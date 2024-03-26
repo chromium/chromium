@@ -374,7 +374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileSerializeMicroSeconds" units="microseconds"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>

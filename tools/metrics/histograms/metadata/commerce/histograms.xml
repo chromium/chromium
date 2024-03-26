@@ -664,7 +664,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.TrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-07-21">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-09-22">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -675,7 +675,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.UntrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-07-21">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-09-22">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -880,7 +880,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2024-05-19">
+    enum="BooleanVisible" expires_after="2024-09-22">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

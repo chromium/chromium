@@ -691,7 +691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Clipboard.Read.NumberOfFormats" units="count"
-    expires_after="2024-06-30">
+    expires_after="2024-09-22">
   <owner>estade@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <owner>snianu@microsoft.com</owner>
@@ -1061,7 +1061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DecodedImage.WebPFileFormat" enum="WebPFileFormat"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>mcasas@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>
@@ -1071,7 +1071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DecodedImageType" enum="DecodedImageType"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>urvang@chromium.org</owner>
   <summary>
     Image codec inferred during decode. The histogram is incremented when enough
@@ -1172,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Experimental.Cookies.CacheLookupResult2"
-    enum="CookieCacheLookupResult" expires_after="2024-07-21">
+    enum="CookieCacheLookupResult" expires_after="2024-09-22">
   <owner>carlscab@google.com</owner>
   <owner>woa-performance@google</owner>
   <summary>
@@ -1351,7 +1351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.ClosedSheetType.Desktop" enum="FedCmSheetType"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1444,7 +1444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.IdpSigninRequestInitiatedByUser"
-    enum="BooleanYesNo" expires_after="2024-07-21">
+    enum="BooleanYesNo" expires_after="2024-09-22">
   <owner>cbiesinger@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1510,7 +1510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.IdpSignoutRequestInitiatedByUser"
-    enum="BooleanYesNo" expires_after="2024-07-21">
+    enum="BooleanYesNo" expires_after="2024-09-22">
   <owner>cbiesinger@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2040,7 +2040,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fonts.DecodeTime" units="microseconds"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
   <summary>
@@ -3821,7 +3821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.Outcome" enum="WebOTPServiceOutcome"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -4364,7 +4364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.PermissionsPolicy.Header2"
-    enum="FeaturePolicyFeature" expires_after="2024-07-21">
+    enum="FeaturePolicyFeature" expires_after="2024-09-22">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

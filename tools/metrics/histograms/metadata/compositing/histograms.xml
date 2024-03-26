@@ -674,7 +674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumActiveLayers" units="layers"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -684,7 +684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumActivePictureLayers" units="layers"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumRenderSurfaces" units="surfaces"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CompositorLatency.Type{Sequence}" enum="FrameReportType"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1145,7 +1145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2024-07-21">
+    units="%" expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1277,7 +1277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.MaxStale" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1362,7 +1362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Stale" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>

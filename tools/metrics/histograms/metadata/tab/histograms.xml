@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tab.Count.Guest" units="units" expires_after="2024-07-21">
+<histogram name="Tab.Count.Guest" units="units" expires_after="2024-09-22">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.Count.Incognito" units="units" expires_after="2024-07-21">
+<histogram name="Tab.Count.Incognito" units="units" expires_after="2024-09-22">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.StatusWhenSwitchedBackToForeground" enum="TabStatus"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ckitagawa@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -723,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserCustomizedGroupCountPerLoad" units="groups"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -763,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserPinnedTabCountPerLoad" units="tabs"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -877,7 +877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.Discarding.InactiveToReloadTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1008,7 +1008,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2024-07-21">
+<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2024-09-22">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
@@ -1053,7 +1053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ewannpv@chromium.org</owner>
   <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
@@ -1487,7 +1487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RestoreTabStateException" enum="RestoreTabStateException"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -1500,7 +1500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1511,7 +1511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.SadTab.Reload.Event" enum="SadTabEvent"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1671,7 +1671,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2024-07-21">
+<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2024-09-22">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <owner>sbirch@google.com</owner>
@@ -1689,7 +1689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabCountPerWindow" units="tabs"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -2276,7 +2276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TimeSinceCreationAtStartup" enum="IOSAllOpenTabsAge"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -2394,7 +2394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.TabCountOnPageLoad" units="tabs"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -2406,7 +2406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.TimeToCreateNewTabFromPress" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>robliao@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

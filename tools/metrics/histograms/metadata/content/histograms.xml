@@ -1106,7 +1106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
-    units="ms" expires_after="2024-07-23">
+    units="ms" expires_after="2024-09-22">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1202,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

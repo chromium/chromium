@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>rishbhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -673,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateDuration" units="seconds"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>rishabhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateStatus" enum="FwupdReturnValue"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>rishabhagr@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -1075,7 +1075,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Meminfo" units="KB" expires_after="2024-07-21">
+<histogram name="Platform.Meminfo" units="KB" expires_after="2024-09-22">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -1336,7 +1336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.ResourceExhaustedCase"
-    enum="ResourceExhaustedCase" expires_after="2024-06-09">
+    enum="ResourceExhaustedCase" expires_after="2024-09-22">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1367,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1742,7 +1742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulWritesDaily" units="KiB"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1819,7 +1819,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.SwapInDaily" units="pages" expires_after="2024-07-21">
+<histogram name="Platform.SwapInDaily" units="pages" expires_after="2024-09-22">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>
@@ -2106,7 +2106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -2197,7 +2197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.FirstTimeoutWritingTime" units="seconds"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>System uptime when first timeout writing TPM command occurs</summary>
@@ -2244,7 +2244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.U2F.Command" enum="Cr50U2FCommands"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>Records occurrences of U2F commands sent to cr50.</summary>

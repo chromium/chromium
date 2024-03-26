@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.CameraRoll.Content.Present" enum="BooleanPresent"
-    expires_after="2024-07-07">
+    expires_after="2024-09-22">
   <owner>jasonsun@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

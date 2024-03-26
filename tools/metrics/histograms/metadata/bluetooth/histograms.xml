@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.Result"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2024-09-22">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1048,7 +1048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.PairDevice.Result"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2024-09-22">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1390,7 +1390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2024-09-22">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1794,7 +1794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ConnectedDeviceCount" units="devices"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>adlr@chromium.org</owner>
   <summary>
     Counts the number of simulataneously connected Bluetooth devices. Used to
@@ -1920,7 +1920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2024-07-21">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2024-09-22">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

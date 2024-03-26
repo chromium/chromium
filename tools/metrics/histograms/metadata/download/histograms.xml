@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.DownloadDangerPrompt.{DownloadDangerTypeString}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2024-07-21">
+    enum="SBClientDownloadExtensions" expires_after="2024-09-22">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -744,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.PartialView.StartTimeToOpenDownloadClick" units="ms"
-    expires_after="2024-07-19">
+    expires_after="2024-09-22">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

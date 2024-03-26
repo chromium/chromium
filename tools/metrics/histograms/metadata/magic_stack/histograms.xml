@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.Build.{ModuleType}.{ModulePosition}"
-    units="count" expires_after="2024-06-20">
+    units="count" expires_after="2024-09-22">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click.{ModuleType}.{ModulePosition}"
-    units="count" expires_after="2024-06-20">
+    units="count" expires_after="2024-09-22">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

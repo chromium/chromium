@@ -222,14 +222,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DriveCommon.Lifecycle.Unmount" enum="DriveMountStatus"
-    expires_after="2024-06-23">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Records outcomes of attempts to unmount Google Drive.</summary>
 </histogram>
 
 <histogram name="DriveCommon.LocalSearch.OfflineSearchTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -249,7 +249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DriveCommon.LocalSearch.TextSearchTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -277,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ChangeDirectory.RootType"
-    enum="FileManagerRootType" expires_after="2024-07-21">
+    enum="FileManagerRootType" expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DirectoryTree.Expand.{RootType}" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -416,7 +416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.DownloadsCount" units="units"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Glitch" enum="FileManagerGlitch"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>majewski@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -889,7 +889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Notification.Show"
-    enum="FileManagerNotificationType" expires_after="2024-07-21">
+    enum="FileManagerNotificationType" expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1466,7 +1466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadArcMedia" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1476,7 +1476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadCrostini" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1496,7 +1496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadDrive" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1517,7 +1517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Recent.LoadTotal" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1583,7 +1583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ToggleFileListType" enum="FileManagerListType"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

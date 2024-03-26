@@ -1977,7 +1977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2024-06-01">
+    enum="EnterpriseEnrollmentType" expires_after="2024-09-22">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2330,7 +2330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -2574,7 +2574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -2694,7 +2694,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2024-07-21">
+    enum="NetErrorCodes" expires_after="2024-09-22">
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2704,7 +2704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.StateDetermination.KillSwitchFetch.NumTries"
-    units="requests" expires_after="2024-07-21">
+    units="requests" expires_after="2024-09-22">
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -3189,7 +3189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>

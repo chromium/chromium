@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2024-07-03">
+    enum="WebAppInstallResultCode" expires_after="2024-09-22">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>laurencom@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -621,7 +621,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1421,7 +1421,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-05-26">
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-09-22">
   <owner>laurencom@google.com</owner>
   <owner>tby@google.com</owner>
   <summary>
@@ -1802,7 +1802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
-    units="characters" expires_after="2024-07-21">
+    units="characters" expires_after="2024-09-22">
   <owner>laurencom@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1855,7 +1855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreQueryState"
-    enum="AppListPlayStoreQueryState" expires_after="2024-07-21">
+    enum="AppListPlayStoreQueryState" expires_after="2024-09-22">
   <owner>tby@chromium.org</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>

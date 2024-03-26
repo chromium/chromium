@@ -847,7 +847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CaptivePortalResult" enum="CaptivePortalNetworkState"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2048,7 +2048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorHasProxy" enum="Boolean"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2059,7 +2059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorResult"
-    enum="NetworkPortalStatus" expires_after="2024-07-21">
+    enum="NetworkPortalStatus" expires_after="2024-09-22">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2070,7 +2070,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorRunCount" units="attempts"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2080,7 +2080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorType" enum="NetworkTechnology"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2366,7 +2366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2024-07-21">
+    enum="BooleanPresent" expires_after="2024-09-22">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>

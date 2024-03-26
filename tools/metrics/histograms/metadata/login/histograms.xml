@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.BrowserShutdownTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>xiyuan@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.TokenCheckResponseTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

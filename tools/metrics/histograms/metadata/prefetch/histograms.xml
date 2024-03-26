@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieReadTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>

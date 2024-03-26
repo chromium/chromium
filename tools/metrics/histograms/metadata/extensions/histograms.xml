@@ -466,7 +466,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ContentVerification.FetchResult"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2024-09-22">
   <owner>vkovalova@google.com</owner>
   <owner>lazyboy@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>

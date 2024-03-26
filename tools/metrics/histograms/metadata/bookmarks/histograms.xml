@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>supertri@chromium.org</owner>
   <owner>isherman@chromium.org</owner>
   <owner>aidanday@google.com</owner>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.FilterUsed2"
-    enum="MobileBookmarkManagerFilter" expires_after="2024-07-21">
+    enum="MobileBookmarkManagerFilter" expires_after="2024-09-22">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.SortOptionUsed"
-    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2024-07-21">
+    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2024-09-22">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>

@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionState"
-    enum="PredictionStateAutocompleteStatePair" expires_after="2024-07-07">
+    enum="PredictionStateAutocompleteStatePair" expires_after="2024-09-22">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2341,7 +2341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormSubmission.PerProfileType"
-    enum="BrowserProfileType" expires_after="2024-07-21">
+    enum="BrowserProfileType" expires_after="2024-09-22">
   <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -3684,7 +3684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>koerber@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -3707,7 +3707,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.PreFilledFieldClassificationsQuality.{FormType}"
     enum="AutofillPreFilledFieldClassificationsQuality"
-    expires_after="2024-07-23">
+    expires_after="2024-09-22">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3740,7 +3740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PreFilledValueStatus.{FormType}"
-    enum="AutofillPreFilledValueStatus" expires_after="2024-07-23">
+    enum="AutofillPreFilledValueStatus" expires_after="2024-09-22">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3821,7 +3821,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.MigrateProfileEditedType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2024-07-07">
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-09-22">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -3865,7 +3865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.ProfileImportType"
-    enum="AutofillProfileImportType" expires_after="2024-07-21">
+    enum="AutofillProfileImportType" expires_after="2024-09-22">
   <owner>koerber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
@@ -3997,7 +3997,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.PerProfile"
-    units="Observations" expires_after="2024-07-21">
+    units="Observations" expires_after="2024-09-22">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4021,7 +4021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileTokenQuality.PerProfile" units="Percents"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4032,7 +4032,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile"
-    units="Observations" expires_after="2024-07-21">
+    units="Observations" expires_after="2024-09-22">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4339,7 +4339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}{ShowType}"
-    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2024-07-01">
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2024-09-22">
   <owner>jsaul@google.com</owner>
   <owner>qihuizhao@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4981,7 +4981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
-    expires_after="2024-05-19">
+    expires_after="2024-09-22">
   <owner>arabm@google.com</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -5110,7 +5110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome2"
-    enum="TouchToFill.CreditCard.Outcome" expires_after="2024-07-21">
+    enum="TouchToFill.CreditCard.Outcome" expires_after="2024-09-22">
   <owner>mlerman@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>vykochko@google.com</owner>
@@ -5129,7 +5129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.PerfectFilling" enum="Boolean"
-    expires_after="2024-05-19">
+    expires_after="2024-09-22">
   <owner>mlerman@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>vykochko@google.com</owner>
@@ -5143,7 +5143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.SelectedIndex" units="index"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>mlerman@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>vykochko@google.com</owner>
@@ -5155,7 +5155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.TriggerOutcome"
-    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2024-07-21">
+    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2024-09-22">
   <owner>mlerman@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>vykochko@google.com</owner>

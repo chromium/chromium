@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.GlobalTemporaryPoolSize" units="MB"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.StorageKeyNonceCount" units="buckets"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalBucketCount" units="buckets"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2024-06-30">
+    enum="GCMRegistrationRequestStatus" expires_after="2024-09-22">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error

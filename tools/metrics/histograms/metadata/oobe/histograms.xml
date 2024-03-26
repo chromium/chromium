@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairing.Result"
-    enum="HidDetectionBluetoothPairingResult" expires_after="2024-07-21">
+    enum="HidDetectionBluetoothPairingResult" expires_after="2024-09-22">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
-    units="attempts" expires_after="2024-07-21">
+    units="attempts" expires_after="2024-09-22">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -673,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.InitialHidsMissing" enum="HidsMissing"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -709,7 +709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
-    enum="MarketingOptInGeolocationEvent" expires_after="2024-07-21">
+    enum="MarketingOptInGeolocationEvent" expires_after="2024-09-22">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -730,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OnboardingFlowDuration.{OnboardingType}" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -744,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OnboardingFlowStatus.{OnboardingType}"
-    enum="BooleanStartedCompleted" expires_after="2024-07-21">
+    enum="BooleanStartedCompleted" expires_after="2024-09-22">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -767,7 +767,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-07-21">
+<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-09-22">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -780,7 +780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OobeFlowStatus" enum="BooleanStartedCompleted"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -793,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OobeStartToOnboardingStartTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>

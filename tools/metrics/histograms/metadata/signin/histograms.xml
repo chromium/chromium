@@ -423,7 +423,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.AndroidGetAccountsTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>alexilin@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -432,7 +432,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -441,7 +441,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AuthError" enum="GoogleServiceAuthError"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -494,7 +494,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.BoundSessionCredentials.CookieRotationNetError"
-    enum="NetErrorCodes" expires_after="2024-07-14">
+    enum="NetErrorCodes" expires_after="2024-09-22">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

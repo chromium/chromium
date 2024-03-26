@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2024-07-21">
+    units="dBFS (negated)" expires_after="2024-09-22">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2024-07-21">
+    units="dBFS (negated)" expires_after="2024-09-22">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1245,7 +1245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Duration.Signaling" units="microseconds"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>handellm@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Latency.Worker" units="microseconds"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>handellm@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1603,7 +1603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.ZeroHz.QueueOverload" enum="Boolean"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>henrika@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <summary>

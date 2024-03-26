@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadExtensions"
-    enum="SBClientDownloadExtensions" expires_after="2024-07-21">
+    enum="SBClientDownloadExtensions" expires_after="2024-09-22">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2024-07-21">
+    enum="SBPhishingClassifierEvent" expires_after="2024-09-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ClassifyThresholdsResult"
-    enum="SBClientDetectionClassifyThresholdsResult" expires_after="2024-07-21">
+    enum="SBClientDetectionClassifyThresholdsResult" expires_after="2024-09-22">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -720,7 +720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-09-22">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -730,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration.{RequestType}"
-    units="ms" expires_after="2024-07-21">
+    units="ms" expires_after="2024-09-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

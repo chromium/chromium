@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.Duration.OverOneDay" enum="BooleanYesNo"
-    expires_after="2024-06-09">
+    expires_after="2024-09-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.FRE.Disclaimer.DialogShownCount.{FinalStatus}"
-    units="count" expires_after="2024-06-30">
+    units="count" expires_after="2024-09-22">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
