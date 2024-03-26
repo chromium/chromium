@@ -173,9 +173,15 @@ RootCompositorFrameSinkImpl::Create(
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,
                 output_surface.get());
+      } else {
+        auto time_source = std::make_unique<DelayBasedTimeSource>(
+            base::SingleThreadTaskRunner::GetCurrentDefault().get());
+        synthetic_begin_frame_source =
+            std::make_unique<DelayBasedBeginFrameSourceMac>(
+                std::move(time_source), restart_id);
       }
 #endif
-      if (!external_begin_frame_source) {
+      if (!external_begin_frame_source && !synthetic_begin_frame_source) {
         auto time_source = std::make_unique<DelayBasedTimeSource>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get());
         synthetic_begin_frame_source =
