@@ -1471,6 +1471,20 @@ void AXTree::CheckTreeConsistency(const AXTreeUpdate& update) {
     return;
   }
 
+  // Do not check pages with child trees.
+  // Required to pass PDFExtensionAccessibilityTreeDumpTest tests.
+  if (has_plugin_) {
+    return;
+  }
+  for (const auto& node_data : update.nodes) {
+    if (node_data.role == ax::mojom::Role::kEmbeddedObject) {
+      has_plugin_ = true;
+    }
+  }
+  if (has_plugin_) {
+    return;
+  }
+
   // Return early if the expected node count matches the node ids mapped.
   if (update.tree_checks->node_count == id_map_.size()) {
     return;

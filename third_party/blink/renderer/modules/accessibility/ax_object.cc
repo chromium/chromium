@@ -6315,12 +6315,6 @@ void AXObject::ClearChildren() const {
       ax_child_from_node->DetachFromParent();
     }
   }
-
-  // On clearing of children, ensure that our plugin serializer, if it exists,
-  // is properly reset.
-  if (IsA<HTMLEmbedElement>(node)) {
-    AXObjectCache().ResetPluginTreeSerializer();
-  }
 }
 
 void AXObject::ChildrenChangedWithCleanLayout() {

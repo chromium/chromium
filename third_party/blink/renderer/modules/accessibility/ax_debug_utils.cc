@@ -102,40 +102,25 @@ std::string ParentChainToStringHelper(const AXObject* obj) {
   return builder;
 }
 
-void CheckTreeConsistency(
-    AXObjectCacheImpl& cache,
-    ui::AXTreeSerializer<AXObject*,
-                         HeapVector<Member<AXObject>>,
-                         ui::AXTreeUpdate*,
-                         ui::AXTreeData*,
-                         ui::AXNodeData>& serializer,
-    ui::AXTreeSerializer<const ui::AXNode*,
-                         std::vector<const ui::AXNode*>,
-                         ui::AXTreeUpdate*,
-                         ui::AXTreeData*,
-                         ui::AXNodeData>* plugin_serializer) {
+void CheckTreeConsistency(AXObjectCacheImpl& cache,
+                          ui::AXTreeSerializer<AXObject*,
+                                               HeapVector<Member<AXObject>>,
+                                               ui::AXTreeUpdate*,
+                                               ui::AXTreeData*,
+                                               ui::AXNodeData>& serializer) {
   // If all serializations are complete, check that the number of included nodes
   // being serialized is the same as the number of included nodes according to
   // the AXObjectCache.
   size_t included_node_count_from_cache = cache.GetIncludedNodeCount();
-  size_t plugin_included_node_count_from_cache =
-      cache.GetPluginIncludedNodeCount();
-  size_t serializer_client_node_count = serializer.ClientTreeNodeCount();
-  size_t plugin_serializer_client_node_count =
-      plugin_serializer ? plugin_serializer->ClientTreeNodeCount() : 0;
-  if (included_node_count_from_cache != serializer_client_node_count ||
-      plugin_included_node_count_from_cache !=
-          plugin_serializer_client_node_count) {
+  if (included_node_count_from_cache != serializer.ClientTreeNodeCount()) {
     // There was an inconsistency in the node count: provide a helpful message
     // to facilitate debugging.
     std::ostringstream msg;
     msg << "AXTreeSerializer should have the expected number of included nodes:"
         << "\n* AXObjectCache: " << included_node_count_from_cache
-        << "\n* AXObjectCache plugin: " << plugin_included_node_count_from_cache
         << "\n* Depth first cache count: "
         << RecursiveIncludedNodeCount(cache.Root())
-        << "\n* Serializer: " << serializer.ClientTreeNodeCount()
-        << "\n* plugin Serializer: " << plugin_serializer_client_node_count;
+        << "\n* Serializer: " << serializer.ClientTreeNodeCount();
     HeapHashMap<AXID, Member<AXObject>>& all_objects = cache.GetObjects();
     for (const auto& id_to_object_entry : all_objects) {
       AXObject* obj = id_to_object_entry.value;
