@@ -33,6 +33,8 @@ class PinTextfield : public views::Textfield {
   // Returns currently typed pin.
   std::u16string GetPin();
 
+  void SetObscured(bool obscured);
+
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;

@@ -6250,6 +6250,8 @@ static_library("ui") {
       "views/webauthn/pin_options_button.h",
       "views/webauthn/pin_textfield.cc",
       "views/webauthn/pin_textfield.h",
+      "views/webauthn/reveal_button_util.cc",
+      "views/webauthn/reveal_button_util.h",
       "views/webauthn/ring_progress_bar.cc",
       "views/webauthn/ring_progress_bar.h",
       "views/webauthn/sheet_view_factory.cc",

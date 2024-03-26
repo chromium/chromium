@@ -86,6 +86,14 @@ std::u16string PinTextfield::GetPin() {
   return pin;
 }
 
+void PinTextfield::SetObscured(bool obscured) {
+  SetTextInputType(obscured ? ui::TEXT_INPUT_TYPE_PASSWORD
+                            : ui::TEXT_INPUT_TYPE_TEXT);
+  for (int i = 0; i < pin_digits_count_; i++) {
+    render_texts_[i]->SetObscured(obscured);
+  }
+}
+
 void PinTextfield::OnPaint(gfx::Canvas* canvas) {
   View::OnPaintBackground(canvas);
 

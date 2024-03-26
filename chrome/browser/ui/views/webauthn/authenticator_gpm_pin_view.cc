@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_view.h"
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/views/webauthn/reveal_button_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
@@ -13,7 +14,7 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(Delegate* delegate,
                                                  int pin_digits_count)
     : delegate_(delegate) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -21,6 +22,10 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(Delegate* delegate,
   pin_textfield->SetController(this);
   pin_textfield->SetAccessibleName(u"Pin field (UNTRANSLATED)");
   pin_textfield_ = AddChildView(std::move(pin_textfield));
+
+  reveal_button_ = AddChildView(CreateRevealButton(
+      base::BindRepeating(&AuthenticatorGPMPinView::OnRevealButtonClicked,
+                          base::Unretained(this))));
 }
 
 AuthenticatorGPMPinView::~AuthenticatorGPMPinView() = default;
@@ -48,6 +53,12 @@ bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
   }
 
   return true;
+}
+
+void AuthenticatorGPMPinView::OnRevealButtonClicked() {
+  pin_revealed_ = !pin_revealed_;
+  reveal_button_->SetToggled(pin_revealed_);
+  pin_textfield_->SetObscured(!pin_revealed_);
 }
 
 BEGIN_METADATA(AuthenticatorGPMPinView)
