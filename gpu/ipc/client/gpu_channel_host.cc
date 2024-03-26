@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -213,9 +212,7 @@ GpuChannelHost::~GpuChannelHost() = default;
 
 GpuChannelHost::ConnectionTracker::ConnectionTracker() = default;
 
-GpuChannelHost::ConnectionTracker::~ConnectionTracker() {
-  CHECK(observer_list_.empty(), base::NotFatalUntil::M126);
-}
+GpuChannelHost::ConnectionTracker::~ConnectionTracker() = default;
 
 void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
   is_connected_.store(false);
@@ -225,22 +222,23 @@ void GpuChannelHost::ConnectionTracker::OnDisconnectedFromGpuProcess() {
 void GpuChannelHost::ConnectionTracker::AddObserver(
     GpuChannelLostObserver* obs) {
   AutoLock lock(channel_obs_lock_);
-  CHECK(!base::Contains(observer_list_, obs), base::NotFatalUntil::M126);
-  observer_list_.push_back(obs);
+  observer_list_.AddObserver(obs);
+  DCHECK(!observer_list_.empty());
 }
 
 void GpuChannelHost::ConnectionTracker::RemoveObserver(
     GpuChannelLostObserver* obs) {
   AutoLock lock(channel_obs_lock_);
-  std::erase(observer_list_, obs);
+  observer_list_.RemoveObserver(obs);
 }
 
 void GpuChannelHost::ConnectionTracker::NotifyGpuChannelLost() {
   AutoLock lock(channel_obs_lock_);
-  for (GpuChannelLostObserver* observer : observer_list_) {
-    observer->OnGpuChannelLost();
+  for (auto& observer : observer_list_) {
+    observer.OnGpuChannelLost();
   }
-  observer_list_.clear();
+  observer_list_.Clear();
+  DCHECK(observer_list_.empty());
 }
 
 GpuChannelHost::OrderingBarrierInfo::OrderingBarrierInfo() = default;

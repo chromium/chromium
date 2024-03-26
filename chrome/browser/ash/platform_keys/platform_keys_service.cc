@@ -57,11 +57,7 @@ PlatformKeysServiceImpl::PlatformKeysServiceImpl(
       &PlatformKeysServiceImpl::OnDelegateShutDown, base::Unretained(this)));
 }
 
-PlatformKeysServiceImpl::~PlatformKeysServiceImpl() {
-  // Destroy the delegate as it calls back into OnDelegateShutdown() which we
-  // should not call on a partially-destroyed `this`.
-  delegate_.reset();
-}
+PlatformKeysServiceImpl::~PlatformKeysServiceImpl() = default;
 
 void PlatformKeysServiceImpl::AddObserver(
     PlatformKeysServiceObserver* observer) {

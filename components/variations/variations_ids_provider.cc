@@ -233,14 +233,11 @@ bool VariationsIdsProvider::ForceDisableVariationIds(
 }
 
 void VariationsIdsProvider::AddObserver(Observer* observer) {
-  base::AutoLock scoped_lock(lock_);
-  CHECK(!base::Contains(observer_list_, observer), base::NotFatalUntil::M126);
-  observer_list_.push_back(observer);
+  observer_list_.AddObserver(observer);
 }
 
 void VariationsIdsProvider::RemoveObserver(Observer* observer) {
-  base::AutoLock scoped_lock(lock_);
-  std::erase(observer_list_, observer);
+  observer_list_.RemoveObserver(observer);
 }
 
 void VariationsIdsProvider::ResetForTesting() {
@@ -384,8 +381,8 @@ void VariationsIdsProvider::UpdateVariationIDsHeaderValue() {
       GenerateBase64EncodedProto(/*is_signed_in=*/true,
                                  /*is_first_party_context=*/true);
 
-  for (auto* observer : observer_list_) {
-    observer->VariationIdsHeaderUpdated();
+  for (auto& observer : observer_list_) {
+    observer.VariationIdsHeaderUpdated();
   }
 }
 

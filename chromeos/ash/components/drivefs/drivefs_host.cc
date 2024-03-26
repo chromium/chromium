@@ -297,10 +297,6 @@ DriveFsHost::~DriveFsHost() {
     observer.OnHostDestroyed();
     observer.Reset();
   }
-
-  // Reset `mount_state_` manually to avoid accessing a partially-destructed
-  // `this` in ~MountState().
-  mount_state_.reset();
 }
 
 bool DriveFsHost::Mount() {

@@ -191,9 +191,8 @@ class GPU_EXPORT GpuChannelHost
 
     // The GpuChannelLost Monitor for LayerTreeFrameSink.
     base::Lock channel_obs_lock_;
-    // Note that ObserverList is sequence checked so we can't use that here.
-    std::vector<GpuChannelLostObserver*> GUARDED_BY(channel_obs_lock_)
-        observer_list_;
+    base::ObserverList<GpuChannelLostObserver>::Unchecked GUARDED_BY(
+        channel_obs_lock_) observer_list_;
   };
 
   // A filter used internally to route incoming messages from the IO thread
