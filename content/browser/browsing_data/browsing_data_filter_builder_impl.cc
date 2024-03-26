@@ -204,7 +204,7 @@ void BrowsingDataFilterBuilderImpl::SetCookiePartitionKeyCollection(
 }
 
 bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteDataForCookies() const {
-  if (cookie_partition_key_collection_.IsEmpty() ||
+  if (domains_.empty() || cookie_partition_key_collection_.IsEmpty() ||
       cookie_partition_key_collection_.ContainsAllKeys()) {
     return false;
   }
@@ -241,7 +241,9 @@ bool BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey(
 }
 
 bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
-  return mode_ == Mode::kPreserve && origins_.empty() && domains_.empty();
+  return mode_ == Mode::kPreserve && origins_.empty() && domains_.empty() &&
+         !partitioned_state_only_ &&
+         cookie_partition_key_collection_.ContainsAllKeys() && !HasStorageKey();
 }
 
 bool BrowsingDataFilterBuilderImpl::MatchesNothing() {

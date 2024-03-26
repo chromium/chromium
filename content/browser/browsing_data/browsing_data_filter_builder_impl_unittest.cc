@@ -23,6 +23,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -525,6 +526,44 @@ TEST(BrowsingDataFilterBuilderImplTest, IsCrossSiteClearSiteDataForCookies) {
     builder.SetCookiePartitionKeyCollection(
         test_case.cookie_partition_key_collection);
     EXPECT_EQ(test_case.expected, builder.IsCrossSiteClearSiteDataForCookies());
+  }
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, StorageKey_PreserveNoOrigins) {
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  auto origin1 = url::Origin::Create(GURL("https://foo.com"));
+  auto origin2 = url::Origin::Create(GURL("https://bar.com"));
+
+  auto filter_storage_key =
+      blink::StorageKey::Create(origin1, net::SchemefulSite(origin2),
+                                blink::mojom::AncestorChainBit::kCrossSite);
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
+  builder.SetStorageKey(filter_storage_key);
+  auto matcher_function = builder.BuildStorageKeyFilter();
+
+  blink::StorageKey keys[] = {
+      // Top-level (Foo).
+      blink::StorageKey::CreateFirstParty(origin1),
+      // Foo embedded on Bar.
+      blink::StorageKey::Create(origin1, net::SchemefulSite(origin2),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      // Foo embedded on Bar embedded on Foo.
+      blink::StorageKey::Create(origin1, net::SchemefulSite(origin1),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+      // Bar
+      blink::StorageKey::CreateFirstParty(origin2),
+      // Bar embedded on Foo
+      blink::StorageKey::Create(origin2, net::SchemefulSite(origin1),
+                                blink::mojom::AncestorChainBit::kCrossSite),
+  };
+
+  for (const blink::StorageKey& key : keys) {
+    SCOPED_TRACE(key);
+    EXPECT_EQ(matcher_function.Run(key), key == filter_storage_key);
   }
 }
 
