@@ -90,26 +90,24 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_Q_AND_A);
 
   auto* input_data = request.add_input_data();
-  input_data->set_tag("model_input");
+  input_data->set_tag("original_content");
   input_data->set_text(original_content);
 
   input_data = request.add_input_data();
-  input_data->set_tag("user_question");
+  input_data->set_tag("new_question");
   input_data->set_text(question);
 
-  for (const auto& [history_question, history_answer] : QAHistory) {
+  for (const auto& [previous_question, previous_answer] : QAHistory) {
     input_data = request.add_input_data();
-    input_data->set_tag("history_question");
-    input_data->set_text(history_question);
+    input_data->set_tag("previous_question");
+    input_data->set_text(previous_question);
 
     input_data = request.add_input_data();
-    input_data->set_tag("history_answer");
-    input_data->set_text(history_answer);
+    input_data->set_tag("previous_answer");
+    input_data->set_text(previous_answer);
   }
 
-  std::move(done_callback)
-      .Run(base::Value::Dict(),
-           {MantaStatusCode::kGenericError, request.SerializeAsString()});
+  RequestInternal(request, std::move(done_callback));
 }
 
 void MahiProvider::RequestInternal(const proto::Request& request,
