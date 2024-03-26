@@ -5,13 +5,15 @@
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 
 #include <stddef.h>
-
+#include <memory>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
@@ -159,15 +161,13 @@ TabResumptionPageHandler::TabResumptionPageHandler(
 
 TabResumptionPageHandler::~TabResumptionPageHandler() = default;
 
-void TabResumptionPageHandler::OnQueryURLsComplete(
+void TabResumptionPageHandler::OnGetMostRecentVisitForEachURLComplete(
     std::vector<history::mojom::TabPtr> tabs,
     GetTabsCallback callback,
-    std::vector<history::QueryURLResult> results) {
+    std::map<GURL, history::VisitRow> visit_pairs) {
   history::VisitVector visit_rows;
-  for (auto result : results) {
-    for (auto visit : result.visits) {
-      visit_rows.push_back(visit);
-    }
+  for (const auto& visit : visit_pairs) {
+    visit_rows.push_back(visit.second);
   }
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -221,8 +221,6 @@ void TabResumptionPageHandler::OnAnnotatedVisits(
     return;
   }
 
-  std::sort(scored_tabs.begin(), scored_tabs.end(), CompareTabsByTime);
-
   std::move(callback).Run(std::move(scored_tabs));
 }
 
@@ -245,9 +243,10 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     return;
   }
 
-  // Filter out duplicate host urls.
-  auto tabs_mojom = GetDeduplicatedTabs();
-
+  auto tabs_mojom = GetForeignTabs();
+  // Sort tabs now so when we check for matching urls later the most recent
+  // is already first.
+  std::sort(tabs_mojom.begin(), tabs_mojom.end(), CompareTabsByTime);
   std::vector<GURL> urls;
   for (const auto& tab : tabs_mojom) {
     urls.push_back(tab->url);
@@ -260,11 +259,12 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
 
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->QueryURLs(
-      urls, /*want_visits=*/true,
-      base::BindOnce(&TabResumptionPageHandler::OnQueryURLsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(tabs_mojom),
-                     std::move(callback)),
+  history_service->GetMostRecentVisitForEachURL(
+      urls,
+      base::BindOnce(
+          &TabResumptionPageHandler::OnGetMostRecentVisitForEachURLComplete,
+          weak_ptr_factory_.GetWeakPtr(), std::move(tabs_mojom),
+          std::move(callback)),
       &task_tracker_);
 }
 
@@ -272,26 +272,6 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
 void TabResumptionPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDismissedTabsPrefName, base::Value::List());
-}
-
-std::vector<history::mojom::TabPtr>
-TabResumptionPageHandler::GetDeduplicatedTabs() {
-  std::vector<history::mojom::TabPtr> tabs_mojom = GetForeignTabs();
-  std::map<GURL, history::mojom::TabPtr> url_tab_map;
-  for (auto& tab_mojom : tabs_mojom) {
-    GURL url = tab_mojom->url;
-    if (url_tab_map.find(url) == url_tab_map.end() ||
-        url_tab_map[url]->relative_time < tab_mojom->relative_time) {
-      url_tab_map[url] = std::move(tab_mojom);
-    }
-  }
-  tabs_mojom.clear();
-
-  std::vector<history::mojom::TabPtr> unique_tabs;
-  for (auto& url_pair : url_tab_map) {
-    unique_tabs.push_back(std::move(url_pair.second));
-  }
-  return unique_tabs;
 }
 
 // static

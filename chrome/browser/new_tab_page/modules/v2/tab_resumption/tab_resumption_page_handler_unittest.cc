@@ -117,24 +117,18 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
           }));
 
   EXPECT_CALL(mock_history_service(),
-              QueryURLs(testing::_, true, testing::_, testing::_))
-      .WillOnce(
-          (testing::Invoke([&](const std::vector<GURL>& urls, bool want_visits,
-                               MockHistoryService::QueryURLsCallback callback,
-                               base::CancelableTaskTracker* tracker) {
-            std::vector<history::QueryURLResult> results;
+              GetMostRecentVisitForEachURL(testing::_, testing::_, testing::_))
+      .WillOnce((testing::Invoke(
+          [&](const std::vector<GURL>& urls,
+              base::OnceCallback<void(std::map<GURL, history::VisitRow>)>
+                  callback,
+              base::CancelableTaskTracker* tracker) {
+            std::map<GURL, history::VisitRow> visits;
             for (auto url : urls) {
-              history::QueryURLResult result;
-              result.success = true;
-              result.row.set_url(url);
-              result.row.set_last_visit(base::Time::Now());
-              history::VisitVector visits;
               history::VisitRow visit;
-              visits.push_back(visit);
-              result.visits = visits;
-              results.push_back(result);
+              visits[url] = visit;
             }
-            std::move(callback).Run(results);
+            std::move(callback).Run(visits);
             return base::CancelableTaskTracker::TaskId();
           })));
 
@@ -223,24 +217,18 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
           }));
 
   EXPECT_CALL(mock_history_service(),
-              QueryURLs(testing::_, true, testing::_, testing::_))
-      .WillOnce(
-          (testing::Invoke([&](const std::vector<GURL>& urls, bool want_visits,
-                               MockHistoryService::QueryURLsCallback callback,
-                               base::CancelableTaskTracker* tracker) {
-            std::vector<history::QueryURLResult> results;
+              GetMostRecentVisitForEachURL(testing::_, testing::_, testing::_))
+      .WillOnce((testing::Invoke(
+          [&](const std::vector<GURL>& urls,
+              base::OnceCallback<void(std::map<GURL, history::VisitRow>)>
+                  callback,
+              base::CancelableTaskTracker* tracker) {
+            std::map<GURL, history::VisitRow> visits;
             for (auto url : urls) {
-              history::QueryURLResult result;
-              result.success = true;
-              result.row.set_url(url);
-              result.row.set_last_visit(base::Time::Now());
-              history::VisitVector visits;
               history::VisitRow visit;
-              visits.push_back(visit);
-              result.visits = visits;
-              results.push_back(result);
+              visits[url] = visit;
             }
-            std::move(callback).Run(results);
+            std::move(callback).Run(visits);
             return base::CancelableTaskTracker::TaskId();
           })));
 
