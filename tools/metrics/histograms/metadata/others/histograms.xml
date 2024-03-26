@@ -7768,7 +7768,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode"
+<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode2"
     enum="Hresult" expires_after="2024-08-04">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
@@ -7782,7 +7782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultLastError"
+    name="OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultLastError2"
     enum="WinGetLastError" expires_after="2024-08-04">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
@@ -7795,7 +7795,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time"
+<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time2"
     units="ms" expires_after="2024-08-04">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
@@ -7808,7 +7808,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode"
+<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode2"
     enum="Hresult" expires_after="2024-08-04">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
@@ -7823,7 +7823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultLastError"
+    name="OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultLastError2"
     enum="WinGetLastError" expires_after="2024-08-04">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
@@ -7838,7 +7838,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time"
+<histogram name="OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time2"
     units="ms" expires_after="2024-08-04">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>

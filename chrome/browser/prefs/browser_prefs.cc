@@ -992,6 +992,9 @@ constexpr char kResetCheckDefaultBrowser[] =
 // Deprecated 02/2024
 constexpr char kOsCryptAppBoundFixedDataPrefName[] =
     "os_crypt.app_bound_fixed_data";
+// Deprecated 03/2024
+constexpr char kOsCryptAppBoundFixedData2PrefName[] =
+    "os_crypt.app_bound_fixed_data2";
 #endif  // BUILDFLAG(IS_WIN)
 
 // Deprecated 02/2024.
@@ -1127,6 +1130,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
   // Deprecated 02/2024.
   registry->RegisterStringPref(kOsCryptAppBoundFixedDataPrefName,
+                               std::string());
+  // Deprecated 03/2024.
+  registry->RegisterStringPref(kOsCryptAppBoundFixedData2PrefName,
                                std::string());
 #endif
 
@@ -2303,6 +2309,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_WIN)
   // Deprecated 02/2024.
   local_state->ClearPref(kOsCryptAppBoundFixedDataPrefName);
+  // Deprecated 03/2024.
+  local_state->ClearPref(kOsCryptAppBoundFixedData2PrefName);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

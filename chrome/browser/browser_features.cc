@@ -20,7 +20,7 @@ namespace features {
 // and reliability of app-bound encryption primitives on a background thread.
 BASE_FEATURE(kAppBoundEncryptionMetrics,
              "AppBoundEncryptionMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // This is used to enable an experiment for modifying confidence cutoff of
