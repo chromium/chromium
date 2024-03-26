@@ -8,6 +8,7 @@ package ios.proto;
 option optimize_for = LITE_RUNTIME;
 
 import "ios/web/public/session/proto/metadata.proto";
+import "ios/chrome/browser/sessions/proto/tab_group.proto";
 
 // Represents the information about a WebState's opener in a WebStateList.
 //
@@ -37,4 +38,5 @@ message WebStateListStorage {
   repeated WebStateListItemStorage items = 1;
   int32 active_index = 2;
   int32 pinned_item_count = 3;
+  repeated TabGroupStorage groups = 4;
 }

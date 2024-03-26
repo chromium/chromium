@@ -8,6 +8,9 @@ proto_library("proto") {
   proto_in_dir = "//"
   generate_cc = true
   generate_python = false
-  sources = [ "storage.proto" ]
+  sources = [
+    "storage.proto",
+    "tab_group.proto",
+  ]
   deps = [ "//ios/web/public/session/proto" ]
 }

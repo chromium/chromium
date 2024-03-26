@@ -11,8 +11,10 @@
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
 namespace {
@@ -74,6 +76,21 @@ std::vector<Token> TokenizeWebStateListDescription(
   return tokens;
 }
 
+// Creates a fake WebState with navigation items.
+std::unique_ptr<web::WebState> CreateWebState() {
+  const GURL url = GURL(kChromeUIVersionURL);
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
+
+  auto web_state =
+      std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  web_state->SetNavigationItemCount(1);
+  web_state->SetVisibleURL(url);
+
+  return web_state;
+}
+
 }  // namespace
 
 WebStateListBuilderFromDescription::WebStateListBuilderFromDescription() =
@@ -110,7 +127,8 @@ bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
         if (GetWebStateForIdentifier(token.character)) {
           return false;
         }
-        auto web_state = std::make_unique<web::FakeWebState>();
+        auto web_state = CreateWebState();
+
         SetWebStateIdentifier(web_state.get(), token.character);
         web_state_list.InsertWebState(
             std::move(web_state),

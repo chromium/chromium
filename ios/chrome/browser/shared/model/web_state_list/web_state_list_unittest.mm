@@ -560,6 +560,14 @@ TEST_F(WebStateListRangeTest, Contract) {
   EXPECT_EQ(WebStateList::Range(2, 0), range);
 }
 
+// Tests that the `AsSet` getter returns the correct set of indices.
+TEST_F(WebStateListRangeTest, AsSet) {
+  WebStateList::Range range(12, 3);
+  std::set<int> expected = {12, 13, 14};
+
+  EXPECT_EQ(expected, range.AsSet());
+}
+
 // Tests iterating over the indices from a range in a range-based for-loop lists
 // all indices correctly.
 TEST_F(WebStateListRangeTest, ForLoop) {

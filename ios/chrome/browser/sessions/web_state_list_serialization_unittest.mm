@@ -11,12 +11,15 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -155,6 +158,14 @@ void SerializeWebStateList(const WebStateList& web_state_list,
   }
 
   SerializeWebStateList(web_state_list, metadata_map, storage);
+}
+
+// Checks that the given `tab_group_range` is present in the `web_state_list`.
+bool CheckWebStateListHasTabGroup(const WebStateList& web_state_list,
+                                  const WebStateList::Range& tab_group_range) {
+  const TabGroup* group =
+      web_state_list.GetGroupOfWebStateAt(tab_group_range.range_begin());
+  return tab_group_range == web_state_list.GetGroupRange(group);
 }
 
 }  // namespace
@@ -861,4 +872,128 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_SessionIDCheck) {
   // Check that the pinned tab has been restored at the correct position
   // but is no longer pinned.
   EXPECT_FALSE(web_state_list.IsWebStatePinnedAt(0));
+}
+
+// Tests deserializing works when support for tab groups is enabled.
+// Tests with one tab group.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsEnabled) {
+  FakeWebStateListDelegate delegate;
+  const WebStateList::Range group_range = WebStateList::Range(0, 1);
+
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
+                                                         "| [0 a] b* c d"));
+
+    SerializeWebStateList(web_state_list, storage);
+
+    EXPECT_EQ(storage.items_size(), 4);
+    EXPECT_EQ(storage.active_index(), 1);
+    EXPECT_EQ(storage.groups_size(), 1);
+  }
+
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ true,
+                              /*enable_tab_groups*/ true,
+                              base::BindRepeating(&CreateWebStateFromProto));
+  EXPECT_EQ(restored_web_states.size(), 4u);
+
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+
+  // Check tab groups.
+  std::set<const TabGroup*> groups = web_state_list.GetGroups();
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_TRUE(CheckWebStateListHasTabGroup(web_state_list, group_range));
+}
+
+// Tests deserializing works when support for tab groups is enabled.
+// Tests with multiple tab groups.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest,
+       Deserialize_Proto_TabGroupsEnabled_MultipleGroups) {
+  FakeWebStateListDelegate delegate;
+  const WebStateList::Range group_range_first = WebStateList::Range(0, 1);
+  const WebStateList::Range group_range_second = WebStateList::Range(2, 2);
+
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
+                                                         "| [0 a] b* [1 c d]"));
+
+    SerializeWebStateList(web_state_list, storage);
+
+    EXPECT_EQ(storage.items_size(), 4);
+    EXPECT_EQ(storage.active_index(), 1);
+    EXPECT_EQ(storage.groups_size(), 2);
+  }
+
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ true,
+                              /*enable_tab_groups*/ true,
+                              base::BindRepeating(&CreateWebStateFromProto));
+  EXPECT_EQ(restored_web_states.size(), 4u);
+
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+
+  // Check tab groups.
+  std::set<const TabGroup*> groups = web_state_list.GetGroups();
+  ASSERT_EQ(groups.size(), 2u);
+  EXPECT_TRUE(CheckWebStateListHasTabGroup(web_state_list, group_range_first));
+  EXPECT_TRUE(CheckWebStateListHasTabGroup(web_state_list, group_range_second));
+}
+
+// Tests deserializing works when support for tab groups is disabled.
+// Tests with one tab group.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsDisabled) {
+  FakeWebStateListDelegate delegate;
+
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
+                                                         "| [0 a] b* [1 c d]"));
+
+    SerializeWebStateList(web_state_list, storage);
+
+    EXPECT_EQ(storage.items_size(), 4);
+    EXPECT_EQ(storage.active_index(), 1);
+    EXPECT_EQ(storage.groups_size(), 2);
+  }
+
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ true,
+                              /*enable_tab_groups*/ false,
+                              base::BindRepeating(&CreateWebStateFromProto));
+  EXPECT_EQ(restored_web_states.size(), 4u);
+
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+
+  // Check tab groups.
+  std::set<const TabGroup*> groups = web_state_list.GetGroups();
+  ASSERT_EQ(groups.size(), 0u);
 }

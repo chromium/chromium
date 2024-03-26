@@ -198,6 +198,7 @@ class WebStateList {
     // Getters.
     constexpr int range_begin() const { return start_; }
     constexpr int count() const { return count_; }
+    std::set<int> AsSet() const { return std::set<int>(begin(), end()); }
 
     // `range_end` is the first index not in the range.
     constexpr int range_end() const { return start_ + count_; }
