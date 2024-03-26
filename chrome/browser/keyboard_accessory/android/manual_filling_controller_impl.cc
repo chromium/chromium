@@ -336,11 +336,9 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
   DCHECK(address_controller_);
 
-  if (CreditCardAccessoryController::AllowedForWebContents(web_contents)) {
-    cc_controller_ =
-        CreditCardAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
-    DCHECK(cc_controller_);
-  }
+  cc_controller_ =
+      CreditCardAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
+  DCHECK(cc_controller_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ManualFillingCache",

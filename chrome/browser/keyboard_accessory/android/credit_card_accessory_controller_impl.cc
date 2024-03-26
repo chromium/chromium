@@ -269,35 +269,8 @@ void CreditCardAccessoryControllerImpl::OnToggleChanged(
 }
 
 // static
-bool CreditCardAccessoryController::AllowedForWebContents(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile);
-  if (personal_data_manager) {
-    std::vector<CreditCard*> cards =
-        personal_data_manager->GetCreditCardsToSuggest();
-    bool has_virtual_card = base::ranges::any_of(cards, [](const auto& card) {
-      return card->virtual_card_enrollment_state() ==
-             CreditCard::VirtualCardEnrollmentState::kEnrolled;
-    });
-    if (has_virtual_card) {
-      // Virtual cards are available. We should always show manual fallback
-      // for virtual cards.
-      return true;
-    }
-  }
-
-  return true;
-}
-
-// static
 CreditCardAccessoryController* CreditCardAccessoryController::GetOrCreate(
     content::WebContents* web_contents) {
-  DCHECK(CreditCardAccessoryController::AllowedForWebContents(web_contents));
-
   CreditCardAccessoryControllerImpl::CreateForWebContents(web_contents);
   return CreditCardAccessoryControllerImpl::FromWebContents(web_contents);
 }

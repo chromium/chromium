@@ -8,7 +8,6 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -150,7 +149,6 @@ class CreditCardAccessoryControllerTest
       filling_source_observer_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
   TestAutofillDriverInjector<testing::NiceMock<MockAutofillDriver>>
@@ -162,26 +160,7 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
     : public CreditCardAccessoryControllerTest {
  public:
   CreditCardAccessoryControllerTestSupportingPromoCodeOffers() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(CreditCardAccessoryControllerTest,
-       AllowedForWebContentsForVirtualCards) {
-  PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile());
-  // Add a virtual card.
-  CreditCard card = test::GetMaskedServerCard();
-  card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  personal_data_manager->AddServerCreditCardForTest(
-      std::make_unique<CreditCard>(card));
-
-  // Verify that the accessory sheet is allowed.
-  ASSERT_TRUE(
-      CreditCardAccessoryController::AllowedForWebContents(web_contents()));
-}
 
 TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
   CreditCard card = test::GetCreditCard();
