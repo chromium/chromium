@@ -212,6 +212,10 @@ if (v8_enable_webassembly) {
     max_len = 500
   }
 
+  v8_fuzzer("wasm_compile_wasmgc_fuzzer") {
+    max_len = 500
+  }
+
   v8_fuzzer("wasm_fuzzer") {
     max_len = 500
     seed_corpus = "//v8/test/fuzzer/wasm_corpus/"
