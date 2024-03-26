@@ -825,7 +825,7 @@
       // flag.
       // TODO(crbug.com/1514397): Remove this when the deprecation is done.
       name: "CSSCustomStateNewSyntax",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSDisplayAnimation",
