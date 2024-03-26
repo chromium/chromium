@@ -17,9 +17,7 @@ rootWebArea
 ++++++group hasAriaAttribute=true
 ++++++group hasAriaAttribute=true
 ++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
 ++++++splitter horizontal
-++++++genericContainer hasAriaAttribute=true
 ++++++genericContainer hasAriaAttribute=true
 ++++++genericContainer hasAriaAttribute=true
 ++++++genericContainer hasAriaAttribute=true

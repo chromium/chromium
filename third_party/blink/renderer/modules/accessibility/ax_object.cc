@@ -3602,10 +3602,7 @@ bool AXObject::ComputeIsAriaHidden(IgnoredReasons* ignored_reasons) const {
   }
   // aria-hidden:true works a bit like display:none.
   // * aria-hidden=true affects entire subtree.
-  // * aria-hidden=false cannot override aria-hidden=true on an ancestor.
-  //   It can only affect elements that are styled as hidden, and only when
-  //   there is no aria-hidden=true in the ancestor chain.
-  // Therefore aria-hidden=true must be checked on every ancestor.
+  // * aria-hidden=false is a noop.
   if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden)) {
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXAriaHiddenElement));
@@ -5183,7 +5180,6 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
         AtomicString("ARIA-DROPEFFECT"),
         AtomicString("ARIA-FLOWTO"),
         AtomicString("ARIA-GRABBED"),
-        AtomicString("ARIA-HIDDEN"),  // For aria-hidden=false.
         AtomicString("ARIA-KEYSHORTCUTS"),
         AtomicString("ARIA-LABEL"),
         AtomicString("ARIA-LABELEDBY"),
