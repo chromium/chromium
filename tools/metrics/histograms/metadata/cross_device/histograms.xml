@@ -131,8 +131,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadata.IsManufacturerEmpty"
-    enum="BooleanEmpty" expires_after="2024-05-05">
-  <owner>hansenmichael@google.com</owner>
+    enum="BooleanEmpty" expires_after="2024-11-05">
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Indicates whether or not the device manufacturer name returned in the
@@ -142,8 +142,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadata.IsModelEmpty" enum="BooleanEmpty"
-    expires_after="2024-05-05">
-  <owner>hansenmichael@google.com</owner>
+    expires_after="2024-11-05">
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Indicates whether or not the device model name returned in the hardware info
@@ -152,8 +152,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Result"
-    enum="InstanceIDResult" expires_after="2024-05-05">
-  <owner>hansenmichael@google.com</owner>
+    enum="InstanceIDResult" expires_after="2024-11-05">
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Indicates the result of fetching an InstanceId token during the construction
@@ -162,8 +162,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Retries"
-    units="retries" expires_after="2024-05-05">
-  <owner>hansenmichael@google.com</owner>
+    units="retries" expires_after="2024-11-05">
+  <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Counts the number of times the InstanceId token fetch got retried because it
@@ -1838,7 +1838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
-    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2024-05-05">
+    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2024-09-15">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1935,7 +1935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration"
-    units="ms" expires_after="2024-05-05">
+    units="ms" expires_after="2024-09-15">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -1972,8 +1972,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HostVerifier.DoesHostHaveCryptoData"
-    enum="Boolean" expires_after="2024-05-05">
-  <owner>hansenmichael@google.com</owner>
+    enum="Boolean" expires_after="2024-11-05">
+  <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records if a multi-device host device has all of the crypto data necessary
