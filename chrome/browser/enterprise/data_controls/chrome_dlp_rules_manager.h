@@ -16,7 +16,6 @@
 #include "components/enterprise/data_controls/dlp_rules_manager_base.h"
 #include "components/enterprise/data_controls/rule.h"
 #include "components/enterprise/data_controls/verdict.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
 
 class Profile;
@@ -58,11 +57,6 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
       Level level,
       RuleMetadata* out_rule_metadata) const override;
 
-  // Returns a `Verdict` corresponding to all triggered Data Control rules given
-  // the provided context.
-  Verdict GetVerdict(Restriction restriction,
-                     const ActionContext& context) const;
-
  protected:
   friend class data_controls::ChromeDlpRulesManagerTest;
   friend class data_controls::RulesService;
@@ -103,10 +97,6 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
       const std::map<Restriction, std::map<RuleId, Level>>& restrictions_map,
       const bool ignore_allow = false) const;
 
-  // Parse the "DataControlsRules" policy if the corresponding experiment is
-  // enabled, and populate `rules_`.
-  void OnDataControlsRulesUpdate();
-
   // Parse the "DataLeakPrevention*" policies and populate corresponding class
   // data members. Virtual to be overridden in the CrOS implementation of this
   // class.
@@ -143,14 +133,6 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
 
   // Map from RuleIds to the rule metadata.
   std::map<RuleId, RuleMetadata> rules_id_metadata_mapping_;
-
-  // Watches changes to the "DataControlsRules" policy. Does nothing if the
-  // "EnableDesktopDataControls" experiment is disabled.
-  PrefChangeRegistrar data_controls_rules_registrar_;
-
-  // List of rules created from the "DataControlsRules" policy. Empty if the
-  // "EnableDesktopDataControls" experiment is disabled.
-  std::vector<Rule> rules_;
 };
 
 }  // namespace data_controls

@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_RULES_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_RULES_SERVICE_H_
 
-#include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/enterprise/data_controls/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
 
@@ -49,6 +49,11 @@ class RulesService : public KeyedService {
   explicit RulesService(content::BrowserContext* browser_context);
 
  private:
+  // Returns a `Verdict` corresponding to all triggered Data Control rules given
+  // the provided context.
+  Verdict GetVerdict(Rule::Restriction restriction,
+                     const ActionContext& context) const;
+
   // Helpers to convert action-specific types to rule-specific types.
   ActionSource GetAsActionSource(
       const content::ClipboardEndpoint& endpoint) const;
@@ -58,10 +63,21 @@ class RulesService : public KeyedService {
   ActionSourceOrDestination ExtractPasteActionContext(
       const content::ClipboardEndpoint& endpoint) const;
 
+  // Parse the "DataControlsRules" policy if the corresponding experiment is
+  // enabled, and populate `rules_`.
+  void OnDataControlsRulesUpdate();
+
   // `profile_` and `rules_manager_` are initialized with the browser_context
   // passed in the constructor.
   const raw_ptr<Profile> profile_ = nullptr;
-  ChromeDlpRulesManager rules_manager_;
+
+  // Watches changes to the "DataControlsRules" policy. Does nothing if the
+  // "EnableDesktopDataControls" experiment is disabled.
+  PrefChangeRegistrar pref_registrar_;
+
+  // List of rules created from the "DataControlsRules" policy. Empty if the
+  // "EnableDesktopDataControls" experiment is disabled.
+  std::vector<Rule> rules_;
 };
 
 class RulesServiceFactory : public ProfileKeyedServiceFactory {

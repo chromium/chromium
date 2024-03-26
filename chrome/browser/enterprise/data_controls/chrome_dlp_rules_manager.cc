@@ -27,14 +27,6 @@ constexpr char kWildCardMatching[] = "*";
 ChromeDlpRulesManager::ChromeDlpRulesManager(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
-  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    data_controls_rules_registrar_.Init(profile_->GetPrefs());
-    data_controls_rules_registrar_.Add(
-        kDataControlsRulesPref,
-        base::BindRepeating(&ChromeDlpRulesManager::OnDataControlsRulesUpdate,
-                            base::Unretained(this)));
-    OnDataControlsRulesUpdate();
-  }
 }
 
 ChromeDlpRulesManager::~ChromeDlpRulesManager() = default;
@@ -250,38 +242,6 @@ std::string ChromeDlpRulesManager::GetSourceUrlPattern(
   return std::string();
 }
 
-Verdict ChromeDlpRulesManager::GetVerdict(Restriction restriction,
-                                          const ActionContext& context) const {
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return Verdict::NotSet();
-  }
-
-  Level max_level = Level::kNotSet;
-  Verdict::TriggeredRules triggered_rules;
-  for (const auto& rule : rules_) {
-    Level level = rule.GetLevel(restriction, context);
-    if (level > max_level) {
-      max_level = level;
-    }
-    if (level != Level::kNotSet && !rule.rule_id().empty()) {
-      triggered_rules[rule.rule_id()] = rule.name();
-    }
-  }
-
-  switch (max_level) {
-    case Rule::Level::kNotSet:
-      return Verdict::NotSet();
-    case Rule::Level::kReport:
-      return Verdict::Report(std::move(triggered_rules));
-    case Rule::Level::kWarn:
-      return Verdict::Warn(std::move(triggered_rules));
-    case Rule::Level::kBlock:
-      return Verdict::Block(std::move(triggered_rules));
-    case Rule::Level::kAllow:
-      return Verdict::Allow();
-  }
-}
-
 // static
 RulesConditionsMap ChromeDlpRulesManager::MatchUrlAndGetRulesMapping(
     const GURL& url,
@@ -336,28 +296,6 @@ ChromeDlpRulesManager::GetMaxJoinRestrictionLevelAndRuleId(
   }
 
   return MatchedRuleInfo(max_level, matched_rule_id, url_condition);
-}
-
-void ChromeDlpRulesManager::OnDataControlsRulesUpdate() {
-  DCHECK(profile_);
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return;
-  }
-
-  rules_.clear();
-
-  const base::Value::List& rules_list =
-      profile_->GetPrefs()->GetList(kDataControlsRulesPref);
-
-  for (const base::Value& rule_value : rules_list) {
-    auto rule = Rule::Create(rule_value);
-
-    if (!rule) {
-      continue;
-    }
-
-    rules_.push_back(std::move(*rule));
-  }
 }
 
 void ChromeDlpRulesManager::OnDataLeakPreventionRulesUpdate() {
