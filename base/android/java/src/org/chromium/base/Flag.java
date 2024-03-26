@@ -24,7 +24,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public abstract class Flag {
     // Used to reset all flags between tests.
-    private static final HashMap<String, Flag> sFlagsCreatedForTesting = new HashMap<>();
+    private static HashMap<String, Flag> sFlagsCreatedForTesting = new HashMap<>();
 
     protected final FeatureMap mFeatureMap;
     protected final String mFeatureName;
@@ -53,15 +53,6 @@ public abstract class Flag {
     protected abstract void clearInMemoryCachedValueForTesting();
 
     /**
-     * Resets the list of active flag instances. This shouldn't be used directly by individual tests
-     * other than those that exercise Flag subclasses.
-     */
-    public static void resetFlagsForTesting() {
-        resetAllInMemoryCachedValuesForTesting();
-        sFlagsCreatedForTesting.clear();
-    }
-
-    /**
      * Resets the in-memory cache of every Flag instance. This shouldn't be used directly by
      * individual tests other than those that exercise Flag subclasses.
      */
@@ -69,5 +60,15 @@ public abstract class Flag {
         for (Flag flag : sFlagsCreatedForTesting.values()) {
             flag.clearInMemoryCachedValueForTesting();
         }
+    }
+
+    /**
+     * Use an empty sFlagsCreated map for this test instead of carrying over from and to other tests
+     * in the same process (batched or Robolectric).
+     */
+    public static void useTemporaryFlagsCreatedForTesting() {
+        HashMap<String, Flag> oldValues = sFlagsCreatedForTesting;
+        sFlagsCreatedForTesting = new HashMap<>();
+        ResettersForTesting.register(() -> sFlagsCreatedForTesting = oldValues);
     }
 }

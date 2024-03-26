@@ -6,12 +6,12 @@ package org.chromium.base;
 
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
 
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.PostNativeFlag;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.cached_flags.CachedFlag;
+import org.chromium.base.cached_flags.PostNativeFlag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
 
@@ -23,7 +23,7 @@ public class FlagUnitTest {
     private static final FeatureMap FEATURE_MAP = BaseFlagTestRule.FEATURE_MAP;
 
     @Test
-    public void testDuplicateFeatureFlags_throwsAssertionError() {
+    public void testDuplicateFeatureFlags_throwsAssertionError_SafeDefaultAndCached() {
         new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
         try {
             new MutableFlagWithSafeDefault(FEATURE_MAP, FEATURE_A, false);
@@ -35,9 +35,10 @@ public class FlagUnitTest {
             throw new RuntimeException("Duplicate feature");
         } catch (AssertionError e) {
         }
+    }
 
-        Flag.resetFlagsForTesting();
-
+    @Test
+    public void testDuplicateFeatureFlags_throwsAssertionError_PostNativeAndCached() {
         new MutableFlagWithSafeDefault(FEATURE_MAP, FEATURE_A, false);
         try {
             new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A);
@@ -49,9 +50,10 @@ public class FlagUnitTest {
             throw new RuntimeException("Duplicate feature");
         } catch (AssertionError e) {
         }
+    }
 
-        Flag.resetFlagsForTesting();
-
+    @Test
+    public void testDuplicateFeatureFlags_throwsAssertionError_CachedAndPostNative() {
         new CachedFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_A, false);
         try {
             new MutableFlagWithSafeDefault(FEATURE_MAP, FEATURE_A, false);

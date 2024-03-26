@@ -12,18 +12,24 @@ import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
 import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_B;
 import static org.chromium.base.test.util.BaseFlagTestRule.assertIsEnabledMatches;
 
-import org.chromium.base.test.util.BaseFlagTestRule;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.BaseFlagTestRule;
 
 /** Unit Tests for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFlagUnitTest {
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
+
+    @After
+    public void tearDown() {
+        CachedFlagUtils.resetFlagsForTesting();
+    }
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {

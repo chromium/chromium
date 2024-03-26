@@ -25,7 +25,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 @NotThreadSafe
 public abstract class FeatureParam<T> {
     @CheckDiscard("Only needed to reset tests. Production code shouldn't use.")
-    private static final Map<Pair<String, String>, FeatureParam> sParams = new HashMap<>();
+    private static Map<Pair<String, String>, FeatureParam> sParamsForTesting = new HashMap<>();
 
     protected final FeatureMap mFeatureMap;
     protected final String mFeatureName;
@@ -46,8 +46,9 @@ public abstract class FeatureParam<T> {
         mParamName = paramName;
         mDefaultValue = defaultValue;
 
-        if (BuildConfig.ENABLE_ASSERTS) {
-            FeatureParam previous = sParams.put(new Pair<>(mFeatureName, mParamName), this);
+        if (BuildConfig.IS_FOR_TEST) {
+            FeatureParam previous =
+                    sParamsForTesting.put(new Pair<>(mFeatureName, mParamName), this);
             assert previous == null;
         }
     }
@@ -68,15 +69,19 @@ public abstract class FeatureParam<T> {
      * those that exercise FeatureParam subclasses.
      */
     public static void resetAllInMemoryCachedValuesForTesting() {
-        if (sParams == null) return;
-        for (FeatureParam param : sParams.values()) {
+        if (sParamsForTesting == null) return;
+        for (FeatureParam param : sParamsForTesting.values()) {
             param.mInMemoryCachedValue = null;
         }
     }
 
-    /** Most clients should not call this, only really for param tests. */
-    public static void deleteParamsForTesting() {
-        resetAllInMemoryCachedValuesForTesting();
-        sParams.clear();
+    /**
+     * Use an empty sParams map for this test instead of carrying over from and to other tests in
+     * the same process (batched or Robolectric).
+     */
+    public static void useTemporaryParamsCreatedForTesting() {
+        Map<Pair<String, String>, FeatureParam> oldValues = sParamsForTesting;
+        sParamsForTesting = new HashMap<>();
+        ResettersForTesting.register(() -> sParamsForTesting = oldValues);
     }
 }
