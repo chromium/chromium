@@ -434,7 +434,7 @@ class Internals final : public ScriptWrappable {
 
   DOMRectList* draggableRegions(Document*, ExceptionState&);
   DOMRectList* nonDraggableRegions(Document*, ExceptionState&);
-  void SetSupportsAppRegion(bool supports_app_region);
+  void SetSupportsDraggableRegions(bool supports_draggable_regions);
 
   DOMArrayBuffer* serializeObject(v8::Isolate* isolate,
                                   const ScriptValue&,

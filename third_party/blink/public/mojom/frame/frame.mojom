@@ -61,6 +61,7 @@ import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/opengraph/metadata.mojom";
+import "third_party/blink/public/mojom/page/draggable_region.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -1268,4 +1269,8 @@ interface LocalMainFrameHost {
   // Set the browser window to resizable or not. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
   SetResizable(bool resizable);
+
+  // Notify the browser that the draggable regions defined by the app-region
+  // CSS property have been updated.
+  DraggableRegionsChanged(array<DraggableRegion> regions);
 };

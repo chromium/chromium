@@ -123,7 +123,7 @@ void ShellNativeAppWindow::UpdateWindowTitle() {
   // No window title to update.
 }
 
-void ShellNativeAppWindow::UpdateDraggableRegions(
+void ShellNativeAppWindow::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   NOTIMPLEMENTED();
 }

@@ -182,7 +182,6 @@ class ExtensionFrameHelper
   void WillReleaseScriptContext(v8::Local<v8::Context>,
                                 int32_t world_id) override;
   void OnDestruct() override;
-  void DraggableRegionsChanged() override;
   void DidClearWindowObject() override;
 
   // Type of view associated with the RenderFrame.

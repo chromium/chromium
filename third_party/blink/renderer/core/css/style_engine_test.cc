@@ -7373,7 +7373,7 @@ TEST_F(StyleEngineTest,
 TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view_impl = web_view_helper.Initialize();
-  web_view_impl->SetSupportsAppRegion(true);
+  web_view_impl->SetSupportsDraggableRegions(true);
   web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 

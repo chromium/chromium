@@ -289,10 +289,6 @@ class AppWindow : public content::WebContentsDelegate,
   // Sets the window shape. Passing a nullptr |rects| sets the default shape.
   void UpdateShape(std::unique_ptr<ShapeRects> rects);
 
-  // Called from the render interface to modify the draggable regions.
-  void UpdateDraggableRegions(
-      const std::vector<blink::mojom::DraggableRegionPtr>& regions);
-
   // Notify hat an app window is ready and can resume resource requests.
   void AppWindowReady();
 
@@ -395,7 +391,7 @@ class AppWindow : public content::WebContentsDelegate,
     native_app_window_ = std::move(native_app_window);
   }
 
-  void SetOnUpdateDraggableRegionsForTesting(base::OnceClosure callback) {
+  void SetOnDraggableRegionsChangedForTesting(base::OnceClosure callback) {
     on_update_draggable_regions_callback_for_testing_ = std::move(callback);
   }
 
@@ -459,6 +455,9 @@ class AppWindow : public content::WebContentsDelegate,
       content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& draggable_regions,
+      content::WebContents* contents) override;
 
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;

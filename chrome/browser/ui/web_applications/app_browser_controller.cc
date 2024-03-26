@@ -46,6 +46,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -399,7 +400,7 @@ void AppBrowserController::PrimaryPageChanged(content::Page& page) {
   // or Borderless mode.
   if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
     content::RenderFrameHost& host = page.GetMainDocument();
-    UpdateSupportsAppRegion(/*supports_app_region=*/true, &host);
+    UpdateSupportsDraggableRegions(/*supports_draggable_regions=*/true, &host);
   }
 }
 
@@ -636,7 +637,7 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
   // app window.
   if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
     content::RenderFrameHost* host = contents->GetPrimaryMainFrame();
-    UpdateSupportsAppRegion(/*supports_app_region=*/true, host);
+    UpdateSupportsDraggableRegions(/*supports_draggable_regions=*/true, host);
   }
 }
 
@@ -644,7 +645,7 @@ void AppBrowserController::OnTabRemoved(content::WebContents* contents) {
   // Stop collecting draggable app regions when the web contents is removed
   // since it may be reparented to a tab in the browser.
   content::RenderFrameHost* host = contents->GetPrimaryMainFrame();
-  UpdateSupportsAppRegion(/*supports_app_region=*/false, host);
+  UpdateSupportsDraggableRegions(/*supports_draggable_regions=*/false, host);
 }
 
 ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
@@ -668,8 +669,26 @@ ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
       gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
-void AppBrowserController::UpdateDraggableRegion(const SkRegion& region) {
-  draggable_region_ = region;
+void AppBrowserController::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  if (contents != active_contents) {
+    return;
+  }
+
+  SkRegion sk_region;
+  for (const blink::mojom::DraggableRegionPtr& region : regions) {
+    sk_region.op(
+        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                          region->bounds.x() + region->bounds.width(),
+                          region->bounds.y() + region->bounds.height()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+  }
+
+  draggable_region_ = sk_region;
 
   if (on_draggable_region_set_for_testing_)
     std::move(on_draggable_region_set_for_testing_).Run();
@@ -749,8 +768,8 @@ void AppBrowserController::SetInitialURL(const GURL& initial_url) {
   OnReceivedInitialURL();
 }
 
-void AppBrowserController::UpdateSupportsAppRegion(
-    bool supports_app_region,
+void AppBrowserController::UpdateSupportsDraggableRegions(
+    bool supports_draggable_regions,
     content::RenderFrameHost* host) {
   CHECK(host);
 
@@ -761,7 +780,7 @@ void AppBrowserController::UpdateSupportsAppRegion(
 
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
   host->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-  client->SetSupportsAppRegion(supports_app_region);
+  client->SetSupportsDraggableRegions(supports_draggable_regions);
 }
 
 }  // namespace web_app

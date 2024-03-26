@@ -230,6 +230,7 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2039,6 +2040,14 @@ void Browser::InitiatePreview(content::WebContents& web_contents,
 
 bool Browser::ShouldUseInstancedSystemMediaControls() const {
   return is_type_app() || is_type_app_popup();
+}
+
+void Browser::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  if (app_controller_) {
+    app_controller_->DraggableRegionsChanged(regions, contents);
+  }
 }
 
 void Browser::DidFinishNavigation(

@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
@@ -1727,18 +1728,18 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
 void LocalFrameView::UpdateDocumentAnnotatedRegions() const {
   Document* document = frame_->GetDocument();
   if (!document->HasAnnotatedRegions() ||
-      !frame_->GetPage()->GetChromeClient().SupportsAppRegion()) {
+      !frame_->GetPage()->GetChromeClient().SupportsDraggableRegions()) {
     return;
   }
 
   Vector<AnnotatedRegionValue> new_regions;
   CollectAnnotatedRegions(*(document->GetLayoutBox()), new_regions);
-  if (new_regions == document->AnnotatedRegions())
+  if (new_regions == document->AnnotatedRegions()) {
     return;
-  document->SetAnnotatedRegions(new_regions);
+  }
 
-  DCHECK(frame_->Client());
-  frame_->Client()->AnnotatedRegionsChanged();
+  document->SetAnnotatedRegions(new_regions);
+  frame_->GetPage()->GetChromeClient().DraggableRegionsChanged();
 }
 
 void LocalFrameView::DidAttachDocument() {

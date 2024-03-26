@@ -305,8 +305,12 @@ void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {
   web_view_->SetKeyboardFocusURL(focus_url);
 }
 
-bool ChromeClientImpl::SupportsAppRegion() {
-  return web_view_->SupportsAppRegion();
+bool ChromeClientImpl::SupportsDraggableRegions() {
+  return web_view_->SupportsDraggableRegions();
+}
+
+void ChromeClientImpl::DraggableRegionsChanged() {
+  return web_view_->DraggableRegionsChanged();
 }
 
 void ChromeClientImpl::StartDragging(LocalFrame* frame,

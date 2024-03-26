@@ -278,7 +278,7 @@ void NativeAppWindowViews::RenderFrameCreated(
     mojo::Remote<extensions::mojom::AppWindow> app_window;
     render_frame_host->GetRemoteInterfaces()->GetInterface(
         app_window.BindNewPipeAndPassReceiver());
-    app_window->SetSupportsAppRegion(true);
+    app_window->SetSupportsDraggableRegions(true);
   }
 }
 
@@ -321,7 +321,7 @@ void NativeAppWindowViews::UpdateWindowTitle() {
   widget_->UpdateWindowTitle();
 }
 
-void NativeAppWindowViews::UpdateDraggableRegions(
+void NativeAppWindowViews::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
   // Draggable region is not supported for non-frameless window.
   if (!frameless_)

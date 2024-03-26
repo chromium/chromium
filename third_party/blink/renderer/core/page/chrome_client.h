@@ -183,7 +183,11 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   // Returns true if the page should support drag regions via the app-region
   // CSS property.
-  virtual bool SupportsAppRegion() = 0;
+  virtual bool SupportsDraggableRegions() = 0;
+
+  // Sends the draggable regions defined by the app-region CSS property to the
+  // browser.
+  virtual void DraggableRegionsChanged() = 0;
 
   // Allow document lifecycle updates to be run in order to produce composited
   // outputs. Updates are blocked from occurring during loading navigation in

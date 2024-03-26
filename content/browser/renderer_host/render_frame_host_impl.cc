@@ -271,6 +271,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -6858,6 +6859,15 @@ void RenderFrameHostImpl::SetResizable(bool resizable) {
   }
 
   GetPage().SetResizable(resizable);
+}
+
+void RenderFrameHostImpl::DraggableRegionsChanged(
+    std::vector<blink::mojom::DraggableRegionPtr> regions) {
+  if (!IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  delegate_->DraggableRegionsChanged(std::move(regions));
 }
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,

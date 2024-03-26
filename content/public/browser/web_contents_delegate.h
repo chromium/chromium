@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -773,6 +774,11 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Notifies the previewed page is activated.
   virtual void DidActivatePreviewedPage() {}
+
+  // Updates the draggable regions defined by the app-region CSS property.
+  virtual void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      WebContents* contents) {}
 
 #if !BUILDFLAG(IS_ANDROID)
   // Whether the WebContents should use per PWA instanced

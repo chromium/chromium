@@ -584,9 +584,14 @@ void AppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
   native_app_window_->UpdateShape(std::move(rects));
 }
 
-void AppWindow::UpdateDraggableRegions(
-    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
-  native_app_window_->UpdateDraggableRegions(regions);
+void AppWindow::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  CHECK_EQ(contents, web_contents())
+      << "Received DraggableRegionsChanged() notification for unexpected web "
+         "contents";
+
+  native_app_window_->DraggableRegionsChanged(regions);
 
   if (on_update_draggable_regions_callback_for_testing_) {
     std::move(on_update_draggable_regions_callback_for_testing_).Run();

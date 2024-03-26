@@ -65,8 +65,6 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
       const GURL& frame_url) override;
   void IncrementLazyKeepaliveCount() override;
   void DecrementLazyKeepaliveCount() override;
-  void UpdateDraggableRegions(
-      std::vector<blink::mojom::DraggableRegionPtr> regions) override;
   void AppWindowReady() override;
   void OpenChannelToExtension(
       extensions::mojom::ExternalConnectionInfoPtr info,

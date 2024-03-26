@@ -157,6 +157,7 @@
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
@@ -2498,6 +2499,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void Maximize() override;
   void Restore() override;
   void SetResizable(bool resizable) override;
+  void DraggableRegionsChanged(
+      std::vector<blink::mojom::DraggableRegionPtr> regions) override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

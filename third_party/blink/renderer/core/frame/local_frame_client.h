@@ -363,8 +363,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual scoped_refptr<WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() = 0;
 
-  virtual void AnnotatedRegionsChanged() = 0;
-
   virtual void SetVirtualTimePauser(
       WebScopedVirtualTimePauser virtual_time_pauser) {}
 

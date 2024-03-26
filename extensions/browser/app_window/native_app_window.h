@@ -45,7 +45,7 @@ class NativeAppWindow : public ui::BaseWindow,
   virtual void UpdateWindowTitle() = 0;
 
   // Called when the draggable regions are changed.
-  virtual void UpdateDraggableRegions(
+  virtual void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) = 0;
 
   // Returns the region used by frameless windows for dragging. May return

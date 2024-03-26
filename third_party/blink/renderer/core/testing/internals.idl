@@ -263,7 +263,7 @@ interface Internals {
     // Overrides default behavior to support the app-region CSS property.
     // Setting to true enables collection of draggable/non-draggable
     // app regions.
-    void SetSupportsAppRegion(boolean supports_app_regions);
+    void SetSupportsDraggableRegions(boolean supports_draggable_regionss);
 
     // Returns a string with information about the mouse cursor used at the specified client location.
     DOMString getCurrentCursorInfo();

@@ -650,9 +650,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // The main frame scrolled.
   virtual void DidChangeScrollOffset() {}
 
-  // Informs the browser that the draggable regions have been updated.
-  virtual void DraggableRegionsChanged() {}
-
   // MediaStream -----------------------------------------------------
 
   virtual WebMediaStreamDeviceObserver* MediaStreamDeviceObserver() {

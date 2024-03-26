@@ -1056,10 +1056,6 @@ LocalFrameClientImpl::GetRemoteNavigationAssociatedInterfaces() {
   return web_frame_->Client()->GetRemoteNavigationAssociatedInterfaces();
 }
 
-void LocalFrameClientImpl::AnnotatedRegionsChanged() {
-  web_frame_->Client()->DraggableRegionsChanged();
-}
-
 base::UnguessableToken LocalFrameClientImpl::GetDevToolsFrameToken() const {
   return web_frame_->Client()->GetDevToolsFrameToken();
 }

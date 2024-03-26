@@ -6391,11 +6391,6 @@ void RenderFrameImpl::OnStopLoading() {
     observer.OnStop();
 }
 
-void RenderFrameImpl::DraggableRegionsChanged() {
-  for (auto& observer : observers_)
-    observer.DraggableRegionsChanged();
-}
-
 bool RenderFrameImpl::IsRequestingNavigation() {
   return is_requesting_navigation_;
 }

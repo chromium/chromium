@@ -239,8 +239,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;
 
-  void AnnotatedRegionsChanged() override;
-
   base::UnguessableToken GetDevToolsFrameToken() const override;
 
   String evaluateInInspectorOverlayForTesting(const String& script) override;

@@ -78,7 +78,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool CanTakeFocus(mojom::blink::FocusType) override;
   void TakeFocus(mojom::blink::FocusType) override;
   void SetKeyboardFocusURL(Element* new_focus_element) override;
-  bool SupportsAppRegion() override;
+  bool SupportsDraggableRegions() override;
+  void DraggableRegionsChanged() override;
   void BeginLifecycleUpdates(LocalFrame& main_frame) override;
   void RegisterForCommitObservation(CommitObserver*) override;
   void UnregisterFromCommitObservation(CommitObserver*) override;

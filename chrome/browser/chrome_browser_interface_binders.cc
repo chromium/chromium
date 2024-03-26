@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/web_applications/draggable_region_host_impl.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
@@ -1032,14 +1031,6 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindMediaFoundationRendererNotifierHandler));
 #endif
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  if (!render_frame_host->GetParent()) {
-    map->Add<chrome::mojom::DraggableRegions>(
-        base::BindRepeating(&DraggableRegionsHostImpl::CreateIfAllowed));
-  }
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

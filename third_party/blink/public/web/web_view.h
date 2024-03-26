@@ -479,7 +479,7 @@ class BLINK_EXPORT WebView {
   // Draggable Regions ---------------------------------------------------
   // Indicates that this WebView should collect draggable regions set using the
   // app-region CSS property.
-  virtual void SetSupportsAppRegion(bool supports_app_region) = 0;
+  virtual void SetSupportsDraggableRegions(bool supports_draggable_regions) = 0;
 
   // Misc -------------------------------------------------------------
 

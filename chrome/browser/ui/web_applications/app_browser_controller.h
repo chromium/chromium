@@ -18,6 +18,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/color/color_provider.h"
@@ -262,7 +263,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   void AddColorMixers(ui::ColorProvider* provider,
                       const ui::ColorProviderKey& key) const override;
 
-  void UpdateDraggableRegion(const SkRegion& region);
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents);
   const std::optional<SkRegion>& draggable_region() const {
     return draggable_region_;
   }
@@ -300,8 +303,8 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   // Indicates to the WebView whether it should support draggable regions via
   // the app-region CSS property.
-  void UpdateSupportsAppRegion(bool supports_app_region,
-                               content::RenderFrameHost* host);
+  void UpdateSupportsDraggableRegions(bool supports_draggable_regions,
+                                      content::RenderFrameHost* host);
 
   const raw_ptr<Browser> browser_;
   const webapps::AppId app_id_;

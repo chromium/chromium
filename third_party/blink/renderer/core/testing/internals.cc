@@ -3002,9 +3002,11 @@ DOMRectList* Internals::nonDraggableRegions(Document* document,
   return AnnotatedRegions(document, false, exception_state);
 }
 
-void Internals::SetSupportsAppRegion(bool supports_app_region) {
-  document_->GetPage()->GetChromeClient().GetWebView()->SetSupportsAppRegion(
-      supports_app_region);
+void Internals::SetSupportsDraggableRegions(bool supports_draggable_regions) {
+  document_->GetPage()
+      ->GetChromeClient()
+      .GetWebView()
+      ->SetSupportsDraggableRegions(supports_draggable_regions);
 }
 
 DOMRectList* Internals::AnnotatedRegions(Document* document,
