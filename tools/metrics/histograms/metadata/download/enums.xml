@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="DEEP_SCANNED_SAFE"/>
   <int value="16" label="DEEP_SCANNED_OPENED_DANGEROUS"/>
   <int value="17" label="PROMPT_FOR_SCANNING"/>
-  <int value="18" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="18" label="BLOCKED_UNSUPPORTED_FILETYPE (deprecated)"/>
   <int value="19" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
   <int value="20" label="DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED"/>
   <int value="21"

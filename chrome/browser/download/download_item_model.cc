@@ -1210,8 +1210,6 @@ bool DownloadItemModel::ShouldShowDropdown() const {
       GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED ||
       GetDangerType() == download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE ||
-      GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE ||
       GetDangerType() == download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED) {
     return false;
   }

@@ -898,8 +898,6 @@ TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
       download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
   download::DownloadDangerType blocked_sensitive =
       download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
-  download::DownloadDangerType blocked_filetype =
-      download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
 
   const struct TestCase {
     DownloadItem::DownloadState state;        // Expectation for GetState()
@@ -917,7 +915,6 @@ TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
       {DownloadItem::COMPLETE,  blocked_encrypted, true,  false},
       {DownloadItem::COMPLETE,  blocked_too_large, true,  false},
       {DownloadItem::COMPLETE,  blocked_sensitive, true,  false},
-      {DownloadItem::COMPLETE,  blocked_filetype,  true,  false},
   };
 
   SetupDownloadItemDefaults();

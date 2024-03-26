@@ -177,7 +177,7 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="SENSITIVE_CONTENT_BLOCK"/>
   <int value="33" label="DEEP_SCANNED_SAFE"/>
   <int value="34" label="DEEP_SCAN_PROMPT"/>
-  <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE (deprecated)"/>
   <int value="36" label="ACCOUNT_COMPROMISE"/>
   <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
   <int value="38" label="LOCAL_DECRYPTION_FAILED"/>
@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="SENSITIVE_CONTENT_BLOCK"/>
   <int value="12" label="DEEP_SCANNED_SAFE"/>
   <int value="13" label="PROMPT_FOR_SCANNING"/>
-  <int value="14" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="14" label="BLOCKED_UNSUPPORTED_FILETYPE (deprecated)"/>
   <int value="15" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
   <int value="16" label="DEEP_SCANNED_FAILED"/>
   <int value="17" label="PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>

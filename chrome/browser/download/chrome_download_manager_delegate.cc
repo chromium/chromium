@@ -435,8 +435,6 @@ download::DownloadDangerType SavePackageDangerType(
       return download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
     case safe_browsing::DownloadCheckResult::DEEP_SCANNED_SAFE:
       return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
-    case safe_browsing::DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
-      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
     case safe_browsing::DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED;
     case safe_browsing::DownloadCheckResult::BLOCKED_TOO_LARGE:
@@ -1742,12 +1740,6 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
       download_prefs_->download_restriction();
 
   if (IsDangerTypeBlocked(danger_type))
-    return true;
-
-  // TODO(crbug/1061111): Move this into IsDangerTypeBlocked once the UX is
-  // ready.
-  if (danger_type ==
-      download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE)
     return true;
 
   bool file_type_dangerous =
