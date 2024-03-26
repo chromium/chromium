@@ -21,12 +21,13 @@ ClipboardPasteData& ClipboardPasteData::operator=(ClipboardPasteData&&) =
 
 bool ClipboardPasteData::empty() {
   return text.empty() && html.empty() && svg.empty() && rtf.empty() &&
-         png.empty() && file_paths.empty() && custom_data.empty();
+         png.empty() && bitmap.empty() && file_paths.empty() &&
+         custom_data.empty();
 }
 
 size_t ClipboardPasteData::size() {
-  size_t size =
-      text.size() + html.size() + svg.size() + rtf.size() + png.size();
+  size_t size = text.size() + html.size() + svg.size() + rtf.size() +
+                png.size() + bitmap.computeByteSize();
   for (const auto& entry : custom_data) {
     size += entry.second.size();
   }
@@ -52,6 +53,10 @@ void ClipboardPasteData::Merge(ClipboardPasteData&& other) {
 
   if (!other.png.empty()) {
     png = std::move(other.png);
+  }
+
+  if (!other.bitmap.empty()) {
+    bitmap = std::move(other.bitmap);
   }
 
   if (!other.file_paths.empty()) {
