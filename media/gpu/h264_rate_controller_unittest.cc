@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/gpu/h264_rate_controller.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -13,6 +14,7 @@ constexpr int kCommonFps = 30;
 constexpr uint32_t kCommonFrameHeight = 600;
 constexpr uint32_t kCommonFrameWidth = 800;
 constexpr size_t kCommonHRDBufferSize = 40000;  // bytes
+constexpr base::TimeDelta kCommonGopMaxDuration = base::Seconds(4);
 constexpr uint32_t kCommonQpMax = 51u;
 constexpr uint32_t kCommonQpMin = 1u;
 constexpr size_t kLayer0Index = 0;
@@ -32,27 +34,32 @@ class H264RateControllerTest : public testing::Test {
     size_t last_frame_buffer_bytes;
     float frame_rate_mean_min;
     float frame_rate_mean_max;
+    size_t last_frame_size_target;
+    int buffer_fullness;
   };
 
   H264RateControllerTest() = default;
 
   void SetUp() override {
-    settings_.content_type =
+    rate_controller_settings_.content_type =
         VideoEncodeAccelerator::Config::ContentType::kCamera;
-    settings_.frame_size.SetSize(kCommonFrameWidth, kCommonFrameHeight);
-    settings_.fixed_delta_qp = false;
-    settings_.num_temporal_layers = 1;
-    settings_.layers.emplace_back();
-    settings_.layers[0].avg_bitrate = kCommonAvgBitrate;
-    settings_.layers[0].peak_bitrate = kCommonPeakBitrate;
-    settings_.layers[0].hrd_buffer_size = kCommonHRDBufferSize;
-    settings_.layers[0].min_qp = kCommonQpMin;
-    settings_.layers[0].max_qp = kCommonQpMax;
-    settings_.layers[0].frame_rate = kCommonFps;
+    rate_controller_settings_.frame_size.SetSize(kCommonFrameWidth,
+                                                 kCommonFrameHeight);
+    rate_controller_settings_.fixed_delta_qp = false;
+    rate_controller_settings_.num_temporal_layers = 1;
+    rate_controller_settings_.gop_max_duration = kCommonGopMaxDuration;
+    rate_controller_settings_.layer_settings.emplace_back();
+    rate_controller_settings_.layer_settings[0].avg_bitrate = kCommonAvgBitrate;
+    rate_controller_settings_.layer_settings[0].hrd_buffer_size =
+        kCommonHRDBufferSize;
+    rate_controller_settings_.layer_settings[0].min_qp = kCommonQpMin;
+    rate_controller_settings_.layer_settings[0].max_qp = kCommonQpMax;
+    rate_controller_settings_.layer_settings[0].frame_rate = kCommonFps;
 
     // Copy operation test
-    H264RateController::ControllerSettings settings_copy = settings_;
-    settings_ = settings_copy;
+    H264RateController::ControllerSettings rate_controller_settings_copy =
+        rate_controller_settings_;
+    rate_controller_settings_ = rate_controller_settings_copy;
   }
 
  protected:
@@ -60,13 +67,15 @@ class H264RateControllerTest : public testing::Test {
   // intra frames at the beginning and in the middle of the sequence. In each
   // cycle the following methods are executed on the rate controller:
   // 1. ShrinkHRDBuffers()
-  // 2. AddFrameTimestampToLayer()
-  // 3. AddFrameBytesToLayer()
+  // 2. EstimateIntraFrameQP() or EstimateInterFrameQP()
+  // 3. FinishIntraFrame() or FinishInterFrame()
   int RunTestSequence(uint32_t avg_bitrate,
                       int fps,
                       int frame_count,
                       size_t num_temporal_layers,
-                      int start_frame_index) {
+                      int start_frame_index,
+                      int& last_intra_frame_qp,
+                      int& last_inter_frame_qp) {
     constexpr size_t kFirstIntraFrameIndex = 0;
     const size_t kSecondIntraFrameIndex = frame_count / 2;
     size_t frame_size = avg_bitrate / 8 / fps;
@@ -96,14 +105,18 @@ class H264RateControllerTest : public testing::Test {
         rate_controller_->temporal_layers(i).ShrinkHRDBuffer(timestamp);
       }
 
-      rate_controller_->temporal_layers(layer_index)
-          .AddFrameTimestamp(timestamp);
-
-      rate_controller_->temporal_layers(layer_index)
-          .AddFrameBytes(encoded_size, timestamp);
-      if (layer_index == 0 && num_temporal_layers > 1) {
-        rate_controller_->temporal_layers(kLayer1Index)
-            .AddFrameBytes(encoded_size, timestamp);
+      if (frame_index == kFirstIntraFrameIndex ||
+          frame_index == kSecondIntraFrameIndex) {
+        rate_controller_->EstimateIntraFrameQP(timestamp);
+        last_intra_frame_qp =
+            rate_controller_->temporal_layers(layer_index).curr_frame_qp();
+        rate_controller_->FinishIntraFrame(encoded_size, timestamp);
+      } else {
+        rate_controller_->EstimateInterFrameQP(layer_index, timestamp);
+        last_inter_frame_qp =
+            rate_controller_->temporal_layers(layer_index).curr_frame_qp();
+        rate_controller_->FinishInterFrame(layer_index, encoded_size,
+                                           timestamp);
       }
 
       ++frame_index;
@@ -114,7 +127,7 @@ class H264RateControllerTest : public testing::Test {
   }
 
   std::unique_ptr<H264RateController> rate_controller_;
-  H264RateController::ControllerSettings settings_;
+  H264RateController::ControllerSettings rate_controller_settings_;
 };
 
 // Test Cases
@@ -125,12 +138,17 @@ class H264RateControllerTest : public testing::Test {
 TEST_F(H264RateControllerTest, RunH264RateController1TemporalLayerTest) {
   constexpr size_t kTestSequenceFrameCount = 30;
   constexpr RateControllerTestValues kExpectedValues1 = {
-      false, 40000, 0, 40000, 0, 29.9f, 30.1f};
+      false, 40000, 0, 40000, 0, 29.9f, 30.1f, 0, 0};
   constexpr RateControllerTestValues kExpectedValues2 = {
-      false, 40000, 16633, 23367, 20801, 29.9f, 30.1f};
-  constexpr uint32_t kExpectedIntraFrameQP2 = 34;
+      false, 40000, 16633, 23367, 20801, 29.9f, 30.1f, 1778, 52};
+  constexpr int kExpectedIntraFrameQP2 = 34;
+  constexpr int kExpectedInterFrameQP2 = 28;
 
-  rate_controller_ = std::make_unique<H264RateController>(settings_);
+  rate_controller_ =
+      std::make_unique<H264RateController>(rate_controller_settings_);
+
+  std::array<int, 1> buffer_fullness_array = {0};
+  base::span<int> buffer_fullness_values(buffer_fullness_array);
 
   EXPECT_EQ(kExpectedValues1.buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
@@ -149,16 +167,26 @@ TEST_F(H264RateControllerTest, RunH264RateController1TemporalLayerTest) {
   EXPECT_EQ(kExpectedValues1.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValues1.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer0Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValues1.buffer_fullness,
+            buffer_fullness_values[kLayer0Index]);
 
   int start_frame_index = 0;
-  int last_frame_index =
-      RunTestSequence(kCommonAvgBitrate, kCommonFps, kTestSequenceFrameCount,
-                      settings_.num_temporal_layers, start_frame_index);
+  int last_intra_frame_qp;
+  int last_inter_frame_qp;
+  int last_frame_index = RunTestSequence(
+      kCommonAvgBitrate, kCommonFps, kTestSequenceFrameCount,
+      rate_controller_settings_.num_temporal_layers, start_frame_index,
+      last_intra_frame_qp, last_inter_frame_qp);
   base::TimeDelta timestamp = base::Microseconds(
       last_frame_index * base::Time::kMicrosecondsPerSecond / kCommonFps);
 
-  EXPECT_EQ(kExpectedIntraFrameQP2,
-            rate_controller_->EstimateIntraFrameQP(timestamp));
+  EXPECT_EQ(kExpectedIntraFrameQP2, last_intra_frame_qp);
+  EXPECT_EQ(kExpectedInterFrameQP2, last_inter_frame_qp);
 
   EXPECT_EQ(kExpectedValues2.buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
@@ -177,34 +205,47 @@ TEST_F(H264RateControllerTest, RunH264RateController1TemporalLayerTest) {
   EXPECT_EQ(kExpectedValues2.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValues2.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer0Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValues2.buffer_fullness,
+            buffer_fullness_values[kLayer0Index]);
 }
 
 TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayerTest) {
   constexpr size_t kTestSequenceFrameCount = 30;
   constexpr RateControllerTestValues kExpectedValuesLayer01 = {
-      false, 26666, 0, 26666, 0, 29.9f, 30.1f};
+      false, 26666, 0, 26666, 0, 29.9f, 30.1f, 0, 0};
   constexpr RateControllerTestValues kExpectedValuesLayer11 = {
-      false, 40000, 0, 40000, 0, 29.9f, 30.1f};
+      false, 40000, 0, 40000, 0, 29.9f, 30.1f, 0, 0};
   constexpr RateControllerTestValues kExpectedValuesLayer02 = {
-      false, 26666, 1387, 25279, 4166, 15.0f, 15.1f};
-  constexpr uint32_t kExpectedIntraFrameQP2 = 31;
+      false, 26666, 1387, 25279, 4166, 15.0f, 15.1f, 15598, 15};
+  constexpr int kExpectedIntraFrameQP2 = 31;
+  constexpr int kExpectedInterFrameQP2 = 28;
   constexpr RateControllerTestValues kExpectedValuesLayer12 = {
-      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f};
+      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f, 1032, 52};
 
-  settings_.num_temporal_layers = 2;
-  settings_.layers[0].avg_bitrate = kCommonAvgBitrate * 2 / 3;
-  settings_.layers[0].peak_bitrate = kCommonPeakBitrate * 2 / 3;
-  settings_.layers[0].hrd_buffer_size = kCommonHRDBufferSize * 2 / 3;
-  settings_.layers[0].frame_rate = kCommonFps / 2;
-  settings_.layers.emplace_back();
-  settings_.layers[1].avg_bitrate = kCommonAvgBitrate;
-  settings_.layers[1].peak_bitrate = kCommonPeakBitrate;
-  settings_.layers[1].hrd_buffer_size = kCommonHRDBufferSize;
-  settings_.layers[1].min_qp = kCommonQpMin;
-  settings_.layers[1].max_qp = kCommonQpMax;
-  settings_.layers[1].frame_rate = kCommonFps;
+  rate_controller_settings_.num_temporal_layers = 2;
+  rate_controller_settings_.layer_settings[0].avg_bitrate =
+      kCommonAvgBitrate * 2 / 3;
+  rate_controller_settings_.layer_settings[0].hrd_buffer_size =
+      kCommonHRDBufferSize * 2 / 3;
+  rate_controller_settings_.layer_settings[0].frame_rate = kCommonFps / 2;
+  rate_controller_settings_.layer_settings.emplace_back();
+  rate_controller_settings_.layer_settings[1].avg_bitrate = kCommonAvgBitrate;
+  rate_controller_settings_.layer_settings[1].hrd_buffer_size =
+      kCommonHRDBufferSize;
+  rate_controller_settings_.layer_settings[1].min_qp = kCommonQpMin;
+  rate_controller_settings_.layer_settings[1].max_qp = kCommonQpMax;
+  rate_controller_settings_.layer_settings[1].frame_rate = kCommonFps;
 
-  rate_controller_ = std::make_unique<H264RateController>(settings_);
+  rate_controller_ =
+      std::make_unique<H264RateController>(rate_controller_settings_);
+
+  std::array<int, 2> buffer_fullness_array = {0, 0};
+  base::span<int> buffer_fullness_values(buffer_fullness_array);
 
   EXPECT_EQ(kExpectedValuesLayer01.buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
@@ -223,6 +264,13 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayerTest) {
   EXPECT_EQ(kExpectedValuesLayer01.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer01.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer0Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer01.buffer_fullness,
+            buffer_fullness_values[kLayer0Index]);
   EXPECT_EQ(kExpectedValuesLayer11.buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .GetBufferBytesAtTime(base::TimeDelta()));
@@ -240,16 +288,26 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayerTest) {
   EXPECT_EQ(kExpectedValuesLayer11.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer11.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer1Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer11.buffer_fullness,
+            buffer_fullness_values[kLayer1Index]);
 
   int start_frame_index = 0;
-  int last_frame_index =
-      RunTestSequence(kCommonAvgBitrate, kCommonFps, kTestSequenceFrameCount,
-                      settings_.num_temporal_layers, start_frame_index);
+  int last_intra_frame_qp;
+  int last_inter_frame_qp;
+  int last_frame_index = RunTestSequence(
+      kCommonAvgBitrate, kCommonFps, kTestSequenceFrameCount,
+      rate_controller_settings_.num_temporal_layers, start_frame_index,
+      last_intra_frame_qp, last_inter_frame_qp);
   base::TimeDelta timestamp = base::Microseconds(
       last_frame_index * base::Time::kMicrosecondsPerSecond / kCommonFps);
 
-  EXPECT_EQ(kExpectedIntraFrameQP2,
-            rate_controller_->EstimateIntraFrameQP(timestamp));
+  EXPECT_EQ(kExpectedIntraFrameQP2, last_intra_frame_qp);
+  EXPECT_EQ(kExpectedInterFrameQP2, last_inter_frame_qp);
 
   EXPECT_EQ(kExpectedValuesLayer02.buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
@@ -268,6 +326,13 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayerTest) {
   EXPECT_EQ(kExpectedValuesLayer02.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer02.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer0Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer02.buffer_fullness,
+            buffer_fullness_values[kLayer0Index]);
   EXPECT_EQ(kExpectedValuesLayer12.buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .GetBufferBytesAtTime(timestamp));
@@ -285,36 +350,51 @@ TEST_F(H264RateControllerTest, RunH264RateController2TemporalLayerTest) {
   EXPECT_EQ(kExpectedValuesLayer12.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer12.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer1Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer12.buffer_fullness,
+            buffer_fullness_values[kLayer1Index]);
 }
 
 TEST_F(H264RateControllerTest,
        RunH264RateController2TemporalLayerFixedLayerQPTest) {
   constexpr size_t kTestSequenceFrameCount = 30;
   constexpr RateControllerTestValues kExpectedValuesLayer01 = {
-      false, 26666, 0, 26666, 0, 29.9f, 30.1f};
+      false, 26666, 0, 26666, 0, 29.9f, 30.1f, 0, 0};
   constexpr RateControllerTestValues kExpectedValuesLayer11 = {
-      false, 40000, 0, 40000, 0, 29.9f, 30.1f};
-  constexpr uint32_t kExpectedIntraFrameQP2 = 28;
+      false, 40000, 0, 40000, 0, 29.9f, 30.1f, 0, 0};
+  constexpr int kExpectedIntraFrameQP2 = 28;
+  constexpr int kExpectedInterFrameQP2 = 28;
   constexpr RateControllerTestValues kExpectedValuesLayer02 = {
-      false, 26666, 1387, 25279, 4166, 15.0f, 15.1f};
+      false, 26666, 1387, 25279, 4166, 15.0f, 15.1f, 1373, 15};
   constexpr RateControllerTestValues kExpectedValuesLayer12 = {
-      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f};
+      false, 40000, 16633, 23367, 20801, 15.0f, 15.1f, 1626, 52};
 
-  settings_.fixed_delta_qp = true;
-  settings_.num_temporal_layers = 2;
-  settings_.layers[0].avg_bitrate = kCommonAvgBitrate * 2 / 3;
-  settings_.layers[0].peak_bitrate = kCommonPeakBitrate * 2 / 3;
-  settings_.layers[0].hrd_buffer_size = kCommonHRDBufferSize * 2 / 3;
-  settings_.layers[0].frame_rate = kCommonFps / 2;
-  settings_.layers.emplace_back();
-  settings_.layers[1].avg_bitrate = kCommonAvgBitrate;
-  settings_.layers[1].peak_bitrate = kCommonPeakBitrate;
-  settings_.layers[1].hrd_buffer_size = kCommonHRDBufferSize;
-  settings_.layers[1].min_qp = kCommonQpMin;
-  settings_.layers[1].max_qp = kCommonQpMax;
-  settings_.layers[1].frame_rate = kCommonFps;
+  rate_controller_settings_.content_type =
+      VideoEncodeAccelerator::Config::ContentType::kDisplay;
+  rate_controller_settings_.fixed_delta_qp = true;
+  rate_controller_settings_.num_temporal_layers = 2;
+  rate_controller_settings_.layer_settings[0].avg_bitrate =
+      kCommonAvgBitrate * 2 / 3;
+  rate_controller_settings_.layer_settings[0].hrd_buffer_size =
+      kCommonHRDBufferSize * 2 / 3;
+  rate_controller_settings_.layer_settings[0].frame_rate = kCommonFps / 2;
+  rate_controller_settings_.layer_settings.emplace_back();
+  rate_controller_settings_.layer_settings[1].avg_bitrate = kCommonAvgBitrate;
+  rate_controller_settings_.layer_settings[1].hrd_buffer_size =
+      kCommonHRDBufferSize;
+  rate_controller_settings_.layer_settings[1].min_qp = kCommonQpMin;
+  rate_controller_settings_.layer_settings[1].max_qp = kCommonQpMax;
+  rate_controller_settings_.layer_settings[1].frame_rate = kCommonFps;
 
-  rate_controller_ = std::make_unique<H264RateController>(settings_);
+  rate_controller_ =
+      std::make_unique<H264RateController>(rate_controller_settings_);
+
+  std::array<int, 2> buffer_fullness_array = {0, 0};
+  base::span<int> buffer_fullness_values(buffer_fullness_array);
 
   EXPECT_EQ(kExpectedValuesLayer01.buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
@@ -333,6 +413,13 @@ TEST_F(H264RateControllerTest,
   EXPECT_EQ(kExpectedValuesLayer01.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer01.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer0Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer01.buffer_fullness,
+            buffer_fullness_values[kLayer0Index]);
   EXPECT_EQ(kExpectedValuesLayer11.buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .GetBufferBytesAtTime(base::TimeDelta()));
@@ -350,16 +437,26 @@ TEST_F(H264RateControllerTest,
   EXPECT_EQ(kExpectedValuesLayer11.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer11.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer1Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer11.buffer_fullness,
+            buffer_fullness_values[kLayer1Index]);
 
   int start_frame_index = 0;
-  int last_frame_index =
-      RunTestSequence(kCommonAvgBitrate, kCommonFps, kTestSequenceFrameCount,
-                      settings_.num_temporal_layers, start_frame_index);
+  int last_intra_frame_qp;
+  int last_inter_frame_qp;
+  int last_frame_index = RunTestSequence(
+      kCommonAvgBitrate, kCommonFps, kTestSequenceFrameCount,
+      rate_controller_settings_.num_temporal_layers, start_frame_index,
+      last_intra_frame_qp, last_inter_frame_qp);
   base::TimeDelta timestamp = base::Microseconds(
       last_frame_index * base::Time::kMicrosecondsPerSecond / kCommonFps);
 
-  EXPECT_EQ(kExpectedIntraFrameQP2,
-            rate_controller_->EstimateIntraFrameQP(timestamp));
+  EXPECT_EQ(kExpectedIntraFrameQP2, last_intra_frame_qp);
+  EXPECT_EQ(kExpectedInterFrameQP2, last_inter_frame_qp);
 
   EXPECT_EQ(kExpectedValuesLayer02.buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
@@ -378,6 +475,13 @@ TEST_F(H264RateControllerTest,
   EXPECT_EQ(kExpectedValuesLayer02.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer0Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer02.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer0Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer02.buffer_fullness,
+            buffer_fullness_values[kLayer0Index]);
   EXPECT_EQ(kExpectedValuesLayer12.buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .GetBufferBytesAtTime(timestamp));
@@ -395,12 +499,20 @@ TEST_F(H264RateControllerTest,
   EXPECT_EQ(kExpectedValuesLayer12.last_frame_buffer_bytes,
             rate_controller_->temporal_layers(kLayer1Index)
                 .last_frame_buffer_bytes());
+  EXPECT_EQ(kExpectedValuesLayer12.last_frame_size_target,
+            rate_controller_->temporal_layers(kLayer1Index)
+                .last_frame_size_target_for_testing());
+  rate_controller_->GetHRDBufferFullness(buffer_fullness_values,
+                                         base::TimeDelta());
+  EXPECT_EQ(kExpectedValuesLayer12.buffer_fullness,
+            buffer_fullness_values[kLayer1Index]);
 }
 
 TEST_F(H264RateControllerTest, RunH264RateControllerFramerateMeanTest) {
   constexpr float kFrameRateExpectedValues[] = {29.9f, 30.1f};
 
-  rate_controller_ = std::make_unique<H264RateController>(settings_);
+  rate_controller_ =
+      std::make_unique<H264RateController>(rate_controller_settings_);
 
   size_t frame_size = kCommonAvgBitrate / 8 / kCommonFps;
   base::TimeDelta timestamp;
@@ -443,7 +555,8 @@ TEST_F(H264RateControllerTest, RunH264RateControllerSetBufferParametersTest) {
   constexpr RateControllerTestValues kExpectedValues = {false, 80000, 4166,
                                                         75834, 4166};
 
-  rate_controller_ = std::make_unique<H264RateController>(settings_);
+  rate_controller_ =
+      std::make_unique<H264RateController>(rate_controller_settings_);
 
   size_t frame_size = kCommonAvgBitrate / 8 / kCommonFps;
   base::TimeDelta timestamp;

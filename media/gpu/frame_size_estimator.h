@@ -33,6 +33,14 @@ namespace media {
 //
 // pred_frame_bytes =
 //     qp_size_value * delta_q_step_factor / q_step + qp_size_correction
+//
+// In the inverse estimation process, the QP value is estimated for the given
+// encoded frame size and the QP of the previous frame.
+//
+// q_step =
+//     sqrt(qp_size_value * q_step_prev / (frame_bytes + qp_size_correction))
+//
+// qp = 6 * log2(q_step / (5 / 8))
 class MEDIA_GPU_EXPORT FrameSizeEstimator {
  public:
   FrameSizeEstimator(base::TimeDelta max_window_size,
@@ -43,7 +51,10 @@ class MEDIA_GPU_EXPORT FrameSizeEstimator {
   FrameSizeEstimator(const FrameSizeEstimator& other) = delete;
   FrameSizeEstimator& operator=(const FrameSizeEstimator& other) = delete;
 
-  // Estimates encoded frame size for the given qp and qp_prev, based on the
+  float qp_size_mean() const { return qp_size_stats_.mean(); }
+  float size_correction_mean() const { return size_correction_stats_.mean(); }
+
+  // Estimates encoded frame size for the given `qp` and `qp_prev`, based on the
   // stats of the previous frames. In usual encoding scenario, the current
   // QP is unknown at this point, but the estimate of the QP parameter is used
   // instead.
@@ -55,9 +66,6 @@ class MEDIA_GPU_EXPORT FrameSizeEstimator {
               uint32_t qp,
               uint32_t qp_prev,
               base::TimeDelta elapsed_time);
-
-  float qp_size_mean() const { return qp_size_stats_.mean(); }
-  float size_correction_mean() const { return size_correction_stats_.mean(); }
 
   void UpdateMaxWindowSize(base::TimeDelta max_window_size);
 
