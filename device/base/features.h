@@ -25,6 +25,10 @@ namespace features {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebBluetoothConfirmPairingSupport);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
+#if defined(USE_UDEV)
+DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kUdevUsbSubsystemFilter);
+#endif  // defined(USE_UDEV)
 }  // namespace features
 }  // namespace device
 
