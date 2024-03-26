@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "pdf/pdf_engine.h"
@@ -26,21 +27,20 @@ std::optional<bool> g_use_skia_renderer_enabled_by_policy;
 class ScopedSdkInitializer {
  public:
   explicit ScopedSdkInitializer(bool enable_v8) {
-    if (!IsSDKInitializedViaPlugin()) {
-      InitializeSDK(
-          enable_v8,
-          g_use_skia_renderer_enabled_by_policy.value_or(
-              base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer)),
-          FontMappingMode::kNoMapping);
-    }
+    CHECK(!IsSDKInitializedViaPlugin());
+    InitializeSDK(
+        enable_v8,
+        g_use_skia_renderer_enabled_by_policy.value_or(
+            base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer)),
+        FontMappingMode::kNoMapping);
   }
 
   ScopedSdkInitializer(const ScopedSdkInitializer&) = delete;
   ScopedSdkInitializer& operator=(const ScopedSdkInitializer&) = delete;
 
   ~ScopedSdkInitializer() {
-    if (!IsSDKInitializedViaPlugin())
-      ShutdownSDK();
+    CHECK(!IsSDKInitializedViaPlugin());
+    ShutdownSDK();
   }
 };
 
