@@ -6,6 +6,7 @@
     "is_debug": false,
     "symbol_level": 1,
     "target_cpu": "x86",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
