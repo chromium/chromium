@@ -866,8 +866,7 @@ void OutlinePainter::PaintOutlineRects(
     const DisplayItemClient& client,
     const Vector<PhysicalRect>& outline_rects,
     const LayoutObject::OutlineInfo& info,
-    const ComputedStyle& style,
-    const Document& document) {
+    const ComputedStyle& style) {
   DCHECK(style.HasOutline());
   DCHECK(!outline_rects.empty());
 
