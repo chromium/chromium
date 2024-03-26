@@ -130,6 +130,8 @@ enum class OverscrollState {
 - (void)enableOverscrollActions;
 // Sets the style of the overscroll actions.
 - (void)setStyle:(OverscrollStyle)style;
+// Trigger a overscroll refresh without user gesture.
+- (void)forceAnimatedScrollRefresh;
 
 @end
 

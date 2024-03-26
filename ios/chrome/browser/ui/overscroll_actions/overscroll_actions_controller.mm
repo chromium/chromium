@@ -423,6 +423,15 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   _lastScrollBeginTime = base::TimeTicks::Now();
 }
 
+- (void)forceAnimatedScrollRefresh {
+  _forceStateUpdate = YES;
+  [self scrollViewWillBeginDragging];
+  [self.scrollView
+      scrollRectToVisible:CGRectMake(0, -kHeaderMaxExpansionThreshold - 1, 1,
+                                     kHeaderMaxExpansionThreshold + 1)
+                 animated:YES];
+}
+
 - (BOOL)isOverscrollActionsAllowed {
   const BOOL isZooming = [[self scrollView] isZooming];
   // Check that the scrollview is scrolled to top.
@@ -543,6 +552,14 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   DCHECK_EQ(static_cast<id>(webViewScrollViewProxy), [self scrollView]);
   [self scrollViewWillEndDraggingWithVelocity:velocity
                           targetContentOffset:targetContentOffset];
+}
+
+- (void)webViewScrollViewDidEndScrollingAnimation:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  CHECK_EQ(static_cast<id>(webViewScrollViewProxy), [self scrollView]);
+  [self scrollViewDidEndDraggingWillDecelerate:YES
+                                 contentOffset:webViewScrollViewProxy
+                                                   .contentOffset];
 }
 
 #pragma mark - Pan gesture recognizer handling

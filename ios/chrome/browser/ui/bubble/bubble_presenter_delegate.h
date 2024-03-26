@@ -19,6 +19,11 @@
 // Whether the NTP is scrolled to top.
 - (BOOL)isNTPScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter;
 
+// Notifies the delegate that the user has performed the pull-to-refresh gesture
+// as instructed by the in-product help
+- (void)bubblePresenterDidPerformPullToRefreshGesture:
+    (BubblePresenter*)bubblePresenter;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_DELEGATE_H_

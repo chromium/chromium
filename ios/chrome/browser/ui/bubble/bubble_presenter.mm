@@ -666,7 +666,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
     shouldHandleSwipeInDirection:(UISwipeGestureRecognizerDirection)direction {
-  // TODO(crbug.com/40276959): Implement.
+  if (view == self.pullToRefreshGestureIPH) {
+    [self.delegate bubblePresenterDidPerformPullToRefreshGesture:self];
+  } else if (view == self.swipeBackForwardGestureIPH) {
+    // TODO(crbug.com/40276959): Implement.
+  } else {
+    NOTREACHED();
+  }
 }
 
 #pragma mark - Private

@@ -13,6 +13,9 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
 TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
     : web_state_list_(browser->GetWebStateList()),
@@ -34,7 +37,20 @@ TabBasedIPHBrowserAgent::~TabBasedIPHBrowserAgent() = default;
 void TabBasedIPHBrowserAgent::NotifyMultiGestureRefreshEvent() {
   engagement_tracker_->NotifyEvent(
       feature_engagement::events::kIOSMultiGestureRefreshUsed);
-  multi_gesture_refresh_ = true;
+  web::WebState* currentWebState = web_state_list_->GetActiveWebState();
+  if (currentWebState) {
+    // Check whether the page is scrolled to the top. Normally this should be
+    // checked after the page has been fully refreshed, but at that time the web
+    // view might not have resumed its original scroll offset. Adding a check
+    // here as a precaution.
+    CRWWebViewScrollViewProxy* proxy =
+        currentWebState->GetWebViewProxy().scrollViewProxy;
+    CGPoint scroll_offset = proxy.contentOffset;
+    UIEdgeInsets content_inset = proxy.contentInset;
+    if (AreCGFloatsEqual(scroll_offset.y, -content_inset.top)) {
+      multi_gesture_refresh_ = true;
+    }
+  }
 }
 
 void TabBasedIPHBrowserAgent::NotifyBackForwardButtonTap() {

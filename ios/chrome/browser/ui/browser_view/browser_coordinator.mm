@@ -3159,6 +3159,18 @@ enum class ToolbarKind {
   return [self.NTPCoordinator isScrolledToTop];
 }
 
+- (void)bubblePresenterDidPerformPullToRefreshGesture:
+    (BubblePresenter*)bubblePresenter {
+  if (!self.activeWebState) {
+    return;
+  }
+  OverscrollActionsTabHelper* tabHelper =
+      OverscrollActionsTabHelper::FromWebState(self.activeWebState);
+  OverscrollActionsController* controller =
+      tabHelper->GetOverscrollActionsController();
+  [controller forceAnimatedScrollRefresh];
+}
+
 #pragma mark - OverscrollActionsControllerDelegate methods.
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
