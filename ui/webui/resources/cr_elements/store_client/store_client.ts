@@ -108,18 +108,18 @@ export function makeStoreClientMixin<S, A extends Action>(
       }
 
       onStateChanged(state: S) {
-        this.propertyWatches_.forEach((valueGetter, localProperty) => {
+        // Collect all changes and batch them together. This reduces visual
+        // churn on the polymer component if a single store change results in
+        // multiple polymer properties changing.
+        const changes: Record<string, any> = {};
+        for (const [localProperty, valueGetter] of this.propertyWatches_) {
           const oldValue = this.get(localProperty);
           const newValue = valueGetter(state);
-          // Avoid poking Polymer unless something has actually changed.
-          // Reducers must return new objects rather than mutating existing
-          // objects, so any real changes will pass through correctly.
-          if (oldValue === newValue || newValue === undefined) {
-            return;
+          if (newValue !== oldValue && newValue !== undefined) {
+            changes[localProperty] = newValue;
           }
-
-          this.set(localProperty, newValue);
-        });
+        }
+        this.setProperties(changes);
       }
 
       updateFromStore(): void {

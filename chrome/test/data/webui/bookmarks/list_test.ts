@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import type {BookmarksAppElement, BookmarksItemElement, BookmarksListElement, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {BrowserProxyImpl, Command, MenuSource, removeBookmark} from 'chrome://bookmarks/bookmarks.js';
+import {BrowserProxyImpl, Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
@@ -188,42 +187,6 @@ suite('<bookmarks-list> integration test', function() {
         ['1', '3', '5', '7', '9'],
         normalizeIterable(store.data.selection.items));
     assertDeepEquals('5', store.data.selection.anchor);
-  });
-
-  test('delete restores focus on item after anchor', async function() {
-    customClick(items[2]!);
-    customClick(items[4]!, {ctrlKey: true});
-    assertDeepEquals(['5', '9'], normalizeIterable(store.data.selection.items));
-    assertEquals('9', store.data.selection.anchor);
-
-    // customClick does not set focus like a real click does.
-    list.$.list.focusItem(4);
-    await waitAfterNextRender(list);
-    assertEquals(
-        '9', (list.shadowRoot?.activeElement as BookmarksItemElement).itemId);
-
-    // Simulate user deleting items. Remove actions come in rapidly one at a
-    // time via `api_listener.ts` but they are batched together.
-    store.beginBatchUpdate();
-    for (const item of store.data.selection.items) {
-      const parentId = store.data.nodes[item]?.parentId!;
-      store.dispatch(removeBookmark(
-          item, parentId, store.data.nodes[parentId]?.children?.indexOf(item)!,
-          store.data.nodes));
-    }
-    store.endBatchUpdate();
-
-    // Let `list` update its dom.
-    await waitAfterNextRender(list);
-
-    // `list` internally uses setTimeout to trigger focus after deletion. Using
-    // `setTimeout` here should force assertions to run after focus has been
-    // updated.
-    await new Promise(resolve => setTimeout(resolve));
-
-    // The element immediately preceding the deleted '9' should now be focused.
-    assertEquals(
-        '7', (list.shadowRoot?.activeElement as BookmarksItemElement).itemId);
   });
 });
 
