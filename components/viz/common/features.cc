@@ -202,20 +202,6 @@ BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
              "AllowForceMergeRenderPassWithRequireOverlayQuads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether to:
-// - Perform periodic inactive frame culling.
-// - Cull *all* frames in case of critical memory pressure, rather than keeping
-//   one.
-BASE_FEATURE(kAggressiveFrameCulling,
-             "AggressiveFrameCulling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, do not rely on surface garbage collection to happen
-// periodically, but trigger it eagerly, to avoid missing calls.
-BASE_FEATURE(kEagerSurfaceGarbageCollection,
-             "EagerSurfaceGarbageCollection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Used to gate calling SetPurgeable on OutputPresenter::Image from
 // SkiaOutputDeviceBufferQueue.
 BASE_FEATURE(kBufferQueueImageSetPurgeable,

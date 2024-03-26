@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
-#include "components/viz/common/features.h"
 
 namespace viz {
 namespace {
@@ -86,15 +85,13 @@ void FrameEvictionManager::UnlockFrame(FrameEvictionManagerClient* frame) {
 void FrameEvictionManager::RegisterUnlockedFrame(
     FrameEvictionManagerClient* frame) {
   unlocked_frames_.emplace_front(frame, clock_->NowTicks());
-  if (base::FeatureList::IsEnabled(features::kAggressiveFrameCulling)) {
-    if (!idle_frames_culling_timer_.IsRunning()) {
-      // Unretained: `idle_frames_culling_timer_` is a member of `this`, doesn't
-      // outlive it, and cancels the task in its destructor.
-      idle_frames_culling_timer_.Start(
-          FROM_HERE, kPeriodicCullingDelay,
-          base::BindRepeating(&FrameEvictionManager::CullOldUnlockedFrames,
-                              base::Unretained(this)));
-    }
+  if (!idle_frames_culling_timer_.IsRunning()) {
+    // Unretained: `idle_frames_culling_timer_` is a member of `this`, doesn't
+    // outlive it, and cancels the task in its destructor.
+    idle_frames_culling_timer_.Start(
+        FROM_HERE, kPeriodicCullingDelay,
+        base::BindRepeating(&FrameEvictionManager::CullOldUnlockedFrames,
+                            base::Unretained(this)));
   }
 }
 
@@ -197,10 +194,7 @@ void FrameEvictionManager::OnMemoryPressure(
       PurgeMemory(kModeratePressurePercentage);
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      if (base::FeatureList::IsEnabled(features::kAggressiveFrameCulling))
-        PurgeAllUnlockedFrames();
-      else
-        PurgeMemory(kCriticalPressurePercentage);
+      PurgeAllUnlockedFrames();
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       // No need to change anything when there is no pressure.
