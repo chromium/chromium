@@ -16,8 +16,6 @@ src/common/internal/query/query.ts
 src/common/internal/query/compare.ts
 src/common/internal/params_utils.ts
 src/common/framework/fixture.ts
-src/common/internal/version.ts
-src/common/internal/logging/logger.ts
 src/common/util/data_tables.ts
 src/common/util/timeout.ts
 src/common/util/util.ts
@@ -32,6 +30,8 @@ src/common/internal/test_suite_listing.ts
 src/common/internal/util.ts
 src/common/internal/tree.ts
 src/common/internal/file_loader.ts
+src/common/internal/version.ts
+src/common/internal/logging/logger.ts
 src/common/util/colors.ts
 src/common/util/navigator_gpu.ts
 src/common/runtime/helper/sys.ts
