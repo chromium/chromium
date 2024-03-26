@@ -12,6 +12,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -497,18 +498,18 @@ IN_PROC_BROWSER_TEST_P(RenderThreadImplGpuMemoryBufferBrowserTest,
         gfx::RowSizeForBufferFormat(buffer_size.width(), format, plane);
     EXPECT_GT(row_size_in_bytes, 0u);
 
-    std::unique_ptr<char[]> data(new char[row_size_in_bytes]);
-    memset(data.get(), 0x2a + plane, row_size_in_bytes);
+    auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
+    std::ranges::fill(data, 0x2a + plane);
     size_t height = buffer_size.height() /
                     gfx::SubsamplingFactorForBufferFormat(format, plane);
     for (size_t y = 0; y < height; ++y) {
       // Copy |data| to row |y| of |plane| and verify result.
       memcpy(
           static_cast<char*>(buffer->memory(plane)) + y * buffer->stride(plane),
-          data.get(), row_size_in_bytes);
+          data.data(), row_size_in_bytes);
       EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
                               y * buffer->stride(plane),
-                          data.get(), row_size_in_bytes));
+                          data.data(), row_size_in_bytes));
     }
   }
 

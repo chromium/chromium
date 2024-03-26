@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -713,15 +714,15 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
   EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
   EXPECT_EQ(length, element.data.size());
 
-  std::unique_ptr<char[]> flat_data(new char[element.data.size()]);
+  auto flat_data = base::HeapArray<char>::Uninit(element.data.size());
   element.data.ForEachSegment([&flat_data](const char* segment,
                                            size_t segment_size,
                                            size_t segment_offset) {
     std::copy(segment, segment + segment_size,
-              flat_data.get() + segment_offset);
+              flat_data.data() + segment_offset);
     return true;
   });
-  EXPECT_EQ(0, memcmp(raw_data, flat_data.get(), length));
+  EXPECT_EQ(base::span(raw_data), flat_data.as_span());
 }
 
 #if BUILDFLAG(IS_ANDROID)
