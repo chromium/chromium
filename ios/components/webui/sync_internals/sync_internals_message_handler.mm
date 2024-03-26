@@ -261,28 +261,23 @@ void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
 
   if (syncer::SyncService* service = GetSyncService()) {
     service->GetEntityCountsForDebugging(
-        BindOnce(&SyncInternalsMessageHandler::OnGotEntityCounts,
-                 weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    OnGotEntityCounts({});
+        base::BindRepeating(&SyncInternalsMessageHandler::OnGotEntityCounts,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 void SyncInternalsMessageHandler::OnGotEntityCounts(
-    const std::vector<syncer::TypeEntitiesCount>& entity_counts) {
-  base::Value::List count_list;
-  for (const syncer::TypeEntitiesCount& count : entity_counts) {
-    base::Value::Dict count_dictionary;
-    count_dictionary.Set(syncer::sync_ui_util::kModelType,
-                         ModelTypeToDebugString(count.type));
-    count_dictionary.Set(syncer::sync_ui_util::kEntities, count.entities);
-    count_dictionary.Set(syncer::sync_ui_util::kNonTombstoneEntities,
-                         count.non_tombstone_entities);
-    count_list.Append(std::move(count_dictionary));
-  }
+    const syncer::TypeEntitiesCount& entity_counts) {
+  base::Value::Dict count_dictionary;
+  count_dictionary.Set(syncer::sync_ui_util::kModelType,
+                       ModelTypeToDebugString(entity_counts.type));
+  count_dictionary.Set(syncer::sync_ui_util::kEntities, entity_counts.entities);
+  count_dictionary.Set(syncer::sync_ui_util::kNonTombstoneEntities,
+                       entity_counts.non_tombstone_entities);
 
   base::Value::Dict event_details;
-  event_details.Set(syncer::sync_ui_util::kEntityCounts, std::move(count_list));
+  event_details.Set(syncer::sync_ui_util::kEntityCounts,
+                    std::move(count_dictionary));
   DispatchEvent(syncer::sync_ui_util::kOnEntityCountsUpdated, event_details);
 }
 

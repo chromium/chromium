@@ -83,8 +83,7 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
   // once they are retrieved.
   void SendAboutInfoAndEntityCounts();
 
-  void OnGotEntityCounts(
-      const std::vector<syncer::TypeEntitiesCount>& entity_counts);
+  void OnGotEntityCounts(const syncer::TypeEntitiesCount& entity_counts);
 
   syncer::SyncService* GetSyncService();
 

@@ -135,10 +135,7 @@ base::Value::List FakeSyncService::GetTypeStatusMapForDebugging() const {
 }
 
 void FakeSyncService::GetEntityCountsForDebugging(
-    base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
-    const {
-  return std::move(callback).Run({});
-}
+    base::RepeatingCallback<void(const TypeEntitiesCount&)> callback) const {}
 
 const GURL& FakeSyncService::GetSyncServiceUrlForDebugging() const {
   return sync_service_url_;

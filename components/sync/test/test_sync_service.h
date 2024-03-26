@@ -123,7 +123,7 @@ class TestSyncService : public SyncService {
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
   base::Value::List GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
-      base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+      base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   const GURL& GetSyncServiceUrlForDebugging() const override;
   std::string GetUnrecoverableErrorMessageForDebugging() const override;

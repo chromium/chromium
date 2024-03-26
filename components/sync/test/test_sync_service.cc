@@ -306,10 +306,7 @@ base::Value::List TestSyncService::GetTypeStatusMapForDebugging() const {
 }
 
 void TestSyncService::GetEntityCountsForDebugging(
-    base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
-    const {
-  std::move(callback).Run({});
-}
+    base::RepeatingCallback<void(const TypeEntitiesCount&)> callback) const {}
 
 const GURL& TestSyncService::GetSyncServiceUrlForDebugging() const {
   return sync_service_url_;

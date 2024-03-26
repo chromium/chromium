@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
@@ -537,9 +536,11 @@ class SyncService : public KeyedService {
   // constructing that page.
   virtual base::Value::List GetTypeStatusMapForDebugging() const = 0;
 
-  // Retrieves the TypeEntitiesCount for all registered data types.
+  // Retrieves the TypeEntitiesCount for all registered data types. The
+  // `callback` will be invoked for every data type, as soon as it has
+  // computed its counts.
   virtual void GetEntityCountsForDebugging(
-      base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+      base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const = 0;
 
   virtual const GURL& GetSyncServiceUrlForDebugging() const = 0;

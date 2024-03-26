@@ -106,8 +106,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   // once they are retrieved.
   void SendAboutInfoAndEntityCounts();
 
-  void OnGotEntityCounts(
-      const std::vector<syncer::TypeEntitiesCount>& entity_counts);
+  void OnGotEntityCounts(const syncer::TypeEntitiesCount& entity_counts);
 
   // Gets the SyncService of the underlying original profile. May return
   // nullptr (e.g. if sync is disabled on the command line).

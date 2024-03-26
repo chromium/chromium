@@ -58,7 +58,7 @@ function highlightIfChanged(node: HTMLElement, oldVal: number, newVal: number) {
   }
 }
 
-function refreshAboutInfo(newAboutInfo: object) {
+function refreshAboutInfo(newAboutInfo: AboutInfo) {
   aboutInfo = newAboutInfo;
   const aboutInfoDiv = document.querySelector<HTMLElement>('#about-info');
   assert(aboutInfoDiv);
@@ -71,21 +71,35 @@ interface EntityCount {
   nonTombstoneEntities: number;
 }
 
-function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount[]}) {
-  if (!aboutInfo.type_status) {
-    return;
-  }
-  for (const count of response.entityCounts) {
-    const typeStatusRow =
-        aboutInfo.type_status.find(row => row.name === count.modelType);
-    if (typeStatusRow) {
-      typeStatusRow.num_entries = count.entities;
-      typeStatusRow.num_live = count.nonTombstoneEntities;
-    }
-  }
+let updateEntityCountsTimeoutID = -1;
+
+function updateEntityCounts() {
+  updateEntityCountsTimeoutID = -1;
+
   const typeInfo = document.querySelector<HTMLElement>('#typeInfo');
   assert(typeInfo);
   jstProcess(new JsEvalContext({type_status: aboutInfo.type_status}), typeInfo);
+}
+
+function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount}) {
+  if (!aboutInfo.type_status) {
+    return;
+  }
+
+  const typeStatusRow = aboutInfo.type_status.find(
+      row => row.name === response.entityCounts.modelType);
+  if (typeStatusRow) {
+    typeStatusRow.num_entries = response.entityCounts.entities;
+    typeStatusRow.num_live = response.entityCounts.nonTombstoneEntities;
+  }
+
+  // onEntityCountsUpdatedEvent() typically gets called multiple times in quick
+  // succession (once for each data type). To avoid lots of almost-simultaneous
+  // updates to the HTML table (which would result in UI jank), delay updating
+  // just a bit.
+  if (updateEntityCountsTimeoutID === -1) {
+    updateEntityCountsTimeoutID = setTimeout(updateEntityCounts, 10);
+  }
 }
 
 /**

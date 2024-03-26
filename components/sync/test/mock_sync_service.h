@@ -115,7 +115,7 @@ class MockSyncService : public SyncService {
               (const override));
   MOCK_METHOD(void,
               GetEntityCountsForDebugging,
-              (base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)>),
+              (base::RepeatingCallback<void(const TypeEntitiesCount&)>),
               (const override));
   MOCK_METHOD(const GURL&, GetSyncServiceUrlForDebugging, (), (const override));
   MOCK_METHOD(std::string,
