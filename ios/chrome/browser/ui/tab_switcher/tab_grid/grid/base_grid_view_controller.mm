@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -1387,7 +1388,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                             selectedItemIdentifier:
                                 (GridItemIdentifier*)selectedItemIdentifier
                                           snapshot:(GridSnapshot*)snapshot {
-  CHECK(item.type == GridItemType::Tab);
+  CHECK(item.type == GridItemType::Tab || item.type == GridItemType::Group);
   // TODO(crbug.com/1473625): There are crash reports that show there could be
   // cases where the open tabs section is not present in the snapshot. If so,
   // don't perform the update.
@@ -1409,7 +1410,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridItemIdentifier* previousItemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
   self.selectedItemIdentifier = selectedItemIdentifier;
-  self.lastInsertedItemID = item.tabSwitcherItem.identifier;
+  if (item.type == GridItemType::Tab) {
+    self.lastInsertedItemID = item.tabSwitcherItem.identifier;
+  } else if (item.type == GridItemType::Group) {
+    self.lastInsertedItemID = web::WebStateID();
+  }
 
   // The snapshot API doesn't provide a way to insert at a given index (that's
   // its purpose actually), only before/after an existing item, or by
@@ -1667,11 +1672,31 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                    atIndex:(NSUInteger)index {
   CHECK(cell);
   CHECK(item);
+  GridItemIdentifier* groupItemIdentifier =
+      [GridItemIdentifier groupIdentifier:item];
   cell.delegate = self;
   cell.theme = self.theme;
-  // TODO(crbug.com/1501837): Configure the cell when the model is available.
-  cell.title = @"Temporary Title";
+  cell.itemIdentifier = groupItemIdentifier;
+  cell.groupColor = item.groupColor;
+  cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
+  if (self.mode == TabGridModeSelection) {
+    if ([self.gridProvider isItemSelected:groupItemIdentifier]) {
+      cell.state = GridCellStateEditingSelected;
+    } else {
+      cell.state = GridCellStateEditingUnselected;
+    }
+  } else {
+    cell.state = GridCellStateNotEditing;
+  }
+
+  [item fetchGroupTabInfos:^(TabGroupItem* innerItem,
+                             NSArray<GroupTabInfo*>* groupTabInfos) {
+    if ([cell.itemIdentifier.tabGroupItem isEqual:innerItem]) {
+      [cell configureWithGroupTabInfos:groupTabInfos
+                        totalTabsCount:innerItem.numberOfTabsInGroup];
+    }
+  }];
 }
 
 // Configures `cell`'s identifier and title synchronously, and favicon and
@@ -1758,9 +1783,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridItemIdentifier* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
-  CHECK_EQ(GridItemType::Tab, itemIdentifier.type);
+  CHECK(itemIdentifier.type == GridItemType::Group ||
+        itemIdentifier.type == GridItemType::Tab);
 
-  web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
   [self.mutator userTappedOnItemID:itemIdentifier];
   if (_mode == TabGridModeSelection) {
     // Reconfigure the item.
@@ -1769,7 +1794,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   }
 
-  [self.delegate gridViewController:self didSelectItemWithID:itemID];
+  switch (itemIdentifier.type) {
+    case GridItemType::Tab: {
+      web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
+      [self.delegate gridViewController:self didSelectItemWithID:itemID];
+      break;
+    }
+    case GridItemType::Group:
+      // TODO(crbug.com/1501837): Add the handling of groups selection in the
+      // grid view controller.
+      break;
+    case GridItemType::SuggestedActions:
+      NOTREACHED();
+      break;
+  }
 }
 
 // Animates the empty state into view.

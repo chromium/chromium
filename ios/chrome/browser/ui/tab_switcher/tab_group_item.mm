@@ -48,6 +48,10 @@ const CGFloat kFaviconSize = 16;
   return ColorForTabGroupColorId(_tabGroup->visual_data().color());
 }
 
+- (NSInteger)numberOfTabsInGroup {
+  return (NSUInteger)_webStateList->GetGroupRange(_tabGroup).count();
+}
+
 - (void)fetchGroupTabInfos:(GroupTabInfosFetchingCompletionBlock)completion {
   NSUInteger numberOfRequestedImages = 0;
   for (int index : _webStateList->GetGroupRange(_tabGroup)) {

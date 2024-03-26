@@ -341,6 +341,46 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
                                    atIndex:selectionOnlyChange.index()];
         break;
       }
+      const TabGroup* oldGroup = selectionOnlyChange.old_group();
+      const TabGroup* newGroup = selectionOnlyChange.new_group();
+
+      if (oldGroup != newGroup) {
+        if (oldGroup == nullptr) {
+          web::WebState* currentWebState =
+              _webStateList->GetWebStateAt(selectionOnlyChange.index());
+
+          TabSwitcherItem* tabItemToAddToGroup =
+              [[WebStateTabSwitcherItem alloc]
+                  initWithWebState:currentWebState];
+          GridItemIdentifier* tabIdentifierToAddToGroup =
+              [GridItemIdentifier tabIdentifier:tabItemToAddToGroup];
+
+          GridItemIdentifier* selectedIdentifier =
+              GetActiveNonPinnedIdentifier(webStateList);
+          [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
+                           selectedItemIdentifier:selectedIdentifier];
+        } else {
+          TabGroupItem* oldGroupItem =
+              [[TabGroupItem alloc] initWithTabGroup:oldGroup
+                                        webStateList:_webStateList];
+          GridItemIdentifier* oldGroupIdentifier =
+              [GridItemIdentifier groupIdentifier:oldGroupItem];
+          [self.consumer replaceItem:oldGroupIdentifier
+                 withReplacementItem:oldGroupIdentifier];
+        }
+
+        if (newGroup) {
+          TabGroupItem* newGroupItem =
+              [[TabGroupItem alloc] initWithTabGroup:newGroup
+                                        webStateList:_webStateList];
+          GridItemIdentifier* newGroupIdentifier =
+              [GridItemIdentifier groupIdentifier:newGroupItem];
+
+          [self.consumer replaceItem:newGroupIdentifier
+                 withReplacementItem:newGroupIdentifier];
+        }
+        break;
+      }
       // The activation is handled after this switch statement.
       break;
     }
@@ -407,18 +447,61 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
     }
-    case WebStateListChange::Type::kGroupCreate:
-      // TODO(crbug.com/329810998): Handle the tab group creation.
+    case WebStateListChange::Type::kGroupCreate: {
+      const WebStateListChangeGroupCreate& groupCreateChange =
+          change.As<WebStateListChangeGroupCreate>();
+
+      const TabGroup* currentGroup = groupCreateChange.created_group();
+      TabGroupItem* groupItem =
+          [[TabGroupItem alloc] initWithTabGroup:currentGroup
+                                    webStateList:webStateList];
+      GridItemIdentifier* groupItemIdentifier =
+          [GridItemIdentifier groupIdentifier:groupItem];
+
+      const int startingWebStateIndex =
+          webStateList->GetGroupRange(currentGroup).range_begin();
+      GridItemIdentifier* selectedIdentifier =
+          GetActiveNonPinnedIdentifier(webStateList);
+
+      [self.consumer insertItem:groupItemIdentifier
+                         atIndex:(NSUInteger)startingWebStateIndex
+          selectedItemIdentifier:selectedIdentifier];
       break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // TODO(crbug.com/329810998): Handle the tab group's visual data update.
+    }
+    case WebStateListChange::Type::kGroupVisualDataUpdate: {
+      const WebStateListChangeGroupVisualDataUpdate& visualDataChange =
+          change.As<WebStateListChangeGroupVisualDataUpdate>();
+      TabGroupItem* groupItem = [[TabGroupItem alloc]
+          initWithTabGroup:visualDataChange.updated_group()
+              webStateList:webStateList];
+      GridItemIdentifier* groupItemIdentifier =
+          [GridItemIdentifier groupIdentifier:groupItem];
+      [self.consumer replaceItem:groupItemIdentifier
+             withReplacementItem:groupItemIdentifier];
+
       break;
+    }
     case WebStateListChange::Type::kGroupMove:
       // TODO(crbug.com/329810998): Handle the tab group move.
       break;
-    case WebStateListChange::Type::kGroupDelete:
-      // TODO(crbug.com/329810998): Handle the tab group deletion.
+    case WebStateListChange::Type::kGroupDelete: {
+      const WebStateListChangeGroupDelete& groupDeleteChange =
+          change.As<WebStateListChangeGroupDelete>();
+      TabGroupItem* group = [[TabGroupItem alloc]
+          initWithTabGroup:groupDeleteChange.deleted_group()
+              webStateList:_webStateList];
+
+      // An additional layer check for group nullability.
+      CHECK(group);
+
+      GridItemIdentifier* groupItemIdentifier =
+          [GridItemIdentifier groupIdentifier:group];
+      GridItemIdentifier* selectedIdentifier =
+          GetActiveNonPinnedIdentifier(webStateList);
+      [self.consumer removeItemWithIdentifier:groupItemIdentifier
+                       selectedItemIdentifier:selectedIdentifier];
       break;
+    }
   }
   [self updateToolbarAfterNumberOfItemsChanged];
   if (status.active_web_state_change()) {

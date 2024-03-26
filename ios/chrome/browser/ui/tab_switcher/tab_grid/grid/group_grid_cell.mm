@@ -197,7 +197,7 @@ const CGFloat kGroupColorViewSize = 18;
   [super prepareForReuse];
   self.title = nil;
   self.titleHidden = NO;
-  self.groupColorName = nil;
+  self.groupColor = nil;
   self.selected = NO;
   self.opacity = 1.0;
 }
@@ -240,10 +240,10 @@ const CGFloat kGroupColorViewSize = 18;
   _theme = theme;
 }
 
-- (void)setGroupColorName:(NSString*)groupColorName {
-  if (groupColorName) {
-    _groupColorName = groupColorName;
-    _groupColorView.backgroundColor = [UIColor colorNamed:_groupColorName];
+- (void)setGroupColor:(UIColor*)groupColor {
+  if (groupColor) {
+    _groupColor = groupColor;
+    _groupColorView.backgroundColor = groupColor;
   }
 }
 

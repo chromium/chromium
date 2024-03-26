@@ -36,6 +36,7 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
 #endif
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) UIColor* groupColor;
+@property(nonatomic, readonly) NSInteger numberOfTabsInGroup;
 
 // Fetches the groupTabInfos (pair of snapshots and favicons), calling
 // `completion` on the calling sequence when the operation completes.
