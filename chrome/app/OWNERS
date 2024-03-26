@@ -37,6 +37,7 @@ per-file profiles_strings.grdp=file://chrome/app/profiles_strings_grdp/OWNERS
 per-file *settings*strings*.grdp=file://chrome/browser/resources/settings/OWNERS
 per-file *settings*strings*.grdp=file://ui/webui/PLATFORM_OWNERS
 per-file *settings*strings*.grdp=sauski@google.com
+per-file *settings*strings*.grdp=rainhard@chromium.org
 
 per-file support_tool_strings.grdp=file://chrome/browser/support_tool/OWNERS
 
