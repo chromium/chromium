@@ -4,12 +4,12 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
@@ -334,7 +334,7 @@ TEST_F(StatementTest, BindString_NullData) {
       "CREATE TABLE texts(id INTEGER PRIMARY KEY NOT NULL, t TEXT NOT NULL)"));
 
   Statement insert(db_.GetUniqueStatement("INSERT INTO texts(t) VALUES(?)"));
-  insert.BindString(0, base::StringPiece(nullptr, 0));
+  insert.BindString(0, std::string_view(nullptr, 0));
   ASSERT_TRUE(insert.Run());
 
   Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));

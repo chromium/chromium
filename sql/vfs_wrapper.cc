@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -14,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -204,11 +204,11 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
   if (file_name && (desired_flags & kJournalFlags)) {
     // https://www.sqlite.org/c3ref/vfs.html indicates that the journal path
     // will have a suffix separated by "-" from the main database file name.
-    base::StringPiece file_name_string_piece(file_name);
+    std::string_view file_name_string_piece(file_name);
     size_t dash_index = file_name_string_piece.rfind('-');
-    if (dash_index != base::StringPiece::npos) {
+    if (dash_index != std::string_view::npos) {
       base::FilePath database_file_path(
-          base::StringPiece(file_name, dash_index));
+          std::string_view(file_name, dash_index));
       if (base::PathExists(database_file_path) &&
           base::apple::GetBackupExclusion(database_file_path)) {
         base::apple::SetBackupExclusion(base::FilePath(file_name_string_piece));

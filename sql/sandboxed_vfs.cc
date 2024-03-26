@@ -8,6 +8,7 @@
 #include <cstring>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -121,22 +122,19 @@ base::Time SqliteEpoch() {
 #if DCHECK_IS_ON()
 // `full_path_cstr` must be a filename argument passed to the VFS from SQLite.
 SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
-  base::StringPiece full_path(full_path_cstr);
+  std::string_view full_path(full_path_cstr);
 
-  const char* database_file_cstr = sqlite3_filename_database(full_path_cstr);
-  base::StringPiece database_file(database_file_cstr);
-  if (full_path == database_file)
+  if (full_path == sqlite3_filename_database(full_path_cstr)) {
     return SandboxedVfsFileType::kDatabase;
+  }
 
-  const char* journal_file_cstr = sqlite3_filename_journal(full_path_cstr);
-  base::StringPiece journal_file(journal_file_cstr);
-  if (full_path == journal_file)
+  if (full_path == sqlite3_filename_journal(full_path_cstr)) {
     return SandboxedVfsFileType::kJournal;
+  }
 
-  const char* wal_file_cstr = sqlite3_filename_wal(full_path_cstr);
-  base::StringPiece wal_file(wal_file_cstr);
-  if (full_path == wal_file)
+  if (full_path == sqlite3_filename_wal(full_path_cstr)) {
     return SandboxedVfsFileType::kWal;
+  }
 
   NOTREACHED()
       << "Argument is not a file name buffer passed from SQLite to a VFS: "

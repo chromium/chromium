@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/check.h"
@@ -20,7 +21,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
@@ -44,7 +44,7 @@ size_t CountSQLItemsOfType(sql::Database* db, const char* type) {
 // Read the number of the root page of a B-tree (index/table).
 //
 // Returns a 0-indexed page number, not the raw SQLite page number.
-std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
+std::optional<int> GetRootPage(sql::Database& db, std::string_view tree_name) {
   sql::Statement select(
       db.GetUniqueStatement("SELECT rootpage FROM sqlite_schema WHERE name=?"));
   select.BindString(0, tree_name);
@@ -209,7 +209,7 @@ bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
 }
 
 bool CorruptIndexRootPage(const base::FilePath& db_path,
-                          base::StringPiece index_name) {
+                          std::string_view index_name) {
   std::optional<int> page_size = ReadDatabasePageSize(db_path);
   if (!page_size.has_value())
     return false;

@@ -7,13 +7,13 @@
 #include <ostream>  // Needed to compile NOTREACHED() with operator <<.
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "sql/sqlite_result_code_values.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -440,7 +440,7 @@ void CheckSqliteLoggedResultCodeForTesting() {
 
     const char* error_message = sqlite3_errstr(result_code);
 
-    static constexpr base::StringPiece kUnknownErrorMessage("unknown error");
+    static constexpr std::string_view kUnknownErrorMessage("unknown error");
     DCHECK_EQ(kUnknownErrorMessage.compare(error_message), 0)
         << "Unmapped SQLite result code: " << result_code
         << " SQLite message: " << error_message;

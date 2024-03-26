@@ -6,9 +6,9 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
@@ -23,7 +23,7 @@ constexpr char kVersionKey[] = "version";
 constexpr char kCompatibleVersionKey[] = "last_compatible_version";
 constexpr char kMmapStatusKey[] = "mmap_status";
 
-void PrepareSetStatement(base::StringPiece key,
+void PrepareSetStatement(std::string_view key,
                          Database& db,
                          Statement& insert_statement) {
   insert_statement.Assign(db.GetCachedStatement(
@@ -31,7 +31,7 @@ void PrepareSetStatement(base::StringPiece key,
   insert_statement.BindString(0, key);
 }
 
-bool PrepareGetStatement(base::StringPiece key,
+bool PrepareGetStatement(std::string_view key,
                          Database& db,
                          Statement& select_statement) {
   select_statement.Assign(db.GetCachedStatement(
@@ -189,7 +189,7 @@ int MetaTable::GetCompatibleVersionNumber() {
   return GetValue(kCompatibleVersionKey, &version) ? version : 0;
 }
 
-bool MetaTable::SetValue(base::StringPiece key, const std::string& value) {
+bool MetaTable::SetValue(std::string_view key, const std::string& value) {
   DCHECK(db_);
 
   Statement insert;
@@ -198,7 +198,7 @@ bool MetaTable::SetValue(base::StringPiece key, const std::string& value) {
   return insert.Run();
 }
 
-bool MetaTable::SetValue(base::StringPiece key, int64_t value) {
+bool MetaTable::SetValue(std::string_view key, int64_t value) {
   DCHECK(db_);
 
   Statement insert;
@@ -207,7 +207,7 @@ bool MetaTable::SetValue(base::StringPiece key, int64_t value) {
   return insert.Run();
 }
 
-bool MetaTable::GetValue(base::StringPiece key, std::string* value) {
+bool MetaTable::GetValue(std::string_view key, std::string* value) {
   DCHECK(value);
   DCHECK(db_);
 
@@ -219,7 +219,7 @@ bool MetaTable::GetValue(base::StringPiece key, std::string* value) {
   return true;
 }
 
-bool MetaTable::GetValue(base::StringPiece key, int* value) {
+bool MetaTable::GetValue(std::string_view key, int* value) {
   DCHECK(value);
   DCHECK(db_);
 
@@ -231,7 +231,7 @@ bool MetaTable::GetValue(base::StringPiece key, int* value) {
   return true;
 }
 
-bool MetaTable::GetValue(base::StringPiece key, int64_t* value) {
+bool MetaTable::GetValue(std::string_view key, int64_t* value) {
   DCHECK(value);
   DCHECK(db_);
 
@@ -243,7 +243,7 @@ bool MetaTable::GetValue(base::StringPiece key, int64_t* value) {
   return true;
 }
 
-bool MetaTable::DeleteKey(base::StringPiece key) {
+bool MetaTable::DeleteKey(std::string_view key) {
   DCHECK(db_);
 
   Statement delete_statement(

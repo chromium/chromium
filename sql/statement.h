@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -15,7 +16,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "sql/database.h"
@@ -135,11 +135,11 @@ class COMPONENT_EXPORT(SQL) Statement {
   void BindInt64(int param_index, int64_t val);
   void BindDouble(int param_index, double val);
   void BindCString(int param_index, const char* val);
-  void BindString(int param_index, base::StringPiece val);
+  void BindString(int param_index, std::string_view val);
 
   // If you need to store (potentially invalid) UTF-16 strings losslessly,
   // store them as BLOBs instead. `BindBlob()` has an overload for this purpose.
-  void BindString16(int param_index, base::StringPiece16 value);
+  void BindString16(int param_index, std::u16string_view value);
   void BindBlob(int param_index, base::span<const uint8_t> value);
 
   // Overload that makes it easy to pass in std::string values.

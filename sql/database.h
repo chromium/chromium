@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/types/pass_key.h"
@@ -519,7 +519,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // be attached while a transaction is opened. However, these databases cannot
   // be detached until the transaction is committed or aborted.
   bool AttachDatabase(const base::FilePath& other_db_path,
-                      base::StringPiece attachment_point);
+                      std::string_view attachment_point);
 
   // Detaches a database that was previously attached with AttachDatabase().
   //
@@ -528,7 +528,7 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Attachment APIs are only exposed for use in recovery. General use is
   // discouraged in Chrome. The README has more details.
-  bool DetachDatabase(base::StringPiece attachment_point);
+  bool DetachDatabase(std::string_view attachment_point);
 
   // Statements ----------------------------------------------------------------
 
@@ -613,9 +613,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns true if the given structure exists.  Instead of test-then-create,
   // callers should almost always prefer the "IF NOT EXISTS" version of the
   // CREATE statement.
-  bool DoesIndexExist(base::StringPiece index_name);
-  bool DoesTableExist(base::StringPiece table_name);
-  bool DoesViewExist(base::StringPiece table_name);
+  bool DoesIndexExist(std::string_view index_name);
+  bool DoesTableExist(std::string_view table_name);
+  bool DoesViewExist(std::string_view table_name);
 
   // Returns true if a column with the given name exists in the given table.
   //
@@ -759,7 +759,7 @@ class COMPONENT_EXPORT(SQL) Database {
   }
 
   // Internal helper for Does*Exist() functions.
-  bool DoesSchemaItemExist(base::StringPiece name, base::StringPiece type);
+  bool DoesSchemaItemExist(std::string_view name, std::string_view type);
 
   // Used to implement the interface with sql::test::ScopedErrorExpecter.
   static ScopedErrorExpecterCallback* current_expecter_cb_;

@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <tuple>
 
 #include "base/check.h"
@@ -29,7 +30,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -153,7 +153,7 @@ SqliteResultCode BackupDatabaseForRaze(sqlite3* source_db,
   return sqlite_result_code;
 }
 
-bool ValidAttachmentPoint(base::StringPiece attachment_point) {
+bool ValidAttachmentPoint(std::string_view attachment_point) {
   // SQLite could handle a much wider character set, with appropriate quoting.
   //
   // Chrome's constraint is easy to remember, and sufficient for the few
@@ -552,7 +552,7 @@ base::FilePath Database::DbPath() const {
   const char* path = sqlite3_db_filename(db_, "main");
   if (!path)
     return base::FilePath();
-  const base::StringPiece db_path(path);
+  const std::string_view db_path(path);
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(db_path));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -1286,7 +1286,7 @@ void Database::RollbackAllTransactions() {
 }
 
 bool Database::AttachDatabase(const base::FilePath& other_db_path,
-                              base::StringPiece attachment_point) {
+                              std::string_view attachment_point) {
   TRACE_EVENT0("sql", "Database::AttachDatabase");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1302,7 +1302,7 @@ bool Database::AttachDatabase(const base::FilePath& other_db_path,
   return statement.Run();
 }
 
-bool Database::DetachDatabase(base::StringPiece attachment_point) {
+bool Database::DetachDatabase(std::string_view attachment_point) {
   TRACE_EVENT0("sql", "Database::DetachDatabase");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1650,23 +1650,23 @@ bool Database::IsSQLValid(const char* sql) {
   return true;
 }
 
-bool Database::DoesIndexExist(base::StringPiece index_name) {
+bool Database::DoesIndexExist(std::string_view index_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoesSchemaItemExist(index_name, "index");
 }
 
-bool Database::DoesTableExist(base::StringPiece table_name) {
+bool Database::DoesTableExist(std::string_view table_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoesSchemaItemExist(table_name, "table");
 }
 
-bool Database::DoesViewExist(base::StringPiece view_name) {
+bool Database::DoesViewExist(std::string_view view_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DoesSchemaItemExist(view_name, "view");
 }
 
-bool Database::DoesSchemaItemExist(base::StringPiece name,
-                                   base::StringPiece type) {
+bool Database::DoesSchemaItemExist(std::string_view name,
+                                   std::string_view type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static const char kSql[] =
@@ -2239,12 +2239,13 @@ bool Database::FullIntegrityCheck(std::vector<std::string>* messages) {
     DCHECK(row) << "PRAGMA integrity_check should never return NULL rows";
 
     const int row_size = sqlite3_column_bytes(statement, /*iCol=*/0);
-    base::StringPiece row_string(reinterpret_cast<const char*>(row), row_size);
+    std::string_view row_string(reinterpret_cast<const char*>(row), row_size);
 
-    const std::vector<base::StringPiece> row_lines = base::SplitStringPiece(
+    const std::vector<std::string_view> row_lines = base::SplitStringPiece(
         row_string, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    for (base::StringPiece row_line : row_lines)
+    for (std::string_view row_line : row_lines) {
       result_lines.emplace_back(row_line);
+    }
   }
 
   const auto finalize_result_code =
