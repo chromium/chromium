@@ -5,8 +5,8 @@
 
 # This is the main failure suppression file for ChromeAndroid and Chrome Webview
 # Web Platform Tests.
-external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?mouse [ Timeout Skip ]
-external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?pen [ Timeout Skip ]
+external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?mouse [ Skip Timeout ]
+external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?pen [ Skip Timeout ]
 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?touch [ Timeout ]
 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
@@ -44,10 +44,10 @@ external/wpt/pointerevents/touch-action-with-swipe-dir-change.html?touch [ Timeo
 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Timeout ]
 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y_touch.html [ Timeout ]
 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y-pan-y_touch.html [ Timeout ]
-[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-y-css_touch.html [ Timeout Skip ]
-[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Timeout Skip ]
-[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-svg-none-test_touch.html [ Timeout Skip ]
-[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-table-none-test_touch.html [ Timeout Skip ]
+[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-pan-y-css_touch.html [ Skip Timeout ]
+[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Skip Timeout ]
+[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-svg-none-test_touch.html [ Skip Timeout ]
+[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-table-none-test_touch.html [ Skip Timeout ]
 [ Webview ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
 [ Webview ] external/wpt/shape-detection/idlharness.https.any.html [ Failure ]
 [ Webview ] external/wpt/shape-detection/idlharness.https.any.serviceworker.html [ Failure ]
