@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.ActionTy
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -96,21 +96,26 @@ public class PriceDropNotifier {
     }
 
     private final Context mContext;
+    private final Profile mProfile;
     private ImageFetcher mImageFetcher;
     private final NotificationManagerProxy mNotificationManagerProxy;
     private PriceDropNotificationManager mPriceDropNotificationManager;
 
     /**
      * Creates a {@link PriceDropNotifier} instance.
+     *
      * @param context The Android context.
+     * @param profile The {@link Profile} associated with price drop registration.
      */
-    public static PriceDropNotifier create(Context context) {
-        return new PriceDropNotifier(context, new NotificationManagerProxyImpl(context));
+    public static PriceDropNotifier create(Context context, Profile profile) {
+        return new PriceDropNotifier(context, profile, new NotificationManagerProxyImpl(context));
     }
 
     @VisibleForTesting
-    PriceDropNotifier(Context context, NotificationManagerProxy notificationManager) {
+    PriceDropNotifier(
+            Context context, Profile profile, NotificationManagerProxy notificationManager) {
         mContext = context;
+        mProfile = profile;
         mNotificationManagerProxy = notificationManager;
         mPriceDropNotificationManager =
                 PriceDropNotificationManagerFactory.create(mContext, mNotificationManagerProxy);
@@ -133,8 +138,7 @@ public class PriceDropNotifier {
         if (mImageFetcher == null) {
             mImageFetcher =
                     ImageFetcherFactory.createImageFetcher(
-                            ImageFetcherConfig.NETWORK_ONLY,
-                            ProfileManager.getLastUsedRegularProfile().getProfileKey());
+                            ImageFetcherConfig.NETWORK_ONLY, mProfile.getProfileKey());
         }
         return mImageFetcher;
     }
