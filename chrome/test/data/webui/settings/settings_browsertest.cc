@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_features.h"
@@ -894,7 +895,14 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestWithoutWebPrinting,
           "runMochaSuite('WebPrintingNotShown')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig, PrivacyPage) {
+// Flaky on linux debug builds. https://crbug.com/331366001.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_PrivacyPage DISABLED_PrivacyPage
+#else
+#define MAYBE_PrivacyPage PrivacyPage
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig,
+                       MAYBE_PrivacyPage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
 
