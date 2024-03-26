@@ -771,6 +771,12 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
       current_wallpaper_->wallpaper_info().MatchesAsset(*new_info)) {
     DVLOG(1) << "Detected no change in online wallpaper";
     std::move(callback).Run(/*success=*/true);
+    // Fires resized signal to
+    // `PersonalizationAppWallpaperProviderImpl::OnWallpaperResized` to tell the
+    // UI to clear the loading state.
+    for (auto& observer : observers_) {
+      observer.OnWallpaperResized();
+    }
     return;
   }
 

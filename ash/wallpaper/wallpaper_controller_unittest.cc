@@ -1627,6 +1627,55 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaper) {
       GURL(kDummyUrl).ExtractFileName())));
 }
 
+TEST_P(WallpaperControllerTest,
+       SetOnlineWallpaper_FiresResizedSignalWhenSettingTheSameWallpaper) {
+  TestWallpaperControllerObserver observer(controller_);
+  gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
+  WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER_CROPPED;
+  SimulateUserLogin(kAccountId1);
+  const OnlineWallpaperParams& params = OnlineWallpaperParams(
+      kAccountId1, TestWallpaperControllerClient::kDummyCollectionId, layout,
+      /*preview_mode=*/false, /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, kUnitId,
+      /*variants=*/
+      {{kAssetId, GURL(kDummyUrl), backdrop::Image::IMAGE_TYPE_UNKNOWN}});
+  {
+    // Verify that calling |SetOnlineWallpaper| will download the image data if
+    // it does not exist. Verify that the wallpaper is set successfully.
+    base::RunLoop run_loop;
+    ClearWallpaperCount();
+    base::RunLoop resized_loop;
+    observer.SetOnResizeCallback(resized_loop.QuitClosure());
+
+    controller_->SetOnlineWallpaper(
+        params, base::BindLambdaForTesting(
+                    [quit = run_loop.QuitClosure()](bool success) {
+                      EXPECT_TRUE(success);
+                      std::move(quit).Run();
+                    }));
+    run_loop.Run();
+    resized_loop.Run();
+    EXPECT_EQ(1, GetWallpaperCount());
+    EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+  }
+
+  {
+    // Verifies setting the same wallpaper still results in `OnWallpaperResized`
+    // being fired.
+    base::RunLoop run_loop;
+    base::RunLoop resized_loop;
+    observer.SetOnResizeCallback(resized_loop.QuitClosure());
+    controller_->SetOnlineWallpaper(
+        params, base::BindLambdaForTesting(
+                    [quit = run_loop.QuitClosure()](bool success) {
+                      EXPECT_TRUE(success);
+                      std::move(quit).Run();
+                    }));
+    run_loop.Run();
+    resized_loop.Run();
+  }
+}
+
 TEST_P(WallpaperControllerTest, SetTimeOfDayWallpaper) {
   if (!IsTimeOfDayEnabled()) {
     return;
