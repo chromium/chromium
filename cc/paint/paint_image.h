@@ -349,9 +349,10 @@ class CC_PAINT_EXPORT PaintImage {
 
   bool IsOpaque() const;
   bool HasGainmap() const {
-    DCHECK_EQ(gainmap_paint_image_generator_ != nullptr,
+    DCHECK_EQ(gainmap_paint_image_generator_ != nullptr ||
+                  gainmap_sk_image_ != nullptr,
               gainmap_info_.has_value());
-    return gainmap_paint_image_generator_.get();
+    return gainmap_info_.has_value();
   }
   const SkGainmapInfo& GetGainmapInfo() const {
     DCHECK(HasGainmap());
@@ -379,6 +380,7 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PlaybackImageProvider;
   friend class DrawImageRectOp;
   friend class DrawImageOp;
+  friend class DrawImageToneMapUtil;
   friend class DrawSkottieOp;
 
   // TODO(crbug.com/1031051): Remove these once GetSkImage()
@@ -407,11 +409,19 @@ class CC_PAINT_EXPORT PaintImage {
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
 
+  // The target HDR headroom for gainmap and global tone map application.
+  float target_hdr_headroom_ = 1.f;
+
   // Gainmap HDR metadata.
+  sk_sp<SkImage> gainmap_sk_image_;
   sk_sp<PaintImageGenerator> gainmap_paint_image_generator_;
   std::optional<SkGainmapInfo> gainmap_info_;
 
-  // The HDR metadata for non-gainmap HDR rendering.
+  // If true, then use `hdr_metadata_` to tone map to `target_hdr_headroom_`.
+  bool use_global_tone_map_ = false;
+
+  // HDR metadata used by global tone map application and (potentially but not
+  // yet) gain map application.
   std::optional<gfx::HDRMetadata> hdr_metadata_;
 
   sk_sp<TextureBacking> texture_backing_;

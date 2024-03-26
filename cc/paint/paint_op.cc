@@ -28,6 +28,7 @@
 #include "cc/paint/skottie_serialization_history.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -36,7 +37,9 @@
 #include "third_party/skia/include/core/SkTiledImageUtils.h"
 #include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
+#include "third_party/skia/include/private/SkGainmapShader.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
+#include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -1131,6 +1134,77 @@ void DrawDRRectOp::RasterWithFlags(const DrawDRRectOp* op,
   });
 }
 
+// Helper class for applying tone mapping on the fly in DrawImage and
+// DrawImageRect.
+class DrawImageToneMapUtil {
+ public:
+  static bool UseGainmapShader(const PaintImage& image) {
+    if (image.gainmap_sk_image_) {
+      DCHECK(image.cached_sk_image_);
+      DCHECK(image.gainmap_info_.has_value());
+      return true;
+    }
+    return false;
+  }
+  static void AddGainmapShaderToPaint(SkPaint& paint,
+                                      const PaintImage& image,
+                                      const SkRect& src_rect,
+                                      const SkSamplingOptions& sampling,
+                                      const SkRect& dst_rect,
+                                      sk_sp<SkColorSpace> dst_color_space) {
+    if (!dst_color_space) {
+      dst_color_space = SkColorSpace::MakeSRGB();
+    }
+
+    // Let `gainmap_rect` be the rect in `gainmap_sk_image` that corresponds to
+    // `src_rect` in `cached_sk_image_`.
+    SkRect gainmap_rect = src_rect;
+    {
+      float scale_x = image.gainmap_sk_image_->width() /
+                      static_cast<float>(image.cached_sk_image_->width());
+      float scale_y = image.gainmap_sk_image_->height() /
+                      static_cast<float>(image.cached_sk_image_->height());
+      gainmap_rect.fLeft *= scale_x;
+      gainmap_rect.fRight *= scale_x;
+      gainmap_rect.fTop *= scale_y;
+      gainmap_rect.fBottom *= scale_y;
+    }
+
+    sk_sp<SkShader> shader = SkGainmapShader::Make(
+        image.cached_sk_image_, src_rect, sampling, image.gainmap_sk_image_,
+        gainmap_rect, sampling, image.gainmap_info_.value(), dst_rect,
+        image.target_hdr_headroom_, std::move(dst_color_space));
+    DCHECK(shader);
+    paint.setShader(std::move(shader));
+  }
+
+  static bool UseGlobalToneMapFilter(const PaintImage& image) {
+    return image.use_global_tone_map_ && image.cached_sk_image_ &&
+           image.cached_sk_image_->colorSpace();
+  }
+  static void AddGlobalToneMapFilterToPaint(
+      SkPaint& paint,
+      const PaintImage& image,
+      sk_sp<SkColorSpace> dst_color_space) {
+    if (!dst_color_space) {
+      dst_color_space = SkColorSpace::MakeSRGB();
+    }
+    gfx::ColorConversionSkFilterCache cache;
+    sk_sp<SkColorFilter> filter = cache.Get(
+        gfx::ColorSpace(*image.cached_sk_image_->colorSpace()),
+        gfx::ColorSpace(*dst_color_space.get()),
+        /*src_bit_depth=*/std::nullopt, image.hdr_metadata_,
+        gfx::ColorSpace::kDefaultSDRWhiteLevel, image.target_hdr_headroom_);
+    if (paint.getColorFilter()) {
+      // Perform tone mapping before the existing color filter.
+      paint.setColorFilter(
+          paint.getColorFilter()->makeComposed(std::move(filter)));
+    } else {
+      paint.setColorFilter(std::move(filter));
+    }
+  }
+};
+
 void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
                                   const PaintFlags* flags,
                                   SkCanvas* canvas,
@@ -1152,6 +1226,30 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     }
     if (!sk_image)
       sk_image = op->image.GetSwSkImage();
+    if (!sk_image) {
+      return;
+    }
+
+    // If this uses a gainmap shader, then replace DrawImage with a shader.
+    // TODO(b/41483652): This needs to tile images that don't fit into textures.
+    if (DrawImageToneMapUtil::UseGainmapShader(op->image)) {
+      SkRect src = SkRect::MakeIWH(sk_image->width(), sk_image->height());
+      SkRect dst = SkRect::MakeXYWH(op->left, op->top, sk_image->width(),
+                                    sk_image->height());
+      DrawImageToneMapUtil::AddGainmapShaderToPaint(
+          paint, op->image, src, op->sampling, dst,
+          canvas->imageInfo().refColorSpace());
+      canvas->drawRect(dst, paint);
+      return;
+    }
+
+    // Add a tone mapping filter to `paint` if needed.
+    if (DrawImageToneMapUtil::UseGlobalToneMapFilter(op->image)) {
+      auto dst_color_space = canvas->imageInfo().refColorSpace();
+      DrawImageToneMapUtil::AddGlobalToneMapFilterToPaint(paint, op->image,
+                                                          dst_color_space);
+      sk_image = sk_image->reinterpretColorSpace(dst_color_space);
+    }
 
     SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
                                  op->sampling, &paint);
@@ -1234,6 +1332,36 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       }
       if (!sk_image)
         sk_image = op->image.GetSwSkImage();
+      if (!sk_image) {
+        return;
+      }
+
+      // If the PaintImage uses a gainmap shader, then replace DrawImage with a
+      // shader.
+      // TODO(b/41483652): This needs to tile images that don't fit into
+      // textures.
+      if (DrawImageToneMapUtil::UseGainmapShader(op->image)) {
+        SkPaint gainmap_paint = p;
+        DrawImageToneMapUtil::AddGainmapShaderToPaint(
+            gainmap_paint, op->image, adjusted_src, op->sampling, op->dst,
+            c->imageInfo().refColorSpace());
+        c->drawRect(op->dst, gainmap_paint);
+        return;
+      }
+
+      // If this uses a global tone map filter, then incorporate that filter
+      // into the paint.
+      if (DrawImageToneMapUtil::UseGlobalToneMapFilter(op->image)) {
+        SkPaint tonemap_paint = p;
+        DrawImageToneMapUtil::AddGlobalToneMapFilterToPaint(
+            tonemap_paint, op->image, c->imageInfo().refColorSpace());
+        sk_image =
+            sk_image->reinterpretColorSpace(c->imageInfo().refColorSpace());
+        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling,
+                      &tonemap_paint, op->constraint);
+        return;
+      }
+
       DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
                     op->constraint);
     });

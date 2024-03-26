@@ -22,6 +22,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
+#include "cc/base/features.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
@@ -474,15 +475,12 @@ void PaintOpReader::Read(
   if (auto* entry =
           options_.transfer_cache->GetEntryAs<ServiceImageTransferCacheEntry>(
               transfer_cache_entry_id)) {
-    // Bake the HDR headroom into the image now.
-    // TODO(https://crbug.com/1483235): Move the application of tone mapping
-    // from here to playback time.
-    sk_sp<SkImage> sk_image;
+    // Compute the HDR headroom if tone mapping will be applied.
+    float hdr_headroom = 1.f;
     if (entry->NeedsToneMapApplied()) {
       const float dynamic_range_high_mix =
           1.f - dynamic_range_limit.constrained_high_mix -
           dynamic_range_limit.standard_mix;
-      float hdr_headroom = 1.f;
       if (dynamic_range_limit.constrained_high_mix > 0) {
         hdr_headroom *= std::pow(std::min(2.f, options_.hdr_headroom),
                                  dynamic_range_limit.constrained_high_mix);
@@ -490,19 +488,53 @@ void PaintOpReader::Read(
       if (dynamic_range_high_mix > 0) {
         hdr_headroom *= std::pow(options_.hdr_headroom, dynamic_range_high_mix);
       }
-      sk_image = entry->GetImageWithToneMapApplied(hdr_headroom, needs_mips);
-    } else {
-      if (needs_mips) {
-        entry->EnsureMips();
-      }
-      sk_image = entry->image();
     }
 
-    *image = PaintImageBuilder::WithDefault()
-                 .set_id(PaintImage::GetNextId())
-                 .set_texture_image(std::move(sk_image),
-                                    PaintImage::kNonLazyStableId)
-                 .TakePaintImage();
+    // Bake the HDR headroom into the image now.
+    // TODO(b/328665503): Move the application of tone mapping from here to
+    // playback time.
+    if ((entry->HasGainmap() &&
+         !base::FeatureList::IsEnabled(features::kPaintWithGainmapShader)) ||
+        (entry->use_global_tone_map() &&
+         !base::FeatureList::IsEnabled(
+             features::kPaintWithGlobalToneMapFilter))) {
+      auto sk_image =
+          entry->GetImageWithToneMapApplied(hdr_headroom, needs_mips);
+      *image = PaintImageBuilder::WithDefault()
+                   .set_id(PaintImage::GetNextId())
+                   .set_texture_image(std::move(sk_image),
+                                      PaintImage::kNonLazyStableId)
+                   .TakePaintImage();
+      return;
+    }
+
+    if (needs_mips) {
+      entry->EnsureMips();
+    }
+    if (entry->HasGainmap()) {
+      *image = PaintImageBuilder::WithDefault()
+                   .set_id(PaintImage::GetNextId())
+                   .set_gainmap_texture_image(
+                       entry->image(), entry->gainmap_image(),
+                       entry->gainmap_info(), PaintImage::kNonLazyStableId)
+                   .set_target_hdr_headroom(hdr_headroom)
+                   .TakePaintImage();
+    } else if (entry->use_global_tone_map()) {
+      *image =
+          PaintImageBuilder::WithDefault()
+              .set_id(PaintImage::GetNextId())
+              .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
+              .set_hdr_metadata(entry->hdr_metadata())
+              .set_use_global_tone_map(true)
+              .set_target_hdr_headroom(hdr_headroom)
+              .TakePaintImage();
+    } else {
+      *image =
+          PaintImageBuilder::WithDefault()
+              .set_id(PaintImage::GetNextId())
+              .set_texture_image(entry->image(), PaintImage::kNonLazyStableId)
+              .TakePaintImage();
+    }
   }
 }
 

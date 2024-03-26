@@ -193,4 +193,12 @@ BASE_FEATURE(kMetricsTracingCalculationReduction,
              "MetricsTracingCalculationReduction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaintWithGainmapShader,
+             "PaintWithGainmapShader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPaintWithGlobalToneMapFilter,
+             "PaintWithGlobalToneMapFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -646,13 +646,12 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
         image_, gainmap_image_, gainmap_info_, hdr_headroom,
         image_->isTextureBacked() ? gr_context_ : nullptr,
         image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  } else if (use_tone_curve_) {
+  } else if (use_global_tone_map_) {
     // Images are always rendered as SDR-relative and the output color space
     // is SDR itself,
     image = cache.ApplyToneCurve(
-        image_, tone_curve_hdr_metadata_,
-        gfx::ColorSpace::kDefaultSDRWhiteLevel, hdr_headroom,
-        image_->isTextureBacked() ? gr_context_ : nullptr,
+        image_, hdr_metadata_, gfx::ColorSpace::kDefaultSDRWhiteLevel,
+        hdr_headroom, image_->isTextureBacked() ? gr_context_ : nullptr,
         image_->isTextureBacked() ? graphite_recorder_ : nullptr);
   }
   if (!image) {
@@ -701,7 +700,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   if (has_hdr_metadata) {
     gfx::HDRMetadata hdr_metadata_value;
     reader.Read(&hdr_metadata_value);
-    tone_curve_hdr_metadata_ = hdr_metadata_value;
+    hdr_metadata_ = hdr_metadata_value;
   }
   sk_sp<SkColorSpace> target_color_space;
   reader.Read(&target_color_space);
@@ -742,7 +741,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   }
 
   // Save the tone curve parameters, if they are to be used.
-  use_tone_curve_ =
+  use_global_tone_map_ =
       !has_gainmap_ && gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
 
   // Perform color conversion (if no tone mapping is needed).

@@ -177,6 +177,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseV1MetricsTermination);
 // to when tracing is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMetricsTracingCalculationReduction);
 
+// Temporary features to enable the fix for b/328665503 independently from
+// adding the implementation.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGainmapShader);
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPaintWithGlobalToneMapFilter);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
