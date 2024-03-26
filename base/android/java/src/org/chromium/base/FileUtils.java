@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.io.ByteArrayOutputStream;
@@ -221,6 +222,7 @@ public class FileUtils {
     @NativeMethods
     public interface Natives {
         /** Returns the canonicalised absolute pathname for |filePath|. */
-        String getAbsoluteFilePath(String filePath);
+        @JniType("base::FilePath")
+        String getAbsoluteFilePath(@JniType("base::FilePath") String filePath);
     }
 }

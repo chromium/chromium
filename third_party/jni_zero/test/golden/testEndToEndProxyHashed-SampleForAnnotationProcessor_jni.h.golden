@@ -23,13 +23,13 @@ inline jclass org_jni_1zero_SampleForAnnotationProcessor_clazz(JNIEnv* env) {
 // Forward declare used conversion functions to avoid a compiler warning that
 // triggers if a conversion specialization exists within the including .cc file.
 namespace jni_zero {
-template<> jni_zero::ScopedJavaLocalRef<jstring> ToJniType<std::string>(JNIEnv*, const
+template<> jni_zero::ScopedJavaLocalRef<jstring> ToJniType<std::string, jstring>(JNIEnv*, const
     std::string&);
-template<> jni_zero::tests::CPPClass FromJniType<jni_zero::tests::CPPClass>(JNIEnv*, const
+template<> jni_zero::tests::CPPClass FromJniType<jni_zero::tests::CPPClass, jobject>(JNIEnv*, const
     JavaRef<jobject>&);
-template<> std::optional<std::string> FromJniType<std::optional<std::string>>(JNIEnv*, const
-    JavaRef<jstring>&);
-template<> std::string FromJniType<std::string>(JNIEnv*, const JavaRef<jstring>&);
+template<> std::optional<std::string> FromJniType<std::optional<std::string>, jstring>(JNIEnv*,
+    const JavaRef<jstring>&);
+template<> std::string FromJniType<std::string, jstring>(JNIEnv*, const JavaRef<jstring>&);
 }  // namespace jni_zero
 
 // Method stubs.
@@ -92,7 +92,8 @@ JNI_BOUNDARY_EXPORT jobjectArray
     jclass jcaller,
     jclass __arrayClazz) {
   auto ret = JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(env);
-  return jni_zero::ConvertArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>::ToJniType(env,
+  return
+      jni_zero::ConvertArray<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>::ToJniType<jobject>(env,
       ret, __arrayClazz).Release();
 }
 
@@ -113,7 +114,7 @@ JNI_BOUNDARY_EXPORT jstring
     JNIEnv* env,
     jclass jcaller) {
   auto ret = JNI_SampleForAnnotationProcessor_ReturnConvertedString(env);
-  return jni_zero::ToJniType<std::string>(env, ret).Release();
+  return jni_zero::ToJniType<std::string, jstring>(env, ret).Release();
 }
 
 static std::vector<std::string> JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(JNIEnv*
@@ -124,7 +125,7 @@ JNI_BOUNDARY_EXPORT jobjectArray
     JNIEnv* env,
     jclass jcaller) {
   auto ret = JNI_SampleForAnnotationProcessor_ReturnConvertedStrings(env);
-  return jni_zero::ConvertArray<std::vector<std::string>>::ToJniType(env, ret,
+  return jni_zero::ConvertArray<std::vector<std::string>>::ToJniType<jstring>(env, ret,
       jni_zero::g_string_class).Release();
 }
 
@@ -335,19 +336,19 @@ JNI_BOUNDARY_EXPORT void
     jobject convertedObj,
     jobjectArray objects,
     jobjectArray convertedObjects) {
-  std::string convertedString_converted = jni_zero::FromJniType<std::string>(env,
+  std::string convertedString_converted = jni_zero::FromJniType<std::string, jstring>(env,
       jni_zero::JavaParamRef<jstring>(env, convertedString));
   std::vector<std::string> convertedStrings_converted =
       jni_zero::ConvertArray<std::vector<std::string>>::FromJniType<jstring>(env,
       jni_zero::JavaParamRef<jobjectArray>(env, convertedStrings));
   std::optional<std::string> optionalString_converted =
-      jni_zero::FromJniType<std::optional<std::string>>(env, jni_zero::JavaParamRef<jstring>(env,
-      optionalString));
+      jni_zero::FromJniType<std::optional<std::string>, jstring>(env,
+      jni_zero::JavaParamRef<jstring>(env, optionalString));
   jni_zero::tests::CPPClass convertedObj_converted =
-      jni_zero::FromJniType<jni_zero::tests::CPPClass>(env, jni_zero::JavaParamRef<jobject>(env,
-      convertedObj));
+      jni_zero::FromJniType<jni_zero::tests::CPPClass, jobject>(env,
+      jni_zero::JavaParamRef<jobject>(env, convertedObj));
   std::vector<jni_zero::tests::CPPClass> convertedObjects_converted =
-      jni_zero::ConvertArray<std::vector<jni_zero::tests::CPPClass>>::FromJniType(env,
+      jni_zero::ConvertArray<std::vector<jni_zero::tests::CPPClass>>::FromJniType<jobject>(env,
       jni_zero::JavaParamRef<jobjectArray>(env, convertedObjects));
   return JNI_SampleForAnnotationProcessor_TestSpecialTypes(env, jni_zero::JavaParamRef<jclass>(env,
       clazz), jni_zero::JavaParamRef<jobjectArray>(env, classes),

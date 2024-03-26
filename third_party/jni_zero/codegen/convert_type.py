@@ -10,14 +10,16 @@ import java_types
 def conversion_declarations(java_to_cpp_types, cpp_to_java_types):
   declarations = set()
   for java_type in java_to_cpp_types:
-    c = java_type.converted_type()
-    j = f'const JavaRef<{java_type.to_cpp()}>&'
-    declarations.add(f'template<> {c} FromJniType<{c}>(JNIEnv*, {j});')
+    T = java_type.converted_type()
+    J = java_type.to_cpp()
+    declarations.add(f'template<> {T} '
+                     f'FromJniType<{T}, {J}>(JNIEnv*, const JavaRef<{J}>&);')
 
   for java_type in cpp_to_java_types:
-    c = java_type.converted_type()
-    j = f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
-    declarations.add(f'template<> {j} ToJniType<{c}>(JNIEnv*, const {c}&);')
+    T = java_type.converted_type()
+    J = java_type.to_cpp()
+    declarations.add(f'template<> jni_zero::ScopedJavaLocalRef<{J}> '
+                     f'ToJniType<{T}, {J}>(JNIEnv*, const {T}&);')
 
   if not declarations:
     return ''
@@ -39,20 +41,27 @@ def to_jni_expression(rvalue, java_type, clazz_param=None):
       rvalue = f'as_jint({rvalue})'
     return f'static_cast<{java_type.to_cpp()}>({rvalue})'
 
-  converted_type = java_type.converted_type()
+  T = java_type.converted_type()
+  if not java_type.is_array():
+    J = java_type.to_cpp()
+    return f'jni_zero::ToJniType<{T}, {J}>(env, {rvalue})'
 
-  if java_type.is_array():
-    if java_type.is_primitive_array():
-      maybe_java_clazz = ''
-    elif clazz_param:
-      maybe_java_clazz = ', ' + clazz_param.name
-    else:
-      maybe_java_clazz = ', ' + header_common.class_accessor_expression(
-          java_type.java_class)
-    return (f'jni_zero::ConvertArray<{converted_type}>::ToJniType(env, '
-            f'{rvalue}{maybe_java_clazz})')
+  element_type = java_type.to_array_element_type()
+  if element_type.is_array():
+    raise Exception(
+        '@JniType() for multi-dimensional arrays are not yet supported. '
+        'Found ' + T)
+  if element_type.is_primitive():
+    return (f'jni_zero::ConvertArray<{T}>::ToJniType(env, {rvalue})')
 
-  return f'jni_zero::ToJniType<{converted_type}>(env, {rvalue})'
+  if clazz_param:
+    clazz_expr = clazz_param.name
+  else:
+    clazz_expr = header_common.class_accessor_expression(
+        element_type.java_class)
+  J = element_type.to_cpp()
+  return (f'jni_zero::ConvertArray<{T}>::ToJniType<{J}>(env, {rvalue}, '
+          f'{clazz_expr})')
 
 
 def to_jni_assignment(dest_var_name, src_var_name, java_type):
@@ -67,23 +76,27 @@ def to_jni_assignment(dest_var_name, src_var_name, java_type):
 
 def from_jni_expression(rvalue, java_type):
   """Returns a conversion call expression from default jni type to specified @JniType."""
-  converted_type = java_type.converted_type()
+  T = java_type.converted_type()
+  J = java_type.to_cpp()
   if java_type.is_primitive():
-    return f'static_cast<{converted_type}>({rvalue})'
+    return f'static_cast<{T}>({rvalue})'
 
-  original_type = java_type.to_cpp()
   if not java_type.is_primitive():
-    rvalue = header_common.java_param_ref_expression(original_type, rvalue)
+    rvalue = header_common.java_param_ref_expression(J, rvalue)
 
-  if java_type.is_array():
-    if java_type.java_class == java_types.STRING_CLASS:
-      template_arg = '<jstring>'
-    else:
-      template_arg = ''
-    return (f'jni_zero::ConvertArray<{converted_type}>::FromJniType'
-            f'{template_arg}(env, {rvalue})')
+  if not java_type.is_array():
+    return f'jni_zero::FromJniType<{T}, {J}>(env, {rvalue})'
 
-  return f'jni_zero::FromJniType<{converted_type}>(env, {rvalue})'
+  element_type = java_type.to_array_element_type()
+  if element_type.is_array():
+    raise Exception(
+        '@JniType() for multi-dimensional arrays are not yet supported. '
+        'Found ' + T)
+  if element_type.is_primitive():
+    return f'jni_zero::ConvertArray<{T}>::FromJniType(env, {rvalue})'
+
+  J = java_type.to_array_element_type().to_cpp()
+  return f'jni_zero::ConvertArray<{T}>::FromJniType<{J}>(env, {rvalue})'
 
 
 def from_jni_assignment(dst_var_name, src_var_name, java_type):
