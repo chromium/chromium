@@ -64,4 +64,15 @@ TrackFragmentRandomAccess::TrackFragmentRandomAccess(
 TrackFragmentRandomAccess& TrackFragmentRandomAccess::operator=(
     const TrackFragmentRandomAccess&) = default;
 
+AudioSampleEntry::AudioSampleEntry() = default;
+AudioSampleEntry::~AudioSampleEntry() = default;
+AudioSampleEntry::AudioSampleEntry(const AudioSampleEntry&) = default;
+AudioSampleEntry& AudioSampleEntry::operator=(const AudioSampleEntry&) =
+    default;
+
+OpusSpecificBox::OpusSpecificBox() = default;
+OpusSpecificBox::~OpusSpecificBox() = default;
+OpusSpecificBox::OpusSpecificBox(const OpusSpecificBox&) = default;
+OpusSpecificBox& OpusSpecificBox::operator=(const OpusSpecificBox&) = default;
+
 }  // namespace media::mp4::writable_boxes

@@ -48,6 +48,7 @@ class MEDIA_EXPORT Mp4Muxer : public Muxer {
   const bool has_video_;
   const bool has_audio_;
 
+  AudioCodec audio_codec_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

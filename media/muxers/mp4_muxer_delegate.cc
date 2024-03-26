@@ -102,9 +102,11 @@ void CopyCreationTimeAndDuration(mp4::writable_boxes::Track& track,
 
 }  // namespace
 
-Mp4MuxerDelegate::Mp4MuxerDelegate(Muxer::WriteDataCB write_callback,
+Mp4MuxerDelegate::Mp4MuxerDelegate(AudioCodec audio_codec,
+                                   Muxer::WriteDataCB write_callback,
                                    size_t audio_sample_count_per_fragment)
     : write_callback_(std::move(write_callback)),
+      audio_codec_(audio_codec),
       audio_sample_count_per_fragment_(audio_sample_count_per_fragment) {}
 
 Mp4MuxerDelegate::~Mp4MuxerDelegate() = default;
@@ -149,12 +151,10 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
   // `stsd`, `avc1`, `avcC`.
   mp4::writable_boxes::SampleDescription description = {};
-
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   mp4::writable_boxes::VisualSampleEntry visual_entry = {};
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   visual_entry.coded_size = params.visible_rect_size;
-
   visual_entry.compressor_name = version_info::GetProductName();
 
   mp4::AVCDecoderConfigurationRecord avc_config;
@@ -165,8 +165,11 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
   visual_entry.avc_decoder_configuration.avc_config_record =
       std::move(avc_config);
   visual_entry.pixel_aspect_ratio = mp4::writable_boxes::PixelAspectRatioBox();
-  description.visual_sample_entry = std::move(visual_entry);
+  description.video_sample_entry = std::move(visual_entry);
+#else
+  NOTREACHED();
 #endif
+
   description.entry_count = 1;
 
   BuildTrack(*moov_, video_track_index_.value(), false,
@@ -214,7 +217,7 @@ void Mp4MuxerDelegate::AddAudioFrame(
   if (!audio_track_index_.has_value()) {
     DVLOG(1) << __func__ << ", " << params.AsHumanReadableString();
 
-    CHECK(codec_description.has_value());
+    CHECK(codec_description.has_value() || (audio_codec_ == AudioCodec::kOpus));
     CHECK(start_audio_time_.is_null());
 
     EnsureInitialized();
@@ -227,7 +230,7 @@ void Mp4MuxerDelegate::AddAudioFrame(
     context_->SetAudioTrack({audio_track_index_.value(),
                              static_cast<uint32_t>(audio_sample_rate_)});
 
-    BuildMovieAudioTrack(params, encoded_data, codec_description.value());
+    BuildMovieAudioTrack(params, encoded_data, std::move(codec_description));
   }
   last_audio_time_ = timestamp;
 
@@ -237,18 +240,39 @@ void Mp4MuxerDelegate::AddAudioFrame(
 void Mp4MuxerDelegate::BuildMovieAudioTrack(
     const AudioParameters& params,
     std::string encoded_data,
-    AudioEncoder::CodecDescription codec_description) {
+    std::optional<AudioEncoder::CodecDescription> codec_description) {
   DCHECK(audio_track_index_.has_value());
+  DCHECK(codec_description.has_value() || (audio_codec_ == AudioCodec::kOpus));
 
-  // `stsd`, `mp4a`, `esds`.
+  // `stsd`, `mp4a`, `esds`, 'opus', 'dops'.
   mp4::writable_boxes::SampleDescription description = {};
+  mp4::writable_boxes::AudioSampleEntry audio_sample_entry = {};
+  audio_sample_entry.channel_count = params.channels();
+  audio_sample_entry.sample_rate = audio_sample_rate_;
+
+  if (audio_codec_ == AudioCodec::kAAC) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  mp4::writable_boxes::AudioSampleEntry audio_entry = {};
-  audio_entry.sample_rate = audio_sample_rate_;
-  audio_entry.elementary_stream_descriptor.aac_codec_description =
-      std::move(codec_description);
-  description.audio_sample_entry = std::move(audio_entry);
+    mp4::writable_boxes::ElementaryStreamDescriptor
+        elementary_stream_descriptor = {};
+    elementary_stream_descriptor.aac_codec_description =
+        std::move(codec_description.value());
+    audio_sample_entry.elementary_stream_descriptor =
+        std::move(elementary_stream_descriptor);
+    audio_sample_entry.codec = AudioCodec::kAAC;
+#else
+    NOTREACHED();
 #endif
+  } else {
+    // TODO(crbug.com/40281463): Ensure the below OpusSpecificBox is correct.
+    CHECK_EQ(audio_codec_, AudioCodec::kOpus);
+    mp4::writable_boxes::OpusSpecificBox opus_specific_box = {};
+    opus_specific_box.channel_count = audio_sample_entry.channel_count;
+    opus_specific_box.sample_rate = audio_sample_entry.sample_rate;
+    audio_sample_entry.opus_specific_box = std::move(opus_specific_box);
+    audio_sample_entry.codec = AudioCodec::kOpus;
+  }
+
+  description.audio_sample_entry = std::move(audio_sample_entry);
   description.entry_count = 1;
 
   BuildTrack(*moov_, audio_track_index_.value(), true,

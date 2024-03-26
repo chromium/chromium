@@ -26,9 +26,11 @@ Mp4Muxer::Mp4Muxer(AudioCodec audio_codec,
           std::max(max_data_output_interval.value_or(base::TimeDelta()),
                    kMinimumForcedBlobDuration)),
       has_video_(has_video),
-      has_audio_(has_audio) {
+      has_audio_(has_audio),
+      audio_codec_(audio_codec) {
   CHECK(has_video_ || has_audio_);
-  CHECK(!has_audio || audio_codec == AudioCodec::kAAC);
+  CHECK(!has_audio || audio_codec_ == AudioCodec::kAAC ||
+        audio_codec_ == AudioCodec::kOpus);
 
   DVLOG(1) << __func__ << ", Max output interval in seconds: "
            << max_data_output_interval_.InSeconds();
@@ -46,8 +48,6 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
   if (audio_params) {
     CHECK(has_audio_);
     // The first audio sample should have code description.
-    DCHECK(seen_audio_ || frame.codec_description.has_value());
-
     mp4_muxer_delegate_->AddAudioFrame(*audio_params, std::move(frame.data),
                                        frame.codec_description,
                                        base::TimeTicks() + relative_timestamp);

@@ -55,6 +55,7 @@ class Mp4MuxerDelegateInterface {
 class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
   explicit Mp4MuxerDelegate(
+      AudioCodec audio_codec,
       Muxer::WriteDataCB write_callback,
       size_t audio_sample_count_per_fragment = kAudioFragmentCount);
   ~Mp4MuxerDelegate() override;
@@ -90,9 +91,10 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
                             std::string encoded_data,
                             VideoEncoder::CodecDescription codec_description);
   void AddDataToVideoFragment(std::string encoded_data, bool is_key_frame);
-  void BuildMovieAudioTrack(const AudioParameters& params,
-                            std::string encoded_data,
-                            AudioEncoder::CodecDescription codec_description);
+  void BuildMovieAudioTrack(
+      const AudioParameters& params,
+      std::string encoded_data,
+      std::optional<AudioEncoder::CodecDescription> codec_description);
   void AddDataToAudioFragment(std::string encoded_data);
 
   void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
@@ -145,6 +147,8 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   bool live_mode_ = false;
 
   uint32_t sequence_number_ = 1;
+
+  AudioCodec audio_codec_;
 
   // 1000 is a count that audio samples in the same fragment
   // when no video frame is added. In Windows, when video frames are present,

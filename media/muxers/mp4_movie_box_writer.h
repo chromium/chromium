@@ -47,13 +47,15 @@ DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleToChunkBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieDecodingTimeToSampleBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleSizeBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleChunkOffsetBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAudioSampleEntryBoxWriter,
+                             mp4::writable_boxes::AudioSampleEntry);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieOpusSpecificBoxWriter,
+                             mp4::writable_boxes::OpusSpecificBox);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieVisualSampleEntryBoxWriter,
                              mp4::writable_boxes::VisualSampleEntry);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAVCDecoderConfigurationBoxWriter,
                              mp4::writable_boxes::AVCDecoderConfiguration);
-DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAudioSampleEntryBoxWriter,
-                             mp4::writable_boxes::AudioSampleEntry);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieElementaryStreamDescriptorBoxWriter,
                              mp4::writable_boxes::ElementaryStreamDescriptor);
 #endif

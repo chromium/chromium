@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/fourccs.h"
@@ -90,14 +91,6 @@ struct MEDIA_EXPORT ElementaryStreamDescriptor : FullBox {
   std::vector<uint8_t> aac_codec_description;
 };
 
-// MP4A Audio Sample Entry (`mp4a`) box.
-struct MEDIA_EXPORT AudioSampleEntry : Box {
-  uint32_t sample_rate;  // AudioSampleEntry.
-
-  ElementaryStreamDescriptor elementary_stream_descriptor;
-  BitRate bit_rate;
-};
-
 // AVC DecoderConfiguration Record (`avcc`) box.
 struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // Refer AVCDecoderConfigurationRecord of box_definitions.h
@@ -105,6 +98,8 @@ struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // is hard to be correct.
   AVCDecoderConfigurationRecord avc_config_record;
 };
+
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // VisualSampleEtnry (`avc1`) box.
 struct MEDIA_EXPORT VisualSampleEntry : Box {
@@ -117,10 +112,41 @@ struct MEDIA_EXPORT VisualSampleEntry : Box {
 
   // It will have browser brand name.
   std::string compressor_name;  // char compressor_name[32];
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   AVCDecoderConfiguration avc_decoder_configuration;
+#endif
   PixelAspectRatioBox pixel_aspect_ratio;
 };
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+// Opus media data ('dOps') box.
+// Spec is https://opus-codec.org/docs/opus_in_isobmff.html.
+struct MEDIA_EXPORT OpusSpecificBox : Box {
+  OpusSpecificBox();
+  ~OpusSpecificBox();
+  OpusSpecificBox(const OpusSpecificBox&);
+  OpusSpecificBox& operator=(const OpusSpecificBox&);
+
+  uint8_t channel_count;
+  uint32_t sample_rate;
+};
+
+// Audio Sample Entry (`mp4a` or 'Opus') box.
+struct MEDIA_EXPORT AudioSampleEntry : Box {
+  AudioSampleEntry();
+  ~AudioSampleEntry();
+  AudioSampleEntry(const AudioSampleEntry&);
+  AudioSampleEntry& operator=(const AudioSampleEntry&);
+
+  uint32_t sample_rate;  // AudioSampleEntry.
+  uint8_t channel_count;
+
+  AudioCodec codec;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::optional<ElementaryStreamDescriptor> elementary_stream_descriptor;
+#endif
+  std::optional<OpusSpecificBox> opus_specific_box;
+  BitRate bit_rate;
+};
 
 // Media sample table (`stsd`) box.
 struct MEDIA_EXPORT SampleDescription : FullBox {
@@ -130,11 +156,8 @@ struct MEDIA_EXPORT SampleDescription : FullBox {
   SampleDescription& operator=(const SampleDescription&);
 
   uint32_t entry_count = 0;
-
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  std::optional<VisualSampleEntry> visual_sample_entry;
   std::optional<AudioSampleEntry> audio_sample_entry;
-#endif
+  std::optional<VisualSampleEntry> video_sample_entry;
 };
 
 // `stco`, `stsz`, `stts`, `stsc`' are mandatory boxes.

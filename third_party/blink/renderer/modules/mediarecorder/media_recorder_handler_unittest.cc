@@ -112,14 +112,16 @@ static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, true, false, "video/webm", "av01", false},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, true, false, "video/x-matroska", "avc1", false},
-    {true, true, false, "video/mp4", "avc1", false},
+    {true, true, false, "video/mp4", "avc1", false, true},
     {true, true, true, "video/mp4", "avc1,mp4a.40.2", false, true},
     {true, false, true, "audio/mp4", "mp4a.40.2", false, true},
+    {true, true, true, "video/mp4", "avc1,opus", false, true},
 #endif
     {true, false, true, "audio/webm", "opus", true},
     {true, false, true, "audio/webm", "", true},  // Should default to opus.
     {true, false, true, "audio/webm", "pcm", true},
     {true, true, true, "video/webm", "vp9,opus", true},
+    {true, false, true, "audio/mp4", "opus", false, true},
 };
 
 MediaStream* CreateMediaStream(V8TestingScope& scope) {
@@ -211,6 +213,14 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     media_recorder_handler_->OnEncodedAudio(params, std::move(encoded_data),
                                             std::move(codec_description),
                                             timestamp);
+  }
+
+  void OnEncodedAudioNoCodeDescriptionForTesting(
+      const media::AudioParameters& params,
+      std::string encoded_data,
+      base::TimeTicks timestamp) {
+    media_recorder_handler_->OnEncodedAudio(params, std::move(encoded_data),
+                                            absl::nullopt, timestamp);
   }
 
   void OnAudioBusForTesting(const media::AudioBus& audio_bus) {
@@ -347,7 +357,7 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
   bool IsCodecSupported() {
 #if !BUILDFLAG(ENABLE_OPENH264)
     // Test requires OpenH264 encoder. It can't use the VEA encoder.
-    if (std::string(GetParam().codecs) == "avc1") {
+    if (String(GetParam().codecs).Find("avc1") != kNotFound) {
       return false;
     }
 #endif
@@ -656,38 +666,68 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
       kTestAudioSampleRate * kTestAudioBufferDurationMs / 1000);
   SetAudioFormatForTesting(params);
 
-  const size_t kEncodedSizeThreshold = 24;
-  {
+  if (GetParam().use_mp4_muxer) {
+    const size_t kEncodedSizeThreshold = 48u;
+
     base::RunLoop run_loop;
-    // writeData() is pinged a number of times as the WebM header is written;
-    // the last time it is called it has the encoded data.
+    // WriteData is called as many as fragments (`moof` box) in addition
+    // to 2 times of `ftyp`, `moov` boxes (no 'mfra'box as it is audio only).
     EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
         .Times(AtLeast(1));
     EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
-        .Times(1)
+        .Times(2)
         .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-    for (int i = 0; i < kRatioOpusToTestAudioBuffers; ++i)
-      OnAudioBusForTesting(*audio_bus1);
-    run_loop.Run();
-  }
-  Mock::VerifyAndClearExpectations(recorder);
+    media::AudioParameters audio_params(
+        media::AudioParameters::AUDIO_PCM_LINEAR,
+        media::ChannelLayoutConfig::Stereo(), kTestAudioSampleRate,
+        kTestAudioSampleRate * kTestAudioBufferDurationMs / 1000);
 
-  {
-    base::RunLoop run_loop;
-    // The second time around writeData() is called a number of times to write
-    // the WebM frame header, and then is pinged with the encoded data.
-    EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
-        .Times(AtLeast(1));
-    EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
-        .Times(1)
-        .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+    // Null codec_description is used for Opus.
+    OnEncodedAudioNoCodeDescriptionForTesting(audio_params, "audio",
+                                              base::TimeTicks::Now());
 
-    for (int i = 0; i < kRatioOpusToTestAudioBuffers; ++i)
-      OnAudioBusForTesting(*audio_bus2);
+    media_recorder_handler_->Stop();
+
     run_loop.Run();
+
+    Mock::VerifyAndClearExpectations(recorder);
+  } else {
+    const size_t kEncodedSizeThreshold = 24;
+    {
+      base::RunLoop run_loop;
+      // writeData() is pinged a number of times as the WebM header is written;
+      // the last time it is called it has the encoded data.
+      EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
+          .Times(AtLeast(1));
+      EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
+          .Times(1)
+          .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+      for (int i = 0; i < kRatioOpusToTestAudioBuffers; ++i) {
+        OnAudioBusForTesting(*audio_bus1);
+      }
+      run_loop.Run();
+    }
+    Mock::VerifyAndClearExpectations(recorder);
+
+    {
+      base::RunLoop run_loop;
+      // The second time around writeData() is called a number of times to write
+      // the WebM frame header, and then is pinged with the encoded data.
+      EXPECT_CALL(*recorder, WriteData(_, Lt(kEncodedSizeThreshold), _, _, _))
+          .Times(AtLeast(1));
+      EXPECT_CALL(*recorder, WriteData(_, Gt(kEncodedSizeThreshold), _, _, _))
+          .Times(1)
+          .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+
+      for (int i = 0; i < kRatioOpusToTestAudioBuffers; ++i) {
+        OnAudioBusForTesting(*audio_bus2);
+      }
+      run_loop.Run();
+    }
+    Mock::VerifyAndClearExpectations(recorder);
   }
-  Mock::VerifyAndClearExpectations(recorder);
 
   media_recorder_handler_->Stop();
 }
@@ -906,6 +946,8 @@ static const MediaRecorderTestParams kMediaRecorderTestParamsForMp4[] = {
     {false, true, false, "video/mp4", "avc1", false},
     {false, false, true, "audio/mp4", "mp4a.40.2", false},
     {false, true, true, "video/mp4", "avc1,mp4a.40.2", false},
+    {false, true, true, "audio/mp4", "opus", false},
+    {false, true, true, "video/mp4", "avc1,opus", false},
 };
 
 TEST_P(MediaRecorderHandlerTestForMp4,
@@ -958,10 +1000,10 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
   const String good_mp4_audio_mime_types[] = {"audio/mp4"};
   const String bad_mp4_audio_mime_types[] = {"AUDIO/mp4"};
 
-  const String good_mp4_audio_codecs[] = {"mp4a.40.2"};
+  const String good_mp4_audio_codecs[] = {"mp4a.40.2, opus"};
 
-  const String bad_mp4_audio_codecs[] = {"mp4a", "mp4a.40", "mP4a.40.2",
-                                         "aac",  "opus",    "pcm"};
+  const String bad_mp4_audio_codecs[] = {"mp4a", "mp4a.40", "mP4a.40.2", "aac",
+                                         "pcm"};
 
   if (GetParam()) {
     // mp4, enabled feature of kMediaRecorderEnableMp4Muxer.
@@ -1011,6 +1053,12 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
+
+    for (const auto& type : good_mp4_video_mime_types) {
+      for (const auto& codec : bad_mp4_video_codecs) {
+        EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
+      }
+    }
 #endif
 
     // audio mime types.
@@ -1057,6 +1105,12 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #else
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
+        EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
+      }
+    }
+
+    for (const auto& type : good_mp4_audio_mime_types) {
+      for (const auto& codec : bad_mp4_audio_codecs) {
         EXPECT_FALSE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1310,7 +1364,7 @@ TEST_P(MediaRecorderHandlerWinAacCodecTest, AudioBitsPerSeconds) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  media_recorder_handler_->Start(0, "", GetParam(), 0);
+  media_recorder_handler_->Start(0, mime_type, GetParam(), 0);
 
   EXPECT_EQ(media::MFAudioEncoder::ClampAccCodecBitrate(GetParam()),
             recorder->audioBitsPerSecond());

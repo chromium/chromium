@@ -559,7 +559,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
 
   visual_sample_entry.avc_decoder_configuration = std::move(avc);
 
-  sample_description.visual_sample_entry = std::move(visual_sample_entry);
+  sample_description.video_sample_entry = std::move(visual_sample_entry);
 
   Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
   FlushAndWait(&box_writer);
@@ -641,8 +641,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
   EXPECT_EQ(0u, avc_config_reader.sps_ext_list.size());
 }
 
-TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
-  // Tests `avc1` and its children box writer.
+TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
+  // Tests `aac` and its children box writer.
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
@@ -650,7 +650,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
 
   mp4::writable_boxes::AudioSampleEntry audio_sample_entry;
   constexpr uint32_t kSampleRate = 48000u;
+  audio_sample_entry.channel_count = 2u;
   audio_sample_entry.sample_rate = kSampleRate;
+  audio_sample_entry.codec = AudioCodec::kAAC;
 
   mp4::writable_boxes::ElementaryStreamDescriptor esds;
   constexpr uint32_t kBitRate = 341000u;
@@ -724,6 +726,54 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
   EXPECT_FALSE(metadata_frame);
 }
 #endif
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4OpusAudioSampleEntry) {
+  // Tests `opus` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::SampleDescription sample_description;
+
+  mp4::writable_boxes::AudioSampleEntry audio_sample_entry;
+  constexpr uint32_t kSampleRate = 48000u;
+  audio_sample_entry.channel_count = 2u;
+  audio_sample_entry.sample_rate = kSampleRate;
+  audio_sample_entry.codec = AudioCodec::kOpus;
+
+  mp4::writable_boxes::OpusSpecificBox opus_specific_box;
+  opus_specific_box.channel_count = 2u;
+  opus_specific_box.sample_rate = 48000u;
+  audio_sample_entry.opus_specific_box = std::move(opus_specific_box);
+
+  sample_description.audio_sample_entry = std::move(audio_sample_entry);
+
+  Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::SampleDescription reader_sample_description;
+  reader_sample_description.type = mp4::kAudio;
+
+  EXPECT_TRUE(box_reader->ReadChild(&reader_sample_description));
+  EXPECT_EQ(1u, reader_sample_description.audio_entries.size());
+
+  const auto& audio_sample = reader_sample_description.audio_entries[0];
+  EXPECT_EQ(1, audio_sample.data_reference_index);
+  EXPECT_EQ(2, audio_sample.channelcount);
+  EXPECT_EQ(16, audio_sample.samplesize);
+  EXPECT_EQ(kSampleRate, audio_sample.samplerate);
+
+  const mp4::OpusSpecificBox& dops_box = audio_sample.dops;
+  EXPECT_EQ(2u, dops_box.channel_count);
+  EXPECT_EQ(48000u, dops_box.sample_rate);
+}
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   // Tests `mvex/trex` box writer.
