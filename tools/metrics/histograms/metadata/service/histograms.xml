@@ -455,6 +455,9 @@ chromium-metrics-reviews@google.com.
     RaceNetworkRequest result. RaceNetworkRequest runs a race between the
     network request which bypasses ServiceWorker, and the other request which
     goes through the fetch handler. This metric is recorded for {Resource}.
+
+    ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransfer.Read was
+    broken from 2024-03-05 and 2024-03-25.
   </summary>
   <token key="Resource">
     <variant name="MainResource" summary="main resource"/>

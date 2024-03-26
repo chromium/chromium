@@ -422,8 +422,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient::Read",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", request_.url, "read_data_result", result);
-  RecordMojoResultForDataTransfer(result, "Read");
+                         "url", request_.url, "read_data_result", read_result);
+  RecordMojoResultForDataTransfer(read_result, "Read");
   switch (read_result) {
     case MOJO_RESULT_OK:
       write_buffer_manager_for_race_network_request_.ArmOrNotify();
@@ -436,8 +436,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     case MOJO_RESULT_SHOULD_WAIT:
       return;
     default:
-      SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", result);
-      NOTREACHED() << "ReadData result:" << result;
+      SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", read_result);
+      NOTREACHED() << "ReadData result:" << read_result;
       return;
   }
 }
