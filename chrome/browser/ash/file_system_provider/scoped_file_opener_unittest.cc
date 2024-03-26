@@ -65,7 +65,7 @@ class TestingProvidedFileSystem : public FakeProvidedFileSystem {
 typedef std::vector<std::pair<int, base::File::Error>> OpenLog;
 
 void LogOpen(OpenLog* log, int file_handle, base::File::Error result) {
-  log->push_back(std::make_pair(file_handle, result));
+  log->emplace_back(file_handle, result);
 }
 
 }  // namespace

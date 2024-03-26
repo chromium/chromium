@@ -232,7 +232,7 @@ void LogNotification(NotificationLog* notification_log,
 void LogOpenFile(OpenFileLog* open_file_log,
                  int file_handle,
                  base::File::Error result) {
-  open_file_log->push_back(std::make_pair(file_handle, result));
+  open_file_log->emplace_back(file_handle, result);
 }
 
 }  // namespace

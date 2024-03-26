@@ -37,7 +37,7 @@ void LogStatus(StatusLog* log, base::File::Error result) {
 
 // Writes a |result| to the |log| vector for opening a file.
 void LogOpen(OpenLog* log, int handle, base::File::Error result) {
-  log->push_back(std::make_pair(handle, result));
+  log->emplace_back(handle, result);
 }
 
 }  // namespace

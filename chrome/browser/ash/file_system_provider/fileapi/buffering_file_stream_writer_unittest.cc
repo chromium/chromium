@@ -63,7 +63,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
             int buf_len,
             net::CompletionOnceCallback callback) override {
     DCHECK(write_log_);
-    write_log_->push_back(std::string(buf->data(), buf_len));
+    write_log_->emplace_back(buf->data(), buf_len);
     pending_bytes_ += buf_len;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
