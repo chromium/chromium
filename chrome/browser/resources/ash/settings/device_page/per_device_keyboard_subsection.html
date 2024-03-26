@@ -31,6 +31,14 @@
           on-click="openPersonalizationHub" external>
       </cr-link-row>
     </template>
+    <div class="settings-box">
+      <div class="start" id="keyboardBrightnessPercentLabel">
+        $i18n{keyboardBrightnessLabel}
+      </div>
+      <settings-slider id="keyboardBrightnessSlider"
+        pref="{{keyboardBrightnessPercentPref}}">
+      </settings-slider>
+    </div>
     <settings-toggle-button
         id="internalTopRowAreFunctionKeysButton"
         pref="{{topRowAreFunctionKeysPref}}"

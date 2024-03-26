@@ -6076,6 +6076,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_COLORS" translateable="false" desc="In Device Settings, the direct link from Keyboard Settings to Personalization Hub's RGB keyboard control">
     Keyboard Colors
   </message>
+  <!-- TODO(b/329861823) Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL" translateable="false" desc="The label for setting the keyboard brightness.">
+    Keyboard brightness
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
     Press and hold to automatically repeat the key
   </message>

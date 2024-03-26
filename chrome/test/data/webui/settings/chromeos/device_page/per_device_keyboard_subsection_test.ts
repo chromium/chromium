@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -365,27 +365,35 @@ suite('<settings-per-device-keyboard-subsection>', () => {
                        .classList.contains('remap-keyboard-keys-row-internal'));
       });
 
-  test('Verify rgbKeyboardControlLink visibility', async () => {
+  test('Verify keyboard backlight control elements visibility', async () => {
     // Default settings: both flag and RGB keyboard support are true.
     await changeIsExternalState(false);
     const rgbKeyboardControlLink = () =>
         subsection.shadowRoot!.querySelector<CrLinkRowElement>(
             '#rgbKeyboardControlLink');
+    const keyboardBrightnessSlider = () =>
+        subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#keyboardBrightnessSlider');
 
-    // Initially, the link should be visible.
+    // Initially, both elements should be visible.
     assertTrue(isVisible(rgbKeyboardControlLink()));
+    assertTrue(isVisible(keyboardBrightnessSlider()));
 
     // Disable keyboard backlight control flag and reinitialize.
     setKeyboardBacklightControlEnabled(false);
     await initializePerDeviceKeyboardSubsection(fakeKeyboards);
-    // Link should be hidden after flag is disabled.
+
+    // Both elements should be hidden after flag is disabled.
     assertFalse(isVisible(rgbKeyboardControlLink()));
+    assertFalse(isVisible(keyboardBrightnessSlider()));
 
     // Enable flag but disable RGB keyboard support, then reinitialize.
     setKeyboardBacklightControlEnabled(true);
     provider.setFakeIsRgbKeyboardSupported(false);
     await initializePerDeviceKeyboardSubsection(fakeKeyboards);
-    // Link should remain hidden since RGB keyboard support is false.
+
+    // Both elements should remain hidden since RGB keyboard support is false.
     assertFalse(isVisible(rgbKeyboardControlLink()));
+    assertFalse(isVisible(keyboardBrightnessSlider()));
   });
 });

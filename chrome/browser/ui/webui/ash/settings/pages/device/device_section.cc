@@ -764,6 +764,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"fKeyShiftOption", IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION},
       {"fKeyCtrlShiftOption", IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION},
       {"fKeyAltOption", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION},
+      {"keyboardBrightnessLabel", IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL},
       {"keyboardColors", IDS_SETTINGS_KEYBOARD_COLORS},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
