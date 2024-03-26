@@ -55,4 +55,5 @@ found in the LICENSE file.
     <color name="tab_group_color_picker_yellow">@color/tab_group_color_picker_yellow_dark</color>
     <color name="tab_group_color_picker_yellow_incognito">@color/tab_group_color_picker_yellow_light</color>
     <color name="tab_group_color_picker_selection_bg_incognito">@color/dialog_bg_color_dark_baseline</color>
+    <color name="tab_group_tab_strip_title_text_color_incognito">@color/baseline_neutral_20</color>
 </resources>

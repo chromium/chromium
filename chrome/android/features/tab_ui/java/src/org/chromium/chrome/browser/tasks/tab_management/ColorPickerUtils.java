@@ -15,7 +15,9 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,7 @@ public class ColorPickerUtils {
      * be used for retrieving items from the tab group color picker.
      *
      * @param colorId The color id corresponding to the color item in the color picker.
+     * @param isIncognito Whether the current tab model is in incognito mode.
      */
     public static @ColorRes int getTabGroupColorPickerItemColorResource(
             @TabGroupColorId int colorId, boolean isIncognito) {
@@ -141,6 +144,31 @@ public class ColorPickerUtils {
             default:
                 assert false : "Invalid tab group color id " + colorId;
                 return Resources.ID_NULL;
+        }
+    }
+
+    /**
+     * Get the text color corresponding to the respective color item.
+     *
+     * @param context The current context.
+     * @param colorId The color id corresponding to the color item in the color picker.
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     */
+    public static @ColorInt int getTabGroupColorPickerItemTextColor(
+            Context context, @TabGroupColorId int colorId, boolean isIncognito) {
+        if (isIncognito) {
+            return ContextCompat.getColor(
+                    context, R.color.tab_group_tab_strip_title_text_color_incognito);
+        } else if (ColorUtils.inNightMode(context)) {
+            return SemanticColorUtils.getColorOnSurfaceInverse(context);
+        } else {
+            switch (colorId) {
+                case TabGroupColorId.YELLOW:
+                case TabGroupColorId.ORANGE:
+                    return SemanticColorUtils.getDefaultTextColor(context);
+                default:
+                    return SemanticColorUtils.getDefaultTextColorOnAccent1(context);
+            }
         }
     }
 }

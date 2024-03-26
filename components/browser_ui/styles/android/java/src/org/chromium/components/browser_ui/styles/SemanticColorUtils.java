@@ -172,6 +172,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorPrimaryContainer, context);
     }
 
+    /** Returns the semantic color values that corresponds to colorOnSurfaceInverse. */
+    public static @ColorInt int getColorOnSurfaceInverse(Context context) {
+        return resolve(R.attr.colorOnSurfaceInverse, context);
+    }
+
     /** Returns the semantic color values that corresponds to chip_bg_selected_color. */
     public static @ColorInt int getChipBgSelectedColor(Context context) {
         return resolve(R.attr.colorSecondaryContainer, context);

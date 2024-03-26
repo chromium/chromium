@@ -154,7 +154,7 @@ public class LayerTitleCache {
         }
 
         title.set(
-                titleBitmapFactory.getTitleBitmap(mContext, titleString),
+                titleBitmapFactory.getTabTitleBitmap(titleString),
                 titleBitmapFactory.getFaviconBitmap(originalFavicon),
                 fetchFaviconFromHistory);
 
@@ -204,7 +204,8 @@ public class LayerTitleCache {
             title.register();
         }
 
-        Bitmap titleBitmap = titleBitmapFactory.getTitleBitmap(mContext, titleString);
+        Bitmap titleBitmap =
+                titleBitmapFactory.getGroupTitleBitmap(mContext, incognito, rootId, titleString);
         for (GroupTitleObserver observer : mGroupTitleObservers) {
             observer.onGroupTitleUpdated(incognito, rootId, titleString, titleBitmap.getWidth());
         }

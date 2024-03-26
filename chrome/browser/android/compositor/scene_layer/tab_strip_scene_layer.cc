@@ -524,9 +524,10 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   // Set title.
   DecorationTitle* title_layer = layer_title_cache->GetGroupTitleLayer(id);
   if (title_layer) {
+    float title_y = (height - title_layer->size().height()) / 2.f;
     title_layer->setOpacity(1.0f);
     title_layer->setBounds(gfx::Size(width - (title_text_padding * 2), height));
-    title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, 0));
+    title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, title_y));
     if (title_indicator_layer->children().size() == 0) {
       title_indicator_layer->AddChild(title_layer->layer());
     } else {
