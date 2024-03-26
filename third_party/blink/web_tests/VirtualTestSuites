@@ -56,7 +56,8 @@
   {
     "prefix": "page-margin-boxes",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/css/css-page"],
+    "bases": ["external/wpt/css/css-page",
+              "wpt_internal/printing"],
     "args": ["--enable-blink-features=PageMarginBoxes"],
     "owners": ["mstensho@chromium.org"],
     "expires": "Jul 1, 2024"
