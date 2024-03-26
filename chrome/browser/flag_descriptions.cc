@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
 
@@ -349,7 +348,6 @@ const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
     "will speak the audio descriptions aloud as the video plays.";
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[] =
     "Require parent permissions for extensions";
 const char
@@ -357,7 +355,6 @@ const char
         "Apply Family Link parental control settings for extension "
         "installation. "
         "The enable-family-link-supervision flag must also be enabled.";
-#endif  // ENABLE_SUPERVISED_USERS
 
 const char kUseAndroidStagingSmdsName[] = "Use Android staging SM-DS";
 const char kUseAndroidStagingSmdsDescription[] =
@@ -7708,13 +7705,11 @@ const char kFollowingFeedSidepanelDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kEnableProtoApiForClassifyUrlName[] =
     "Enable Proto API for Classify URL";
 const char kEnableProtoApiForClassifyUrlDescription[] =
     "Calls to Classify URL RPC will use Protocol Buffer format in resposnes, "
     "instead of JSON.";
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =

@@ -83,6 +83,7 @@
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -166,7 +167,9 @@
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -275,13 +278,6 @@
 #include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
 #include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -3156,11 +3152,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SAVELINKAS:
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       CheckSupervisedUserURLFilterAndSaveLinkAs();
-#else
-      ExecSaveLinkAs();
-#endif
       break;
 
     case IDC_CONTENT_CONTEXT_SAVEAVAS:
@@ -3683,7 +3675,6 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
     return false;
   }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
   CHECK(profile);
   if (supervised_user::IsSubjectToParentalControls(*profile->GetPrefs())) {
@@ -3701,7 +3692,6 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
       return false;
     }
   }
-#endif
 
   return params_.link_url.is_valid() &&
          ProfileIOData::IsHandledProtocol(params_.link_url.scheme());
@@ -4083,7 +4073,6 @@ void RenderViewContextMenu::ExecInspectBackgroundPage() {
       platform_app, GetProfile(), DevToolsOpenedByAction::kContextMenuInspect);
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void RenderViewContextMenu::CheckSupervisedUserURLFilterAndSaveLinkAs() {
   Profile* const profile = Profile::FromBrowserContext(browser_context_);
   CHECK(profile);
@@ -4110,7 +4099,6 @@ void RenderViewContextMenu::OnSupervisedUserURLFilterChecked(
     ExecSaveLinkAs();
   }
 }
-#endif
 
 void RenderViewContextMenu::ExecSaveLinkAs() {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();

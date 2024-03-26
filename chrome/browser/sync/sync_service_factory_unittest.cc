@@ -20,7 +20,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -96,10 +95,7 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(syncer::kSyncSegmentationDataType)) {
       datatypes.Put(syncer::SEGMENTATION);
     }
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     datatypes.Put(syncer::APPS);

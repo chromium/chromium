@@ -55,7 +55,7 @@
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
@@ -78,10 +78,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/pref_names.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -315,15 +311,12 @@ void PrepareFactory(
     policy::BrowserPolicyConnector* policy_connector) {
   factory->SetManagedPolicies(policy_service, policy_connector);
   factory->SetRecommendedPolicies(policy_service, policy_connector);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (supervised_user_settings) {
     scoped_refptr<PrefStore> supervised_user_prefs =
         base::MakeRefCounted<SupervisedUserPrefStore>(supervised_user_settings);
     DCHECK(async || supervised_user_prefs->IsInitializationComplete());
     factory->set_supervised_user_prefs(supervised_user_prefs);
   }
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   factory->set_standalone_browser_prefs(std::move(standalone_browser_prefs));

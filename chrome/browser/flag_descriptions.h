@@ -16,7 +16,6 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -239,11 +238,9 @@ extern const char kEnableDrDcDescription[];
 extern const char kUseClientGmbInterfaceName[];
 extern const char kUseClientGmbInterfaceDescription[];
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
 extern const char
     kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];
-#endif  // ENABLE_SUPERVISED_USERS
 
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
@@ -4483,10 +4480,8 @@ extern const char kFollowingFeedSidepanelDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kEnableProtoApiForClassifyUrlName[];
 extern const char kEnableProtoApiForClassifyUrlDescription[];
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableNetworkServiceSandboxName[];

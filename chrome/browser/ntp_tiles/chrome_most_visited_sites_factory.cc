@@ -20,6 +20,7 @@
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/features.h"
@@ -27,6 +28,9 @@
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -34,16 +38,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
-#include "components/supervised_user/core/browser/supervised_user_utils.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 namespace {
 
 class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
@@ -104,7 +98,6 @@ void SupervisorBridge::OnURLFilterChanged() {
 }
 
 }  // namespace
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 // static
 std::unique_ptr<ntp_tiles::MostVisitedSites>
@@ -150,11 +143,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess()),
           std::move(data_decoder)),
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       std::make_unique<SupervisorBridge>(profile),
-#else
-      nullptr,
-#endif
       is_default_chrome_app_migrated);
   return most_visited_sites;
 }

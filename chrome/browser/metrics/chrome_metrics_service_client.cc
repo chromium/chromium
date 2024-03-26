@@ -49,6 +49,7 @@
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_metrics_provider.h"
+#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
@@ -111,7 +112,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
@@ -214,10 +214,6 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/bluetooth_metrics_provider.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/metrics/family_link_user_metrics_provider.h"
-#endif
 
 namespace {
 
@@ -887,10 +883,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<FamilyLinkUserMetricsProvider>());
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics_service_->RegisterMetricsProvider(

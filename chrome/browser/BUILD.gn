@@ -45,6 +45,8 @@ import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
 
+assert(enable_supervised_users)
+
 # //build/config/android/rules.gni imports //tools/grit/grit_rule.gni, which
 # produces a conflict for the "grit" template so we have to only include one.
 if (is_android) {
@@ -801,6 +803,8 @@ static_library("browser") {
     "metrics/chrome_metrics_service_client.h",
     "metrics/chrome_metrics_services_manager_client.cc",
     "metrics/chrome_metrics_services_manager_client.h",
+    "metrics/family_link_user_metrics_provider.cc",
+    "metrics/family_link_user_metrics_provider.h",
     "metrics/https_engagement_metrics_provider.cc",
     "metrics/https_engagement_metrics_provider.h",
     "metrics/incognito_observer.cc",
@@ -1713,6 +1717,30 @@ static_library("browser") {
     "subresource_filter/subresource_filter_history_observer.h",
     "subresource_filter/subresource_filter_profile_context_factory.cc",
     "subresource_filter/subresource_filter_profile_context_factory.h",
+    "supervised_user/child_accounts/child_account_service_factory.cc",
+    "supervised_user/child_accounts/child_account_service_factory.h",
+    "supervised_user/child_accounts/list_family_members_service_factory.cc",
+    "supervised_user/child_accounts/list_family_members_service_factory.h",
+    "supervised_user/chrome_supervised_user_service_platform_delegate_base.cc",
+    "supervised_user/chrome_supervised_user_service_platform_delegate_base.h",
+    "supervised_user/chrome_supervised_user_web_content_handler_base.cc",
+    "supervised_user/chrome_supervised_user_web_content_handler_base.h",
+    "supervised_user/supervised_user_browser_utils.cc",
+    "supervised_user/supervised_user_browser_utils.h",
+    "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
+    "supervised_user/supervised_user_google_auth_navigation_throttle.h",
+    "supervised_user/supervised_user_interstitial_tab_closer.cc",
+    "supervised_user/supervised_user_interstitial_tab_closer.h",
+    "supervised_user/supervised_user_metrics_service_factory.cc",
+    "supervised_user/supervised_user_metrics_service_factory.h",
+    "supervised_user/supervised_user_navigation_observer.cc",
+    "supervised_user/supervised_user_navigation_observer.h",
+    "supervised_user/supervised_user_navigation_throttle.cc",
+    "supervised_user/supervised_user_navigation_throttle.h",
+    "supervised_user/supervised_user_service_factory.cc",
+    "supervised_user/supervised_user_service_factory.h",
+    "supervised_user/supervised_user_settings_service_factory.cc",
+    "supervised_user/supervised_user_settings_service_factory.h",
     "sync/account_bookmark_sync_service_factory.cc",
     "sync/account_bookmark_sync_service_factory.h",
     "sync/chrome_sync_client.cc",
@@ -1927,6 +1955,8 @@ static_library("browser") {
       "search_engine_choice/search_engine_choice_dialog_service_factory.h",
       "search_engine_choice/search_engine_choice_profile_tagger.cc",
       "search_engine_choice/search_engine_choice_profile_tagger.h",
+      "supervised_user/desktop/supervised_user_service_platform_delegate.cc",
+      "supervised_user/desktop/supervised_user_service_platform_delegate.h",
       "user_education/browser_feature_promo_storage_service.cc",
       "user_education/browser_feature_promo_storage_service.h",
       "user_education/browser_tutorial_service.cc",
@@ -2127,6 +2157,7 @@ static_library("browser") {
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_share_target",
     "//chrome/common:channel_info",
+    "//chrome/common:supervised_user_commands_mojom",
     "//chrome/common:version_header",
     "//chrome/common/cart:mojo_bindings",
     "//chrome/common/companion:mojo_bindings",
@@ -2441,6 +2472,9 @@ static_library("browser") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:fetcher",
+    "//components/supervised_user/core/browser:list_family_members_service",
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
@@ -3185,6 +3219,12 @@ static_library("browser") {
       "installable/installed_webapp_geolocation_context.h",
       "installable/installed_webapp_provider.cc",
       "installable/installed_webapp_provider.h",
+      "supervised_user/android/supervised_user_service_platform_delegate.cc",
+      "supervised_user/android/supervised_user_service_platform_delegate.h",
+      "supervised_user/android/website_parent_approval.cc",
+      "supervised_user/android/website_parent_approval.h",
+      "supervised_user/child_accounts/child_account_service_android.cc",
+      "supervised_user/child_accounts/child_account_service_android.h",
 
       # TODO(b/40071344): Fold into "keyboard_accessory/android".
       "keyboard_accessory/android/address_accessory_controller_impl.cc",
@@ -3485,6 +3525,8 @@ static_library("browser") {
       "//chrome/browser/safety_check/android",
       "//chrome/browser/search_resumption:jni_headers",
       "//chrome/browser/signin/services/android:jni_headers",
+      "//chrome/browser/supervised_user:supervised_user_service_platform_delegate_jni_headers",
+      "//chrome/browser/supervised_user:website_parent_approval_jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab:jni_headers",
       "//chrome/browser/touch_to_fill/autofill/android:public",
@@ -3573,6 +3615,7 @@ static_library("browser") {
       "//components/signin/internal/identity_manager",  # cf android/signin/DEPS
       "//components/signin/public/android:jni_headers",
       "//components/subresource_filter/android",
+      "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser:fetcher",
       "//components/thin_webview/internal",
       "//components/tpcd/metadata",
@@ -3618,19 +3661,6 @@ static_library("browser") {
     }
 
     deps -= [ "//components/storage_monitor" ]
-
-    if (enable_supervised_users) {
-      sources += [
-        "supervised_user/android/website_parent_approval.cc",
-        "supervised_user/android/website_parent_approval.h",
-        "supervised_user/child_accounts/child_account_service_android.cc",
-        "supervised_user/child_accounts/child_account_service_android.h",
-      ]
-      deps += [
-        "//chrome/browser/supervised_user:website_parent_approval_jni_headers",
-        "//components/supervised_user/core/browser",
-      ]
-    }
 
     if (dfmify_dev_ui) {
       # TODO(huangs): Extracting this to a separate target.
@@ -5826,6 +5856,12 @@ static_library("browser") {
       "renderer_context_menu/read_write_card_observer.h",
       "speech/tts_crosapi_util.cc",
       "speech/tts_crosapi_util.h",
+      "supervised_user/chromeos/chromeos_utils.cc",
+      "supervised_user/chromeos/chromeos_utils.h",
+      "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",
+      "supervised_user/chromeos/supervised_user_favicon_request_handler.h",
+      "supervised_user/chromeos/supervised_user_web_content_handler_impl.cc",
+      "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       "usb/usb_pinned_notification.cc",
       "usb/usb_pinned_notification.h",
       "webshare/chromeos/sharesheet_client.cc",
@@ -6505,6 +6541,8 @@ static_library("browser") {
       "policy/cloud/profile_token_policy_web_signin_service_factory.h",
       "policy/local_sync_policy_handler.cc",
       "policy/local_sync_policy_handler.h",
+      "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.cc",
+      "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:attestation_ca_proto",
@@ -7832,75 +7870,7 @@ static_library("browser") {
     }
   }
 
-  if (enable_supervised_users) {
-    sources += [
-      "metrics/family_link_user_metrics_provider.cc",
-      "metrics/family_link_user_metrics_provider.h",
-      "supervised_user/child_accounts/child_account_service_factory.cc",
-      "supervised_user/child_accounts/child_account_service_factory.h",
-      "supervised_user/child_accounts/list_family_members_service_factory.cc",
-      "supervised_user/child_accounts/list_family_members_service_factory.h",
-      "supervised_user/chrome_supervised_user_service_platform_delegate_base.cc",
-      "supervised_user/chrome_supervised_user_service_platform_delegate_base.h",
-      "supervised_user/chrome_supervised_user_web_content_handler_base.cc",
-      "supervised_user/chrome_supervised_user_web_content_handler_base.h",
-      "supervised_user/supervised_user_browser_utils.cc",
-      "supervised_user/supervised_user_browser_utils.h",
-      "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
-      "supervised_user/supervised_user_google_auth_navigation_throttle.h",
-      "supervised_user/supervised_user_interstitial_tab_closer.cc",
-      "supervised_user/supervised_user_interstitial_tab_closer.h",
-      "supervised_user/supervised_user_metrics_service_factory.cc",
-      "supervised_user/supervised_user_metrics_service_factory.h",
-      "supervised_user/supervised_user_navigation_observer.cc",
-      "supervised_user/supervised_user_navigation_observer.h",
-      "supervised_user/supervised_user_navigation_throttle.cc",
-      "supervised_user/supervised_user_navigation_throttle.h",
-      "supervised_user/supervised_user_service_factory.cc",
-      "supervised_user/supervised_user_service_factory.h",
-      "supervised_user/supervised_user_settings_service_factory.cc",
-      "supervised_user/supervised_user_settings_service_factory.h",
-    ]
-    if (is_android) {
-      sources += [
-        "supervised_user/android/supervised_user_service_platform_delegate.cc",
-        "supervised_user/android/supervised_user_service_platform_delegate.h",
-      ]
-      deps += [ "//chrome/browser/supervised_user:supervised_user_service_platform_delegate_jni_headers" ]
-    } else {
-      sources += [
-        "supervised_user/desktop/supervised_user_service_platform_delegate.cc",
-        "supervised_user/desktop/supervised_user_service_platform_delegate.h",
-      ]
-    }
-    if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/ash/crosapi" ]
-    }
-    if (is_chromeos) {
-      sources += [
-        "supervised_user/chromeos/chromeos_utils.cc",
-        "supervised_user/chromeos/chromeos_utils.h",
-        "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",
-        "supervised_user/chromeos/supervised_user_favicon_request_handler.h",
-        "supervised_user/chromeos/supervised_user_web_content_handler_impl.cc",
-        "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
-      ]
-    }
-    if (is_win || is_linux || is_mac) {
-      sources += [
-        "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.cc",
-        "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h",
-      ]
-    }
-    deps += [
-      "//chrome/common:supervised_user_commands_mojom",
-      "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser:fetcher",
-      "//components/supervised_user/core/browser:list_family_members_service",
-      "//components/supervised_user/core/common",
-    ]
-  }
-  if (enable_supervised_users && enable_extensions) {
+  if (enable_extensions) {
     sources += [
       "supervised_user/extension_icon_loader.cc",
       "supervised_user/extension_icon_loader.h",

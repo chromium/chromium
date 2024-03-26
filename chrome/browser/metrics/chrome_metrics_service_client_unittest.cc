@@ -203,7 +203,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 21;
+  expected_providers += 22;
 
   int sample_rate;
   if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(
@@ -284,10 +284,6 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // BluetoothMetricsProvider
   expected_providers += 1;
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  expected_providers++;  // FamilyLinkUserMetricsProvider
 #endif
 
   std::unique_ptr<TestChromeMetricsServiceClient>

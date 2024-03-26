@@ -160,6 +160,8 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
+#include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/translate/translate_service.h"
@@ -295,7 +297,6 @@
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -671,16 +672,9 @@
 #include "components/pdf/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
-#endif
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "chrome/browser/media/cast_remoting_connector.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -5006,12 +5000,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         page_load_metrics::MetricsNavigationThrottle::Create(handle));
   }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  MaybeAddThrottle(
-      SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
-      &throttles);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   // TODO(davidben): This is insufficient to integrate with prerender properly.
   // https://crbug.com/370595
@@ -5100,11 +5088,13 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   MaybeAddThrottle(
       SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(handle),
       &throttles);
-#endif
+
+  MaybeAddThrottle(
+      SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(handle),
+      &throttles);
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::

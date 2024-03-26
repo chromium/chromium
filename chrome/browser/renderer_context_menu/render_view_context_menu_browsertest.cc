@@ -48,6 +48,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_user_data.h"
@@ -67,6 +68,8 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
+#include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/compose/buildflags.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -81,8 +84,11 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -144,16 +150,6 @@
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/mock_chrome_compose_client.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
-#include "chrome/test/supervised_user/supervision_mixin.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -678,7 +674,6 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class ContextMenuForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTestBase {
  protected:
@@ -811,8 +806,6 @@ IN_PROC_BROWSER_TEST_F(
   std::u16string suggested_filename = menu_observer.params().suggested_filename;
   ASSERT_EQ(kSuggestedFilename, base::UTF16ToUTF8(suggested_filename).c_str());
 }
-
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,

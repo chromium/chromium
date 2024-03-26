@@ -13,13 +13,16 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/profiles/off_the_record_profile_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/webui/webui_allowlist_provider.h"
@@ -28,13 +31,6 @@
 #include "base/trace_event/trace_event.h"
 #include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_content_settings_provider.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -56,9 +52,7 @@ HostContentSettingsMapFactory::HostContentSettingsMapFactory()
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
-#endif
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(TemplateURLServiceFactory::GetInstance());
 #endif
@@ -131,7 +125,6 @@ scoped_refptr<RefcountedKeyedService>
           // interaction with profile->IsGuestSession()?
           false));
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user::SupervisedUserSettingsService* supervised_service =
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   // This may be null in testing.
@@ -143,7 +136,6 @@ scoped_refptr<RefcountedKeyedService>
     settings_map->RegisterProvider(HostContentSettingsMap::SUPERVISED_PROVIDER,
                                    std::move(supervised_provider));
   }
-#endif // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_ANDROID)
   if (!profile->IsOffTheRecord()) {

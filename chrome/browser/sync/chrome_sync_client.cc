@@ -27,6 +27,7 @@
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/security_events/security_event_recorder.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sharing/sharing_message_model_type_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
@@ -68,7 +70,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
@@ -98,13 +100,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_model_type_controller.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -244,12 +239,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service = nullptr;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user_settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
-          profile_->GetProfileKey());
-#endif
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForKey(
+              profile_->GetProfileKey());
 
   component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
       this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
@@ -727,7 +719,6 @@ ChromeSyncClient::GetSyncApiComponentFactory() {
 }
 
 bool ChromeSyncClient::IsCustomPassphraseAllowed() {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(
@@ -735,7 +726,6 @@ bool ChromeSyncClient::IsCustomPassphraseAllowed() {
   if (supervised_user_settings_service) {
     return supervised_user_settings_service->IsCustomPassphraseAllowed();
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return true;
 }
 

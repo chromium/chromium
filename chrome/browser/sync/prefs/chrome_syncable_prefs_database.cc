@@ -17,7 +17,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -36,8 +35,6 @@
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/pref_names.h"
-#endif
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "components/supervised_user/core/common/pref_names.h"
 #endif
 
@@ -496,12 +493,12 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     {prefs::kSupervisedUserApprovedExtensions,
      {syncable_prefs_ids::kSupervisedUserApprovedExtensions,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_MAC)
     {prefs::kShowFullscreenToolbar,
      {syncable_prefs_ids::kShowFullscreenToolbar, syncer::PREFERENCES,

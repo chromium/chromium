@@ -262,7 +262,6 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveIsolatedWebAppData) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterChildUser) {
   profile_->SetIsSupervisedProfile(true);
 
@@ -302,7 +301,6 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, CookieDeletionFilterIncognitoUser) {
   EXPECT_FALSE(
       delegate()->IsCookieDeletionDisabled(GURL("https://youtube.com")));
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveFederatedIdentityData) {
   const url::Origin kRequester =

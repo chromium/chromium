@@ -171,7 +171,6 @@
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_prefs.h"
@@ -236,11 +235,6 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/screen_ai/pref_names.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/child_account_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif
 
 #include "components/feed/buildflags.h"
@@ -1822,6 +1816,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   SharingSyncPreference::RegisterProfilePrefs(registry);
   site_engagement::SiteEngagementService::RegisterProfilePrefs(registry);
   storage::RegisterProfilePrefs(registry);
+  supervised_user::RegisterProfilePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
@@ -1873,10 +1868,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(ENABLE_RLZ)
   ChromeRLZTrackerDelegate::RegisterProfilePrefs(registry);
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user::RegisterProfilePrefs(registry);
 #endif
 
 #if BUILDFLAG(ENABLE_FEED_V2)
