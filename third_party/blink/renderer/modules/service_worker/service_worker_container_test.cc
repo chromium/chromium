@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -42,9 +43,7 @@ namespace {
 
 // Promise-related test support.
 
-struct StubScriptFunction {
-  DISALLOW_NEW();
-
+struct StubScriptFunction : public GarbageCollected<StubScriptFunction> {
  public:
   StubScriptFunction() : call_count_(0) {}
 
@@ -52,7 +51,7 @@ struct StubScriptFunction {
   // but it should not be called after the StubScriptFunction dies.
   v8::Local<v8::Function> GetFunction(ScriptState* script_state) {
     return MakeGarbageCollected<ScriptFunction>(
-               script_state, MakeGarbageCollected<ScriptFunctionImpl>(*this))
+               script_state, MakeGarbageCollected<ScriptFunctionImpl>(this))
         ->V8Function();
   }
 
@@ -66,7 +65,7 @@ struct StubScriptFunction {
 
   class ScriptFunctionImpl : public ScriptFunction::Callable {
    public:
-    explicit ScriptFunctionImpl(StubScriptFunction& owner) : owner_(owner) {}
+    explicit ScriptFunctionImpl(StubScriptFunction* owner) : owner_(owner) {}
 
     ScriptValue Call(ScriptState*, ScriptValue arg) override {
       owner_->arg_ = arg;
@@ -74,7 +73,12 @@ struct StubScriptFunction {
       return ScriptValue();
     }
 
-    const raw_ref<StubScriptFunction> owner_;
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(owner_);
+      ScriptFunction::Callable::Trace(visitor);
+    }
+
+    Member<StubScriptFunction> owner_;
   };
 };
 
@@ -89,15 +93,17 @@ class ScriptValueTest {
 void ExpectRejected(ScriptState* script_state,
                     ScriptPromiseUntyped& promise,
                     const ScriptValueTest& value_test) {
-  StubScriptFunction resolved, rejected;
-  promise.Then(resolved.GetFunction(script_state),
-               rejected.GetFunction(script_state));
+  StubScriptFunction* resolved = MakeGarbageCollected<StubScriptFunction>();
+  StubScriptFunction* rejected = MakeGarbageCollected<StubScriptFunction>();
+  promise.Then(resolved->GetFunction(script_state),
+               rejected->GetFunction(script_state));
   script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
       script_state->GetIsolate());
-  EXPECT_EQ(0ul, resolved.CallCount());
-  EXPECT_EQ(1ul, rejected.CallCount());
-  if (rejected.CallCount())
-    value_test(script_state, rejected.Arg());
+  EXPECT_EQ(0ul, resolved->CallCount());
+  EXPECT_EQ(1ul, rejected->CallCount());
+  if (rejected->CallCount()) {
+    value_test(script_state, rejected->Arg());
+  }
 }
 
 // DOM-related test support.
