@@ -38,7 +38,6 @@ RecordReplayToolbarButton::RecordReplayToolbarButton(Browser* browser)
                                         base::Unretained(this))),
       browser_(browser),
       web_contents_(nullptr),
-      post_recording_web_contents_(nullptr),
       web_contents_observer_(nullptr),
       recordreplay_contents_(nullptr) {
   SetVectorIcons(kRecordReplayIcon, kRecordReplayIcon);
@@ -137,8 +136,6 @@ void RecordReplayToolbarButton::StopRecording() {
     return;
   }
 
-  EnsurePostRecordingWebContents();
-
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   int index = tab_strip_model->GetIndexOfWebContents(web_contents_);
   if (index == TabStripModel::kNoTab) {
@@ -155,7 +152,7 @@ void RecordReplayToolbarButton::StopRecording() {
 
 void RecordReplayToolbarButton::RecordingTabDestroyed() {
   if (web_contents_) {
-    EnsurePostRecordingWebContents();
+    CreatePostRecordingWebContents();
     web_contents_ = nullptr;
     web_contents_observer_.release();
   }
@@ -170,19 +167,18 @@ void RecordReplayToolbarButton::RefreshIconState() {
   }
 }
 
-void RecordReplayToolbarButton::EnsurePostRecordingWebContents() {
-  if (!post_recording_web_contents_) {
-    content::WebContents::CreateParams new_params(web_contents_->GetBrowserContext());
-    std::unique_ptr<content::WebContents> post_recording_web_contents(
-      content::WebContents::Create(new_params));
-    post_recording_web_contents_ = post_recording_web_contents.get();
-    TabStripModel* tab_strip_model = browser_->tab_strip_model();
-    tab_strip_model->AppendWebContents(std::move(post_recording_web_contents), true);
-  }
+void RecordReplayToolbarButton::CreatePostRecordingWebContents() {
+  content::WebContents::CreateParams new_params(web_contents_->GetBrowserContext());
+  std::unique_ptr<content::WebContents> post_recording_web_contents(
+    content::WebContents::Create(new_params));
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
 
   // TODO: Make this URL point to `app.replay.io` URL for the recording.
+  // TODO: this should also maybe be done via WebContents::CreateParams if it can?
   GURL url = GURL("https://app.replay.io");
-  post_recording_web_contents_->GetController().LoadURL(url, content::Referrer(),
+  post_recording_web_contents->GetController().LoadURL(url, content::Referrer(),
                                               ui::PAGE_TRANSITION_TYPED,
                                               std::string());
+
+  tab_strip_model->AppendWebContents(std::move(post_recording_web_contents), true);
 }

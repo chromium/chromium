@@ -29,11 +29,10 @@ class RecordReplayToolbarButton: public ToolbarButton {
   void RecordingTabDestroyed();
 
   void RefreshIconState();
-  void EnsurePostRecordingWebContents();
+  void CreatePostRecordingWebContents();
 
   const raw_ptr<Browser> browser_;
   content::WebContents* web_contents_;
-  content::WebContents* post_recording_web_contents_;
   std::unique_ptr<RecordReplayToolbarButtonWebContentsObserver>
     web_contents_observer_;
   // our hidden webcontent running business/auth logic.
