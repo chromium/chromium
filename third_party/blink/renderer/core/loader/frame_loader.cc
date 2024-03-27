@@ -849,10 +849,10 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // Only warn if the resource URL's origin is different than its requestor
   // (we don't want to warn for <img src="faß.de/image.img"> on faß.de).
   // TODO(crbug.com/1396475): Remove once Non-Transitional mode is shipped.
-  if (resource_request.RequestorOrigin() &&
+  if (url.HasIDNA2008DeviationCharacter() &&
+      resource_request.RequestorOrigin() &&
       !resource_request.RequestorOrigin()->IsSameOriginWith(
-          SecurityOrigin::Create(url).get()) &&
-      url.HasIDNA2008DeviationCharacter()) {
+          SecurityOrigin::Create(url).get())) {
     String message = GetConsoleWarningForIDNADeviationCharacters(url);
     if (!message.empty()) {
       request.GetOriginWindow()->AddConsoleMessage(

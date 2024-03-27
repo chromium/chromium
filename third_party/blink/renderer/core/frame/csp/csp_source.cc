@@ -46,13 +46,13 @@ SchemeMatchingResult SchemeMatches(
 }
 
 bool HostMatches(const network::mojom::blink::CSPSource& source,
-                 const String& host) {
+                 const StringView& host) {
   if (source.is_host_wildcard) {
     if (source.host.empty()) {
       // host-part = "*"
       return true;
     }
-    if (host.EndsWithIgnoringCase(String("." + source.host))) {
+    if (host.ToString().EndsWithIgnoringCase(String("." + source.host))) {
       // host-part = "*." 1*host-char *( "." 1*host-char )
       return true;
     }
@@ -161,7 +161,7 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
     return false;
   }
 
-  return HostMatches(source, url.Host()) &&
+  return HostMatches(source, url.HostView()) &&
          ports_match != PortMatchingResult::kNotMatching && paths_match;
 }
 
@@ -181,7 +181,7 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
     return true;
   }
 
-  bool hosts_match = HostMatches(source, url.Host());
+  bool hosts_match = HostMatches(source, url.HostView());
   PortMatchingResult ports_match = PortMatches(
       source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());

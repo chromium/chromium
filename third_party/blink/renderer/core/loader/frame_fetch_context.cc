@@ -447,9 +447,9 @@ void FrameFetchContext::AddClientHintsIfNecessary(
           ? document_->domWindow()->GetSecurityContext().GetPermissionsPolicy()
           : nullptr;
 
-  url::Origin resource_origin =
-      SecurityOrigin::Create(request.Url())->ToUrlOrigin();
-  bool is_1p_origin = IsFirstPartyOrigin(request.Url());
+  const scoped_refptr<SecurityOrigin> resource_origin =
+      SecurityOrigin::Create(request.Url());
+  bool is_1p_origin = IsFirstPartyOrigin(resource_origin.get());
 
   std::optional<UserAgentMetadata> ua = GetUserAgentMetadata();
 
@@ -484,8 +484,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   // by browser (from accept-ch header on this response or previously persisted)
   // with renderer-parsed http-equiv merged in.
   BaseFetchContext::AddClientHintsIfNecessary(
-      GetClientHintsPreferences(), resource_origin, is_1p_origin, ua, policy,
-      image_info, prefers_color_scheme, prefers_reduced_motion,
+      GetClientHintsPreferences(), resource_origin->ToUrlOrigin(), is_1p_origin,
+      ua, policy, image_info, prefers_color_scheme, prefers_reduced_motion,
       prefers_reduced_transparency, request);
 }
 
@@ -569,7 +569,8 @@ bool FrameFetchContext::AllowScript() const {
   return script_enabled;
 }
 
-bool FrameFetchContext::IsFirstPartyOrigin(const KURL& url) const {
+bool FrameFetchContext::IsFirstPartyOrigin(
+    const SecurityOrigin* resource_origin) const {
   if (GetResourceFetcherProperties().IsDetached())
     return false;
 
@@ -578,7 +579,7 @@ bool FrameFetchContext::IsFirstPartyOrigin(const KURL& url) const {
       .Top()
       .GetSecurityContext()
       ->GetSecurityOrigin()
-      ->IsSameOriginWith(SecurityOrigin::Create(url).get());
+      ->IsSameOriginWith(resource_origin);
 }
 
 bool FrameFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {

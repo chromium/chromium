@@ -197,9 +197,9 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                             const ClientHintsPreferences&) const;
   void SetFirstPartyCookie(ResourceRequest&);
 
-  // Returns true if the origin of |url| is same as the origin of the top level
+  // Returns true if `resource_origin` is same as the origin of the top level
   // frame's main resource.
-  bool IsFirstPartyOrigin(const KURL& url) const;
+  bool IsFirstPartyOrigin(const SecurityOrigin* resource_origin) const;
 
   CoreProbeSink* Probe() const;
 

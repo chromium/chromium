@@ -198,7 +198,7 @@ bool KURL::IsAboutURL(const char* allowed_path) const {
     return false;
   }
 
-  String path = GetPath();
+  StringView path = ComponentStringView(parsed_.path);
   StringUTF8Adaptor path_utf8(path);
   return GURL::IsAboutPath(path_utf8.AsStringPiece(), allowed_path);
 }
