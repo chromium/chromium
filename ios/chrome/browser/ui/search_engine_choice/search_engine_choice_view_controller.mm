@@ -86,8 +86,10 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   UIStackView* _searchEngineStackView;
   // Contains the selected search engine button.
   SnippetSearchEngineButton* _selectedSearchEngineButton;
-  // Wether `-[SearchEngineChoiceViewController viewWillAppear]` was called.
-  BOOL _viewWillAppearCalled;
+  // Whether `-[SearchEngineChoiceViewController viewIsAppearing:]` was called.
+  BOOL _viewIsAppearingCalled;
+  // Whether the search engine buttons have been loaded in the stack view.
+  BOOL _searchEnginesLoaded;
 }
 
 @synthesize searchEngines = _searchEngines;
@@ -298,10 +300,13 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   [self loadSearchEngineButtons];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  _viewWillAppearCalled = YES;
-  // Update all views sizes before checking if the scroll view is at the bottom.
+- (void)viewIsAppearing:(BOOL)animated {
+  [super viewIsAppearing:animated];
+  _viewIsAppearingCalled = YES;
+  // Using -[UIViewController viewWillAppear:] is too early. There is an issue
+  // on iPhone, the safe area is not visible yet.
+  // Using -[UIViewController viewDidAppear:] is too late. There is an issue on
+  // iPad, the More button appears and then disappears.
   [self.view layoutIfNeeded];
   [self updateDidReachBottomFlag];
 }
@@ -326,6 +331,12 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   // Reset the title font to make sure that it is
   // properly scaled.
   _titleLabel.font = GetFRETitleFont(self);
+  // Update the primary button once the layout changes take effect to have the
+  // right measurements to evaluate the scroll position.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf updateDidReachBottomFlag];
+  });
 }
 
 #pragma mark - Private
@@ -387,22 +398,29 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   }
   // Hide the horizontal seperator for the last button.
   button.horizontalSeparatorHidden = YES;
-  [self.view layoutSubviews];
+  _searchEnginesLoaded = YES;
+  [self.view layoutIfNeeded];
   [self updateDidReachBottomFlag];
 }
 
+// Tests if the scroll view reached the end of the last search engine button
+// for the first time, and hides the more button accordingly.
 - (void)updateDidReachBottomFlag {
-  if (!_viewWillAppearCalled || _didReachBottom ||
-      !self.presentingViewController) {
+  if (!_viewIsAppearingCalled || _didReachBottom ||
+      !self.presentingViewController || !_searchEnginesLoaded) {
     // Don't update the value if the view is not ready to appear.
     // Don't update the value if the bottom was reached at least once.
     // Don't update the value if the view is not presented yet.
+    // Don't update the value if the search engines have not been loaded yet.
     return;
   }
   CGFloat scrollPosition =
       _scrollView.contentOffset.y + _scrollView.frame.size.height;
-  CGFloat scrollLimit =
-      _scrollView.contentSize.height + _scrollView.contentInset.bottom;
+  // The limit to remove the more button is when `_searchEngineStackView` is
+  // fully visible.
+  CGFloat scrollLimit = _searchEngineStackView.frame.origin.y +
+                        _searchEngineStackView.frame.size.height +
+                        _scrollView.contentInset.bottom;
   if (scrollPosition >= scrollLimit) {
     _didReachBottom = YES;
     [self updatePrimaryActionButton];
@@ -417,6 +435,24 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
               interaction:(UITextItemInteraction)interaction {
   [self.actionDelegate showLearnMore];
   return NO;
+}
+
+#pragma mark - UIContentContainer
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+  __weak __typeof(self) weakSelf = self;
+  [coordinator
+      animateAlongsideTransition:nil
+                      completion:^(
+                          id<UIViewControllerTransitionCoordinatorContext>
+                              unused) {
+                        // Recompute if the user reached the bottom, once the
+                        // animation is done.
+                        [weakSelf updateDidReachBottomFlag];
+                      }];
 }
 
 @end
