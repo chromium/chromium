@@ -108,11 +108,11 @@ class BootTimesRecorder : public content::RenderWidgetHostObserver {
                                      content::RenderWidgetHostObserver>
       render_widget_host_observations_{this};
 
-  bool login_started_;
+  bool login_started_ = false;
 
-  bool login_done_;
+  bool login_done_ = false;
 
-  bool restart_requested_;
+  bool restart_requested_ = false;
 };
 
 }  // namespace ash
