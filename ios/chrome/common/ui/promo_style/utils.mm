@@ -7,10 +7,6 @@
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-namespace {
-
-// Determines which font text style to use depending on the device size, the
-// size class and if dynamic type is enabled.
 UIFontTextStyle GetTitleLabelFontTextStyle(UIViewController* view_controller) {
   UIViewController* presenter = view_controller.presentingViewController
                                     ? view_controller.presentingViewController
@@ -27,10 +23,7 @@ UIFontTextStyle GetTitleLabelFontTextStyle(UIViewController* view_controller) {
   return UIFontTextStyleTitle2;
 }
 
-}  // namespace
-
-UIFont* GetFRETitleFont(UIViewController* view_controller) {
-  UIFontTextStyle text_style = GetTitleLabelFontTextStyle(view_controller);
+UIFont* GetFRETitleFont(UIFontTextStyle text_style) {
   UIFontDescriptor* descriptor =
       [UIFontDescriptor preferredFontDescriptorWithTextStyle:text_style];
   UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize
