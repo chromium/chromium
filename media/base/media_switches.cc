@@ -1084,7 +1084,7 @@ BASE_FEATURE(kHardwareSecureDecryptionFallback,
 // (CDM) after failures or crashes to fallback to software secure CDMs should
 // use per site logic.
 const base::FeatureParam<bool> kHardwareSecureDecryptionFallbackPerSite{
-    &kHardwareSecureDecryptionFallback, "per_site", false};
+    &kHardwareSecureDecryptionFallback, "per_site", true};
 
 // The minimum and maximum number of days to disable hardware secure Content
 // Decryption Module (CDM) as part of the fallback logic.
