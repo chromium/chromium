@@ -310,14 +310,9 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_WindowStates) {
   AppLaunchInfoSaveWaiter::Wait();
 }
 
-// TODO(crbug.com/330098654): Test is flaky.
+// TODO(crbug.com/330516096): Test is flaky.
 // Tests that the browser windows are restored to their old window states.
-#if (BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER))
-#define MAYBE_WindowStates DISABLED_WindowStates
-#else
-#define MAYBE_WindowStates WindowStates
-#endif
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, MAYBE_WindowStates) {
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, DISABLED_WindowStates) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we
