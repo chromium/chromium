@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/utility/image_writer/image_writer.h"
+
 #include <windows.h>
+
 #include <setupapi.h>
 #include <stddef.h>
 #include <winioctl.h>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
-#include "chrome/utility/image_writer/image_writer.h"
 
 namespace image_writer {
 
@@ -34,17 +37,17 @@ bool ImageWriter::IsValidDevice() {
   query.QueryType = PropertyStandardQuery;
   DWORD bytes_returned;
 
-  std::unique_ptr<char[]> output_buf(new char[kStorageQueryBufferSize]);
+  auto output_buf = base::HeapArray<char>::WithSize(kStorageQueryBufferSize);
   BOOL status = DeviceIoControl(
       device_handle.Get(),             // Device handle.
       IOCTL_STORAGE_QUERY_PROPERTY,    // Flag to request device properties.
       &query,                          // Query parameters.
       sizeof(STORAGE_PROPERTY_QUERY),  // query parameters size.
-      output_buf.get(),                // output buffer.
-      kStorageQueryBufferSize,         // Size of buffer.
+      output_buf.data(),               // output buffer.
+      output_buf.size(),               // Size of buffer.
       &bytes_returned,                 // Number of bytes returned.
                                        // Must not be null.
-      NULL);                           // Optional unused overlapped perameter.
+      nullptr);                        // Optional unused overlapped perameter.
 
   if (!status) {
     PLOG(ERROR) << "Storage property query failed";
@@ -52,7 +55,7 @@ bool ImageWriter::IsValidDevice() {
   }
 
   STORAGE_DEVICE_DESCRIPTOR* device_descriptor =
-      reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(output_buf.get());
+      reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(output_buf.data());
 
   return device_descriptor->RemovableMedia == TRUE ||
          device_descriptor->BusType == BusTypeUsb;

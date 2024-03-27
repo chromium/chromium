@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/containers/heap_array.h"
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
 #include "base/task/single_thread_task_runner.h"
@@ -22,8 +23,8 @@ namespace image_writer {
 
 // Since block devices like large sequential access and IPC is expensive we're
 // doing work in 1MB chunks.
-const int kBurningBlockSize = 1 << 20;  // 1 MB
-const int kMemoryAlignment = 4096;
+const size_t kBurningBlockSize = 1 << 20;  // 1 MB
+const size_t kMemoryAlignment = 4096;
 
 ImageWriter::ImageWriter(ImageWriterHandler* handler,
                          const base::FilePath& image_path,
@@ -36,10 +37,8 @@ ImageWriter::ImageWriter(ImageWriterHandler* handler,
 
 ImageWriter::~ImageWriter() {
 #if BUILDFLAG(IS_WIN)
-  for (std::vector<HANDLE>::const_iterator it = volume_handles_.begin();
-       it != volume_handles_.end();
-       ++it) {
-    CloseHandle(*it);
+  for (HANDLE handle : volume_handles_) {
+    CloseHandle(handle);
   }
 #endif
 }
@@ -131,7 +130,7 @@ void ImageWriter::WriteChunk() {
     // aligned writes to devices.
     int bytes_to_write = bytes_read + (kMemoryAlignment - 1) -
                          (bytes_read - 1) % kMemoryAlignment;
-    DCHECK_EQ(0, bytes_to_write % kMemoryAlignment);
+    DCHECK_EQ(0u, bytes_to_write % kMemoryAlignment);
     int bytes_written =
         device_file_.Write(bytes_processed_, buffer.get(), bytes_to_write);
 
@@ -160,45 +159,49 @@ void ImageWriter::VerifyChunk() {
     return;
   }
 
-  std::unique_ptr<char[]> image_buffer(new char[kBurningBlockSize]);
+  auto image_buffer = base::HeapArray<uint8_t>::WithSize(kBurningBlockSize);
   // DASD buffers require memory alignment on some systems.
-  std::unique_ptr<char, base::AlignedFreeDeleter> device_buffer(
-      static_cast<char*>(
+  std::unique_ptr<uint8_t, base::AlignedFreeDeleter> device_buffer_ptr(
+      static_cast<uint8_t*>(
           base::AlignedAlloc(kBurningBlockSize, kMemoryAlignment)));
+  base::span<uint8_t> device_buffer(device_buffer_ptr.get(), kBurningBlockSize);
 
-  int bytes_read = image_file_.Read(bytes_processed_, image_buffer.get(),
-                                    kBurningBlockSize);
+  std::optional<size_t> image_bytes_read =
+      image_file_.Read(bytes_processed_, image_buffer);
 
-  if (bytes_read > 0) {
-    if (device_file_.Read(bytes_processed_,
-                          device_buffer.get(),
-                          kBurningBlockSize) < bytes_read) {
-      LOG(ERROR) << "Failed to read " << bytes_read << " bytes of "
-                 << "device at offset " << bytes_processed_;
-      Error(error::kReadDevice);
-      return;
-    }
-
-    if (memcmp(image_buffer.get(), device_buffer.get(), bytes_read) != 0) {
-      LOG(ERROR) << "Write verification failed when comparing " << bytes_read
-                 << " bytes at " << bytes_processed_;
-      Error(error::kVerificationFailed);
-      return;
-    }
-
-    bytes_processed_ += bytes_read;
-    PostProgress(bytes_processed_);
-
-    PostTask(base::BindOnce(&ImageWriter::VerifyChunk, AsWeakPtr()));
-  } else if (bytes_read == 0) {
-    // End of file.
-    handler_->SendSucceeded();
-    running_ = false;
-  } else {
+  if (!image_bytes_read) {
     // Unable to read entire file.
     LOG(ERROR) << "Failed to read " << kBurningBlockSize << " bytes of image "
                << "at offset " << bytes_processed_;
     Error(error::kReadImage);
+  } else if (image_bytes_read.value() == 0) {
+    // End of file.
+    handler_->SendSucceeded();
+    running_ = false;
+  } else {
+    std::optional<size_t> device_bytes_read =
+        device_file_.Read(bytes_processed_, device_buffer);
+    if (!device_bytes_read ||
+        device_bytes_read.value() < image_bytes_read.value()) {
+      LOG(ERROR) << "Failed to read " << image_bytes_read.value()
+                 << " bytes of device at offset " << bytes_processed_;
+      Error(error::kReadDevice);
+      return;
+    }
+
+    if (image_buffer.first(image_bytes_read.value()) !=
+        device_buffer.first(device_bytes_read.value())) {
+      LOG(ERROR) << "Write verification failed when comparing "
+                 << image_bytes_read.value() << " bytes at "
+                 << bytes_processed_;
+      Error(error::kVerificationFailed);
+      return;
+    }
+
+    bytes_processed_ += image_bytes_read.value();
+    PostProgress(bytes_processed_);
+
+    PostTask(base::BindOnce(&ImageWriter::VerifyChunk, AsWeakPtr()));
   }
 }
 

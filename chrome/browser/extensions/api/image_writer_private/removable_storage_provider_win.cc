@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,17 +111,17 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
   query.PropertyId = StorageDeviceProperty;
   query.QueryType = PropertyStandardQuery;
 
-  std::unique_ptr<char[]> output_buf(new char[1024]);
+  auto output_buf = base::HeapArray<char>::WithSize(1024);
   status = DeviceIoControl(
-      device_handle.Get(),            // Device handle.
-      IOCTL_STORAGE_QUERY_PROPERTY,   // Flag to request device properties.
-      &query,                         // Query parameters.
-      sizeof(STORAGE_PROPERTY_QUERY), // query parameters size.
-      output_buf.get(),               // output buffer.
-      1024,                           // Size of buffer.
-      &bytes_returned,                // Number of bytes returned.
-                                      // Must not be null.
-      NULL);                          // Optional unused overlapped perameter.
+      device_handle.Get(),             // Device handle.
+      IOCTL_STORAGE_QUERY_PROPERTY,    // Flag to request device properties.
+      &query,                          // Query parameters.
+      sizeof(STORAGE_PROPERTY_QUERY),  // query parameters size.
+      output_buf.data(),               // output buffer.
+      output_buf.size(),               // Size of buffer.
+      &bytes_returned,                 // Number of bytes returned.
+                                       // Must not be null.
+      nullptr);                        // Optional unused overlapped parameter.
 
   if (status == FALSE) {
     PLOG(ERROR) << "Storage property query failed.";
@@ -128,7 +129,7 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
   }
 
   STORAGE_DEVICE_DESCRIPTOR* device_descriptor =
-      reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(output_buf.get());
+      reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(output_buf.data());
 
   if (!device_descriptor->RemovableMedia &&
       !(device_descriptor->BusType == BusTypeUsb)) {
@@ -164,13 +165,13 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
 
   if (device_descriptor->VendorIdOffset &&
       output_buf[device_descriptor->VendorIdOffset]) {
-    device.vendor.assign(output_buf.get() + device_descriptor->VendorIdOffset);
+    device.vendor.assign(output_buf.data() + device_descriptor->VendorIdOffset);
   }
 
   std::string product_id;
   if (device_descriptor->ProductIdOffset &&
       output_buf[device_descriptor->ProductIdOffset]) {
-    device.model.assign(output_buf.get() + device_descriptor->ProductIdOffset);
+    device.model.assign(output_buf.data() + device_descriptor->ProductIdOffset);
   }
 
   device_list->data.push_back(std::move(device));
