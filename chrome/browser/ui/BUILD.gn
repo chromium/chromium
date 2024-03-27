@@ -1542,6 +1542,8 @@ static_library("ui") {
       "tabs/tab_group.cc",
       "tabs/tab_group.h",
       "tabs/tab_group_controller.h",
+      "tabs/tab_group_deletion_dialog_controller.cc",
+      "tabs/tab_group_deletion_dialog_controller.h",
       "tabs/tab_group_model.cc",
       "tabs/tab_group_model.h",
       "tabs/tab_group_tab_collection.cc",

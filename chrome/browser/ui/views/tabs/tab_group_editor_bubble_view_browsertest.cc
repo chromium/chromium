@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -221,4 +222,114 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
   EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
+}
+
+class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2
+    : public TabGroupEditorBubbleViewDialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
+    UngroupUnsavedGroupDoesntShowDialog) {
+  base::HistogramTester histogram_tester;
+
+  ShowUi("SetUp");
+
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(1, tsm->count());
+  TabGroupModel* group_model = tsm->group_model();
+  std::vector<tab_groups::TabGroupId> group_list = group_model->ListTabGroups();
+  ASSERT_EQ(1u, group_list.size());
+  ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
+
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  TabGroupHeader* header =
+      browser_view->tabstrip()->group_header(group_list[0]);
+  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  ASSERT_NE(nullptr, editor_bubble);
+
+  views::Button* const ungroup_button =
+      views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+          TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_UNGROUP));
+  EXPECT_NE(nullptr, ungroup_button);
+
+  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+                                gfx::PointF(), base::TimeTicks(), 0, 0);
+  views::test::ButtonTestApi(ungroup_button).NotifyClick(released_event);
+
+  EXPECT_EQ(0u, group_model->ListTabGroups().size());
+  EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
+  EXPECT_EQ(1, tsm->count());
+
+  // Make sure the dialog is shown, and fake clicking the button.
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser_view->browser()->tab_group_deletion_dialog_controller();
+  EXPECT_FALSE(deletion_dialog_controller->IsShowingDialog());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
+    UngroupSavedGroupShowsDialog) {
+  base::HistogramTester histogram_tester;
+
+  ShowUi("SetUp");
+
+  TabStripModel* tsm = browser()->tab_strip_model();
+  ASSERT_EQ(1, tsm->count());
+  TabGroupModel* group_model = tsm->group_model();
+  std::vector<tab_groups::TabGroupId> group_list = group_model->ListTabGroups();
+  ASSERT_EQ(1u, group_list.size());
+  ASSERT_EQ(1u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
+
+  BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
+  TabGroupHeader* header =
+      browser_view->tabstrip()->group_header(group_list[0]);
+  views::Widget* editor_bubble = GetEditorBubbleWidget(header);
+  ASSERT_NE(nullptr, editor_bubble);
+
+  {  // Save the group.
+    views::Button* const save_toggle =
+        views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+            TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_SAVE_GROUP));
+    ASSERT_NE(nullptr, save_toggle);
+    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+                                  gfx::PointF(), base::TimeTicks(), 0, 0);
+    views::test::ButtonTestApi(save_toggle).NotifyClick(released_event);
+  }
+
+  {  // Ungroup the group.
+    views::Button* const ungroup_button =
+        views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+            TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_UNGROUP));
+    ASSERT_NE(nullptr, ungroup_button);
+    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
+                                  gfx::PointF(), base::TimeTicks(), 0, 0);
+    views::test::ButtonTestApi(ungroup_button).NotifyClick(released_event);
+  }
+
+  // Make sure that the ungroup action did not occur.
+  EXPECT_EQ(1u, group_model->ListTabGroups().size());
+  EXPECT_TRUE(group_model->ContainsTabGroup(group_list[0]));
+  EXPECT_EQ(1, tsm->count());
+
+  // Make sure the dialog is shown, and fake clicking the button.
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser_view->browser()->tab_group_deletion_dialog_controller();
+  EXPECT_TRUE(deletion_dialog_controller->IsShowingDialog());
+
+  // Pull the dialog state and call the OnDialogOk method.
+  deletion_dialog_controller->SimulateOkButtonForTesting();
+
+  // Make sure that the ungroup action occured.
+  EXPECT_EQ(0u, group_model->ListTabGroups().size());
+  EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
+  EXPECT_EQ(1, tsm->count());
 }

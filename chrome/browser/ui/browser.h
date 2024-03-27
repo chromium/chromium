@@ -73,6 +73,10 @@ class TabStripModel;
 class TabStripModelDelegate;
 class TabMenuModelDelegate;
 
+namespace tab_groups {
+class DeletionDialogController;
+}
+
 namespace blink {
 enum class ProtocolHandlerSecurityLevel;
 }
@@ -487,6 +491,12 @@ class Browser : public TabStripModelObserver,
   chrome::BrowserCommandController* command_controller() {
     return command_controller_.get();
   }
+
+  tab_groups::DeletionDialogController* tab_group_deletion_dialog_controller()
+      const {
+    return tab_group_deletion_dialog_controller_.get();
+  }
+
   SessionID session_id() const { return session_id_; }
   bool omit_from_session_restore() const { return omit_from_session_restore_; }
   bool should_trigger_session_restore() const {
@@ -1377,6 +1387,10 @@ class Browser : public TabStripModelObserver,
       extension_window_controller_;
 
   std::unique_ptr<chrome::BrowserCommandController> command_controller_;
+
+  // Dialog controller that handles the showing of the deletion dialog.
+  std::unique_ptr<tab_groups::DeletionDialogController>
+      tab_group_deletion_dialog_controller_;
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;

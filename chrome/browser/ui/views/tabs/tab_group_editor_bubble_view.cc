@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -511,7 +512,15 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 }
 
 void TabGroupEditorBubbleView::UngroupPressed() {
-  Ungroup(browser_, group_);
+  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+      base::FeatureList::IsEnabled(features::kTabGroupsSaveV2) &&
+      save_group_toggle_->GetIsOn()) {
+    browser_->tab_group_deletion_dialog_controller()->MaybeShowDialog(
+        tab_groups::DeletionDialogController::DialogType::UngroupSingle,
+        base::BindOnce(&TabGroupEditorBubbleView::Ungroup, browser_, group_));
+  } else {
+    Ungroup(browser_, group_);
+  }
   GetWidget()->Close();
 }
 
