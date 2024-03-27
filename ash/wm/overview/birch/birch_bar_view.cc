@@ -82,12 +82,6 @@ BirchBarView::BirchBarView(aura::Window* root_window)
 
 BirchBarView::~BirchBarView() = default;
 
-void BirchBarView::Shutdown() {
-  for (BirchChipButton* chip : chips_) {
-    chip->Shutdown();
-  }
-}
-
 // static
 std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
     aura::Window* root_window) {
@@ -108,6 +102,12 @@ std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
   return widget;
 }
 
+void BirchBarView::Shutdown() {
+  for (BirchChipButton* chip : chips_) {
+    chip->Shutdown();
+  }
+}
+
 void BirchBarView::UpdateAvailableSpace(int available_space) {
   if (available_space_ == available_space) {
     return;
@@ -124,6 +124,26 @@ base::CallbackListSubscription BirchBarView::AddRelayoutCallback(
 
 int BirchBarView::GetChipsNum() const {
   return chips_.size();
+}
+
+void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
+  // Clear current chips.
+  chips_.clear();
+  primary_row_->RemoveAllChildViews();
+  if (secondary_row_) {
+    auto secondary_row = RemoveChildViewT(secondary_row_);
+    secondary_row_ = nullptr;
+  }
+
+  for (auto item : items) {
+    chips_.emplace_back(
+        primary_row_->AddChildView(views::Builder<BirchChipButton>()
+                                       .Init(item)
+                                       .SetPreferredSize(chip_size_)
+                                       .Build()));
+  }
+
+  Relayout(RelayoutReason::kAddRemoveChip);
 }
 
 void BirchBarView::AddChip(BirchItem* item) {

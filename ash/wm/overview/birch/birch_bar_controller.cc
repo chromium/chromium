@@ -176,12 +176,15 @@ void BirchBarController::OnItemsFetchedFromModel() {
 void BirchBarController::InitBar(BirchBarView* bar_view) {
   CHECK(!data_fetch_in_progress_);
 
+  std::vector<raw_ptr<BirchItem>> items_to_show;
   for (auto& item : items_) {
-    if (bar_view->GetChipsNum() == BirchBarView::kMaxChipsNum) {
+    if (items_to_show.size() == BirchBarView::kMaxChipsNum) {
       break;
     }
-    bar_view->AddChip(item.get());
+    items_to_show.emplace_back(item.get());
   }
+
+  bar_view->SetupChips(items_to_show);
 
   // Only run bar initialized callback if there are fetched items.
   if (items_.size() && !bar_map_[bar_view].is_null()) {

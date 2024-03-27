@@ -65,12 +65,12 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   BirchBarView& operator=(const BirchBarView&) = delete;
   ~BirchBarView() override;
 
-  // Shuts down the `BirchChipButtons`.
-  void Shutdown();
-
   // Creates a birch bar widget for given `root_window`.
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
+
+  // Shuts down the `BirchChipButtons`.
+  void Shutdown();
 
   // Updates the birch bar's available space and relayout the bar according to
   // the updated available space. Note that the function must be called before
@@ -82,6 +82,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
 
   // Gets current number of chips.
   int GetChipsNum() const;
+
+  // Clear existing chips and create new chips with given items.
+  void SetupChips(const std::vector<raw_ptr<BirchItem>>& items);
 
   // Adds a new birch chip to the bar.
   // TODO(zxdan): move the function to private when using model and replace the
