@@ -502,7 +502,9 @@ class SigninPausedStateProvider : public StateProvider,
   // signin::IdentityManager::Observer:
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override {
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override {
     if (account_info != identity_manager_->GetPrimaryAccountInfo(
                             signin::ConsentLevel::kSignin)) {
       return;

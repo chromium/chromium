@@ -375,7 +375,8 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
 
 void SyncAuthManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   OnRefreshTokenUpdatedForAccount(account_info);
 }
 

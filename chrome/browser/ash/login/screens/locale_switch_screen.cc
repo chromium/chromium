@@ -20,6 +20,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -152,7 +153,8 @@ void LocaleSwitchScreen::HideImpl() {
 
 void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (error == GoogleServiceAuthError::AuthErrorNone()) {
     return;
   }

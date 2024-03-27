@@ -27,7 +27,8 @@ class SignInTestObserver : public IdentityManager::Observer,
   void OnRefreshTokenRemovedForAccount(const CoreAccountId&) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo&,
-      const GoogleServiceAuthError&) override;
+      const GoogleServiceAuthError&,
+      signin_metrics::SourceForRefreshTokenOperation) override;
   void OnAccountsInCookieUpdated(const AccountsInCookieJarInfo&,
                                  const GoogleServiceAuthError&) override;
 

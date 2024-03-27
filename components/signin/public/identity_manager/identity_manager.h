@@ -119,9 +119,16 @@ class IdentityManager : public KeyedService,
     // changed. Note: It is always called after
     // |OnRefreshTokenUpdatedForAccount| when the refresh token is updated. It
     // is not called when the refresh token is removed.
+    // `token_operation_source` has a default value of
+    // `signin_metrics::SourceForRefreshTokenOperation::Unknown` which means
+    // that either the token did not change (example is when a token becomes
+    // invalid on the server) or that the operation value was not explicitly
+    // set.
     virtual void OnErrorStateOfRefreshTokenUpdatedForAccount(
         const CoreAccountInfo& account_info,
-        const GoogleServiceAuthError& error) {}
+        const GoogleServiceAuthError& error,
+        signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+    }
 
     // Called after refresh tokens are loaded.
     virtual void OnRefreshTokensLoaded() {}
@@ -625,10 +632,10 @@ class IdentityManager : public KeyedService,
   void OnRefreshTokenRevoked(const CoreAccountId& account_id) override;
   void OnRefreshTokensLoaded() override;
   void OnEndBatchChanges() override;
-  void OnAuthErrorChanged(
-      const CoreAccountId& account_id,
-      const GoogleServiceAuthError& auth_error,
-      signin_metrics::SourceForRefreshTokenOperation source) override;
+  void OnAuthErrorChanged(const CoreAccountId& account_id,
+                          const GoogleServiceAuthError& auth_error,
+                          signin_metrics::SourceForRefreshTokenOperation
+                              token_operation_source) override;
 
   // GaiaCookieManagerService callbacks:
   void OnGaiaAccountsInCookieUpdated(

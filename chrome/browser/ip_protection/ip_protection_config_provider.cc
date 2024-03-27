@@ -654,7 +654,8 @@ void IpProtectionConfigProvider::OnPrimaryAccountChanged(
 
 void IpProtectionConfigProvider::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   VLOG(2) << "IPATP::OnErrorStateOfRefreshTokenUpdatedForAccount: "
           << error.ToString();
   // Workspace user accounts can have account credential expirations that cause

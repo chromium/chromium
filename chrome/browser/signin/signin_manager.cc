@@ -333,7 +333,8 @@ void SigninManager::OnAccountsInCookieUpdated(
 
 void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   CoreAccountInfo current_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 

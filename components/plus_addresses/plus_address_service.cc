@@ -394,7 +394,8 @@ void PlusAddressService::OnPrimaryAccountChanged(
 
 void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (auto primary_account = identity_manager_->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
       primary_account.IsEmpty() ||

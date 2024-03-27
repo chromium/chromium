@@ -35,7 +35,8 @@ void SignInTestObserver::OnRefreshTokenRemovedForAccount(const CoreAccountId&) {
 }
 void SignInTestObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo&,
-    const GoogleServiceAuthError&) {
+    const GoogleServiceAuthError&,
+    signin_metrics::SourceForRefreshTokenOperation) {
   QuitIfConditionIsSatisfied();
 }
 void SignInTestObserver::OnAccountsInCookieUpdated(

@@ -617,13 +617,13 @@ void IdentityManager::OnEndBatchChanges() {
 void IdentityManager::OnAuthErrorChanged(
     const CoreAccountId& account_id,
     const GoogleServiceAuthError& auth_error,
-    signin_metrics::SourceForRefreshTokenOperation source) {
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   CoreAccountInfo account_info =
       GetAccountInfoForAccountWithRefreshToken(account_id);
 
   for (auto& observer : observer_list_)
-    observer.OnErrorStateOfRefreshTokenUpdatedForAccount(account_info,
-                                                         auth_error);
+    observer.OnErrorStateOfRefreshTokenUpdatedForAccount(
+        account_info, auth_error, token_operation_source);
 }
 
 void IdentityManager::OnGaiaAccountsInCookieUpdated(

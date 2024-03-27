@@ -61,7 +61,9 @@ class AccountManagerUIHandler
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
 
   // |AccountAppsAvailability::Observer| overrides.
   void OnAccountAvailableInArc(

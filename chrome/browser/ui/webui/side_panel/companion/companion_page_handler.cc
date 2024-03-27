@@ -109,7 +109,8 @@ void CompanionPageHandler::OnPrimaryAccountChanged(
 
 void CompanionPageHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   NotifyURLChanged(/*is_full_reload=*/true);
 }
 

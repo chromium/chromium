@@ -68,7 +68,9 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
       const GoogleServiceAuthError& error) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnRefreshTokensLoaded() override;
 
  private:
@@ -133,7 +135,8 @@ void IdentityManagerObserver::OnAccountsInCookieUpdated(
 
 void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (primary_account_.IsEmpty() ||
       account_info.account_id != primary_account_.account_id) {
     return;
@@ -151,10 +154,15 @@ void IdentityManagerObserver::OnRefreshTokensLoaded() {
     // OnErrorStateOfRefreshTokenUpdatedForAccount() can be called before
     // refresh tokens are marked as loaded, in this case error state can not be
     // identified reliably. To mitigate this, call it again here.
+    // It is safe to use the default value for the source of the refresh token
+    // operation
+    // (`signin_metrics::SourceForRefreshTokenOperation::kUnknown`) as it is not
+    // currently used.
     OnErrorStateOfRefreshTokenUpdatedForAccount(
         primary_account_,
         identity_manager_->GetErrorStateOfRefreshTokenForAccount(
-            primary_account_.account_id));
+            primary_account_.account_id),
+        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   }
   UpdateAccountsInCookieJarInfoIfNeeded(
       identity_manager_->GetAccountsInCookieJar());

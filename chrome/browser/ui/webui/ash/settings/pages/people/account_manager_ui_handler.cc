@@ -538,7 +538,8 @@ void AccountManagerUIHandler::OnExtendedAccountInfoUpdated(
 
 void AccountManagerUIHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (error.state() != GoogleServiceAuthError::NONE) {
     RefreshUI();
   }
