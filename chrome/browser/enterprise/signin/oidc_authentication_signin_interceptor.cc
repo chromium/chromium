@@ -235,6 +235,9 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
       new_profile->GetUserCloudPolicyManager();
   std::string gaia_id =
       user_policy_manager->core()->store()->policy()->gaia_id();
+  VLOG(1) << "Adding user with gaia id <" << gaia_id << "> and email <"
+          << user_email_ << "> to the newly created OIDC profile.";
+
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
           gaia_id, user_email_, "refresh_token",
@@ -242,9 +245,15 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::
               kMachineLogon_CredentialProvider);
+  VLOG(1) << "Account id <" << account_id.ToString()
+          << "> has been added to the newly created OIDC profile.";
 
-  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_id, signin::ConsentLevel::kSignin);
+  auto set_primary_account_result =
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_id, signin::ConsentLevel::kSignin);
+  VLOG(1) << "Operation of setting account id <" << account_id.ToString()
+          << "> received the following result: "
+          << static_cast<int>(set_primary_account_result);
 
   interception_status_ = OidcInterceptionStatus::kCompleted;
   // TODO(319477219): In addition to kSignin level primary account, allow user
