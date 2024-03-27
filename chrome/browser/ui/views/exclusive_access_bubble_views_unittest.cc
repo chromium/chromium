@@ -142,14 +142,7 @@ class ExclusiveAccessBubbleViewsTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/330394198): Reenable the test on Win once the
-// ExclusiveAccessBubbleViews is properly set up to have a widget context.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_UpdateViewContent DISABLED_UpdateViewContent
-#else
-#define MAYBE_UpdateViewContent UpdateViewContent
-#endif
-TEST_P(ExclusiveAccessBubbleViewsTest, MAYBE_UpdateViewContent) {
+TEST_P(ExclusiveAccessBubbleViewsTest, UpdateViewContent) {
   const InstructionTextTestCase& test_case = GetParam();
   UpdateExclusiveAccessBubbleType(
       test_case.bubble_type, /*notify_download=*/test_case.notify_download);
