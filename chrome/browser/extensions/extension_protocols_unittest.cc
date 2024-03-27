@@ -62,9 +62,6 @@ using testing::StrictMock;
 namespace extensions {
 namespace {
 
-// Default extension id to use for extension generation when none is set.
-constexpr char kEmptyExtensionId[] = "";
-
 base::FilePath GetTestPath(const std::string& name) {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
@@ -78,55 +75,62 @@ base::FilePath GetContentVerifierTestPath() {
       .AppendASCII("different_sized_files");
 }
 
-scoped_refptr<Extension> CreateTestExtension(const std::string& name,
-                                             bool incognito_split_mode,
-                                             const ExtensionId& extension_id) {
-  auto manifest = base::Value::Dict().Set("name", name);
-  manifest.Set("version", "1");
-  manifest.Set("manifest_version", 2);
-  manifest.Set("incognito", incognito_split_mode ? "split" : "spanning");
-
-  base::FilePath path = GetTestPath("response_headers");
-
-  std::string error;
-  scoped_refptr<Extension> extension(
-      Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
-                        Extension::NO_FLAGS, extension_id, &error));
-  EXPECT_TRUE(extension.get()) << error;
-  return extension;
+scoped_refptr<const Extension> CreateTestExtension(const std::string& name,
+                                                   bool incognito_split_mode,
+                                                   int manifest_version) {
+  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
+  return ExtensionBuilder(name)
+      .SetManifestVersion(manifest_version)
+      .SetManifestKey("incognito", incognito_split_mode ? "split" : "spanning")
+      .SetPath(GetTestPath("response_headers"))
+      .SetLocation(mojom::ManifestLocation::kInternal)
+      .Build();
 }
 
-scoped_refptr<Extension> CreateTestExtension(const std::string& name,
-                                             bool incognito_split_mode) {
-  return CreateTestExtension(name, incognito_split_mode, kEmptyExtensionId);
-}
-
-scoped_refptr<Extension> CreateWebStoreExtension() {
-  base::Value::Dict manifest =
-      base::Value::Dict()
-          .Set("name", "WebStore")
-          .Set("version", "1")
-          .Set("manifest_version", 2)
-          .Set("icons", base::Value::Dict().Set("16", "webstore_icon_16.png"))
-          .Set("web_accessible_resources",
-               base::Value::List().Append("webstore_icon_16.png"));
-
+scoped_refptr<const Extension> CreateWebStoreExtension(int manifest_version) {
+  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_RESOURCES, &path));
   path = path.AppendASCII("web_store");
 
-  std::string error;
-  scoped_refptr<Extension> extension(
-      Extension::Create(path, mojom::ManifestLocation::kComponent, manifest,
-                        Extension::NO_FLAGS, &error));
-  EXPECT_TRUE(extension.get()) << error;
-  return extension;
+  return ExtensionBuilder("WebStore")
+      .SetManifestVersion(manifest_version)
+      .SetManifestKey("icons",
+                      base::Value::Dict().Set("16", "webstore_icon_16.png"))
+      .SetManifestKey(
+          "web_accessible_resources",
+          manifest_version == 3
+              ? base::Value::List().Append(
+                    base::Value::Dict()
+                        .Set("resources",
+                             base::Value::List().Append("webstore_icon_16.png"))
+                        .Set("matches", base::Value::List().Append("*://*/*")))
+              : base::Value::List().Append("webstore_icon_16.png"))
+      .SetPath(path)
+      .SetLocation(mojom::ManifestLocation::kComponent)
+      .Build();
 }
 
-scoped_refptr<const Extension> CreateTestResponseHeaderExtension() {
+scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
+    int manifest_version) {
+  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
   return ExtensionBuilder("An extension with web-accessible resources")
-      .SetManifestKey("web_accessible_resources",
-                      base::Value::List().Append("test.dat"))
+      .SetManifestVersion(manifest_version)
+      .SetManifestKey(
+          "web_accessible_resources",
+          manifest_version == 3
+              ? base::Value::List().Append(
+                    base::Value::Dict()
+                        .Set("resources",
+                             base::Value::List().Append("test.dat"))
+                        .Set("matches", base::Value::List().Append("*://*/*")))
+              : base::Value::List().Append("test.dat"))
+      .SetManifestKey(
+          "background",
+          manifest_version == 3
+              ? base::Value::Dict().Set("service_worker", "background.js")
+              : base::Value::Dict().Set(
+                    "scripts", base::Value::List().Append("background.js")))
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }
@@ -182,7 +186,8 @@ class GetResult {
 // This test lives in src/chrome instead of src/extensions because it tests
 // functionality delegated back to Chrome via ChromeExtensionsBrowserClient.
 // See chrome/browser/extensions/chrome_url_request_util.cc.
-class ExtensionProtocolsTestBase : public testing::Test {
+class ExtensionProtocolsTestBase : public testing::Test,
+                                   public testing::WithParamInterface<int> {
  public:
   explicit ExtensionProtocolsTestBase(bool force_incognito)
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
@@ -204,6 +209,8 @@ class ExtensionProtocolsTestBase : public testing::Test {
         std::make_unique<ChromeContentVerifierDelegate>(browser_context()));
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(browser_context()))
         ->set_content_verifier(content_verifier_.get());
+    loader_factory_.Bind(
+        CreateExtensionNavigationURLLoaderFactory(browser_context(), false));
   }
 
   void TearDown() override {
@@ -211,11 +218,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
     content_verifier_->Shutdown();
     // Shut down the PowerMonitor if initialized.
     base::PowerMonitor::ShutdownForTesting();
-  }
-
-  void SetProtocolHandler(bool is_incognito) {
-    loader_factory_.Bind(
-        CreateExtensionNavigationURLLoaderFactory(browser_context(), false));
   }
 
   GetResult RequestOrLoad(const GURL& url,
@@ -264,24 +266,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   void EnableSimulationOfSystemSuspendForRequests() {
     power_monitor_source_.emplace();
-  }
-
-  void AddExtensionAndPerformResourceLoad(const ExtensionId& extension_id) {
-    // Register a non-incognito extension protocol handler.
-    SetProtocolHandler(false);
-
-    scoped_refptr<Extension> extension =
-        CreateTestExtension("foo", false, extension_id);
-    AddExtension(extension, false, false);
-    ASSERT_EQ(extension->id(), extension_id);
-
-    // Load the extension.
-    {
-      auto get_result =
-          RequestOrLoad(extension->GetResourceURL("test.dat"),
-                        network::mojom::RequestDestination::kDocument);
-      EXPECT_EQ(net::OK, get_result.result());
-    }
   }
 
  protected:
@@ -341,14 +325,20 @@ class ExtensionProtocolsIncognitoTest : public ExtensionProtocolsTestBase {
       : ExtensionProtocolsTestBase(true /*force_incognito*/) {}
 };
 
+INSTANTIATE_TEST_SUITE_P(MV2, ExtensionProtocolsTest, ::testing::Values(2));
+INSTANTIATE_TEST_SUITE_P(MV3, ExtensionProtocolsTest, ::testing::Values(3));
+INSTANTIATE_TEST_SUITE_P(MV2,
+                         ExtensionProtocolsIncognitoTest,
+                         ::testing::Values(2));
+INSTANTIATE_TEST_SUITE_P(MV3,
+                         ExtensionProtocolsIncognitoTest,
+                         ::testing::Values(3));
+
 // Tests that making a chrome-extension request in an incognito context is
 // only allowed under the right circumstances (if the extension is allowed
 // in incognito, and it's either a non-main-frame request or a split-mode
 // extension).
-TEST_F(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
-  // Register an incognito extension protocol handler.
-  SetProtocolHandler(true);
-
+TEST_P(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
   struct TestCase {
     // Inputs.
     std::string name;
@@ -358,17 +348,17 @@ TEST_F(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
     // Expected results.
     bool should_allow_main_frame_load;
     bool should_allow_sub_frame_load;
-  } cases[] = {
+  } test_cases[] = {
       {"spanning disabled", false, false, false, false},
       {"split disabled", true, false, false, false},
       {"spanning enabled", false, true, false, false},
       {"split enabled", true, true, true, false},
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    scoped_refptr<Extension> extension =
-        CreateTestExtension(cases[i].name, cases[i].incognito_split_mode);
-    AddExtension(extension, cases[i].incognito_enabled, false);
+  for (const auto& test_case : test_cases) {
+    scoped_refptr<const Extension> extension = CreateTestExtension(
+        test_case.name, test_case.incognito_split_mode, GetParam());
+    AddExtension(extension, test_case.incognito_enabled, false);
 
     // First test a main frame request.
     // It doesn't matter that the resource doesn't exist. If the resource
@@ -378,11 +368,11 @@ TEST_F(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
         RequestOrLoad(extension->GetResourceURL("404.html"),
                       network::mojom::RequestDestination::kDocument);
 
-    if (cases[i].should_allow_main_frame_load) {
-      EXPECT_EQ(net::ERR_FILE_NOT_FOUND, get_result.result()) << cases[i].name;
+    if (test_case.should_allow_main_frame_load) {
+      EXPECT_EQ(net::ERR_FILE_NOT_FOUND, get_result.result()) << test_case.name;
     } else {
       EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result())
-          << cases[i].name;
+          << test_case.name;
     }
     // Subframe navigation requests are blocked in ExtensionNavigationThrottle
     // which isn't added in this unit test. This is tested in an integration
@@ -403,11 +393,9 @@ void CheckForContentLengthHeader(const GetResult& get_result) {
 
 // Tests getting a resource for a component extension works correctly, both when
 // the extension is enabled and when it is disabled.
-TEST_F(ExtensionProtocolsTest, ComponentResourceRequest) {
-  // Register a non-incognito extension protocol handler.
-  SetProtocolHandler(false);
-
-  scoped_refptr<Extension> extension = CreateWebStoreExtension();
+TEST_P(ExtensionProtocolsTest, ComponentResourceRequest) {
+  scoped_refptr<const Extension> extension =
+      CreateWebStoreExtension(GetParam());
   AddExtension(extension, false, false);
 
   // First test it with the extension enabled.
@@ -436,12 +424,9 @@ TEST_F(ExtensionProtocolsTest, ComponentResourceRequest) {
 
 // Tests that a URL request for resource from an extension returns a few
 // expected response headers.
-TEST_F(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
-  // Register a non-incognito extension protocol handler.
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
   scoped_refptr<const Extension> extension =
-      CreateTestResponseHeaderExtension();
+      CreateTestResponseHeaderExtension(GetParam());
   AddExtension(extension, false, false);
 
   {
@@ -462,16 +447,20 @@ TEST_F(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
     std::string access_control =
         get_result.GetResponseHeaderByName("Access-Control-Allow-Origin");
     EXPECT_EQ("*", access_control);
+
+    // Only background service worker script should be allowed to load as a
+    // service worker.
+    std::string service_worker_allowed =
+        get_result.GetResponseHeaderByName("Service-Worker-Allowed");
+    EXPECT_TRUE(service_worker_allowed.empty());
   }
 }
 
 // Tests that a URL request for main frame or subframe from an extension
 // succeeds, but subresources fail. See http://crbug.com/312269.
-TEST_F(ExtensionProtocolsTest, AllowFrameRequests) {
-  // Register a non-incognito extension protocol handler.
-  SetProtocolHandler(false);
-
-  scoped_refptr<Extension> extension = CreateTestExtension("foo", false);
+TEST_P(ExtensionProtocolsTest, AllowFrameRequests) {
+  scoped_refptr<const Extension> extension =
+      CreateTestExtension("foo", false, GetParam());
   AddExtension(extension, false, false);
 
   // All MAIN_FRAME requests should succeed. SUB_FRAME requests that are not
@@ -496,9 +485,7 @@ TEST_F(ExtensionProtocolsTest, AllowFrameRequests) {
   }
 }
 
-TEST_F(ExtensionProtocolsTest, MetadataFolder) {
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, MetadataFolder) {
   base::FilePath extension_dir = GetTestPath("metadata_folder");
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
@@ -525,9 +512,7 @@ TEST_F(ExtensionProtocolsTest, MetadataFolder) {
 
 // Tests that unreadable files and deleted files correctly go through
 // ContentVerifyJob.
-TEST_F(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
   // Unzip extension containing verification hashes to a temporary directory.
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -582,9 +567,7 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
 }
 
 // Tests that zero byte files correctly go through ContentVerifyJob.
-TEST_F(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
   const std::string kEmptyJs("empty.js");
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -644,9 +627,7 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
   }
 }
 
-TEST_F(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
   const std::string kBackgroundJs("background.js");
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -695,19 +676,28 @@ TEST_F(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
 }
 
 // Tests that mime types are properly set for returned extension resources.
-TEST_F(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
-  // Register a non-incognito extension protocol handler.
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
   TestExtensionDir test_dir;
-  constexpr char kManifest[] = R"(
+  const int manifest_version = GetParam();
+  EXPECT_TRUE(manifest_version == 2 || manifest_version == 3);
+  constexpr char kManifestV2[] = R"(
       {
         "name": "Test Ext",
-        "description": "A test extension",
         "manifest_version": 2,
-        "version": "0.1",
+        "version": "1",
         "web_accessible_resources": ["*"]
       })";
+  constexpr char kManifestV3[] = R"(
+      {
+        "name": "Test Ext",
+        "manifest_version": 3,
+        "version": "1",
+        "web_accessible_resources": [{
+          "resources": [ "*" ],
+          "matches": [ "*://*/*" ]
+        }]
+      })";
+  const char* kManifest = manifest_version == 3 ? kManifestV3 : kManifestV2;
   test_dir.WriteManifest(kManifest);
   base::Value::Dict manifest = base::test::ParseJsonDict(kManifest);
   ASSERT_FALSE(manifest.empty());
@@ -749,10 +739,7 @@ TEST_F(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
 
 // Tests that requests for extension resources (including the generated
 // background page) are not aborted on system suspend.
-TEST_F(ExtensionProtocolsTest, ExtensionRequestsNotAborted) {
-  // Register a non-incognito extension protocol handler.
-  SetProtocolHandler(false);
-
+TEST_P(ExtensionProtocolsTest, ExtensionRequestsNotAborted) {
   base::FilePath extension_dir =
       GetTestPath("common").AppendASCII("background_script");
   std::string error;
