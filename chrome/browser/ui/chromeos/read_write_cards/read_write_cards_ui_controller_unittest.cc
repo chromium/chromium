@@ -292,4 +292,44 @@ TEST_P(ReadWriteCardsUiControllerTest, WidgetBoundsWithExtraReservedHeight) {
   EXPECT_EQ(kDefaultWidth, widget_bounds.width());
 }
 
+TEST_P(ReadWriteCardsUiControllerTest, ChildViewsPosition) {
+  ReadWriteCardsUiController controller;
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  int mahi_height = 80;
+  int qa_height = 90;
+  auto* mahi_view =
+      controller.SetMahiView(CreateViewWithHeight(controller, mahi_height));
+  auto* qa_view = controller.SetQuickAnswersView(
+      CreateViewWithHeight(controller, qa_height));
+  auto* widget = controller.widget_for_test();
+  ASSERT_TRUE(widget);
+  gfx::Rect widget_bounds = widget->GetRestoredBounds();
+
+  auto* contents_view = widget->GetContentsView();
+
+  // Widget is positioned above context menu.
+  EXPECT_EQ(widget_bounds.bottom() + kQuickAnswersAndMahiSpacing,
+            context_menu_bounds.y());
+
+  // Quick Answers view is above Mahi view.
+  EXPECT_EQ(0u, contents_view->GetIndexOf(qa_view));
+  EXPECT_EQ(1u, contents_view->GetIndexOf(mahi_view));
+
+  context_menu_bounds.set_y(10);
+  controller.SetContextMenuBounds(context_menu_bounds);
+  widget_bounds = widget->GetRestoredBounds();
+
+  // Context menu is positioned above the view.
+  EXPECT_EQ(context_menu_bounds.bottom() + kQuickAnswersAndMahiSpacing,
+            widget_bounds.y());
+
+  // Mahi view is above Quick Answers view.
+  EXPECT_EQ(0u, contents_view->GetIndexOf(mahi_view));
+  EXPECT_EQ(1u, contents_view->GetIndexOf(qa_view));
+}
+
 }  // namespace chromeos::mahi

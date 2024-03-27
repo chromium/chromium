@@ -52,9 +52,10 @@ class ReadWriteCardsUiController : public views::ViewObserver {
   views::View* GetQuickAnswersViewForTest();
   views::View* GetMahiViewForTest();
 
-  // Updates widget bounds.
-  void UpdateWidgetBounds();
-  void MaybeUpdateWidgetBounds();
+  // Re-layout a widget and views. This includes updating the widget bounds and
+  // reorder child views, if needed.
+  void Relayout();
+  void MaybeRelayout();
 
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
 
@@ -69,6 +70,10 @@ class ReadWriteCardsUiController : public views::ViewObserver {
 
   // Hides `widget_` if necessary.
   void MaybeHideWidget();
+
+  // Reorder the child views inside `widget_`, depending on if the widget is
+  // above or below the context menu.
+  void ReorderChildViews(bool widget_above_context_menu);
 
   // Owned by the views hierarchy.
   raw_ptr<ReadWriteCardsView> quick_answers_view_;

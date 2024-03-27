@@ -80,7 +80,7 @@ ReadWriteCardsView* ReadWriteCardsUiController::SetQuickAnswersView(
   quick_answers_view_ = contents_view->AddChildView(std::move(view));
   quick_answers_view_->AddObserver(this);
 
-  UpdateWidgetBounds();
+  Relayout();
 
   return quick_answers_view_;
 }
@@ -96,7 +96,7 @@ void ReadWriteCardsUiController::RemoveQuickAnswersView() {
   MaybeHideWidget();
 
   if (widget_) {
-    UpdateWidgetBounds();
+    Relayout();
   }
 }
 
@@ -109,7 +109,7 @@ views::View* ReadWriteCardsUiController::SetMahiView(
   views::View* contents_view = widget_->GetContentsView();
   mahi_view_.SetView(contents_view->AddChildView(std::move(view)));
 
-  UpdateWidgetBounds();
+  Relayout();
 
   return mahi_view_.view();
 }
@@ -123,7 +123,7 @@ void ReadWriteCardsUiController::RemoveMahiView() {
   MaybeHideWidget();
 
   if (widget_) {
-    UpdateWidgetBounds();
+    Relayout();
   }
 }
 
@@ -135,7 +135,7 @@ views::View* ReadWriteCardsUiController::GetMahiViewForTest() {
   return mahi_view_.view();
 }
 
-void ReadWriteCardsUiController::UpdateWidgetBounds() {
+void ReadWriteCardsUiController::Relayout() {
   CHECK(widget_);
   int widget_width = context_menu_bounds_.width();
   int widget_height =
@@ -157,12 +157,16 @@ void ReadWriteCardsUiController::UpdateWidgetBounds() {
                             quick_answers_view_->size().height();
   }
 
+  bool widget_above_context_menu = true;
   if (y - extra_reserved_height < display::Screen::GetScreen()
                                       ->GetDisplayMatching(context_menu_bounds_)
                                       .work_area()
                                       .y()) {
     y = context_menu_bounds_.bottom() + kQuickAnswersAndMahiSpacing;
+    widget_above_context_menu = false;
   }
+
+  ReorderChildViews(widget_above_context_menu);
 
   gfx::Rect bounds({x, y}, {widget_width, widget_height});
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -175,12 +179,12 @@ void ReadWriteCardsUiController::UpdateWidgetBounds() {
   widget_->SetBounds(bounds);
 }
 
-void ReadWriteCardsUiController::MaybeUpdateWidgetBounds() {
+void ReadWriteCardsUiController::MaybeRelayout() {
   if (!widget_) {
     return;
   }
 
-  UpdateWidgetBounds();
+  Relayout();
 }
 
 void ReadWriteCardsUiController::SetContextMenuBounds(
@@ -192,7 +196,7 @@ void ReadWriteCardsUiController::SetContextMenuBounds(
   }
 
   if (widget_) {
-    UpdateWidgetBounds();
+    Relayout();
   }
 }
 
@@ -235,6 +239,25 @@ void ReadWriteCardsUiController::MaybeHideWidget() {
 
   // Close the widget if all the views are removed.
   widget_.reset();
+}
+
+void ReadWriteCardsUiController::ReorderChildViews(
+    bool widget_above_context_menu) {
+  // No need to reorder if one of the view is not set.
+  if (!quick_answers_view_ || !mahi_view_) {
+    return;
+  }
+
+  CHECK(widget_);
+  auto* contents_view = widget_->GetContentsView();
+
+  // Quick Answers view should be on top if the widget is above the context
+  // menu. The order should be reversed otherwise.
+  if (widget_above_context_menu) {
+    contents_view->ReorderChildView(quick_answers_view_, /*index=*/0);
+  } else {
+    contents_view->ReorderChildView(mahi_view_.view(), /*index=*/0);
+  }
 }
 
 }  // namespace chromeos

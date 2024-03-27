@@ -30,11 +30,11 @@ void ReadWriteCardsView::SetContextMenuBounds(
 
 void ReadWriteCardsView::PreferredSizeChanged() {
   views::View::PreferredSizeChanged();
-  read_write_cards_ui_controller_->MaybeUpdateWidgetBounds();
+  read_write_cards_ui_controller_->MaybeRelayout();
 }
 
 void ReadWriteCardsView::ChildPreferredSizeChanged(views::View* child) {
-  read_write_cards_ui_controller_->MaybeUpdateWidgetBounds();
+  read_write_cards_ui_controller_->MaybeRelayout();
 }
 
 BEGIN_METADATA(ReadWriteCardsView)
