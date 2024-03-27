@@ -19,7 +19,7 @@ public class PermissionManagerBridge {
     // permission request. This permission must be always granted.
     public static final String NO_ANDROID_PERMISSION = "org.chromium.wolvic.NO_ANDROID_PERMISSION";
 
-    public enum PermissionType {
+    public enum ContentPermissionType {
         GEOLOCATION(0),
         DESKTOP_NOTIFICATION(1),
         PERSISTENT_STORAGE(2),
@@ -34,15 +34,15 @@ public class PermissionManagerBridge {
         // mapped into this value and automatically denied.
         NOT_SUPPORTED(9);
 
-        public static final PermissionType[] types = PermissionType.values();
+        public static final ContentPermissionType[] types = ContentPermissionType.values();
 
         private final int value;
 
-        private PermissionType(int value) {
+        private ContentPermissionType(int value) {
             this.value = value;
         }
 
-        private static PermissionType fromValue(int value) {
+        private static ContentPermissionType fromValue(int value) {
             return types[value];
         }
 
@@ -79,8 +79,10 @@ public class PermissionManagerBridge {
     }
 
     public interface Delegate {
-        void onPermissionRequest(PermissionType[] permissionTypes, String[] androidPermissionTypes,
-                                 String url, boolean isOffTheRecord, PermissionCallback callback);
+        void onContentPermissionRequest(ContentPermissionType[] permissionTypes, String url,
+                                        boolean isOffTheRecord, PermissionCallback callback);
+        void onAndroidPermissionRequest(String[] androidPermissionTypes,
+                                        PermissionCallback callback);
     }
     
     private static PermissionManagerBridge sInstance;
@@ -98,26 +100,24 @@ public class PermissionManagerBridge {
     }
 
     @CalledByNative
-    public static void onPermissionRequest(int[] permissionTypes,
-                                           String[] androidPermissionTypes,
-                                           String url,
-                                           boolean isOffTheRecord,
-                                           long inProgressRequestPtr) {
+    public static void onContentPermissionRequest(int[] permissionTypes,
+                                                  String url,
+                                                  boolean isOffTheRecord,
+                                                  long inProgressRequestPtr) {
         PermissionManagerBridge bridge = get();
         if (bridge.mDelegate == null) {
             return;
         }
-        bridge.mDelegate.onPermissionRequest(
+        bridge.mDelegate.onContentPermissionRequest(
                 Arrays.stream(permissionTypes)
-                        .mapToObj(PermissionType::fromValue)
-                        .toArray(PermissionType[]::new),
-                androidPermissionTypes,
+                        .mapToObj(ContentPermissionType::fromValue)
+                        .toArray(ContentPermissionType[]::new),
                 url,
                 isOffTheRecord,
                 new PermissionCallback() {
                     @Override
                     public void onPermissionResult(PermissionStatus[] results) {
-                        PermissionManagerBridgeJni.get().onPermissionResult(
+                        PermissionManagerBridgeJni.get().onContentPermissionResult(
                                 isOffTheRecord,
                                 inProgressRequestPtr,
                                 Arrays.stream(results)
@@ -127,8 +127,37 @@ public class PermissionManagerBridge {
         });
     }
 
+    @CalledByNative
+    public static void onAndroidPermissionRequest(String[] permissionTypes,
+                                                  boolean isOffTheRecord,
+                                                  long inProgressRequestPtr) {
+        PermissionManagerBridge bridge = get();
+        if (bridge.mDelegate == null) {
+            return;
+        }
+        bridge.mDelegate.onAndroidPermissionRequest(
+                permissionTypes,
+                new PermissionCallback() {
+                    @Override
+                    public void onPermissionResult(PermissionStatus[] results) {
+                        PermissionManagerBridgeJni.get().onAndroidPermissionResult(
+                                isOffTheRecord,
+                                inProgressRequestPtr,
+                                Arrays.stream(results)
+                                        .mapToInt(PermissionStatus::getValue)
+                                        .toArray());
+                    }
+        });
+    }
+
+
     @NativeMethods
     public interface Natives {
-        void onPermissionResult(boolean isOffTheRecord, long inProgressRequestPtr, int[] results);
+        void onContentPermissionResult(boolean isOffTheRecord,
+                                       long inProgressRequestPtr,
+                                       int[] results);
+        void onAndroidPermissionResult(boolean isOffTheRecord,
+                                       long inProgressRequestPtr,
+                                       int[] results);
     }
 }

@@ -24,6 +24,8 @@ struct InProgressRequest {
   content::PermissionRequestDescription description;
   std::vector<base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>>
       callbacks;
+  absl::optional<std::vector<content::PermissionStatus>> content_results;
+  absl::optional<std::vector<content::PermissionStatus>> android_results;
 };
 
 class WolvicPermissionManager : public content::PermissionControllerDelegate {
@@ -74,17 +76,20 @@ class WolvicPermissionManager : public content::PermissionControllerDelegate {
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
-  void OnPermissionResult(InProgressRequest* in_progress_request,
-                          const std::vector<content::PermissionStatus>& result);
+  void OnContentPermissionResult(
+      JNIEnv* env,
+      InProgressRequest* in_progress_request,
+      const std::vector<content::PermissionStatus>& result);
   void OnAndroidPermissionResult(
       InProgressRequest* in_progress_request,
       const std::vector<content::PermissionStatus>& result);
 
  private:
-  void RequestContentPermissions(
-    JNIEnv* env,
-    InProgressRequest* in_progress_request,
-    const content::PermissionRequestDescription& request_description);
+  void CompleteRequest(InProgressRequest* in_progress_request);
+  void RequestContentPermissions(JNIEnv* env,
+                                 InProgressRequest* in_progress_request);
+  void RequestAndroidPermissions(JNIEnv* env,
+                                 InProgressRequest* in_progress_request);
 
   raw_ptr<content::BrowserContext> browser_context_;
 
