@@ -103,6 +103,10 @@ tast_disabled_tests_from_chrome_all = [
   "platform.Drivefs@reven-vmtest",
   "platform.Drivefs@betty-pi-arc",
 
+  # b/331384750
+  "videoconferencing.TrayTriggersExtension@brya",
+  "videoconferencing.TrayTriggersExtension.lacros@brya",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
