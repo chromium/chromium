@@ -3646,19 +3646,6 @@
       typedom_types: ["Keyword"],
     },
     {
-      name: "mask",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      field_group: "svg",
-      field_template: "pointer",
-      type_name: "StyleSVGResource",
-      include_paths: ["third_party/blink/renderer/core/style/style_svg_resource.h"],
-      wrapper_pointer_name: "Member",
-      default_value: "nullptr",
-      name_for_methods: "MaskerResource",
-      converter: "ConvertElementReference",
-      computable: false,
-    },
-    {
       name: "mask-type",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "svg",
@@ -6142,7 +6129,6 @@
       style_builder_template_args: {
         fill_type: "MaskMode",
       },
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "mask-clip",
@@ -6151,21 +6137,10 @@
       style_builder_template_args: {
         fill_type: "Clip",
       },
-      runtime_flag: "CSSMaskingInterop",
-    },
-    {
-      name: "-webkit-alternative-mask-clip",
-      alternative_of: "-webkit-mask-clip",
-      alias_for: "mask-clip",
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-clip",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "Clip",
-      },
+      alias_for: "mask-clip",
     },
     {
       name: "mask-composite",
@@ -6174,21 +6149,10 @@
       style_builder_template_args: {
         fill_type: "CompositingOperator",
       },
-      runtime_flag: "CSSMaskingInterop",
-    },
-    {
-      name: "-webkit-alternative-mask-composite",
-      alternative_of: "-webkit-mask-composite",
-      alias_for: "mask-composite",
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-composite",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "CompositingOperator",
-      },
+      alias_for: "mask-composite",
     },
     {
       name: "mask-image",
@@ -6198,29 +6162,13 @@
         fill_type: "Image",
         fill_type_getter: "GetImage"
       },
-      runtime_flag: "CSSMaskingInterop",
       // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
       // otherwise {-webkit-}mask-composite has no effect.
       priority: 2,
-    },
-    {
-      name: "-webkit-alternative-mask-image",
-      alternative_of: "-webkit-mask-image",
-      alias_for: "mask-image",
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-image",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      interpolable: true,
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "Image",
-        fill_type_getter: "GetImage"
-      },
-      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
-      // otherwise {-webkit-}mask-composite has no effect.
-      priority: 2,
+      alias_for: "mask-image",
     },
     {
       name: "mask-origin",
@@ -6229,21 +6177,10 @@
       style_builder_template_args: {
         fill_type: "Origin",
       },
-      runtime_flag: "CSSMaskingInterop",
-    },
-    {
-      name: "-webkit-alternative-mask-origin",
-      alternative_of: "-webkit-mask-origin",
-      alias_for: "mask-origin",
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-origin",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "Origin",
-      },
+      alias_for: "mask-origin",
     },
     {
       name: "-webkit-mask-position-x",
@@ -6272,21 +6209,10 @@
       style_builder_template_args: {
         fill_type: "Repeat",
       },
-      runtime_flag: "CSSMaskingInterop",
-    },
-    {
-      name: "-webkit-alternative-mask-repeat",
-      alternative_of: "-webkit-mask-repeat",
-      alias_for: "mask-repeat",
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-repeat",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "Repeat",
-      },
+      alias_for: "mask-repeat",
     },
     {
       name: "mask-size",
@@ -6296,22 +6222,10 @@
       style_builder_template_args: {
         fill_type: "Size",
       },
-      runtime_flag: "CSSMaskingInterop",
-    },
-    {
-      name: "-webkit-alternative-mask-size",
-      alternative_of: "-webkit-mask-size",
-      alias_for: "mask-size",
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-size",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      interpolable: true,
-      style_builder_template: "mask_layer",
-      style_builder_template_args: {
-        fill_type: "Size",
-      },
+      alias_for: "mask-size",
     },
     {
       name: "-webkit-perspective-origin-x",
@@ -8053,34 +7967,18 @@
       longhands: ["column-width", "column-count"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
-    // This alternative of mask is active when CSSMaskingInterop is enabled.
     {
-      name: "-alternative-mask",
-      alternative_of: "mask",
+      name: "mask",
       longhands: [
         "mask-image", "-webkit-mask-position-x",
         "-webkit-mask-position-y", "mask-size", "mask-repeat", "mask-origin",
         "mask-clip", "mask-composite", "mask-mode"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask",
-      longhands: [
-        "-webkit-mask-image", "-webkit-mask-position-x",
-        "-webkit-mask-position-y", "-webkit-mask-size", "-webkit-mask-repeat",
-        "-webkit-mask-origin", "-webkit-mask-clip"
-      ],
-      property_methods: ["ParseShorthand"],
-    },
-    // This alternative of -webkit-mask is active when CSSMaskingInterop is
-    // enabled.
-    {
-      name: "-webkit-alternative-mask",
-      alternative_of: "-webkit-mask",
-      alias_for: "-alternative-mask",
-      runtime_flag: "CSSMaskingInterop",
+      alias_for: "mask",
     },
     {
       name: "-webkit-mask-box-image",
@@ -8097,20 +7995,10 @@
       longhands: ["-webkit-mask-position-x", "-webkit-mask-position-y"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       computable: true,
-      runtime_flag: "CSSMaskingInterop",
-    },
-    {
-      name: "-webkit-alternative-mask-position",
-      alternative_of: "-webkit-mask-position",
-      alias_for: "mask-position",
-      computable: false,
-      runtime_flag: "CSSMaskingInterop",
     },
     {
       name: "-webkit-mask-position",
-      longhands: ["-webkit-mask-position-x", "-webkit-mask-position-y"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      computable: true,
+      alias_for: "mask-position",
     },
     {
       name: "text-emphasis",

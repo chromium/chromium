@@ -73,13 +73,17 @@ void ScopedSVGPaintState::ApplyEffects() {
   bool is_svg_root_or_foreign_object =
       object_.IsSVGRoot() || object_.IsSVGForeignObject();
   if (is_svg_root_or_foreign_object) {
-    // PaintLayerPainter takes care of clip path.
+    // PaintLayerPainter takes care of clip path and mask.
     DCHECK(object_.HasLayer() || !properties || !properties->ClipPathMask());
-  } else if (properties && properties->ClipPathMask()) {
-    should_paint_clip_path_as_mask_image_ = true;
+  } else {
+    if (properties && properties->ClipPathMask()) {
+      should_paint_clip_path_as_mask_image_ = true;
+    }
+    // TODO(fs): This could check for the existence of the property now?
+    if (object_.StyleRef().HasMask()) {
+      should_paint_mask_ = true;
+    }
   }
-
-  ApplyMaskIfNecessary();
 }
 
 void ScopedSVGPaintState::ApplyPaintPropertyState(
@@ -106,22 +110,6 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
   scoped_paint_chunk_properties_.emplace(
       paint_controller, state, display_item_client_,
       DisplayItem::PaintPhaseToSVGEffectType(paint_info_.phase));
-}
-
-void ScopedSVGPaintState::ApplyMaskIfNecessary() {
-  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    if (!(object_.IsSVGRoot() || object_.IsSVGForeignObject()) &&
-        object_.StyleRef().HasMask()) {
-      should_paint_mask_ = true;
-    }
-    return;
-  }
-  SVGResourceClient* client = SVGResources::GetClient(object_);
-  if (!client)
-    return;
-  if (GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, object_.StyleRef().MaskerResource()))
-    should_paint_mask_ = true;
 }
 
 }  // namespace blink

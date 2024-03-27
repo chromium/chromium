@@ -323,8 +323,7 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
   CSSValueList* position_list = CSSValueList::CreateSpaceSeparated();
   if (layer.IsBackgroundXOriginSet()) {
     DCHECK(property.IDEquals(CSSPropertyID::kBackgroundPosition) ||
-           property.IDEquals(CSSPropertyID::kMaskPosition) ||
-           property.IDEquals(CSSPropertyID::kWebkitMaskPosition));
+           property.IDEquals(CSSPropertyID::kMaskPosition));
     position_list->Append(
         *CSSIdentifierValue::Create(layer.BackgroundXOrigin()));
   }
@@ -332,8 +331,7 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
       *ZoomAdjustedPixelValueForLength(layer.PositionX(), style));
   if (layer.IsBackgroundYOriginSet()) {
     DCHECK(property.IDEquals(CSSPropertyID::kBackgroundPosition) ||
-           property.IDEquals(CSSPropertyID::kMaskPosition) ||
-           property.IDEquals(CSSPropertyID::kWebkitMaskPosition));
+           property.IDEquals(CSSPropertyID::kMaskPosition));
     position_list->Append(
         *CSSIdentifierValue::Create(layer.BackgroundYOrigin()));
   }
@@ -445,7 +443,6 @@ const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) {
-  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
   // Canonical order (https://drafts.fxtf.org/css-masking/#typedef-mask-layer):
   //   <mask-reference>              ||
   //   <position> [ / <bg-size> ]?   ||
@@ -476,7 +473,7 @@ const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
         layer->Size() != FillLayer::InitialFillSize(EFillLayerType::kMask)) {
       CSSValueList* position_size_list = CSSValueList::CreateSlashSeparated();
       position_size_list->Append(*CreatePositionListForLayer(
-          GetCSSPropertyWebkitMaskPosition(), *layer, style));
+          GetCSSPropertyMaskPosition(), *layer, style));
       if (layer->Size() != FillLayer::InitialFillSize(EFillLayerType::kMask)) {
         position_size_list->Append(*ValueForFillSize(layer->Size(), style));
       }

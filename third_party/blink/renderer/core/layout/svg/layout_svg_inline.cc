@@ -182,7 +182,7 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
   if (diff.NeedsFullLayout()) {
     // The boundaries affect mask clip and clip path mask/clip.
     const ComputedStyle& style = StyleRef();
-    if (style.HasMaskForSVG() || style.HasClipPath()) {
+    if (style.HasMask() || style.HasClipPath()) {
       SetNeedsPaintPropertyUpdate();
     }
     SetNeedsBoundariesUpdate();

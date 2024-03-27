@@ -109,8 +109,6 @@ void SVGResources::UpdateEffects(LayoutObject& object,
   }
   if (style.HasFilter())
     style.Filter().AddClient(EnsureClient(object));
-  if (StyleSVGResource* masker_resource = style.MaskerResource())
-    masker_resource->AddClient(EnsureClient(object));
   // FilterChanged() includes changes from more than just the 'filter'
   // property, so explicitly check that a filter existed or exists.
   if (diff.FilterChanged() &&
@@ -129,8 +127,6 @@ void SVGResources::UpdateEffects(LayoutObject& object,
   }
   if (old_style->HasFilter())
     old_style->Filter().RemoveClient(*client);
-  if (StyleSVGResource* masker_resource = old_style->MaskerResource())
-    masker_resource->RemoveClient(*client);
 }
 
 void SVGResources::ClearEffects(const LayoutObject& object) {
@@ -151,8 +147,6 @@ void SVGResources::ClearEffects(const LayoutObject& object) {
     // the LayoutObject is detached. Move ownership to the LayoutObject.
     client->InvalidateFilterData();
   }
-  if (StyleSVGResource* masker_resource = style->MaskerResource())
-    masker_resource->RemoveClient(*client);
 }
 
 void SVGResources::UpdatePaints(const LayoutObject& object,
@@ -309,8 +303,7 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
 
   const auto* clip_reference =
       DynamicTo<ReferenceClipPathOperation>(style.ClipPath());
-  if (ContainsResource(clip_reference, resource) ||
-      ContainsResource(style.MaskerResource(), resource)) {
+  if (ContainsResource(clip_reference, resource)) {
     // TODO(fs): "Downgrade" to non-subtree?
     layout_object->SetSubtreeShouldDoFullPaintInvalidation();
     layout_object->SetNeedsPaintPropertyUpdate();
@@ -433,7 +426,7 @@ void SVGResourceInvalidator::InvalidateEffects() {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }
-  if (style.HasClipPath() || style.HasMaskForSVG()) {
+  if (style.HasClipPath() || style.HasMask()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
   }

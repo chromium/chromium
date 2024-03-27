@@ -562,8 +562,6 @@ crbug.com/40829059 [ Win11-arm64 ] external/wpt/css/css-masking/clip-path/clip-p
 crbug.com/40829059 [ Win10.20h2 ] external/wpt/css/css-masking/clip-path/clip-path-shape-006.html [ Failure ]
 crbug.com/40829059 [ Linux ] external/wpt/css/css-masking/clip-path/clip-path-shape-006.html [ Failure ]
 crbug.com/40829059 [ Mac ] external/wpt/css/css-masking/clip-path/clip-path-shape-006.html [ Failure ]
-crbug.com/40829059 virtual/css-masking-disabled/external/wpt/css/css-masking/clip-path/clip-path-shape-005.html [ Failure ]
-crbug.com/40829059 virtual/css-masking-disabled/external/wpt/css/css-masking/clip-path/clip-path-shape-006.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
@@ -6625,35 +6623,6 @@ crbug.com/1467464 http/tests/devtools/security/mixed-content-sidebar.js [ Failur
 
 # Expected to fail 2023-11-13
 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-preload-first-frame-presented.html [ Timeout ]
-
-# Failures due to adding new virtual tests.
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/* [ Failure ]
-# Tests that the mask doesn't apply(?).
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-7.html [ Pass ]
-# Tests the "old" SVG mask property.
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1d.html [ Pass ]
-# Potentially incorrect.
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-5.html [ Pass ]
-# These use mask-image in both the test and the ref.
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-8.html [ Pass ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-6.html [ Pass ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-data-url-image.html [ Pass ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-ib-split-2.html [ Pass ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-ib-split.html [ Pass ]
-# Also includes the prefixed property (-webkit-mask-image) since it primarily tests another feature.
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-inline-sliced-1.html [ Pass ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-svg-child-will-change.html [ Pass ]
-# Doesn't contain anything mask-related.
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1c.html [ Pass ]
-
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-composite-computed.html [ Failure ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-composite-valid.html [ Failure ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-computed.html [ Failure ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-repeat-valid.html [ Failure ]
-
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/animations/mask-position-interpolation.html [ Failure ]
-crbug.com/432153 virtual/css-masking-disabled/external/wpt/css/css-masking/parsing/mask-position-valid.html [ Failure ]
 
 # Gardener 2023-10-17
 crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html [ Failure ]

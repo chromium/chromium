@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -329,9 +328,6 @@ static CSSValue* PendingCssValue(StyleImage* style_image) {
 }
 
 StyleImage* ElementStyleResources::LoadMaskSource(CSSValue& pending_value) {
-  if (!RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    return nullptr;
-  }
   auto* image_value = DynamicTo<CSSImageValue>(pending_value);
   if (!image_value) {
     return nullptr;
@@ -447,15 +443,11 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         }
         break;
       }
-      case CSSPropertyID::kMaskImage:
-      case CSSPropertyID::kWebkitMaskImage: {
+      case CSSPropertyID::kMaskImage: {
         for (FillLayer* mask_layer = &builder.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
-            StyleImage* image = nullptr;
-            if (property == CSSPropertyID::kMaskImage) {
-              image = LoadMaskSource(*pending_value);
-            }
+            StyleImage* image = LoadMaskSource(*pending_value);
             if (!image) {
               image = loader.Load(*pending_value,
                                   FetchParameters::ImageRequestBehavior::kNone,

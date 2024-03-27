@@ -4366,7 +4366,8 @@ namespace {
 
 CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                      CSSParserTokenRange& range,
-                                     const CSSParserContext& context) {
+                                     const CSSParserContext& context,
+                                     bool use_alias_parsing) {
   switch (resolved_property) {
     case CSSPropertyID::kBackgroundClip:
       if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
@@ -4380,7 +4381,6 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
       return ConsumeBackgroundBox(range);
     case CSSPropertyID::kBackgroundImage:
     case CSSPropertyID::kMaskImage:
-    case CSSPropertyID::kWebkitMaskImage:
       return ConsumeImageOrNone(range, context);
     case CSSPropertyID::kBackgroundPositionX:
     case CSSPropertyID::kWebkitMaskPositionX:
@@ -4394,7 +4394,6 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
       return ConsumeBackgroundSize(range, context,
                                    WebFeature::kNegativeBackgroundSize,
                                    ParsingStyle::kNotLegacy);
-    case CSSPropertyID::kWebkitMaskSize:
     case CSSPropertyID::kMaskSize:
       return ConsumeBackgroundSize(range, context,
                                    WebFeature::kNegativeMaskSize,
@@ -4402,16 +4401,15 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kBackgroundColor:
       return ConsumeColor(range, context);
     case CSSPropertyID::kMaskClip:
-      return ConsumeCoordBoxOrNoClip(range);
-    case CSSPropertyID::kWebkitMaskClip:
-      return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
+      return use_alias_parsing
+                 ? ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow)
+                 : ConsumeCoordBoxOrNoClip(range);
     case CSSPropertyID::kMaskOrigin:
-      return ConsumeCoordBox(range);
-    case CSSPropertyID::kWebkitMaskOrigin:
-      return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
+      return use_alias_parsing
+                 ? ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid)
+                 : ConsumeCoordBox(range);
     case CSSPropertyID::kBackgroundRepeat:
     case CSSPropertyID::kMaskRepeat:
-    case CSSPropertyID::kWebkitMaskRepeat:
       return ConsumeRepeatStyleValue(range);
     case CSSPropertyID::kMaskComposite:
       return ConsumeMaskComposite(range);
@@ -4420,13 +4418,6 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     default:
       return nullptr;
   };
-}
-
-const StylePropertyShorthand& WebkitMaskShorthand(CSSPropertyID shorthand_id) {
-  if (shorthand_id == CSSPropertyID::kAlternativeMask) {
-    return alternativeMaskShorthand();
-  }
-  return webkitMaskShorthand();
 }
 
 }  // namespace
@@ -4446,12 +4437,10 @@ bool ParseBackgroundOrMask(bool important,
                            HeapVector<CSSPropertyValue, 64>& properties) {
   CSSPropertyID shorthand_id = local_context.CurrentShorthand();
   DCHECK(shorthand_id == CSSPropertyID::kBackground ||
-         shorthand_id == CSSPropertyID::kWebkitMask ||
-         shorthand_id == CSSPropertyID::kAlternativeMask);
+         shorthand_id == CSSPropertyID::kMask);
   const StylePropertyShorthand& shorthand =
-      shorthand_id == CSSPropertyID::kBackground
-          ? backgroundShorthand()
-          : WebkitMaskShorthand(shorthand_id);
+      shorthand_id == CSSPropertyID::kBackground ? backgroundShorthand()
+                                                 : maskShorthand();
 
   const unsigned longhand_count = shorthand.length();
   HeapVector<Member<const CSSValue>, 4> longhands[10];
@@ -4483,7 +4472,6 @@ bool ParseBackgroundOrMask(bool important,
             bg_position_parsed_in_current_layer = true;
           }
         } else if (property.IDEquals(CSSPropertyID::kBackgroundSize) ||
-                   property.IDEquals(CSSPropertyID::kWebkitMaskSize) ||
                    property.IDEquals(CSSPropertyID::kMaskSize)) {
           if (!ConsumeSlashIncludingWhitespace(range)) {
             continue;
@@ -4502,12 +4490,12 @@ bool ParseBackgroundOrMask(bool important,
           continue;
         } else {
           value =
-              ConsumeBackgroundComponent(property.PropertyID(), range, context);
+              ConsumeBackgroundComponent(property.PropertyID(), range, context,
+                                         local_context.UseAliasParsing());
         }
         if (value) {
           if (property.IDEquals(CSSPropertyID::kBackgroundOrigin) ||
-              property.IDEquals(CSSPropertyID::kMaskOrigin) ||
-              property.IDEquals(CSSPropertyID::kWebkitMaskOrigin)) {
+              property.IDEquals(CSSPropertyID::kMaskOrigin)) {
             origin_value = value;
           }
           parsed_longhand[i] = true;
@@ -4538,14 +4526,13 @@ bool ParseBackgroundOrMask(bool important,
 
       if (!parsed_longhand[i]) {
         if ((property.IDEquals(CSSPropertyID::kBackgroundClip) ||
-             property.IDEquals(CSSPropertyID::kMaskClip) ||
-             property.IDEquals(CSSPropertyID::kWebkitMaskClip)) &&
+             property.IDEquals(CSSPropertyID::kMaskClip)) &&
             origin_value) {
           longhands[i].push_back(origin_value);
           continue;
         }
 
-        if (shorthand_id == CSSPropertyID::kAlternativeMask) {
+        if (shorthand_id == CSSPropertyID::kMask) {
           longhands[i].push_back(To<Longhand>(property).InitialValue());
         } else {
           longhands[i].push_back(CSSInitialValue::Create());

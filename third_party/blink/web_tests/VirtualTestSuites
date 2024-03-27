@@ -2264,14 +2264,6 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"
   },
-  {
-    "prefix": "css-masking-disabled",
-    "owners": ["pdr@chromium.org, yotha@chromium.org, tcaptan@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
-    "bases": [ "external/wpt/css/css-masking"],
-    "args": ["--disable-blink-features=CSSMaskingInterop"],
-    "expires": "never"
-  },
 
   "This individual test must be run separately from others, because it makes a",
   "huge memory allocation that often causes OOM if other tests have run in the",

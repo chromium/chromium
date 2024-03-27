@@ -3905,36 +3905,22 @@ const CSSValue* WebkitMaskBoxImage::CSSValueFromComputedStyleInternal(
       style.MaskBoxImage(), style, allow_visited_style, value_phase);
 }
 
-bool WebkitMask::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CHECK(!RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+bool Mask::ParseShorthand(bool important,
+                          CSSParserTokenRange& range,
+                          const CSSParserContext& context,
+                          const CSSParserLocalContext& local_context,
+                          HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
                                                   local_context, properties);
 }
 
-bool AlternativeMask::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
-  return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
-                                                  local_context, properties);
-}
-
-const CSSValue* AlternativeMask::CSSValueFromComputedStyleInternal(
+const CSSValue* Mask::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValuesForMaskShorthand(
-      alternativeMaskShorthand(), style, layout_object, allow_visited_style,
-      value_phase);
+      maskShorthand(), style, layout_object, allow_visited_style, value_phase);
 }
 
 bool MaskPosition::ParseShorthand(
@@ -3952,26 +3938,6 @@ bool MaskPosition::ParseShorthand(
 }
 
 const CSSValue* MaskPosition::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
-      *this, style, &style.MaskLayers());
-}
-
-bool WebkitMaskPosition::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseBackgroundOrMaskPosition(
-      webkitMaskPositionShorthand(), important, range, context,
-      WebFeature::kThreeValuedPositionBackground, properties);
-}
-
-const CSSValue* WebkitMaskPosition::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,

@@ -204,8 +204,6 @@ static HeapVector<Member<SVGResource>> CollectResources(
             DynamicTo<ReferenceFilterOperation>(*operation))
       resources.push_back(reference_operation->Resource());
   }
-  if (auto* masker = style.MaskerResource())
-    resources.push_back(masker->Resource());
   if (auto* marker = style.MarkerStartResource())
     resources.push_back(marker->Resource());
   if (auto* marker = style.MarkerMidResource())
@@ -237,20 +235,18 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
       }
     }
   }
-  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
-         layer = layer->Next()) {
-      const auto* mask_source =
-          DynamicTo<StyleMaskSourceImage>(layer->GetImage());
-      if (!mask_source) {
-        continue;
-      }
-      const SVGResource* svg_resource = mask_source->GetSVGResource();
-      SVGResourceClient* client =
-          mask_source->GetSVGResourceClient(layout_object);
-      if (svg_resource && svg_resource->FindCycle(*client)) {
-        return true;
-      }
+  for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
+       layer = layer->Next()) {
+    const auto* mask_source =
+        DynamicTo<StyleMaskSourceImage>(layer->GetImage());
+    if (!mask_source) {
+      continue;
+    }
+    const SVGResource* svg_resource = mask_source->GetSVGResource();
+    SVGResourceClient* client =
+        mask_source->GetSVGResourceClient(layout_object);
+    if (svg_resource && svg_resource->FindCycle(*client)) {
+      return true;
     }
   }
   return false;

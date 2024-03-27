@@ -261,11 +261,6 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     exclusions.insert(DebugField::mask_);
   }
   if (!CSSPropertyEquality::PropertiesEqual(
-          PropertyHandle(CSSProperty::Get(CSSPropertyID::kWebkitMaskImage)),
-          *base_computed_style, computed_style)) {
-    exclusions.insert(DebugField::mask_);
-  }
-  if (!CSSPropertyEquality::PropertiesEqual(
           PropertyHandle(CSSProperty::Get(CSSPropertyID::kBorderImageSource)),
           *base_computed_style, computed_style)) {
     exclusions.insert(DebugField::border_image_);

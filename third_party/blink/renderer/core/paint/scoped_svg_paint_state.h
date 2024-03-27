@@ -86,7 +86,6 @@ class ScopedSVGPaintState {
  private:
   void ApplyEffects();
   void ApplyPaintPropertyState(const ObjectPaintProperties&);
-  void ApplyMaskIfNecessary();
 
   const LayoutObject& object_;
   const PaintInfo& paint_info_;

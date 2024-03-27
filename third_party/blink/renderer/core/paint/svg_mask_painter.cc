@@ -292,31 +292,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
                            gfx::ToEnclosingRect(visual_rect));
 
-  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    PaintMaskLayers(context, layout_object);
-    return;
-  }
-
-  SVGResourceClient* client = SVGResources::GetClient(layout_object);
-  const ComputedStyle& style = layout_object.StyleRef();
-  auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-      *client, style.MaskerResource());
-  DCHECK(masker);
-  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker))
-    return;
-  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
-  masker->ClearInvalidationMask();
-
-  const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
-      layout_object, GeometryBox::kFillBox,
-      SVGResources::ForeignObjectQuirk::kDisabled);
-  const float zoom =
-      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
-
-  context.Save();
-  PaintSVGMask(masker, reference_box, zoom, context, SkBlendMode::kSrcOver,
-               /*apply_mask_type=*/true);
-  context.Restore();
+  PaintMaskLayers(context, layout_object);
 }
 
 void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,

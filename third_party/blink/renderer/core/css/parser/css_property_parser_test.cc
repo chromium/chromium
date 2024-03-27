@@ -1158,7 +1158,7 @@ void TestRepeatStyleViaShorthandsParsing(const String& testValue,
   TestRepeatStyleViaShorthandParsing(testValue, expectedCssText,
                                      CSSPropertyID::kBackground);
   TestRepeatStyleViaShorthandParsing(testValue, expectedCssText,
-                                     CSSPropertyID::kAlternativeMask);
+                                     CSSPropertyID::kMask);
 }
 
 TEST(CSSPropertyParserTest, RepeatStyleRepeatXViaShorthand) {
@@ -1221,21 +1221,21 @@ TEST(CSSPropertyParserTest, MaskModeMultipleValues) {
                       "alpha, luminance, match-source");
 }
 
-void TestMaskParsing(const String& specifiedCssText,
+void TestMaskParsing(const String& specified_css_text,
                      const CSSPropertyID property_id,
-                     const String& expectedPropValue) {
+                     const String& expected_prop_value) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   ASSERT_NE(style, nullptr);
 
   auto result = style->ParseAndSetProperty(
-      CSSPropertyID::kAlternativeMask, specifiedCssText, false /* important */,
+      CSSPropertyID::kMask, specified_css_text, false /* important */,
       SecureContextMode::kSecureContext, nullptr /* context_style_sheet */);
   ASSERT_NE(result, MutableCSSPropertyValueSet::kParseError);
 
   EXPECT_EQ(style->PropertyCount(), 9U);
 
-  EXPECT_EQ(style->GetPropertyValue(property_id), expectedPropValue);
+  EXPECT_EQ(style->GetPropertyValue(property_id), expected_prop_value);
 }
 
 TEST(CSSPropertyParserTest, MaskRepeatFromMaskNone) {
@@ -1293,7 +1293,7 @@ TEST(CSSPropertyParserTest, MaskSizeFromMaskNone) {
 }
 
 TEST(CSSPropertyParserTest, MaskFromMaskNoneRepeatY) {
-  TestMaskParsing("none repeat-y", CSSPropertyID::kAlternativeMask, "repeat-y");
+  TestMaskParsing("none repeat-y", CSSPropertyID::kMask, "repeat-y");
 }
 
 }  // namespace blink

@@ -26185,24 +26185,24 @@ Called by update_use_counter_css.py.-->
   <int value="277" label="webkit-marquee-repetition (obsolete)"/>
   <int value="278" label="webkit-marquee-speed (obsolete)"/>
   <int value="279" label="webkit-marquee-style (obsolete)"/>
-  <int value="280" label="webkit-mask"/>
+  <int value="280" label="alias-webkit-mask"/>
   <int value="281" label="webkit-mask-box-image"/>
   <int value="282" label="webkit-mask-box-image-outset"/>
   <int value="283" label="webkit-mask-box-image-repeat"/>
   <int value="284" label="webkit-mask-box-image-slice"/>
   <int value="285" label="webkit-mask-box-image-source"/>
   <int value="286" label="webkit-mask-box-image-width"/>
-  <int value="287" label="webkit-mask-clip"/>
-  <int value="288" label="webkit-mask-composite"/>
-  <int value="289" label="webkit-mask-image"/>
-  <int value="290" label="webkit-mask-origin"/>
-  <int value="291" label="webkit-mask-position"/>
+  <int value="287" label="alias-webkit-mask-clip"/>
+  <int value="288" label="alias-webkit-mask-composite"/>
+  <int value="289" label="alias-webkit-mask-image"/>
+  <int value="290" label="alias-webkit-mask-origin"/>
+  <int value="291" label="alias-webkit-mask-position"/>
   <int value="292" label="webkit-mask-position-x"/>
   <int value="293" label="webkit-mask-position-y"/>
-  <int value="294" label="webkit-mask-repeat"/>
+  <int value="294" label="alias-webkit-mask-repeat"/>
   <int value="295" label="webkit-mask-repeat-x (obsolete)"/>
   <int value="296" label="webkit-mask-repeat-y (obsolete)"/>
-  <int value="297" label="webkit-mask-size"/>
+  <int value="297" label="alias-webkit-mask-size"/>
   <int value="298" label="alias-webkit-max-logical-width"/>
   <int value="299" label="alias-webkit-max-logical-height"/>
   <int value="300" label="alias-webkit-min-logical-width"/>

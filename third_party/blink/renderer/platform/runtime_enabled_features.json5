@@ -902,14 +902,6 @@
       status: "experimental",
     },
     {
-      // Un-prefixed and interoperable mask implementation, including
-      // sub-features such as mask-image, mask-mode, etc.
-      // Tracking bug: https://crbug.com/1418401
-      // Spec: https://drafts.fxtf.org/css-masking/#the-mask
-      name: "CSSMaskingInterop",
-      status: "stable",
-    },
-    {
       // Tracked as an experiment to help Search quantify
       // performance improvements.
       name: "CSSMPCImprovements",

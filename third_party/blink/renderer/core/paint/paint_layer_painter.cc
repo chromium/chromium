@@ -303,8 +303,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (should_paint_content && !selection_drag_image_only) {
     if (const auto* properties = object.FirstFragment().PaintProperties()) {
       if (properties->Mask()) {
-        if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled() &&
-            object.IsSVGForeignObject()) {
+        if (object.IsSVGForeignObject()) {
           SVGMaskPainter::Paint(context, object, object);
         } else {
           PaintWithPhase(PaintPhase::kMask, context, paint_flags);

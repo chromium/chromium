@@ -2089,13 +2089,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')
   // that applies an effect to SVG elements.
   bool HasSVGEffect() const {
-    return HasFilter() || HasClipPath() || HasMaskForSVG();
-  }
-  bool HasMaskForSVG() const {
-    if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-      return HasMask();
-    }
-    return MaskerResource();
+    return HasFilter() || HasClipPath() || HasMask();
   }
 
   // Returns true if any property has an <image> value that is a CSS paint
