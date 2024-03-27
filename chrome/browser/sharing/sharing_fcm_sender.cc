@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "base/version.h"
@@ -92,6 +93,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
                          !fcm_configuration.vapid_p256dh().empty() &&
                          !fcm_configuration.vapid_auth_secret().empty();
 
+  base::UmaHistogramBoolean("Sharing.SendMessageUsingSync", canSendViaSync);
   if (canSendViaSync) {
     message.set_message_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
     EncryptMessage(

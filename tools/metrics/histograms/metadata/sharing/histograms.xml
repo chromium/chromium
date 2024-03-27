@@ -408,6 +408,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendMessageUsingSync" enum="Boolean"
+    expires_after="2024-09-27">
+  <owner>rushans@google.com</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records whether a SharingMessage is being sent over sync. Recorded for all
+    messages before sending them. Recorded for all platforms.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
     enum="SendTabToSelfNotificationStatus" expires_after="2024-09-22">
   <owner>jeffreycohen@chromium.org</owner>
