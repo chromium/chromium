@@ -315,7 +315,7 @@ HRESULT AppCommandRunner::ExecuteAppCommand(
     const std::vector<std::wstring>& substitutions,
     base::Process& process) {
   VLOG(2) << __func__ << ": " << executable << ": "
-          << base::JoinString(parameters, L",")
+          << base::JoinString(parameters, L",") << " : "
           << base::JoinString(substitutions, L",");
 
   const std::optional<std::wstring> command_line_parameters =
