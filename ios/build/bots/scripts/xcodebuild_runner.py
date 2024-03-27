@@ -372,6 +372,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     error_message, stdout = "", ""
     num_attempts = 4
     for attempt in range(num_attempts):
+      # reset error_message with each attempt
+      error_message = ""
       enumerate_tests_json = os.path.join(
           os.path.abspath(self.out_dir),
           'enumerate_tests_%d.json' % int(time.time()))
