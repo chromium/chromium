@@ -2509,8 +2509,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      // This should be removed in M127, after it has been shipped for several
+      // milestones.
       name: "NestedTopLayerSupport",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NetInfoConstantType",
