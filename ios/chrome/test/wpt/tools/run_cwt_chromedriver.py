@@ -77,7 +77,8 @@ if args.asan_build:
       'libclang_rt.asan_iossim_dynamic.dylib')]
 
 egtests_app = test_apps.EgtestsApp(
-    egtests_app=test_app, test_args=['--port %s' % args.port],
+    egtests_app=test_app, all_eg_test_names=[],
+    test_args=['--port %s' % args.port],
     host_app_path=host_app, inserted_libs=inserted_libs)
 
 if iossim_util.is_device_with_udid_simulator(destination):
