@@ -84,7 +84,7 @@ std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
       base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale, or which account.
   load_task.IgnoreStalenessForTesting();
-  load_task.IngoreAccountForTesting();
+  load_task.IgnoreAccountForTesting();
 
   base::RunLoop run_loop;
   load_task.Execute(run_loop.QuitClosure());
