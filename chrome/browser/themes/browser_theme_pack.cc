@@ -15,6 +15,8 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
@@ -174,29 +176,28 @@ BrowserThemePack::PersistentID GetPersistentIDByIDR(int idr) {
 // Returns true if the scales in |input| match those in |expected|.
 // The order must match as the index is used in determining the raw id.
 bool InputScalesValid(std::string_view input,
-                      const std::vector<ui::ResourceScaleFactor>& expected) {
-  if (input.size() != expected.size() * sizeof(float))
+                      base::span<ui::ResourceScaleFactor> expected) {
+  if (input.size() != expected.size() * sizeof(float)) {
     return false;
-  std::unique_ptr<float[]> scales(new float[expected.size()]);
-  // Do a memcpy to avoid misaligned memory access.
-  memcpy(scales.get(), input.data(), input.size());
+  }
+  auto scales = base::HeapArray<float>::WithSize(expected.size());
+  base::as_writable_byte_span(scales).copy_from(base::as_byte_span(input));
   for (size_t index = 0; index < expected.size(); ++index) {
-    if (scales[index] != ui::GetScaleForResourceScaleFactor(expected[index]))
+    if (scales[index] != ui::GetScaleForResourceScaleFactor(expected[index])) {
       return false;
+    }
   }
   return true;
 }
 
 // Returns |scale_factors| as a string to be written to disk.
 std::string GetResourceScaleFactorsAsString(
-    const std::vector<ui::ResourceScaleFactor>& scale_factors) {
-  std::unique_ptr<float[]> scales(new float[scale_factors.size()]);
-  for (size_t i = 0; i < scale_factors.size(); ++i)
+    base::span<const ui::ResourceScaleFactor> scale_factors) {
+  auto scales = base::HeapArray<float>::WithSize(scale_factors.size());
+  for (size_t i = 0; i < scale_factors.size(); ++i) {
     scales[i] = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
-  std::string out_string = std::string(
-      reinterpret_cast<const char*>(scales.get()),
-      scale_factors.size() * sizeof(float));
-  return out_string;
+  }
+  return std::string(base::as_string_view(base::as_byte_span(scales)));
 }
 
 struct StringToIntTable {
