@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -276,6 +278,11 @@ void PrefetchManager::PrefetchUrl(
                     switches::kLoadingPredictorAllowLocalRequestForTesting)
                     ? network::mojom::kURLLoadOptionNone
                     : network::mojom::kURLLoadOptionBlockLocalRequest;
+
+  if (base::FeatureList::IsEnabled(
+          features::kLoadingPredictorPrefetchUseReadAndDiscardBody)) {
+    options |= network::mojom::kURLLoadOptionReadAndDiscardBody;
+  }
 
   std::unique_ptr<blink::ThrottlingURLLoader> loader =
       blink::ThrottlingURLLoader::CreateLoaderAndStart(

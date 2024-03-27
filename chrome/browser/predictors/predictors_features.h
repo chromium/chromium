@@ -34,6 +34,8 @@ extern const base::FeatureParam<PrefetchSubresourceType>
 
 BASE_DECLARE_FEATURE(kLoadingPredictorInflightPredictiveActions);
 
+BASE_DECLARE_FEATURE(kLoadingPredictorPrefetchUseReadAndDiscardBody);
+
 // Returns whether local predictions should be used to make preconnect
 // predictions.
 bool ShouldUseLocalPredictions();

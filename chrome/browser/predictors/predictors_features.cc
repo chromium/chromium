@@ -64,6 +64,12 @@ BASE_FEATURE(kLoadingPredictorPrefetch,
              "LoadingPredictorPrefetch",
              kLoadingPredictorPrefetchDefaultFeatureState);
 
+// Use the kURLLoadOptionReadAndDiscardBody option to URLLoader to avoid
+// unnecessarily copying response body data.
+BASE_FEATURE(kLoadingPredictorPrefetchUseReadAndDiscardBody,
+             "LoadingPredictorPrefetchUseReadAndDiscardBody",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<PrefetchSubresourceType>::Option
     kPrefetchSubresourceTypeParamOptions[] = {
         {PrefetchSubresourceType::kAll, "all"},

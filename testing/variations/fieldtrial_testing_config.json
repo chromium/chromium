@@ -15092,6 +15092,26 @@
             ]
         }
     ],
+    "ReactivePrefetchAndroidDiscardBody": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "//0": "This experiment is only enabled on Android,",
+                    "//1": "because only android has the",
+                    "//2": "LoadingPredictorPrefetch feature enabled by",
+                    "//3": "default. On other platforms it would conflict",
+                    "//4": "with the ReactivePrefetchDesktop experiment.",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LoadingPredictorPrefetchUseReadAndDiscardBody"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReactivePrefetchDesktop": [
         {
             "platforms": [
