@@ -814,9 +814,8 @@ inline constexpr char kRecoveryLearnMoreURL[] =
 
 // The URL for the learn more link about extended automatic updates for
 // ChromeOS devices.
-// TODO(b/324303395): Update link to landing page.
 inline constexpr char16_t kDeviceExtendedUpdatesLearnMoreURL[] =
-    u"https://support.google.com/chromebook?p=extended_updates_support";
+    u"https://www.google.com/chromebook/autoupdates-opt-in/";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
