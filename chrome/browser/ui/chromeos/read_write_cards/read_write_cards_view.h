@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_VIEW_H_
 #define CHROME_BROWSER_UI_CHROMEOS_READ_WRITE_CARDS_READ_WRITE_CARDS_VIEW_H_
 
+#include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -45,7 +46,8 @@ class ReadWriteCardsView : public views::View {
   // layout.
   gfx::Rect context_menu_bounds_;
 
-  chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller_;
+  const raw_ref<chromeos::ReadWriteCardsUiController>
+      read_write_cards_ui_controller_;
 };
 
 }  // namespace chromeos

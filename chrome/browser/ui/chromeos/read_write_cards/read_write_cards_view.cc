@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -29,11 +30,11 @@ void ReadWriteCardsView::SetContextMenuBounds(
 
 void ReadWriteCardsView::PreferredSizeChanged() {
   views::View::PreferredSizeChanged();
-  read_write_cards_ui_controller_.MaybeUpdateWidgetBounds();
+  read_write_cards_ui_controller_->MaybeUpdateWidgetBounds();
 }
 
 void ReadWriteCardsView::ChildPreferredSizeChanged(views::View* child) {
-  read_write_cards_ui_controller_.MaybeUpdateWidgetBounds();
+  read_write_cards_ui_controller_->MaybeUpdateWidgetBounds();
 }
 
 BEGIN_METADATA(ReadWriteCardsView)
