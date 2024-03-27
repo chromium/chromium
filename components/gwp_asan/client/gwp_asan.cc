@@ -493,12 +493,22 @@ void MaybeEnableLightweightDetector(bool boost_sampling,
 void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
                                            const char* process_type) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  [[maybe_unused]] static bool init_once = [&]() -> bool {
-    if (!base::FeatureList::IsEnabled(
-            internal::kExtremeLightweightUAFDetector)) {
-      return false;
-    }
+  if (!base::FeatureList::IsEnabled(internal::kExtremeLightweightUAFDetector)) {
+    return;
+  }
 
+  using enum internal::ExtremeLightweightUAFDetectorTargetProcesses;
+  switch (internal::kExtremeLightweightUAFDetectorTargetProcesses.Get()) {
+    case kAllProcesses:
+      break;
+    case kBrowserProcessOnly:
+      if (*process_type != '\0') {
+        return;  // Non-empty process_type means a non-browser process.
+      }
+      break;
+  }
+
+  [[maybe_unused]] static bool init_once = [&]() -> bool {
     size_t sampling_frequency = static_cast<size_t>(
         internal::kExtremeLightweightUAFDetectorSamplingFrequency.Get());
     size_t quarantine_capacity_in_bytes = static_cast<size_t>(

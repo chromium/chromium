@@ -19,6 +19,13 @@ GWP_ASAN_EXPORT extern const base::FeatureParam<int>
     kExtremeLightweightUAFDetectorSamplingFrequency;
 GWP_ASAN_EXPORT extern const base::FeatureParam<int>
     kExtremeLightweightUAFDetectorQuarantineCapacityInBytes;
+enum class ExtremeLightweightUAFDetectorTargetProcesses {
+  kAllProcesses,
+  kBrowserProcessOnly,
+};
+GWP_ASAN_EXPORT extern const base::FeatureParam<
+    ExtremeLightweightUAFDetectorTargetProcesses>
+    kExtremeLightweightUAFDetectorTargetProcesses;
 
 }  // namespace gwp_asan::internal
 
