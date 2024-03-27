@@ -783,6 +783,13 @@ void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active) {
       ->SendActiveState(active);
 }
 
+std::optional<uint64_t> GetVisitedLinkSaltForNavigation(
+    NavigationHandle* navigation_handle) {
+  return static_cast<NavigationRequest*>(navigation_handle)
+      ->commit_params()
+      .visited_link_salt;
+}
+
 void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
   // In many cases, the load may have finished before we get here.  Only wait if
   // the tab still has a pending navigation.

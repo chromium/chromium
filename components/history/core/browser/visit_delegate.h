@@ -5,9 +5,14 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DELEGATE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DELEGATE_H_
 
+#include <optional>
 #include <vector>
 
 class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace history {
 
@@ -39,6 +44,12 @@ class VisitDelegate {
 
   // Called when all URLs are removed from HistoryService.
   virtual void DeleteAllURLs() = 0;
+
+  // Returns the hash salt corresponding to the given origin. If we have not
+  // previously navigated to `origin`, a new <origin, salt> pair will be
+  // generated, and that new salt value will be returned.
+  virtual std::optional<uint64_t> GetOrAddOriginSalt(
+      const url::Origin& origin) = 0;
 };
 
 }  // namespace history

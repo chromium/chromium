@@ -536,6 +536,10 @@ BindFakeFrameWidgetInterfaces(RenderFrameHost* frame);
 // RenderFrameHost
 void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active);
 
+// Return the value set for VisitedLinkSalt in the navigation's commit_params.
+std::optional<uint64_t> GetVisitedLinkSaltForNavigation(
+    NavigationHandle* navigation_handle);
+
 // Holds down modifier keys for the duration of its lifetime and releases them
 // upon destruction. This allows simulating multiple input events without
 // simulating modifier key releases in between.

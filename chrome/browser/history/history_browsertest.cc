@@ -44,6 +44,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
 
@@ -73,6 +74,54 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
                std::optional<int64_t>),
               (override));
 };
+
+// This helper class obtains, at ready-to-commit time,  the `visited_link_state`
+// value that was assigned to the navigation's `commit_params`.
+class VisitedLinkNavigationThrottleObserver
+    : public content::WebContentsObserver {
+ public:
+  // Callers should pass in the `url` of the navigation they wish to intercept.
+  VisitedLinkNavigationThrottleObserver(content::WebContents* web_contents,
+                                        const GURL& url);
+  VisitedLinkNavigationThrottleObserver(
+      const VisitedLinkNavigationThrottleObserver&) = delete;
+  VisitedLinkNavigationThrottleObserver& operator=(
+      const VisitedLinkNavigationThrottleObserver&) = delete;
+  ~VisitedLinkNavigationThrottleObserver() override = default;
+
+  // Returns the `visited_link_state` value store in the navigation's
+  // `commit_params`.
+  std::optional<uint64_t> GetVisitedLinkSalt();
+
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+ private:
+  GURL url_;
+  std::optional<uint64_t> visited_link_salt_;
+};
+
+VisitedLinkNavigationThrottleObserver::VisitedLinkNavigationThrottleObserver(
+    content::WebContents* web_contents,
+    const GURL& url)
+    : content::WebContentsObserver(web_contents), url_(url) {}
+
+std::optional<uint64_t>
+VisitedLinkNavigationThrottleObserver::GetVisitedLinkSalt() {
+  return visited_link_salt_;
+}
+
+void VisitedLinkNavigationThrottleObserver::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Return early if we intercept a different navigation.
+  if (navigation_handle->GetURL() != url_) {
+    return;
+  }
+  // Obtain the visited link state.
+  visited_link_salt_ =
+      content::GetVisitedLinkSaltForNavigation(navigation_handle);
+}
 
 }  // namespace
 
@@ -1144,4 +1193,74 @@ IN_PROC_BROWSER_TEST_F(HistoryFencedFrameBrowserTest,
   // navigation of the fenced frame.
   EXPECT_EQ(last_load_completion_before_navigation,
             history_tab_helper->last_load_completion_);
+}
+
+// For tests which enable :visited links partitioning.
+class HistoryVisitedLinksBrowserTest : public HistoryBrowserTest {
+ public:
+  HistoryVisitedLinksBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kPartitionVisitedLinkDatabase);
+  }
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryVisitedLinksBrowserTest, GetSaltForSameOrigin) {
+  constexpr char kOrigin[] = "foo.com";
+  const GURL kUrl(embedded_https_test_server().GetURL(kOrigin, "/empty.html"));
+
+  // Obtain our expected salt value from the history service.
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  std::optional<uint64_t> expected_salt =
+      history_service->GetOrAddOriginSalt(url::Origin::Create(kUrl));
+  ASSERT_TRUE(expected_salt.has_value());
+
+  // Perform a navigation and assert that we obtain our expected salt value.
+  VisitedLinkNavigationThrottleObserver observer(web_contents(), kUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  EXPECT_EQ(observer.GetVisitedLinkSalt(), expected_salt.value());
+
+  // Navigate to a same-origin URL. We should receive the same salt as our
+  // previous navigation.
+  const GURL kUrl2(
+      embedded_https_test_server().GetURL(kOrigin, "/title1.html"));
+  VisitedLinkNavigationThrottleObserver observer2(web_contents(), kUrl2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
+  EXPECT_EQ(observer.GetVisitedLinkSalt(), observer2.GetVisitedLinkSalt());
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryVisitedLinksBrowserTest, AddSaltForCrossOrigin) {
+  constexpr char kOrigin[] = "foo.com";
+  const GURL kUrl(embedded_https_test_server().GetURL(kOrigin, "/empty.html"));
+
+  // Obtain our expected salt value for kOrigin from the history service.
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  std::optional<uint64_t> expected_salt =
+      history_service->GetOrAddOriginSalt(url::Origin::Create(kUrl));
+  ASSERT_TRUE(expected_salt.has_value());
+
+  // Perform a navigation and assert that we obtain our expected salt value for
+  // kOrigin.
+  VisitedLinkNavigationThrottleObserver observer(web_contents(), kUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  EXPECT_EQ(observer.GetVisitedLinkSalt(), expected_salt.value());
+
+  // Navigate to a cross-origin URL. We should receive a different salt from our
+  // previous navigation.
+  constexpr char kOrigin2[] = "bar.com";
+  const GURL kUrl2(
+      embedded_https_test_server().GetURL(kOrigin2, "/title1.html"));
+  VisitedLinkNavigationThrottleObserver observer2(web_contents(), kUrl2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
+  EXPECT_NE(observer2.GetVisitedLinkSalt(), std::nullopt);
+  EXPECT_NE(observer.GetVisitedLinkSalt(), observer2.GetVisitedLinkSalt());
 }

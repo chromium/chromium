@@ -17,6 +17,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace visitedlink {
 class VisitedLinkWriter;
 }
@@ -42,6 +46,8 @@ class ContentVisitDelegate : public VisitDelegate,
   void AddURLs(const std::vector<GURL>& urls) override;
   void DeleteURLs(const std::vector<GURL>& urls) override;
   void DeleteAllURLs() override;
+  std::optional<uint64_t> GetOrAddOriginSalt(
+      const url::Origin& origin) override;
 
   // Implementation of visitedlink::VisitedLinkDelegate.
   void RebuildTable(const scoped_refptr<

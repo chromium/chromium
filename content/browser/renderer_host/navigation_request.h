@@ -420,6 +420,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
+  void SetVisitedLinkSalt(uint64_t salt) override;
   network::mojom::WebSandboxFlags SandboxFlagsInitiator() override;
   network::mojom::WebSandboxFlags SandboxFlagsInherited() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
@@ -444,6 +445,8 @@ class CONTENT_EXPORT NavigationRequest
   blink::mojom::RendererContentSettingsPtr GetContentSettingsForTesting()
       override;
   void SetIsAdTagged() override;
+  // NOTE: Read function comments in NavigationHandle before use!
+  std::optional<url::Origin> GetOriginToCommit() override;
   // End of NavigationHandle implementation.
 
   // mojom::NavigationRendererCancellationListener implementation:
@@ -883,19 +886,6 @@ class CONTENT_EXPORT NavigationRequest
   // case of downloads or 204 responses). Prefer to use GetOriginToCommit if
   // possible.
   url::Origin GetTentativeOriginAtRequestTime();
-
-  // Will calculate the origin that this NavigationRequest will commit. (This
-  // should be reasonably accurate, but some browser-vs-renderer inconsistencies
-  // might still exist - they are currently tracked in
-  // https://crbug.com/1220238).
-  //
-  // Returns `nullopt` if the navigation will not commit (e.g. in case of
-  // downloads, or 204 responses).  This may happen if and only if
-  // `NavigationRequest::GetRenderFrameHost` returns null.
-  //
-  // This method may only be called after a response has been delivered for
-  // processing, or after the navigation fails with an error page.
-  std::optional<url::Origin> GetOriginToCommit();
 
   // Same as `GetOriginToCommit()`, except that includes information about how
   // the origin gets calculated, to help debug if the browser-side calculated

@@ -746,6 +746,15 @@ void HistoryService::AddRelatedSearchesForVisit(
                               history_backend_, visit_id, related_searches));
 }
 
+std::optional<uint64_t> HistoryService::GetOrAddOriginSalt(
+    const url::Origin& origin) {
+  if (visit_delegate_) {
+    return visit_delegate_->GetOrAddOriginSalt(origin);
+  }
+  // If there is no visit_delegate_ we cannot determine the corresponding salt.
+  return std::nullopt;
+}
+
 void HistoryService::AddSearchMetadataForVisit(
     const GURL& search_normalized_url,
     const std::u16string& search_terms,

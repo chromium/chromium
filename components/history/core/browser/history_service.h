@@ -264,6 +264,11 @@ class HistoryService : public KeyedService,
       const std::vector<std::string>& related_searches,
       VisitID visit_id);
 
+  // Returns the salt used to hash visited links from this origin. If we have
+  // not previously navigated to this origin, a new <origin, salt> pair will be
+  // added, and that new salt value is returned.
+  std::optional<uint64_t> GetOrAddOriginSalt(const url::Origin& origin);
+
   // Updates the history database with the search metadata for a search-like
   // visit. Virtual for testing.
   virtual void AddSearchMetadataForVisit(const GURL& search_normalized_url,

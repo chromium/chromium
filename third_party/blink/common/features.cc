@@ -1656,6 +1656,13 @@ const base::FeatureParam<bool> kPartialLowEndModeExcludeCanvasFontCache{
     "exclude-canvas-font-cache", false};
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
+// When enabled, this flag partitions the :visited link hashtable by <link url,
+// top-level site, frame origin>.
+// TODO(crbug.com/329102369): complete the partitioned hashtable implementation.
+BASE_FEATURE(kPartitionVisitedLinkDatabase,
+             "PartitionVisitedLinkDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of the PaintCache for Path2D objects that are rasterized
 // out of process.  Has no effect when kCanvasOopRasterization is disabled.
 BASE_FEATURE(kPath2DPaintCache,

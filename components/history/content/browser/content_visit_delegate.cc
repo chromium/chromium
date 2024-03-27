@@ -117,6 +117,11 @@ void ContentVisitDelegate::DeleteAllURLs() {
   visitedlink_writer_->DeleteAllURLs();
 }
 
+std::optional<uint64_t> ContentVisitDelegate::GetOrAddOriginSalt(
+    const url::Origin& origin) {
+  return visitedlink_writer_->GetOrAddOriginSalt(origin);
+}
+
 void ContentVisitDelegate::RebuildTable(
     const scoped_refptr<URLEnumerator>& enumerator) {
   DCHECK(history_service_);

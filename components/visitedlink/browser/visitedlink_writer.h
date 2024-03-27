@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
@@ -40,6 +41,10 @@ class GURL;
 
 namespace content {
 class BrowserContext;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace visitedlink {
@@ -147,6 +152,12 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 
   // Returns the Delegate of this Writer.
   VisitedLinkDelegate* GetDelegate();
+
+  // Return the salt used to hash visited links from this origin. If we have not
+  // visited this origin before, a new <origin, salt> pair will be added to the
+  // map, and that new salt value will be retuned. Will return
+  // std::optional if the table is currently being built or rebuilt.
+  std::optional<uint64_t> GetOrAddOriginSalt(const url::Origin& origin);
 
 #if defined(UNIT_TEST) || !defined(NDEBUG) || defined(PERF_TEST)
   // This is a debugging function that can be called to double-check internal
@@ -416,6 +427,27 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // The pointer is owned by this class, but it must remain valid while the
   // history query is running. We must only delete it when the query is done.
   scoped_refptr<TableBuilder> table_builder_;
+
+  // Contains every per-origin salt used in creating the hashtable.
+  //
+  // NOTE: When VisitedLinkWriter is created, salts_ is empty.
+  //
+  // At initialization time, we will construct the partitioned hashtable on the
+  // DB thread, where salts_ will be accessed and added to as the table is
+  // built. During this time on the DB thread (when table_builder_ is not null),
+  // salts_ CANNOT be added to or accessed by the UI thread.
+  //
+  // Once initialization is complete and we are marshalled back to the UI
+  // thread (once table_builder_ is set to null again), salts_ can be added to
+  // and accessed by the UI thread, whether we are adding new visits via the
+  // History Service or sending salt values via the
+  // VisitedLinksNavigationThrottle.
+  //
+  // TODO(crbug.com/330548738): Currently we store all salts relevant to this
+  // profile in this one map, but there can be many StoragePartitions per
+  // profile. We should revisit in a future phase to take into account which
+  // StoragePartition each origin is being committed to.
+  std::map<url::Origin, uint64_t> salts_;
 
   // Indicates URLs added and deleted since we started rebuilding the table.
   std::set<Fingerprint> added_since_rebuild_;

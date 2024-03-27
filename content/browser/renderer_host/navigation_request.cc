@@ -1376,7 +1376,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*load_with_storage_access=*/load_with_storage_access,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
-          /*cookie_deprecation_label=*/std::nullopt);
+          /*cookie_deprecation_label=*/std::nullopt,
+          /*visited_link_salt=*/std::nullopt);
 
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
@@ -1522,7 +1523,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*load_with_storage_access=*/false,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
-          /*cookie_deprecation_label=*/std::nullopt);
+          /*cookie_deprecation_label=*/std::nullopt,
+          /*visited_link_salt=*/std::nullopt);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -8772,6 +8774,10 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
 
 void NavigationRequest::SetSilentlyIgnoreErrors() {
   silently_ignore_errors_ = true;
+}
+
+void NavigationRequest::SetVisitedLinkSalt(uint64_t salt) {
+  commit_params_->visited_link_salt = salt;
 }
 
 // static

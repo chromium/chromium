@@ -627,6 +627,20 @@ struct CommitNavigationParams {
 
   // The cookie deprecation label for cookie deprecation facilitated testing.
   string? cookie_deprecation_label;
+
+  // The :visited link hashtable is stored in shared memory and contains salted
+  // hashes for all visits. Each salt corresponds to a unique origin, and
+  // renderer processes are only informed of salts that correspond to their
+  // origins. As a result, any given renderer process can only
+  // learn about visits relevant to origins for which it has the salt.
+  //
+  // Here we store the salt corresponding to this navigation's origin to
+  // be committed. It will allow the renderer process that commits this
+  // navigation to learn about visits hashed with this salt. Setting a salt
+  // value is optional. In these cases, VisitedLinkWriter is responsible for
+  // sending salt values to the renderer after the :visited link hashtable has
+  // been initialized.
+  uint64? visited_link_salt;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

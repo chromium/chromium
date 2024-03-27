@@ -1016,6 +1016,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPartialLowEndModeExcludeCanvasFontCache;
 #endif
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPartitionVisitedLinkDatabase);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPlzDedicatedWorker);
 
 // Whether first-party to third-party different-bucket same-origin post messages

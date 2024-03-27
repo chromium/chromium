@@ -560,6 +560,21 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // the navigation: no error page will commit.
   virtual void SetSilentlyIgnoreErrors() = 0;
 
+  // The :visited link hashtable is stored in shared memory and contains salted
+  // hashes for all visits. Each salt corresponds to a unique origin, and
+  // renderer processes are only informed of salts that correspond to their
+  // origins. As a result, any given renderer process can only
+  // learn about visits relevant to origins for which it has the salt.
+  //
+  // Here we store the salt corresponding to this navigation's origin to
+  // be committed. It will allow the renderer process that commits this
+  // navigation to learn about visits hashed with this salt. Setting a salt
+  // value is optional - `commit_params` is constructed with a std::nullopt
+  // default value. In these cases, VisitedLinkWriter is responsible for
+  // sending salt values to the renderer after the :visited link hashtable has
+  // been initialized.
+  virtual void SetVisitedLinkSalt(uint64_t salt) = 0;
+
   // The sandbox flags of the initiator of the navigation, if any.
   // WebSandboxFlags::kNone otherwise.
   virtual network::mojom::WebSandboxFlags SandboxFlagsInitiator() = 0;
@@ -644,6 +659,21 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns a SafeRef to this handle.
   virtual base::SafeRef<NavigationHandle> GetSafeRef() = 0;
+
+  // Will calculate the origin that this NavigationRequest will commit. (This
+  // should be reasonably accurate, but some browser-vs-renderer inconsistencies
+  // might still exist - they are currently tracked in
+  // https://crbug.com/1220238).
+  //
+  // Returns `nullopt` if the navigation will not commit (e.g. in case of
+  // downloads, or 204 responses).  This may happen if and only if
+  // `NavigationHandle::GetRenderFrameHost` returns null.
+  //
+  // This method may only be called after a response has been delivered for
+  // processing, or after the navigation fails with an error page, because the
+  // return value depends on headers in the HTTP response (e.g., a CSP sandbox
+  // header may cause the origin to be opaque).
+  virtual std::optional<url::Origin> GetOriginToCommit() = 0;
 
   // Testing methods ----------------------------------------------------------
   //

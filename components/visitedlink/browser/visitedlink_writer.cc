@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <io.h>
@@ -408,6 +409,24 @@ void VisitedLinkWriter::DeleteAllURLs() {
 
 VisitedLinkDelegate* VisitedLinkWriter::GetDelegate() {
   return delegate_;
+}
+
+std::optional<uint64_t> VisitedLinkWriter::GetOrAddOriginSalt(
+    const url::Origin& origin) {
+  // To avoid race conditions, we should not get from or add to the salt map
+  // while the hashtable is building.
+  if (table_builder_ || table_is_loading_from_file_) {
+    return std::nullopt;
+  }
+  // Obtain the salt for this origin if it already exists.
+  auto it = salts_.find(origin);
+  if (it != salts_.end()) {
+    return it->second;
+  }
+  // Otherwise, generate a new salt for this origin.
+  const uint64_t generated_salt = base::RandUint64();
+  salts_.insert({origin, generated_salt});
+  return generated_salt;
 }
 
 void VisitedLinkWriter::DeleteURLs(URLIterator* urls) {

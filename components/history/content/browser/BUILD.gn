@@ -12,6 +12,8 @@ static_library("browser") {
     "history_context_helper.h",
     "history_database_helper.cc",
     "history_database_helper.h",
+    "visited_link_navigation_throttle.cc",
+    "visited_link_navigation_throttle.h",
     "web_contents_top_sites_observer.cc",
     "web_contents_top_sites_observer.h",
   ]

@@ -82,6 +82,7 @@
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
@@ -237,6 +238,7 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/history/content/browser/visited_link_navigation_throttle.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/language/core/browser/pref_names.h"
@@ -1405,6 +1407,33 @@ bool SubAppsAPIsRequireUserGestureAndAuthorization(
 std::unique_ptr<blocked_content::PopupNavigationDelegate>
 CreatePopupNavigationDelegate(NavigateParams params) {
   return std::make_unique<ChromePopupNavigationDelegate>(std::move(params));
+}
+
+// NOTE: MaybeCreateVisitedLinkNavigationThrottleFor is defined here due to
+// usage of Profile code which lives in chrome/. The rest of the
+// VisitedLinkNavigationThrottle class lives in components/, which cannot access
+// chrome/ code due to layering.
+std::unique_ptr<VisitedLinkNavigationThrottle>
+MaybeCreateVisitedLinkNavigationThrottleFor(
+    content::NavigationHandle* navigation_handle) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabase)) {
+    return nullptr;
+  }
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle->GetWebContents()->GetBrowserContext());
+  // Off-the-record profiles do not record history or visited links.
+  if (profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS);
+  if (!history_service) {
+    return nullptr;
+  }
+  return std::make_unique<VisitedLinkNavigationThrottle>(
+      std::move(navigation_handle), history_service);
 }
 
 ChromeContentBrowserClient::PopupNavigationDelegateFactory
@@ -5335,6 +5364,9 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(PreviewNavigationThrottle::MaybeCreateThrottleFor(handle),
                    &throttles);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  MaybeAddThrottle(MaybeCreateVisitedLinkNavigationThrottleFor(handle),
+                   &throttles);
 
   return throttles;
 }
