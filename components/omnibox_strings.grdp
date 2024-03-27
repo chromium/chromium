@@ -62,6 +62,11 @@
       Search or type URL
     </message>
   </if>
+  <if expr="is_android">
+    <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">
+      Search the web in Chrome
+    </message>
+  </if>
   <message name="IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE" desc="The omnibox text when there is both traditional text (i.e., user text + inline autocompletion) and additional text (i.e. the default suggestion's URL when rich autocompleting a title) to display.">
     <ph name="TRADITIONAL_TEXT">$1</ph> - <ph name="ADDITIONAL_TEXT">$2</ph>
   </message>

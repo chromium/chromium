@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -114,6 +115,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     /**
      * Begins a new query.
      *
+     * @param origin The SearchActivity requestor.
      * @param searchType The type of search to invoke.
      * @param optionalText Prepopulate with a query, this may be null.
      * @param voiceRecognitionHandler Handler responsible for managing voice searches.
@@ -121,10 +123,17 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
      */
     @VisibleForTesting
     public void beginQuery(
+            @IntentOrigin int origin,
             @SearchType int searchType,
             @Nullable String optionalText,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull WindowAndroid windowAndroid) {
+
+        if (origin == IntentOrigin.CUSTOM_TAB) {
+            mUrlBar.setHint(R.string.omnibox_on_cct_empty_hint);
+        } else {
+            mUrlBar.setHint(R.string.omnibox_empty_hint);
+        }
         // Clear the text regardless of the promo decision.  This allows the user to enter text
         // before native has been initialized and have it not be cleared one the delayed beginQuery
         // logic is performed.

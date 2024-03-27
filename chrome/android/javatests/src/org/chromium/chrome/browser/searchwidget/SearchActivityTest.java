@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -357,7 +358,12 @@ public class SearchActivityTest {
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
         locationBarCoordinator.setVoiceRecognitionHandlerForTesting(mHandler);
-        locationBar.beginQuery(SearchType.VOICE, /* optionalText= */ null, mHandler, null);
+        locationBar.beginQuery(
+                IntentOrigin.SEARCH_WIDGET,
+                SearchType.VOICE,
+                /* optionalText= */ null,
+                mHandler,
+                null);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);

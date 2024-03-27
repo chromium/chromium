@@ -623,6 +623,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private void beginQuery() {
         mSearchBox.beginQuery(
+                mIntentOrigin,
                 mSearchType,
                 SearchActivityUtils.getIntentQuery(getIntent()),
                 mLocationBarCoordinator.getVoiceRecognitionHandler(),
