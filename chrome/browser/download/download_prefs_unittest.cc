@@ -762,7 +762,7 @@ class DownloadDirOneDrive : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void AddOneDriveFuseboxVolume() {
     auto* fake_provided_fs =
-        file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile_);
+        file_manager::test::MountFakeProvidedFileSystemOneDrive(profile_);
 
     file_manager::VolumeManager* const volume_manager =
         file_manager::VolumeManager::Get(profile_);

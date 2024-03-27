@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
+#include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/platform_util.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
@@ -240,11 +241,23 @@ class FakeExtensionProviderOneDrive
       request_mount_impl_;
 };
 
+// Mount a provider and return a `ProvidedFileSystemInterface`.
+ash::file_system_provider::ProvidedFileSystemInterface* MountProvidedFileSystem(
+    Profile* profile,
+    const extensions::ExtensionId& extension_id,
+    ash::file_system_provider::MountOptions options,
+    std::unique_ptr<ash::file_system_provider::ProviderInterface> provider);
+
+// Only call this after `MountProvidedFileSystem()`.
+ash::file_system_provider::ProviderInterface* GetProvider(
+    Profile* profile,
+    const extensions::ExtensionId& extension_id);
+
 // Mount a `FakeProvidedFileSystemOneDrive`.
-FakeProvidedFileSystemOneDrive* CreateFakeProvidedFileSystemOneDrive(
+FakeProvidedFileSystemOneDrive* MountFakeProvidedFileSystemOneDrive(
     Profile* profile);
 
-// Only call this after `CreateFakeProvidedFileSystemOneDrive()`.
+// Only call this after `MountFakeProvidedFileSystemOneDrive()`.
 FakeExtensionProviderOneDrive* GetFakeProviderOneDrive(Profile* profile);
 
 }  // namespace test

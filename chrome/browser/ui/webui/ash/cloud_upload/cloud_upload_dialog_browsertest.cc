@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_P(CloudUploadDialogHandlerDisabledBrowserTest,
                      chromeos::cloud_upload::kCloudUploadPolicyAllowed);
 
     // Perform the necessary OneDrive & Microsoft365 setup.
-    file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
+    file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
     file_manager::test::AddFakeWebApp(
         web_app::kMicrosoft365AppId, kDocMimeType, kDocFileExtension, "", true,
         apps::AppServiceProxyFactory::GetForProfile(profile()));
@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAutomated(
           profile())) {
     // Perform the necessary OneDrive & Microsoft365 setup.
-    file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
+    file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
     file_manager::test::AddFakeWebApp(
         web_app::kMicrosoft365AppId, kDocMimeType, kDocFileExtension, "", true,
         apps::AppServiceProxyFactory::GetForProfile(profile()));
@@ -1232,7 +1232,7 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
   }
 
   void AddFakeODFS() {
-    file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
+    file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
   }
 
   void AddFakeOfficePWA() {

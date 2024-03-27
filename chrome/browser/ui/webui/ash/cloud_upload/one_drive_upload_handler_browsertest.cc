@@ -121,7 +121,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
   // Creates and mounts fake provided file system for OneDrive.
   void SetUpODFS() {
     provided_file_system_ =
-        file_manager::test::CreateFakeProvidedFileSystemOneDrive(profile());
+        file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
   }
 
   // Copy the test file with `test_file_name` into the directory `target_dir`,

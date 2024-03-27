@@ -1706,7 +1706,7 @@ class OneDriveTest : public TestAccountBrowserTest,
 
     // Create a fake ODFS.
     provided_file_system_ =
-        test::CreateFakeProvidedFileSystemOneDrive(profile());
+        test::MountFakeProvidedFileSystemOneDrive(profile());
 
     // Add test files to the fake ODFS.
     provided_file_system_->AddEntry(
