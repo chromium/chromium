@@ -1455,10 +1455,6 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         danger_type = download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
         is_pending_scanning = true;
         break;
-      case safe_browsing::DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
-        danger_type =
-            download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
-        break;
       case safe_browsing::DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
         danger_type =
             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
@@ -1599,7 +1595,6 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
                                                             /*allowed*/ true);
       break;
 
-    case safe_browsing::DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case safe_browsing::DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case safe_browsing::DownloadCheckResult::BLOCKED_TOO_LARGE:
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:

@@ -150,8 +150,6 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS;
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return DownloadDangerType::PROMPT_FOR_SCANNING;
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
-      return DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return DownloadDangerType::DANGEROUS_ACCOUNT_COMPROMISE;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:

@@ -486,7 +486,6 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::POTENTIALLY_UNWANTED:
     case Result::BLOCKED_PASSWORD_PROTECTED:
     case Result::BLOCKED_TOO_LARGE:
-    case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case Result::DANGEROUS_ACCOUNT_COMPROMISE:
     case Result::BLOCKED_SCAN_FAILED:
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::

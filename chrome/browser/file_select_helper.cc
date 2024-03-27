@@ -123,7 +123,6 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::DEEP_SCANNED_SAFE:
     case Result::PROMPT_FOR_SCANNING:
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-    case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case Result::DEEP_SCANNED_FAILED:
     case Result::BLOCKED_SCAN_FAILED:
     case Result::IMMEDIATE_DEEP_SCAN:

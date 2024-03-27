@@ -41,8 +41,6 @@ const char* GetDownloadDangerTypeString(const DownloadDangerType& danger_type) {
       return "DeepScannedOpenedDangerous";
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return "PromptForScanning";
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
-      return "BlockedUnsupportedFiletype";
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return "DangerousAccountCompromise";
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:

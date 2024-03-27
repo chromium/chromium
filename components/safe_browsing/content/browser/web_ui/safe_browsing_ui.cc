@@ -3223,9 +3223,6 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
     case DownloadCheckResult::PROMPT_FOR_SCANNING:
       url_and_result.Set("result", "PROMPT_FOR_SCANNING");
       break;
-    case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
-      url_and_result.Set("result", "BLOCKED_UNSUPPORTED_FILE_TYPE");
-      break;
     case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
       url_and_result.Set("result", "DANGEROUS_ACCOUNT_COMPROMISE");
       break;

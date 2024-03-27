@@ -70,9 +70,6 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypePromptForScanning;
-    case DownloadDangerType::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
-      return crosapi::mojom::DownloadDangerType::
-          kDownloadDangerTypeBlockedUnsupportedFiletype;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeDangerousAccountCompromise;
