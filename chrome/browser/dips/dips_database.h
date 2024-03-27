@@ -65,6 +65,10 @@ class DIPSDatabase {
   // `is_current_interaction` field to the Popups table.
   bool MigrateToVersion5();
 
+  // Migrates from v5 to v6 of the DIPS database schema. This migration adds a
+  // Config table for storing key-value configuration data.
+  bool MigrateToVersion6();
+
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
              const TimestampRange& storage_times,
@@ -238,6 +242,13 @@ class DIPSDatabase {
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
   bool ExecuteSqlForTesting(const char* sql);
 
+  bool SetConfigValueForTesting(std::string_view name, int64_t value) {
+    return SetConfigValue(name, value);
+  }
+  std::optional<int64_t> GetConfigValueForTesting(std::string_view name) {
+    return GetConfigValue(name);
+  }
+
  protected:
   // Initialization functions --------------------------------------------------
   sql::InitStatus Init();
@@ -278,6 +289,11 @@ class DIPSDatabase {
   bool AdjustLastTimestamps(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             const DIPSEventRemovalType type);
+
+  // Upsert the row for `key` in the config table to contain `value`.
+  bool SetConfigValue(std::string_view key, int64_t value);
+  // Get the value for `key` from the config table, or nullopt if absent.
+  std::optional<int64_t> GetConfigValue(std::string_view key);
 
   // When the number of entries in the database exceeds |max_entries_|, purge
   // down to |max_entries_| - |purge_entries_|.

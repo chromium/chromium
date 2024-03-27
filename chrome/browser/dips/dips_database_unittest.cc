@@ -29,16 +29,18 @@
 #include "sql/sqlite_result_code_values.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
+using testing::Optional;
 
 class DIPSDatabase;
 
 namespace {
 
-const int kCurrentVersionNumber = 5;
-const int kCompatibleVersionNumber = 5;
+const int kCurrentVersionNumber = 6;
+const int kCompatibleVersionNumber = 6;
 
 class TestDatabase : public DIPSDatabase {
  public:
@@ -1576,13 +1578,22 @@ class DIPSDatabaseMigrationTest : public testing::Test {
     return kGetLastCompatibleVersionSql.ColumnInt(0);
   }
 
-  int GetDatabasePrepopulated(sql::Database* db) {
+  std::optional<int> GetPrepopulatedFromMetaTable(sql::Database* db) {
     sql::Statement kGetPrepopulatedSql(db->GetUniqueStatement(
         "SELECT value FROM meta WHERE key='prepopulated'"));
     if (!kGetPrepopulatedSql.Step()) {
-      return 0;
+      return std::nullopt;
     }
     return kGetPrepopulatedSql.ColumnInt(0);
+  }
+
+  std::optional<int64_t> GetPrepopulatedFromConfigTable(sql::Database* db) {
+    sql::Statement kGetPrepopulatedSql(db->GetUniqueStatement(
+        "SELECT int_value FROM config WHERE key='prepopulated'"));
+    if (!kGetPrepopulatedSql.Step()) {
+      return std::nullopt;
+    }
+    return kGetPrepopulatedSql.ColumnInt64(0);
   }
 
   std::vector<std::string> GetFirstAndLastColumnForSite(sql::Database* db,
@@ -1624,6 +1635,11 @@ class DIPSDatabaseMigrationTest : public testing::Test {
         db, "SELECT * FROM popups ORDER BY opener_site", "|", "\n");
   }
 
+  std::string DbConfigToString(sql::Database* db) {
+    return sql::test::ExecuteWithResults(
+        db, "SELECT * FROM config ORDER BY key", "|", "\n");
+  }
+
  private:
   base::test::ScopedFeatureList features_;
   std::unique_ptr<TestDatabase> db_;
@@ -1651,6 +1667,7 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateEmptyToCurrentVersion) {
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_TRUE(db.DoesTableExist("bounces"));
     EXPECT_TRUE(db.DoesTableExist("popups"));
+    EXPECT_TRUE(db.DoesTableExist("config"));
 
     // The "stateless_bounce" columns should be removed, and replaced by just
     // "bounce" columns.
@@ -1683,7 +1700,7 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
     EXPECT_EQ(GetDatabaseVersion(&db), v2sql_version_num);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db),
               v2sql_compatible_version_num);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), v2sql_prepopulated);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), v2sql_prepopulated);
 
     sql::MetaTable meta_table;
     ASSERT_TRUE(
@@ -1719,10 +1736,13 @@ TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
     // Check version.
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 0);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), std::nullopt);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
     ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_TRUE(db.DoesTableExist("config"));
+
+    EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), std::nullopt);
 
     EXPECT_TRUE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
@@ -1745,6 +1765,8 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 1);
 
     EXPECT_FALSE(db.DoesTableExist("popups"));
+    EXPECT_FALSE(db.DoesTableExist("config"));
+
     EXPECT_TRUE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
     EXPECT_FALSE(db.DoesColumnExist("bounces", "first_bounce_time"));
@@ -1807,6 +1829,9 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
     ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_TRUE(db.DoesTableExist("config"));
+
+    EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), std::nullopt);
 
     // The `kStatelessBounceTimesV1` columns should be removed, and replaced by
     // just `kBounceTimesV2ToV3` columns:
@@ -1878,9 +1903,11 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), 2);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 2);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), 1);
 
     EXPECT_FALSE(db.DoesTableExist("popups"));
+    EXPECT_FALSE(db.DoesTableExist("config"));
+
     EXPECT_FALSE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
     EXPECT_FALSE(
@@ -1902,10 +1929,13 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), std::nullopt);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
     ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_TRUE(db.DoesTableExist("config"));
+
+    EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), 1);
 
     EXPECT_TRUE(
         db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
@@ -1929,9 +1959,10 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), 3);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 3);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), 1);
 
     EXPECT_FALSE(db.DoesTableExist("popups"));
+    EXPECT_FALSE(db.DoesTableExist("config"));
 
     EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
@@ -1949,14 +1980,17 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV3ToCurrentVersion) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), std::nullopt);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
     ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_TRUE(db.DoesTableExist("config"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "popup_site"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
+
+    EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), 1);
 
     EXPECT_EQ(DbBouncesToString(&db),
               "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
@@ -1976,7 +2010,9 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV4ToCurrentVersion) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), 4);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 4);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), 1);
+
+    EXPECT_FALSE(db.DoesTableExist("config"));
 
     EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "popup_site"));
@@ -1997,14 +2033,91 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV4ToCurrentVersion) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
-    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), std::nullopt);
 
     ASSERT_TRUE(db.DoesTableExist("bounces"));
     ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_TRUE(db.DoesTableExist("config"));
     EXPECT_TRUE(db.DoesColumnExist("popups", "is_current_interaction"));
+
+    EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), 1);
 
     EXPECT_EQ(DbPopupsToString(&db),
               "site1.com|3p-site.com|123|2023-10-01 12:00:00|\n"
               "site2.com|3p-site.com|456|2023-10-02 12:00:00|");
   }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV5ToCurrentVersion) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v5.sql"));
+
+  // Verify pre migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    ASSERT_EQ(GetDatabaseVersion(&db), 5);
+    ASSERT_EQ(GetDatabaseLastCompatibleVersion(&db), 5);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), 1);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_FALSE(db.DoesTableExist("config"));
+  }
+
+  MigrateDatabase();
+
+  // Verify post migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+    EXPECT_EQ(GetPrepopulatedFromMetaTable(&db), std::nullopt);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+    ASSERT_TRUE(db.DoesTableExist("popups"));
+    ASSERT_TRUE(db.DoesTableExist("config"));
+
+    EXPECT_EQ(GetPrepopulatedFromConfigTable(&db), 1);
+
+    EXPECT_EQ(DbConfigToString(&db), "prepopulated|1");
+  }
+}
+
+// Verifies actions on the `config` table of the DIPS database.
+class DIPSDatabaseConfigTest : public DIPSDatabaseTest {
+ public:
+  DIPSDatabaseConfigTest() : DIPSDatabaseTest(/*in_memory=*/true) {}
+};
+
+TEST_F(DIPSDatabaseConfigTest, GetUnknownKeyReturnsNullopt) {
+  EXPECT_EQ(db_->GetConfigValueForTesting("test"), std::nullopt);
+}
+
+TEST_F(DIPSDatabaseConfigTest, WriteAndRead) {
+  ASSERT_TRUE(db_->SetConfigValueForTesting("test", 42));
+  EXPECT_THAT(db_->GetConfigValueForTesting("test"), Optional(42));
+}
+
+TEST_F(DIPSDatabaseConfigTest, Overwrite) {
+  ASSERT_TRUE(db_->SetConfigValueForTesting("test", 42));
+  ASSERT_TRUE(db_->SetConfigValueForTesting("test", 99));
+
+  EXPECT_THAT(db_->GetConfigValueForTesting("test"), Optional(99));
+}
+
+TEST_F(DIPSDatabaseConfigTest, MultipleKeys) {
+  ASSERT_TRUE(db_->SetConfigValueForTesting("foo", 42));
+  ASSERT_TRUE(db_->SetConfigValueForTesting("bar", 99));
+
+  EXPECT_THAT(db_->GetConfigValueForTesting("foo"), Optional(42));
+  EXPECT_THAT(db_->GetConfigValueForTesting("bar"), Optional(99));
+}
+
+TEST_F(DIPSDatabaseConfigTest, MarkAsPrepopulated) {
+  ASSERT_FALSE(db_->IsPrepopulated());
+  ASSERT_TRUE(db_->MarkAsPrepopulated());
+  ASSERT_TRUE(db_->IsPrepopulated());
 }
