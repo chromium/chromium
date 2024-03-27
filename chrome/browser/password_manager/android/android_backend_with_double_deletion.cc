@@ -44,8 +44,8 @@ void AndroidBackendWithDoubleDeletion::InitBackend(
                                  base::DoNothing());
 
   // `sync_enabled_or_disabled_cb` can be invoked by `android_backend_` only if
-  // M4 feature flag is enabled. The callback is invoked when sync status
-  // changes are detected.
+  // M4 feature flag is enabled and the `android_backend_` is an account
+  // backend. The callback is invoked when sync status changes are detected.
   android_backend_->InitBackend(
       affiliated_match_helper, std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
