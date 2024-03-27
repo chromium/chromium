@@ -640,7 +640,7 @@
     'swarming': {
       'dimensions': {
         'gpu': '1002:7340',
-        'os': 'Ubuntu-22.04.3',
+        'os': 'Ubuntu-22.04',
         'display_attached': '1',
         'pool': 'chromium.tests.gpu',
       },

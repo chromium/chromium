@@ -6606,7 +6606,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -6638,7 +6638,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8232,7 +8232,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8259,7 +8259,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8290,7 +8290,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8313,7 +8313,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8338,7 +8338,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8365,7 +8365,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8389,7 +8389,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8426,7 +8426,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8470,7 +8470,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8505,7 +8505,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8540,7 +8540,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8579,7 +8579,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8624,7 +8624,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8660,7 +8660,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8696,7 +8696,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8734,7 +8734,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -8772,7 +8772,7 @@
           "dimensions": {
             "display_attached": "1",
             "gpu": "1002:7340",
-            "os": "Ubuntu-22.04.3",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
