@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 component("base") {
   output_name = "mojo_base_lib"
@@ -25,6 +26,29 @@ component("base") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+  ]
+}
+
+component("protobuf_support") {
+  output_name = "mojo_base_protobuf_support"
+
+  sources = [
+    "proto_wrapper.cc",
+    "proto_wrapper.h",
+    "proto_wrapper_passkeys.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "IS_MOJO_BASE_PROTOBUF_SUPPORT_IMPL" ]
+
+  public_deps = [
+    ":base",
+    "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 
@@ -138,6 +162,35 @@ component("shared_typemap_traits") {
   ]
 }
 
+component("protobuf_support_traits") {
+  output_name = "mojo_base_protobuf_support_traits"
+
+  sources = [
+    "proto_wrapper_mojom_traits.cc",
+    "proto_wrapper_mojom_traits.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  defines = [ "IS_MOJO_BASE_PROTOBUF_SUPPORT_TRAITS_IMPL" ]
+
+  public_deps = [
+    ":base",
+    ":protobuf_support",
+    ":shared_typemap_traits",
+    "//base:i18n",
+    "//mojo/public/mojom/base:base_shared",
+    "//mojo/public/mojom/base:protobuf_support_shared",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+proto_library("test_proto") {
+  testonly = true
+  sources = [ "test.proto" ]
+  cc_generator_options = "lite"
+}
+
 source_set("tests") {
   testonly = true
 
@@ -150,6 +203,7 @@ source_set("tests") {
     "int128_unittest.cc",
     "memory_allocator_dump_cross_process_uid_unittest.cc",
     "process_id_unittest.cc",
+    "proto_wrapper_unittest.cc",
     "read_only_buffer_unittest.cc",
     "ref_counted_memory_unittest.cc",
     "safe_base_name_unittest.cc",
@@ -168,12 +222,16 @@ source_set("tests") {
 
   public_deps = [
     ":base",
+    ":protobuf_support",
+    ":protobuf_support_traits",
     ":shared_typemap_traits",
+    ":test_proto",
     "//base",
     "//base/test:test_support",
     "//build:blink_buildflags",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
