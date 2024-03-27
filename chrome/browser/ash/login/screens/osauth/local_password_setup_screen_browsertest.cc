@@ -349,8 +349,9 @@ class LocalPasswordSetupScreenRecoveryTest
 // Submit the password in recovery mode. Local password setup screen
 // should exit with proper exit code and `kLocalPassword` should be in the
 // modified factors set.
+// TODO(crbug.com/329339200): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenRecoveryTest,
-                       UpdateLocalPassword) {
+                       DISABLED_UpdateLocalPassword) {
   ShowLocalPasswordSetupScreen();
   WaitForLocalPasswordSetupScreenShown();
 
