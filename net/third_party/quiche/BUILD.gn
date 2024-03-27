@@ -320,7 +320,6 @@ static_library("quiche_tool_support") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//net",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/quic_trace:quic_trace_proto",

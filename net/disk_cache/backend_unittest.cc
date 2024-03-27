@@ -30,7 +30,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -63,6 +62,7 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 using disk_cache::EntryResult;
 using net::test::IsError;
@@ -1561,9 +1561,9 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry() {
   // This may be not thread-safe in general, but for now it's OK so add some
   // ThreadSanitizer annotations to ignore data races on cache_.
   // See http://crbug.com/55970
-  ANNOTATE_IGNORE_READS_BEGIN();
+  ABSL_ANNOTATE_IGNORE_READS_BEGIN();
   EXPECT_GE(1, cache_->GetEntryCount());
-  ANNOTATE_IGNORE_READS_END();
+  ABSL_ANNOTATE_IGNORE_READS_END();
 
   EXPECT_NE(net::OK, OpenEntry(first, &entry));
 }
@@ -1625,9 +1625,9 @@ void DiskCacheBackendTest::BackendTrimInvalidEntry2() {
   FlushQueueForTest();
   // If it's not clear enough: we may still have eviction tasks running at this
   // time, so the number of entries is changing while we read it.
-  ANNOTATE_IGNORE_READS_AND_WRITES_BEGIN();
+  ABSL_ANNOTATE_IGNORE_READS_AND_WRITES_BEGIN();
   EXPECT_GE(30, cache_->GetEntryCount());
-  ANNOTATE_IGNORE_READS_AND_WRITES_END();
+  ABSL_ANNOTATE_IGNORE_READS_AND_WRITES_END();
 
   // For extra messiness, the integrity check for the cache can actually cause
   // evictions if it's over-capacity, which would race with above. So change the
