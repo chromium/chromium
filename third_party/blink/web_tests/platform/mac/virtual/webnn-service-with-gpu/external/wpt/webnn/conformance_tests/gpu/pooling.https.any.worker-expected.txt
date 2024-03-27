@@ -1,89 +1,89 @@
 This is a testharness.js-based test.
 [FAIL] averagePool2d float32 4D constant tensor all positive default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor all positive default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor all negative default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.windowDimensions
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.padding
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.strides
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.dilations
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.layout=nchw
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] averagePool2d float32 4D tensor options.dilations with options.strides
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D constant tensor all positive default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor default all positive options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor default all negative options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.windowDimensions
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.padding
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.strides
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.dilations
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.layout=nchw
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.layout=nhwc
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] l2Pool2d float32 4D tensor options.dilations with options.strides
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D constant tensor default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.windowDimensions
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.padding
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.strides
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.dilations
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.layout=nchw
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.layout=nhwc
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] maxPool2d float32 4D tensor options.dilations with options.strides
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model graph build error: This operator is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 Harness: the test ran to completion.
 

@@ -81,11 +81,11 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
   ASSIGN_OR_RETURN(
       std::unique_ptr<GraphBuilder> graph_builder,
       GraphBuilder::CreateAndBuild(*graph_info.get(), model_file_dir.GetPath()),
-      [&](std::string error) {
+      [&](mojom::ErrorPtr error) {
         originating_sequence->PostTask(
-            FROM_HERE, base::BindOnce(&GraphImpl::OnCreateAndBuildFailure,
-                                      std::move(callback),
-                                      "Model graph build error: " + error));
+            FROM_HERE, base::BindOnce(std::move(callback),
+                                      mojom::CreateGraphResult::NewError(
+                                          std::move(error))));
         return;
       });
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",

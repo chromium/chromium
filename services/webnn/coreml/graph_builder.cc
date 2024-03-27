@@ -214,6 +214,16 @@ CoreML::Specification::MILSpec::Value CreateStringValue(
   return scalar_value;
 }
 
+base::unexpected<mojom::ErrorPtr> NewNotSupportedError(std::string message) {
+  return base::unexpected(mojom::Error::New(
+      mojom::Error::Code::kNotSupportedError, std::move(message)));
+}
+
+base::unexpected<mojom::ErrorPtr> NewUnknownError(std::string message) {
+  return base::unexpected(
+      mojom::Error::New(mojom::Error::Code::kUnknownError, std::move(message)));
+}
+
 }  // namespace
 
 std::string GetCoreMLNameFromInput(const std::string& input_name) {
@@ -229,7 +239,7 @@ std::string GetCoreMLNameFromOutput(const std::string& output_name) {
 }
 
 // static
-[[nodiscard]] base::expected<std::unique_ptr<GraphBuilder>, std::string>
+[[nodiscard]] base::expected<std::unique_ptr<GraphBuilder>, mojom::ErrorPtr>
 GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
                              const base::FilePath& working_directory) {
   // Use a random string for the model package directory, because MLModel
@@ -245,14 +255,12 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
   auto graph_builder = base::WrapUnique(new GraphBuilder(
       graph_info, ml_package_dir, data_dir.Append(kMlPackageModelFileName),
       data_dir.Append(kMlPackageWeightsDir).Append(kMlPackageWeightsFileName)));
-  auto build_result =
-      graph_builder->BuildCoreMLModel(graph_info, working_directory);
-  if (!build_result.has_value()) {
-    return base::unexpected(build_result.error());
-  }
+
+  RETURN_IF_ERROR(
+      graph_builder->BuildCoreMLModel(graph_info, working_directory));
 
   if (!graph_builder->SerializeModel()) {
-    return base::unexpected("Failed to serialize CoreML model.");
+    return NewUnknownError("Failed to serialize CoreML model.");
   }
 
   return graph_builder;
@@ -269,9 +277,9 @@ GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info,
 
 GraphBuilder::~GraphBuilder() = default;
 
-[[nodiscard]] base::expected<void, std::string> GraphBuilder::BuildCoreMLModel(
-    const mojom::GraphInfo& graph_info,
-    const base::FilePath& working_directory) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilder::BuildCoreMLModel(const mojom::GraphInfo& graph_info,
+                               const base::FilePath& working_directory) {
   CHECK_EQ(ml_model_.specificationversion(), 0);
   // Based on comment in Model.proto
   //  * 7 : iOS 16, macOS 13, tvOS 16, watchOS 9 (Core ML 6)
@@ -319,7 +327,7 @@ GraphBuilder::~GraphBuilder() = default;
         break;
       }
       default: {
-        return base::unexpected("This operator is not implemented.");
+        return NewNotSupportedError("This operator is not implemented.");
       }
     }
   }
@@ -344,7 +352,7 @@ bool GraphBuilder::SerializeModel() {
   return result;
 }
 
-base::expected<void, std::string> GraphBuilder::WriteWeightsToFile(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
     CoreML::Specification::MILSpec::Block& block) {
   base::File weights_file(weights_file_path_,
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
@@ -354,21 +362,21 @@ base::expected<void, std::string> GraphBuilder::WriteWeightsToFile(
       static_cast<uint32_t>(graph_info_->constant_id_to_buffer_map.size())};
   if (!weights_file.WriteAtCurrentPosAndCheck(
           base::byte_span_from_ref(header))) {
-    return base::unexpected(kWriteFileErrorMessage);
+    return NewUnknownError(kWriteFileErrorMessage);
   }
   current_offset += sizeof(header);
 
   for (auto& [key, buffer] : graph_info_->constant_id_to_buffer_map) {
     auto& operand = graph_info_->id_to_operand_map.at(key);
     if (operand->dimensions.empty()) {
-      RETURN_IF_ERROR(AddConstantImmediateValue(key, block));
+      AddConstantImmediateValue(key, block);
       continue;
     }
 
     std::optional<BlobDataType> weight_type =
         OperandTypeToDataTypeInWeightFile(operand->data_type);
     if (!weight_type.has_value()) {
-      return base::unexpected("Unsupported constant type.");
+      return NewNotSupportedError("Unsupported constant type.");
     }
 
     WeightMetadata metadata(weight_type.value(), buffer.size(),
@@ -376,18 +384,19 @@ base::expected<void, std::string> GraphBuilder::WriteWeightsToFile(
 
     if (!weights_file.WriteAtCurrentPosAndCheck(
             base::byte_span_from_ref(metadata))) {
-      return base::unexpected(kWriteFileErrorMessage);
+      return NewUnknownError(kWriteFileErrorMessage);
     }
 
     if (!weights_file.WriteAtCurrentPosAndCheck(base::make_span(buffer))) {
-      return base::unexpected(kWriteFileErrorMessage);
+      return NewUnknownError(kWriteFileErrorMessage);
     }
-    RETURN_IF_ERROR(AddConstantFileValue(key, current_offset, *operand, block));
+
+    AddConstantFileValue(key, current_offset, *operand, block);
     current_offset += sizeof(metadata);
     current_offset += buffer.size();
     current_offset = base::bits::AlignUp(current_offset, kWeightAlignment);
     if (!weights_file.Seek(base::File::Whence::FROM_BEGIN, current_offset)) {
-      return base::unexpected(kWriteFileErrorMessage);
+      return NewUnknownError(kWriteFileErrorMessage);
     }
   }
   return base::ok();
@@ -447,7 +456,7 @@ void GraphBuilder::AddPlaceholderInput(
   PopulateValueType(operand, output_value_type);
 }
 
-[[nodiscard]] base::expected<void, std::string> GraphBuilder::AddInput(
+[[nodiscard]] base::expected<void, mojom::ErrorPtr> GraphBuilder::AddInput(
     uint64_t input_id,
     CoreML::Specification::MILSpec::Function& main_function) {
   auto* mutable_description = ml_model_.mutable_description();
@@ -464,7 +473,7 @@ void GraphBuilder::AddPlaceholderInput(
   return base::ok();
 }
 
-[[nodiscard]] base::expected<void, std::string> GraphBuilder::AddOutput(
+[[nodiscard]] base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOutput(
     uint64_t output_id) {
   const auto output_iterator = id_to_op_input_info_map_.find(output_id);
   CHECK(output_iterator != id_to_op_input_info_map_.end());
@@ -476,7 +485,7 @@ void GraphBuilder::AddPlaceholderInput(
   return base::ok();
 }
 
-base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
     const mojom::ElementWiseBinary& operation,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
@@ -493,7 +502,7 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
 
   if (!kSupportedBinaryOpsTypes.contains(input_lhs.mil_data_type) ||
       !kSupportedBinaryOpsTypes.contains(input_rhs.mil_data_type)) {
-    return base::unexpected("Unsupported input datatype.");
+    return NewNotSupportedError("Unsupported input datatype.");
   }
 
   (*op->mutable_inputs())["x"].add_arguments()->set_name(input_lhs.coreml_name);
@@ -529,7 +538,7 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
       break;
     }
     default:
-      return base::unexpected("Unimplemented Binary Operator.");
+      return NewNotSupportedError("Unimplemented Binary Operator.");
   }
 
   PopulateNamedValueType(
@@ -540,7 +549,7 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
   return base::ok();
 }
 
-base::expected<void, std::string> GraphBuilder::AddConstantImmediateValue(
+void GraphBuilder::AddConstantImmediateValue(
     uint32_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
   auto& operand = *graph_info_->id_to_operand_map.at(constant_id);
@@ -584,10 +593,9 @@ base::expected<void, std::string> GraphBuilder::AddConstantImmediateValue(
       break;
   }
   attributes["val"] = std::move(immediate_value);
-  return base::ok();
 }
 
-base::expected<void, std::string> GraphBuilder::AddConstantFileValue(
+void GraphBuilder::AddConstantFileValue(
     uint32_t constant_id,
     uint64_t offset,
     const mojom::Operand& operand,
@@ -608,7 +616,6 @@ base::expected<void, std::string> GraphBuilder::AddConstantFileValue(
   blob->set_filename(kWeightsRelativeFilePath);
   blob->set_offset(offset);
   attributes["val"] = std::move(blob_value);
-  return base::ok();
 }
 
 [[nodiscard]] const GraphBuilder::OperandInfo* GraphBuilder::GetOperandInfo(
@@ -618,7 +625,7 @@ base::expected<void, std::string> GraphBuilder::AddConstantFileValue(
   return &input_iterator->second;
 }
 
-base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
     uint64_t operand_id,
     const mojom::Operand& operand,
     ::CoreML::Specification::FeatureDescription& feature_description) {
@@ -645,7 +652,7 @@ base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
     case mojom::Operand::DataType::kUint64:
     case mojom::Operand::DataType::kInt8:
     case mojom::Operand::DataType::kUint8:
-      return base::unexpected("Unsupported input datatype.");
+      return NewNotSupportedError("Unsupported input datatype.");
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers
@@ -704,20 +711,19 @@ void GraphBuilder::PopulateValueType(
   }
 }
 
-base::expected<void, std::string> GraphBuilder::SetupMlPackageDirStructure(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::SetupMlPackageDirStructure(
     const base::FilePath& working_directory) {
   if (!base::CreateDirectory(ml_package_dir_)) {
-    return base::unexpected("Fail to create .mlpackage directory.");
+    return NewUnknownError("Fail to create .mlpackage directory.");
   }
   base::FilePath data_dir = ml_package_dir_.Append(kMlPackageDataDir);
   if (!base::CreateDirectory(data_dir)) {
-    return base::unexpected("Fail to create .mlpackage/Data directory.");
+    return NewUnknownError("Fail to create .mlpackage/Data directory.");
   }
 
   base::FilePath weights_dir = data_dir.Append(kMlPackageWeightsDir);
   if (!base::CreateDirectory(weights_dir)) {
-    return base::unexpected(
-        "Fail to create .mlpackage/Data/weights directory.");
+    return NewUnknownError("Fail to create .mlpackage/Data/weights directory.");
   }
 
   // Creates a Manifest.json file that contains the package information. The
@@ -751,7 +757,7 @@ base::expected<void, std::string> GraphBuilder::SetupMlPackageDirStructure(
   metadata.Set(kManifestModelIdentifierKey, model_identifier);
   JSONFileValueSerializer serializer(ml_package_dir_.Append(kManifestFileName));
   if (!serializer.Serialize(std::move(metadata))) {
-    return base::unexpected("Fail to create Manifest.json for mlpackage.");
+    return NewUnknownError("Fail to create Manifest.json for mlpackage.");
   }
 
   return base::ok();

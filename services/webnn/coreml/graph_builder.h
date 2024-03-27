@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
+#include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
 #include "third_party/coremltools/mlmodel/format/Model.pb.h"
@@ -35,7 +36,7 @@ class GraphBuilder {
   //
   // Returns unexpected if it fails.
   [[nodiscard]] static base::expected<std::unique_ptr<GraphBuilder>,
-                                      std::string>
+                                      mojom::ErrorPtr>
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  const base::FilePath& working_directory);
 
@@ -72,39 +73,39 @@ class GraphBuilder {
                base::FilePath model_file_path,
                base::FilePath weights_file_path);
 
-  [[nodiscard]] base::expected<void, std::string> BuildCoreMLModel(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildCoreMLModel(
       const mojom::GraphInfo& graph_info,
       const base::FilePath& working_directory);
 
   [[nodiscard]] bool SerializeModel();
-  [[nodiscard]] base::expected<void, std::string> WriteWeightsToFile(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> WriteWeightsToFile(
       CoreML::Specification::MILSpec::Block& block);
 
   // Add input in Model.description and in Program's main function inputs.
-  [[nodiscard]] base::expected<void, std::string> AddInput(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddInput(
       uint64_t input_id,
       CoreML::Specification::MILSpec::Function& main_function);
   void AddPlaceholderInput(
       CoreML::Specification::MILSpec::Function& main_function,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, std::string> AddOutput(uint64_t output_id);
-  [[nodiscard]] base::expected<void, std::string> AddOperationForBinary(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOutput(
+      uint64_t output_id);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForBinary(
       const mojom::ElementWiseBinary& operation,
       CoreML::Specification::MILSpec::Block& block);
   // Add constants as immediate values in the model file.
-  [[nodiscard]] base::expected<void, std::string> AddConstantImmediateValue(
-      uint32_t constant_id,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddConstantImmediateValue(uint32_t constant_id,
+                                 CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
-  [[nodiscard]] base::expected<void, std::string> AddConstantFileValue(
-      uint32_t constant_id,
-      uint64_t offset,
-      const webnn::mojom::Operand& operand,
-      CoreML::Specification::MILSpec::Block& block);
+  void AddConstantFileValue(uint32_t constant_id,
+                            uint64_t offset,
+                            const webnn::mojom::Operand& operand,
+                            CoreML::Specification::MILSpec::Block& block);
 
   // Helpers
   [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
-  [[nodiscard]] base::expected<void, std::string> PopulateFeatureDescription(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  PopulateFeatureDescription(
       uint64_t operand_id,
       const webnn::mojom::Operand& operand,
       ::CoreML::Specification::FeatureDescription& feature_description);
@@ -118,8 +119,8 @@ class GraphBuilder {
   void PopulateValueType(const webnn::mojom::Operand& operand,
                          CoreML::Specification::MILSpec::ValueType& value_type);
 
-  [[nodiscard]] base::expected<void, std::string> SetupMlPackageDirStructure(
-      const base::FilePath& working_directory);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  SetupMlPackageDirStructure(const base::FilePath& working_directory);
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to CoreML model. The creator of `this` must ensure the GraphInfo reference
