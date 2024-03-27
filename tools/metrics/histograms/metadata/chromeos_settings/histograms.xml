@@ -120,7 +120,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled"
     enum="BooleanEnabled" expires_after="2024-05-05">
-  <owner>ckincaid@chromium.org</owner>
   <owner>dmblack@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -130,7 +129,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeat{Setting}"
     units="ms" expires_after="2024-06-30">
-  <owner>ckincaid@chromium.org</owner>
   <owner>dmblack@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>

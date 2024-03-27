@@ -1368,17 +1368,17 @@
   },
   {
     "name": "clipboard-history-longpress",
-    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "owners": ["newcomer@google.com", "multipaste@google.com"],
     "expiry_milestone": 125
   },
   {
     "name": "clipboard-history-refresh",
-    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "owners": ["newcomer@google.com", "multipaste@google.com"],
     "expiry_milestone": 125
   },
   {
     "name": "clipboard-history-url-titles",
-    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "owners": ["newcomer@google.com", "multipaste@google.com"],
     "expiry_milestone": 125
   },
   {
@@ -8423,7 +8423,7 @@
   },
   {
     "name": "wallpaper-fast-refresh",
-    "owners": ["ckincaid@google.com", "assistive-eng@google.com"],
+    "owners": ["cowmoo@google.com", "assistive-eng@google.com"],
     "expiry_milestone": 120
   },
   {

@@ -4110,13 +4110,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Ash_Clipboard_CopiedItem">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>Emitted when a user copies data to their clipboard.</description>
 </action>
 
 <action name="Ash_Clipboard_PastedItem">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>
     Emitted when a user pastes data from their clipboard through standard
@@ -4125,7 +4125,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Ash_ClipboardHistory_PastedItem1">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>
     Emitted when a user pastes the first item from their clipboard history.
@@ -4133,7 +4133,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Ash_ClipboardHistory_PastedItem2">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>
     Emitted when a user pastes the second item from their clipboard history.
@@ -4141,7 +4141,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Ash_ClipboardHistory_PastedItem3">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>
     Emitted when a user pastes the third item from their clipboard history.
@@ -4149,7 +4149,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Ash_ClipboardHistory_PastedItem4">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>
     Emitted when a user pastes the fourth item from their clipboard history.
@@ -4157,7 +4157,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Ash_ClipboardHistory_PastedItem5">
-  <owner>ckincaid@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <description>
     Emitted when a user pastes the fifth item from their clipboard history.

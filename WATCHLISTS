@@ -3016,7 +3016,6 @@
                     'joeantonetti+watch-multidevice@google.com',
                     'jonmann+watch-multidevice@chromium.org'],
     'multipaste': ['andrewxu+watch-multipaste@google.com',
-                   'ckincaid+watch-multipaste@google.com',
                    'dmblack+watch-multipaste@google.com',
                    'multipaste-eng+reviews@google.com'],
     'nacl': ['native-client-reviews@googlegroups.com'],
