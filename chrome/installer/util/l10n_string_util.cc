@@ -6,8 +6,9 @@
 
 #include "chrome/installer/util/l10n_string_util.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <limits>
@@ -16,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/containers/buffer_iterator.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
@@ -165,11 +167,11 @@ std::wstring GetLocalizedEulaResource() {
   // (see the definition of full_exe_path and resource).
   DCHECK(std::numeric_limits<uint32_t>::max() > (url_path.size() * 3));
   DWORD count = static_cast<DWORD>(url_path.size() * 3);
-  std::unique_ptr<wchar_t[]> url_canon(new wchar_t[count]);
-  HRESULT hr = ::UrlCanonicalizeW(url_path.c_str(), url_canon.get(), &count,
+  auto url_canon = base::HeapArray<wchar_t>::WithSize(count);
+  HRESULT hr = ::UrlCanonicalizeW(url_path.c_str(), url_canon.data(), &count,
                                   URL_ESCAPE_UNSAFE);
   if (SUCCEEDED(hr))
-    return std::wstring(url_canon.get());
+    return std::wstring(url_canon.data());
   return url_path;
 }
 
