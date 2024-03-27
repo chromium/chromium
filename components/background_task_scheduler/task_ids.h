@@ -139,6 +139,10 @@ enum class TaskIds {
   // team_email: privacy-sandbox-dev@chromium.org
   // owner: csharrison@chromium.org
   ATTRIBUTION_PROVIDER_FLUSH_JOB_ID = 111,
+  // component: UI>Settings>Privacy
+  // team_email: chrome-privacy-controls@google.com
+  // owner: zalmashni@google.com, rubindl@chromium.org
+  SAFETY_HUB_JOB_ID = 112,
 };
 
 }  // namespace background_task

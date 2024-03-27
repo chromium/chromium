@@ -146,7 +146,10 @@ public class BackgroundTaskSchedulerUmaTest {
                 BackgroundTaskSchedulerUma.BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 32);
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_SAFETY_HUB,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.SAFETY_HUB_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 33);
     }
 
     @Test

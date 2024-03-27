@@ -211,6 +211,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PeriodicBackgroundSyncChromeWakeup"
       summary="PeriodicBackgroundSyncChromeWakeup"/>
   <variant name="QueryTile" summary="QueryTile"/>
+  <variant name="SafetyHub" summary="SafetyHub"/>
   <variant name="Test" summary="Test"/>
   <variant name="WebApkUpdate" summary="WebApkUpdate"/>
   <variant name="WebviewComponentUpdate" summary="WebviewComponentUpdate"/>
