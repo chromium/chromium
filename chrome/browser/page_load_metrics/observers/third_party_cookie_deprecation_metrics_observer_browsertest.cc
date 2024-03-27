@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,12 +20,18 @@
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
 #include "chrome/browser/tpcd/experiment/tpcd_utils.h"
+#include "chrome/browser/tpcd/support/top_level_trial_service.h"
+#include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
+#include "chrome/browser/tpcd/support/tpcd_support_service.h"
+#include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
+#include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -47,6 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -56,23 +64,24 @@ constexpr char kHostC[] = "c.test";
 
 const char kThirdPartyCookieAccessBlockedHistogram[] =
     "PageLoad.Clients.TPCD.ThirdPartyCookieAccessBlockedByExperiment2";
-
 const char kThirdPartyCookieAllowMechanismHistogram[] =
-    "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism2";
-
+    "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism3";
 const char kWebFeatureHistogram[] = "Blink.UseCounter.Features";
-
 const char kThirdPartyCookieIsAdOrNonAdHistogram[] =
     "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd2";
-
 const char kThirdPartyCookieAdBlockedByExperimentHistogram[] =
     "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment2";
+const char kCookieReadStatusHistogram[] =
+    "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus2";
 
 using WebFeature = blink::mojom::WebFeature;
+using ThirdPartyCookieAllowMechanism =
+    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
 
 struct Allow3PCMechanismBrowserTestCase {
-  bool explicit_setting_allow_3p_cookie = false;
-  bool global_setting_allow_3p_cookie = false;
+  bool allow_by_global_setting = false;
+  bool allow_by_3pcd_1p_trial_token = false;
+  bool allow_by_3pcd_3p_trial_token = false;
   bool tpcd_metadata_unspecified_allow_3p_cookie = false;
   bool tpcd_metadata_test_allow_3p_cookie = false;
   bool tpcd_metadata_1p_dt_allow_3p_cookie = false;
@@ -81,86 +90,130 @@ struct Allow3PCMechanismBrowserTestCase {
   bool tpcd_metadata_critical_sector_allow_3p_cookie = false;
   bool tpcd_metadata_cuj_allow_3p_cookie = false;
   bool tpcd_metadata_gov_edu_tld_allow_3p_cookie = false;
-  bool tracking_protection_onboard = false;
+  bool allow_by_explicit_setting = false;
+  ThirdPartyCookieAllowMechanism expected_allow_mechanism_histogram_sample;
+  std::optional<WebFeature> expected_web_feature_histogram_sample;
 };
 
-// Skip complex test cases setting for TPCD_TRIAL and TPCD_HEURISTICS since
-// they have similar logics to TPCD_METADATA.
 const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
     {
-        .explicit_setting_allow_3p_cookie = true,
+        .allow_by_global_setting = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
     },
     {
-        .global_setting_allow_3p_cookie = true,
+        .allow_by_3pcd_1p_trial_token = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD,
     },
     {
-        .tpcd_metadata_unspecified_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_test_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_1p_dt_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_3p_dt_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_dogfood_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_critical_sector_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_cuj_allow_3p_cookie = true,
-    },
-    {
-        .tpcd_metadata_gov_edu_tld_allow_3p_cookie = true,
-    },
-    {
-        .explicit_setting_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
-    },
-    {
-        .global_setting_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .allow_by_3pcd_3p_trial_token = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCD,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD,
     },
     {
         .tpcd_metadata_unspecified_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::
+                kAllowBy3PCDMetadataSourceUnspecified,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_test_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_1p_dt_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_3p_dt_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_dogfood_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_critical_sector_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::
+                kAllowBy3PCDMetadataSourceCriticalSector,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_cuj_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
         .tpcd_metadata_gov_edu_tld_allow_3p_cookie = true,
-        .tracking_protection_onboard = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
     },
     {
-        // test cases for all value as default.
+        .allow_by_explicit_setting = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowByExplicitSetting,
     },
-};
+    // Precedence testing test cases:
+    {
+        .allow_by_global_setting = true,
+        .allow_by_3pcd_1p_trial_token = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
+    },
+    {
+        .allow_by_3pcd_1p_trial_token = true,
+        .allow_by_3pcd_3p_trial_token = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD,
+    },
+    {
+        .allow_by_3pcd_3p_trial_token = true,
+        // This test only needs to be perform with one variant of the TPCD
+        // Metadata.
+        .tpcd_metadata_critical_sector_allow_3p_cookie = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::kAllowBy3PCD,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD,
+    },
+    {
+        .tpcd_metadata_critical_sector_allow_3p_cookie = true,
+        .allow_by_explicit_setting = true,
+        .expected_allow_mechanism_histogram_sample =
+            ThirdPartyCookieAllowMechanism::
+                kAllowBy3PCDMetadataSourceCriticalSector,
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
+    }};
 
 }  // namespace
 
@@ -231,6 +284,11 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
     run_loop.Run();
   }
 
+  void DisableGlobal3pcb() {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(content_settings::CookieControlsMode::kOff));
+  }
   void SetUpTrackingProtectionOnboard() {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kTrackingProtectionOnboardingStatus,
@@ -778,10 +836,13 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
 
 class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
     : public ThirdPartyCookieDeprecationObserverBaseBrowserTest,
-      public testing::WithParamInterface<Allow3PCMechanismBrowserTestCase> {
+      public testing::WithParamInterface<
+          std::tuple<Allow3PCMechanismBrowserTestCase,
+                     /*is_tracking_protection_onboarded:*/ bool>> {
  public:
   ThirdPartyCookieDeprecationObserverMechanismBrowserTest()
-      : test_case_(GetParam()) {
+      : test_case_(std::get<0>(GetParam())),
+        is_tracking_protection_onboarded_(std::get<1>(GetParam())) {
     CHECK(fake_install_dir_.CreateUniqueTempDir());
     CHECK(fake_install_dir_.IsValid());
   }
@@ -793,7 +854,7 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
 
   ~ThirdPartyCookieDeprecationObserverMechanismBrowserTest() override = default;
 
-  bool IsAnyTpcdMetadataAllowMechanismEnabled() {
+  bool IsAnyTpcdMetadataAllowMechanismTestCase() {
     return test_case_.tpcd_metadata_unspecified_allow_3p_cookie ||
            test_case_.tpcd_metadata_test_allow_3p_cookie ||
            test_case_.tpcd_metadata_1p_dt_allow_3p_cookie ||
@@ -804,82 +865,63 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
            test_case_.tpcd_metadata_gov_edu_tld_allow_3p_cookie;
   }
 
+  bool IsAnyTpcdMitigationAllowMechanismTestCase() {
+    return IsAnyTpcdMetadataAllowMechanismTestCase() ||
+           test_case_.allow_by_3pcd_1p_trial_token ||
+           test_case_.allow_by_3pcd_3p_trial_token;
+  }
+
   void SetUp() override {
-    // Experiment feature param requests 3PCs blocked.
-    if (IsAnyTpcdMetadataAllowMechanismEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kCookieDeprecationFacilitatedTesting,
-            {{tpcd::experiment::kDisable3PCookiesName, "true"}}},
-           {content_settings::features::kTrackingProtection3pcd, {}},
-           {net::features::kTpcdMetadataGrants, {}}},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kCookieDeprecationFacilitatedTesting,
-            {{tpcd::experiment::kDisable3PCookiesName, "true"}}}},
-          {content_settings::features::kTrackingProtection3pcd});
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Enters Mode B.
+    enabled_features.push_back(
+        {features::kCookieDeprecationFacilitatedTesting,
+         {{tpcd::experiment::kDisable3PCookiesName, "true"}}});
+
+    if (IsAnyTpcdMetadataAllowMechanismTestCase()) {
+      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
     }
+
+    if (test_case_.allow_by_3pcd_3p_trial_token) {
+      enabled_features.push_back({net::features::kTpcdTrialSettings, {}});
+      // Disable the validity service so it doesn't remove manually created
+      // trial settings.
+      tpcd::trial::ValidityService::DisableForTesting();
+    }
+
+    if (test_case_.allow_by_3pcd_1p_trial_token) {
+      enabled_features.push_back(
+          {net::features::kTopLevelTpcdTrialSettings, {}});
+      // Disable the validity service so it doesn't remove manually created
+      // trial settings.
+      tpcd::trial::ValidityService::DisableForTesting();
+    }
+
+    if (is_tracking_protection_onboarded_) {
+      enabled_features.push_back(
+          {content_settings::features::kTrackingProtection3pcd, {}});
+    } else {
+      disabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 
-  void SetUpThirdPartyCookieAllowMechanism(const GURL& first_party_url,
-                                           const GURL& third_party_url) {
-    auto tpcd_metadata_helper = [&](const std::string& source) {
-      base::ScopedAllowBlockingForTesting allow_blocking;
+  void SetUpOnMainThread() override {
+    ThirdPartyCookieDeprecationObserverBaseBrowserTest::SetUpOnMainThread();
 
-      //  Simulate tracking protection settings.
-      browser()->profile()->GetPrefs()->SetBoolean(
-          prefs::kBlockAll3pcToggleEnabled, false);
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
 
-      // Set up tpcd metadata, make sure both the primary pattern and secondary
-      // pattern match.
-      tpcd::metadata::Metadata metadata;
-      tpcd::metadata::AddEntryToMetadata(
-          metadata, ContentSettingsPattern::FromURL(third_party_url).ToString(),
-          ContentSettingsPattern::FromURL(first_party_url).ToString(), source);
-      EXPECT_EQ(metadata.metadata_entries_size(), 1);
-      MockComponentInstallation(metadata);
-      EXPECT_EQ(CookieSettingsFactory::GetForProfile(browser()->profile())
-                    ->GetCookieSetting(third_party_url, first_party_url,
-                                       net::CookieSettingOverrides()),
-                ContentSetting::CONTENT_SETTING_ALLOW);
-    };
-
-    Wait();
-    g_browser_process->local_state()->SetInteger(
-        tpcd::experiment::prefs::kTPCDExperimentClientState,
-        static_cast<int>(tpcd::experiment::utils::ExperimentState::kEligible));
-
-    // Set up tracking protection onboard status.
-    if (test_case_.tracking_protection_onboard) {
+    if (is_tracking_protection_onboarded_) {
       SetUpTrackingProtectionOnboard();
-    }
-
-    if (test_case_.explicit_setting_allow_3p_cookie) {
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-          ->SetContentSettingDefaultScope(third_party_url, GURL(),
-                                          ContentSettingsType::COOKIES,
-                                          CONTENT_SETTING_ALLOW);
-    } else if (test_case_.global_setting_allow_3p_cookie) {
-      browser()->profile()->GetPrefs()->SetInteger(
-          prefs::kCookieControlsMode,
-          static_cast<int>(content_settings::CookieControlsMode::kOff));
-    } else if (test_case_.tpcd_metadata_unspecified_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceUnspecified);
-    } else if (test_case_.tpcd_metadata_test_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceTest);
-    } else if (test_case_.tpcd_metadata_1p_dt_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSource1pDt);
-    } else if (test_case_.tpcd_metadata_3p_dt_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSource3pDt);
-    } else if (test_case_.tpcd_metadata_dogfood_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceDogFood);
-    } else if (test_case_.tpcd_metadata_critical_sector_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceCriticalSector);
-    } else if (test_case_.tpcd_metadata_cuj_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceCuj);
-    } else if (test_case_.tpcd_metadata_gov_edu_tld_allow_3p_cookie) {
-      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceGovEduTld);
     }
   }
 
@@ -895,108 +937,180 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
     tpcd::metadata::Parser::GetInstance()->ParseMetadata(raw_metadata);
   }
 
+  void SetUpThirdPartyCookieAllowMechanism(const GURL& first_party_url,
+                                           const GURL& third_party_url) {
+    Wait();
+    g_browser_process->local_state()->SetInteger(
+        tpcd::experiment::prefs::kTPCDExperimentClientState,
+        static_cast<int>(tpcd::experiment::utils::ExperimentState::kEligible));
+
+    if (test_case_.allow_by_global_setting) {
+      DisableGlobal3pcb();
+    }
+
+    if (test_case_.allow_by_3pcd_1p_trial_token) {
+      auto* service = tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(
+          browser()->profile());
+      auto origin = url::Origin::Create(first_party_url);
+      service->UpdateTopLevelTrialSettingsForTesting(
+          origin, /*match_subdomains=*/true, /*enabled=*/true);
+    }
+
+    if (test_case_.allow_by_3pcd_3p_trial_token) {
+      auto* service = tpcd::trial::TpcdTrialServiceFactory::GetForProfile(
+          browser()->profile());
+      auto request_origin = url::Origin::Create(third_party_url);
+      auto partition_origin = url::Origin::Create(first_party_url);
+      service->Update3pcdTrialSettingsForTesting(
+          request_origin, net::SchemefulSite(partition_origin).Serialize(),
+          /*match_subdomains=*/true, /*enabled=*/true);
+    }
+
+    auto tpcd_metadata_helper = [&](const std::string& source) {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+
+      //  Simulate tracking protection settings.
+      browser()->profile()->GetPrefs()->SetBoolean(
+          prefs::kBlockAll3pcToggleEnabled, false);
+
+      // Set up tpcd metadata, make sure both the primary pattern and secondary
+      // pattern match.
+      tpcd::metadata::Metadata metadata;
+      tpcd::metadata::AddEntryToMetadata(
+          metadata, ContentSettingsPattern::FromURL(third_party_url).ToString(),
+          ContentSettingsPattern::FromURL(first_party_url).ToString(), source);
+      EXPECT_EQ(metadata.metadata_entries_size(), 1);
+      MockComponentInstallation(metadata);
+    };
+    if (test_case_.tpcd_metadata_unspecified_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceUnspecified);
+    }
+    if (test_case_.tpcd_metadata_test_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceTest);
+    }
+    if (test_case_.tpcd_metadata_1p_dt_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSource1pDt);
+    }
+    if (test_case_.tpcd_metadata_3p_dt_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSource3pDt);
+    }
+    if (test_case_.tpcd_metadata_dogfood_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceDogFood);
+    }
+    if (test_case_.tpcd_metadata_critical_sector_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceCriticalSector);
+    }
+    if (test_case_.tpcd_metadata_cuj_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceCuj);
+    }
+    if (test_case_.tpcd_metadata_gov_edu_tld_allow_3p_cookie) {
+      tpcd_metadata_helper(tpcd::metadata::Parser::kSourceGovEduTld);
+    }
+
+    if (test_case_.allow_by_explicit_setting) {
+      CookieSettingsFactory::GetForProfile(browser()->profile())
+          ->SetCookieSettingForUserBypass(first_party_url);
+    }
+  }
+
   void VerifyThirdPartyCookieAllowMechanism(
       const base::HistogramTester& histogram_tester) {
-    auto am_helper = [&](const int mechanism, bool record = true) -> void {
+    auto am_helper = [&](ThirdPartyCookieAllowMechanism mechanism,
+                         bool record = true) -> void {
       histogram_tester.ExpectUniqueSample(
           kThirdPartyCookieAllowMechanismHistogram, mechanism, record ? 2 : 0);
     };
-    auto wf_helper = [&](const WebFeature& web_feature,
-                         bool record = true) -> void {
+    auto wf_helper = [&](WebFeature web_feature, bool record = true) -> void {
       histogram_tester.ExpectBucketCount(kWebFeatureHistogram, web_feature,
                                          record ? 1 : 0);
     };
 
     // Notes: All the blink feature usage metric only record when tracking
     // protection is onboard.
-    if (test_case_.explicit_setting_allow_3p_cookie) {
-      am_helper(/*kAllowByExplicitSetting*/ 1);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowByExplicitSetting,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.global_setting_allow_3p_cookie) {
-      // If tracking protection is onboard, the global setting is not allow
-      // third party to access cookie. Also, it blocks re-enable third-party
-      // cookies access through pref key prefs::kCookieControlsMode used by
-      // enterprise policy BlockThirdPartyCookies. In this case, page load
-      // metrics observers' OnCookie(Read|Change) won't be triggered.
-      am_helper(/*kAllowByGlobalSetting*/ 2,
-                !test_case_.tracking_protection_onboard);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
-                false);
-    } else if (test_case_.tpcd_metadata_unspecified_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSourceUnspecified*/ 11);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_test_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSourceTest*/ 12);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_1p_dt_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSource1pDt*/ 13);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_3p_dt_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSource1pDt*/ 14);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_dogfood_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSourceDogFood*/ 15);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_critical_sector_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSourceCriticalSector*/ 16);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_cuj_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSourceCuj*/ 17);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else if (test_case_.tpcd_metadata_gov_edu_tld_allow_3p_cookie) {
-      am_helper(/*kAllowBy3PCDMetadataSourceGovEduTld*/ 18);
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
-                test_case_.tracking_protection_onboard);
-    } else {
-      am_helper(/*kAllowByGlobalSetting*/ 2,
-                !test_case_.tracking_protection_onboard);
-      // If tracking protection is onboard, the global setting is not allow
-      // third party to access cookie.
-      wf_helper(WebFeature::kThirdPartyCookieDeprecation_AllowByGlobalSetting,
-                false);
+
+    if (test_case_.allow_by_global_setting) {
+      if (test_case_.allow_by_3pcd_1p_trial_token &&
+          is_tracking_protection_onboarded_) {
+        am_helper(ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
+        return;
+      }
+
+      // If tracking protection is onboard, the global setting does not allow
+      // third party contexts to access cookie. Also, it blocks re-enable
+      // third-party cookies access through the pref key
+      // prefs::kCookieControlsMode used by enterprise policy
+      // BlockThirdPartyCookies.
+      am_helper(test_case_.expected_allow_mechanism_histogram_sample,
+                !is_tracking_protection_onboarded_);
+      if (test_case_.expected_web_feature_histogram_sample.has_value()) {
+        wf_helper(test_case_.expected_web_feature_histogram_sample.value(),
+                  false);
+      }
+      return;
+    }
+
+    if (IsAnyTpcdMitigationAllowMechanismTestCase()) {
+      if (test_case_.allow_by_explicit_setting &&
+          !is_tracking_protection_onboarded_) {
+        am_helper(ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting);
+        return;
+      }
+
+      am_helper(test_case_.expected_allow_mechanism_histogram_sample,
+                is_tracking_protection_onboarded_);
+      if (test_case_.expected_web_feature_histogram_sample.has_value()) {
+        wf_helper(test_case_.expected_web_feature_histogram_sample.value(),
+                  is_tracking_protection_onboarded_);
+      }
+      return;
+    }
+
+    if (test_case_.allow_by_explicit_setting) {
+      am_helper(test_case_.expected_allow_mechanism_histogram_sample);
+      if (test_case_.expected_web_feature_histogram_sample.has_value()) {
+        wf_helper(test_case_.expected_web_feature_histogram_sample.value(),
+                  is_tracking_protection_onboarded_);
+      }
+      return;
     }
   }
 
-  int CanTriggerCookieChangeObserver() {
-    // If tracking protection is onboard, the CookieChangeObserver is trigger
-    // only when some mechanisms re-enable the third party cookie access
-    if (test_case_.tracking_protection_onboard) {
-      return test_case_.explicit_setting_allow_3p_cookie ||
-             IsAnyTpcdMetadataAllowMechanismEnabled();
-    }
-    return true;
+  bool CanTriggerCookieChangeObserver() {
+    return test_case_.allow_by_explicit_setting ||
+           (IsAnyTpcdMitigationAllowMechanismTestCase() &&
+            is_tracking_protection_onboarded_) ||
+           (test_case_.allow_by_global_setting &&
+            !is_tracking_protection_onboarded_);
   }
 
  private:
   Allow3PCMechanismBrowserTestCase test_case_;
+  bool is_tracking_protection_onboarded_;
   base::ScopedTempDir fake_install_dir_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     ThirdPartyCookieDeprecationObserverMechanismBrowserTest,
-    testing::ValuesIn(kAllowMechanismTestCases));
+    testing::Combine(testing::ValuesIn(kAllowMechanismTestCases),
+                     testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverMechanismBrowserTest,
                        ThirdPartyCookiesReadAndWrite) {
-  SetUpThirdPartyCookieAllowMechanism(/*first_party_url=*/GetURL(kHostA),
-                                      /*third_party_url=*/GetURL(kHostB));
+  auto first_party_url = GetURL(kHostA);
+  auto third_party_url = GetURL(kHostB);
+  SetUpThirdPartyCookieAllowMechanism(first_party_url, third_party_url);
 
   content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
   NavigateToPageWithFrame(kHostA);
+
   // 3p cookie write
   NavigateFrameTo(kHostB, "/set-cookie?thirdparty=1;SameSite=None;Secure");
+
   // 3p cookie read
   NavigateFrameTo(kHostB, "/");
+
   if (CanTriggerCookieChangeObserver()) {
     observer.Wait();
   }
@@ -1007,8 +1121,9 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverMechanismBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverMechanismBrowserTest,
                        ThirdPartyJavaScriptCookieReadAndWrite) {
-  SetUpThirdPartyCookieAllowMechanism(/*first_party_url=*/GetURL(kHostA),
-                                      /*third_party_url=*/GetURL(kHostB));
+  auto first_party_url = GetURL(kHostA);
+  auto third_party_url = GetURL(kHostB);
+  SetUpThirdPartyCookieAllowMechanism(first_party_url, third_party_url);
 
   content::CookieChangeObserver observer(web_contents(), 2);
   base::HistogramTester histogram_tester;
@@ -1293,9 +1408,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
     FetchCookies(kHostB, test_case.path);
     NavigateToUntrackedUrl();
 
-    histogram_tester.ExpectBucketCount(
-        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
-        test_case.expected_status, 1);
+    histogram_tester.ExpectBucketCount(kCookieReadStatusHistogram,
+                                       test_case.expected_status, 1);
   }
 }
 
@@ -1329,9 +1443,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
     FetchCookies(kHostB, test_case.path);
     NavigateToUntrackedUrl();
 
-    histogram_tester.ExpectBucketCount(
-        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
-        test_case.expected_status, 1);
+    histogram_tester.ExpectBucketCount(kCookieReadStatusHistogram,
+                                       test_case.expected_status, 1);
 
     bool is_read_blocked_by_ad_heuristics = test_case.expected_status == 20;
     histogram_tester.ExpectBucketCount(
@@ -1381,9 +1494,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
     FetchCookies(kHostB, test_case.path);
     NavigateToUntrackedUrl();
 
-    histogram_tester.ExpectBucketCount(
-        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus",
-        test_case.expected_status, 1);
+    histogram_tester.ExpectBucketCount(kCookieReadStatusHistogram,
+                                       test_case.expected_status, 1);
   }
 }
 
@@ -1408,8 +1520,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookieDeprecationObserverCookieReadBrowserTest,
   FetchCookies(kHostB, "/empty.html");
   NavigateToUntrackedUrl();
 
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus", 0);
+  histogram_tester.ExpectTotalCount(kCookieReadStatusHistogram, 0);
 }
 
 class ThirdPartyCookieDeprecationObserverTriggerBrowserTest
