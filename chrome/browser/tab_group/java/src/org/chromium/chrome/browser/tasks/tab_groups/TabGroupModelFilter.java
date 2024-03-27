@@ -138,11 +138,6 @@ public class TabGroupModelFilter extends TabModelFilter {
             didCreateNewGroup = didCreateNewGroup && (destinationGroupColorId == INVALID_COLOR_ID);
         }
 
-        // If this is a new tab group creation, do not trigger a snackbar.
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && didCreateNewGroup) {
-            notify = false;
-        }
-
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             if (didCreateNewGroup) {
                 observer.didCreateNewGroup(tab, this);
@@ -266,11 +261,6 @@ public class TabGroupModelFilter extends TabModelFilter {
 
                 if (didCreateNewGroup) {
                     observer.didCreateNewGroup(destinationTab, this);
-
-                    // If this is a new tab group creation, do not trigger a snackbar.
-                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                        continue;
-                    }
                 }
 
                 // Since the undo group merge logic is unsupported when called from the tab strip,
@@ -394,11 +384,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             if (didCreateNewGroup) {
                 observer.didCreateNewGroup(destinationTab, this);
-
-                // If this is a new tab group creation, do not trigger a snackbar.
-                if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                    continue;
-                }
             }
 
             if (notify) {

@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_TO_GTS_ANIMATION;
 
 import android.content.Intent;
@@ -105,7 +104,7 @@ import java.util.Map;
     "force-fieldtrials=Study/Group",
     "force-fieldtrial-params=Study.Group:enable_launch_polish/true"
 })
-@DisableFeatures({TAB_TO_GTS_ANIMATION, TAB_GROUP_PARITY_ANDROID})
+@DisableFeatures(TAB_TO_GTS_ANIMATION)
 @Batch(Batch.PER_CLASS)
 public class SelectableTabListEditorTest {
     private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =

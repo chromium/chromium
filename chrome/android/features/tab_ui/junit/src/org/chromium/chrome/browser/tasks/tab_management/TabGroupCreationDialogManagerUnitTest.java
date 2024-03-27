@@ -50,7 +50,6 @@ public class TabGroupCreationDialogManagerUnitTest {
     @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
     @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Mock private TabGroupCreationDialogManager.ShowDialogDelegate mShowDialogDelegate;
-    @Mock private Runnable mOnDialogAcceptedRunnable;
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mObserverCaptor;
 
@@ -70,10 +69,7 @@ public class TabGroupCreationDialogManagerUnitTest {
                 .thenReturn(mIncognitoTabGroupModelFilter);
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(
-                        mActivity,
-                        mModalDialogManager,
-                        mTabModelSelector,
-                        mOnDialogAcceptedRunnable);
+                        mActivity, mModalDialogManager, mTabModelSelector);
     }
 
     @After
