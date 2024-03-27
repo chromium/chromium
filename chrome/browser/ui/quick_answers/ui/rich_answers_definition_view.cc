@@ -217,7 +217,7 @@ void RichAnswersDefinitionView::MaybeAddSynonyms(views::View* container_view,
           l10n_util::GetStringUTF8(
               IDS_RICH_ANSWERS_VIEW_DEFINITION_SYNONYMS_LABEL_TEXT),
           GetFontList(TypographyToken::kCrosBody2), label_width,
-          /*is_multi_line=*/true, ui::kColorNativeColor2));
+          /*is_multi_line=*/true, ui::kColorCrosSysPositive));
   std::string synonyms_text =
       base::JoinString(sense.synonyms_list.value(), ", ");
   int synonyms_label_width = label_width -
