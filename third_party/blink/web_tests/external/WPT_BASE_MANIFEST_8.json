@@ -70737,6 +70737,19 @@
        {}
       ]
      ],
+     "position-visibility-add-no-overflow.tentative.html": [
+      "9d87f82b9f3783c1c428afe021de87b5a0fc6ad3",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-no-overflow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-visibility-anchors-valid.tentative.html": [
       "05a04445d386d39f5a21f394a1411052ca0dbf7b",
       [
@@ -70764,7 +70777,20 @@
       ]
      ],
      "position-visibility-no-overflow.tentative.html": [
-      "2ce678373e588a8c1b0619cb4929d6bfd5ac2632",
+      "39fb55b1205984ff2b624fefe3bd95a4abf77aec",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-no-overflow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "position-visibility-remove-no-overflow.tentative.html": [
+      "a043917da683ee18b45dda568b5eea1e7222239c",
       [
        null,
        [
@@ -300543,7 +300569,11 @@
       []
      ],
      "position-visibility-no-overflow-ref.html": [
-      "9d11cd87abc736d7dff9681ee81ec4c86162728b",
+      "d6e64d0d107664532f657d8774df1aeda6e038f9",
+      []
+     ],
+     "position-visibility-remove-no-overflow-ref.html": [
+      "b41d2110e5079c847378f41b1a95e1485028a091",
       []
      ],
      "property-interpolations-expected.txt": [
@@ -382434,7 +382464,7 @@
    },
    "screen-wake-lock": {
     "META.yml": [
-     "b311993d82e15880bb991e993ffe6716be28ef23",
+     "78d6dfcbd49952e62960dec17884a68580188df7",
      []
     ],
     "OWNERS": [
@@ -623749,7 +623779,7 @@
      ]
     ],
     "wakelock-disabled-by-permissions-policy.https.html": [
-     "354b0a5e15469b497b2e8d4d8e93991f0305ca4a",
+     "fd1e6db656f6e1505881cdac8655397d5d2c86a2",
      [
       null,
       {
@@ -623794,7 +623824,7 @@
      ]
     ],
     "wakelock-enabled-on-self-origin-by-permissions-policy.https.html": [
-     "5b90b4f4ce0dddc3463effa61bf7d213e5d57ab3",
+     "82ed6d3f78e460c7267abdb180ace976679901ff",
      [
       null,
       {
