@@ -435,7 +435,6 @@ class WebStateList {
 
   // Removes all WebStates from the group. The WebStates stay where they are.
   // The group is destroyed.
-  // TODO(crbug.com/325422747): Actually destroy the group.
   void DeleteGroup(const TabGroup* group);
 
   // Adds an observer to the model.
@@ -555,7 +554,6 @@ class WebStateList {
 
   // Removes all WebStates from the group. The WebStates stay where they are.
   // The group is destroyed.
-  // TODO(crbug.com/325422747): Actually destroy the group.
   //
   // Assumes that the WebStateList is locked.
   void DeleteGroupImpl(const TabGroup* group);
