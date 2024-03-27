@@ -1817,6 +1817,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="107" label="kVcBackgroundGlowscapes"/>
 </enum>
 
+<enum name="SeaPenWallpaperManagerMigrationStatus">
+  <int value="0" label="kNotStarted"/>
+  <int value="1" label="kCrashed"/>
+  <int value="2" label="kFailed"/>
+  <int value="3" label="kSuccess"/>
+</enum>
+
 <enum name="SetWallpaperResult">
   <int value="0" label="Success"/>
   <int value="1" label="Permission Denied"/>

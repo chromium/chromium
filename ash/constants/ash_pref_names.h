@@ -1254,6 +1254,15 @@ inline constexpr char kWallpaperTimeOfDayStatus[] =
 inline constexpr char kWallpaperTimeOfDayScheduleType[] =
     "ash.wallpaper_time_of_day.schedule_type";
 
+// Integer pref that tracks whether user SeaPen images have been moved to
+// cryptohome. SeaPen initially stored images in the global wallpaper directory,
+// but now only stores a copy of the active (currently set as wallpaper) image
+// in global wallpaper directory. All other SeaPen images are in cryptohome so
+// that they are encrypted upon logout.
+// @see SeaPenWallpaperManager::MigrationStatus enum.
+inline constexpr char kWallpaperSeaPenMigrationStatus[] =
+    "ash.wallpaper.sea_pen.migration_status";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 inline constexpr char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";

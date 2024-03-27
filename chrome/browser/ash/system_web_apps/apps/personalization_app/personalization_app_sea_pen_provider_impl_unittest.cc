@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
+#include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -188,10 +189,9 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
-
     ASSERT_TRUE(profile_manager_.SetUp());
-    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    sea_pen_wallpaper_manager_.SetStorageDirectory(GetTempDirectory());
+    sea_pen_wallpaper_manager_.SetSessionDelegateForTesting(
+        std::make_unique<TestSeaPenWallpaperManagerSessionDelegate>());
   }
 
   // Set up the profile for an account. This can be used to set up the profile
@@ -215,7 +215,11 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
         sea_pen_provider_remote_.BindNewPipeAndPassReceiver());
   }
 
-  base::FilePath GetTempDirectory() { return scoped_temp_dir_.GetPath(); }
+  TestSeaPenWallpaperManagerSessionDelegate*
+  sea_pen_wallpaper_manager_session_delegate() {
+    return static_cast<TestSeaPenWallpaperManagerSessionDelegate*>(
+        sea_pen_wallpaper_manager_.session_delegate_for_testing());
+  }
 
   mojo::Remote<ash::personalization_app::mojom::SeaPenProvider>&
   sea_pen_provider_remote() {
@@ -231,10 +235,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_; }
-
-  const base::FilePath& GetTempFileDirectory() {
-    return scoped_temp_dir_.GetPath();
-  }
 
   void CreateSeaPenFilesForTesting(const AccountId& account_id,
                                    std::vector<uint32_t> sea_pen_ids) {
@@ -303,10 +303,9 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir scoped_temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   TestWallpaperController test_wallpaper_controller_;
-  SeaPenWallpaperManager sea_pen_wallpaper_manager_;
+  SeaPenWallpaperManager sea_pen_wallpaper_manager_{};
   content::TestWebUI web_ui_;
   InProcessDataDecoder in_process_data_decoder_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -646,8 +645,8 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
   {
     // Mess up the file so it fails decoding.
-    const auto file_path = GetTempFileDirectory()
-                               .Append(GetTestAccountId().GetAccountIdKey())
+    const auto file_path = sea_pen_wallpaper_manager_session_delegate()
+                               ->GetStorageDirectory(GetTestAccountId())
                                .Append(base::NumberToString(kSeaPenId1))
                                .AddExtension(".jpg");
     std::string data;

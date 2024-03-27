@@ -6743,6 +6743,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SeaPen.MigrationStatus"
+    enum="SeaPenWallpaperManagerMigrationStatus" expires_after="2024-12-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records result of migrating user SeaPen files to new directory.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
     expires_after="2024-12-31">
   <owner>pzliu@google.com</owner>

@@ -10,20 +10,25 @@
 namespace ash::wallpaper_constants {
 
 // Blur sigma used for normal wallpaper.
-constexpr float kClear = 0.f;
+inline constexpr float kClear = 0.f;
 // Blur sigma in lock/login screen.
-constexpr float kLockLoginBlur = 30.0f;
+inline constexpr float kLockLoginBlur = 30.0f;
 // Blur sigma used in oobe.
-constexpr float kOobeBlur = ColorProvider::kBackgroundBlurSigma;
+inline constexpr float kOobeBlur = ColorProvider::kBackgroundBlurSigma;
 
 // File path suffix of resized small wallpapers.
-constexpr char kSmallWallpaperSuffix[] = "_small";
+inline constexpr char kSmallWallpaperSuffix[] = "_small";
 
 // The ID of the time of day wallpaper collection served by backdrop server.
-constexpr char kTimeOfDayWallpaperCollectionId[] =
+inline constexpr char kTimeOfDayWallpaperCollectionId[] =
     "_time_of_day_chromebook_collection";
 // The ID of the default time of day wallpaper.
-constexpr uint64_t kDefaultTimeOfDayWallpaperUnitId = 18;
+inline constexpr uint64_t kDefaultTimeOfDayWallpaperUnitId = 18;
+
+// The subdirectory name for storing SeaPen wallpaper. There is a SeaPen
+// subdirectory in the global wallpaper directory, and in
+// <user_profile_directory>/wallpaper/sea_pen.
+inline constexpr char kSeaPenWallpaperDirName[] = "sea_pen";
 
 }  // namespace ash::wallpaper_constants
 

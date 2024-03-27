@@ -74,6 +74,7 @@
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/user_education/user_education_controller.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
@@ -156,6 +157,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   ProjectorControllerImpl::RegisterProfilePrefs(registry);
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
+  SeaPenWallpaperManager::RegisterProfilePrefs(registry);
   SearchNotifierController::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);

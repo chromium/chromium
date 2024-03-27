@@ -16,8 +16,8 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
+#include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -25,7 +25,6 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -206,8 +205,8 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    ASSERT_TRUE(sea_pen_wallpaper_manager_storage_dir_.CreateUniqueTempDir());
-    sea_pen_wallpaper_manager_.SetStorageDirectory(GetSeaPenStorageDirectory());
+    sea_pen_wallpaper_manager()->SetSessionDelegateForTesting(
+        std::make_unique<TestSeaPenWallpaperManagerSessionDelegate>());
 
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
@@ -256,6 +255,12 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     return &sea_pen_wallpaper_manager_;
   }
 
+  TestSeaPenWallpaperManagerSessionDelegate*
+  sea_pen_wallpaper_manager_session_delegate() {
+    return static_cast<TestSeaPenWallpaperManagerSessionDelegate*>(
+        sea_pen_wallpaper_manager()->session_delegate_for_testing());
+  }
+
   TestWallpaperController* test_wallpaper_controller() {
     return &test_wallpaper_controller_;
   }
@@ -300,15 +305,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     return test_wallpaper_observer_.current_attribution();
   }
 
-  base::FilePath GetSeaPenStorageDirectory() {
-    return sea_pen_wallpaper_manager_storage_dir_.GetPath();
-  }
-
  private:
   // Note: `scoped_feature_list_` should be destroyed after `task_environment_`
   // (see crbug.com/846380).
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir sea_pen_wallpaper_manager_storage_dir_;
   content::BrowserTaskEnvironment task_environment_;
   InProcessDataDecoder in_process_data_decoder_;
   TestingPrefServiceSimple pref_service_;
@@ -480,11 +480,10 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, ValidSeaPenAttribution) {
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, MissingSeaPenAttribution) {
   // Write a jpg with no metadata.
-  const base::FilePath jpg_path =
-      GetSeaPenStorageDirectory()
-          .Append(GetTestAccountId().GetAccountIdKey())
-          .Append("111")
-          .AddExtension(".jpg");
+  const base::FilePath jpg_path = sea_pen_wallpaper_manager_session_delegate()
+                                      ->GetStorageDirectory(GetTestAccountId())
+                                      .Append("111")
+                                      .AddExtension(".jpg");
   ASSERT_TRUE(base::CreateDirectory(jpg_path.DirName()));
   ASSERT_TRUE(base::WriteFile(jpg_path, CreateJpgBytes()));
 

@@ -11,7 +11,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -71,13 +70,6 @@ base::FilePath GetExistingWallpaperPath(const WallpaperType type,
 
   if (!base::PathExists(wallpaper_path)) {
     return base::FilePath();
-  }
-
-  // If the wallpaper is a Sea Pen wallpaper, tries to update last modified time
-  // to the current time. Even when this process fails, still continues loading
-  // the wallpaper.
-  if (type == WallpaperType::kSeaPen) {
-    base::TouchFile(wallpaper_path, base::Time::Now(), base::Time::Now());
   }
 
   return wallpaper_path;

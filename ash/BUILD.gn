@@ -2513,6 +2513,8 @@ component("ash") {
     "wallpaper/online_wallpaper_variant_info_fetcher.h",
     "wallpaper/sea_pen_wallpaper_manager.cc",
     "wallpaper/sea_pen_wallpaper_manager.h",
+    "wallpaper/sea_pen_wallpaper_manager_session_delegate_impl.cc",
+    "wallpaper/sea_pen_wallpaper_manager_session_delegate_impl.h",
     "wallpaper/views/wallpaper_base_view.cc",
     "wallpaper/views/wallpaper_base_view.h",
     "wallpaper/views/wallpaper_view.cc",
@@ -4714,6 +4716,8 @@ static_library("test_support") {
     "user_education/welcome_tour/welcome_tour_test_util.h",
     "utility/haptics_tracking_test_input_controller.cc",
     "utility/haptics_tracking_test_input_controller.h",
+    "wallpaper/test_sea_pen_wallpaper_manager_session_delegate.cc",
+    "wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h",
     "wallpaper/test_wallpaper_image_downloader.cc",
     "wallpaper/test_wallpaper_image_downloader.h",
 
