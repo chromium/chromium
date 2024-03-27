@@ -76,3 +76,6 @@
 -ThirdPartyMetricsObserverBrowserTest.OpaqueOriginSubframe
 -ThirdPartyMetricsObserverBrowserTest.ThreeThirdPartyFrames_ThreeTimingsRecorded
 -VideoLCPTypeTest.DataURIType_Video
+
+# crbug.com/1489659
+-PDFExtensionAccessibilityNavigationTest.LinkNavigation
