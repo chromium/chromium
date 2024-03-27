@@ -52,6 +52,7 @@ using user_data_auth::AddAuthFactorReply;
 using user_data_auth::AUTH_FACTOR_TYPE_KIOSK;
 using user_data_auth::AUTH_FACTOR_TYPE_PASSWORD;
 using user_data_auth::AUTH_INTENT_DECRYPT;
+using user_data_auth::AUTH_INTENT_RESTORE_KEY;
 using user_data_auth::AUTH_INTENT_VERIFY_ONLY;
 using user_data_auth::AuthenticateAuthFactorReply;
 using user_data_auth::AuthFactor;
@@ -408,8 +409,9 @@ TEST_P(AuthSessionAuthenticatorTest, RestoreDeviceKeyOnLockScreen) {
   auto user_context = std::make_unique<UserContext>(
       user_manager::UserType::kRegular, kAccountId);
   user_context->SetKey(Key(kPassword));
-  EXPECT_CALL(userdataauth(),
-              StartAuthSession(WithPersistentAccountId(AUTH_INTENT_DECRYPT), _))
+  EXPECT_CALL(
+      userdataauth(),
+      StartAuthSession(WithPersistentAccountId(AUTH_INTENT_RESTORE_KEY), _))
       .WillOnce(ReplyWith(BuildStartReply(
           kFirstAuthSessionId, /*user_exists=*/true,
           /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));

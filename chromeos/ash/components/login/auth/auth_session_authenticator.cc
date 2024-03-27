@@ -443,9 +443,9 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
   // non-ephemeral user sessions.
   if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
     LOGIN_LOG(EVENT)
-        << "AuthenticateToUnlock starts AuthSession for decrypt to "
-           "restore keyset.";
-    intent = AuthSessionIntent::kDecrypt;
+        << "AuthenticateToUnlock starts AuthSession for restore_key to "
+           "restore filesystem keyset.";
+    intent = AuthSessionIntent::kRestoreKey;
   }
 
   StartAuthSessionForLoggedIn(
