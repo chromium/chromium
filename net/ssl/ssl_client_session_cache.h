@@ -118,7 +118,7 @@ class NET_EXPORT SSLClientSessionCache {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  raw_ptr<base::Clock, DanglingUntriaged> clock_;
+  raw_ptr<base::Clock> clock_;
   Config config_;
   base::LRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_ = 0;

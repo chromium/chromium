@@ -276,8 +276,8 @@ TEST_F(SSLClientSessionCacheTest, Expiration) {
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
-  SSLClientSessionCache cache(config);
   std::unique_ptr<base::SimpleTestClock> clock = MakeTestClock();
+  SSLClientSessionCache cache(config);
   cache.SetClockForTesting(clock.get());
 
   // Add |kNumEntries - 1| entries.
@@ -325,8 +325,8 @@ TEST_F(SSLClientSessionCacheTest, LookupExpirationCheck) {
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
-  SSLClientSessionCache cache(config);
   std::unique_ptr<base::SimpleTestClock> clock = MakeTestClock();
+  SSLClientSessionCache cache(config);
   cache.SetClockForTesting(clock.get());
 
   // Insert an entry into the session cache.
@@ -375,8 +375,8 @@ TEST_F(SSLClientSessionCacheTest, TestFlushOnMemoryNotifications) {
 
   SSLClientSessionCache::Config config;
   config.expiration_check_count = kExpirationCheckCount;
-  SSLClientSessionCache cache(config);
   std::unique_ptr<base::SimpleTestClock> clock = MakeTestClock();
+  SSLClientSessionCache cache(config);
   cache.SetClockForTesting(clock.get());
 
   // Insert an entry into the session cache.
