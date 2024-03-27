@@ -1,0 +1,161 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- This test will check whether dnd events follow protected mode. -->
+<title>Drag and Drop: DOM Move</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dnd.html#concept-dnd-p">
+
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<style>
+  .box {
+    display: block;
+    border: 1px solid black;
+    width: 350px;
+    height: 200px;
+    text-align: center;
+  }
+</style>
+
+<div id="drag-box" class="dragged box" draggable="true">
+  Select this element, drag it to the Drop Zone and then release the selection
+  to move the element.
+</div>
+
+<div id="drop-box" class="dropzone box">
+  Drop Here
+</div>
+
+<p>
+  Current test: <code id="test-description"></code>
+</p>
+
+<script>
+  'use strict';
+
+  /* Moves the mouse to the center of `element`. */
+  const mouseMoveToCenter = element => {
+    const clientRect = element.getBoundingClientRect();
+    const centerX = (clientRect.left + clientRect.right) / 2;
+    const centerY = (clientRect.top + clientRect.bottom) / 2;
+    if (window.eventSender) {
+      eventSender.mouseMoveTo(centerX, centerY);
+    }
+  };
+
+  /* Compare two arrays. */
+  function checkArrays(arrA, arrB) {
+    if (arrA.length !== arrB.length) return false;
+    for (var i = 0; i < arrA.length; i++) {
+      if (arrA[i] !== arrB[i]) return false;
+    }
+    return true;
+  }
+
+  /* Test drag data state in dnd events. */
+  const dndDomMoveTest = testCase => {
+    promise_test(async t => {
+      document.querySelector('#test-description').textContent =
+        JSON.stringify(testCase);
+
+      const gotEvent = {
+        dragStart: false,
+        dragOver: false,
+        drop: false,
+        dragEnd: false,
+      };
+
+      const samplePlainData = 'sample text plain';
+
+      let movedItem = document.getElementById('drag-box');
+      const dragBox = document.getElementById('drag-box');
+      const dropBox = document.getElementById('drop-box');
+      const doneButton = document.createElement('button');
+
+      dragBox.ondragstart = t.step_func(e => {
+        gotEvent.dragStart = true;
+        e.dataTransfer.setData('text/plain', samplePlainData);
+        e.dataTransfer.setData('text/html', 'sample text html');
+        e.dataTransfer.items.add(new File(["h", "e", "l", "l", "o"],
+          "hello.txt"));
+        e.dataTransfer.items.add(new File(["h", "e", "l", "l", "o", "2"],
+          "hello2.txt"));
+      });
+
+      dropBox.ondragover = t.step_func(e => {
+        gotEvent.dragOver = true;
+        e.preventDefault();
+      });
+
+      const dndTest = new Promise(resolve => {
+        dragBox.ondragend = t.step_func(e => {
+          gotEvent.dragEnd = true;
+          return resolve();
+        });
+        dropBox.ondrop = t.step_func(async e => {
+          gotEvent.drop = true;
+          e.preventDefault();
+
+          const movedItemDestination =
+            document.getElementById('drop-box');
+          const movedItemSource =
+            document.getElementById('drag-box');
+
+          if (testCase.action == 'appendChild') {
+            movedItemDestination.appendChild(movedItem);
+          }
+          else {
+            return reject('Error: Invalid testCase.action. Please make sure the testCase is spelled correctly');
+          }
+
+          // Click to resolve test as backup in case dragend never triggers to
+          // end the test.
+          setTimeout(() => {
+            const clickEvent = new Event('click');
+            doneButton.dispatchEvent(clickEvent);
+          }, 100);
+        });
+
+        doneButton.onclick = t.step_func(() => {
+          return resolve();
+        })
+
+        // Do drag and drop.
+        if (window.eventSender) {
+          mouseMoveToCenter(dragBox);
+          eventSender.mouseDown();
+          setTimeout(() => {
+            mouseMoveToCenter(dropBox);
+            eventSender.mouseUp();
+          }, 100);
+        }
+      });
+      await dndTest;
+      // TODO(crbug.com/394955): Once this bug is fixed, checks must be
+      // added for types and length of data transfer item list.
+      assert_true(gotEvent.dragStart,
+        'drag-box should have gotten a dragstart event');
+      assert_true(gotEvent.dragOver,
+        'drop-box should have gotten a dragover event');
+      assert_true(gotEvent.drop,
+        'drop-box should have gotten a drop event');
+      assert_equals(gotEvent.dragEnd, testCase.expectDragEnd,
+        'drag-box should have gotten a dragEnd event');
+    }, `tested with input: ${testCase.load}, ${testCase.action}`);
+  };
+
+  const dndDomMoveTests = testCases => {
+    for (let testCase of testCases)
+      dndDomMoveTest(testCase);
+
+    promise_test(() => {
+      return Promise.resolve().then(() => {
+        document.querySelector('#test-description').textContent = 'done';
+      });
+    }, 'all tests complete');
+  }
+
+  dndDomMoveTests([
+    { load: 'dragData', expectDragEnd: true, action: 'appendChild' },
+  ]);
+</script>

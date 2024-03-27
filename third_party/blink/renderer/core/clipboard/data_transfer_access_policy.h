@@ -27,10 +27,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CLIPBOARD_DATA_TRANSFER_ACCESS_POLICY_H_
 
 namespace blink {
-
+/*
+* As per spec(https://html.spec.whatwg.org/multipage/dnd.html#drag-data-store-mode)
+* Drag data store has 3 modes: "Read/write", "Read-only" and "Protected".
+* kWritable refers to "Read/write".
+* kTypesReadable refers to "Protected".
+* kReadable refers to "Read-only".
+*/
 enum class DataTransferAccessPolicy {
   kNumb,
-  kImageWritable,
   kWritable,
   kTypesReadable,
   kReadable

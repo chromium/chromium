@@ -1618,10 +1618,17 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 
   // Verify dragend DOM event.
   {
-    // TODO(lukasza): Figure out why the drop event sees different values of
-    // DataTransfer.dropEffect and DataTransfer.types properties.
+    // Different values of DataTransfer.dropEffect is observed and is
+    // being tracked by https://crbug.com/1470718.
+    // Different values of DataTransfer.types is seen due to
+    // https://crbug.com/394955. This causes certain File objects to be
+    // mapped to text/plain in `DataObject::ToWebDragData()` and thus
+    // text/plain is seen in "dragleave", "dragenter", "dragover" and "drop"
+    // events. While dragend doesn't use WebDragData object and that is why
+    // text/plain is not seen in this event.
     state->expected_dom_event_data.set_expected_drop_effect("copy");
-    state->expected_dom_event_data.set_expected_mime_types("");
+    state->expected_dom_event_data.set_expected_mime_types(
+        "Files,text/html,text/uri-list");
 
     // TODO: https://crbug.com/686136: dragEnd coordinates for non-OOPIF
     // scenarios are currently broken.
@@ -2203,10 +2210,17 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
 
   // Verify dragend DOM event.
   {
-    // TODO(lukasza): Figure out why the drop event sees different values of
-    // DataTransfer.dropEffect and DataTransfer.types properties.
+    // Different values of DataTransfer.dropEffect is observed and is
+    // being tracked by https://crbug.com/1470718.
+    // Different values of DataTransfer.types is seen due to
+    // https://crbug.com/394955. This causes certain File objects to be
+    // mapped to text/plain in `DataObject::ToWebDragData()` and thus
+    // text/plain is seen in "dragleave", "dragenter", "dragover" and "drop"
+    // events. While dragend doesn't use WebDragData object and that is why
+    // text/plain is not seen in this event.
     state->expected_dom_event_data.set_expected_drop_effect("copy");
-    state->expected_dom_event_data.set_expected_mime_types("");
+    state->expected_dom_event_data.set_expected_mime_types(
+        "Files,text/html,text/uri-list");
 
     // TODO: https://crbug.com/686136: dragEnd coordinates for non-OOPIF
     // scenarios are currently broken.

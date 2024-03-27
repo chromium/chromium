@@ -566,8 +566,7 @@ bool DataTransfer::CanWriteData() const {
 }
 
 bool DataTransfer::CanSetDragImage() const {
-  return policy_ == DataTransferAccessPolicy::kImageWritable ||
-         policy_ == DataTransferAccessPolicy::kWritable;
+  return policy_ == DataTransferAccessPolicy::kWritable;
 }
 
 DragOperationsMask DataTransfer::SourceOperation() const {

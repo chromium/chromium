@@ -981,11 +981,15 @@ bool MouseEventManager::TryStartDrag(
           frame_->Selection().ComputeVisibleSelectionInDOMTree().Start()))
     return false;
 
-  // Invalidate clipboard here against anymore pasteboard writing for
-  // security. The drag image can still be changed as we drag, but not
-  // the pasteboard data.
+  // Set the clipboard access policy to protected
+  // (https://html.spec.whatwg.org/multipage/dnd.html#concept-dnd-p) to
+  // prevent changes in the clipboard after dragstart event has been fired:
+  // https://html.spec.whatwg.org/multipage/dnd.html#dndevents
+  // According to
+  // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-setdragimage,
+  // drag image is only allowed to be changed during dragstart event.
   GetDragState().drag_data_transfer_->SetAccessPolicy(
-      DataTransferAccessPolicy::kImageWritable);
+      DataTransferAccessPolicy::kTypesReadable);
 
   if (drag_controller.StartDrag(frame_, GetDragState(), event.Event(),
                                 mouse_down_pos_)) {
