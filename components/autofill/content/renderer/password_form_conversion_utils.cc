@@ -6,7 +6,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/core/common/autofill_features.h"

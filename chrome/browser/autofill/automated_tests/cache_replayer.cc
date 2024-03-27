@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 
 #include <algorithm>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -415,7 +415,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
     }
     // If we've fallen to this level, something went bad with adding the request
     // node. If fail_on_error is set then abort, else log and try the next one.
-    constexpr base::StringPiece status_msg =
+    constexpr std::string_view status_msg =
         "could not cache query node content";
     if (fail_on_error) {
       return ServerCacheReplayer::Status{

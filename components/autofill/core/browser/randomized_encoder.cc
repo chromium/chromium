@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -290,7 +291,7 @@ std::string RandomizedEncoder::EncodeForTesting(
     FormSignature form_signature,
     FieldSignature field_signature,
     std::string_view data_type,
-    base::StringPiece16 data_value) const {
+    std::u16string_view data_value) const {
   return Encode(form_signature, field_signature, data_type,
                 base::UTF16ToUTF8(data_value));
 }

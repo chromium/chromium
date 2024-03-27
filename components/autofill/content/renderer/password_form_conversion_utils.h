@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "third_party/blink/public/platform/web_string.h"

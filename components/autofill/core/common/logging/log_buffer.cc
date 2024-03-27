@@ -51,7 +51,7 @@ void AppendChildToLastNode(std::vector<base::Value::Dict>* buffer,
 }
 
 // This is an optimization to reduce the number of text nodes in the DOM.
-// Sequences of appended StringPieces are coalesced into one. If many strings
+// Sequences of appended string_views are coalesced into one. If many strings
 // are appended, this has quadratic runtime. But the number of strings
 // and the lengths of strings should be relatively small and we reduce the
 // memory consumption of the DOM, which may grow rather large.
@@ -182,7 +182,7 @@ LogBuffer& operator<<(LogBuffer& buf, std::string_view text) {
   return buf;
 }
 
-LogBuffer& operator<<(LogBuffer& buf, base::StringPiece16 text) {
+LogBuffer& operator<<(LogBuffer& buf, std::u16string_view text) {
   return buf << base::UTF16ToUTF8(text);
 }
 
@@ -244,10 +244,10 @@ namespace {
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
 template <typename T, typename CharT = typename T::value_type>
 LogBuffer HighlightValueInternal(T haystack, T needle) {
-  using StringPieceT = std::basic_string_view<CharT>;
+  using StringViewT = std::basic_string_view<CharT>;
   LogBuffer buffer(LogBuffer::IsActive(true));
   size_t pos = haystack.find(needle);
-  if (pos == StringPieceT::npos || needle.empty()) {
+  if (pos == StringViewT::npos || needle.empty()) {
     buffer << haystack;
     return buffer;
   }
@@ -262,8 +262,8 @@ LogBuffer HighlightValue(std::string_view haystack, std::string_view needle) {
   return HighlightValueInternal(haystack, needle);
 }
 
-LogBuffer HighlightValue(base::StringPiece16 haystack,
-                         base::StringPiece16 needle) {
+LogBuffer HighlightValue(std::u16string_view haystack,
+                         std::u16string_view needle) {
   return HighlightValueInternal(haystack, needle);
 }
 

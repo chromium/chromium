@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
@@ -57,8 +56,8 @@ class AutofillProfileComparator {
   // If |whitespace_spec| is RETAIN_WHITESPACE, then the postal codes "B15 3TR"
   // and "B153TR" are not considered equal, but "16 Bridge St."" and "16 Bridge
   // St" are because trailing whitespace and punctuation are ignored.
-  bool Compare(base::StringPiece16 text1,
-               base::StringPiece16 text2,
+  bool Compare(std::u16string_view text1,
+               std::u16string_view text2,
                WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE) const;
 
   // Returns true if |existing_profile| is a merge candidate for |new_profile|.
@@ -77,7 +76,7 @@ class AutofillProfileComparator {
 
   // Returns true if |text| is empty or contains only skippable characters. A
   // character is skippable if it is punctuation or white space.
-  bool HasOnlySkippableCharacters(base::StringPiece16 text) const;
+  bool HasOnlySkippableCharacters(std::u16string_view text) const;
 
   // Get the difference in 'types' of two profiles. The difference is determined
   // with respect to the provided `app_locale`.
@@ -121,7 +120,7 @@ class AutofillProfileComparator {
   // If |whitespace_spec| is DISCARD_WHITESPACE, punctuation and whitespace are
   // discarded. For example, +1 (234) 567-8900 becomes 12345678900.
   static std::u16string NormalizeForComparison(
-      base::StringPiece16 text,
+      std::u16string_view text,
       WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE);
 
   // Returns true if |p1| and |p2| are viable merge candidates. This means that
@@ -212,11 +211,11 @@ class AutofillProfileComparator {
 
   // Returns the set of unique tokens in |s|. Note that the string data backing
   // |s| is expected to have a lifetime which exceeds the call to UniqueTokens.
-  static std::set<base::StringPiece16> UniqueTokens(base::StringPiece16 s);
+  static std::set<std::u16string_view> UniqueTokens(std::u16string_view s);
 
   // Compares the unique tokens in s1 and s2.
-  static CompareTokensResult CompareTokens(base::StringPiece16 s1,
-                                           base::StringPiece16 s2);
+  static CompareTokensResult CompareTokens(std::u16string_view s1,
+                                           std::u16string_view s2);
 
   // Returns the value of |t| from |p1| or |p2| depending on which is non-empty.
   // This method expects that the value is either the same in |p1| and |p2| or

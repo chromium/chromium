@@ -12,7 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "components/autofill/core/common/logging/log_macros.h"
@@ -157,7 +156,7 @@ LogBuffer& operator<<(LogBuffer& buf, Br&& tag);
 
 LogBuffer& operator<<(LogBuffer& buf, std::string_view text);
 
-LogBuffer& operator<<(LogBuffer& buf, base::StringPiece16 text);
+LogBuffer& operator<<(LogBuffer& buf, std::u16string_view text);
 
 // Sometimes you may want to fill a buffer that you then stream as a whole
 // to LOG_AF_INTERNALS, which commits the data to chrome://autofill-internals:
@@ -223,8 +222,8 @@ LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, Attrib&& attrib);
 
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
 LogBuffer HighlightValue(std::string_view haystack, std::string_view needle);
-LogBuffer HighlightValue(base::StringPiece16 haystack,
-                         base::StringPiece16 needle);
+LogBuffer HighlightValue(std::u16string_view haystack,
+                         std::u16string_view needle);
 
 namespace internal {
 

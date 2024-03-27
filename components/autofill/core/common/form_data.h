@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -180,7 +181,7 @@ struct FormData {
 
   // Finds a field in the FormData by its name or id.
   // Returns a pointer to the field if found, otherwise returns nullptr.
-  FormFieldData* FindFieldByName(const base::StringPiece16 name_or_id);
+  FormFieldData* FindFieldByName(std::u16string_view name_or_id);
 
   // The id attribute of the form.
   std::u16string id_attribute;

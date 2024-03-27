@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
@@ -46,7 +47,6 @@
 
 #if DCHECK_IS_ON()
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
 #endif
 
 namespace autofill {
@@ -331,7 +331,7 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   }
   selected_view.GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
-  constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
+  constexpr auto kDerivedClasses = base::MakeFixedFlatSet<std::string_view>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",

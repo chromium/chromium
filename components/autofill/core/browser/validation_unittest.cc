@@ -326,8 +326,7 @@ INSTANTIATE_TEST_SUITE_P(InternationalBankAccountNumber,
 
 TEST_P(AutofillIsInternationalBankAccountNumber,
        IsInternationalBankAccountNumber) {
-  EXPECT_TRUE(IsInternationalBankAccountNumber(GetParam()))
-      << base::StringPiece16(GetParam());
+  EXPECT_TRUE(IsInternationalBankAccountNumber(GetParam())) << GetParam();
   EXPECT_TRUE(IsInternationalBankAccountNumber(u" " + GetParam() + u" "));
   EXPECT_FALSE(IsInternationalBankAccountNumber(u"DE" + GetParam()));
   EXPECT_FALSE(IsInternationalBankAccountNumber(GetParam() + u"."));

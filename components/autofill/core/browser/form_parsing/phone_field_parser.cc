@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -442,7 +443,7 @@ std::string PhoneFieldParser::GetJSONFieldType(RegexType phonetype_id) {
 // static
 bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
                                        AutofillScanner* scanner,
-                                       base::StringPiece16 regex,
+                                       std::u16string_view regex,
                                        raw_ptr<AutofillField>* field,
                                        const char* regex_name,
                                        const bool is_country_code_field,

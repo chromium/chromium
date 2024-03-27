@@ -8,11 +8,11 @@
 #include <cstddef>
 #include <iterator>
 #include <numeric>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -67,8 +67,8 @@ RegexMatchesCache::RegexMatchesCache(int capacity) : cache_(capacity) {}
 RegexMatchesCache::~RegexMatchesCache() = default;
 
 RegexMatchesCache::Key RegexMatchesCache::BuildKey(
-    base::StringPiece16 input,
-    base::StringPiece16 pattern) {
+    std::u16string_view input,
+    std::u16string_view pattern) {
   return Key(std::hash<std::u16string_view>{}(input),
              std::hash<std::u16string_view>{}(pattern));
 }
@@ -105,8 +105,8 @@ ParsingContext::~ParsingContext() = default;
 // static
 bool FormFieldParser::MatchesRegexWithCache(
     ParsingContext& context,
-    base::StringPiece16 input,
-    base::StringPiece16 pattern,
+    std::u16string_view input,
+    std::u16string_view pattern,
     std::vector<std::u16string>* groups) {
   RegexMatchesCache::Key key;
   if (!groups && context.matches_cache) {
@@ -397,7 +397,7 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
 // static
 bool FormFieldParser::ParseField(ParsingContext& context,
                                  AutofillScanner* scanner,
-                                 base::StringPiece16 pattern,
+                                 std::u16string_view pattern,
                                  base::span<const MatchPatternRef> patterns,
                                  raw_ptr<AutofillField>* match,
                                  const char* regex_name) {
@@ -409,7 +409,7 @@ bool FormFieldParser::ParseField(ParsingContext& context,
 bool FormFieldParser::ParseFieldSpecificsWithLegacyPattern(
     ParsingContext& context,
     AutofillScanner* scanner,
-    base::StringPiece16 pattern,
+    std::u16string_view pattern,
     MatchParams match_type,
     raw_ptr<AutofillField>* match,
     const char* regex_name) {
@@ -458,7 +458,7 @@ bool FormFieldParser::ParseFieldSpecificsWithNewPatterns(
 bool FormFieldParser::ParseFieldSpecifics(
     ParsingContext& context,
     AutofillScanner* scanner,
-    base::StringPiece16 pattern,
+    std::u16string_view pattern,
     const MatchParams& match_type,
     base::span<const MatchPatternRef> patterns,
     raw_ptr<AutofillField>* match,
@@ -573,12 +573,12 @@ FormFieldParser::RemoveCheckableFields(
 
 bool FormFieldParser::Match(ParsingContext& context,
                             const AutofillField* field,
-                            base::StringPiece16 pattern,
+                            std::u16string_view pattern,
                             DenseSet<MatchAttribute> match_attributes,
                             const char* regex_name) {
   bool found_match = false;
   std::string_view match_type_string;
-  base::StringPiece16 value;
+  std::u16string_view value;
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches

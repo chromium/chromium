@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_clock.h"

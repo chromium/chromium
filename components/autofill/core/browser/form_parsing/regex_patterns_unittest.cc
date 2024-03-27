@@ -9,12 +9,12 @@
 // Only these tests will be kept once the pattern provider launches.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/ranges/ranges.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
@@ -59,7 +59,7 @@ MatchPatternRefTestApi test_api(MatchPatternRef p) {
   return MatchPatternRefTestApi(p);
 }
 
-auto Matches(base::StringPiece16 regex) {
+auto Matches(std::u16string_view regex) {
   icu::RegexPattern regex_pattern = *CompileRegex(regex);
   return ::testing::Truly(
       [regex_pattern = std::move(regex_pattern)](std::string_view actual) {

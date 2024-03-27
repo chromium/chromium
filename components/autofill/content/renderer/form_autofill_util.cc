@@ -1562,7 +1562,7 @@ std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
                                                  const WebString& id_list) {
   std::vector<WebElement> web_elements;
   std::u16string id_list_utf16 = id_list.Utf16();
-  for (const auto& id : base::SplitStringPiece(
+  for (std::u16string_view id : base::SplitStringPiece(
            id_list_utf16, base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
            base::SPLIT_WANT_NONEMPTY)) {
     web_elements.push_back(document.GetElementById(WebString(id)));

@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/form_data.h"
 
 #include <stddef.h>
+#include <string_view>
 #include <tuple>
 
 #include "base/base64.h"
@@ -157,7 +158,7 @@ const FormFieldData* FormData::FindFieldByGlobalId(
   return fields_it != fields.end() ? &*fields_it : nullptr;
 }
 
-FormFieldData* FormData::FindFieldByName(const base::StringPiece16 name_or_id) {
+FormFieldData* FormData::FindFieldByName(std::u16string_view name_or_id) {
   auto fields_it = base::ranges::find(fields, name_or_id, &FormFieldData::name);
 
   // If the field is found, return a pointer to the field, otherwise return

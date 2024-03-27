@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
 
@@ -69,7 +68,7 @@ class RandomizedEncoder {
   std::string EncodeForTesting(FormSignature form_signature,
                                FieldSignature field_signature,
                                std::string_view data_type,
-                               base::StringPiece16 data_value) const;
+                               std::u16string_view data_value) const;
 
   AutofillRandomizedValue_EncodingType encoding_type() const {
     DCHECK(encoding_info_);

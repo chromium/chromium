@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -235,7 +236,7 @@ std::vector<FieldValue> GetFieldValues(
 // Types the characters of `value` after focusing field `e`.
 [[nodiscard]] AssertionResult EnterTextIntoField(
     const autofill::ElementExpr& e,
-    base::StringPiece value,
+    std::string_view value,
     AutofillUiTest* test,
     content::ToRenderFrameHost execution_target) {
   AssertionResult a = FocusField(e, execution_target);
@@ -1237,7 +1238,7 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
 
   // Modify a field.
   ASSERT_TRUE(FocusField(GetElementById("state"), test->GetWebContents()));
-  ASSERT_NE(kDefaultAddressValues.state_short, base::StringPiece("CA"));
+  ASSERT_NE(kDefaultAddressValues.state_short, "CA");
   test->FillElementWithValue("state", "CA");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
@@ -3603,7 +3604,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   load_stop_observer.Wait();
 
   // Short hand for ExpectBucketCount:
-  auto expect_count = [&](base::StringPiece name,
+  auto expect_count = [&](std::string_view name,
                           base::HistogramBase::Sample sample,
                           base::HistogramBase::Count expected_count) {
     histogram_tester().ExpectBucketCount(name, sample, expected_count);
@@ -3629,16 +3630,16 @@ class AutofillInteractiveTestShadowDom
   size_t case_num() const { return GetParam(); }
 
   // Replaces "$1" in `str` with the `case_num()`.
-  std::string WithCaseNum(base::StringPiece str) const {
+  std::string WithCaseNum(std::string_view str) const {
     return base::ReplaceStringPlaceholders(
         str, {base::NumberToString(case_num())}, nullptr);
   }
 
-  ElementExpr JsElement(base::StringPiece js_expr) {
+  ElementExpr JsElement(std::string_view js_expr) {
     return ElementExpr(WithCaseNum(js_expr));
   }
 
-  content::EvalJsResult Js(base::StringPiece js_code) {
+  content::EvalJsResult Js(std::string_view js_code) {
     return content::EvalJs(GetWebContents(), WithCaseNum(js_code));
   }
 };

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -20,7 +21,7 @@
 namespace autofill {
 namespace {
 
-base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
   return GetMatchPatterns(name, context.page_language, context.pattern_source);
 }

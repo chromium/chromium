@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <string_view>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
@@ -102,7 +103,7 @@ const std::vector<base::FilePath> GetTestFiles() {
     return {};
   }
   std::vector<base::FilePath> result;
-  for (const base::StringPiece& piece :
+  for (std::string_view piece :
        base::SplitStringPiece(input_list_string, "\n", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     result.push_back(dir.AppendASCII(piece));

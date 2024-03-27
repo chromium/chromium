@@ -5,7 +5,6 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"

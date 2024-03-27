@@ -12,6 +12,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1064,7 +1064,7 @@ void FormStructure::ProcessExtractedFields() {
 }
 
 void FormStructure::ExtractParseableFieldLabels() {
-  std::vector<base::StringPiece16> field_labels;
+  std::vector<std::u16string_view> field_labels;
   field_labels.reserve(field_count());
   for (const auto& field : *this) {
     // Skip fields that are not a text input or not visible.
@@ -1096,7 +1096,7 @@ void FormStructure::ExtractParseableFieldLabels() {
 }
 
 void FormStructure::ExtractParseableFieldNames() {
-  std::vector<base::StringPiece16> names;
+  std::vector<std::u16string_view> names;
   names.reserve(field_count());
   for (const auto& field : *this)
     names.emplace_back(field->name);

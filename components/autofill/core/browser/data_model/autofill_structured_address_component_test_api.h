@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/re2/src/re2/re2.h"

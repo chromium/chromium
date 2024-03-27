@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_BORROWED_TRANSLITERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_BORROWED_TRANSLITERATOR_H_
 
+#include <string_view>
+
 #include "base/i18n/unicodestring.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
@@ -37,7 +38,7 @@ class BorrowedTransliterator {
 // remove the diacritics. This function also converts other Latin characters to
 // ascii (ł -> l, ß -> ss). It does not perform German transliteration (ö
 // becomes o, not oe).
-std::u16string RemoveDiacriticsAndConvertToLowerCase(base::StringPiece16 value);
+std::u16string RemoveDiacriticsAndConvertToLowerCase(std::u16string_view value);
 
 }  // namespace autofill
 

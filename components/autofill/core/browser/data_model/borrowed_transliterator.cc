@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/no_destructor.h"
 
@@ -63,7 +65,7 @@ BorrowedTransliterator::GetTransliterator() {
 }
 
 std::u16string RemoveDiacriticsAndConvertToLowerCase(
-    base::StringPiece16 value) {
+    std::u16string_view value) {
   icu::UnicodeString result = icu::UnicodeString(value.data(), value.length());
   BorrowedTransliterator().Transliterate(&result);
   return base::i18n::UnicodeStringToString16(result);

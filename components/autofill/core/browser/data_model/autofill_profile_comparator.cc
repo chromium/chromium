@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 #include <algorithm>
+#include <string_view>
 #include <vector>
 
 #include "base/i18n/char_iterator.h"
@@ -68,7 +69,7 @@ bool IsPunctuationOrWhitespace(const int8_t character) {
 class NormalizingIterator {
  public:
   NormalizingIterator(
-      const base::StringPiece16& text,
+      std::u16string_view text,
       AutofillProfileComparator::WhitespaceSpec whitespace_spec);
   ~NormalizingIterator();
 
@@ -108,7 +109,7 @@ class NormalizingIterator {
 };
 
 NormalizingIterator::NormalizingIterator(
-    const base::StringPiece16& text,
+    std::u16string_view text,
     AutofillProfileComparator::WhitespaceSpec whitespace_spec)
     : collapse_skippable_(whitespace_spec ==
                           AutofillProfileComparator::RETAIN_WHITESPACE),
@@ -264,8 +265,8 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifferenceMap(
                                  GetUserVisibleTypes(), app_locale);
 }
 
-bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
-                                        base::StringPiece16 text2,
+bool AutofillProfileComparator::Compare(std::u16string_view text1,
+                                        std::u16string_view text2,
                                         WhitespaceSpec whitespace_spec) const {
   if (text1.empty() && text2.empty()) {
     return true;
@@ -298,7 +299,7 @@ bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
 }
 
 bool AutofillProfileComparator::HasOnlySkippableCharacters(
-    base::StringPiece16 text) const {
+    std::u16string_view text) const {
   if (text.empty()) {
     return true;
   }
@@ -310,7 +311,7 @@ bool AutofillProfileComparator::HasOnlySkippableCharacters(
 
 // static
 std::u16string AutofillProfileComparator::NormalizeForComparison(
-    base::StringPiece16 text,
+    std::u16string_view text,
     AutofillProfileComparator::WhitespaceSpec whitespace_spec) {
   // This algorithm is not designed to be perfect, we could get arbitrarily
   // fancy here trying to canonicalize address lines. Instead, this is designed
@@ -504,7 +505,7 @@ bool AutofillProfileComparator::IsNameVariantOf(
       GetNamePartVariants(name_1_parts.given);
   const std::set<std::u16string> middle_name_variants =
       GetNamePartVariants(name_1_parts.middle);
-  base::StringPiece16 family_name = name_1_parts.family;
+  std::u16string_view family_name = name_1_parts.family;
 
   // Iterate over all full name variants of profile 2 and see if any of them
   // match the full name from profile 1.
@@ -751,21 +752,21 @@ bool AutofillProfileComparator::IsMergeCandidate(
 }
 
 // static
-std::set<base::StringPiece16> AutofillProfileComparator::UniqueTokens(
-    base::StringPiece16 s) {
-  std::vector<base::StringPiece16> tokens = base::SplitStringPiece(
+std::set<std::u16string_view> AutofillProfileComparator::UniqueTokens(
+    std::u16string_view s) {
+  std::vector<std::u16string_view> tokens = base::SplitStringPiece(
       s, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return std::set<base::StringPiece16>(tokens.begin(), tokens.end());
+  return std::set<std::u16string_view>(tokens.begin(), tokens.end());
 }
 
 // static
 AutofillProfileComparator::CompareTokensResult
-AutofillProfileComparator::CompareTokens(base::StringPiece16 s1,
-                                         base::StringPiece16 s2) {
+AutofillProfileComparator::CompareTokens(std::u16string_view s1,
+                                         std::u16string_view s2) {
   // Note: std::include() expects the items in each range to be in sorted order,
   // hence the use of std::set<> instead of std::unordered_set<>.
-  std::set<base::StringPiece16> t1 = UniqueTokens(s1);
-  std::set<base::StringPiece16> t2 = UniqueTokens(s2);
+  std::set<std::u16string_view> t1 = UniqueTokens(s1);
+  std::set<std::u16string_view> t2 = UniqueTokens(s2);
 
   // Does s1 contain all of the tokens in s2? As a special case, return 0 if the
   // two sets are exactly the same.
@@ -795,7 +796,7 @@ std::set<std::u16string> AutofillProfileComparator::GetNamePartVariants(
     const std::u16string& name_part) {
   const size_t kMaxSupportedSubNames = 8;
 
-  std::vector<base::StringPiece16> sub_names = base::SplitStringPiece(
+  std::vector<std::u16string_view> sub_names = base::SplitStringPiece(
       name_part, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Limit the number of sub-names we support (to constrain memory usage);

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/iban.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -167,7 +169,7 @@ int GetRemainderOfIbanValue(const std::u16string& stripped_value) {
   return remainder;
 }
 
-std::u16string RemoveIbanSeparators(base::StringPiece16 value) {
+std::u16string RemoveIbanSeparators(std::u16string_view value) {
   std::u16string stripped_value;
   base::RemoveChars(value, base::kWhitespaceUTF16, &stripped_value);
   return stripped_value;

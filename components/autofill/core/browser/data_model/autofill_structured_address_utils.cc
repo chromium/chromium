@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -15,7 +16,6 @@
 #include "base/i18n/char_iterator.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -309,7 +309,7 @@ std::u16string NormalizeAndRewrite(const std::u16string& country_code,
       NormalizeValue(text, keep_white_space));
 }
 
-std::u16string NormalizeValue(base::StringPiece16 value,
+std::u16string NormalizeValue(std::u16string_view value,
                               bool keep_white_space) {
   return AutofillProfileComparator::NormalizeForComparison(
       value, keep_white_space ? AutofillProfileComparator::RETAIN_WHITESPACE

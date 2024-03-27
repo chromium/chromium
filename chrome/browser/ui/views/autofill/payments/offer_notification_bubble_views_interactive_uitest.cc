@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -793,13 +795,13 @@ IN_PROC_BROWSER_TEST_P(
     auto* promo_code_label_view =
         GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
     EXPECT_TRUE(promo_code_label_view);
-    EXPECT_EQ(base::ASCIIToUTF16(base::StringPiece(kDiscountCode)),
+    EXPECT_EQ(base::ASCIIToUTF16(std::string_view(kDiscountCode)),
               promo_code_label_view->GetPromoCodeLabelTextForTesting());
   } else {
     auto* promo_code_label_button =
         GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
     EXPECT_TRUE(promo_code_label_button);
-    EXPECT_EQ(base::ASCIIToUTF16(base::StringPiece(kDiscountCode)),
+    EXPECT_EQ(base::ASCIIToUTF16(std::string_view(kDiscountCode)),
               promo_code_label_button->GetText());
   }
   EXPECT_EQ(nullptr,

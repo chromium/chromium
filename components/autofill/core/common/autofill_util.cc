@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -30,7 +30,7 @@ using mojom::SubmissionSource;
 
 namespace {
 
-constexpr base::StringPiece16 kSplitCharacters = u" .,-_@";
+constexpr std::u16string_view kSplitCharacters = u" .,-_@";
 
 template <typename Char>
 struct Compare : base::CaseInsensitiveCompareASCII<Char> {

@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

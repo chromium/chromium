@@ -6,9 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_LABEL_PROCESSING_UTIL_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
-
-#include "base/strings/string_piece.h"
 
 namespace autofill {
 
@@ -18,7 +17,7 @@ namespace autofill {
 // adjacent fields. If there aren't any changes to the labels, |std::nullopt|
 // is returned.
 std::optional<std::vector<std::u16string>> GetParseableLabels(
-    const std::vector<base::StringPiece16>& labels);
+    const std::vector<std::u16string_view>& labels);
 
 }  // namespace autofill
 

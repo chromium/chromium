@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -13,7 +14,7 @@
 namespace autofill {
 
 namespace {
-base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
   return GetMatchPatterns(name, context.page_language, context.pattern_source);
 }

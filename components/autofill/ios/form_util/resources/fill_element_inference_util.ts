@@ -366,7 +366,7 @@ gCrWeb.fill.isAutofillableInputElement = function(element: Element): boolean {
  * characters.
  *
  * It is based on the logic in
- *     bool isLabelValid(base::StringPiece16 inferred_label,
+ *     bool isLabelValid(std::u16string_view inferred_label,
  *         const std::vector<char16_t>& stop_words)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  * The list of characters that are considered special is hard-coded in a regexp.

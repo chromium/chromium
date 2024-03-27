@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -103,7 +104,7 @@ bool MakeQueryRequestURL(std::optional<AutofillPageQueryRequest> query,
 }
 
 // Make HTTP request header given |url|.
-inline std::string MakeRequestHeader(base::StringPiece url) {
+inline std::string MakeRequestHeader(std::string_view url) {
   return base::StrCat({"GET ", url, " ", "HTTP/1.1"});
 }
 

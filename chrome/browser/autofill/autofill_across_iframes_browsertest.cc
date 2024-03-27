@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -129,11 +130,11 @@ void FillCard(content::RenderFrameHost* rfh,
               const FormFieldData& triggered_field) {
   CreditCard card;
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "",
-                          base::ASCIIToUTF16(base::StringPiece(kCvc)));
+                          base::ASCIIToUTF16(std::string_view(kCvc)));
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
   manager.FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form, triggered_field, card,
-      base::ASCIIToUTF16(base::StringPiece(kCvc)),
+      base::ASCIIToUTF16(std::string_view(kCvc)),
       AutofillTriggerDetails(AutofillTriggerSource::kPopup));
 }
 
@@ -202,7 +203,7 @@ auto IsWithinAutofillLimits() {
                                   Le(kTypeValueFormFillingLimit)))));
 }
 
-auto HasValue(base::StringPiece value) {
+auto HasValue(std::string_view value) {
   return Field(&FormFieldData::value, base::ASCIIToUTF16(value));
 }
 
@@ -263,8 +264,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   // all placeholders $1, $2, ... in `content_html` replaced with the
   // corresponding hostname from `kHostnames`.
   // This response is served by for *every* hostname.
-  void SetUrlContent(std::string relative_path,
-                     base::StringPiece content_html) {
+  void SetUrlContent(std::string relative_path, std::string_view content_html) {
     ASSERT_EQ(relative_path[0], '/');
     std::vector<std::string> replacements;
     replacements.reserve(std::size(kHostnames));
@@ -286,7 +286,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   //
   // Each test shall prepare the intended response using SetUrlContent() in
   // advance.
-  const FormStructure* NavigateToUrl(base::StringPiece relative_url,
+  const FormStructure* NavigateToUrl(std::string_view relative_url,
                                      size_t num_fields) {
     NavigateParams params(
         browser(),
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     auto exp = HtmlFieldType::kCreditCardExpDate4DigitYear;
     auto cvc = HtmlFieldType::kCreditCardVerificationCode;
     auto unspecified = HtmlFieldType::kUnspecified;
-    auto m = [](base::StringPiece host, HtmlFieldType type) {
+    auto m = [](std::string_view host, HtmlFieldType type) {
       return Pointee(AllOf(Property(&AutofillField::html_type, Eq(type)),
                            Field(&AutofillField::origin,
                                  Property(&url::Origin::host, Eq(host)))));

@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
@@ -18,7 +19,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -755,7 +755,7 @@ void CreditCard::SetInfoForMonthInputType(const std::u16string& value) {
   if (!MatchesRegex<kDateRegex>(value))
     return;
 
-  std::vector<base::StringPiece16> year_month = base::SplitStringPiece(
+  std::vector<std::u16string_view> year_month = base::SplitStringPiece(
       value, u"-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   DCHECK_EQ(2u, year_month.size());
   int num = 0;

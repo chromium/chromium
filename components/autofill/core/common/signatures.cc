@@ -4,11 +4,12 @@
 
 #include "components/autofill/core/common/signatures.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -153,7 +154,7 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
 }
 
 FieldSignature CalculateFieldSignatureByNameAndType(
-    base::StringPiece16 field_name,
+    std::u16string_view field_name,
     FormControlType field_type) {
   return FieldSignature(StrToHash32Bit(base::StrCat(
       {UTF16ToUTF8(field_name), "&", FormControlTypeToString(field_type)})));

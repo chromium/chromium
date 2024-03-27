@@ -8,10 +8,10 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
@@ -99,7 +99,7 @@ class PhoneFieldParser : public FormFieldParser {
   // Convenient wrapper for ParseFieldSpecifics().
   static bool ParsePhoneField(ParsingContext& context,
                               AutofillScanner* scanner,
-                              base::StringPiece16 regex,
+                              std::u16string_view regex,
                               raw_ptr<AutofillField>* field,
                               const char* regex_name,
                               const bool is_country_code_field,

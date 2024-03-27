@@ -11,6 +11,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
@@ -21,8 +22,8 @@ namespace autofill {
 
 namespace {
 
-bool MatchesRegex(base::StringPiece16 input,
-                  base::StringPiece16 regex,
+bool MatchesRegex(std::u16string_view input,
+                  std::u16string_view regex,
                   std::vector<std::u16string>* groups = nullptr) {
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   return autofill::MatchesRegex(input, *cache->GetRegexPattern(regex), groups);

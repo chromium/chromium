@@ -6,6 +6,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -150,7 +151,7 @@ class MetricsScraper {
 
  private:
   MetricsScraper(const base::FilePath& output_file,
-                 base::StringPiece16 histogram_regex)
+                 std::u16string_view histogram_regex)
       : output_file_(output_file),
         histogram_regex_(CompileRegex(histogram_regex)) {}
 

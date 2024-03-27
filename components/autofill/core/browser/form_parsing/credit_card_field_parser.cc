@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -33,7 +34,7 @@ namespace autofill {
 
 namespace {
 
-base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
   return GetMatchPatterns(name, context.page_language, context.pattern_source);
 }
@@ -381,9 +382,9 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     if (base::Contains(field->options, u"2", option_projection)) {
       return false;
     }
-    auto is_substring = [](base::StringPiece16 option,
-                           base::StringPiece16 year_needle) {
-      return option.find(year_needle) != base::StringPiece16::npos;
+    auto is_substring = [](std::u16string_view option,
+                           std::u16string_view year_needle) {
+      return option.find(year_needle) != std::u16string_view::npos;
     };
     return base::ranges::search(field->options, year_needles, is_substring,
                                 option_projection) != field->options.end();
@@ -837,7 +838,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
     separator_candidates.emplace_back(separator);
 
     // Fallback: The matching separator with padding whitespace trimmed.
-    base::StringPiece16 trimmed_separator =
+    std::u16string_view trimmed_separator =
         base::TrimWhitespace(separator, base::TRIM_ALL);
     if (trimmed_separator != separator) {
       separator_candidates.emplace_back(trimmed_separator);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/base_switches.h"
@@ -165,7 +166,7 @@ class AutofillServerTest : public InProcessBrowserTest {
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
-  void NavigateToUrl(base::StringPiece relative_url) {
+  void NavigateToUrl(std::string_view relative_url) {
     NavigateParams params(
         browser(), embedded_https_test_server().GetURL("a.com", relative_url),
         ui::PAGE_TRANSITION_LINK);
@@ -174,8 +175,7 @@ class AutofillServerTest : public InProcessBrowserTest {
   }
 
   // Registers the response `content_html` for a given `relative_path`.
-  void SetUrlContent(std::string relative_path,
-                     base::StringPiece content_html) {
+  void SetUrlContent(std::string relative_path, std::string_view content_html) {
     ASSERT_EQ(relative_path[0], '/');
     pages_[std::move(relative_path)] = content_html;
   }

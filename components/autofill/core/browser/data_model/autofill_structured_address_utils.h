@@ -188,7 +188,7 @@ std::vector<std::string> ExtractAllPlaceholders(const std::string& value);
 std::string GetPlaceholderToken(std::string_view value);
 
 // Returns a named capture group created by the concatenation of the
-// StringPieces in |pattern_span_initializer_list|. The group is named by the
+// string_views in |pattern_span_initializer_list|. The group is named by the
 // string representation of |type| and respects |options|.
 std::string CaptureTypeWithPattern(
     const FieldType& type,
@@ -249,7 +249,7 @@ std::u16string NormalizeAndRewrite(const std::u16string& country_code,
 // removes diacritics.
 // If |keep_white_spaces| is true, white spaces are collapsed. Otherwise,
 // white spaces are completely removed.
-std::u16string NormalizeValue(const base::StringPiece16 value,
+std::u16string NormalizeValue(std::u16string_view value,
                               bool keep_white_space = true);
 
 // Returns true of both vectors contain the same tokens in the same order.

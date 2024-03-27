@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -31,7 +32,7 @@ constexpr size_t kMinCommonNamePrefixLength = 16;
 // valid, the string cannot be empty or consist of digits only.
 // This condition prevents the logic from simplifying strings like
 // "address-line-1", "address-line-2" to "1", "2".
-bool IsValidParseableName(base::StringPiece16 parseable_name) {
+bool IsValidParseableName(std::u16string_view parseable_name) {
   static constexpr char16_t kRegex[] = u"\\D";
   return MatchesRegex<kRegex>(parseable_name);
 }
@@ -39,12 +40,12 @@ bool IsValidParseableName(base::StringPiece16 parseable_name) {
 // Tries to remove an affix of length `len` from all `strings`. The removal
 // fails if one of the resulting strings is not `IsValidParseableName()`.
 // Assumes that all strings are at least `len` long.
-void MaybeRemoveAffix(base::span<base::StringPiece16> strings,
+void MaybeRemoveAffix(base::span<std::u16string_view> strings,
                       size_t len,
                       bool prefix) {
   DCHECK(base::ranges::all_of(
-      strings, [&](base::StringPiece16 s) { return s.size() >= len; }));
-  auto RemoveAffix = [&](base::StringPiece16 s) {
+      strings, [&](std::u16string_view s) { return s.size() >= len; }));
+  auto RemoveAffix = [&](std::u16string_view s) {
     if (prefix) {
       s.remove_prefix(len);
     } else {
@@ -52,7 +53,7 @@ void MaybeRemoveAffix(base::span<base::StringPiece16> strings,
     }
     return s;
   };
-  if (base::ranges::all_of(strings, [&](base::StringPiece16 s) {
+  if (base::ranges::all_of(strings, [&](std::u16string_view s) {
         return IsValidParseableName(RemoveAffix(s));
       })) {
     base::ranges::transform(strings, strings.begin(), RemoveAffix);
@@ -61,14 +62,13 @@ void MaybeRemoveAffix(base::span<base::StringPiece16> strings,
 
 }  // namespace
 
-size_t FindLongestCommonAffixLength(
-    base::span<const base::StringPiece16> strings,
-    bool prefix) {
+size_t FindLongestCommonAffixLength(base::span<std::u16string_view> strings,
+                                    bool prefix) {
   if (strings.empty())
     return 0;
 
   size_t affix_len = 0;
-  auto AgreeOnNextChar = [&](base::StringPiece16 other) {
+  auto AgreeOnNextChar = [&](std::u16string_view other) {
     if (affix_len >= other.size())
       return false;
     return prefix ? strings[0][affix_len] == other[affix_len]
@@ -79,7 +79,7 @@ size_t FindLongestCommonAffixLength(
   return affix_len;
 }
 
-void ComputeParseableNames(base::span<base::StringPiece16> field_names) {
+void ComputeParseableNames(base::span<std::u16string_view> field_names) {
   if (field_names.size() < kCommonNamePrefixRemovalFieldThreshold)
     return;
   size_t lcp = FindLongestCommonAffixLength(field_names, /*prefix=*/true);

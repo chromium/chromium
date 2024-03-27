@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -75,7 +76,7 @@ class AddressAutofillTableProfileTest
 
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
   // different master table.
-  base::StringPiece GetProfileTable() const {
+  std::string_view GetProfileTable() const {
     return profile_source() == AutofillProfile::Source::kLocalOrSyncable
                ? "local_addresses"
                : "contact_info";

@@ -4,13 +4,15 @@
 
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace autofill {
 
-using LabelPieces = std::vector<base::StringPiece16>;
+using LabelPieces = std::vector<std::u16string_view>;
 
 // The maximum number of fields that can share a label.
 const int kMaxNumberOfFieldsToShareALabel = 3;
@@ -29,7 +31,7 @@ std::optional<std::vector<std::u16string>> GetParseableLabels(
   // the subsequent fields.
   size_t label_index = 0;
   while (label_index < labels.size()) {
-    const base::StringPiece16& label = labels[label_index];
+    const std::u16string_view& label = labels[label_index];
     // If the label is empty or has a size that exceeds
     // |kMaxLengthOfShareableLabel| it can not be shared with subsequent fields.
     if (label.empty() || label.size() > kMaxLengthOfShareableLabel) {

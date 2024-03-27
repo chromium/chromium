@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -61,7 +61,7 @@ namespace {
 
 // Utility method that tries to find a field in `form` whose `id_attribute`
 // matches `id`. Returns nullptr if no such field exists.
-const FormFieldData* FindFieldById(const FormData& form, base::StringPiece id) {
+const FormFieldData* FindFieldById(const FormData& form, std::string_view id) {
   auto it = base::ranges::find(form.fields, base::UTF8ToUTF16(id),
                                &FormFieldData::id_attribute);
   return it != form.fields.end() ? &*it : nullptr;
@@ -256,7 +256,7 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
   void TearDown() override;
 
   void LoadHTMLWithUserGesture(const char* html);
-  WebElement GetElementById(base::StringPiece element_id);
+  WebElement GetElementById(std::string_view element_id);
   void FocusField(const char* element_id);
 
   void ExpectAutomaticGenerationAvailable(const char* element_id,
@@ -267,8 +267,8 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
       const std::u16string& expected_generation_element);
   void SelectGenerationFallbackAndExpect(bool available);
   void ExpectAttribute(const WebElement& element,
-                       base::StringPiece attribute,
-                       base::StringPiece expected_value);
+                       std::string_view attribute,
+                       std::string_view expected_value);
 
   void BindAutofillDriver(mojo::ScopedInterfaceEndpointHandle handle);
   void BindPasswordManagerDriver(mojo::ScopedInterfaceEndpointHandle handle);
@@ -349,7 +349,7 @@ void PasswordGenerationAgentTest::LoadHTMLWithUserGesture(const char* html) {
 }
 
 WebElement PasswordGenerationAgentTest::GetElementById(
-    base::StringPiece element_id) {
+    std::string_view element_id) {
   WebDocument document = GetMainFrame()->GetDocument();
   WebElement element =
       document.GetElementById(blink::WebString::FromUTF8(element_id));
@@ -430,8 +430,8 @@ void PasswordGenerationAgentTest::SelectGenerationFallbackAndExpect(
 
 void PasswordGenerationAgentTest::ExpectAttribute(
     const WebElement& element,
-    base::StringPiece attribute,
-    base::StringPiece expected_value) {
+    std::string_view attribute,
+    std::string_view expected_value) {
   WebString actual_value =
       element.GetAttribute(blink::WebString::FromUTF8(attribute));
   ASSERT_FALSE(actual_value.IsNull());

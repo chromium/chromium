@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -283,7 +285,7 @@ class AutofillProfileComparatorTest : public testing::Test {
 TEST_F(AutofillProfileComparatorTest, UniqueTokens) {
   std::u16string kInput = u"a b a a b";
   std::vector<std::u16string> tokens = {u"a", u"b"};
-  EXPECT_EQ(std::set<base::StringPiece16>(tokens.begin(), tokens.end()),
+  EXPECT_EQ(std::set<std::u16string_view>(tokens.begin(), tokens.end()),
             comparator_.UniqueTokens(kInput));
 }
 

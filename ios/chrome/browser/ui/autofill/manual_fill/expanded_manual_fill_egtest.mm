@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <string_view>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -135,7 +137,7 @@ void CheckHeader(bool is_landscape) {
 
 // Loads a form depending on the desired `data_type`.
 void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
-  base::StringPiece form_url;
+  std::string_view form_url;
   std::string form_text;
   switch (data_type) {
     case ManualFillDataType::kPassword:
