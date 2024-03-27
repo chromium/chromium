@@ -24,7 +24,3 @@ IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, FeedbackSysInfo) {
   RunTestWithoutTestLoader("about_sys/about_sys_test.js",
                            "runMochaSuite('FeedbackSysInfoTest')");
 }
-
-IN_PROC_BROWSER_TEST_F(SystemInfoBrowserTest, KeyValuePairViewer) {
-  RunTest("about_sys/key_value_pair_viewer_test.js", "mocha.run()");
-}
