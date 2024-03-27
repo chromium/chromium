@@ -38,7 +38,8 @@ class HostStarterOAuthHelperTest : public testing::Test {
 
   void SetUp() override;
 
-  void OnTokensRetrieved(const std::string& access_token,
+  void OnTokensRetrieved(const std::string& user_email,
+                         const std::string& access_token,
                          const std::string& refresh_token);
   void HandleOAuthError(const std::string& error_message,
                         HostStarter::Result error_result);
@@ -55,10 +56,12 @@ class HostStarterOAuthHelperTest : public testing::Test {
   }
   std::string& access_token() { return access_token_; }
   std::string& refresh_token() { return refresh_token_; }
+  std::string& user_email() { return user_email_; }
   std::string& error_message() { return error_message_; }
   std::optional<HostStarter::Result>& error_result() { return error_result_; }
 
  private:
+  std::string user_email_;
   std::string access_token_;
   std::string refresh_token_;
   std::string error_message_;
@@ -82,6 +85,7 @@ HostStarterOAuthHelperTest::~HostStarterOAuthHelperTest() = default;
 void HostStarterOAuthHelperTest::SetUp() {
   access_token_.clear();
   refresh_token_.clear();
+  user_email_.clear();
   error_message_.clear();
   error_result_.reset();
 
@@ -92,8 +96,10 @@ void HostStarterOAuthHelperTest::SetUp() {
 }
 
 void HostStarterOAuthHelperTest::OnTokensRetrieved(
+    const std::string& user_email,
     const std::string& access_token,
     const std::string& refresh_token) {
+  user_email_ = user_email;
   access_token_ = access_token;
   refresh_token_ = refresh_token;
   quit_closure_.Run();
@@ -152,6 +158,7 @@ TEST_F(HostStarterOAuthHelperTest, NoUserEmail_TokensRetrievedSuccessfully) {
 
   ASSERT_EQ(access_token(), kAccessTokenValue);
   ASSERT_EQ(refresh_token(), kRefreshTokenValue);
+  ASSERT_EQ(user_email(), kTestEmail);
   ASSERT_FALSE(error_result().has_value());
 }
 
@@ -170,6 +177,7 @@ TEST_F(HostStarterOAuthHelperTest, UserEmail_TokensRetrievedSuccessfully) {
 
   ASSERT_EQ(access_token(), kAccessTokenValue);
   ASSERT_EQ(refresh_token(), kRefreshTokenValue);
+  ASSERT_EQ(user_email(), kTestEmail);
   ASSERT_FALSE(error_result().has_value());
 }
 
@@ -188,6 +196,7 @@ TEST_F(HostStarterOAuthHelperTest, DifferentUserEmail_RunsErrorCallback) {
 
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
+  ASSERT_TRUE(user_email().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_TRUE(error_result().has_value());
   ASSERT_EQ(*error_result(), HostStarter::Result::PERMISSION_DENIED);
@@ -207,6 +216,7 @@ TEST_F(HostStarterOAuthHelperTest, GetTokensNetworkError_RunsErrorCallback) {
 
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
+  ASSERT_TRUE(user_email().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_TRUE(error_result().has_value());
   ASSERT_EQ(*error_result(), HostStarter::Result::NETWORK_ERROR);
@@ -228,6 +238,7 @@ TEST_F(HostStarterOAuthHelperTest, GetTokensOAuthError_RunsErrorCallback) {
 
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
+  ASSERT_TRUE(user_email().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_TRUE(error_result().has_value());
   ASSERT_EQ(*error_result(), HostStarter::Result::OAUTH_ERROR);
@@ -248,6 +259,7 @@ TEST_F(HostStarterOAuthHelperTest, GetUserEmailNetworkError_RunsErrorCallback) {
 
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
+  ASSERT_TRUE(user_email().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_EQ(error_result(), HostStarter::Result::NETWORK_ERROR);
 }

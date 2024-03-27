@@ -408,7 +408,7 @@ TEST_F(HostStarterBaseTest, ExistingHostIsStopped) {
   EXPECT_TRUE(test_daemon_controller_delegate().stop_called());
 }
 
-TEST_F(HostStarterBaseTest, MismatchedOwnerEmail) {
+TEST_F(HostStarterBaseTest, OAuthFlowWithMismatchedOwnerEmail) {
   HostStarter::Params params;
   params.owner_email = "not-the-person-who-generated-the-auth-code@fraud.com";
   params.auth_code = "auth_me_dude";
@@ -427,10 +427,32 @@ TEST_F(HostStarterBaseTest, MismatchedOwnerEmail) {
   EXPECT_FALSE(test_host_starter().error_message().empty());
 }
 
+TEST_F(HostStarterBaseTest, CorpFlowWithMismatchedOwnerEmailValue) {
+  HostStarter::Params params;
+  params.owner_email = "PLACEHOLDER_VALUE";
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
+  RunUntilQuit();
+
+  // Make sure the operation completed successfully.
+  EXPECT_EQ(start_result(), HostStarter::START_COMPLETE);
+
+  // Verify owner from the service was written to the config rather than the
+  // placeholder value.
+  auto config = test_daemon_controller_delegate().GetConfig();
+  ASSERT_TRUE(config.has_value());
+  const std::string* value = config->FindString(kHostOwnerConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestUserEmail);
+}
+
 TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideId) {
   test_host_starter().clear_directory_id();
 
-  test_host_starter().StartHost(HostStarter::Params(), GetCompletionCallback());
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
   // Make sure the operation failed for the expected reason.
@@ -443,6 +465,7 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideId) {
 TEST_F(HostStarterBaseTest, RegisterNewHostCallbackProvideMismatchedId) {
   HostStarter::Params params;
   params.id = "my-guid";
+  params.owner_email = kTestUserEmail;
 
   test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
@@ -457,7 +480,10 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackProvideMismatchedId) {
 TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideAuthCode) {
   test_host_starter().clear_robot_authorization_code();
 
-  test_host_starter().StartHost(HostStarter::Params(), GetCompletionCallback());
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
   // Make sure the operation failed for the expected reason.
@@ -470,35 +496,52 @@ TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideAuthCode) {
 TEST_F(HostStarterBaseTest, RegisterNewHostCallbackDoesNotProvideOwnerEmail) {
   test_host_starter().clear_owner_account_email();
 
-  test_host_starter().StartHost(HostStarter::Params(), GetCompletionCallback());
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
-  // Make sure the operation failed for the expected reason.
-  EXPECT_EQ(start_result(), HostStarter::REGISTRATION_ERROR);
+  // Make sure the operation completed successfully.
+  EXPECT_EQ(start_result(), HostStarter::START_COMPLETE);
 
-  // Verify an error was reported.
-  EXPECT_NE(test_host_starter().error_message(), std::string());
+  // Verify the owner email to be written to the config.
+  auto config = test_daemon_controller_delegate().GetConfig();
+  ASSERT_TRUE(config.has_value());
+  const std::string* value = config->FindString(kHostOwnerConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestUserEmail);
 }
 
 TEST_F(HostStarterBaseTest,
        RegisterNewHostCallbackDoesNotProvideServiceAccount) {
   test_host_starter().clear_service_account_email();
 
-  test_host_starter().StartHost(HostStarter::Params(), GetCompletionCallback());
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
-  // Make sure the operation failed for the expected reason.
-  EXPECT_EQ(start_result(), HostStarter::REGISTRATION_ERROR);
+  // Make sure the operation completed successfully.
+  EXPECT_EQ(start_result(), HostStarter::START_COMPLETE);
 
-  // Verify an error was reported.
-  EXPECT_NE(test_host_starter().error_message(), std::string());
+  // Verify the expected service account was written to the config.
+  auto config = test_daemon_controller_delegate().GetConfig();
+  ASSERT_TRUE(config.has_value());
+  const std::string* value = config->FindString(kServiceAccountConfigPath);
+  ASSERT_NE(value, nullptr);
+  EXPECT_EQ(*value, kTestRobotEmail);
 }
 
 TEST_F(HostStarterBaseTest, NewHostFailsToStart) {
   test_daemon_controller_delegate().set_result_for_config_and_start(
       DaemonController::RESULT_FAILED);
 
-  test_host_starter().StartHost(HostStarter::Params(), GetCompletionCallback());
+  HostStarter::Params params;
+  params.owner_email = kTestUserEmail;
+
+  test_host_starter().StartHost(std::move(params), GetCompletionCallback());
   RunUntilQuit();
 
   // Make sure the operation failed for the expected reason.

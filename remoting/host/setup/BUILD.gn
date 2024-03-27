@@ -116,8 +116,6 @@ source_set("start_host_main") {
   sources = [
     "corp_host_starter.cc",
     "corp_host_starter.h",
-    "host_stopper.cc",
-    "host_stopper.h",
     "oauth_host_starter.cc",
     "oauth_host_starter.h",
     "start_host_main.cc",

@@ -62,7 +62,8 @@ class HostStarterBase : public HostStarter {
   // Methods used to implement the registration process described in the class
   // comment. They are listed in the order in which they are called.
   void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
-  void OnUserTokensRetrieved(const std::string& access_token,
+  void OnUserTokensRetrieved(const std::string& user_email,
+                             const std::string& access_token,
                              const std::string& refresh_token);
   virtual void RegisterNewHost(const std::string& access_token,
                                const std::string& public_key) = 0;
@@ -70,7 +71,8 @@ class HostStarterBase : public HostStarter {
                            const std::string& owner_account_email,
                            const std::string& service_account_email,
                            const std::string& authorization_code);
-  void OnServiceAccountTokensRetrieved(const std::string& access_token,
+  void OnServiceAccountTokensRetrieved(const std::string& service_account_email,
+                                       const std::string& access_token,
                                        const std::string& refresh_token);
   virtual void RemoveOldHostFromDirectory(
       base::OnceClosure on_host_removed) = 0;

@@ -91,7 +91,7 @@ void HostStarterOAuthHelper::OnGetUserEmailResponse(
     return;
   }
 
-  std::move(done_callback_).Run(access_token_, refresh_token_);
+  std::move(done_callback_).Run(user_email, access_token_, refresh_token_);
 }
 
 void HostStarterOAuthHelper::OnOAuthError() {

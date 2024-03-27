@@ -23,7 +23,8 @@ namespace remoting {
 class HostStarterOAuthHelper : public gaia::GaiaOAuthClient::Delegate {
  public:
   using OnDoneCallback =
-      base::OnceCallback<void(const std::string& access_token,
+      base::OnceCallback<void(const std::string& user_email,
+                              const std::string& access_token,
                               const std::string& refresh_token)>;
   using OnErrorCallback =
       base::OnceCallback<void(const std::string& error_message,

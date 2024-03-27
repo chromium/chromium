@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
@@ -92,9 +93,16 @@ void HostStarterBase::OnExistingConfigLoaded(
   }
 }
 
-void HostStarterBase::OnUserTokensRetrieved(const std::string& access_token,
+void HostStarterBase::OnUserTokensRetrieved(const std::string& user_email,
+                                            const std::string& access_token,
                                             const std::string& refresh_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If an owner email was not provided, then use the account which created the
+  // authorization code.
+  if (start_host_params_.owner_email.empty()) {
+    start_host_params_.owner_email = base::ToLowerASCII(user_email);
+  }
 
   // We don't need a `refresh_token` for the user so ignore it even if the
   // authorization_code was created with the offline param.
@@ -123,19 +131,19 @@ void HostStarterBase::OnNewHostRegistered(
   }
   start_host_params_.id = base::ToLowerASCII(directory_id);
 
-  if (owner_account_email.empty()) {
-    HandleError("No owner account email provided in callback.",
-                REGISTRATION_ERROR);
-    return;
+  if (!owner_account_email.empty()) {
+    start_host_params_.owner_email = base::ToLowerASCII(owner_account_email);
   }
-  start_host_params_.owner_email = base::ToLowerASCII(owner_account_email);
 
-  if (service_account_email.empty()) {
-    HandleError("No service account email provided in callback.",
-                REGISTRATION_ERROR);
-    return;
+  // For some use cases, the CRD backend will return the service account and for
+  // others we will need to use the email associated with the authz code. The
+  // first approach is preferred as then we can provide the email address to
+  // the OAuth helper to make sure they match so we set |service_account_email_|
+  // here if a value was provided. Otherwise we will set this member after
+  // retrieving the service account refresh token from the authorization code.
+  if (!service_account_email.empty()) {
+    service_account_email_ = base::ToLowerASCII(service_account_email);
   }
-  service_account_email_ = base::ToLowerASCII(service_account_email);
 
   if (authorization_code.empty()) {
     HandleError("No authorization code returned by the Directory.",
@@ -159,11 +167,16 @@ void HostStarterBase::OnNewHostRegistered(
 }
 
 void HostStarterBase::OnServiceAccountTokensRetrieved(
+    const std::string& service_account_email,
     const std::string& access_token,
     const std::string& refresh_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (service_account_email_.empty()) {
+    service_account_email_ = base::ToLowerASCII(service_account_email);
+  }
   service_account_refresh_token_ = refresh_token;
+
   RemoveOldHostFromDirectory(
       base::BindOnce(&HostStarterBase::StopOldHost, weak_ptr_));
 }
