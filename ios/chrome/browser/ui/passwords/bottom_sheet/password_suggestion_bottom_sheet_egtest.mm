@@ -353,6 +353,11 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard {
+  // TODO(crbug.com/330369023): Fix and reenable this test.
+  if (@available(iOS 17.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test failing to go idle on iOS 17.4 and up.");
+  }
+
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -833,6 +838,11 @@ id<GREYMatcher> OpenKeyboardButton() {
 }
 
 - (void)testPasswordBottomSheetDismiss3TimesNotShownAnymore {
+  // TODO(crbug.com/330369023): Fix and reenable this test.
+  if (@available(iOS 17.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test failing to go idle on iOS 17.4 and up.");
+  }
+
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
