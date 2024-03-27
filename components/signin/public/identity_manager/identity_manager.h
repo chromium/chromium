@@ -22,6 +22,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_mutator.h"
@@ -624,8 +625,10 @@ class IdentityManager : public KeyedService,
   void OnRefreshTokenRevoked(const CoreAccountId& account_id) override;
   void OnRefreshTokensLoaded() override;
   void OnEndBatchChanges() override;
-  void OnAuthErrorChanged(const CoreAccountId& account_id,
-                          const GoogleServiceAuthError& auth_error) override;
+  void OnAuthErrorChanged(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& auth_error,
+      signin_metrics::SourceForRefreshTokenOperation source) override;
 
   // GaiaCookieManagerService callbacks:
   void OnGaiaAccountsInCookieUpdated(

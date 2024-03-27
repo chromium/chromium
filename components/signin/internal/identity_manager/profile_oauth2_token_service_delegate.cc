@@ -202,7 +202,8 @@ void ProfileOAuth2TokenServiceDelegate::FireAuthErrorChanged(
     const GoogleServiceAuthError& error) {
   DCHECK(!account_id.empty());
   for (auto& observer : observer_list_)
-    observer.OnAuthErrorChanged(account_id, error);
+    observer.OnAuthErrorChanged(account_id, error,
+                                update_refresh_token_source_);
 }
 
 std::string ProfileOAuth2TokenServiceDelegate::GetTokenForMultilogin(
@@ -230,6 +231,8 @@ void ProfileOAuth2TokenServiceDelegate::LoadCredentials(
     bool is_syncing) {
   DCHECK_EQ(SourceForRefreshTokenOperation::kUnknown,
             update_refresh_token_source_);
+  // AutoReset is not used here since the call to loading the credentials is
+  // asynchronous. The source will be reset in `FireRefreshTokensLoaded()`.
   update_refresh_token_source_ =
       SourceForRefreshTokenOperation::kTokenService_LoadCredentials;
   LoadCredentialsInternal(primary_account_id, is_syncing);

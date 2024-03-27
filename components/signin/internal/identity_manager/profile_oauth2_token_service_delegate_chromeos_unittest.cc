@@ -134,8 +134,10 @@ class TestOAuth2TokenServiceObserver
     batch_change_records_.rbegin()->emplace_back(account_id);
   }
 
-  void OnAuthErrorChanged(const CoreAccountId& account_id,
-                          const GoogleServiceAuthError& auth_error) override {
+  void OnAuthErrorChanged(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& auth_error,
+      signin_metrics::SourceForRefreshTokenOperation source) override {
     last_err_account_id_ = account_id;
     last_err_ = auth_error;
     on_auth_error_changed_calls++;

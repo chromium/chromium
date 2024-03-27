@@ -78,8 +78,10 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     ++token_revoked_count_;
   }
   void OnRefreshTokensLoaded() override { ++tokens_loaded_count_; }
-  void OnAuthErrorChanged(const CoreAccountId& account_id,
-                          const GoogleServiceAuthError& error) override {
+  void OnAuthErrorChanged(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation source) override {
     ++auth_error_changed_count_;
   }
 

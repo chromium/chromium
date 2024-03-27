@@ -162,7 +162,8 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::OnRefreshTokensLoaded() {
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::OnAuthErrorChanged(
     const CoreAccountId& account_id,
-    const GoogleServiceAuthError& auth_error) {
+    const GoogleServiceAuthError& auth_error,
+    signin_metrics::SourceForRefreshTokenOperation source) {
   FireAuthErrorChanged(account_id, auth_error);
 }
 

@@ -189,8 +189,10 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 
   void OnEndBatchChanges() override { ++end_batch_changes_; }
 
-  void OnAuthErrorChanged(const CoreAccountId& account_id,
-                          const GoogleServiceAuthError& auth_error) override {
+  void OnAuthErrorChanged(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& auth_error,
+      signin_metrics::SourceForRefreshTokenOperation source) override {
     ++auth_error_changed_count_;
   }
 
@@ -708,8 +710,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        InvalidateTokensForMultilogin) {
   class TokenServiceErrorObserver : public ProfileOAuth2TokenServiceObserver {
    public:
-    MOCK_METHOD2(OnAuthErrorChanged,
-                 void(const CoreAccountId&, const GoogleServiceAuthError&));
+    MOCK_METHOD3(OnAuthErrorChanged,
+                 void(const CoreAccountId&,
+                      const GoogleServiceAuthError&,
+                      signin_metrics::SourceForRefreshTokenOperation source));
   };
 
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
@@ -720,9 +724,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   const CoreAccountId account_id2 = CoreAccountId::FromGaiaId("account_id2");
 
   // This will be fired from UpdateCredentials.
-  EXPECT_CALL(
-      observer,
-      OnAuthErrorChanged(::testing::_, GoogleServiceAuthError::AuthErrorNone()))
+  EXPECT_CALL(observer,
+              OnAuthErrorChanged(
+                  ::testing::_, GoogleServiceAuthError::AuthErrorNone(),
+                  signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(2);
   oauth2_service_delegate_->UpdateCredentials(account_id1, "refresh_token1");
   oauth2_service_delegate_->UpdateCredentials(account_id2, "refresh_token2");
@@ -735,7 +740,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                   account_id1,
                   GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                       GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                          CREDENTIALS_REJECTED_BY_SERVER)));
+                          CREDENTIALS_REJECTED_BY_SERVER),
+                  signin_metrics::SourceForRefreshTokenOperation::kUnknown));
 
   oauth2_service_delegate_->InvalidateTokenForMultilogin(account_id1);
   EXPECT_EQ(oauth2_service_delegate_->GetAuthError(account_id1).state(),
@@ -989,14 +995,19 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
     TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
         delete;
 
-    void OnAuthErrorChanged(const CoreAccountId& account_id,
-                            const GoogleServiceAuthError& auth_error) override {
+    void OnAuthErrorChanged(
+        const CoreAccountId& account_id,
+        const GoogleServiceAuthError& auth_error,
+        signin_metrics::SourceForRefreshTokenOperation source) override {
       error_changed_ = true;
       EXPECT_EQ("account_id", account_id.ToString());
       EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(), auth_error);
       EXPECT_TRUE(delegate_->RefreshTokenIsAvailable(account_id));
       EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
                 delegate_->GetAuthError(account_id));
+      EXPECT_EQ(signin_metrics::SourceForRefreshTokenOperation::
+                    kAccountReconcilor_GaiaCookiesUpdated,
+                source);
     }
 
     raw_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
@@ -1017,7 +1028,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
 
   ASSERT_FALSE(token_service_observer.error_changed_);
   oauth2_service_delegate_->UpdateCredentials(
-      CoreAccountId::FromGaiaId("account_id"), "token");
+      CoreAccountId::FromGaiaId("account_id"), "token",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kAccountReconcilor_GaiaCookiesUpdated);
   EXPECT_TRUE(token_service_observer.error_changed_);
 
   oauth2_service_delegate_->RemoveObserver(&token_service_observer);
@@ -1067,13 +1080,18 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     TokenServiceErrorObserver& operator=(const TokenServiceErrorObserver&) =
         delete;
 
-    void OnAuthErrorChanged(const CoreAccountId& account_id,
-                            const GoogleServiceAuthError& auth_error) override {
+    void OnAuthErrorChanged(
+        const CoreAccountId& account_id,
+        const GoogleServiceAuthError& auth_error,
+        signin_metrics::SourceForRefreshTokenOperation source) override {
       error_changed_ = true;
       EXPECT_FALSE(token_available_)
           << "OnAuthErrorChanged() should be called first";
       EXPECT_EQ(auth_error, delegate_->GetAuthError(account_id));
       CheckTokenState(account_id);
+      EXPECT_EQ(signin_metrics::SourceForRefreshTokenOperation::
+                    kDiceResponseHandler_Signout,
+                source);
     }
 
     void OnRefreshTokenAvailable(const CoreAccountId& account_id) override {
@@ -1103,7 +1121,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   oauth2_service_delegate_->AddObserver(&token_service_observer);
   oauth2_service_delegate_->UpdateCredentials(
       CoreAccountId::FromGaiaId("account_id"),
-      GaiaConstants::kInvalidRefreshToken);
+      GaiaConstants::kInvalidRefreshToken,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signout);
   EXPECT_TRUE(token_service_observer.token_available_);
   EXPECT_TRUE(token_service_observer.error_changed_);
   oauth2_service_delegate_->RemoveObserver(&token_service_observer);

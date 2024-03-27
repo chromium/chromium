@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_OBSERVER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PROFILE_OAUTH2_TOKEN_SERVICE_OBSERVER_H_
 
+#include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -36,8 +37,13 @@ class ProfileOAuth2TokenServiceObserver {
   // Called when the authentication error state for |account_id| has changed.
   // Note: It is always called after |OnRefreshTokenAvailable| when refresh
   // token is updated. It is not called when the refresh token is revoked.
-  virtual void OnAuthErrorChanged(const CoreAccountId& account_id,
-                                  const GoogleServiceAuthError& auth_error) {}
+  // The source will be
+  // `signin_metrics::SourceForRefreshTokenOperation::kUnknown` if the token did
+  // not change and became invalid on the server.
+  virtual void OnAuthErrorChanged(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& auth_error,
+      signin_metrics::SourceForRefreshTokenOperation source) {}
 
  protected:
   virtual ~ProfileOAuth2TokenServiceObserver() {}

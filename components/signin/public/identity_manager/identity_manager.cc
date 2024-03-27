@@ -616,7 +616,8 @@ void IdentityManager::OnEndBatchChanges() {
 
 void IdentityManager::OnAuthErrorChanged(
     const CoreAccountId& account_id,
-    const GoogleServiceAuthError& auth_error) {
+    const GoogleServiceAuthError& auth_error,
+    signin_metrics::SourceForRefreshTokenOperation source) {
   CoreAccountInfo account_info =
       GetAccountInfoForAccountWithRefreshToken(account_id);
 

@@ -13,6 +13,7 @@
 #include "base/threading/platform_thread.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -56,8 +57,10 @@ class RetryingTestingOAuth2AccessTokenManagerConsumer
 class FakeOAuth2TokenServiceObserver
     : public ProfileOAuth2TokenServiceObserver {
  public:
-  MOCK_METHOD2(OnAuthErrorChanged,
-               void(const CoreAccountId&, const GoogleServiceAuthError&));
+  MOCK_METHOD3(OnAuthErrorChanged,
+               void(const CoreAccountId&,
+                    const GoogleServiceAuthError&,
+                    signin_metrics::SourceForRefreshTokenOperation));
 };
 
 // This class fakes the behaviour of a MutableProfileOAuth2TokenServiceDelegate
@@ -555,16 +558,23 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
   ProfileOAuth2TokenService token_service(&prefs_, std::move(delegate));
   FakeOAuth2TokenServiceObserver observer;
   token_service.GetDelegate()->AddObserver(&observer);
-  EXPECT_CALL(
-      observer,
-      OnAuthErrorChanged(account_id_,
-                         GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
+  EXPECT_CALL(observer,
+              OnAuthErrorChanged(
+                  account_id_,
+                  GoogleServiceAuthError(
+                      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
+                  signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(1);
 
-  token_service.GetDelegate()->UpdateCredentials(account_id_, "refreshToken");
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_, "refreshToken",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
   const CoreAccountId account_id_2 = CoreAccountId::FromGaiaId("account_id_2");
-  token_service.GetDelegate()->UpdateCredentials(account_id_2, "refreshToken2");
+  token_service.GetDelegate()->UpdateCredentials(
+      account_id_2, "refreshToken2",
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
   token_service.InvalidateTokenForMultilogin(account_id_, "refreshToken");
   // Check that refresh tokens for failed accounts are set in error.
   EXPECT_EQ(token_service.GetDelegate()->GetAuthError(account_id_).state(),
@@ -582,7 +592,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
       observer,
       OnAuthErrorChanged(account_id_,
                          GoogleServiceAuthError(
-                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
+                             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS),
+                         testing::_))
       .Times(0);
 
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,

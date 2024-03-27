@@ -64,8 +64,10 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   void OnRefreshTokenRevoked(const CoreAccountId& account_id) override;
   void OnEndBatchChanges() override;
   void OnRefreshTokensLoaded() override;
-  void OnAuthErrorChanged(const CoreAccountId& account_id,
-                          const GoogleServiceAuthError& auth_error) override;
+  void OnAuthErrorChanged(
+      const CoreAccountId& account_id,
+      const GoogleServiceAuthError& auth_error,
+      signin_metrics::SourceForRefreshTokenOperation source) override;
 
  private:
   // ProfileOAuth2TokenServiceDelegate implementation:
