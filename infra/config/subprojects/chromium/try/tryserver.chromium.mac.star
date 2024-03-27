@@ -16,9 +16,9 @@ try_.defaults.set(
     builderless = True,
     os = os.MAC_ANY,
     ssd = True,
-    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
+    orchestrator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_configs = ["builder"],
@@ -485,6 +485,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
+    xcode = xcode.x15main,
 )
 
 try_.compilator_builder(
@@ -496,7 +497,6 @@ try_.compilator_builder(
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
-    xcode = xcode.x15main,
 )
 
 try_.orchestrator_builder(

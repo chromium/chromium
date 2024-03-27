@@ -17,9 +17,9 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 8,
-    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
+    orchestrator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_configs = ["builder"],
@@ -475,7 +475,6 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_asan_siso_rel_ng-compilator",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -657,7 +656,6 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
