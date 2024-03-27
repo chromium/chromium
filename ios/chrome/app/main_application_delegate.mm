@@ -33,12 +33,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -432,20 +430,26 @@ const int kMainIntentCheckDelay = 1;
 
 #pragma mark - Private
 
-// Notifies the Feature Engagement Tracker (FET) associated to each browserState
-// that the app has launched from an external intent (i.e. through the share
-// sheet), which is an eligibility criterion for the default browser blue dot
-// promo.
+// Notifies the Feature Engagement Tracker (FET) that the app has launched from
+// an external intent (i.e. through the share sheet), which is an eligibility
+// criterion for the default browser blue dot promo.
+// TODO(crbug.com/325614090): Change this to iterate and inform the feature
+// trackers for all of the browser states.
 - (void)notifyFETAppStartupFromExternalIntent {
-  std::vector<ChromeBrowserState*> loadedBrowserStates =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-  for (ChromeBrowserState* browserState : loadedBrowserStates) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+  Browser* browser =
+      _mainController.browserProviderInterface.mainBrowserProvider.browser;
+
+  // OTR browsers are ignored because they can sometimes cause a nullptr tracker
+  // to be returned from the tracker factory.
+  if (!browser || browser->GetBrowserState()->IsOffTheRecord()) {
+    return;
   }
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+
+  tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
 }
 
 @end
