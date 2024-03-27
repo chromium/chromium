@@ -48,6 +48,10 @@ OpResolver::OpResolver() {
              /* max_version */ 2);
   AddBuiltin(::tflite::BuiltinOperator_ELU,
              ::tflite::ops::builtin::Register_ELU());
+  AddBuiltin(::tflite::BuiltinOperator_EQUAL,
+             ::tflite::ops::builtin::Register_EQUAL(),
+             /* min_version = */ 1,
+             /* max_version = */ 3);
   AddBuiltin(::tflite::BuiltinOperator_EXP,
              ::tflite::ops::builtin::Register_EXP());
   AddBuiltin(::tflite::BuiltinOperator_FLOOR,
@@ -56,10 +60,26 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_FULLY_CONNECTED(),
              /* min_version = */ 1,
              /* max_version = */ 9);
+  AddBuiltin(::tflite::BuiltinOperator_GREATER,
+             ::tflite::ops::builtin::Register_GREATER(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_GREATER_EQUAL,
+             ::tflite::ops::builtin::Register_GREATER_EQUAL(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_HARD_SWISH,
              ::tflite::ops::builtin::Register_HARD_SWISH());
   AddBuiltin(::tflite::BuiltinOperator_LEAKY_RELU,
              ::tflite::ops::builtin::Register_LEAKY_RELU(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_LESS,
+             ::tflite::ops::builtin::Register_LESS(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_LESS_EQUAL,
+             ::tflite::ops::builtin::Register_LESS_EQUAL(),
              /* min_version = */ 1,
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_LOG,

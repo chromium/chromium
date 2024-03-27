@@ -836,12 +836,20 @@ auto GraphBuilder::SerializeElementWiseBinary(
       code = ::tflite::BuiltinOperator_POW;
       break;
     case mojom::ElementWiseBinary_Kind::kEqual:
+      code = ::tflite::BuiltinOperator_EQUAL;
+      break;
     case mojom::ElementWiseBinary_Kind::kGreater:
+      code = ::tflite::BuiltinOperator_GREATER;
+      break;
     case mojom::ElementWiseBinary_Kind::kGreaterOrEqual:
+      code = ::tflite::BuiltinOperator_GREATER_EQUAL;
+      break;
     case mojom::ElementWiseBinary_Kind::kLesser:
+      code = ::tflite::BuiltinOperator_LESS;
+      break;
     case mojom::ElementWiseBinary_Kind::kLesserOrEqual:
-      return base::unexpected(
-          base::StrCat({base::ToString(op.kind), " is not implemented."}));
+      code = ::tflite::BuiltinOperator_LESS_EQUAL;
+      break;
   }
 
   const uint32_t operator_code_index = GetOperatorCodeIndex(code);
