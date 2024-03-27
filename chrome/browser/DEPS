@@ -466,6 +466,8 @@ include_rules = [
   "+services/strings",
   "+services/tracing/public/cpp",
   "+services/video_capture/public",
+  "+services/video_effects/public",
+  "+services/video_effects/test",
   "+services/viz/public",
   "+services/viz/privileged",
   "+skia/ext",

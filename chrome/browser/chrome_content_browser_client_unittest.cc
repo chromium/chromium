@@ -77,6 +77,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/test/test_network_context.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
@@ -90,7 +92,12 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
+// `gn check` is failing on Android for this particular include even though
+// the (conditional) dependency path exists, adding `nogncheck`:
+#include "components/media_effects/media_effects_service.h"  // nogncheck
 #include "components/password_manager/core/common/password_manager_features.h"
+// Ditto:
+#include "services/video_effects/test/fake_video_effects_service.h"  // nogncheck
 #include "ui/base/page_transition_types.h"
 #else
 #include "base/system/sys_info.h"
@@ -629,6 +636,26 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
   // The actual value isn't that important here. What matters is that getting a
   // result means that the plumbing worked.
   EXPECT_FALSE(configuration_future.Get().is_null());
+}
+
+TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
+  mojo::Remote<video_effects::mojom::VideoEffectsService> service;
+  video_effects::FakeVideoEffectsService fake_effects_service(
+      service.BindNewPipeAndPassReceiver());
+  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+
+  std::unique_ptr<base::test::TestFuture<void>> effects_processor_future =
+      fake_effects_service.GetEffectsProcessorCreationFuture();
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  mojo::Remote<video_effects::mojom::VideoEffectsProcessor>
+      video_effects_processor;
+  test_content_browser_client.BindVideoEffectsProcessor(
+      "test_device_id", &profile_,
+      video_effects_processor.BindNewPipeAndPassReceiver());
+
+  EXPECT_TRUE(effects_processor_future->Wait());
+  EXPECT_TRUE(video_effects_processor.is_connected());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

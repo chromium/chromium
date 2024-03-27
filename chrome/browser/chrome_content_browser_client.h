@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 
 class ChromeContentBrowserClientParts;
@@ -996,6 +997,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       mojo::PendingReceiver<media::mojom::VideoEffectsManager>
           video_effects_manager) override;
+
+  void BindVideoEffectsProcessor(
+      const std::string& device_id,
+      content::BrowserContext* browser_context,
+      mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   void PreferenceRankAudioDeviceInfos(

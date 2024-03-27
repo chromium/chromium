@@ -375,6 +375,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -8236,6 +8237,15 @@ void ChromeContentBrowserClient::BindVideoEffectsManager(
         video_effects_manager) {
   media_effects::BindVideoEffectsManager(device_id, browser_context,
                                          std::move(video_effects_manager));
+}
+
+void ChromeContentBrowserClient::BindVideoEffectsProcessor(
+    const std::string& device_id,
+    content::BrowserContext* browser_context,
+    mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
+        video_effects_processor) {
+  media_effects::BindVideoEffectsProcessor(device_id, browser_context,
+                                           std::move(video_effects_processor));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

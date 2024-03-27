@@ -5,10 +5,18 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
 #define COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
 
+#include "base/auto_reset.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_effects/video_effects_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_service.mojom-forward.h"
+
+[[nodiscard]] base::AutoReset<
+    mojo::Remote<video_effects::mojom::VideoEffectsService>*>
+SetVideoEffectsServiceRemoteForTesting(
+    mojo::Remote<video_effects::mojom::VideoEffectsService>* service_override);
 
 class MediaEffectsService : public KeyedService {
  public:
@@ -43,6 +51,30 @@ class MediaEffectsService : public KeyedService {
       const std::string& device_id,
       mojo::PendingReceiver<media::mojom::VideoEffectsManager>
           effects_manager_receiver);
+
+  // Connects a `VideoEffectsManagerImpl` to the provided
+  // `effects_processor_receiver`. If the keyed profile already has a manager
+  // for the passed `device_id`, then it will be used. Otherwise, a new manager
+  // will be created.
+  //
+  // The device id must be the raw string from
+  // `media::mojom::VideoCaptureDeviceDescriptor::device_id`.
+  //
+  // The manager remote will be sent to the Video Effects Service, where
+  // it will be used to subscribe to the effects configuration. The passed in
+  // pending receiver is going to be used to create a Video Effects Processor
+  // in the Video Effects Service.
+  //
+  // Note that this API does not expose the `VideoEffectsManagerImpl` in any
+  // way. If you need to interact with the manager, call
+  // `BindVideoEffectsManager()` instead.
+  //
+  // Calling this method will launch a new instance of Video Effects Service if
+  // it's not already running.
+  void BindVideoEffectsProcessor(
+      const std::string& device_id,
+      mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
+          effects_processor_receiver);
 
  private:
   VideoEffectsManagerImpl& GetOrCreateVideoEffectsManager(

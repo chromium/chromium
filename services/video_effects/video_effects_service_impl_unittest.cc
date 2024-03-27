@@ -6,6 +6,7 @@
 
 #include "services/video_effects/video_effects_service_impl.h"
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,6 +21,8 @@ namespace video_effects {
 using testing::_;
 
 namespace {
+
+constexpr char kDeviceId[] = "test_device";
 
 class TestGpuChannelHostProvider : public GpuChannelHostProvider {
  public:
@@ -50,18 +53,41 @@ TEST_F(VideoEffectsServiceTest, CreateEffectsProcessorWorks) {
   // Calling into `VideoEffectsService:::CreateEffectsProcessor()` is expected
   // to work (irrespective of whether the passed-in pipes are usable or not).
 
-  base::RunLoop run_loop;
-
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote;
 
   service_remote_->CreateEffectsProcessor(
-      manager_receiver.InitWithNewPipeAndPassRemote(),
+      kDeviceId, manager_receiver.InitWithNewPipeAndPassRemote(),
       processor_remote.BindNewPipeAndPassReceiver());
 
-  run_loop.RunUntilIdle();
-
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(processor_remote.is_connected());
+}
+
+TEST_F(VideoEffectsServiceTest, CreateEffectsProcessorWithSameIdFails) {
+  // Calling into `VideoEffectsService:::CreateEffectsProcessor()` is expected
+  // to fail if the same device id is passed.
+
+  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver1;
+  mojo::Remote<mojom::VideoEffectsProcessor> processor_remote1;
+
+  service_remote_->CreateEffectsProcessor(
+      kDeviceId, manager_receiver1.InitWithNewPipeAndPassRemote(),
+      processor_remote1.BindNewPipeAndPassReceiver());
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processor_remote1.is_connected());
+
+  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver2;
+  mojo::Remote<mojom::VideoEffectsProcessor> processor_remote2;
+
+  service_remote_->CreateEffectsProcessor(
+      kDeviceId, manager_receiver2.InitWithNewPipeAndPassRemote(),
+      processor_remote2.BindNewPipeAndPassReceiver());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(processor_remote1.is_connected());
+  EXPECT_FALSE(processor_remote2.is_connected());
 }
 
 }  // namespace video_effects
