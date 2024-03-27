@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "crypto/openssl_util.h"
 #include "net/base/address_list.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_address.h"
@@ -69,6 +70,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_clock.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
@@ -1116,6 +1118,43 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
   }
 
   return it->second;
+}
+
+quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
+    const quic::ParsedQuicVersion& known_quic_version,
+    const ConnectionEndpointMetadata& metadata,
+    bool svcb_optional) const {
+  if (metadata.supported_protocol_alpns.empty()) {
+    // `metadata` doesn't contain QUIC ALPN. If we know the QUIC ALPN to use
+    // externally, i.e. via Alt-Svc, use it in SVCB-optional mode. Otherwise,
+    // the endpoint associated with `metadata` is not eligible for QUIC.
+    return svcb_optional ? known_quic_version
+                         : quic::ParsedQuicVersion::Unsupported();
+  }
+
+  // Otherwise, `metadata` came from an HTTPS/SVCB record. We can use
+  // QUIC if a suitable match is found in the record's ALPN list.
+  // Additionally, if this connection attempt came from Alt-Svc, the DNS
+  // result must be consistent with it. See
+  // https://datatracker.ietf.org/doc/html/rfc9460#name-interaction-with-alt-svc
+  if (known_quic_version.IsKnown()) {
+    std::string expected_alpn = quic::AlpnForVersion(known_quic_version);
+    if (base::Contains(metadata.supported_protocol_alpns,
+                       quic::AlpnForVersion(known_quic_version))) {
+      return known_quic_version;
+    }
+    return quic::ParsedQuicVersion::Unsupported();
+  }
+
+  for (const auto& alpn : metadata.supported_protocol_alpns) {
+    for (const auto& supported_version : supported_versions()) {
+      if (alpn == AlpnForVersion(supported_version)) {
+        return supported_version;
+      }
+    }
+  }
+
+  return quic::ParsedQuicVersion::Unsupported();
 }
 
 bool QuicSessionPool::HasMatchingIpSession(

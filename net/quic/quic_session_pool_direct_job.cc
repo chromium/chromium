@@ -72,7 +72,7 @@ QuicSessionPool::DirectJob::DirectJob(
                                 std::move(client_config_handle),
                                 priority,
                                 net_log),
-      quic_version_(quic_version),
+      quic_version_(std::move(quic_version)),
       host_resolver_(host_resolver),
       use_dns_aliases_(use_dns_aliases),
       require_dns_https_alpn_(require_dns_https_alpn),
@@ -82,7 +82,9 @@ QuicSessionPool::DirectJob::DirectJob(
       retry_on_alternate_network_before_handshake_(
           retry_on_alternate_network_before_handshake),
       network_(handles::kInvalidNetworkHandle) {
-  DCHECK_EQ(quic_version.IsKnown(), !require_dns_https_alpn);
+  // TODO(davidben): `require_dns_https_alpn_` only exists to be `DCHECK`ed
+  // for consistency against `quic_version_`. Remove the parameter?
+  DCHECK_EQ(quic_version_.IsKnown(), !require_dns_https_alpn_);
 }
 
 QuicSessionPool::DirectJob::~DirectJob() {}
@@ -198,7 +200,9 @@ int QuicSessionPool::DirectJob::DoResolveHostComplete(int rv) {
       IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
   for (const auto& endpoint : *resolve_host_request_->GetEndpointResults()) {
     // Only consider endpoints that would have been eligible for QUIC.
-    if (!SelectQuicVersion(endpoint, svcb_optional).IsKnown()) {
+    quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
+        quic_version_, endpoint.metadata, svcb_optional);
+    if (!endpoint_quic_version.IsKnown()) {
       continue;
     }
     if (pool_->HasMatchingIpSession(
@@ -219,11 +223,11 @@ int QuicSessionPool::DirectJob::DoCreateSession() {
       IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
   bool found = false;
   for (const auto& candidate : *resolve_host_request_->GetEndpointResults()) {
-    quic::ParsedQuicVersion version =
-        SelectQuicVersion(candidate, svcb_optional);
-    if (version.IsKnown()) {
+    quic::ParsedQuicVersion endpoint_quic_version = pool_->SelectQuicVersion(
+        quic_version_, candidate.metadata, svcb_optional);
+    if (endpoint_quic_version.IsKnown()) {
       found = true;
-      quic_version_used_ = version;
+      quic_version_used_ = endpoint_quic_version;
       endpoint_result_ = candidate;
       break;
     }
@@ -474,47 +478,6 @@ bool QuicSessionPool::DirectJob::IsSvcbOptional(
   }
 
   return !HostResolver::AllProtocolEndpointsHaveEch(results);
-}
-
-quic::ParsedQuicVersion QuicSessionPool::DirectJob::SelectQuicVersion(
-    const HostResolverEndpointResult& endpoint_result,
-    bool svcb_optional) const {
-  // TODO(davidben): `require_dns_https_alpn_` only exists to be `DCHECK`ed
-  // for consistency against `quic_version_`. Remove the parameter?
-  DCHECK_EQ(require_dns_https_alpn_, !quic_version_.IsKnown());
-
-  if (endpoint_result.metadata.supported_protocol_alpns.empty()) {
-    // `endpoint_result` came from A/AAAA records directly, without HTTPS/SVCB
-    // records. If we know the QUIC ALPN to use externally, i.e. via Alt-Svc,
-    // use it in SVCB-optional mode. Otherwise, `endpoint_result` is not
-    // eligible for QUIC.
-    return svcb_optional ? quic_version_
-                         : quic::ParsedQuicVersion::Unsupported();
-  }
-
-  // Otherwise, `endpoint_result` came from an HTTPS/SVCB record. We can use
-  // QUIC if a suitable match is found in the record's ALPN list.
-  // Additionally, if this connection attempt came from Alt-Svc, the DNS
-  // result must be consistent with it. See
-  // https://www.ietf.org/archive/id/draft-ietf-dnsop-svcb-https-11.html#name-interaction-with-alt-svc
-  if (quic_version_.IsKnown()) {
-    std::string expected_alpn = quic::AlpnForVersion(quic_version_);
-    if (base::Contains(endpoint_result.metadata.supported_protocol_alpns,
-                       quic::AlpnForVersion(quic_version_))) {
-      return quic_version_;
-    }
-    return quic::ParsedQuicVersion::Unsupported();
-  }
-
-  for (const auto& alpn : endpoint_result.metadata.supported_protocol_alpns) {
-    for (const auto& supported_version : pool_->supported_versions()) {
-      if (alpn == AlpnForVersion(supported_version)) {
-        return supported_version;
-      }
-    }
-  }
-
-  return quic::ParsedQuicVersion::Unsupported();
 }
 
 }  // namespace net

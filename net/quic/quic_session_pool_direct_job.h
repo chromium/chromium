@@ -79,15 +79,9 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   bool IsSvcbOptional(
       base::span<const HostResolverEndpointResult> results) const;
 
-  // Returns the QUIC version that would be used with `endpoint_result`, or
-  // `quic::ParsedQuicVersion::Unsupported()` if `endpoint_result` cannot be
-  // used with QUIC.
-  quic::ParsedQuicVersion SelectQuicVersion(
-      const HostResolverEndpointResult& endpoint_result,
-      bool svcb_optional) const;
-
   IoState io_state_ = STATE_RESOLVE_HOST;
-  quic::ParsedQuicVersion quic_version_;
+  // TODO(bashi): Rename to `alt_svc_quic_version_` or `known_quic_version_`?
+  const quic::ParsedQuicVersion quic_version_;
   quic::ParsedQuicVersion quic_version_used_ =
       quic::ParsedQuicVersion::Unsupported();
   raw_ptr<HostResolver> host_resolver_;

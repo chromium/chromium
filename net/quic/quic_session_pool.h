@@ -27,6 +27,7 @@
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
@@ -56,6 +57,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -478,6 +480,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Returns the stored DNS aliases for the session key.
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
+
+  // Returns the QUIC version that would be used with an endpoint associated
+  // with `metadata`, or `quic::ParsedQuicVersion::Unsupported()` if the
+  // endpoint cannot be used with QUIC.
+  quic::ParsedQuicVersion SelectQuicVersion(
+      const quic::ParsedQuicVersion& known_quic_version,
+      const ConnectionEndpointMetadata& metadata,
+      bool svcb_optional) const;
 
  private:
   class Job;
