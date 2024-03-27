@@ -175,6 +175,14 @@ void WebUIContentsWrapper::RunFileChooser(
   }
 }
 
+void WebUIContentsWrapper::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  if (host_) {
+    host_->DraggableRegionsChanged(regions, contents);
+  }
+}
+
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
   if (webui_resizes_host_) {
     EnableAutoResizeForWebContents(web_contents_.get());

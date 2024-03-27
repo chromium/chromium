@@ -59,6 +59,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
         content::RenderFrameHost* render_frame_host,
         scoped_refptr<content::FileSelectListener> listener,
         const blink::mojom::FileChooserParams& params) {}
+    virtual void DraggableRegionsChanged(
+        const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+        content::WebContents* contents) {}
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
@@ -93,6 +96,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/mako/mako_rewrite_view.h"
 
+#include "ash/constants/ash_features.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,6 +37,7 @@ MakoRewriteView::MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
   set_corner_radius(kMakoRewriteCornerRadius);
   // Disable the default offscreen adjustment so that we can customise it.
   set_adjust_if_offscreen(false);
+  event_handler_ = std::make_unique<MakoBubbleEventHandler>(this);
 }
 
 MakoRewriteView::~MakoRewriteView() = default;
@@ -79,6 +85,48 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   GetWidget()->SetBounds(widget_bounds);
 }
 
+void MakoRewriteView::ShowUI() {
+  WebUIBubbleDialogView::ShowUI();
+  // TODO(b/321585877): Remove feature flag for dragging support.
+  if (base::FeatureList::IsEnabled(ash::features::kOrcaDraggingSupport)) {
+    SetupDraggingSupport();
+  }
+}
+
+void MakoRewriteView::DraggableRegionsChanged(
+    const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+    content::WebContents* contents) {
+  SkRegion sk_region;
+  for (const blink::mojom::DraggableRegionPtr& region : regions) {
+    sk_region.op(
+        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                          region->bounds.x() + region->bounds.width(),
+                          region->bounds.y() + region->bounds.height()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+  }
+  draggable_region_ = sk_region;
+}
+
+const std::optional<SkRegion> MakoRewriteView::GetDraggableRegion() {
+  return draggable_region_;
+}
+
+const gfx::Rect MakoRewriteView::GetWidgetBoundsInScreen() {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return gfx::Rect();
+  }
+  return widget->GetWindowBoundsInScreen();
+}
+
+void MakoRewriteView::SetWidgetBoundsConstrained(const gfx::Rect bounds) {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+  widget->SetBoundsConstrained(bounds);
+}
+
 bool MakoRewriteView::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
@@ -88,6 +136,28 @@ bool MakoRewriteView::HandleKeyboardEvent(
   }
 
   return WebUIBubbleDialogView::HandleKeyboardEvent(source, event);
+}
+
+void MakoRewriteView::SetupDraggingSupport() {
+  views::WebView* web_view_ptr = web_view();
+  if (!web_view_ptr) {
+    return;
+  }
+  content::WebContents* web_contents = web_view_ptr->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  // Tell Blink that we support draggable region.
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  if (rfh) {
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
+    client->SetSupportsDraggableRegions(true);
+  }
+
+  // Bind event handlers for dragging support.
+  web_contents->GetNativeView()->AddPreTargetHandler(event_handler_.get());
 }
 
 BEGIN_METADATA(MakoRewriteView)
