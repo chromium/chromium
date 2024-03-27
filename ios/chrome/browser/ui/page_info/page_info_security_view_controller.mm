@@ -183,6 +183,8 @@ enum ItemIdentifier {
           DequeueTableViewCell<TableViewTextCell>(tableView);
       learnMoreCell.textLabel.text = l10n_util::GetNSString(IDS_LEARN_MORE);
       learnMoreCell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+      learnMoreCell.isAccessibilityElement = YES;
+      learnMoreCell.accessibilityLabel = learnMoreCell.textLabel.text;
       learnMoreCell.accessibilityTraits = UIAccessibilityTraitButton;
 
       return learnMoreCell;
