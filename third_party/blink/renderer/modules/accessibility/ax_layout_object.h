@@ -61,23 +61,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   void Detach() override;
   bool IsAXLayoutObject() const final;
-
-  // AX name calc.
-  String TextAlternative(bool recursive,
-                         const AXObject* aria_label_or_description_root,
-                         AXObjectSet& visited,
-                         ax::mojom::blink::NameFrom&,
-                         AXRelatedObjectVector*,
-                         NameSources*) const override;
-
-  // Called when autofill/autocomplete suggestion availability changes on a form
-  // control.
-  void HandleAutofillSuggestionAvailabilityChanged(
-      WebAXAutofillSuggestionAvailability suggestion_availability) override;
-
-  // For a list marker.
-  void GetWordBoundaries(Vector<int>& word_starts,
-                         Vector<int>& word_ends) const override;
 };
 
 template <>

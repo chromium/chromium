@@ -332,6 +332,16 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // a role from the layout object.
   ax::mojom::blink::Role RoleFromLayoutObjectOrNode() const;
 
+  // Called when autofill/autocomplete suggestion availability changes on a form
+  // control.
+  void HandleAutofillSuggestionAvailabilityChanged(
+      WebAXAutofillSuggestionAvailability suggestion_availability) override;
+
+  // Word boundaries are only exposed for inline text boxes and list markers.
+  // This override implements word boundaries for list markers.
+  void GetWordBoundaries(Vector<int>& word_starts,
+                         Vector<int>& word_ends) const override;
+
  private:
   bool HasInternalsAttribute(Element&, const QualifiedName&) const;
   const AtomicString& GetInternalsAttribute(Element&,

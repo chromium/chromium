@@ -131,92 +131,6 @@ bool AXLayoutObject::IsAXLayoutObject() const {
 }
 
 //
-// Whether objects are ignored, i.e. not included in the tree.
-//
-
-//
-// Properties of static elements.
-//
-
-//
-// Properties of interactive elements.
-//
-
-String AXLayoutObject::TextAlternative(
-    bool recursive,
-    const AXObject* aria_label_or_description_root,
-    AXObjectSet& visited,
-    ax::mojom::blink::NameFrom& name_from,
-    AXRelatedObjectVector* related_objects,
-    NameSources* name_sources) const {
-  if (layout_object_) {
-    std::optional<String> text_alternative = GetCSSAltText(GetElement());
-    bool found_text_alternative = false;
-    if (text_alternative) {
-      if (name_sources) {
-        name_sources->push_back(NameSource(false));
-        name_sources->back().type = ax::mojom::blink::NameFrom::kAttribute;
-        name_sources->back().text = text_alternative.value();
-      }
-      return text_alternative.value();
-    }
-    if (layout_object_->IsBR()) {
-      text_alternative = String("\n");
-      found_text_alternative = true;
-    } else if (layout_object_->IsText() &&
-               (!recursive || !layout_object_->IsCounter())) {
-      auto* layout_text = To<LayoutText>(layout_object_.Get());
-      String visible_text = layout_text->PlainText();  // Actual rendered text.
-      // If no text boxes we assume this is unrendered end-of-line whitespace.
-      // TODO find robust way to deterministically detect end-of-line space.
-      if (visible_text.empty()) {
-        // No visible rendered text -- must be whitespace.
-        // Either it is useful whitespace for separating words or not.
-        if (layout_text->IsAllCollapsibleWhitespace()) {
-          if (LastKnownIsIgnoredValue())
-            return "";
-          // If no textboxes, this was whitespace at the line's end.
-          text_alternative = " ";
-        } else {
-          text_alternative = layout_text->TransformedText();
-        }
-      } else {
-        text_alternative = visible_text;
-      }
-      found_text_alternative = true;
-    } else if (!recursive) {
-      if (ListMarker* marker = ListMarker::Get(layout_object_)) {
-        text_alternative = marker->TextAlternative(*layout_object_);
-        found_text_alternative = true;
-      }
-    }
-
-    if (found_text_alternative) {
-      name_from = ax::mojom::blink::NameFrom::kContents;
-      if (name_sources) {
-        name_sources->push_back(NameSource(false));
-        name_sources->back().type = name_from;
-        name_sources->back().text = text_alternative.value();
-      }
-      // Ensure that text nodes count toward
-      // kMaxDescendantsForTextAlternativeComputation when calculating the name
-      // for their direct parent (see AXNodeObject::TextFromDescendants).
-      visited.insert(this);
-      return text_alternative.value();
-    }
-  }
-
-  return AXNodeObject::TextAlternative(
-      recursive, aria_label_or_description_root, visited, name_from,
-      related_objects, name_sources);
-}
-
-//
-// Hit testing.
-//
-
-
-//
 // DOM and layout tree access.
 //
 
@@ -224,36 +138,6 @@ Document* AXLayoutObject::GetDocument() const {
   if (!GetLayoutObject())
     return nullptr;
   return &GetLayoutObject()->GetDocument();
-}
-
-void AXLayoutObject::HandleAutofillSuggestionAvailabilityChanged(
-    WebAXAutofillSuggestionAvailability suggestion_availability) {
-  // Autofill suggestion availability is stored in AXObjectCache.
-  AXObjectCache().SetAutofillSuggestionAvailability(AXObjectID(),
-                                                    suggestion_availability);
-}
-
-void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
-                                       Vector<int>& word_ends) const {
-  if (!layout_object_ || !layout_object_->IsListMarker()) {
-    return;
-  }
-
-  String text_alternative;
-  if (ListMarker* marker = ListMarker::Get(layout_object_)) {
-    text_alternative = marker->TextAlternative(*layout_object_);
-  }
-  if (text_alternative.ContainsOnlyWhitespaceOrEmpty())
-    return;
-
-  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
-  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
-  word_starts.reserve(boundaries.size());
-  word_ends.reserve(boundaries.size());
-  for (const auto& boundary : boundaries) {
-    word_starts.push_back(boundary.start_index);
-    word_ends.push_back(boundary.end_index);
-  }
 }
 
 }  // namespace blink

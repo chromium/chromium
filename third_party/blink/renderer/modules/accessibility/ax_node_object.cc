@@ -4496,6 +4496,63 @@ String AXNodeObject::TextAlternative(
   if (!GetNode() && !GetLayoutObject())
     return String();
 
+  if (GetLayoutObject()) {
+    std::optional<String> text_alternative = GetCSSAltText(GetElement());
+    if (text_alternative) {
+      if (name_sources) {
+        name_sources->push_back(NameSource(false));
+        name_sources->back().type = ax::mojom::blink::NameFrom::kAttribute;
+        name_sources->back().text = text_alternative.value();
+      }
+      return text_alternative.value();
+    }
+    if (GetLayoutObject()->IsBR()) {
+      text_alternative = String("\n");
+      found_text_alternative = true;
+    } else if (GetLayoutObject()->IsText() &&
+               (!recursive || !GetLayoutObject()->IsCounter())) {
+      auto* layout_text = To<LayoutText>(GetLayoutObject());
+      String visible_text = layout_text->PlainText();  // Actual rendered text.
+      // If no text boxes we assume this is unrendered end-of-line whitespace.
+      // TODO find robust way to deterministically detect end-of-line space.
+      if (visible_text.empty()) {
+        // No visible rendered text -- must be whitespace.
+        // Either it is useful whitespace for separating words or not.
+        if (layout_text->IsAllCollapsibleWhitespace()) {
+          if (LastKnownIsIgnoredValue()) {
+            return "";
+          }
+          // If no textboxes, this was whitespace at the line's end.
+          text_alternative = " ";
+        } else {
+          text_alternative = layout_text->TransformedText();
+        }
+      } else {
+        text_alternative = visible_text;
+      }
+      found_text_alternative = true;
+    } else if (!recursive) {
+      if (ListMarker* marker = ListMarker::Get(GetLayoutObject())) {
+        text_alternative = marker->TextAlternative(*GetLayoutObject());
+        found_text_alternative = true;
+      }
+    }
+
+    if (found_text_alternative) {
+      name_from = ax::mojom::blink::NameFrom::kContents;
+      if (name_sources) {
+        name_sources->push_back(NameSource(false));
+        name_sources->back().type = name_from;
+        name_sources->back().text = text_alternative.value();
+      }
+      // Ensure that text nodes count toward
+      // kMaxDescendantsForTextAlternativeComputation when calculating the name
+      // for their direct parent (see AXNodeObject::TextFromDescendants).
+      visited.insert(this);
+      return text_alternative.value();
+    }
+  }
+
   // Step 2E from: http://www.w3.org/TR/accname-aam-1.1 -- value from control.
   // This must occur before 2C, because 2C is not applied if 2E will be:
   // 2C: "If traversal of the current node is due to recursion and the current
@@ -7558,6 +7615,39 @@ AXObject* AXNodeObject::PreviousOnLine() const {
   }
 
   return ax_result;
+}
+
+void AXNodeObject::HandleAutofillSuggestionAvailabilityChanged(
+    WebAXAutofillSuggestionAvailability suggestion_availability) {
+  if (GetLayoutObject()) {
+    // Autofill suggestion availability is stored in AXObjectCache.
+    AXObjectCache().SetAutofillSuggestionAvailability(AXObjectID(),
+                                                      suggestion_availability);
+  }
+}
+
+void AXNodeObject::GetWordBoundaries(Vector<int>& word_starts,
+                                     Vector<int>& word_ends) const {
+  if (!GetLayoutObject() || !GetLayoutObject()->IsListMarker()) {
+    return;
+  }
+
+  String text_alternative;
+  if (ListMarker* marker = ListMarker::Get(GetLayoutObject())) {
+    text_alternative = marker->TextAlternative(*GetLayoutObject());
+  }
+  if (text_alternative.ContainsOnlyWhitespaceOrEmpty()) {
+    return;
+  }
+
+  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
+  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
+  word_starts.reserve(boundaries.size());
+  word_ends.reserve(boundaries.size());
+  for (const auto& boundary : boundaries) {
+    word_starts.push_back(boundary.start_index);
+    word_ends.push_back(boundary.end_index);
+  }
 }
 
 void AXNodeObject::Trace(Visitor* visitor) const {
