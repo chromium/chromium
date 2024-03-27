@@ -300,6 +300,38 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
 </enum>
 
+<enum name="IOSFullscreenMimeType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Animated Portable Network Graphics"/>
+  <int value="2" label="AVIF Image"/>
+  <int value="3" label="Bitmap"/>
+  <int value="4" label="CSS"/>
+  <int value="5" label="CSV"/>
+  <int value="6" label="Microsoft Word"/>
+  <int value="7" label="Microsoft Word XML"/>
+  <int value="8" label="GIF"/>
+  <int value="9" label="HTML"/>
+  <int value="10" label="Icon"/>
+  <int value="11" label="JPEG"/>
+  <int value="12" label="JS"/>
+  <int value="13" label="JSON"/>
+  <int value="14" label="JSON LD"/>
+  <int value="15" label="PNG"/>
+  <int value="16" label="PDF"/>
+  <int value="17" label="PHP"/>
+  <int value="18" label="PowerPoint"/>
+  <int value="19" label="PowerPoint XML"/>
+  <int value="20" label="Rich Text Format"/>
+  <int value="21" label="SVG"/>
+  <int value="22" label="TIFF"/>
+  <int value="23" label="Plain Text"/>
+  <int value="24" label="Webp"/>
+  <int value="25" label="XHTML"/>
+  <int value="26" label="Microsoft Excel"/>
+  <int value="27" label="Microsoft Excel XML"/>
+  <int value="28" label="XML"/>
+</enum>
+
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>

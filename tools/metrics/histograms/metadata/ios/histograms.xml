@@ -1235,6 +1235,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Fullscreen.ExitedMimeType" enum="IOSFullscreenMimeType"
+    expires_after="2024-07-21">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Logs when a user exit fullscreen mode for Chrome on iOS. The enumeration
+    indicates which type of web site the user needed to exit.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
     expires_after="2024-07-21">
   <owner>joemerramos@chromium.org</owner>
