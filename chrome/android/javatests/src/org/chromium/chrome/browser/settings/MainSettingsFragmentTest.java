@@ -115,6 +115,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -129,6 +130,7 @@ import java.util.HashSet;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
+@DisableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
 
@@ -541,6 +543,15 @@ public class MainSettingsFragmentTest {
         Assert.assertTrue(
                 "Sync preference should be shown when the user is signed in.",
                 mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+    public void testSignInPromoHidden_HideSignInPromoEnabled() {
+        launchSettingsActivity();
+
+        onView(withText(R.string.sync_promo_title_settings)).check(doesNotExist());
     }
 
     @Test

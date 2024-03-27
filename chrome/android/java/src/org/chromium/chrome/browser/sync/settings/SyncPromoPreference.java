@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -116,7 +118,8 @@ public class SyncPromoPreference extends Preference
 
     /** Updates the title, summary, and image based on the current sign-in state. */
     private void update() {
-        if (mSigninManager.isSigninDisabledByPolicy()) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+                || mSigninManager.isSigninDisabledByPolicy()) {
             setupPromoHidden();
             return;
         }

@@ -23,6 +23,10 @@ BASE_FEATURE(kSeedAccountsRevamp,
 BASE_FEATURE(kEnterprisePolicyOnSignin,
              "EnterprisePolicyOnSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHideSettingsSignInPromo,
+             "HideSettingsSignInPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Clears the token service before using it. This allows simulating the

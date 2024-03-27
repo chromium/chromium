@@ -19,7 +19,8 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSeedAccountsRevamp, &switches::kEnterprisePolicyOnSignin,
     &switches::kRestoreSignedInAccountAndSettingsFromBackup,
-    &switches::kMinorModeRestrictionsForHistorySyncOptIn};
+    &switches::kMinorModeRestrictionsForHistorySyncOptIn,
+    &switches::kHideSettingsSignInPromo};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
