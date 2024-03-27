@@ -378,6 +378,7 @@ src/webgpu/shader/execution/stage.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/shader/execution/expression/access/array/index.spec.ts
+src/webgpu/shader/execution/expression/access/matrix/index.spec.ts
 src/webgpu/shader/execution/expression/access/vector/components.spec.ts
 src/webgpu/shader/execution/expression/access/vector/index.spec.ts
 src/webgpu/shader/execution/expression/binary/af_addition.cache.ts
@@ -642,6 +643,8 @@ src/webgpu/shader/execution/expression/call/builtin/atomics/atomicStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicSub.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicXor.spec.ts
 src/webgpu/shader/execution/expression/call/user/ptr_params.spec.ts
+src/webgpu/shader/execution/expression/constructor/non_zero.spec.ts
+src/webgpu/shader/execution/expression/constructor/zero_value.spec.ts
 src/webgpu/shader/execution/expression/unary/address_of_and_indirection.spec.ts
 src/webgpu/shader/execution/expression/unary/af_arithmetic.cache.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
