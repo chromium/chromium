@@ -1,0 +1,23 @@
+diff --color -rupN expat-2.2.9/expat/lib/xmlparse.c expat-2.2.9.new/expat/lib/xmlparse.c
+--- expat-2.2.9/expat/lib/xmlparse.c	2022-10-19 22:46:59.000000000 +0000
++++ expat-2.2.9.new/expat/lib/xmlparse.c	2022-10-19 23:28:41.859811027 +0000
+@@ -650,6 +650,8 @@ static const XML_Char implicitContext[]
+ 
+ #  if defined(HAVE_GETRANDOM) || defined(HAVE_SYSCALL_GETRANDOM)
+ 
++void __msan_unpoison(void *, size_t);
++
+ /* Obtain entropy on Linux 3.17+ */
+ static int
+ writeRandomBytes_getrandom_nonblock(void *target, size_t count) {
+@@ -675,6 +677,10 @@ writeRandomBytes_getrandom_nonblock(void
+     }
+   } while (! success && (errno == EINTR));
+ 
++  // MSAN doesn't recognise |syscall| and thus doesn't notice that we have
++  // initialised the output buffer.
++  __msan_unpoison(target, count);
++
+   return success;
+ }
+ 

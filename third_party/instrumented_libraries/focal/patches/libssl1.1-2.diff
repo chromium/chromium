@@ -1,0 +1,11 @@
+diff --color -rupN openssl-1.1.1f/crypto/ec/ecx_meth.c openssl-1.1.1f.new/crypto/ec/ecx_meth.c
+--- openssl-1.1.1f/crypto/ec/ecx_meth.c	2022-11-08 19:01:29.000000000 +0000
++++ openssl-1.1.1f.new/crypto/ec/ecx_meth.c	2022-11-08 19:36:04.051021276 +0000
+@@ -79,6 +79,7 @@ static int ecx_key_op(EVP_PKEY *pkey, in
+         memcpy(pubkey, p, plen);
+     } else {
+         privkey = key->privkey = OPENSSL_secure_malloc(KEYLENID(id));
++        memset(privkey, 0, KEYLENID(id));
+         if (privkey == NULL) {
+             ECerr(EC_F_ECX_KEY_OP, ERR_R_MALLOC_FAILURE);
+             goto err;

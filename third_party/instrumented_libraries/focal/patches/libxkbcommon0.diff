@@ -1,0 +1,12 @@
+diff --color -rupN libxkbcommon-0.10.0/src/context.c libxkbcommon-0.10.0.new/src/context.c
+--- libxkbcommon-0.10.0/src/context.c	2020-01-18 21:13:01.308651200 +0000
++++ libxkbcommon-0.10.0.new/src/context.c	2022-10-28 23:08:30.472207564 +0000
+@@ -93,7 +93,7 @@ XKB_EXPORT int
+ xkb_context_include_path_append_default(struct xkb_context *ctx)
+ {
+     const char *home, *xdg, *root;
+-    char *user_path;
++    char *user_path = NULL;
+     int err;
+     int ret = 0;
+ 

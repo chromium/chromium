@@ -541,7 +541,7 @@ third_party/hunspell/fuzz/bdict_corpus 2 2
 third_party/hyphenation-patterns 1 1
 third_party/hyphenation-patterns/src/am 1 1
 third_party/inspector_protocol 4 1
-third_party/instrumented_libs/focal/scripts 1 1
+third_party/instrumented_libraries/focal/scripts 1 1
 third_party/jsoncpp 1 1
 third_party/libpng/contrib/oss-fuzz 1 1
 third_party/libpng/patches 1 1

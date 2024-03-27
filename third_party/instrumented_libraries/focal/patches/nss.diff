@@ -1,0 +1,51 @@
+diff --git a/lib/pk11wrap/pk11load.c b/lib/pk11wrap/pk11load.c
+index 0323025..cc53636 100644
+--- a/nss/lib/pk11wrap/pk11load.c
++++ b/nss/lib/pk11wrap/pk11load.c
+@@ -353,15 +353,16 @@ SECMOD_SetRootCerts(PK11SlotInfo *slot, SECMODModule *mod)
+     }
+ }
+ 
+-#ifndef NSS_STATIC_SOFTOKEN
++// Remove the build guard here since the code below requires both
++// when NSS_STATIC_SOFTOKEN is set.
+ static const char *my_shlib_name =
+     SHLIB_PREFIX "nss" SHLIB_VERSION "." SHLIB_SUFFIX;
+ static const char *softoken_shlib_name =
+     SHLIB_PREFIX "softokn" SOFTOKEN_SHLIB_VERSION "." SHLIB_SUFFIX;
+-static const PRCallOnceType pristineCallOnce;
+-static PRCallOnceType loadSoftokenOnce;
++__attribute__((unused)) static const PRCallOnceType pristineCallOnce;
++__attribute__((unused)) static PRCallOnceType loadSoftokenOnce;
+ static PRLibrary *softokenLib;
+-static PRInt32 softokenLoadCount;
++__attribute__((unused)) static PRInt32 softokenLoadCount;
+ 
+ /* This function must be run only once. */
+ /*  determine if hybrid platform, then actually load the DSO. */
+@@ -379,10 +380,8 @@ softoken_LoadDSO(void)
+     }
+     return PR_FAILURE;
+ }
+-#else
+ CK_RV NSC_GetFunctionList(CK_FUNCTION_LIST_PTR *pFunctionList);
+ char **NSC_ModuleDBFunc(unsigned long function, char *parameters, void *args);
+-#endif
+ 
+ /*
+  * load a new module into our address space and initialize it.
+diff --git a/nss.gyp b/nss.gyp
+index bf8b4d3..6f873cc 100644
+--- a/nss/nss.gyp
++++ b/nss/nss.gyp
+@@ -111,8 +111,8 @@
+           'dependencies': [
+             'cmd/certutil/certutil.gyp:certutil',
+             'cmd/modutil/modutil.gyp:modutil',
+-            'cmd/pk12util/pk12util.gyp:pk12util',
+-            'cmd/shlibsign/shlibsign.gyp:shlibsign',
++            'cmd/pk12util/pk12util.gyp:pk12util'
++            # Remove shlibsign since we don't sign the libraries.
+           ],
+           'conditions': [
+             [ 'comm_client==1', {

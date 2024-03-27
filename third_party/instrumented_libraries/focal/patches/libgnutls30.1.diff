@@ -1,0 +1,49 @@
+diff -rup gnutls28-3.6.13/lib/safe-memfuncs.c gnutls28-3.6.13.new/lib/safe-memfuncs.c
+--- gnutls28-3.6.13/lib/safe-memfuncs.c	2020-01-01 20:10:19.000000000 +0000
++++ gnutls28-3.6.13.new/lib/safe-memfuncs.c	2021-11-08 23:20:28.486672798 +0000
+@@ -34,25 +34,7 @@
+  **/
+ void gnutls_memset(void *data, int c, size_t size)
+ {
+-	volatile unsigned volatile_zero;
+-	volatile char *vdata = (volatile char*)data;
+-#ifdef HAVE_EXPLICIT_BZERO
+-	if (c == 0) {
+-		explicit_bzero(data, size);
+-		return;
+-	}
+-#endif
+-	volatile_zero = 0;
+-
+-	/* This is based on a nice trick for safe memset,
+-	 * sent by David Jacobson in the openssl-dev mailing list.
+-	 */
+-
+-	if (size > 0) {
+-		do {
+-			memset(data, c, size);
+-		} while(vdata[volatile_zero] != c);
+-	}
++  memset(data, c, size);
+ }
+ 
+ /**
+@@ -71,16 +53,7 @@ void gnutls_memset(void *data, int c, si
+  **/
+ int gnutls_memcmp(const void *s1, const void *s2, size_t n)
+ {
+-	unsigned i;
+-	unsigned status = 0;
+-	const uint8_t *_s1 = s1;
+-	const uint8_t *_s2 = s2;
+-
+-	for (i=0;i<n;i++) {
+-		status |= (_s1[i] ^ _s2[i]);
+-	}
+-
+-	return status;
++  return memcmp(s1, s2, n);
+ }
+ 
+ #ifdef TEST_SAFE_MEMSET
+Only in gnutls28-3.6.13.new/lib: safe-memfuncs.c~

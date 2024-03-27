@@ -1,0 +1,77 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+declare_args() {
+  instrumented_libraries_release = "focal"
+}
+
+group("deps") {
+  if (use_locally_built_instrumented_libraries) {
+    deps = [ "//third_party/instrumented_libraries/$instrumented_libraries_release:locally_built" ]
+  } else if (use_prebuilt_instrumented_libraries) {
+    assert(prebuilt_instrumented_libraries_available,
+           "Prebuilt instrumented libraries are only available when " +
+               "is_msan = true and msan_track_origins = {0, 2}")
+    deps = [ ":prebuilt" ]
+    data_deps = [ ":prebuilt" ]
+  }
+}
+
+if (prebuilt_instrumented_libraries_available) {
+  group("prebuilt") {
+    visibility = [ ":deps" ]
+
+    deps = [ ":extract_prebuilt_instrumented_libraries" ]
+    data_deps = [ ":extract_prebuilt_instrumented_libraries" ]
+  }
+
+  if (msan_track_origins == 0) {
+    archive_prefix = "msan-no-origins"
+  } else if (msan_track_origins == 2) {
+    archive_prefix = "msan-chained-origins"
+  }
+
+  # Note: This requires a clobber whenever Ubuntu version changes.
+  action("extract_prebuilt_instrumented_libraries") {
+    visibility = [ ":prebuilt" ]
+    script = "scripts/unpack_binaries.py"
+    depfile = "$target_out_dir/$archive_prefix.d"
+    args = [
+      archive_prefix,
+      instrumented_libraries_release,
+      rebase_path("binaries", root_build_dir),
+      rebase_path(root_out_dir + "/instrumented_libraries_prebuilt",
+                  root_build_dir),
+      rebase_path(target_out_dir, root_out_dir),
+    ]
+    outputs = [ "$target_out_dir/$archive_prefix.txt" ]
+    data = [ "$root_out_dir/instrumented_libraries_prebuilt/" ]
+  }
+
+  config("prebuilt_ldflags") {
+    ldflags = [
+      # Add a relative RPATH entry to Chromium binaries. This puts instrumented
+      # DSOs before system-installed versions in library search path.
+      "-Wl,-R,\$ORIGIN/instrumented_libraries_prebuilt/lib",
+      "-Wl,-z,origin",
+
+      # Add some padding to allow RPATHs to be modified later.
+      "-Wl,-R,________________________________________________________________________________________________PADDING________________________________________________________________________________________________",
+    ]
+  }
+}
+
+config("locally_built_ldflags") {
+  ldflags = [
+    # Add a relative RPATH entry to Chromium binaries. This puts instrumented
+    # DSOs before system-installed versions in library search path.
+    "-Wl,-R,\$ORIGIN/instrumented_libraries/lib",
+    "-Wl,-z,origin",
+
+    # Add some padding to allow RPATHs to be modified later.
+    "-Wl,-R,________________________________________________________________PADDING________________________________________________________________",
+  ]
+}

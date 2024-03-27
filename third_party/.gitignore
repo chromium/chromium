@@ -66,8 +66,8 @@
 /guava/lib/
 /hamcrest/lib/
 /icu4j/lib/
-/instrumented_libraries/
-/instrumented_libs/
+/instrumented_libraries/scripts/*.tgz
+/instrumented_libraries/scripts/out/*
 /jacoco/coverage/
 /jacoco/doc/
 /jacoco/index.html

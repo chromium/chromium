@@ -1,0 +1,11 @@
+diff --color -rupN openssl-1.1.1f/ssl/ssl_ciph.c openssl-1.1.1f.new/ssl/ssl_ciph.c
+--- openssl-1.1.1f/ssl/ssl_ciph.c	2020-03-31 12:17:45.000000000 +0000
++++ openssl-1.1.1f.new/ssl/ssl_ciph.c	2022-11-08 19:03:17.597890542 +0000
+@@ -1280,6 +1280,7 @@ static int ciphersuite_cb(const char *el
+     const SSL_CIPHER *cipher;
+     /* Arbitrary sized temp buffer for the cipher name. Should be big enough */
+     char name[80];
++    memset(name, 0, sizeof(name));
+ 
+     if (len > (int)(sizeof(name) - 1)) {
+         SSLerr(SSL_F_CIPHERSUITE_CB, SSL_R_NO_CIPHER_MATCH);

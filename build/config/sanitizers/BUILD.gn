@@ -43,7 +43,7 @@ group("deps") {
     }
     if (use_prebuilt_instrumented_libraries ||
         use_locally_built_instrumented_libraries) {
-      deps += [ "//third_party/instrumented_libs:deps" ]
+      deps += [ "//third_party/instrumented_libraries:deps" ]
     }
   }
   if (fail_on_san_warnings) {
