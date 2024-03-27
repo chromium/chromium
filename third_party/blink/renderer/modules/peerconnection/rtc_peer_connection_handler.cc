@@ -1056,15 +1056,19 @@ bool RTCPeerConnectionHandler::Initialize(
     WebLocalFrame* frame,
     ExceptionState& exception_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(frame);
   DCHECK(dependency_factory_);
-  frame_ = frame;
 
   CHECK(!initialize_called_);
   initialize_called_ = true;
 
   // Prevent garbage collection of client_ during processing.
   auto* client_on_stack = client_.Get();
+  if (!client_on_stack) {
+    return false;
+  }
+
+  DCHECK(frame);
+  frame_ = frame;
   peer_connection_tracker_ = PeerConnectionTracker::From(*frame);
 
   configuration_ = server_configuration;
@@ -2321,10 +2325,13 @@ void RTCPeerConnectionHandler::OnIceCandidate(const String& sdp,
                                               int sdp_mline_index,
                                               int component,
                                               int address_family) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   // In order to ensure that the RTCPeerConnection is not garbage collected
   // from under the function, we keep a pointer to it on the stack.
   auto* client_on_stack = client_.Get();
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!client_on_stack) {
+    return;
+  }
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnIceCandidateImpl");
   // This line can cause garbage collection.
   auto* platform_candidate = MakeGarbageCollected<RTCIceCandidatePlatform>(
