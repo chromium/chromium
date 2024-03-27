@@ -42,7 +42,7 @@
 <translation id="1209206284964581585">ప్రస్తుతానికి దాచు</translation>
 <translation id="1219674500290482172">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1226238226094914652">మీ అన్ని పరికరాలలోని పాస్‌వర్డ్‌లు</translation>
-<translation id="122699739164161391">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
+<translation id="122699739164161391">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="1227866575467023566">{count,plural, =1{మీ ఖాతా, {email}‌లోని చదవాల్సిన లిస్ట్‌కు పేజీని జోడించడం జరిగింది}other{మీ ఖాతా, {email}‌లోని మీ చదవాల్సిన లిస్ట్‌కు {count} పేజీలను జోడించడం జరిగింది}}</translation>
 <translation id="1242044645101871359">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
 <translation id="1248276223555153952">ఈ పరికరంలో ఖాతాలను మేనేజ్ చేయండి...</translation>
@@ -72,7 +72,7 @@
 <translation id="1332723353863236763">కొంత డేటా ఇంకా సేవ్ కాలేదు</translation>
 <translation id="1335348992705722518">సెట్టింగ్‌లను మేనేజ్ చేయండి...</translation>
 <translation id="1338381578078138897">{COUNT,plural, =1{మీ Google ఖాతాలో {COUNT} పాస్‌వర్డ్‌ను సేవ్ చేయండి}other{మీ Google ఖాతాలో {COUNT} పాస్‌వర్డ్‌లను సేవ్ చేయండి}}</translation>
-<translation id="1340643665687018190">మెనూను మూసివేయి</translation>
+<translation id="1340643665687018190">మెనూను మూసివేయండి</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">మీరు కాపీ చేసిన లింక్‌ను సందర్శించండి</translation>
 <translation id="1360432990279830238">సైన్ అవుట్ చేసి, సింక్‌ను ఆఫ్ చేయలా?</translation>
@@ -151,7 +151,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} బలహీనమైన పాస్‌వర్డ్}other{{count} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1769106850515800431">వ్యక్తిగతీకరించిన కంటెంట్</translation>
-<translation id="1780152987505130652">గ్రూప్‌ను మూసివేయి</translation>
+<translation id="1780152987505130652">గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="1789803444939621101">పునఃస్వాగతం, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">కార్డుదారుని పేరు</translation>
 <translation id="1809939268435598390">ఫోల్డర్‌ను తొలగించండి</translation>
@@ -376,7 +376,7 @@
 <translation id="2876369937070532032">మీ భద్రతకు ప్రమాదం పొంచి ఉన్నప్పుడు, మీరు సందర్శించే కొన్ని పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="288113003463357084">అడ్రస్ బార్‌ను కిందికి తరలించండి</translation>
 <translation id="2883151425485251736">మీ ఖాతా నుండి దాచిన టాపిక్‌లను చూడండి, ఎడిట్ చేయండి</translation>
-<translation id="288655811176831528">ట్యాబ్‌ని మూసివేయి</translation>
+<translation id="288655811176831528">ట్యాబ్‌ని మూసివేయండి</translation>
 <translation id="288902476966286676">పంపిన వారికి తిరిగి పంపండి</translation>
 <translation id="2890171748217283516">మీరు ఫాలో అయ్యే సైట్‌లు మీ Google ఖాతాలో సేవ్ చేయబడతాయి. మీరు వాటిని Discover సెట్టింగ్‌లలో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="2895084600668778673">మొత్తం ఆటోఫిల్ డేటాను చూడండి</translation>
@@ -498,11 +498,11 @@
 <translation id="3527085408025491307">ఫోల్డర్</translation>
 <translation id="3529024052484145543">సురక్షితం కాదు</translation>
 <translation id="3530206579861815432">మీ సింక్ చేసిన పరికరాలలో తెరిచిన, ఇటీవల మూసివేసిన ట్యాబ్‌లను క్విక్‌గా కనుగొనండి.</translation>
-<translation id="3533202363250687977">అజ్ఞాత ట్యాబ్‌లన్నీ మూసివేయి</translation>
+<translation id="3533202363250687977">అజ్ఞాత ట్యాబ్‌లన్నీ మూసివేయండి</translation>
 <translation id="3533436815740441613">కొత్త ట్యాబ్</translation>
 <translation id="3540141921715814660">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="355101282835380364">ఖాతాలో సేవ్ చేయండి…</translation>
-<translation id="3551320343578183772">ట్యాబ్‌ను మూసివేయి</translation>
+<translation id="3551320343578183772">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="3565207542107370586">బ్రౌజింగ్ డేటాను క్లియర్ చేయండి…</translation>
 <translation id="3570693105179140209">మరిన్ని పాస్‌వర్డ్‌ల కోసం డబుల్ ట్యాప్ చేయండి.</translation>
 <translation id="3575234738189584619">Lens ద్వారా సెర్చ్ చేయండి</translation>
@@ -645,7 +645,7 @@
 <translation id="430793432425771671">ప్రతి ఒక్కటీ సింక్ చేయండి</translation>
 <translation id="4309403553630140242">మరింత సమాచారం కోసం రెండుసార్లు నొక్కండి</translation>
 <translation id="430967081421617822">మొత్తం సమయం</translation>
-<translation id="4322394346347055525">ఇతర ట్యాబ్‌లను మూసివేయి</translation>
+<translation id="4322394346347055525">ఇతర ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="4323142320106872792">మీ స్టోరేజ్ నిండింది</translation>
 <translation id="4331177082088332784">మీరు దీన్ని BEGIN_LINK కంటెంట్ సెట్టింగ్‌ల END_LINKలో మేనేజ్ చేయవచ్చు</translation>
 <translation id="4334428914252001502">1 చదవని కథనం ఉంది.</translation>
@@ -988,7 +988,7 @@
 <translation id="6036215966221662377">బ్రౌజింగ్ డేటాను క్లియర్ చేయండి</translation>
 <translation id="6036514205982097558">మీ అన్ని ట్యాబ్‌లు ఒకే బ్రౌజర్‌లో</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
-<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="6045460247888249350">టైటిల్‌ను జోడించండి</translation>
 <translation id="605721222689873409">YY</translation>
@@ -1016,7 +1016,7 @@
 <translation id="6187302354554850004">చివరగా సింక్ చేసింది: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">చదవనివి</translation>
 <translation id="6196207969502475924">వాయిస్ శోధన</translation>
-<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ట్యాబ్‌ను మూసివేయి}other{{COUNT} ట్యాబ్‌లను మూసివేయి}}</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ట్యాబ్‌ను మూసివేయండి}other{{COUNT} ట్యాబ్‌లను మూసివేయండి}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> రోజులు లేదా అంతకంటే ఎక్కువ రోజులు ఉపయోగించని ట్యాబ్‌లు ఇక్కడికి తరలించబడ్డాయి. మీరు దీన్ని ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" />ఆప్షన్‌లో మార్చవచ్చు.</translation>
 <translation id="6213567400989743524">విస్మరించిన హెచ్చరికలు</translation>
 <translation id="6219550825416862075">పునఃస్వాగతం</translation>
@@ -1402,7 +1402,7 @@
 <translation id="8077675488769462025">ఇన్‌యాక్టివ్ ట్యాబ్‌లు</translation>
 <translation id="8079530767338315840">రిపీట్‌ చేయి</translation>
 <translation id="8079602123447022758">ఈ సెట్టింగ్ మేనేజ్ చేయబడుతుంది, మరింత సమాచారం కోసం రెండుసార్లు నొక్కండి</translation>
-<translation id="8080028325999236607">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
+<translation id="8080028325999236607">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="8084285576995584326">మీ Google ఖాతా డేటాను కంట్రోల్ చేయండి</translation>
 <translation id="809543534949702122">సెర్చ్ హిస్టరీ</translation>
 <translation id="8101409298456377967">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -1446,7 +1446,7 @@
 <translation id="8299613349954694191">వెబ్‌ను ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి అజ్ఞాత ట్యాబ్‌ను తెరవండి.</translation>
 <translation id="8311853334103696030">'ధరను ట్రాక్ చేయండి'ని దాచండి</translation>
 <translation id="8319076807703933069">కొత్త శోధన</translation>
-<translation id="8328777765163860529">అన్నింటినీ మూసివేయి</translation>
+<translation id="8328777765163860529">అన్నింటినీ మూసివేయండి</translation>
 <translation id="8343993175958086504">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏ పరికరంలో అయినా ఉపయోగించండి.</translation>
 <translation id="834783239627985533">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
 <translation id="8358401059263985056">నోటిఫికేషన్‌లను ఆన్ చేయండి</translation>
@@ -1516,7 +1516,7 @@
 <translation id="8680787084697685621">ఖాతా సైన్-ఇన్ వివరాల గడువు తేదీ ముగిసింది.</translation>
 <translation id="868773710103052534">మీరు అంతా పూర్తి చేశారు</translation>
 <translation id="8692689525339542358">ప్రమాదకరమైన సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ పొందండి.</translation>
-<translation id="8693663554456874301">{count,plural, =1{ట్యాబ్‌ను మూసివేయి}other{ట్యాబ్‌లను మూసివేయి}}</translation>
+<translation id="8693663554456874301">{count,plural, =1{ట్యాబ్‌ను మూసివేయండి}other{ట్యాబ్‌లను మూసివేయండి}}</translation>
 <translation id="8703536910991780768">మీ పాస్‌వర్డ్‌లు శక్తివంతమైనవిగా కనిపిస్తున్నాయి</translation>
 <translation id="8706253136355675497">ఉష్ణోగ్రత</translation>
 <translation id="8709409604518538305">ట్యాబ్‌లు మూసివేయబడ్డాయి</translation>
