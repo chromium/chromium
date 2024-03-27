@@ -173,6 +173,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 // set correctly for "Update Google Play services" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesUpdateGooglePlayServices) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
@@ -190,12 +192,20 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDisplayReasonHistogramName,
+      password_manager::PasswordStoreBackendErrorType::
+          kGMSCoreOutdatedSavingPossible,
+      1);
 }
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for "Update to save passwords" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesUpdateToSavePasswords) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
@@ -211,6 +221,12 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
             GetMessageWrapper()->GetPrimaryButtonText());
 
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDisplayReasonHistogramName,
+      password_manager::PasswordStoreBackendErrorType::
+          kGMSCoreOutdatedSavingDisabled,
+      1);
 }
 
 // Tests that the sign in flow starts when the user clicks the "Sign in" button
@@ -240,6 +256,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
 // because account passwords can't be saved due to an outdated GMSCore version.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        UpdateGMSCoreOnActionClickWhenSavingPossible) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
@@ -251,6 +269,10 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // The message needs to be dismissed manually in tests. In production code
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+
+  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
+                                      messages::DismissReason::PRIMARY_ACTION,
+                                      1);
 }
 
 // Tests that the Google Play page where GMSCore can be updated opens when the
@@ -258,6 +280,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 // because passwords can't be saved due to an outdated GMSCore version.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        UpdateGMSCoreOnActionClickWhenSavingDisabled) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(
       password_manager::ErrorMessageFlowType::kSaveFlow,
       password_manager::PasswordStoreBackendErrorType::
@@ -269,6 +293,10 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // The message needs to be dismissed manually in tests. In production code
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+
+  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
+                                      messages::DismissReason::PRIMARY_ACTION,
+                                      1);
 }
 
 // Tests that the metrics are recorded correctly when the message is
