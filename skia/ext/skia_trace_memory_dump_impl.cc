@@ -33,12 +33,12 @@ SkiaTraceMemoryDumpImpl::SkiaTraceMemoryDumpImpl(
 
 SkiaTraceMemoryDumpImpl::~SkiaTraceMemoryDumpImpl() = default;
 
-void SkiaTraceMemoryDumpImpl::dumpNumericValue(const char* dumpName,
-                                               const char* valueName,
+void SkiaTraceMemoryDumpImpl::dumpNumericValue(const char* dump_name,
+                                               const char* value_name,
                                                const char* units,
                                                uint64_t value) {
-  auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dumpName);
-  dump->AddScalar(valueName, units, value);
+  auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dump_name);
+  dump->AddScalar(value_name, units, value);
 }
 
 void SkiaTraceMemoryDumpImpl::dumpStringValue(const char* dump_name,
@@ -48,11 +48,11 @@ void SkiaTraceMemoryDumpImpl::dumpStringValue(const char* dump_name,
   dump->AddString(value_name, "", value);
 }
 
-void SkiaTraceMemoryDumpImpl::setMemoryBacking(const char* dumpName,
-                                               const char* backingType,
-                                               const char* backingObjectId) {
-  if (strcmp(backingType, kMallocBackingType) == 0) {
-    auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dumpName);
+void SkiaTraceMemoryDumpImpl::setMemoryBacking(const char* dump_name,
+                                               const char* backing_type,
+                                               const char* backing_object_id) {
+  if (strcmp(backing_type, kMallocBackingType) == 0) {
+    auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dump_name);
     const char* system_allocator_name =
         base::trace_event::MemoryDumpManager::GetInstance()
             ->system_allocator_pool_name();
@@ -66,13 +66,13 @@ void SkiaTraceMemoryDumpImpl::setMemoryBacking(const char* dumpName,
 }
 
 void SkiaTraceMemoryDumpImpl::setDiscardableMemoryBacking(
-    const char* dumpName,
-    const SkDiscardableMemory& discardableMemoryObject) {
-  std::string name = dump_name_prefix_ + dumpName;
+    const char* dump_name,
+    const SkDiscardableMemory& discardable_memory) {
+  std::string name = dump_name_prefix_ + dump_name;
   DCHECK(!process_memory_dump_->GetAllocatorDump(name));
-  const SkDiscardableMemoryChrome& discardable_memory_obj =
-      static_cast<const SkDiscardableMemoryChrome&>(discardableMemoryObject);
-  auto* dump = discardable_memory_obj.CreateMemoryAllocatorDump(
+  const SkDiscardableMemoryChrome& discardable_memory_chrome =
+      static_cast<const SkDiscardableMemoryChrome&>(discardable_memory);
+  auto* dump = discardable_memory_chrome.CreateMemoryAllocatorDump(
       name.c_str(), process_memory_dump_);
   DCHECK(dump);
 }
@@ -86,6 +86,23 @@ bool SkiaTraceMemoryDumpImpl::shouldDumpWrappedObjects() const {
   // Chrome already dumps objects it imports into Skia. Avoid duplicate dumps
   // by asking Skia not to dump them.
   return false;
+}
+
+void SkiaTraceMemoryDumpImpl::dumpWrappedState(const char* dump_name,
+                                               bool wrapped) {
+  NOTREACHED();
+}
+
+bool SkiaTraceMemoryDumpImpl::shouldDumpUnbudgetedObjects() const {
+  // Only used on Graphite - we should dump unbudgeted items from SkImages or
+  // SkSurfaces the client creates.
+  return true;
+}
+
+void SkiaTraceMemoryDumpImpl::dumpBudgetedState(const char* dump_name,
+                                                bool budgeted) {
+  auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dump_name);
+  dump->AddString("budgeted", "", budgeted ? "1" : "0");
 }
 
 }  // namespace skia

@@ -33,6 +33,7 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
+#include "skia/ext/skia_trace_memory_dump_impl.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
@@ -913,14 +914,30 @@ bool SharedContextState::IsCurrent(gl::GLSurface* surface, bool needs_gl) {
 bool SharedContextState::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (!gr_context_)
-    return true;
-
-  if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
-    raster::DumpBackgroundGrMemoryStatistics(gr_context_, pmd);
-  } else {
-    raster::DumpGrMemoryStatistics(gr_context_, pmd, std::nullopt);
+  bool background = args.level_of_detail ==
+                    base::trace_event::MemoryDumpLevelOfDetail::kBackground;
+  if (gr_context()) {
+    if (background) {
+      raster::DumpBackgroundGrMemoryStatistics(gr_context(), pmd);
+    } else {
+      raster::DumpGrMemoryStatistics(gr_context(), pmd, std::nullopt);
+    }
+  } else if (graphite_context()) {
+    // TODO(https://crbug.com/330806170): There's no Skia API to get the total
+    // total resource size including unbudgeted (client) allocations so just
+    // emit the per-resource stats for non-background dumps for now. After we
+    // add a Skia API to get total resource allocation size, we can add that to
+    // background dumps which are emitted to UMA.
+    if (!background) {
+      // Note: The image provider's allocations are already counted in Skia's
+      // unbudgeted (client) resource allocations so we skip emitted them here.
+      skia::SkiaTraceMemoryDumpImpl trace_memory_dump(args.level_of_detail,
+                                                      pmd);
+      graphite_context()->dumpMemoryStatistics(&trace_memory_dump);
+      gpu_main_graphite_recorder()->dumpMemoryStatistics(&trace_memory_dump);
+      viz_compositor_graphite_recorder()->dumpMemoryStatistics(
+          &trace_memory_dump);
+    }
   }
 
   return true;
