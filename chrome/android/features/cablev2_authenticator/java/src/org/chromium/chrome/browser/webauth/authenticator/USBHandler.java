@@ -14,6 +14,7 @@ import android.system.OsConstants;
 import android.system.StructPollfd;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -99,7 +100,7 @@ class USBHandler implements Closeable {
      * getAssertion request).
      */
     @CalledByNative
-    public void write(byte[] message) {
+    public void write(@JniType("std::vector<uint8_t>") byte[] message) {
         assert mTaskRunner.belongsToCurrentThread();
         assert mOutput != null;
 

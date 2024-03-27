@@ -70,10 +70,14 @@ JNI_BOUNDARY_EXPORT void
     JNIEnv* env,
     jclass jcaller,
     jlong nativeCPPClass,
-    jobject caller) {
+    jobject caller,
+    jbyteArray bytes) {
   CPPClass* native = reinterpret_cast<CPPClass*>(nativeCPPClass);
   CHECK_NATIVE_PTR(env, jcaller, native, "Destroy");
-  return native->Destroy(env, jni_zero::JavaParamRef<jobject>(env, caller));
+  std::vector<uint8_t> bytes_converted =
+      jni_zero::ConvertArray<std::vector<uint8_t>>::FromJniType(env,
+      jni_zero::JavaParamRef<jbyteArray>(env, bytes));
+  return native->Destroy(env, jni_zero::JavaParamRef<jobject>(env, caller), bytes_converted);
 }
 
 static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(JNIEnv* env, const

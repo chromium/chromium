@@ -55,7 +55,7 @@ class SampleForTests {
 
     public void finishExample() {
         // We're done, so let's destroy nativePtr object.
-        SampleForTestsJni.get().destroy(mNativeCPPObject, this);
+        SampleForTestsJni.get().destroy(mNativeCPPObject, this, new byte[0]);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -277,7 +277,10 @@ class SampleForTests {
         // The |nativeCPPClass| is automatically cast to type CPPClass*, in order to obtain the
         // object on which to invoke the member function. Replace "CPPClass" with your particular
         // class name!
-        void destroy(long nativeCPPClass, SampleForTests caller);
+        void destroy(
+                long nativeCPPClass,
+                SampleForTests caller,
+                @JniType("std::vector<uint8_t>") byte[] bytes);
 
         // This declares a C++ function which the application code must implement:
         // static jdouble GetDoubleFunction(JNIEnv* env, jobject caller);

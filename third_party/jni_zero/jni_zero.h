@@ -782,6 +782,32 @@ struct ConvertArray<std::vector<int32_t>> {
   }
 };
 
+// Specialization for byte array.
+template <>
+struct ConvertArray<std::vector<uint8_t>> {
+  static std::vector<uint8_t> FromJniType(JNIEnv* env,
+                                          const JavaRef<jbyteArray>& j_array) {
+    jsize array_jsize = env->GetArrayLength(j_array.obj());
+    size_t array_size = static_cast<size_t>(array_jsize);
+    std::vector<uint8_t> ret;
+    ret.resize(array_size);
+    env->GetByteArrayRegion(j_array.obj(), 0, array_jsize,
+                            reinterpret_cast<jbyte*>(ret.data()));
+    return ret;
+  }
+
+  static ScopedJavaLocalRef<jbyteArray> ToJniType(
+      JNIEnv* env,
+      const std::vector<uint8_t>& vec) {
+    jsize array_jsize = static_cast<jsize>(vec.size());
+    jbyteArray jia = env->NewByteArray(array_jsize);
+    CheckException(env);
+    env->SetByteArrayRegion(jia, 0, array_jsize,
+                            reinterpret_cast<const jbyte*>(vec.data()));
+    return ScopedJavaLocalRef<jbyteArray>(env, jia);
+  }
+};
+
 // Do not call ToJniType for jobject->jobject.
 template <typename J>
 struct ConvertArray<std::vector<ScopedJavaLocalRef<J>>> {

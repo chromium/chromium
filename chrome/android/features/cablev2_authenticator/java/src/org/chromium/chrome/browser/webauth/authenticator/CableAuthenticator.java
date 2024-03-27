@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.util.Pair;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -136,7 +137,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
     }
 
     @CalledByNative
-    public void makeCredential(byte[] serializedParams) {
+    public void makeCredential(@JniType("std::vector<uint8_t>") byte[] serializedParams) {
         PublicKeyCredentialCreationOptions params =
                 PublicKeyCredentialCreationOptions.deserialize(ByteBuffer.wrap(serializedParams));
         // The Chrome hybrid authenticator never supported creation-time
@@ -185,7 +186,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
     }
 
     @CalledByNative
-    public void getAssertion(byte[] serializedParams, byte[] tunnelId) {
+    public void getAssertion(@JniType("std::vector<uint8_t>") byte[] serializedParams) {
         PublicKeyCredentialRequestOptions params =
                 PublicKeyCredentialRequestOptions.deserialize(ByteBuffer.wrap(serializedParams));
 
@@ -444,7 +445,10 @@ class CableAuthenticator implements AuthenticationContextProvider {
          * one-time setup operations. It may be called several times, but subsequent calls are
          * ignored.
          */
-        void setup(long registration, long networkContext, byte[] secret);
+        void setup(
+                long registration,
+                long networkContext,
+                @JniType("std::vector<uint8_t>") byte[] secret);
 
         /**
          * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an
@@ -460,8 +464,8 @@ class CableAuthenticator implements AuthenticationContextProvider {
          */
         long startQR(
                 CableAuthenticator cableAuthenticator,
-                String authenticatorName,
-                String qrURI,
+                @JniType("std::string") String authenticatorName,
+                @JniType("std::string") String qrURI,
                 boolean link);
 
         /**
@@ -469,14 +473,18 @@ class CableAuthenticator implements AuthenticationContextProvider {
          * information which has been provided by the server. Returns an opaque value that can be
          * passed to |stop| to cancel this transaction.
          */
-        long startServerLink(CableAuthenticator cableAuthenticator, byte[] serverLinkData);
+        long startServerLink(
+                CableAuthenticator cableAuthenticator,
+                @JniType("std::vector<uint8_t>") byte[] serverLinkData);
 
         /**
          * Called when a GCM message is received and the user has tapped on the resulting
          * notification. fcmEvent contains a serialized event, as created by
          * |webauthn::authenticator::Registration::Event::Serialize|.
          */
-        long startCloudMessage(CableAuthenticator cableAuthenticator, byte[] fcmEvent);
+        long startCloudMessage(
+                CableAuthenticator cableAuthenticator,
+                @JniType("std::vector<uint8_t>") byte[] fcmEvent);
 
         /**
          * Called to alert the C++ code to stop any ongoing transactions. Takes an opaque handle
@@ -488,13 +496,13 @@ class CableAuthenticator implements AuthenticationContextProvider {
          * validateServerLinkData returns zero if |serverLink| is a valid argument for
          * |startServerLink| or else an error value from cablev2::authenticator::Platform::Error.
          */
-        int validateServerLinkData(byte[] serverLinkData);
+        int validateServerLinkData(@JniType("std::vector<uint8_t>") byte[] serverLinkData);
 
         /**
          * validateQRURI returns zero if |qrURI| is a valid fido: URI or else an error value from
          * cablev2::authenticator::Platform::Error.
          */
-        int validateQRURI(String qrURI);
+        int validateQRURI(@JniType("std::string") String qrURI);
 
         /**
          * onActivityStop is called when onStop() is called on the Activity. This is done in order
@@ -504,7 +512,9 @@ class CableAuthenticator implements AuthenticationContextProvider {
 
         /** Called to alert native code of a response to a makeCredential request. */
         void onAuthenticatorAttestationResponse(
-                int ctapStatus, byte[] attestationObject, boolean prfEnabled);
+                int ctapStatus,
+                @JniType("std::vector<uint8_t>") byte[] attestationObject,
+                boolean prfEnabled);
 
         /** Called to alert native code of a response to a getAssertion request. */
         void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes);

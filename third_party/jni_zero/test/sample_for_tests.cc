@@ -88,7 +88,9 @@ CPPClass::CPPClass() = default;
 CPPClass::~CPPClass() = default;
 
 // static
-void CPPClass::Destroy(JNIEnv* env, const JavaParamRef<jobject>& caller) {
+void CPPClass::Destroy(JNIEnv* env,
+                       const JavaParamRef<jobject>& caller,
+                       std::vector<uint8_t>& bytes) {
   delete this;
 }
 

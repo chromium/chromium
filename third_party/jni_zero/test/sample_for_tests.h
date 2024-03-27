@@ -8,6 +8,7 @@
 #include <jni.h>
 #include <map>
 #include <string>
+#include <vector>
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace jni_zero::tests {
@@ -39,7 +40,9 @@ class CPPClass {
                           const jni_zero::JavaParamRef<jobject>& caller);
   };
 
-  void Destroy(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& caller);
+  void Destroy(JNIEnv* env,
+               const jni_zero::JavaParamRef<jobject>& caller,
+               std::vector<uint8_t>& bytes);
 
   jint Method(JNIEnv* env,
               const jni_zero::JavaParamRef<jobject>& caller,

@@ -16,7 +16,7 @@ public class GEN_JNI {
       // Hashed name: Java_J_N_Ms5kPsN2
     public static native void org_jni_1zero_SampleForTests_addStructB(long nativeCPPClass, Object caller, Object b);
       // Hashed name: Java_J_N_MntihwyL
-    public static native void org_jni_1zero_SampleForTests_destroy(long nativeCPPClass, Object caller);
+    public static native void org_jni_1zero_SampleForTests_destroy(long nativeCPPClass, Object caller, byte[] bytes);
       // Hashed name: Java_J_N_Ma__O3z2
     public static native Class org_jni_1zero_SampleForTests_getClass(Class arg0);
       // Hashed name: Java_J_N_MMoPH9HE
