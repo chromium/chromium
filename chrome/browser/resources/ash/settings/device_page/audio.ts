@@ -201,7 +201,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.isHfpMicSrEnabled =
         (activeInputDevice?.hfpMicSrState === AudioEffectState.kEnabled);
     this.isHfpMicSrSupported_ = activeInputDevice !== undefined &&
-        !(activeInputDevice?.hfpMicSrState === AudioEffectState.kNotSupported);
+        activeInputDevice?.hfpMicSrState !== AudioEffectState.kNotSupported;
     this.showHfpMicSr =
         (this.isHfpMicSrSupported_ &&
          loadTimeData.getBoolean('enableAudioHfpMicSRToggle'));
