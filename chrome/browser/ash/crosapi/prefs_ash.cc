@@ -299,16 +299,7 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessCodeCastDevices:
     case mojom::PrefPath::kAccessCodeCastDeviceAdditionTime:
     case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
-    case mojom::PrefPath::kIsolatedWebAppsEnabled: {
-      if (!profile_prefs_registrar_) {
-        LOG(WARNING) << "Primary profile is not yet initialized";
-        return std::nullopt;
-      }
-      std::string pref_name(GetProfilePrefNameForPref(path));
-      return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(), AshPrefSource::kNormal,
-                   pref_name};
-    }
+    case mojom::PrefPath::kIsolatedWebAppsEnabled:
     case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive:
     case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled: {
       if (!profile_prefs_registrar_) {
