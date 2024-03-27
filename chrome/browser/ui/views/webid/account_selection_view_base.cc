@@ -364,6 +364,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     account_image_view->FetchAccountImage(account, *image_fetcher_);
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
     // data.
+    std::u16string footer =
+        should_include_idp ? idp_display_data.idp_etld_plus_one : u"";
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(
             &AccountSelectionViewBase::Observer::OnAccountSelected,
@@ -373,8 +375,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
         /*secondary_view=*/nullptr,
-        /*add_vertical_label_spacing=*/true,
-        /*footer=*/idp_display_data.idp_etld_plus_one);
+        /*add_vertical_label_spacing=*/true, footer);
     row->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kLeftRightPadding)));
     row->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,

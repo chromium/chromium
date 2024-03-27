@@ -148,8 +148,12 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
     EXPECT_TRUE(icon_view);
     // The footer should contain the IDP eTLD+1. This is not passed to the
     // method but in our tests they all start with 'idp'.
-    EXPECT_TRUE(
-        GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
+    if (expect_idp) {
+      EXPECT_TRUE(
+          GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
+    } else {
+      EXPECT_FALSE(GetHoverButtonFooter(account_row));
+    }
     EXPECT_EQ(icon_view->size(),
               expect_idp ? gfx::Size(kLargerAvatarSize, kLargerAvatarSize)
                          : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
