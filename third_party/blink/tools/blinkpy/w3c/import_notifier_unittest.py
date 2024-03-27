@@ -45,7 +45,10 @@ class ImportNotifierTest(unittest.TestCase):
             MOCK_WEB_TESTS + 'VirtualTestSuites':
             b'[{"prefix": "gpu", "platforms": ["Linux", "Mac", "Win"], '
             b'"bases": ["external/wpt/foo"], "args": ["--foo"], '
-            b'"expires": "never"}]'
+            b'"expires": "never"}]',
+            # Ensure `Port.all_expectations_dict()` recognizes the main file.
+            MOCK_WEB_TESTS + 'TestExpectations':
+            b'',
         })
         self.finder = PathFinder(self.host.filesystem)
         self.host.filesystem.write_text_file(

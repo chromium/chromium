@@ -251,6 +251,18 @@ class Git:
         """Return the commit hash of HEAD."""
         return self.run(['rev-parse', 'HEAD']).strip()
 
+    def new_branch(self, name: str, stack: bool = True):
+        """Create and switch to a new branch.
+
+        Arguments:
+            stack: If true, track the current branch (if it exists). Otherwise,
+                track tip-of-tree (origin/main).
+        """
+        if stack and self.current_branch():
+            self.run(['new-branch', '--upstream-current', name])
+        else:
+            self.run(['new-branch', name])
+
     def _upstream_branch(self):
         current_branch = self.current_branch()
         return self._branch_from_ref(

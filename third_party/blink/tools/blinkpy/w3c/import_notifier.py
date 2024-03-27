@@ -78,10 +78,14 @@ class ImportNotifier:
         self._gerrit_api = gerrit_api
         self._buganizer_client = buganizer_client or BuganizerClient()
 
+        self.finder = path_finder.PathFinder(host.filesystem)
         self.default_port = host.port_factory.get()
+        self.default_port.set_option_default('additional_expectations', [
+            self.finder.path_from_web_tests('ChromeTestExpectations'),
+            self.finder.path_from_web_tests('MobileTestExpectations'),
+        ])
         self.default_port.set_option_default('test_types',
                                              typing.get_args(TestType))
-        self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(DirectoryFailures)
 
@@ -232,12 +236,8 @@ class ImportNotifier:
         Arguments:
             import_rev: A chromium/src revision pointing to the import commit.
         """
-        exp_files = {
-            *self.default_port.all_expectations_dict(),
-            self.finder.path_from_web_tests('ChromeTestExpectations'),
-            self.finder.path_from_web_tests('MobileTestExpectations'),
-        }
         import_range = CommitRange(f'{import_rev}~1', import_rev)
+        exp_files = set(self.default_port.all_expectations_dict())
         for changed_file in self.git.changed_files(import_range):
             abs_changed_file = self.finder.path_from_chromium_base(
                 changed_file)
