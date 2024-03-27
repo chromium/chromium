@@ -5,7 +5,7 @@
 #ifndef BASE_ANDROID_FEATURE_MAP_H_
 #define BASE_ANDROID_FEATURE_MAP_H_
 
-#include <string_view>
+#include <string>
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
@@ -25,7 +25,7 @@ class BASE_EXPORT FeatureMap {
   ~FeatureMap();
 
   // Map a |feature_name| to a Feature*.
-  const Feature* FindFeatureExposedToJava(std::string_view feature_name);
+  const Feature* FindFeatureExposedToJava(const std::string& feature_name);
 
  private:
   flat_map<std::string_view, const Feature*> mapping_;

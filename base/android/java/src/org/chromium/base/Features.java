@@ -5,13 +5,14 @@
 package org.chromium.base;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
  * A class that serves as a bridge to native code to check the status of feature switches.
  *
- * Each subclass represents a set of related features. Each instance of such a class correlates to a
- * single C++ Feature.
+ * <p>Each subclass represents a set of related features. Each instance of such a class correlates
+ * to a single C++ Feature.
  */
 @JNINamespace("base::android")
 public abstract class Features {
@@ -68,8 +69,12 @@ public abstract class Features {
         boolean isEnabled(long featurePointer);
 
         boolean getFieldTrialParamByFeatureAsBoolean(
-                long featurePointer, String paramName, boolean defaultValue);
+                long featurePointer,
+                @JniType("std::string") String paramName,
+                boolean defaultValue);
 
-        String getFieldTrialParamByFeatureAsString(long featurePointer, String paramName);
+        @JniType("std::string")
+        String getFieldTrialParamByFeatureAsString(
+                long featurePointer, @JniType("std::string") String paramName);
     }
 }

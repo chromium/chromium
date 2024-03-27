@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.io.File;
@@ -36,14 +37,16 @@ public abstract class CommandLine {
 
     /**
      * Return the value associated with the given switch, or null.
+     *
      * @param switchString The switch key to lookup. It should NOT start with '--' !
      * @return switch value, or null if the switch is not set or set to empty.
      */
-    public abstract String getSwitchValue(String switchString);
+    public abstract @Nullable String getSwitchValue(String switchString);
 
     /**
-     * Return the value associated with the given switch, or {@code defaultValue} if the switch
-     * was not specified.
+     * Return the value associated with the given switch, or {@code defaultValue} if the switch was
+     * not specified.
+     *
      * @param switchString The switch key to lookup. It should NOT start with '--' !
      * @param defaultValue The default value to return if the switch isn't set.
      * @return Switch value, or {@code defaultValue} if the switch is not set or set to empty.
@@ -217,16 +220,15 @@ public abstract class CommandLine {
         // Make a best-effort to ensure we make a clean (atomic) switch over from the old to
         // the new command line implementation. If another thread is modifying the command line
         // when this happens, all bets are off. (As per the native CommandLine).
-        sCommandLine.set(new NativeCommandLine(getJavaSwitchesOrNull()));
+        sCommandLine.set(new NativeCommandLine(getJavaSwitches()));
     }
 
-    @Nullable
-    public static String[] getJavaSwitchesOrNull() {
+    public static String[] getJavaSwitches() {
         CommandLine commandLine = sCommandLine.get();
         if (commandLine != null) {
             return commandLine.getCommandLineArguments();
         }
-        return null;
+        return new String[0];
     }
 
     private static void setInstance(CommandLine commandLine) {
@@ -284,11 +286,11 @@ public abstract class CommandLine {
         }
 
         @Override
-        public String getSwitchValue(String switchString) {
+        public @Nullable String getSwitchValue(String switchString) {
             // This is slightly round about, but needed for consistency with the NativeCommandLine
             // version which does not distinguish empty values from key not present.
             String value = mSwitches.get(switchString);
-            return value == null || value.isEmpty() ? null : value;
+            return TextUtils.isEmpty(value) ? null : value;
         }
 
         @Override
@@ -375,8 +377,9 @@ public abstract class CommandLine {
         }
 
         @Override
-        public String getSwitchValue(String switchString) {
-            return CommandLineJni.get().getSwitchValue(switchString);
+        public @Nullable String getSwitchValue(String switchString) {
+            String ret = CommandLineJni.get().getSwitchValue(switchString);
+            return ret.isEmpty() ? null : ret;
         }
 
         @Override
@@ -437,20 +440,23 @@ public abstract class CommandLine {
 
     @NativeMethods
     interface Natives {
-        void init(String[] args);
+        void init(@JniType("std::vector<std::string>") String[] args);
 
-        boolean hasSwitch(String switchString);
+        boolean hasSwitch(@JniType("std::string") String switchString);
 
-        String getSwitchValue(String switchString);
+        @JniType("std::string")
+        String getSwitchValue(@JniType("std::string") String switchString);
 
+        @JniType("std::vector<std::string>")
         String[] getSwitchesFlattened();
 
-        void appendSwitch(String switchString);
+        void appendSwitch(@JniType("std::string") String switchString);
 
-        void appendSwitchWithValue(String switchString, String value);
+        void appendSwitchWithValue(
+                @JniType("std::string") String switchString, @JniType("std::string") String value);
 
-        void appendSwitchesAndArguments(String[] array);
+        void appendSwitchesAndArguments(@JniType("std::vector<std::string>") String[] array);
 
-        void removeSwitch(String switchString);
+        void removeSwitch(@JniType("std::string") String switchString);
     }
 }

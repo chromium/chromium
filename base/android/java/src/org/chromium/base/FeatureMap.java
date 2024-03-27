@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.util.Collections;
@@ -165,19 +166,34 @@ public abstract class FeatureMap {
 
     @NativeMethods
     interface Natives {
-        boolean isEnabled(long featureMap, String featureName);
+        boolean isEnabled(long featureMap, @JniType("std::string") String featureName);
 
-        String getFieldTrialParamByFeature(long featureMap, String featureName, String paramName);
+        @JniType("std::string")
+        String getFieldTrialParamByFeature(
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName);
 
         int getFieldTrialParamByFeatureAsInt(
-                long featureMap, String featureName, String paramName, int defaultValue);
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName,
+                int defaultValue);
 
         double getFieldTrialParamByFeatureAsDouble(
-                long featureMap, String featureName, String paramName, double defaultValue);
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName,
+                double defaultValue);
 
         boolean getFieldTrialParamByFeatureAsBoolean(
-                long featureMap, String featureName, String paramName, boolean defaultValue);
+                long featureMap,
+                @JniType("std::string") String featureName,
+                @JniType("std::string") String paramName,
+                boolean defaultValue);
 
-        String[] getFlattedFieldTrialParamsForFeature(long featureMap, String featureName);
+        @JniType("std::vector<std::string>")
+        String[] getFlattedFieldTrialParamsForFeature(
+                long featureMap, @JniType("std::string") String featureName);
     }
 }

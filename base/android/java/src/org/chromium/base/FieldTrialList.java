@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /** Helper to get field trial information. */
@@ -57,14 +58,19 @@ public class FieldTrialList {
 
     @NativeMethods
     interface Natives {
-        String findFullName(String trialName);
+        @JniType("std::string")
+        String findFullName(@JniType("std::string") String trialName);
 
-        boolean trialExists(String trialName);
+        boolean trialExists(@JniType("std::string") String trialName);
 
-        String getVariationParameter(String trialName, String parameterKey);
+        @JniType("std::string")
+        String getVariationParameter(
+                @JniType("std::string") String trialName,
+                @JniType("std::string") String parameterKey);
 
         void logActiveTrials();
 
-        boolean createFieldTrial(String trialName, String groupName);
+        boolean createFieldTrial(
+                @JniType("std::string") String trialName, @JniType("std::string") String groupName);
     }
 }

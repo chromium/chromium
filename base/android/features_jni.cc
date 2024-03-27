@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/base_jni/Features_jni.h"
-#include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -18,24 +17,21 @@ jboolean JNI_Features_IsEnabled(JNIEnv* env, jlong native_feature_pointer) {
 jboolean JNI_Features_GetFieldTrialParamByFeatureAsBoolean(
     JNIEnv* env,
     jlong native_feature_pointer,
-    const JavaParamRef<jstring>& jparam_name,
+    std::string& param_name,
     const jboolean jdefault_value) {
   const base::Feature& feature =
       *reinterpret_cast<base::Feature*>(native_feature_pointer);
-  const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   return base::GetFieldTrialParamByFeatureAsBool(feature, param_name,
                                                  jdefault_value);
 }
 
-ScopedJavaLocalRef<jstring> JNI_Features_GetFieldTrialParamByFeatureAsString(
+std::string JNI_Features_GetFieldTrialParamByFeatureAsString(
     JNIEnv* env,
     jlong native_feature_pointer,
-    const JavaParamRef<jstring>& jparam_name) {
+    std::string& param_name) {
   const base::Feature& feature =
       *reinterpret_cast<base::Feature*>(native_feature_pointer);
-  const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
-  return base::android::ConvertUTF8ToJavaString(
-      env, base::GetFieldTrialParamValueByFeature(feature, param_name));
+  return base::GetFieldTrialParamValueByFeature(feature, param_name);
 }
 
 }  // namespace android
