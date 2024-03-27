@@ -54,7 +54,7 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
 }
 
 void DefaultBrowserPromptManager::CloseAllInfoBars() {
-  TabStripModelObserver::StopObservingAll(this);
+  browser_tab_strip_tracker_.reset();
 
   for (const auto& infobars_entry : infobars_) {
     infobars_entry.second->owner()->RemoveObserver(this);

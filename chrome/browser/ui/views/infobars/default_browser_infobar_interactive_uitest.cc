@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/accelerator_utils.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
@@ -24,8 +25,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/web_contents.h"
@@ -169,4 +172,40 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 
   histogram_tester.ExpectTotalCount(
       "DefaultBrowser.InfoBar.TimesShownBeforeAccept", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       DoesNotShowDismissedPromptOnNewWindows) {
+  // Regression test for a bug where the DefaultBrowserPromptManager didn't
+  // stop subscribing to TabStripModelObserver updates when new windows were
+  // created.
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabMovedToNewWindowId);
+  ShowPromptForTesting();
+  RunTestSequence(
+      // Open two tabs
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      // Dismiss prompt on one tab
+      NameDismissButton(), PressButton(kInfoBarDismissButton), FlushEvents(),
+      // Wait for hide
+      WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      // Move tab to new window
+      InstrumentNextTab(kTabMovedToNewWindowId, AnyBrowser()),
+      Do([&]() { chrome::MoveTabsToNewWindow(browser(), {1}); }),
+      InAnyContext(WaitForWebContentsReady(kTabMovedToNewWindowId)),
+      // Since the infobar isn't rendered synchronously, but the infobar is
+      // created inside the manager, check the size of infobars for the moved
+      // WebContents.
+      InSameContext(CheckElement(
+          kTabMovedToNewWindowId,
+          [](ui::TrackedElement* el) {
+            auto* const manager =
+                infobars::ContentInfoBarManager::FromWebContents(
+                    el->AsA<TrackedElementWebContents>()
+                        ->owner()
+                        ->web_contents());
+            return manager->infobars().size();
+          },
+          0U)));
 }
