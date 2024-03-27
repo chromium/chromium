@@ -605,6 +605,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     // start.
     tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
 
+    [_metricsMediator notifyCredentialProviderWasUsed:tracker];
+
     [_spotlightManagers
         addObject:[SpotlightManager
                       spotlightManagerWithBrowserState:chromeBrowserState]];

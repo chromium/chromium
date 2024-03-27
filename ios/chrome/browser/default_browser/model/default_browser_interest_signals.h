@@ -20,7 +20,7 @@ void NotifyStartWithWidget();
 void NotifyStartWithURL();
 
 // Records all necessary information for Credential Extension use.
-void NotifyCredentialExtensionUsed();
+void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker);
 
 // Records all necessary information when autofill suggestions were shown to the
 // user. Except passwords.

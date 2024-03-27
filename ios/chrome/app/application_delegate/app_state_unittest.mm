@@ -454,6 +454,9 @@ TEST_F(AppStateTest, ApplicationWillEnterForeground) {
       std::make_unique<TestBrowser>(GetBrowserState());
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
+  [[metricsMediator expect]
+      notifyCredentialProviderWasUsed:static_cast<feature_engagement::Tracker*>(
+                                          [OCMArg anyPointer])];
   [[memoryHelper expect] resetForegroundMemoryWarningCount];
   [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
 

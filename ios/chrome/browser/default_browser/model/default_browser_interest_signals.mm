@@ -23,7 +23,7 @@ void NotifyStartWithURL() {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
-void NotifyCredentialExtensionUsed() {
+void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker) {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }

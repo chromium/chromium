@@ -277,12 +277,6 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
     if (count != 0) {
       base::UmaHistogramCounts1000(SysNSStringToUTF8(keyMetric[key]), count);
       [shared_defaults setInteger:0 forKey:key];
-      if ([key isEqualToString:app_group::
-                                   kCredentialExtensionPasswordUseCount] ||
-          [key isEqualToString:app_group::
-                                   kCredentialExtensionQuickPasswordUseCount]) {
-        default_browser::NotifyCredentialExtensionUsed();
-      }
     }
   }
 
@@ -358,6 +352,9 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 @end
 
 @implementation MetricsMediator
+
+// Indicates whether credential extension was used while chrome was inactive.
+BOOL _credentialExtensionWasUsed = NO;
 
 #pragma mark - Public methods.
 
@@ -631,6 +628,15 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
 }
 
+- (void)notifyCredentialProviderWasUsed:(feature_engagement::Tracker*)tracker {
+  if (_credentialExtensionWasUsed) {
+    default_browser::NotifyCredentialExtensionUsed(tracker);
+
+    // Reset to avoid duplicate notifications.
+    _credentialExtensionWasUsed = NO;
+  }
+}
+
 - (BOOL)areMetricsEnabled {
   if (metrics::IsMetricsReportingForceEnabled()) {
     return YES;
@@ -685,6 +691,10 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     app_group::main_app::DisableMetrics();
   }
 
+  // Save CPE use information before it gets reset in RecordWidgetUsage until we
+  // are ready to log it into feture engagement tracker.
+  [self saveCredentialExtensionWasUsed];
+
   // Histograms fired in extensions that need to be re-fired from the main app.
   const metrics_mediator::HistogramNameCountPair histogramsFromExtension[] = {
       {
@@ -738,6 +748,18 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
     base::UmaHistogramMemoryLargeMB(
         "Memory.Browser.MemoryFootprint.OnBackground", footprint_mb);
+  }
+}
+
+- (void)saveCredentialExtensionWasUsed {
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+
+  int password_use_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionPasswordUseCount];
+  int quick_password_use_count = [shared_defaults
+      integerForKey:app_group::kCredentialExtensionQuickPasswordUseCount];
+  if (password_use_count != 0 || quick_password_use_count != 0) {
+    _credentialExtensionWasUsed = YES;
   }
 }
 

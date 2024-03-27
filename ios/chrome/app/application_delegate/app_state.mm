@@ -376,13 +376,18 @@ void FlushCookieStoreOnIOThread(
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  // TODO(crbug.com/325596368): Do this for each browser state.
-  if (self.mainBrowserState) {
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            chromeBrowserState);
     // Send the "Chrome Opened" event to the feature_engagement::Tracker on a
     // warm start.
-    feature_engagement::TrackerFactory::GetForBrowserState(
-        self.mainBrowserState)
-        ->NotifyEvent(feature_engagement::events::kChromeOpened);
+    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
+    [metricsMediator notifyCredentialProviderWasUsed:tracker];
   }
 
   base::RecordAction(base::UserMetricsAction("MobileWillEnterForeground"));
