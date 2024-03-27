@@ -564,6 +564,14 @@ interesting attributes supported today.
   and processing an urgent message. At present, this attribute only affects
   channel associated messages in the renderer process.
 
+* **`[UnlimitedSize]`**
+  The `UnlimitedSize` attribute is used to tag methods that are expected
+  to have large payload size exceeding Mojo's predefined threshold.
+  Without this tag, those methods would trigger a `DumpWithoutCrashing`
+  call. Instead of using `UnlimitedSize`, consider refactoring to avoid
+  such message contents, for example by batching calls or leveraging
+  shared memory where feasible.
+
 * **`[EstimateSize]`**:
   The `EstimateSize` attribute can be used to tag methods with large
   payload sizes that tend to cause frequent reallocations during
