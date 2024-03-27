@@ -121,6 +121,24 @@ id<GREYMatcher> TappableBookmarkNodeWithLabel(NSString* label) {
                     nil);
 }
 
+id<GREYMatcher> TappableBookmarkNodeWithLabel(
+    NSString* label,
+    chrome_test_util::KindOfTest kindOfTest) {
+  NSString* accessibilityLabel;
+  switch (kindOfTest) {
+    case chrome_test_util::KindOfTest::kSignedOut:
+    case chrome_test_util::KindOfTest::kAccount:
+      accessibilityLabel = label;
+      break;
+    case chrome_test_util::KindOfTest::kLocal:
+      accessibilityLabel =
+          [NSString stringWithFormat:@"%@. Only on this device.", label];
+      break;
+  }
+  return grey_allOf(grey_accessibilityLabel(accessibilityLabel),
+                    grey_sufficientlyVisible(), nil);
+}
+
 id<GREYMatcher> SearchIconButton() {
   return grey_accessibilityID(kBookmarksHomeSearchBarIdentifier);
 }
@@ -147,6 +165,21 @@ id<GREYMatcher> SearchIconButton() {
   // Assert the menu is gone.
   [[EarlGrey selectElementWithMatcher:BookmarksDestinationButton()]
       assertWithMatcher:grey_nil()];
+}
+
+- (void)openMobileBookmarks:(chrome_test_util::KindOfTest)kindOfTest {
+  NSString* label;
+  switch (kindOfTest) {
+    case chrome_test_util::KindOfTest::kSignedOut:
+    case chrome_test_util::KindOfTest::kAccount:
+      label = @"Mobile Bookmarks";
+      break;
+    case chrome_test_util::KindOfTest::kLocal:
+      label = @"Mobile Bookmarks. Only on this device.";
+      break;
+  }
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
+      performAction:grey_tap()];
 }
 
 - (void)openMobileBookmarks {

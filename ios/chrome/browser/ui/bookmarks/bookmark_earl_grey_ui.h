@@ -69,8 +69,12 @@ id<GREYMatcher> ContextBarCenterButtonWithLabel(NSString* label);
 // Matcher for context bar trailing button.
 id<GREYMatcher> ContextBarTrailingButtonWithLabel(NSString* label);
 
-// Matcher for tappable bookmark node.
+// Matcher for tappable bookmark node. The second method must be used if the
+// folder appear in both models.
 id<GREYMatcher> TappableBookmarkNodeWithLabel(NSString* label);
+id<GREYMatcher> TappableBookmarkNodeWithLabel(
+    NSString* label,
+    chrome_test_util::KindOfTest kindOfTest);
 
 // Matcher for the search button.
 id<GREYMatcher> SearchIconButton();
@@ -89,8 +93,10 @@ id<GREYMatcher> SearchIconButton();
 // Sets and Leaves the root matcher to the given window.
 - (void)openBookmarksInWindowWithNumber:(int)windowNumber;
 
-// Selects MobileBookmarks to open.
+// Selects MobileBookmarks to open. The second method is used in case of
+// ambiguity.
 - (void)openMobileBookmarks;
+- (void)openMobileBookmarks:(chrome_test_util::KindOfTest)kindOfTest;
 
 // Adds a bookmark for the current tab. Must be called when on a tab.
 - (void)starCurrentTab;

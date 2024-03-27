@@ -700,21 +700,41 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
 // Verify Move functionality on single folder through long press.
 - (void)testMoveFunctionalityOnSingleSignedOut {
-  [self util_testMoveFunctionalityOnSingleFolder:KindOfTest::kSignedOut];
+  [self
+      util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kSignedOut
+                                                toModel:KindOfTest::kSignedOut];
 }
 - (void)testMoveFunctionalityOnSingleFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [self util_testMoveFunctionalityOnSingleFolder:KindOfTest::kLocal];
+  [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kLocal
+                                                  toModel:KindOfTest::kLocal];
 }
 - (void)testMoveFunctionalityOnSingleFolderAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [self util_testMoveFunctionalityOnSingleFolder:KindOfTest::kAccount];
+  [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kAccount
+                                                  toModel:KindOfTest::kAccount];
 }
-- (void)util_testMoveFunctionalityOnSingleFolder:(KindOfTest)kindOfTest {
+- (void)testMoveFunctionalityOnSingleFolderLocalToAccount {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kLocal
+                                                  toModel:KindOfTest::kAccount];
+}
+- (void)testMoveFunctionalityOnSingleFolderAccountToLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kAccount
+                                                  toModel:KindOfTest::kLocal];
+}
+- (void)util_testMoveFunctionalityOnSingleFolderFromModel:(KindOfTest)sourceKind
+                                                  toModel:(KindOfTest)
+                                                              destinationKind {
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
+      setupStandardBookmarksInStorage:kindOfTestToStorageType(sourceKind)];
+  if (sourceKind != destinationKind) {
+    [BookmarkEarlGrey setupStandardBookmarksInStorage:kindOfTestToStorageType(
+                                                          destinationKind)];
+  }
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:sourceKind];
 
   // Invoke Move through long press.
   [[EarlGrey
@@ -728,7 +748,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   // Choose to move the bookmark folder - "Folder 1" into a new folder.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     [self getCreateNewFolderCellIdentifier:kindOfTest])]
+                     [self getCreateNewFolderCellIdentifier:destinationKind])]
       performAction:grey_tap()];
 
   // Enter custom new folder name.
@@ -738,7 +758,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   // Verify current parent folder for "Title For New Folder" folder is "Mobile
   // Bookmarks" folder.
   [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
-                                            kindOfTest:kindOfTest];
+                                            kindOfTest:destinationKind];
 
   // Choose new parent folder for "Title For New Folder" folder.
   [BookmarkEarlGreyUI openFolderPicker];
@@ -752,11 +772,11 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   // Verify Folder 2 only has one item.
   [BookmarkEarlGrey verifyChildCount:1
                     inFolderWithName:@"Folder 2"
-                           inStorage:kindOfTestToStorageType(kindOfTest)];
+                           inStorage:kindOfTestToStorageType(destinationKind)];
 
   // Select Folder 2 as new parent folder for "Title For New Folder".
-  [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          @"Folder 2", destinationKind)]
       performAction:grey_tap()];
 
   // Verify folder picker is dismissed and folder creator is now visible.
@@ -771,7 +791,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Verify picked parent folder is Folder 2.
   [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Folder 2"
-                                            kindOfTest:kindOfTest];
+                                            kindOfTest:destinationKind];
   // Tap Done to close bookmark move flow.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
       performAction:grey_tap()];
@@ -782,12 +802,19 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   // Verify new folder "Title For New Folder" has been created under Folder 2.
   [BookmarkEarlGrey verifyChildCount:2
                     inFolderWithName:@"Folder 2"
-                           inStorage:kindOfTestToStorageType(kindOfTest)];
+                           inStorage:kindOfTestToStorageType(destinationKind)];
 
   // Verify new folder "Title For New Folder" has one bookmark folder.
   [BookmarkEarlGrey verifyChildCount:1
                     inFolderWithName:@"Title For New Folder"
-                           inStorage:kindOfTestToStorageType(kindOfTest)];
+                           inStorage:kindOfTestToStorageType(destinationKind)];
+
+  if (destinationKind != sourceKind) {
+    [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
+        performAction:grey_tap()];
+
+    [BookmarkEarlGreyUI openMobileBookmarks:destinationKind];
+  }
 
   // Drill down to where "Folder 1.1" has been moved and assert it's presence.
   [[EarlGrey
