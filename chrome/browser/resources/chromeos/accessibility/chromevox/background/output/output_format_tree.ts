@@ -7,24 +7,15 @@
  */
 
 export class OutputFormatTree {
-  /** @private */
-  constructor() {
-    /** @public {string} */
-    this.value = '';
-    /** @public {OutputFormatTree|undefined} */
-    this.firstChild;
-    /** @public {OutputFormatTree|undefined} */
-    this.nextSibling;
-    /** @public {OutputFormatTree|undefined} */
-    this.parent;
-  }
+  value = '';
+  firstChild?: OutputFormatTree;
+  nextSibling?: OutputFormatTree;
+  parent?: OutputFormatTree;
 
-  /**
-   * @param {string|!OutputFormatTree} format
-   * @return {!Array<!OutputFormatTree>}
-   */
-  static parseFormat(format) {
-    let formatTrees = [];
+  private constructor() {}
+
+  static parseFormat(format: string | OutputFormatTree): OutputFormatTree[] {
+    let formatTrees: OutputFormatTree[] = [];
     // Hacky way to support args.
     if (typeof (format) === 'string') {
       format = format.replace(/([,:])\s+/gm, '$1');
@@ -39,15 +30,10 @@ export class OutputFormatTree {
     return formatTrees;
   }
 
-  /**
-   * Parses the token containing a custom function and returns a tree.
-   * @param {string} inputStr
-   * @return {!OutputFormatTree}
-   * @private
-   */
-  static buildFromString_(inputStr) {
+  /** Parses the token containing a custom function and returns a tree. */
+  private static buildFromString_(inputStr: string): OutputFormatTree {
     const root = new OutputFormatTree();
-    let currentNode = root;
+    let currentNode: OutputFormatTree = root;
     let index = 0;
     let braceNesting = 0;
     while (index < inputStr.length) {
@@ -56,7 +42,8 @@ export class OutputFormatTree {
         currentNode.firstChild.parent = currentNode;
         currentNode = currentNode.firstChild;
       } else if (inputStr[index] === ')') {
-        currentNode = currentNode.parent;
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        currentNode = currentNode.parent!;
       } else if (inputStr[index] === '{') {
         braceNesting++;
         currentNode.value += inputStr[index];
