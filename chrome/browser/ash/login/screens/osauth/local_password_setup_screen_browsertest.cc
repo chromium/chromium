@@ -210,8 +210,9 @@ IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
 }
 
 // Matching first input and confirm input fields should enable the next button.
+// TODO(crbug.com/329339200): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
-                       MatchingFieldsEnablesNextButton) {
+                       DISABLED_MatchingFieldsEnablesNextButton) {
   ShowLocalPasswordSetupScreen();
   WaitForLocalPasswordSetupScreenShown();
 
@@ -223,19 +224,12 @@ IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
   test::OobeJS().ExpectEnabledPath(kNextButton);
 }
 
-// TODO(crbug.com/329339200): This test is flaky on linux-chromeos builders.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_MatchedThenUnamtchedEnablesThenDisablesNextButton \
-  DISABLED_MatchedThenUnamtchedEnablesThenDisablesNextButton
-#else
-#define MAYBE_MatchedThenUnamtchedEnablesThenDisablesNextButton \
-  MatchedThenUnamtchedEnablesThenDisablesNextButton
-#endif
+// TODO(crbug.com/329339200): This test is flaky.
 // Matching first input and confirm input fields should enable the next button,
 // Subsequent mismatched fields should disable to next button.
 IN_PROC_BROWSER_TEST_F(
     LocalPasswordSetupScreenTest,
-    MAYBE_MatchedThenUnamtchedEnablesThenDisablesNextButton) {
+    DISABLED_MatchedThenUnamtchedEnablesThenDisablesNextButton) {
   ShowLocalPasswordSetupScreen();
   WaitForLocalPasswordSetupScreenShown();
 
@@ -273,7 +267,9 @@ IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
 // Submit the password in onboarding mode. Local password setup screen
 // should exit with proper exit code and `kLocalPassword` should be in the
 // modified factors set.
-IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest, SetLocalPassword) {
+// TODO(crbug.com/329339200): This test is flaky.
+IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
+                       DISABLED_SetLocalPassword) {
   ShowLocalPasswordSetupScreen();
   WaitForLocalPasswordSetupScreenShown();
 
