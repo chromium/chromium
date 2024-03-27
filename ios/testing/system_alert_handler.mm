@@ -61,6 +61,7 @@ NSDictionary<NSString*, NSArray<NSString*>*>* TextToButtonsOfKnownSystemAlerts(
       @"Unable to activate Touch ID on this iPhone." : @[ @"OK" ],
       @"Like to Access the Microphone" : @[ @"OK" ],
       @"Edit Home Screen" : @[ @"Dismiss" ],
+      @"Apple ID Verification" : @[ @"Not Now" ],
     };
   });
   return text_to_buttons;
