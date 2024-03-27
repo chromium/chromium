@@ -118,16 +118,16 @@ export const CrRadioButtonMixinLit =
           button.focus();
         }
 
-        getPaperRipple(): CrRippleElement {
+        getRipple(): CrRippleElement {
           assertNotReached();
         }
 
         private onFocus_() {
-          this.getPaperRipple().showAndHoldDown();
+          this.getRipple().showAndHoldDown();
         }
 
         private hideRipple_() {
-          this.getPaperRipple().clear();
+          this.getRipple().clear();
         }
 
         /**
@@ -160,5 +160,5 @@ export interface CrRadioButtonMixinLitInterface {
   getAriaDisabled(): string;
   getAriaChecked(): string;
   onInputKeydown(e: KeyboardEvent): void;
-  getPaperRipple(): CrRippleElement;
+  getRipple(): CrRippleElement;
 }

@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
 
 import type {CrCardRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import type {PaperRippleElement} from '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 // clang-format on
 
@@ -74,7 +73,7 @@ suite('cr-card-radio-button', function() {
 
   test('Ripple', function() {
     function getRipple() {
-      return radioButton.shadowRoot!.querySelector<PaperRippleElement>('#ink');
+      return radioButton.shadowRoot!.querySelector('cr-ripple');
     }
 
     assertFalse(!!getRipple());

@@ -113,6 +113,7 @@ suite('SearchSettingsTest', function() {
            <iron-icon>${text}</iron-icon>
            <iron-list>${text}</iron-list>
            <paper-ripple>${text}</paper-ripple>
+           <cr-ripple>${text}</cr-ripple>
            <paper-spinner-lite>${text}</paper-spinner-lite>
            <slot>${text}</slot>
            <content>${text}</content>

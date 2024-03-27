@@ -37,11 +37,6 @@ export class CrCardRadioButtonElement extends CrCardRadioButtonElementBase {
     return getHtml.bind(this)();
   }
 
-  // Overridden from CrRadioButtonMixinLit
-  override getPaperRipple() {
-    return this.getRipple();
-  }
-
   // Overridden from CrRippleMixin
   override createRipple() {
     this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');

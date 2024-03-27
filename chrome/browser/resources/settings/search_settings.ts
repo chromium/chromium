@@ -39,6 +39,7 @@ const IGNORED_ELEMENTS: Set<string> = new Set([
   'CR-ACTION-MENU',
   'CR-DIALOG',
   'CR-ICON-BUTTON',
+  'CR-RIPPLE',
   'CR-SLIDER',
   'DIALOG',
   'IMG',
