@@ -26,7 +26,8 @@ enum class BruschettaInstallResult {
   kInstallPflashError = 11,
   kFirmwareDlcInstallError = 12,
   kVmAlreadyExists = 13,
-  kMaxValue = kVmAlreadyExists,
+  kClearVekFailed = 14,
+  kMaxValue = kClearVekFailed,
 };
 
 // Returns the string name of the BruschettaResult.
@@ -46,6 +47,7 @@ class BruschettaInstaller {
     kInstallPflash,
     kStartVm,
     kLaunchTerminal,
+    kClearVek,
   };
 
   class Observer {

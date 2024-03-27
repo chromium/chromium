@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_download.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/prefs/pref_service.h"
 
@@ -35,6 +37,11 @@ namespace bruschetta {
 extern const char kInstallResultMetric[] = "Bruschetta.InstallResult";
 
 namespace {
+
+// The vTPM EK key label.
+// Should be synced with the value in the chromiumos repo:
+// src/platform2/vtpm/backends/attested_virtual_endorsement.cc
+constexpr char kVtpmEkLabel[] = "vtpm-ek";
 
 std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     base::FilePath boot_disk_path,
@@ -364,7 +371,7 @@ void BruschettaInstallerImpl::InstallPflash() {
 
   if (!fds_->pflash.has_value()) {
     VLOG(2) << "No pflash file expected, skipping to StartVm";
-    StartVm();
+    ClearVek();
     return;
   }
 
@@ -399,6 +406,40 @@ void BruschettaInstallerImpl::OnInstallPflash(
     } else {
       LOG(ERROR) << "Install pflash failed, no response";
     }
+    return;
+  }
+
+  ClearVek();
+}
+
+void BruschettaInstallerImpl::ClearVek() {
+  VLOG(2) << "Clearing VEK";
+  NotifyObserver(State::kClearVek);
+
+  attestation::DeleteKeysRequest request;
+  request.set_username("");
+  request.set_key_label_match(kVtpmEkLabel);
+  request.set_match_behavior(
+      attestation::DeleteKeysRequest::MATCH_BEHAVIOR_EXACT);
+
+  auto* client = ash::AttestationClient::Get();
+  DCHECK(client) << "This code requires a AttestationClient";
+
+  client->DeleteKeys(request,
+                     base::BindOnce(&BruschettaInstallerImpl::OnClearVek,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BruschettaInstallerImpl::OnClearVek(
+    const attestation::DeleteKeysReply& result) {
+  if (MaybeClose()) {
+    return;
+  }
+
+  if (result.status() != attestation::STATUS_SUCCESS) {
+    install_running_ = false;
+    Error(BruschettaInstallResult::kClearVekFailed);
+    LOG(ERROR) << "Delete vEK failed: " << result.status();
     return;
   }
 

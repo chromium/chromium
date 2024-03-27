@@ -2599,6 +2599,7 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="kInstallPflashError"/>
   <int value="12" label="kFirmwareDlcInstallError"/>
   <int value="13" label="kVmAlreadyExists"/>
+  <int value="14" label="kClearVekFailed"/>
 </enum>
 
 <enum name="BruschettaResult">

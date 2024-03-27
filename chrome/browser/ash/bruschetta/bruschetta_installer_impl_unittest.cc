@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -45,7 +46,7 @@ using testing::InvokeWithoutArgs;
 using testing::Sequence;
 
 // Total number of stopping points in ::ExpectStopOnStepN
-constexpr int kMaxSteps = 24;
+constexpr int kMaxSteps = 26;
 
 // Total number of stopping points in ::ExpectStopOnStepN when we don't install
 // a pflash file.
@@ -124,6 +125,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   }
 
   void SetUp() override {
+    ash::AttestationClient::InitializeFake();
+
     BuildPrefValues();
 
     ASSERT_TRUE(base::CreateDirectory(
@@ -153,6 +156,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   void TearDown() override {
     CheckVmRegistration();
     ash::disks::DiskMountManager::Shutdown();
+    ash::AttestationClient::Shutdown();
   }
 
   void CheckVmRegistration() {
@@ -232,6 +236,14 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       } else {
         FakeConciergeClient()->set_install_pflash_response(std::nullopt);
       }
+    };
+  }
+
+  auto ClearVekCallback(bool success) {
+    return [success]() {
+      ash::AttestationClient::Get()->GetTestInterface()->set_delete_keys_status(
+          success ? attestation::STATUS_SUCCESS
+                  : attestation::STATUS_INVALID_PARAMETER);
     };
   }
 
@@ -501,6 +513,29 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
         expectation.WillOnce(InvokeWithoutArgs(InstallPflashCallback(true)));
       }
+    }
+
+    // Clear vEK step
+    {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kClearVekFailed;
+      }
+      auto& expectation =
+          EXPECT_CALL(observer_,
+                      StateChanged(BruschettaInstaller::State::kClearVek))
+              .Times(1)
+              .InSequence(seq);
+
+      if (!n--) {
+        expectation.WillOnce(CancelCallback());
+        return false;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, ClearVekCallback(false));
+        return true;
+      }
+
+      expectation.WillOnce(InvokeWithoutArgs(ClearVekCallback(true)));
     }
 
     // Start VM step

@@ -349,6 +349,7 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
         case InstallerState::kInstallPflash:
         case InstallerState::kStartVm:
         case InstallerState::kLaunchTerminal:
+        case InstallerState::kClearVek:
           return l10n_util::GetStringUTF16(
               IDS_BRUSCHETTA_INSTALLER_STARTING_VM_MESSAGE);
       }

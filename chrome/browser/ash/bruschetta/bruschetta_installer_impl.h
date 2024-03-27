@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "url/gurl.h"
@@ -72,6 +73,8 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void InstallPflash();
   void OnInstallPflash(
       std::optional<vm_tools::concierge::InstallPflashResponse> result);
+  void ClearVek();
+  void OnClearVek(const attestation::DeleteKeysReply& result);
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  std::optional<vm_tools::concierge::StartVmResponse> result);
