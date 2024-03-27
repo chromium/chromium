@@ -27,7 +27,8 @@ namespace {
 std::pair<std::unique_ptr<views::View>, HoverListView*> CreatePasskeyList(
     const std::optional<std::u16string>& title,
     const std::vector<int>& passkey_indices,
-    const base::span<const AuthenticatorRequestDialogModel::Mechanism> mechs) {
+    const base::span<const AuthenticatorRequestDialogController::Mechanism>
+        mechs) {
   auto container = std::make_unique<views::BoxLayoutView>();
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   container->SetBetweenChildSpacing(

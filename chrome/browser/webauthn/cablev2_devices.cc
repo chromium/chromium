@@ -298,7 +298,7 @@ KnownDevices::~KnownDevices() = default;
 std::unique_ptr<KnownDevices> KnownDevices::FromProfile(Profile* profile) {
   if (profile->IsOffTheRecord()) {
     // For Incognito windows we collect the devices from the parent profile.
-    // The `AuthenticatorRequestDialogModel` will notice that it's an OTR
+    // The `AuthenticatorRequestDialogController` will notice that it's an OTR
     // profile and display a confirmation interstitial for makeCredential calls.
     profile = profile->GetOriginalProfile();
   }

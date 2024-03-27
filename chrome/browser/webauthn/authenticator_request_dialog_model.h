@@ -59,7 +59,7 @@ struct VectorIcon;
 // Ultimately, this will become an observer of the AuthenticatorRequest, and
 // contain the logic to figure out which steps the user needs to take, in which
 // order, to complete the authentication flow.
-class AuthenticatorRequestDialogModel
+class AuthenticatorRequestDialogController
     : public webauthn::PasskeyModel::Observer {
  public:
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
@@ -190,7 +190,8 @@ class AuthenticatorRequestDialogModel
     virtual void OnStartOver() {}
 
     // Called just before the model is destructed.
-    virtual void OnModelDestroyed(AuthenticatorRequestDialogModel* model) = 0;
+    virtual void OnModelDestroyed(
+        AuthenticatorRequestDialogController* model) = 0;
 
     // Called when the UX flow has navigated to a different step, so the UI
     // should update.
@@ -306,15 +307,15 @@ class AuthenticatorRequestDialogModel
     kWrongPin,
   };
 
-  explicit AuthenticatorRequestDialogModel(
+  explicit AuthenticatorRequestDialogController(
       content::RenderFrameHost* render_frame_host);
 
-  AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
-      delete;
-  AuthenticatorRequestDialogModel& operator=(
-      const AuthenticatorRequestDialogModel&) = delete;
+  AuthenticatorRequestDialogController(
+      const AuthenticatorRequestDialogController&) = delete;
+  AuthenticatorRequestDialogController& operator=(
+      const AuthenticatorRequestDialogController&) = delete;
 
-  ~AuthenticatorRequestDialogModel() override;
+  ~AuthenticatorRequestDialogController() override;
 
   Step current_step() const { return current_step_; }
 
@@ -774,10 +775,10 @@ class AuthenticatorRequestDialogModel
   void set_local_biometrics_override_for_testing(bool);
 #endif
 
-  base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
+  base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AuthenticatorRequestDialogModelTest,
+  FRIEND_TEST_ALL_PREFIXES(AuthenticatorRequestDialogControllerTest,
                            DeduplicateAccounts);
 
   // Contains the state that will be reset when calling StartOver(). StartOver()
@@ -1059,7 +1060,8 @@ class AuthenticatorRequestDialogModel
                           webauthn::PasskeyModel::Observer>
       passkey_model_observation_{this};
 
-  base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
+  base::WeakPtrFactory<AuthenticatorRequestDialogController> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_MODEL_H_

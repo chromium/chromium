@@ -27,7 +27,7 @@
 namespace {
 
 class WebAuthFocusTest : public InProcessBrowserTest,
-                         public AuthenticatorRequestDialogModel::Observer {
+                         public AuthenticatorRequestDialogController::Observer {
  protected:
   WebAuthFocusTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
@@ -49,25 +49,27 @@ class WebAuthFocusTest : public InProcessBrowserTest,
 
   bool permission_requested() { return permission_requested_; }
 
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  raw_ptr<AuthenticatorRequestDialogController> dialog_model_;
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  // AuthenticatorRequestDialogModel::Observer:
+  // AuthenticatorRequestDialogController::Observer:
   void OnStepTransition() override {
     if (dialog_model_->current_step() !=
-        AuthenticatorRequestDialogModel::Step::kAttestationPermissionRequest)
+        AuthenticatorRequestDialogController::Step::
+            kAttestationPermissionRequest) {
       return;
+    }
 
     // Simulate accepting the permission request.
     dialog_model_->OnAttestationPermissionResponse(true);
     permission_requested_ = true;
   }
 
-  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {}
+  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override {}
 
   net::EmbeddedTestServer https_server_;
 

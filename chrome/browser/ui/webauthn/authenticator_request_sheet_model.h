@@ -14,7 +14,7 @@ struct VectorIcon;
 
 // The basic interface of models backing a given UI sheet shown in the WebAuthn
 // request dialog; where each sheet, in turn, corresponds to one of `steps`
-// defined by AuthenticatorRequestDialogModel.
+// defined by AuthenticatorRequestDialogController.
 //
 // For each step, the model implementation encapsulates:
 //

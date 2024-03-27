@@ -121,7 +121,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    dialog_model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    dialog_model_ = std::make_unique<AuthenticatorRequestDialogController>(
         /*web_contents=*/nullptr);
     dialog_model_->set_relying_party_id("example.com");
 
@@ -130,7 +130,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
           device::FidoRequestHandlerBase::TransportAvailabilityInfo(),
           /*is_conditional_mediation=*/false);
       dialog_model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTimedOut);
+          AuthenticatorRequestDialogController::Step::kTimedOut);
       content::WebContents* const web_contents =
           browser()->tab_strip_model()->GetActiveWebContents();
       AuthenticatorRequestDialogView* dialog =
@@ -175,14 +175,14 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
                   ->model())
               ->dialog_model()
               ->current_step(),
-          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+          AuthenticatorRequestDialogController::Step::kMechanismSelection);
       EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
                       ->model()
                       ->IsManageDevicesButtonVisible());
     }
   }
 
-  std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  std::unique_ptr<AuthenticatorRequestDialogController> dialog_model_;
 
  protected:
 #if BUILDFLAG(IS_WIN)

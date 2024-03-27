@@ -16,15 +16,15 @@
 
 namespace {
 
-using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
+using Mechanism = AuthenticatorRequestDialogController::Mechanism;
 using MechanismVisibility =
     AuthenticatorGenericErrorSheetModel::OtherMechanismButtonVisibility;
 
 class AuthenticatorSheetBaseTest : public testing::Test {};
 
-class MockDialogModel : public AuthenticatorRequestDialogModel {
+class MockDialogModel : public AuthenticatorRequestDialogController {
  public:
-  MockDialogModel() : AuthenticatorRequestDialogModel(nullptr) {}
+  MockDialogModel() : AuthenticatorRequestDialogController(nullptr) {}
 
   MOCK_METHOD(base::span<const Mechanism>, mechanisms, (), (const));
   MOCK_METHOD(std::optional<std::u16string>,
@@ -36,7 +36,7 @@ class MockDialogModel : public AuthenticatorRequestDialogModel {
 class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
  public:
   TestAuthenticatorSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       OtherMechanismButtonVisibility other_mechanism_button_visibility)
       : AuthenticatorSheetModelBase(dialog_model,
                                     other_mechanism_button_visibility) {

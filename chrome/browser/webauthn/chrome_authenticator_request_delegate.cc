@@ -109,7 +109,7 @@
 #include "ui/aura/window.h"
 #endif
 
-using AccountState = AuthenticatorRequestDialogModel::AccountState;
+using AccountState = AuthenticatorRequestDialogController::AccountState;
 
 namespace {
 
@@ -613,7 +613,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
-      dialog_model_(std::make_unique<AuthenticatorRequestDialogModel>(
+      dialog_model_(std::make_unique<AuthenticatorRequestDialogController>(
           GetRenderFrameHost())) {
   dialog_model_->AddObserver(this);
   if (g_observer) {
@@ -1121,7 +1121,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   }
 
   if (dialog_model_->current_step() !=
-      AuthenticatorRequestDialogModel::Step::kNotStarted) {
+      AuthenticatorRequestDialogController::Step::kNotStarted) {
     dialog_model_->OnTransportAvailabilityChanged(std::move(data));
     return;
   }
@@ -1150,9 +1150,9 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
   }
   if (is_conditional_ &&
       (dialog_model_->current_step() ==
-           AuthenticatorRequestDialogModel::Step::kConditionalMediation ||
+           AuthenticatorRequestDialogController::Step::kConditionalMediation ||
        dialog_model_->current_step() ==
-           AuthenticatorRequestDialogModel::Step::kNotStarted)) {
+           AuthenticatorRequestDialogController::Step::kNotStarted)) {
     // There is an active conditional request that is not showing any UI. The UI
     // will dispatch to any plugged in authenticators after the user selects an
     // option.
@@ -1225,7 +1225,7 @@ void ChromeAuthenticatorRequestDelegate::OnStartOver() {
 }
 
 void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
-    AuthenticatorRequestDialogModel* model) {
+    AuthenticatorRequestDialogController* model) {
   DCHECK_EQ(model, dialog_model_.get());
 }
 
@@ -1233,7 +1233,7 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
   bool start_transaction = false;
 
   if (dialog_model_->current_step() ==
-      AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
+      AuthenticatorRequestDialogController::Step::kWaitingForEnclave) {
     if (dialog_model_->account_state() == AccountState::kRecoverable &&
         enclave_manager_->has_pending_keys()) {
       // In this case, we were waiting for the user to create their GPM PIN
@@ -1257,7 +1257,7 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
 
     start_transaction = true;
   } else if (dialog_model_->current_step() ==
-                 AuthenticatorRequestDialogModel::Step::
+                 AuthenticatorRequestDialogController::Step::
                      kRecoverSecurityDomain &&
              enclave_manager_->is_ready()) {
     // Finished setting up without enrolling a GPM PIN.
@@ -1292,7 +1292,7 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
   }
 }
 
-AuthenticatorRequestDialogModel*
+AuthenticatorRequestDialogController*
 ChromeAuthenticatorRequestDelegate::GetDialogModelForTesting() {
   return dialog_model_.get();
 }
@@ -1369,7 +1369,7 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded() {
 
 void ChromeAuthenticatorRequestDelegate::OnKeysStored() {
   if (dialog_model_->current_step() !=
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain) {
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain) {
     return;
   }
   CHECK(enclave_manager_->has_pending_keys());

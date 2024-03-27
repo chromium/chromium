@@ -38,7 +38,7 @@ class AuthenticatorRequestSheetView;
 // eventually deleted when DeleteDelegate() is called.
 class AuthenticatorRequestDialogView
     : public views::DialogDelegateView,
-      public AuthenticatorRequestDialogModel::Observer,
+      public AuthenticatorRequestDialogController::Observer,
       public content::WebContentsObserver {
   METADATA_HEADER(AuthenticatorRequestDialogView, views::DialogDelegateView)
 
@@ -77,8 +77,8 @@ class AuthenticatorRequestDialogView
   View* GetInitiallyFocusedView() override;
   std::u16string GetWindowTitle() const override;
 
-  // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  // AuthenticatorRequestDialogController::Observer:
+  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override;
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
   void OnButtonsStateChanged() override;
@@ -90,11 +90,11 @@ class AuthenticatorRequestDialogView
   friend class test::AuthenticatorRequestDialogViewTestApi;
   friend void ShowAuthenticatorRequestDialog(
       content::WebContents* web_contents,
-      AuthenticatorRequestDialogModel* model);
+      AuthenticatorRequestDialogController* model);
 
   // Show by calling ShowAuthenticatorRequestDialog().
   AuthenticatorRequestDialogView(content::WebContents* web_contents,
-                                 AuthenticatorRequestDialogModel* model);
+                                 AuthenticatorRequestDialogController* model);
 
   // Shows the dialog after creation or after being hidden.
   void Show();
@@ -106,7 +106,7 @@ class AuthenticatorRequestDialogView
 
   void OnDialogClosing();
 
-  raw_ptr<AuthenticatorRequestDialogModel> model_;
+  raw_ptr<AuthenticatorRequestDialogController> model_;
 
   raw_ptr<AuthenticatorRequestSheetView, DanglingUntriaged> sheet_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;

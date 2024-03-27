@@ -44,16 +44,16 @@ struct BubbleContents {
   bool show_footer = false;
   bool show_icon = false;
   bool close_on_deactivate = false;
-  void (AuthenticatorRequestDialogModel::*on_ok)();
-  void (AuthenticatorRequestDialogModel::*on_cancel)() =
-      &AuthenticatorRequestDialogModel::StartOver;
+  void (AuthenticatorRequestDialogController::*on_ok)();
+  void (AuthenticatorRequestDialogController::*on_cancel)() =
+      &AuthenticatorRequestDialogController::StartOver;
 };
 
 constexpr BubbleContents kGPMTouchID = {
     .title = u"Touch ID to proceed (UNTRANSLATED)",
     .body = nullptr,
     .show_footer = false,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
+    .on_ok = &AuthenticatorRequestDialogController::OnGPMCreatePasskey,
 };
 
 constexpr BubbleContents kGPMCreatePasskeyContents = {
@@ -62,7 +62,7 @@ constexpr BubbleContents kGPMCreatePasskeyContents = {
     .body = nullptr,
     .show_footer = true,
     .show_icon = true,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
+    .on_ok = &AuthenticatorRequestDialogController::OnGPMCreatePasskey,
 };
 
 constexpr BubbleContents kGPMOnboardingContents = {
@@ -75,7 +75,7 @@ constexpr BubbleContents kGPMOnboardingContents = {
         u"(UNTRANSLATED)",
     .show_footer = true,
     .show_icon = true,
-    .on_ok = &AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted,
+    .on_ok = &AuthenticatorRequestDialogController::OnGPMOnboardingAccepted,
 };
 
 // TODO(rgod): Add username row and correct footer when mocks are ready.
@@ -84,15 +84,16 @@ constexpr BubbleContents kGPMPasskeySavedContents = {
     .title = u"Passkey saved (UT)",
     .show_footer = true,
     .show_icon = true,
-    .on_cancel = &AuthenticatorRequestDialogModel::OnRequestComplete,
+    .on_cancel = &AuthenticatorRequestDialogController::OnRequestComplete,
 };
 
 class AuthenticatorRequestBubbleDelegate
     : public views::BubbleDialogDelegateView,
-      public AuthenticatorRequestDialogModel::Observer {
+      public AuthenticatorRequestDialogController::Observer {
  public:
-  AuthenticatorRequestBubbleDelegate(views::View* anchor_view,
-                                     AuthenticatorRequestDialogModel* model)
+  AuthenticatorRequestBubbleDelegate(
+      views::View* anchor_view,
+      AuthenticatorRequestDialogController* model)
       : BubbleDialogDelegateView(anchor_view,
                                  views::BubbleBorder::Arrow::TOP_RIGHT),
         model_(model),
@@ -128,15 +129,15 @@ class AuthenticatorRequestBubbleDelegate
 
  protected:
   static const BubbleContents* GetContents(
-      AuthenticatorRequestDialogModel::Step step) {
+      AuthenticatorRequestDialogController::Step step) {
     switch (step) {
-      case AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey:
+      case AuthenticatorRequestDialogController::Step::kGPMCreatePasskey:
         return &kGPMCreatePasskeyContents;
-      case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
+      case AuthenticatorRequestDialogController::Step::kGPMTouchID:
         return &kGPMTouchID;
-      case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
+      case AuthenticatorRequestDialogController::Step::kGPMOnboarding:
         return &kGPMOnboardingContents;
-      case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
+      case AuthenticatorRequestDialogController::Step::kGPMPasskeySaved:
         return &kGPMPasskeySavedContents;
       default:
         NOTREACHED();
@@ -169,8 +170,8 @@ class AuthenticatorRequestBubbleDelegate
     return false;  // don't close this bubble.
   }
 
-  // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
+  // AuthenticatorRequestDialogController::Observer:
+  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override {
     model_ = nullptr;
   }
 
@@ -262,7 +263,7 @@ class AuthenticatorRequestBubbleDelegate
     }
 
 #if BUILDFLAG(IS_MAC)
-    if (step_ == AuthenticatorRequestDialogModel::Step::kGPMTouchID) {
+    if (step_ == AuthenticatorRequestDialogController::Step::kGPMTouchID) {
       if (__builtin_available(macos 12, *)) {
         primary_view_->AddChildView(
             std::make_unique<MacAuthenticationView>(base::DoNothing()));
@@ -279,16 +280,17 @@ class AuthenticatorRequestBubbleDelegate
     UpdateFootnote();
   }
 
-  raw_ptr<AuthenticatorRequestDialogModel> model_;
-  AuthenticatorRequestDialogModel::Step step_;
+  raw_ptr<AuthenticatorRequestDialogController> model_;
+  AuthenticatorRequestDialogController::Step step_;
   raw_ptr<const BubbleContents> bubble_contents_;
   raw_ptr<views::View> primary_view_;
 };
 
 }  // namespace
 
-void ShowAuthenticatorRequestBubble(content::WebContents* web_contents,
-                                    AuthenticatorRequestDialogModel* model) {
+void ShowAuthenticatorRequestBubble(
+    content::WebContents* web_contents,
+    AuthenticatorRequestDialogController* model) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   browser->window()->UpdatePageActionIcon(PageActionIconType::kManagePasswords);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);

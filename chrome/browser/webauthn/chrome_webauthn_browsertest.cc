@@ -748,8 +748,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableExtension, ServerLink) {
 }
 
 // WebAuthnCableSecondFactor primarily exercises
-// ChromeAuthenticatorRequestDelegate and AuthenticatorRequestDialogModel. It
-// mocks out the discovery process and thus allows the caBLE UI to be tested.
+// ChromeAuthenticatorRequestDelegate and AuthenticatorRequestDialogController.
+// It mocks out the discovery process and thus allows the caBLE UI to be tested.
 // It uses a trace-based approach: events are recorded (as strings) in an event
 // trace which is then compared against the expected trace at the end.
 class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
@@ -761,7 +761,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
   std::ostringstream& trace() { return trace_; }
 
-  AuthenticatorRequestDialogModel*& model() { return model_; }
+  AuthenticatorRequestDialogController*& model() { return model_; }
 
  protected:
   // DiscoveryFactory vends a single discovery that doesn't discover anything
@@ -1002,7 +1002,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
   std::ostringstream trace_;
   // This field is not a raw_ptr<> to avoid returning a reference to a temporary
   // T* (result of implicitly casting raw_ptr<T> to T*).
-  RAW_PTR_EXCLUSION AuthenticatorRequestDialogModel* model_ = nullptr;
+  RAW_PTR_EXCLUSION AuthenticatorRequestDialogController* model_ = nullptr;
 #if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
   device::WinWebAuthnApi::ScopedOverride override_win_webauthn_api_{

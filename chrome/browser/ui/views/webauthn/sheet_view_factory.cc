@@ -117,8 +117,8 @@ class AuthenticatorCreatePasskeySheetView
 }  // namespace
 
 std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
-    AuthenticatorRequestDialogModel* dialog_model) {
-  using Step = AuthenticatorRequestDialogModel::Step;
+    AuthenticatorRequestDialogController* dialog_model) {
+  using Step = AuthenticatorRequestDialogController::Step;
 
   std::unique_ptr<AuthenticatorRequestSheetView> sheet_view;
   switch (dialog_model->current_step()) {

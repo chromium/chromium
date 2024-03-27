@@ -15,9 +15,9 @@
 
 class AuthenticatorListObserver;
 
-// List of AuthenticatorReference maintained by AuthenticatorRequestDialogModel
-// that BleDeviceHoverListModel observes to add views to WebAuthN UI modal
-// dialog views.
+// List of AuthenticatorReference maintained by
+// AuthenticatorRequestDialogController that BleDeviceHoverListModel observes to
+// add views to WebAuthN UI modal dialog views.
 class ObservableAuthenticatorList {
  public:
   ObservableAuthenticatorList();

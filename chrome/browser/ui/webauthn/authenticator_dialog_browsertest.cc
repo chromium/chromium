@@ -51,7 +51,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    model_ = std::make_unique<AuthenticatorRequestDialogController>(
         browser()
             ->tab_strip_model()
             ->GetActiveWebContents()
@@ -88,34 +88,34 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+          AuthenticatorRequestDialogController::Step::kMechanismSelection);
     } else if (name == "activate_usb") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate);
+          AuthenticatorRequestDialogController::Step::kUsbInsertAndActivate);
     } else if (name == "timeout") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTimedOut);
+          AuthenticatorRequestDialogController::Step::kTimedOut);
     } else if (name == "no_available_transports") {
-      model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kErrorNoAvailableTransports);
+      model_->SetCurrentStepForTesting(AuthenticatorRequestDialogController::
+                                           Step::kErrorNoAvailableTransports);
     } else if (name == "key_not_registered") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kKeyNotRegistered);
+          AuthenticatorRequestDialogController::Step::kKeyNotRegistered);
     } else if (name == "key_already_registered") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kKeyAlreadyRegistered);
+          AuthenticatorRequestDialogController::Step::kKeyAlreadyRegistered);
     } else if (name == "windows_hello_not_enabled") {
-      model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kErrorWindowsHelloNotEnabled);
+      model_->SetCurrentStepForTesting(AuthenticatorRequestDialogController::
+                                           Step::kErrorWindowsHelloNotEnabled);
     } else if (name == "internal_unrecognized_error") {
-      model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kErrorInternalUnrecognized);
+      model_->SetCurrentStepForTesting(AuthenticatorRequestDialogController::
+                                           Step::kErrorInternalUnrecognized);
     } else if (name == "ble_power_on_manual") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kBlePowerOnManual);
+          AuthenticatorRequestDialogController::Step::kBlePowerOnManual);
     } else if (name == "touchid_incognito") {
-      model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
+      model_->SetCurrentStepForTesting(AuthenticatorRequestDialogController::
+                                           Step::kOffTheRecordInterstitial);
     } else if (name == "cable_activate" ||
                name == "cable_server_link_activate") {
       model_->set_cable_transport_info(
@@ -133,19 +133,19 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
+          AuthenticatorRequestDialogController::Step::kCableV2QRCode);
     } else if (name == "cable_v2_connecting") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCableV2Connecting);
+          AuthenticatorRequestDialogController::Step::kCableV2Connecting);
     } else if (name == "cable_v2_connected") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCableV2Connected);
+          AuthenticatorRequestDialogController::Step::kCableV2Connected);
     } else if (name == "cable_v2_error") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCableV2Error);
+          AuthenticatorRequestDialogController::Step::kCableV2Error);
     } else if (name == "phone_aoa") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kAndroidAccessory);
+          AuthenticatorRequestDialogController::Step::kAndroidAccessory);
     } else if (name == "set_pin") {
       model_->CollectPIN(device::pin::PINEntryReason::kSet,
                          device::pin::PINEntryError::kNoError, 6, 0,
@@ -172,7 +172,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           FROM_HERE, base::Seconds(2),
           base::BindLambdaForTesting([&, weak_model = model_->GetWeakPtr()] {
             if (!weak_model || weak_model->current_step() !=
-                                   AuthenticatorRequestDialogModel::Step::
+                                   AuthenticatorRequestDialogController::Step::
                                        kInlineBioEnrollment) {
               return;
             }
@@ -197,22 +197,23 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
                          base::BindOnce([](std::u16string pin) {}));
     } else if (name == "second_tap") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kClientPinTapAgain);
+          AuthenticatorRequestDialogController::Step::kClientPinTapAgain);
     } else if (name == "soft_block") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kClientPinErrorSoftBlock);
+          AuthenticatorRequestDialogController::Step::kClientPinErrorSoftBlock);
     } else if (name == "hard_block") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kClientPinErrorHardBlock);
+          AuthenticatorRequestDialogController::Step::kClientPinErrorHardBlock);
     } else if (name == "authenticator_removed") {
-      model_->SetCurrentStepForTesting(AuthenticatorRequestDialogModel::Step::
-                                           kClientPinErrorAuthenticatorRemoved);
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogController::Step::
+              kClientPinErrorAuthenticatorRemoved);
     } else if (name == "missing_capability") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kMissingCapability);
+          AuthenticatorRequestDialogController::Step::kMissingCapability);
     } else if (name == "storage_full") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kStorageFull);
+          AuthenticatorRequestDialogController::Step::kStorageFull);
     } else if (name == "single_account_select") {
       const std::vector<std::pair<std::string, std::string>> infos = {
           {"verylong@"
@@ -316,21 +317,21 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           /*extension_is_v2=*/true, /*paired_phones=*/{},
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCableActivate);
+          AuthenticatorRequestDialogController::Step::kCableActivate);
     } else if (name == "create_passkey") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+          AuthenticatorRequestDialogController::Step::kCreatePasskey);
     } else if (name == "phone_confirmation") {
       model_->set_cable_transport_info(
           /*extension_is_v2=*/true, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kPhoneConfirmationSheet);
+          AuthenticatorRequestDialogController::Step::kPhoneConfirmationSheet);
     }
 #if BUILDFLAG(IS_MAC)
     else if (name == "ble_permission_mac") {  // NOLINT
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kBlePermissionMac);
+          AuthenticatorRequestDialogController::Step::kBlePermissionMac);
     }
 #endif
 
@@ -339,7 +340,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
   }
 
  private:
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  std::unique_ptr<AuthenticatorRequestDialogController> model_;
   base::RepeatingTimer timer_;
   int bio_samples_remaining_ = 5;
 };
@@ -568,7 +569,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
 
-    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+    model_ = std::make_unique<AuthenticatorRequestDialogController>(
         browser()
             ->tab_strip_model()
             ->GetActiveWebContents()
@@ -692,34 +693,34 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       };
     } else if (name == "recover_security_domain") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+          AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
     } else if (name == "trust_this_computer") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputer);
+          AuthenticatorRequestDialogController::Step::kTrustThisComputer);
     } else if (name == "gpm_create_passkey") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+          AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
     } else if (name == "touchid") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+          AuthenticatorRequestDialogController::Step::kGPMTouchID);
     } else if (name == "gpm_onboarding") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+          AuthenticatorRequestDialogController::Step::kGPMOnboarding);
     } else if (name == "gpm_create_pin") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+          AuthenticatorRequestDialogController::Step::kGPMCreatePin);
     } else if (name == "gpm_enter_pin") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+          AuthenticatorRequestDialogController::Step::kGPMEnterPin);
     } else if (name == "gpm_create_arbitrary_pin") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMCreateArbitraryPin);
+          AuthenticatorRequestDialogController::Step::kGPMCreateArbitraryPin);
     } else if (name == "gpm_enter_arbitrary_pin") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMEnterArbitraryPin);
+          AuthenticatorRequestDialogController::Step::kGPMEnterArbitraryPin);
     } else if (name == "gpm_passkey_saved") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved);
+          AuthenticatorRequestDialogController::Step::kGPMPasskeySaved);
     } else {
       NOTREACHED();
     }
@@ -728,7 +729,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
   }
 
  private:
-  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  std::unique_ptr<AuthenticatorRequestDialogController> model_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -36,7 +36,7 @@ class LinkLabelButton : public views::LabelButton {
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
-  AuthenticatorRequestDialogModel* const dialog_model =
+  AuthenticatorRequestDialogController* const dialog_model =
       reinterpret_cast<AuthenticatorPaaskSheetModel*>(model())->dialog_model();
   // This context is only shown when USB fallback is an option.
   if (!dialog_model->cable_should_suggest_usb()) {

@@ -142,10 +142,10 @@ class ChromeAuthenticatorRequestDelegateTest
 };
 
 class TestAuthenticatorModelObserver final
-    : public AuthenticatorRequestDialogModel::Observer {
+    : public AuthenticatorRequestDialogController::Observer {
  public:
   explicit TestAuthenticatorModelObserver(
-      AuthenticatorRequestDialogModel* model)
+      AuthenticatorRequestDialogController* model)
       : model_(model) {
     last_step_ = model_->current_step();
   }
@@ -155,18 +155,18 @@ class TestAuthenticatorModelObserver final
     }
   }
 
-  AuthenticatorRequestDialogModel::Step last_step() { return last_step_; }
+  AuthenticatorRequestDialogController::Step last_step() { return last_step_; }
 
-  // AuthenticatorRequestDialogModel::Observer:
+  // AuthenticatorRequestDialogController::Observer:
   void OnStepTransition() override { last_step_ = model_->current_step(); }
 
-  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
+  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override {
     model_ = nullptr;
   }
 
  private:
-  raw_ptr<AuthenticatorRequestDialogModel> model_;
-  AuthenticatorRequestDialogModel::Step last_step_;
+  raw_ptr<AuthenticatorRequestDialogController> model_;
+  AuthenticatorRequestDialogController::Step last_step_;
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
@@ -422,8 +422,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
-                    AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
+          EXPECT_EQ(
+              delegate.dialog_model()->cable_ui_type(),
+              AuthenticatorRequestDialogController::CableUIType::CABLE_V1);
           break;
 
         case Result::kServerLink:
@@ -431,7 +432,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
-                    AuthenticatorRequestDialogModel::CableUIType::
+                    AuthenticatorRequestDialogController::CableUIType::
                         CABLE_V2_SERVER_LINK);
           break;
 
@@ -440,7 +441,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_TRUE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
           EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
-                    AuthenticatorRequestDialogModel::CableUIType::
+                    AuthenticatorRequestDialogController::CableUIType::
                         CABLE_V2_2ND_FACTOR);
           break;
       }
@@ -494,16 +495,17 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetConditionalRequest(conditional_ui);
     delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
-    AuthenticatorRequestDialogModel* model = delegate.dialog_model();
+    AuthenticatorRequestDialogController* model = delegate.dialog_model();
     TestAuthenticatorModelObserver observer(model);
     model->AddObserver(&observer);
     EXPECT_EQ(observer.last_step(),
-              AuthenticatorRequestDialogModel::Step::kNotStarted);
+              AuthenticatorRequestDialogController::Step::kNotStarted);
     delegate.OnTransportAvailabilityEnumerated(
-        AuthenticatorRequestDialogModel::TransportAvailabilityInfo());
-    EXPECT_EQ(observer.last_step() ==
-                  AuthenticatorRequestDialogModel::Step::kConditionalMediation,
-              conditional_ui);
+        AuthenticatorRequestDialogController::TransportAvailabilityInfo());
+    EXPECT_EQ(
+        observer.last_step() ==
+            AuthenticatorRequestDialogController::Step::kConditionalMediation,
+        conditional_ui);
   }
 }
 
@@ -760,7 +762,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey_other_rp_id));
 
-  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -816,7 +818,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
   passkey.set_user_id(std::string({5, 6, 7, 8}));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
 
-  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -878,7 +880,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
   passkey_model->AddNewPasskeyForTesting(std::move(shadowed_passkey));
 
-  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -1030,7 +1032,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 //
 // Ideally, this would also test the inverse case, i.e. that with
 // WEBAUTHN_API_VERSION_1 Chrome's own attestation prompt is shown. However,
-// there seems to be no good way to test AuthenticatorRequestDialogModel UI.
+// there seems to be no good way to test AuthenticatorRequestDialogController
+// UI.
 TEST_F(ChromeAuthenticatorRequestDelegateTest, ShouldPromptForAttestationWin) {
   ::device::FakeWinWebAuthnApi win_webauthn_api;
   win_webauthn_api.set_version(WEBAUTHN_API_VERSION_2);

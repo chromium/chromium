@@ -112,7 +112,7 @@ class ChromeWebAuthenticationDelegate
 
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
-      public AuthenticatorRequestDialogModel::Observer {
+      public AuthenticatorRequestDialogController::Observer {
  public:
   // TestObserver is an interface that observes certain events related to this
   // class for testing purposes. Only a single instance of this interface can
@@ -160,7 +160,7 @@ class ChromeAuthenticatorRequestDelegate
 
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
-  AuthenticatorRequestDialogModel* dialog_model() const {
+  AuthenticatorRequestDialogController* dialog_model() const {
     return dialog_model_.get();
   }
 
@@ -223,15 +223,15 @@ class ChromeAuthenticatorRequestDelegate
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
 
-  // AuthenticatorRequestDialogModel::Observer:
+  // AuthenticatorRequestDialogController::Observer:
   void OnStartOver() override;
-  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override;
   void OnStepTransition() override;
   void OnCancelRequest() override;
   void OnManageDevicesClicked() override;
 
   // A non-const version of dialog_model().
-  AuthenticatorRequestDialogModel* GetDialogModelForTesting();
+  AuthenticatorRequestDialogController* GetDialogModelForTesting();
 
   // SetPassEmptyUsbDeviceManagerForTesting controls whether the
   // `DiscoveryFactory` will be given an empty USB device manager. This is
@@ -352,13 +352,14 @@ class ChromeAuthenticatorRequestDelegate
       std::optional<bool> preference);
 
   // ConfigureICloudKeychain is called by `ConfigureDiscoveries` to configure
-  // the `AuthenticatorRequestDialogModel` with iCloud Keychain-related values.
+  // the `AuthenticatorRequestDialogController` with iCloud Keychain-related
+  // values.
   void ConfigureICloudKeychain(RequestSource request_source,
                                const std::string& rp_id);
 #endif
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
-  const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  const std::unique_ptr<AuthenticatorRequestDialogController> dialog_model_;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
   AccountPreselectedCallback account_preselected_callback_;

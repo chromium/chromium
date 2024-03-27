@@ -26,8 +26,9 @@
 #include "ui/views/layout/fill_layout.h"
 
 // static
-void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
-                                    AuthenticatorRequestDialogModel* model) {
+void ShowAuthenticatorRequestDialog(
+    content::WebContents* web_contents,
+    AuthenticatorRequestDialogController* model) {
   // The authenticator request dialog will only be shown for common user-facing
   // WebContents, which have a |manager|. Most other sources without managers,
   // like service workers and extension background pages, do not allow WebAuthn
@@ -59,10 +60,11 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   // shouldn't be doing anything interesting in their destructors, so it should
   // be okay to destroy the |sheet_| immediately after this line.
   //
-  // However, as AuthenticatorRequestDialogModel is owned by |this|, and
-  // ObservableAuthenticatorList is owned by AuthenticatorRequestDialogModel,
-  // destroy all view components that might own models observing the list prior
-  // to destroying AuthenticatorRequestDialogModel.
+  // However, as AuthenticatorRequestDialogController is owned by |this|, and
+  // ObservableAuthenticatorList is owned by
+  // AuthenticatorRequestDialogController, destroy all view components that
+  // might own models observing the list prior to destroying
+  // AuthenticatorRequestDialogController.
   RemoveAllChildViews();
 }
 
@@ -233,7 +235,7 @@ std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
 }
 
 void AuthenticatorRequestDialogView::OnModelDestroyed(
-    AuthenticatorRequestDialogModel* model) {
+    AuthenticatorRequestDialogController* model) {
   model_ = nullptr;
 }
 
@@ -279,7 +281,7 @@ void AuthenticatorRequestDialogView::OnVisibilityChanged(
 
 AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     content::WebContents* web_contents,
-    AuthenticatorRequestDialogModel* model)
+    AuthenticatorRequestDialogController* model)
     : content::WebContentsObserver(web_contents),
       model_(model),
       web_contents_hidden_(web_contents->GetVisibility() ==
@@ -351,14 +353,14 @@ void AuthenticatorRequestDialogView::OnDialogClosing() {
   //   views::DialogClientView::CanClose()
   //   views::Widget::Close()
   //   AuthenticatorRequestDialogView::OnStepTransition()
-  //   AuthenticatorRequestDialogModel::SetCurrentStep()
-  //   AuthenticatorRequestDialogModel::OnRequestComplete()
+  //   AuthenticatorRequestDialogController::SetCurrentStep()
+  //   AuthenticatorRequestDialogController::OnRequestComplete()
   //   ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate()
   //   content::AuthenticatorImpl::InvokeCallbackAndCleanup()
   //   content::AuthenticatorImpl::FailWithNotAllowedErrorAndCleanup()
   //   <<invoke callback>>
   //   ChromeAuthenticatorRequestDelegate::OnCancelRequest()
-  //   AuthenticatorRequestDialogModel::Cancel()
+  //   AuthenticatorRequestDialogController::Cancel()
   //   AuthenticatorRequestDialogView::Cancel()
   //   AuthenticatorRequestDialogView::Close()  [initial call]
   //

@@ -11,7 +11,8 @@
 namespace {
 
 std::vector<int> GetMechanismIndices(
-    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms) {
+    base::span<const AuthenticatorRequestDialogController::Mechanism>
+        mechanisms) {
   std::vector<int> tag_list(mechanisms.size());
   for (size_t i = 0; i < mechanisms.size(); i++) {
     tag_list[i] = static_cast<int>(i);
@@ -22,11 +23,13 @@ std::vector<int> GetMechanismIndices(
 }  // namespace
 
 TransportHoverListModel::TransportHoverListModel(
-    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms)
+    base::span<const AuthenticatorRequestDialogController::Mechanism>
+        mechanisms)
     : TransportHoverListModel(mechanisms, GetMechanismIndices(mechanisms)) {}
 
 TransportHoverListModel::TransportHoverListModel(
-    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms,
+    base::span<const AuthenticatorRequestDialogController::Mechanism>
+        mechanisms,
     std::vector<int> mechanism_indices_to_display)
     : mechanisms_(mechanisms),
       mechanism_indices_to_display_(std::move(mechanism_indices_to_display)) {}

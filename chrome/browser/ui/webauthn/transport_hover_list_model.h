@@ -16,10 +16,12 @@
 class TransportHoverListModel : public HoverListModel {
  public:
   explicit TransportHoverListModel(
-      base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms);
+      base::span<const AuthenticatorRequestDialogController::Mechanism>
+          mechanisms);
 
   TransportHoverListModel(
-      base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms,
+      base::span<const AuthenticatorRequestDialogController::Mechanism>
+          mechanisms,
       std::vector<int> mechanism_indices_to_display);
 
   TransportHoverListModel(const TransportHoverListModel&) = delete;
@@ -36,7 +38,7 @@ class TransportHoverListModel : public HoverListModel {
   size_t GetPreferredItemCount() const override;
 
  private:
-  const base::span<const AuthenticatorRequestDialogModel::Mechanism>
+  const base::span<const AuthenticatorRequestDialogController::Mechanism>
       mechanisms_;
   const std::vector<int> mechanism_indices_to_display_;
 };

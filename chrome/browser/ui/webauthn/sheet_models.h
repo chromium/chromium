@@ -18,7 +18,7 @@
 // as well as maintaining a weak pointer to the dialog model.
 class AuthenticatorSheetModelBase
     : public AuthenticatorRequestSheetModel,
-      public AuthenticatorRequestDialogModel::Observer {
+      public AuthenticatorRequestDialogController::Observer {
  public:
   // Determines whether the button in the lower-left corner of the dialog, to
   // display other available mechanisms, is shown on a sheet.
@@ -30,9 +30,9 @@ class AuthenticatorSheetModelBase
   };
 
   explicit AuthenticatorSheetModelBase(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   AuthenticatorSheetModelBase(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       OtherMechanismButtonVisibility other_mechanism_button_visibility);
 
   AuthenticatorSheetModelBase(const AuthenticatorSheetModelBase&) = delete;
@@ -41,14 +41,14 @@ class AuthenticatorSheetModelBase
 
   ~AuthenticatorSheetModelBase() override;
 
-  AuthenticatorRequestDialogModel* dialog_model() const {
+  AuthenticatorRequestDialogController* dialog_model() const {
     return dialog_model_;
   }
 
   // Returns a string containing the RP ID, styled as an origin, truncated to a
   // reasonable width.
   static std::u16string GetRelyingPartyIdString(
-      const AuthenticatorRequestDialogModel* dialog_model);
+      const AuthenticatorRequestDialogController* dialog_model);
 
  protected:
   // AuthenticatorRequestSheetModel:
@@ -64,11 +64,11 @@ class AuthenticatorSheetModelBase
   void OnAccept() override;
   void OnCancel() override;
 
-  // AuthenticatorRequestDialogModel::Observer:
-  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  // AuthenticatorRequestDialogController::Observer:
+  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override;
 
  private:
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  raw_ptr<AuthenticatorRequestDialogController> dialog_model_;
   OtherMechanismButtonVisibility other_mechanism_button_visibility_ =
       OtherMechanismButtonVisibility::kHidden;
 };
@@ -79,7 +79,7 @@ class AuthenticatorMechanismSelectorSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorMechanismSelectorSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
   // AuthenticatorSheetModelBase:
   bool IsManageDevicesButtonVisible() const override;
@@ -92,7 +92,7 @@ class AuthenticatorInsertAndActivateUsbSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorInsertAndActivateUsbSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
   // AuthenticatorSheetModelBase:
   bool IsActivityIndicatorVisible() const override;
@@ -104,7 +104,7 @@ class AuthenticatorInsertAndActivateUsbSheetModel
 class AuthenticatorTimeoutErrorModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorTimeoutErrorModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -117,7 +117,7 @@ class AuthenticatorNoAvailableTransportsErrorModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorNoAvailableTransportsErrorModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -129,7 +129,7 @@ class AuthenticatorNoAvailableTransportsErrorModel
 class AuthenticatorNoPasskeysErrorModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorNoPasskeysErrorModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -142,7 +142,7 @@ class AuthenticatorNotRegisteredErrorModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorNotRegisteredErrorModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -159,7 +159,7 @@ class AuthenticatorAlreadyRegisteredErrorModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorAlreadyRegisteredErrorModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -176,7 +176,7 @@ class AuthenticatorInternalUnrecognizedErrorSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorInternalUnrecognizedErrorSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -192,7 +192,7 @@ class AuthenticatorBlePowerOnManualSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorBlePowerOnManualSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -203,7 +203,7 @@ class AuthenticatorBlePowerOnManualSheetModel
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
 
-  // AuthenticatorRequestDialogModel::Observer:
+  // AuthenticatorRequestDialogController::Observer:
   void OnBluetoothPoweredStateChanged() override;
 };
 
@@ -211,7 +211,7 @@ class AuthenticatorBlePowerOnAutomaticSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorBlePowerOnAutomaticSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -232,7 +232,7 @@ class AuthenticatorBlePermissionMacSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorBlePermissionMacSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -251,7 +251,7 @@ class AuthenticatorOffTheRecordInterstitialSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorOffTheRecordInterstitialSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
@@ -266,7 +266,7 @@ class AuthenticatorOffTheRecordInterstitialSheetModel
 class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorPaaskSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorPaaskSheetModel() override;
 
  private:
@@ -280,7 +280,7 @@ class AuthenticatorAndroidAccessorySheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorAndroidAccessorySheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorAndroidAccessorySheetModel() override;
 
  private:
@@ -297,7 +297,7 @@ class AuthenticatorClientPinEntrySheetModel
   // setting up a new PIN or entering an existing one.
   enum class Mode { kPinChange, kPinEntry, kPinSetup };
   AuthenticatorClientPinEntrySheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       Mode mode,
       device::pin::PINEntryError error);
   ~AuthenticatorClientPinEntrySheetModel() override;
@@ -327,7 +327,7 @@ class AuthenticatorClientPinTapAgainSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorClientPinTapAgainSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorClientPinTapAgainSheetModel() override;
 
  private:
@@ -342,7 +342,7 @@ class AuthenticatorBioEnrollmentSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorBioEnrollmentSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorBioEnrollmentSheetModel() override;
 
   int max_bio_samples() {
@@ -369,7 +369,7 @@ class AuthenticatorBioEnrollmentSheetModel
 class AuthenticatorRetryUvSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorRetryUvSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorRetryUvSheetModel() override;
 
  private:
@@ -384,22 +384,24 @@ class AuthenticatorRetryUvSheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorGenericErrorSheetModel : public AuthenticatorSheetModelBase {
  public:
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
-  ForClientPinErrorSoftBlock(AuthenticatorRequestDialogModel* dialog_model);
+  ForClientPinErrorSoftBlock(
+      AuthenticatorRequestDialogController* dialog_model);
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
-  ForClientPinErrorHardBlock(AuthenticatorRequestDialogModel* dialog_model);
+  ForClientPinErrorHardBlock(
+      AuthenticatorRequestDialogController* dialog_model);
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
   ForClientPinErrorAuthenticatorRemoved(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
-  ForMissingCapability(AuthenticatorRequestDialogModel* dialog_model);
+  ForMissingCapability(AuthenticatorRequestDialogController* dialog_model);
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel> ForStorageFull(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
-  ForWindowsHelloNotEnabled(AuthenticatorRequestDialogModel* dialog_model);
+  ForWindowsHelloNotEnabled(AuthenticatorRequestDialogController* dialog_model);
 
  private:
   AuthenticatorGenericErrorSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       std::u16string title,
       std::u16string description);
 
@@ -420,7 +422,7 @@ class AuthenticatorResidentCredentialConfirmationSheetView
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorResidentCredentialConfirmationSheetView(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorResidentCredentialConfirmationSheetView() override;
 
  private:
@@ -454,7 +456,7 @@ class AuthenticatorSelectAccountSheetModel
   };
 
   AuthenticatorSelectAccountSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       UserVerificationMode mode,
       SelectionType type);
   ~AuthenticatorSelectAccountSheetModel() override;
@@ -489,7 +491,7 @@ class AttestationPermissionRequestSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AttestationPermissionRequestSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AttestationPermissionRequestSheetModel() override;
 
   // AuthenticatorSheetModelBase:
@@ -511,7 +513,7 @@ class EnterpriseAttestationPermissionRequestSheetModel
     : public AttestationPermissionRequestSheetModel {
  public:
   explicit EnterpriseAttestationPermissionRequestSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
  private:
   // AuthenticatorSheetModelBase:
@@ -522,7 +524,7 @@ class EnterpriseAttestationPermissionRequestSheetModel
 class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorQRSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorQRSheetModel() override;
 
   // Returns true if a label indicating the user that a security key may be used
@@ -543,7 +545,7 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorConnectingSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorConnectingSheetModel() override;
 
  private:
@@ -555,7 +557,7 @@ class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorConnectedSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorConnectedSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorConnectedSheetModel() override;
 
  private:
@@ -568,7 +570,7 @@ class AuthenticatorConnectedSheetModel : public AuthenticatorSheetModelBase {
 class AuthenticatorCableErrorSheetModel : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorCableErrorSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorCableErrorSheetModel() override;
 
  private:
@@ -583,7 +585,7 @@ class AuthenticatorCreatePasskeySheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorCreatePasskeySheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorCreatePasskeySheetModel() override;
 
   // An additional label that `AuthenticatorCreatePasskeySheetView` includes in
@@ -606,7 +608,7 @@ class AuthenticatorCreatePasskeySheetModel
 class AuthenticatorPhoneConfirmationSheet : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorPhoneConfirmationSheet(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorPhoneConfirmationSheet() override;
 
  private:
@@ -625,23 +627,23 @@ class AuthenticatorPhoneConfirmationSheet : public AuthenticatorSheetModelBase {
 //   if no local passkeys are available. Can be empty.
 // * "Secondary" passkeys. These are all the other passkeys & mechanisms.
 // AuthenticatorMultiSourcePickerSheetModel will filter these lists and
-// present them as indices of AuthenticatorRequestDialogModel's `mechanisms()`
-// member.
+// present them as indices of AuthenticatorRequestDialogController's
+// `mechanisms()` member.
 class AuthenticatorMultiSourcePickerSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorMultiSourcePickerSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorMultiSourcePickerSheetModel() override;
 
   // Returns a vector of indices to the "Primary" passkey mechanisms. Indices
-  // correspond to AuthenticatorRequestDialogModel's mechanisms().
+  // correspond to AuthenticatorRequestDialogController's mechanisms().
   std::vector<int>& primary_passkey_indices() {
     return primary_passkey_indices_;
   }
 
   // Returns a vector of indices to the "Secondary" passkey mechanisms. Indices
-  // correspond to AuthenticatorRequestDialogModel's mechanisms().
+  // correspond to AuthenticatorRequestDialogController's mechanisms().
   std::vector<int>& secondary_passkey_indices() {
     return secondary_passkey_indices_;
   }
@@ -665,7 +667,7 @@ class AuthenticatorPriorityMechanismSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorPriorityMechanismSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
   ~AuthenticatorPriorityMechanismSheetModel() override;
 
  private:
@@ -686,10 +688,10 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   enum class Mode { kPinCreate, kPinEntry };
 
   explicit AuthenticatorGPMPinSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       int pin_digits_count,
       Mode mode,
-      AuthenticatorRequestDialogModel::GpmPinError error);
+      AuthenticatorRequestDialogController::GpmPinError error);
   ~AuthenticatorGPMPinSheetModel() override;
 
   int pin_digits_count() const;
@@ -715,7 +717,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   std::u16string pin_;
   const int pin_digits_count_;
   const Mode mode_;
-  const AuthenticatorRequestDialogModel::GpmPinError error_;
+  const AuthenticatorRequestDialogController::GpmPinError error_;
 };
 
 // The sheet shown when the user is entering an arbitrary (alphanumeric) pin.
@@ -727,9 +729,9 @@ class AuthenticatorGPMArbitraryPinSheetModel
   enum class Mode { kPinCreate, kPinEntry };
 
   explicit AuthenticatorGPMArbitraryPinSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model,
+      AuthenticatorRequestDialogController* dialog_model,
       Mode mode,
-      AuthenticatorRequestDialogModel::GpmPinError error);
+      AuthenticatorRequestDialogController::GpmPinError error);
   ~AuthenticatorGPMArbitraryPinSheetModel() override;
 
   // Sets currently typed pin in the sheet.
@@ -752,7 +754,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
   std::u16string pin_;
   const Mode mode_;
-  const AuthenticatorRequestDialogModel::GpmPinError error_;
+  const AuthenticatorRequestDialogController::GpmPinError error_;
 };
 
 // The sheet shown for bootstrapping Google Password Manager passkeys.
@@ -760,7 +762,7 @@ class AuthenticatorTrustThisComputerSheetModel
     : public AuthenticatorSheetModelBase {
  public:
   explicit AuthenticatorTrustThisComputerSheetModel(
-      AuthenticatorRequestDialogModel* dialog_model);
+      AuthenticatorRequestDialogController* dialog_model);
 
   ~AuthenticatorTrustThisComputerSheetModel() override;
 
