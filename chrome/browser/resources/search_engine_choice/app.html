@@ -151,11 +151,10 @@
     --cr-dialog-title-slot-padding-top: 24px;
   }
 
-  cr-dialog h1 {
+  cr-dialog div[slot="title"] {
     font-size: 1.375rem;
     font-weight: 400;
     line-height: 28px;
-    margin: 0;
   }
 
   cr-dialog p {
@@ -299,7 +298,7 @@
 
 <cr-dialog id="infoDialog">
   <div slot="title">
-    <h1>$i18n{infoDialogTitle}</h1>
+    $i18n{infoDialogTitle}
   </div>
   <div slot="body">
     <p>$i18n{infoDialogFirstParagraph}</p>
