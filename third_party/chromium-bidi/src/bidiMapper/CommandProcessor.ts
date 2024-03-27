@@ -31,20 +31,20 @@ import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
-import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
-import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
-import {BrowsingContextProcessor} from './domains/context/BrowsingContextProcessor.js';
-import type {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
-import {InputProcessor} from './domains/input/InputProcessor.js';
-import {NetworkProcessor} from './domains/network/NetworkProcessor.js';
-import {NetworkStorage} from './domains/network/NetworkStorage.js';
-import {PermissionsProcessor} from './domains/permissions/PermissionsProcessor.js';
-import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
-import type {RealmStorage} from './domains/script/RealmStorage.js';
-import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
-import type {EventManager} from './domains/session/EventManager.js';
-import {SessionProcessor} from './domains/session/SessionProcessor.js';
-import {StorageProcessor} from './domains/storage/StorageProcessor.js';
+import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
+import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
+import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
+import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
+import {InputProcessor} from './modules/input/InputProcessor.js';
+import {NetworkProcessor} from './modules/network/NetworkProcessor.js';
+import {NetworkStorage} from './modules/network/NetworkStorage.js';
+import {PermissionsProcessor} from './modules/permissions/PermissionsProcessor.js';
+import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
+import type {RealmStorage} from './modules/script/RealmStorage.js';
+import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
+import type {EventManager} from './modules/session/EventManager.js';
+import {SessionProcessor} from './modules/session/SessionProcessor.js';
+import {StorageProcessor} from './modules/storage/StorageProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {

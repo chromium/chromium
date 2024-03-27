@@ -26,12 +26,12 @@ import type {Result} from '../utils/result.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
-import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
-import {RealmStorage} from './domains/script/RealmStorage.js';
+import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
+import {RealmStorage} from './modules/script/RealmStorage.js';
 import {
   EventManager,
   EventManagerEvents,
-} from './domains/session/EventManager.js';
+} from './modules/session/EventManager.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
 type BidiServerEvent = {
