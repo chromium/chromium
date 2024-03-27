@@ -467,7 +467,7 @@ arc::mojom::ConnectionStateType TranslateConnectionState(
   }
 
   if ((state == shill::kStateIdle) || (state == shill::kStateFailure) ||
-      (state == shill::kStateDisconnect) || (state == "")) {
+      (state == shill::kStateDisconnecting) || (state == "")) {
     return arc::mojom::ConnectionStateType::NOT_CONNECTED;
   }
   if (ash::NetworkState::StateIsPortalled(state)) {

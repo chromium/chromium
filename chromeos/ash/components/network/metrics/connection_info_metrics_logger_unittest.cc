@@ -259,7 +259,7 @@ TEST_F(ConnectionInfoMetricsLoggerTest, AutoStatusTransitions) {
   // Fail to connect from connecting to disconnecting, no valid shill error.
   SetShillState(kCellularServicePath, shill::kStateAssociation);
   histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 2);
-  SetShillState(kCellularServicePath, shill::kStateDisconnect);
+  SetShillState(kCellularServicePath, shill::kStateDisconnecting);
   histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 2);
 
   // Fail to connect from disconnecting to disconnected.

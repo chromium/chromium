@@ -169,7 +169,7 @@ TEST_F(DnsResolverPresentRoutineTest, TestValidAndMalformedNameServers) {
 }
 
 TEST_F(DnsResolverPresentRoutineTest, TestNoActiveNetwork) {
-  SetUpWiFi(shill::kStateDisconnect);
+  SetUpWiFi(shill::kStateDisconnecting);
   SetUpNameServers(GetWellFormedDnsServers());
   RunRoutine(mojom::RoutineVerdict::kNotRun, {});
 }

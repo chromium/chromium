@@ -230,7 +230,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
   // Fail to connect from disconnecting to disconnected.
   SetShillState(kCellularServicePath, shill::kStateAssociation);
   AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateDisconnect);
+  SetShillState(kCellularServicePath, shill::kStateDisconnecting);
   AssertHistogramsTotalCount(counts);
   // Fail to connect from disconnecting to disconnected.
   SetShillError(kCellularServicePath, shill::kErrorConnectFailed);
@@ -301,7 +301,7 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampDisabled) {
   // Fail to connect from connecting to disconnecting, no valid shill error.
   SetShillState(kCellularServicePath, shill::kStateAssociation);
   AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateDisconnect);
+  SetShillState(kCellularServicePath, shill::kStateDisconnecting);
   AssertHistogramsTotalCount(counts);
 
   // Fail to connect from disconnecting to disconnected.

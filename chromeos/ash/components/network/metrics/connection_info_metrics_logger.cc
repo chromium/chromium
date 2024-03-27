@@ -25,9 +25,9 @@ ConnectionInfoMetricsLogger::ConnectionInfo::ConnectionInfo(
     status = Status::kConnected;
   else if (network->IsConnectingState())
     status = Status::kConnecting;
-  else if (network->connection_state() == shill::kStateDisconnect)
+  else if (network->connection_state() == shill::kStateDisconnecting) {
     status = Status::kDisconnecting;
-  else
+  } else
     status = Status::kDisconnected;
 }
 

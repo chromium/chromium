@@ -352,7 +352,7 @@ TEST_F(ArcNetUtilsTest, TranslateConnectionState) {
   EXPECT_EQ(arc::mojom::ConnectionStateType::NOT_CONNECTED,
             net_utils::TranslateConnectionState(shill::kStateFailure));
   EXPECT_EQ(arc::mojom::ConnectionStateType::NOT_CONNECTED,
-            net_utils::TranslateConnectionState(shill::kStateDisconnect));
+            net_utils::TranslateConnectionState(shill::kStateDisconnecting));
   EXPECT_EQ(arc::mojom::ConnectionStateType::NOT_CONNECTED,
             net_utils::TranslateConnectionState(""));
   EXPECT_EQ(arc::mojom::ConnectionStateType::ONLINE,

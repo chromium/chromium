@@ -502,7 +502,7 @@ TEST_F(NetworkSmsHandlerTest, NetworkGuidTest) {
   base::RunLoop().RunUntilIdle();
 
   // Switch to a different modem.
-  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
+  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnecting);
   SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
                      kTestGuid2, kTestIccid2, shill::kStateOnline);
 
@@ -538,7 +538,7 @@ TEST_F(NetworkSmsHandlerTest, NetworkDelayedActiveNetworkTest) {
   EXPECT_EQ(1u, test_observer_->messages(kTestGuid1).size());
   EXPECT_EQ(0u, test_observer_->messages(kTestGuid2).size());
 
-  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
+  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnecting);
   base::RunLoop().RunUntilIdle();
   ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath2),
              dbus::ObjectPath("/SMS/1"));
@@ -563,9 +563,9 @@ TEST_F(NetworkSmsHandlerTest, NetworkDelayedActiveNetworkTest) {
 }
 
 TEST_F(NetworkSmsHandlerTest, MessageReceivedNeverConnectedNetwork) {
-  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
+  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnecting);
   SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
-                     kTestGuid2, kTestIccid2, shill::kStateDisconnect);
+                     kTestGuid2, kTestIccid2, shill::kStateDisconnecting);
 
   base::RunLoop().RunUntilIdle();
   network_sms_handler_->RequestUpdate();
