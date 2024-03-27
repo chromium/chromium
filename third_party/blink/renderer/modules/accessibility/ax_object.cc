@@ -7681,7 +7681,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
             ancestor->RoleValue() == ax::mojom::blink::Role::kTreeGrid) {
           if (AXObject* ax_prev =
                   ancestor->CachedPreviousSiblingIncludingIgnored()) {
-            if (ax_prev->GetControlsListboxForTextfieldCombobox() == ancestor &&
+            if (ax_prev->RoleValue() ==
+                    ax::mojom::blink::Role::kTextFieldWithComboBox &&
                 ax_prev->GetAOMPropertyOrARIAAttribute(
                     AOMRelationProperty::kActiveDescendant)) {
               return true;

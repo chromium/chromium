@@ -5435,13 +5435,21 @@ void AXNodeObject::HandleActiveDescendantChanged() {
   Node* focused_node = GetDocument()->FocusedElement();
   if (focused_node == GetNode()) {
     AXObject* active_descendant = ActiveDescendant();
-    if (active_descendant && active_descendant->IsSelectedFromFocus()) {
-      // In single selection containers, selection follows focus, so a selection
-      // changed event must be fired. This ensures the AT is notified that the
-      // selected state has changed, so that it does not read "unselected" as
-      // the user navigates through the items.
-      AXObjectCache().HandleAriaSelectedChangedWithCleanLayout(
-          active_descendant->GetNode());
+    if (active_descendant) {
+      if (active_descendant->IsSelectedFromFocus()) {
+        // In single selection containers, selection follows focus, so a
+        // selection changed event must be fired. This ensures the AT is
+        // notified that the selected state has changed, so that it does not
+        // read "unselected" as the user navigates through the items.
+        AXObjectCache().HandleAriaSelectedChangedWithCleanLayout(
+            active_descendant->GetNode());
+      } else if (active_descendant->RoleValue() ==
+                 ax::mojom::blink::Role::kRow) {
+        // Active descendant rows must be marked dirty because that can make
+        // them gain accessible name from contents
+        // (see AXObject::SupportsNameFromContents).
+        AXObjectCache().MarkAXObjectDirtyWithCleanLayout(active_descendant);
+      }
     }
 
     // Mark this node dirty. AXEventGenerator will automatically infer

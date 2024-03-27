@@ -27,12 +27,20 @@
         <div role="gridcell">data</div>
     </div>
 </div>
-</body>
 
 <input type="text" role="combobox" aria-controls="treegrid5" aria-activedescendant="treegrid5-row1">
 <div id="treegrid5" role="grid">
     <div id="treegrid5-row1" role="row">
         <div role="gridcell">data</div>
+    </div>
+</div>
+
+<input id="input6" type="text" role="combobox" aria-controls="treegrid6">
+<div id="treegrid6-container" role="none">
+    <div id="treegrid6" role="grid">
+        <div id="treegrid6-row1" role="row">
+            <div role="gridcell">data</div>
+        </div>
     </div>
 </div>
 </body>
@@ -67,4 +75,9 @@ test(function(t) {
     assert_equals(axRow.name, 'data');
 }, "The row's name must concatenate the children if the grid has a previous sibling input with aria-activedescendant");
 
+test(function(t) {
+    document.getElementById('input6').setAttribute('aria-activedescendant', "treegrid6-row1");
+    var axRow = axElementById("treegrid6-row1");
+    assert_equals(axRow.name, 'data');
+}, "The row's name must concatenate the children if the grid has a previous unignored sibling input with a late-added aria-activedescendant");
 </script>
