@@ -111,8 +111,6 @@ enum ModelType {
   USER_EVENTS,
   // Commit only user consents.
   USER_CONSENTS,
-  // Segmentation data.
-  SEGMENTATION,
   // Tabs sent between devices.
   SEND_TAB_TO_SELF,
   // Commit only security events.
@@ -250,7 +248,7 @@ enum class ModelTypeForHistograms {
   kPrintersAuthorizationServers = 52,
   kContactInfo = 53,
   kAutofillWalletUsage = 54,
-  kSegmentation = 55,
+  // kDeprecatedSegmentation = 55,
   kSavedTabGroups = 56,
   kPowerBookmark = 57,
   kWebAuthnCredentials = 58,

@@ -42,9 +42,6 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 // TODO(b/322147254): Cleanup when launched.
 BASE_DECLARE_FEATURE(kSyncPlusAddress);
 
-// If enabled, Segmentation data type will be synced.
-BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Whether explicit passphrase sharing between Ash and Lacros is enabled.
 BASE_DECLARE_FEATURE(kSyncChromeOSExplicitPassphraseSharing);

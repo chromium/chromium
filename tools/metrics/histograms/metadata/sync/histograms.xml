@@ -83,7 +83,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SAVED_TAB_GROUPS" summary="SAVED_TAB_GROUPS"/>
   <variant name=".SEARCH_ENGINE" summary="SEARCH_ENGINE"/>
   <variant name=".SECURITY_EVENT" summary="SECURITY_EVENT"/>
-  <variant name=".SEGMENTATION" summary="SEGMENTATION"/>
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
   <variant name=".SESSION" summary="SESSION"/>
   <variant name=".SHARED_TAB_GROUP_DATA" summary="SHARED_TAB_GROUP_DATA"/>

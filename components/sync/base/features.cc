@@ -38,10 +38,6 @@ BASE_FEATURE(kSyncPlusAddress,
              "SyncPlusAddress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncSegmentationDataType,
-             "SyncSegmentationDataType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kSyncChromeOSExplicitPassphraseSharing,
              "SyncChromeOSExplicitPassphraseSharing",

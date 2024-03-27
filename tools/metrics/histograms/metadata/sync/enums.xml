@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
   <int value="52" label="Printers Authorization Servers"/>
   <int value="53" label="Contact info"/>
   <int value="54" label="Autofill Wallet Usage"/>
-  <int value="55" label="Segmentation"/>
+  <int value="55" label="(Obsolete) Segmentation"/>
   <int value="56" label="Saved Tab Groups"/>
   <int value="57" label="Power Bookmark"/>
   <int value="58" label="WebAuthn Credentials"/>

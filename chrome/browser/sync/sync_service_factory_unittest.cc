@@ -78,7 +78,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(52 == syncer::GetNumModelTypes(),
+    static_assert(51 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -92,9 +92,6 @@ class SyncServiceFactoryTest : public testing::Test {
     // ChromeSyncClient types.
     datatypes.Put(syncer::READING_LIST);
     datatypes.Put(syncer::SECURITY_EVENTS);
-    if (base::FeatureList::IsEnabled(syncer::kSyncSegmentationDataType)) {
-      datatypes.Put(syncer::SEGMENTATION);
-    }
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
