@@ -424,6 +424,10 @@ void TabHoverCardController::HideHoverCard() {
   // Required for test metrics.
   hover_card_last_seen_on_tab_ = nullptr;
 
+  // Stop event sniffing since the hovercard is about to hide
+  // This is to prevent re-entrant calls that may happen during hide.
+  event_sniffer_.reset();
+
   if (thumbnail_observer_) {
     thumbnail_observer_->Observe(nullptr);
     thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
