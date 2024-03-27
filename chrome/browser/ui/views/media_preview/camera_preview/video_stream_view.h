@@ -28,6 +28,7 @@ class VideoStreamView : public views::View, public viz::ContextLostObserver {
 
   void ScheduleFramePaint(scoped_refptr<media::VideoFrame> frame);
   void ClearFrame();
+  size_t GetRenderedFrameCount();
 
  protected:
   // views::View overrides
@@ -43,6 +44,7 @@ class VideoStreamView : public views::View, public viz::ContextLostObserver {
   media::PaintCanvasVideoRenderer video_renderer_;
   scoped_refptr<media::VideoFrame> latest_frame_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
+  size_t rendered_frame_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_CAMERA_PREVIEW_VIDEO_STREAM_VIEW_H_

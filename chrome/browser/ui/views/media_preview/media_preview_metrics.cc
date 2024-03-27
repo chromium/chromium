@@ -181,4 +181,29 @@ void RecordMediaPreviewDuration(Context context, const base::TimeDelta& delta) {
   GetMediaPreviewDurationHistogram(metric_name)->Add(delta.InSeconds());
 }
 
+void RecordPreviewVideoFramesRenderedPercent(Context context, float percent) {
+  std::string context_metric_id;
+  switch (context.ui_location) {
+    case media_preview_metrics::UiLocation::kPermissionPrompt:
+      context_metric_id =
+          "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent";
+      break;
+    case media_preview_metrics::UiLocation::kPageInfo:
+      context_metric_id =
+          "MediaPreviews.UI.Preview.PageInfo.Video.RenderedPercent";
+      break;
+    default:
+#if DCHECK_IS_ON()
+      NOTREACHED_NORETURN() << "Context ui_location is unknown";
+#else
+      LOG(ERROR) << "Context ui_location is unknown";
+      return;
+#endif
+  }
+
+  // Convert percentage to 0-100 integer.
+  int integer_percent = std::clamp(percent, /*__lo=*/0.0f, /*__hi=*/1.0f) * 100;
+  base::UmaHistogramPercentage(context_metric_id, integer_percent);
+}
+
 }  // namespace media_preview_metrics

@@ -42,6 +42,7 @@ void RecordPreviewCameraPixelHeight(Context context, int pixel_height);
 void RecordPreviewVideoExpectedFPS(Context context, int expected_fps);
 void RecordPreviewVideoActualFPS(Context context, int actual_fps);
 void RecordMediaPreviewDuration(Context context, const base::TimeDelta& delta);
+void RecordPreviewVideoFramesRenderedPercent(Context context, float percent);
 
 }  // namespace media_preview_metrics
 

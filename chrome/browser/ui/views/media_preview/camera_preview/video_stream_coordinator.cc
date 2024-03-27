@@ -70,6 +70,7 @@ void VideoStreamCoordinator::OnCameraVideoFrame(
 void VideoStreamCoordinator::OnFatalErrorOrDisconnection() {
   // When called, `video_frame_handler_` is no longer valid.
   video_frame_handler_.reset();
+  video_stream_start_time_.reset();
   if (auto* view = GetVideoStreamView(); view) {
     view->ClearFrame();
   }
@@ -102,13 +103,21 @@ void VideoStreamCoordinator::StopInternal(
 
       media_preview_metrics::RecordPreviewVideoExpectedFPS(
           metrics_context_, actual_params->requested_format.frame_rate);
+    }
+    if (video_stream_start_time_) {
+      int actual_fps =
+          video_stream_total_frames_ /
+          (base::TimeTicks::Now() - *video_stream_start_time_).InSecondsF();
+      media_preview_metrics::RecordPreviewVideoActualFPS(metrics_context_,
+                                                         actual_fps);
+      video_stream_start_time_.reset();
 
-      if (video_stream_start_time_) {
-        int actual_fps =
-            video_stream_total_frames_ /
-            (base::TimeTicks::Now() - *video_stream_start_time_).InSecondsF();
-        media_preview_metrics::RecordPreviewVideoActualFPS(metrics_context_,
-                                                           actual_fps);
+      if (auto* view = GetVideoStreamView()) {
+        float rendered_percent =
+            static_cast<double>(view->GetRenderedFrameCount()) /
+            video_stream_total_frames_;
+        media_preview_metrics::RecordPreviewVideoFramesRenderedPercent(
+            metrics_context_, rendered_percent);
       }
     }
 
