@@ -72,6 +72,10 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   // if the mailbox texture is not going to be accessed further.
   gpu::SyncToken Dissociate();
 
+  // Sets a SyncToken which gates recycling of the associated recyclable canvas
+  // resource. A recyclable canvas resource must be set to use this method.
+  void SetCompletionSyncToken(const gpu::SyncToken& token);
+
   ~WebGPUMailboxTexture();
 
   WGPUTexture GetTexture() { return texture_; }

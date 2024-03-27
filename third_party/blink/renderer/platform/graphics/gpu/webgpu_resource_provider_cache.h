@@ -8,6 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -30,9 +31,14 @@ class PLATFORM_EXPORT RecyclableCanvasResource {
     return resource_provider_.get();
   }
 
+  void SetCompletionSyncToken(const gpu::SyncToken& completion_sync_token) {
+    completion_sync_token_ = completion_sync_token;
+  }
+
  private:
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   base::WeakPtr<WebGPURecyclableResourceCache> cache_;
+  gpu::SyncToken completion_sync_token_;
 };
 
 class PLATFORM_EXPORT WebGPURecyclableResourceCache {
@@ -48,7 +54,8 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // When the holder is destroyed, move the resource provider to
   // |unused_providers_| if the cache is not full.
   void OnDestroyRecyclableResource(
-      std::unique_ptr<CanvasResourceProvider> resource_provider);
+      std::unique_ptr<CanvasResourceProvider> resource_provider,
+      const gpu::SyncToken& completion_sync_token);
 
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
 

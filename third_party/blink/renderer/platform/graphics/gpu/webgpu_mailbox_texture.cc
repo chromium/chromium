@@ -249,12 +249,25 @@ gpu::SyncToken WebGPUMailboxTexture::Dissociate() {
       wire_texture_id_ = 0;
 
       webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
+      if (recyclable_canvas_resource_) {
+        recyclable_canvas_resource_->SetCompletionSyncToken(
+            finished_access_token);
+      }
       if (finished_access_callback_) {
         std::move(finished_access_callback_).Run(finished_access_token);
       }
     }
   }
   return finished_access_token;
+}
+
+void WebGPUMailboxTexture::SetCompletionSyncToken(const gpu::SyncToken& token) {
+  // This should only be called after Dissociate().
+  CHECK_EQ(wire_texture_id_, 0u);
+
+  // This is only allowed if we have an associated recyclable canvas resource.
+  CHECK(recyclable_canvas_resource_);
+  recyclable_canvas_resource_->SetCompletionSyncToken(token);
 }
 
 WebGPUMailboxTexture::~WebGPUMailboxTexture() {
