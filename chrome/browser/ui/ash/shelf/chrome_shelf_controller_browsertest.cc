@@ -765,7 +765,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleApps) {
 
 // Confirm that app windows can be reactivated by clicking their icons and that
 // the correct activation order is maintained.
-IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, WindowActivation) {
+// TODO(crbug.com/331536126): This test is flaky.
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, DISABLED_WindowActivation) {
   int item_count = shelf_model()->item_count();
 
   // First run app.
@@ -1721,7 +1722,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
 
 // Check that the keyboard activation of a shelf item tabs properly through
 // the items at hand.
-IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, AltNumberAppsTabbing) {
+// TODO(crbug.com/331536126): This test is flaky.
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
+                       DISABLED_AltNumberAppsTabbing) {
   // First run app.
   const Extension* extension1 = LoadAndLaunchPlatformApp("launch", "Launched");
   ui::BaseWindow* window1 =
