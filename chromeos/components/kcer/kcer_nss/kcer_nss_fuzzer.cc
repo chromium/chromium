@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
+#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_future.h"
@@ -247,7 +248,7 @@ class CertGenerator {
   // The current implementation allows only a single call to the GetX509Cert().
   // Not a hard requirement, can be changed if needed.
   bool can_be_used_ = true;
-  FuzzedDataProvider& data_provider_;
+  const raw_ref<FuzzedDataProvider> data_provider_;
   base::span<const uint8_t> public_key_spki_;
   std::unique_ptr<net::CertBuilder> issuer_;
   std::unique_ptr<net::CertBuilder> cert_builder_;
@@ -268,61 +269,62 @@ bool CertGenerator::GetBool() {
   // FuzzedDataProvider is expected to return false from ConsumeBool() when
   // there's no remaining bytes, but make it more explicit since GenerateCert()
   // relies on that.
-  return (data_provider_.remaining_bytes() > 0) && data_provider_.ConsumeBool();
+  return (data_provider_->remaining_bytes() > 0) &&
+         data_provider_->ConsumeBool();
 }
 
 int CertGenerator::GetInt() {
-  return data_provider_.ConsumeIntegral<int>();
+  return data_provider_->ConsumeIntegral<int>();
 }
 
 uint64_t CertGenerator::GetUint64() {
-  return data_provider_.ConsumeIntegral<uint64_t>();
+  return data_provider_->ConsumeIntegral<uint64_t>();
 }
 
 std::string CertGenerator::GetString() {
-  return data_provider_.ConsumeRandomLengthString();
+  return data_provider_->ConsumeRandomLengthString();
 }
 
 inline std::vector<uint8_t> CertGenerator::GetBytes() {
-  size_t length = data_provider_.ConsumeIntegralInRange<size_t>(
-      0, /*max=*/data_provider_.remaining_bytes());
-  return data_provider_.ConsumeBytes<uint8_t>(length);
+  size_t length = data_provider_->ConsumeIntegralInRange<size_t>(
+      0, /*max=*/data_provider_->remaining_bytes());
+  return data_provider_->ConsumeBytes<uint8_t>(length);
 }
 
 inline GURL CertGenerator::GetGurl() {
-  return GURL(data_provider_.ConsumeRandomLengthString());
+  return GURL(data_provider_->ConsumeRandomLengthString());
 }
 
 inline net::IPAddress CertGenerator::GetIpAddress() {
   bool use_ip4 = GetBool();
   if (use_ip4) {
-    return net::IPAddress(data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>());
+    return net::IPAddress(data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>());
   } else {
-    return net::IPAddress(data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>(),
-                          data_provider_.ConsumeIntegral<uint8_t>());
+    return net::IPAddress(data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>(),
+                          data_provider_->ConsumeIntegral<uint8_t>());
   }
 }
 
 std::vector<bssl::KeyUsageBit> CertGenerator::GetKeyUsages() {
   std::vector<bssl::KeyUsageBit> result;
-  uint16_t key_usages = data_provider_.ConsumeIntegral<uint16_t>();
+  uint16_t key_usages = data_provider_->ConsumeIntegral<uint16_t>();
   if (key_usages & bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE) {
     result.push_back(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE);
   }
@@ -354,7 +356,7 @@ std::vector<bssl::KeyUsageBit> CertGenerator::GetKeyUsages() {
 }
 
 void CertGenerator::GenerateCert() {
-  std::string issuer_common_name = data_provider_.ConsumeRandomLengthString();
+  std::string issuer_common_name = data_provider_->ConsumeRandomLengthString();
   bool issuer_uses_rsa_key = GetBool();
 
   issuer_ = std::make_unique<net::CertBuilder>(/*orig_cert=*/nullptr,
@@ -375,23 +377,23 @@ void CertGenerator::GenerateCert() {
   auto now = base::Time::Now();
   cert_builder_->SetValidity(now, now + base::Days(30));
   cert_builder_->SetSubjectCommonName("SubjectCommonName");
-  cert_builder_->SetSerialNumber(data_provider_.ConsumeIntegral<uint64_t>());
-  if ((data_provider_.remaining_bytes() == 0) || GetBool()) {
+  cert_builder_->SetSerialNumber(data_provider_->ConsumeIntegral<uint64_t>());
+  if ((data_provider_->remaining_bytes() == 0) || GetBool()) {
     return;
   }
 
   // Randomize the cert.
   if (GetBool()) {
     // RFC 5280 guarantees that these values are from [0,2].
-    int version = data_provider_.ConsumeIntegralInRange(0, 2);
+    int version = data_provider_->ConsumeIntegralInRange(0, 2);
     cert_builder_->SetCertificateVersion(
         static_cast<bssl::CertificateVersion>(version));
   }
   if (GetBool()) {
     cert_builder_->ClearExtensions();
   }
-  for (int i = data_provider_.ConsumeIntegralInRange(0, 100);
-       (data_provider_.remaining_bytes() > 0) && (i > 0); --i) {
+  for (int i = data_provider_->ConsumeIntegralInRange(0, 100);
+       (data_provider_->remaining_bytes() > 0) && (i > 0); --i) {
     std::string oid_str = GetString();
     std::string value = GetString();
     bool critical = GetBool();
@@ -511,7 +513,7 @@ void CertGenerator::GenerateCert() {
   }
   if (GetBool()) {
     cert_builder_->SetSignatureAlgorithm(
-        data_provider_.ConsumeEnum<bssl::SignatureAlgorithm>());
+        data_provider_->ConsumeEnum<bssl::SignatureAlgorithm>());
   }
   if (GetBool()) {
     cert_builder_->SetSignatureAlgorithmTLV(GetString());
