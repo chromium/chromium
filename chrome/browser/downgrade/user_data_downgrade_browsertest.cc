@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -53,7 +53,7 @@ class UserDataDowngradeBrowserTestBase : public InProcessBrowserTest {
   // Returns true if the PRE_ test is running, meaning that the test is in the
   // "before relaunch" stage.
   static bool IsPreTest() {
-    const base::StringPiece test_name(
+    const std::string_view test_name(
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
     return test_name.find("PRE_") != base::StringPiece::npos;
   }
@@ -216,7 +216,7 @@ class UserDataDowngradeBrowserCopyAndCleanTest
   // Writes |downgrade_version| into the DowngradeVersion value in ClientState
   // so that the browser believes that a downgrade was driven by an
   // administrator rather than an accident of fate.
-  void SetDowngradeVersion(base::StringPiece downgrade_version) {
+  void SetDowngradeVersion(std::string_view downgrade_version) {
     ASSERT_EQ(base::win::RegKey(root_key(),
                                 install_static::GetClientStateKeyPath().c_str(),
                                 KEY_SET_VALUE | KEY_WOW64_32KEY)

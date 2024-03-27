@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/downgrade/user_data_downgrade.h"
-
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/mock_callback.h"
@@ -22,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/downgrade/downgrade_manager.h"
+#include "chrome/browser/downgrade/user_data_downgrade.h"
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,8 +65,8 @@ MATCHER_P(HasSwitch, switch_name, "") {
   return arg.HasSwitch(switch_name);
 }
 
-int GetPrePrefixCount(base::StringPiece test_name) {
-  static constexpr base::StringPiece kPrePrefix("PRE_");
+int GetPrePrefixCount(std::string_view test_name) {
+  static constexpr std::string_view kPrePrefix("PRE_");
   int pre_count = 0;
   while (
       base::StartsWith(test_name, kPrePrefix, base::CompareCase::SENSITIVE)) {
@@ -295,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, MAYBE_Test) {}
 
 class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
   struct HistoryEntry {
-    HistoryEntry(base::StringPiece url,
-                 base::StringPiece title,
+    HistoryEntry(std::string_view url,
+                 std::string_view title,
                  base::Time time,
                  history::VisitSource source)
         : url(url),
