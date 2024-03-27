@@ -802,6 +802,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(GwpAsanFeatures.GWP_ASAN_MALLOC, "GWP-ASan for `malloc()`."),
         Flag.baseFeature(GwpAsanFeatures.GWP_ASAN_PARTITION_ALLOC, "GWP-ASan for PartitionAlloc."),
         Flag.baseFeature(
+                GwpAsanFeatures.EXTREME_LIGHTWEIGHT_UAF_DETECTOR,
+                "Enables the Extreme Lightweight UAF Detector."),
+        Flag.baseFeature(
                 CcFeatures.USE_MAP_RECT_FOR_PIXEL_MOVEMENT,
                 "Enables the usage of MapRect for computing filter pixel movement."),
         Flag.baseFeature(
