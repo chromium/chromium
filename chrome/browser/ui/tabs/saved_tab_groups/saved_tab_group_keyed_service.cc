@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -100,7 +101,8 @@ void SavedTabGroupKeyedService::StoreLocalToSavedId(
   }
 }
 
-void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
+std::optional<tab_groups::TabGroupId>
+SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
     Browser* browser,
     const base::Uuid saved_group_guid) {
   const SavedTabGroup* saved_group = model_.Get(saved_group_guid);
@@ -109,13 +111,13 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   // interstitial, the saved_group could be null, so protect against this by
   // early returning.
   if (!saved_group) {
-    return;
+    return std::nullopt;
   }
 
   // Activate the first tab in a group if it is already open.
   if (saved_group->local_group_id().has_value()) {
     FocusFirstTabOrWindowInOpenGroup(saved_group->local_group_id().value());
-    return;
+    return saved_group->local_group_id().value();
   }
 
   // If our tab group was not found in any tabstrip model, open the group in
@@ -127,7 +129,7 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // If no tabs were opened, then there's nothing to do.
   if (opened_web_contents_to_uuid.empty()) {
-    return;
+    return std::nullopt;
   }
 
   // Figure out which tabs we actually opened in this browser that aren't
@@ -165,9 +167,11 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
+
+  return tab_group_id;
 }
 
-void SavedTabGroupKeyedService::SaveGroup(
+base::Uuid SavedTabGroupKeyedService::SaveGroup(
     const tab_groups::TabGroupId& group_id,
     bool is_pinned) {
   Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
@@ -210,6 +214,8 @@ void SavedTabGroupKeyedService::SaveGroup(
   // Link the local group to the saved group in the listener.
   listener_.ConnectToLocalTabGroup(*model_.Get(saved_group_guid),
                                    opened_web_contents_to_uuid);
+
+  return saved_group_guid;
 }
 
 void SavedTabGroupKeyedService::UnsaveGroup(

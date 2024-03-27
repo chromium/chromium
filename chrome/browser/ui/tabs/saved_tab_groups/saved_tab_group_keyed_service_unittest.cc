@@ -281,7 +281,10 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
   browser_1->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(1, browser_1->tab_strip_model()->active_index());
 
-  service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  std::optional<tab_groups::TabGroupId> opened_group_id =
+      service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  EXPECT_TRUE(opened_group_id.has_value());
+  EXPECT_EQ(tab_group_id_1, opened_group_id.value());
 
   // Ensure the first tab in the saved group is activated.
   EXPECT_EQ(0, browser_1->tab_strip_model()->active_index());
@@ -327,7 +330,10 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   browser_1->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(1, browser_1->tab_strip_model()->active_index());
 
-  service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  std::optional<tab_groups::TabGroupId> opened_group_id =
+      service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  EXPECT_TRUE(opened_group_id.has_value());
+  EXPECT_EQ(tab_group_id_1, opened_group_id.value());
 
   // Ensure the active tab in the saved group is not changed.
   EXPECT_EQ(1, browser_1->tab_strip_model()->active_index());
@@ -336,7 +342,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   browser_1->tab_strip_model()->ActivateTabAt(2);
   EXPECT_EQ(2, browser_1->tab_strip_model()->active_index());
 
-  service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  opened_group_id = service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  EXPECT_TRUE(opened_group_id.has_value());
+  EXPECT_EQ(tab_group_id_1, opened_group_id.value());
 
   // If there is no active tab in the saved tab group, the first tab of the
   // saved tab group is activated. Ensure the first tab in the saved group is

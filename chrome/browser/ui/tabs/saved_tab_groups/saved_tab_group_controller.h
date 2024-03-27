@@ -15,17 +15,18 @@ namespace tab_groups {
 // The API for performing updates to the SavedTabGroup feature.
 class SavedTabGroupController {
   // Opens a Saved Tab Group in a specified browser and sets all of the required
-  // state in the SavedTabGroupService.
-  virtual void OpenSavedTabGroupInBrowser(
+  // state in the SavedTabGroupService. Returns the local group id that was
+  // opened. If no group was opened, return nullopt.
+  virtual std::optional<tab_groups::TabGroupId> OpenSavedTabGroupInBrowser(
       Browser* browser,
       const base::Uuid saved_group_guid) = 0;
 
   // Saves a group. Finds the TabGroup by groupid from all browsers, constructs
   // the saved tab group, and starts listening to all tabs. If `prepend` is
   // true, add to the front of the tab group list and pin it, otherwise add to
-  // the back.
-  virtual void SaveGroup(const tab_groups::TabGroupId& group_id,
-                         bool is_pinned = false) = 0;
+  // the back. Returns the id of the saved group.
+  virtual base::Uuid SaveGroup(const tab_groups::TabGroupId& group_id,
+                               bool is_pinned = false) = 0;
 
   // Unsaves a group. Finds the group_id in the list of saved tab groups and
   // removes it. Stops Listening to all tabs.
