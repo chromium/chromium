@@ -37,11 +37,13 @@ update_unix() {
     exit 1
   fi
 
-  # Unpack temporarily, delete npm, npx, corepack symlinks and re-pack.
+  # Unpack temporarily, delete npm, npx, corepack and re-pack.
   tar xfz "${FOLDER}/${FILENAME}" -C "${FOLDER}/"
   rm "${FOLDER}/${FILENAME}"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/corepack"
+  rm -rf "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/lib/node_modules/corepack"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/npm"
+  rm -rf "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/lib/node_modules/npm"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/npx"
 
   # Drop the version info from the name, since it is redundant and would make
