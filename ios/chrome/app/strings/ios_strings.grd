@@ -4508,7 +4508,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Collapse list
       </message>
       <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to enable Chrome content notifications.">
-        Keep up with news, sports, and more based on your interests
+        Keep up with news, sports, and more based on your interests.
       </message>
       <message name="IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_SHORT_DESCRIPTION" desc="Short description for the Set Up List item that encourages the user to enable Chrome content notifications.">
         Keep up with news, sports, and more.
