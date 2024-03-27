@@ -143,9 +143,6 @@ public class PasswordMetricsUtil {
     public static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
-    public static final String ACCOUNT_SETTINGS_ACTIVITY_HISTOGRAM =
-            "PasswordManager.AccountSettings.Launch.Success";
-
     public static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
 
     public static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =

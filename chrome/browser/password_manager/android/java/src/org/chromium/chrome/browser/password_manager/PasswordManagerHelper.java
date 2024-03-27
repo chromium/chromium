@@ -758,16 +758,12 @@ public class PasswordManagerHelper {
     }
 
     private static void startAccountSettingsActivity(Context context, Intent intent) {
-        boolean success = false;
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity != null) {
             try {
                 activity.startActivityForResult(intent, 0);
-                success = true;
             } catch (ActivityNotFoundException e) {
             }
         }
-        RecordHistogram.recordBooleanHistogram(
-                PasswordMetricsUtil.ACCOUNT_SETTINGS_ACTIVITY_HISTOGRAM, success);
     }
 }

@@ -465,18 +465,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AccountSettings.Launch.Success"
-    enum="BooleanSuccess" expires_after="M126">
-  <owner>derinel@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Records whether Account Settings activity could be started successfully.
-    This is recorded right after starting the activity. It is recorded for
-    non-syncing users when they select &quot;Manage passkeys&quot; item in Touch
-    To Fill bottom sheet.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2"
     enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2024-09-01">
