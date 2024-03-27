@@ -678,29 +678,6 @@ const char* LineIterator::Advance() {
   return begin;
 }
 
-bool LineIterator::AdvanceAndCopy(char* buf, size_t buf_len) {
-  if (IsDone())
-    return false;
-
-  const char* begin = reinterpret_cast<const char*>(&bdict_data_[cur_offset_]);
-
-  // Advance over this word to find the end.
-  size_t i;
-  for (i = 0;
-       i < buf_len && cur_offset_ < bdict_length_ && bdict_data_[cur_offset_];
-       i++, cur_offset_++) {
-    buf[i] = bdict_data_[cur_offset_];
-  }
-  // Handle the NULL terminator.
-  cur_offset_++;  // Consume in the input
-  if (i < buf_len)
-    buf[i] = 0;  // Save in the output.
-  else
-    buf[buf_len - 1] = 0;  // Overflow, make sure it's terminated.
-
-  return !!buf[0];
-}
-
 // ReplacementIterator ---------------------------------------------------------
 
 // Fills pointers to NULL terminated strings into the given output params.

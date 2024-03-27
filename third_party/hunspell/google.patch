@@ -279,7 +279,7 @@ index 83a4b42..162b475 100644
    bool parse_flag(const std::string& line, unsigned short* out, FileMgr* af);
    bool parse_num(const std::string& line, int* out, FileMgr* af);
 diff --git a/src/hunspell/filemgr.cxx b/src/hunspell/filemgr.cxx
-index b7c89b2..aef6dba 100644
+index b7c89b2..9eccc40 100644
 --- a/src/hunspell/filemgr.cxx
 +++ b/src/hunspell/filemgr.cxx
 @@ -78,6 +78,32 @@
@@ -298,9 +298,9 @@ index b7c89b2..aef6dba 100644
 +bool FileMgr::getline(std::string& line) {
 +  // Read one line from a BDICT file and return it, if we can read a line
 +  // without errors.
-+  bool result = iterator_->AdvanceAndCopy(line_, BUFSIZE - 1);
++  const char* result = iterator_->Advance();
 +  if (result)
-+    line = line_;
++    line = result;
 +  return result;
 +}
 +
@@ -321,10 +321,10 @@ index b7c89b2..aef6dba 100644
  }
 +#endif
 diff --git a/src/hunspell/filemgr.hxx b/src/hunspell/filemgr.hxx
-index 991e924..65fae23 100644
+index 991e924..018ffed 100644
 --- a/src/hunspell/filemgr.hxx
 +++ b/src/hunspell/filemgr.hxx
-@@ -80,6 +80,30 @@
+@@ -80,6 +80,29 @@
  #include <string>
  #include <fstream>
  
@@ -349,13 +349,12 @@ index 991e924..65fae23 100644
 +
 + protected:
 +  hunspell::LineIterator* iterator_;
-+  char line_[BUFSIZE + 50]; // input buffer
 +};
 +#else
  class FileMgr {
   private:
    FileMgr(const FileMgr&);
-@@ -99,3 +123,4 @@ class FileMgr {
+@@ -99,3 +122,4 @@ class FileMgr {
    int getlinenum();
  };
  #endif

@@ -90,9 +90,9 @@ FileMgr::~FileMgr() {
 bool FileMgr::getline(std::string& line) {
   // Read one line from a BDICT file and return it, if we can read a line
   // without errors.
-  bool result = iterator_->AdvanceAndCopy(line_, BUFSIZE - 1);
+  const char* result = iterator_->Advance();
   if (result)
-    line = line_;
+    line = result;
   return result;
 }
 

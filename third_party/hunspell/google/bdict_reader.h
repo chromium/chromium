@@ -57,11 +57,6 @@ class LineIterator {
   // Returns the next word in the sequence or NULL if there are no mode.
   const char* Advance();
 
-  // Advances to the next word in the sequence and copies it into the given
-  // buffer, of the given length. If it doesn't fit, it will be truncated.
-  // Returns true on success.
-  bool AdvanceAndCopy(char* buf, size_t buf_len);
-
   // Returns true when all data has been read. We're done when we reach a
   // double-NULL or a the end of the input (shouldn't happen).
   bool IsDone() const;

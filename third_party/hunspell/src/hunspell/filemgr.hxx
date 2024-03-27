@@ -101,7 +101,6 @@ class FileMgr {
 
  protected:
   hunspell::LineIterator* iterator_;
-  char line_[BUFSIZE + 50]; // input buffer
 };
 #else
 class FileMgr {
