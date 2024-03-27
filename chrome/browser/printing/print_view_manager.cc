@@ -30,7 +30,7 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "chrome/browser/printing/prefs_util.h"
+#include "chrome/browser/printing/oop_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

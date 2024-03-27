@@ -24,21 +24,7 @@
 
 namespace printing {
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-namespace {
-
-bool CheckOopPolicy() {
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state &&
-      local_state->HasPrefPath(prefs::kOopPrintDriversAllowedByPolicy)) {
-    return local_state->GetBoolean(prefs::kOopPrintDriversAllowedByPolicy);
-  }
-  return true;
-}
-
-}  // namespace
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 std::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   if (!prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault))
     return std::nullopt;
@@ -60,32 +46,22 @@ std::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   DCHECK(name);
   return ParsePaperSize(*name);
 }
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-bool IsOopPrintingEnabled() {
-  // First check feature flag.
-  if (!base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
-    return false;
-  }
-
+std::optional<bool> OopPrintingPref() {
   // Check for policy override.  Do no support dynamic refresh, cache and reuse
   // the value from the first check.
-  static bool policy_override = CheckOopPolicy();
+  static const auto policy_override = []() -> std::optional<bool> {
+    PrefService* local_state = g_browser_process->local_state();
+    if (local_state &&
+        local_state->HasPrefPath(prefs::kOopPrintDriversAllowedByPolicy)) {
+      return local_state->GetBoolean(prefs::kOopPrintDriversAllowedByPolicy);
+    }
+    return std::nullopt;
+  }();
   return policy_override;
 }
-
-bool ShouldPrintJobOop() {
-  return IsOopPrintingEnabled() &&
-         features::kEnableOopPrintDriversJobPrint.Get();
-}
-
-bool ShouldEarlyStartPrintBackendService() {
-  return IsOopPrintingEnabled() &&
-#if BUILDFLAG(IS_WIN)
-         features::kEnableOopPrintDriversSingleProcess.Get() &&
 #endif
-         features::kEnableOopPrintDriversEarlyStart.Get();
-}
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace printing

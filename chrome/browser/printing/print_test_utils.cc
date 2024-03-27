@@ -16,8 +16,7 @@
 #include "printing/print_job_constants.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-#include "chrome/browser/printing/prefs_util.h"
-#include "printing/printing_features.h"
+#include "chrome/browser/printing/oop_features.h"
 #endif
 
 namespace printing::test {

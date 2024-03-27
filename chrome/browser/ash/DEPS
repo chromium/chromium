@@ -294,6 +294,7 @@ include_rules = [
   "+chrome/browser/prefs/pref_service_syncable_util.h",
   "+chrome/browser/prefs/session_startup_pref.h",
   "+chrome/browser/printing/local_printer_utils_chromeos.h",
+  "+chrome/browser/printing/oop_features.h",
   "+chrome/browser/printing/prefs_util.h",
   "+chrome/browser/printing/print_backend_service_manager.h",
   "+chrome/browser/printing/print_backend_service_test_impl.h",
