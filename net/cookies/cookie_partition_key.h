@@ -40,6 +40,7 @@ class NET_EXPORT CookiePartitionKey {
     std::string top_level_site_;
   };
 
+  CookiePartitionKey() = delete;
 #if !BUILDFLAG(CRONET_BUILD)
   explicit CookiePartitionKey(mojo::DefaultConstruct::Tag);
 #endif
