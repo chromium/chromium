@@ -58,7 +58,13 @@ Status ExecuteSelectAccount(Session* session,
   std::unique_ptr<base::Value> result;
   status = web_view->SendCommandAndGetResult("FedCm.selectAccount",
                                              command_params, &result);
-  tracker->DialogClosed();
+  // Only mark the dialog as closed if the command succeeded. For example,
+  // if there is a dialog up but it is not an account chooser, selectAccount
+  // will fail but the dialog is still up and a later canceldialog command
+  // should succeed.
+  if (status.IsOk()) {
+    tracker->DialogClosed();
+  }
   return status;
 }
 

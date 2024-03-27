@@ -7949,6 +7949,32 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     token = self._driver.ExecuteScript("return getResult()")
     self.assertEqual("token", token)
 
+  def testCancelAfterFailedSelectAccount(self):
+    self._accounts = ""
+
+    self._driver.Load(self._https_server.GetUrl() + "/fedcm.html")
+
+    self._driver.SetDelayEnabled(False)
+    self._driver.ResetCooldown()
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript("callFedCm()")
+    self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
+
+    accounts = self._driver.GetAccounts()
+    self.assertEqual("ConfirmIdpLogin", self._driver.GetDialogType())
+    self.assertEqual(0, len(accounts))
+
+    # SelectAccount should fail, but not cause a later CancelFedCmDialog
+    # to fail.
+    self.assertRaises(chromedriver.InvalidArgument, self._driver.SelectAccount,
+                      0)
+
+    self._driver.CancelFedCmDialog()
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    token = self._driver.ExecuteScript('return getResult()')
+    self.assertEqual('NetworkError: Error retrieving a token.', token)
+
   def testClickErrorGotIt(self):
     self._token_response = bytes("""
         {
