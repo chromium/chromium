@@ -116,17 +116,26 @@ class VIEWS_EXPORT FrameBackground {
   gfx::ImageSkia theme_overlay_image_;
   int top_area_height_ = 0;
 
+  // Dangling in tests on `linux-lacros-rel` in:
+  // - DesktopWidgetTestInteractive.WindowModalWindowDestroyedActivationTest
+  // - WidgetCaptureTest.SystemModalWindowReleasesCapture
+  // Likely caused by a fragile ordering in ViewsTestBase::TearDown() of:
+  // - ResourceBundle::CleanupSharedInstance() - delete T
+  // - RunPendingMessages()                    - ~raw_ptr<T>
+  using DanglingImageSkiaPtr =
+      raw_ptr<const gfx::ImageSkia, AcrossTasksDanglingUntriaged>;
+
   // Images for the sides of the frame.
-  raw_ptr<const gfx::ImageSkia> left_edge_ = nullptr;
-  raw_ptr<const gfx::ImageSkia> top_edge_ = nullptr;
-  raw_ptr<const gfx::ImageSkia> right_edge_ = nullptr;
-  raw_ptr<const gfx::ImageSkia> bottom_edge_ = nullptr;
+  DanglingImageSkiaPtr left_edge_ = nullptr;
+  DanglingImageSkiaPtr top_edge_ = nullptr;
+  DanglingImageSkiaPtr right_edge_ = nullptr;
+  DanglingImageSkiaPtr bottom_edge_ = nullptr;
 
   // Images for the corners of the frame.
-  raw_ptr<const gfx::ImageSkia> top_left_corner_ = nullptr;
-  raw_ptr<const gfx::ImageSkia> top_right_corner_ = nullptr;
-  raw_ptr<const gfx::ImageSkia> bottom_left_corner_ = nullptr;
-  raw_ptr<const gfx::ImageSkia> bottom_right_corner_ = nullptr;
+  DanglingImageSkiaPtr top_left_corner_ = nullptr;
+  DanglingImageSkiaPtr top_right_corner_ = nullptr;
+  DanglingImageSkiaPtr bottom_left_corner_ = nullptr;
+  DanglingImageSkiaPtr bottom_right_corner_ = nullptr;
 
   // Vertical inset for theme image when drawing maximized.
   int maximized_top_inset_ = 0;

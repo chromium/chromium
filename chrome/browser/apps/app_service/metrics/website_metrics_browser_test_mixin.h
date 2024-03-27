@@ -77,7 +77,8 @@ class WebsiteMetricsBrowserTestMixin : public InProcessBrowserTestMixin {
   raw_ptr<AppPlatformMetricsService, DanglingUntriaged>
       app_platform_metrics_service_ = nullptr;
 #else
-  raw_ptr<WebsiteMetricsServiceLacros> website_metrics_service_ = nullptr;
+  raw_ptr<WebsiteMetricsServiceLacros, DanglingUntriaged>
+      website_metrics_service_ = nullptr;
 #endif
 };
 

@@ -112,7 +112,7 @@ class U2FClientImpl : public U2FClient {
       DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) override;
 
  private:
-  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> proxy_ = nullptr;
 
   base::WeakPtrFactory<U2FClientImpl> weak_factory_{this};
 };

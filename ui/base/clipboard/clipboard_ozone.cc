@@ -350,12 +350,12 @@ class ClipboardOzone::AsyncClipboardOzone {
   base::flat_map<ClipboardBuffer, PlatformClipboard::DataMap> offered_data_;
 
   // Provides communication to a system clipboard under ozone level.
-  raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
+  raw_ptr<PlatformClipboard, DanglingUntriaged> platform_clipboard_ = nullptr;
 
   // Reference to the ClipboardOzone object instantiating this
   // ClipboardOzone::AsyncClipboardOzone object. It is used to set
   // the correct source when some text is copied from Ash and pasted to Lacros.
-  const raw_ptr<ClipboardOzone> clipboard_ozone_;
+  const raw_ptr<ClipboardOzone, DanglingUntriaged> clipboard_ozone_;
 
   ClipboardSequenceNumberToken clipboard_sequence_number_;
   ClipboardSequenceNumberToken selection_sequence_number_;

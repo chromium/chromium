@@ -49,7 +49,7 @@ class WebFileHandlersPermissionHandler {
   const apps::FileHandlers GetAppsFileHandlers(const Extension& extension);
 
   // Remember the profile when this object is created.
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   base::WeakPtrFactory<WebFileHandlersPermissionHandler> weak_factory_{this};
 };

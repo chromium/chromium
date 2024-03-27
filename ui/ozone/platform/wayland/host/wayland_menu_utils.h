@@ -23,7 +23,7 @@ class WaylandMenuUtils : public PlatformMenuUtils {
   std::string ToDBusKeySym(KeyboardCode code) const override;
 
  private:
-  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandConnection, LeakedDanglingUntriaged> connection_;
 };
 
 }  // namespace ui

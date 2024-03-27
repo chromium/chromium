@@ -27,7 +27,7 @@ class WaylandUtils : public PlatformUtils {
   void OnUnhandledKeyEvent(const KeyEvent& key_event) override;
 
  private:
-  const raw_ptr<WaylandConnection> connection_;
+  const raw_ptr<WaylandConnection, LeakedDanglingUntriaged> connection_;
 };
 
 }  // namespace ui

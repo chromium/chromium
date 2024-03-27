@@ -96,9 +96,8 @@ class WebKioskSessionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    kiosk_session_service_lacros_ = KioskSessionServiceLacros::Get();
     attempt_user_exit_reset_ =
-        kiosk_session_service_lacros_->SetAttemptUserExitCallbackForTesting(
+        KioskSessionServiceLacros::Get()->SetAttemptUserExitCallbackForTesting(
             base::DoNothing());
 
     installer_ = std::make_unique<WebKioskInstallerLacros>(GetProfile());
@@ -125,31 +124,29 @@ class WebKioskSessionServiceBrowserTest : public InProcessBrowserTest {
     return install_result.Get();
   }
 
-  KioskSessionServiceLacros* kiosk_session_service_lacros() const {
-    return kiosk_session_service_lacros_;
-  }
-
  private:
   std::unique_ptr<WebKioskInstallerLacros> installer_;
-  raw_ptr<KioskSessionServiceLacros> kiosk_session_service_lacros_;
   std::unique_ptr<base::AutoReset<base::OnceClosure>> attempt_user_exit_reset_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
                        BrowserKioskSessionIsCreated) {
-  EXPECT_EQ(kiosk_session_service_lacros()->GetKioskBrowserSessionForTesting(),
-            nullptr);
+  EXPECT_EQ(
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
+      nullptr);
 
   CreateKioskAppWindowAndWaitInitialized();
 
-  EXPECT_NE(kiosk_session_service_lacros()->GetKioskBrowserSessionForTesting(),
-            nullptr);
+  EXPECT_NE(
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
+      nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest, VerifyInstallUrl) {
   CreateKioskAppWindowAndWaitInitialized();
 
-  EXPECT_EQ(kiosk_session_service_lacros()->GetInstallURL(), GURL(kWebAppUrl));
+  EXPECT_EQ(KioskSessionServiceLacros::Get()->GetInstallURL(),
+            GURL(kWebAppUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
@@ -157,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
   // Closing all browser windows should trigger `AttemptUserExit`.
   base::test::TestFuture<void> did_attempt_user_exit;
   auto auto_reset =
-      kiosk_session_service_lacros()->SetAttemptUserExitCallbackForTesting(
+      KioskSessionServiceLacros::Get()->SetAttemptUserExitCallbackForTesting(
           did_attempt_user_exit.GetCallback());
 
   CreateKioskAppWindowAndWaitInitialized();

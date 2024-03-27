@@ -1439,7 +1439,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
   // Origin thread (i.e. the UI thread in production).
   base::PlatformThreadId origin_thread_id_;
 
-  raw_ptr<dbus::ObjectProxy> power_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> power_manager_proxy_ =
+      nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::optional<bool> service_available_;
