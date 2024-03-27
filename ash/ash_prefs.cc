@@ -81,6 +81,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
 #include "ash/wm/lock_state_controller.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
@@ -109,6 +110,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   AutozoomControllerImpl::RegisterProfilePrefs(registry);
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
+  BirchBarController::RegisterProfilePrefs(registry);
   BirchModel::RegisterProfilePrefs(registry);
   CalendarController::RegisterProfilePrefs(registry);
   camera_app_prefs::RegisterProfilePrefs(registry);

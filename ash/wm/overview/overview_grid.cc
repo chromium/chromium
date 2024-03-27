@@ -520,11 +520,12 @@ bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
 
 // Returns true if the birch bar should be shown in current state.
 bool ShouldShowBirchBar(aura::Window* root_window) {
-  // The birch bar should not be shown in tablet mode or partial split view or
-  // the feature is disabled.
+  // The birch bar should not be shown in tablet mode, partial split view,
+  // the forest feature is disabled, or the birch bars are disabled by users.
   // TODO(http://b/325963519): remove the restriction of tablet mode when the
   // design is finalized.
   return features::IsForestFeatureEnabled() &&
+         BirchBarController::Get()->GetShowBirchSuggestions() &&
          !Shell::Get()->IsInTabletMode() &&
          !SplitViewController::Get(root_window)->InSplitViewMode();
 }
@@ -2508,8 +2509,47 @@ FasterSplitView* OverviewGrid::GetFasterSplitView() {
              : nullptr;
 }
 
-bool OverviewGrid::IsBirchBarShowing() const {
-  return birch_bar_widget_ && birch_bar_widget_->IsVisible();
+void OverviewGrid::MaybeInitBirchBarWidget(bool by_user) {
+  if (!ShouldShowBirchBar(root_window_) || birch_bar_widget_) {
+    return;
+  }
+
+  birch_bar_widget_ = BirchBarView::CreateBirchBarWidget(root_window_);
+  birch_bar_view_ =
+      views::AsViewClass<BirchBarView>(birch_bar_widget_->GetContentsView());
+  birch_bar_relayout_callback_subscription_ =
+      birch_bar_view_->AddRelayoutCallback(base::BindRepeating(
+          &OverviewGrid::OnBirchBarLayoutChanged, base::Unretained(this)));
+
+  // Initialize the birch bar view with birch bar controller.
+  auto* birch_bar_controller = BirchBarController::Get();
+  CHECK(birch_bar_controller);
+  birch_bar_controller->RegisterBar(
+      birch_bar_view_, base::BindOnce(&OverviewGrid::ShowBirchBarWidget,
+                                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Stack birch bar at bottom to guarantee the dragged window is above it.
+  auto* window = birch_bar_widget_->GetNativeWindow();
+  window->parent()->StackChildAtBottom(window);
+
+  if (by_user) {
+    RefreshGridBounds(/*animate=*/true);
+  }
+}
+
+void OverviewGrid::DestroyBirchBarWidget(bool by_user) {
+  if (birch_bar_widget_) {
+    // The birch bar controller may be destroyed when shutting down Overview.
+    if (auto* birch_bar_controller = BirchBarController::Get()) {
+      birch_bar_controller->OnBarDestroying(birch_bar_view_);
+    }
+    birch_bar_view_ = nullptr;
+    birch_bar_widget_.reset();
+  }
+
+  if (by_user) {
+    RefreshGridBounds(/*animate=*/true);
+  }
 }
 
 void OverviewGrid::OnSplitViewStateChanged(
@@ -2670,46 +2710,10 @@ void OverviewGrid::MaybeInitDesksWidget() {
   window->parent()->StackChildAtBottom(window);
 }
 
-void OverviewGrid::MaybeInitBirchBarWidget() {
-  if (!ShouldShowBirchBar(root_window_) || birch_bar_widget_) {
-    return;
-  }
-
-  birch_bar_widget_ = BirchBarView::CreateBirchBarWidget(root_window_);
-  birch_bar_view_ =
-      views::AsViewClass<BirchBarView>(birch_bar_widget_->GetContentsView());
-  birch_bar_relayout_callback_subscription_ =
-      birch_bar_view_->AddRelayoutCallback(
-          base::BindRepeating(&OverviewGrid::OnBirchBarLayoutChanged,
-                              weak_ptr_factory_.GetWeakPtr()));
-
-  // Initialize the birch bar view with birch bar controller.
-  auto* birch_bar_controller = BirchBarController::Get();
-  CHECK(birch_bar_controller);
-  birch_bar_controller->RegisterBar(
-      birch_bar_view_, base::BindOnce(&OverviewGrid::ShowBirchBarWidget,
-                                      weak_ptr_factory_.GetWeakPtr()));
-
-  // Stack birch bar at bottom to guarantee the dragged window is above it.
-  auto* window = birch_bar_widget_->GetNativeWindow();
-  window->parent()->StackChildAtBottom(window);
-}
-
 void OverviewGrid::ShowBirchBarWidget() {
   CHECK(birch_bar_widget_);
   birch_bar_widget_->Show();
   // TODO(zxdan): add birch bar showing animation.
-}
-
-void OverviewGrid::DestroyBirchBarWidget() {
-  if (birch_bar_widget_) {
-    // The birch bar controller may be destroyed when shutting down Overview.
-    if (auto* birch_bar_controller = BirchBarController::Get()) {
-      birch_bar_controller->OnBarDestroying(birch_bar_view_);
-    }
-    birch_bar_view_ = nullptr;
-    birch_bar_widget_.reset();
-  }
 }
 
 std::vector<gfx::RectF> OverviewGrid::GetWindowRects(

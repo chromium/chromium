@@ -14,8 +14,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point.h"
+
+class PrefRegistrySimple;
 
 namespace ash {
 
@@ -37,6 +40,8 @@ class BirchBarController : public BirchModel::Observer {
   // session is shutting down.
   static BirchBarController* Get();
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // Register a bar view with its initialized callback which will be called
   // after initialization.
   void RegisterBar(BirchBarView* bar_view,
@@ -53,12 +58,21 @@ class BirchBarController : public BirchModel::Observer {
   // Called if a suggestion is hidden by user from context menu.
   void OnItemHiddenByUser(BirchItem* item);
 
+  // Called if the user shows/hides the suggestions from context menu.
+  void SetShowBirchSuggestions(bool show);
+
+  // Gets if the user allows the suggestions to show.
+  bool GetShowBirchSuggestions() const;
+
  private:
   friend class BirchBarMenuTest;
 
+  // Fetches data from birch model if there is no fetching in progress.
+  void MaybeFetchDataFromModel();
+
   // Called when birch items are fetched from model or the fetching process
   // timed out.
-  void OnItemsFecthedFromModel();
+  void OnItemsFetchedFromModel();
 
   // initialize the given `bar_view` with the items fetched from model.
   void InitBar(BirchBarView* bar_view);
@@ -69,6 +83,9 @@ class BirchBarController : public BirchModel::Observer {
   // BirchModel::Observer:
   void OnBirchClientSet() override;
 
+  // Called when the show suggestions pref changes.
+  void OnShowSuggestionsPrefChanged();
+
   // Birch items fetched from model.
   std::vector<std::unique_ptr<BirchItem>> items_;
 
@@ -77,8 +94,11 @@ class BirchBarController : public BirchModel::Observer {
   // The map of each bar view to corresponding initialized callback.
   base::flat_map<raw_ptr<BirchBarView>, base::OnceClosure> bar_map_;
 
-  // Indicates if the data fetching process completes or not.
-  bool data_fetch_complete_ = false;
+  // Indicates if the data fetching is in progress.
+  bool data_fetch_in_progress_ = false;
+
+  // Show/hide suggestions pref change registrar.
+  PrefChangeRegistrar show_suggestions_pref_registrar_;
 
   base::ScopedObservation<BirchModel, BirchModel::Observer>
       birch_model_observer_{this};

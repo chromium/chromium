@@ -4,26 +4,41 @@
 
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 
+#include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
+namespace {
+
+// Returns the pref service to use for Birch bar prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
+}  // namespace
+
 BirchBarController::BirchBarController() {
-  if (!Shell::Get()->birch_model()->birch_client()) {
-    // Observe birch model and wait until client is set before requesting data.
-    birch_model_observer_.Observe(Shell::Get()->birch_model());
-  } else {
-    // Fetching data from model.
-    Shell::Get()->birch_model()->RequestBirchDataFetch(
-        base::BindOnce(&BirchBarController::OnItemsFecthedFromModel,
-                       weak_ptr_factory_.GetWeakPtr()));
+  // Init and register the show suggestions pref callback.
+  show_suggestions_pref_registrar_.Init(GetPrefService());
+  show_suggestions_pref_registrar_.Add(
+      prefs::kBirchShowSuggestions,
+      base::BindRepeating(&BirchBarController::OnShowSuggestionsPrefChanged,
+                          base::Unretained(this)));
+
+  if (GetShowBirchSuggestions()) {
+    // Fetching data from model if going to show the suggestions.
+    MaybeFetchDataFromModel();
   }
 }
 
@@ -43,6 +58,11 @@ BirchBarController* BirchBarController::Get() {
   return nullptr;
 }
 
+// static.
+void BirchBarController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kBirchShowSuggestions, true);
+}
+
 void BirchBarController::RegisterBar(
     BirchBarView* bar_view,
     base::OnceClosure bar_initialized_callback) {
@@ -50,7 +70,7 @@ void BirchBarController::RegisterBar(
   bar_map_[bar_view] = std::move(bar_initialized_callback);
 
   // Directly initialize the bar view if data fetching is done.
-  if (data_fetch_complete_) {
+  if (!birch_model_observer_.IsObserving() && !data_fetch_in_progress_) {
     InitBar(bar_view);
   }
 }
@@ -100,10 +120,39 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
   std::erase_if(items_, base::MatchesUniquePtr(item));
 }
 
-void BirchBarController::OnItemsFecthedFromModel() {
+void BirchBarController::SetShowBirchSuggestions(bool show) {
+  // Register the show suggestions option to user's pref.
+  show_suggestions_pref_registrar_.prefs()->SetBoolean(
+      prefs::kBirchShowSuggestions, show);
+}
+
+bool BirchBarController::GetShowBirchSuggestions() const {
+  return show_suggestions_pref_registrar_.prefs()->GetBoolean(
+      prefs::kBirchShowSuggestions);
+}
+
+void BirchBarController::MaybeFetchDataFromModel() {
+  if (data_fetch_in_progress_) {
+    return;
+  }
+
+  auto* birch_model = Shell::Get()->birch_model();
+  if (birch_model->birch_client()) {
+    // Fetching data from model.
+    data_fetch_in_progress_ = true;
+    birch_model->RequestBirchDataFetch(
+        base::BindOnce(&BirchBarController::OnItemsFetchedFromModel,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else if (!birch_model_observer_.IsObserving()) {
+    // Observe birch model and wait until client is set before requesting data.
+    birch_model_observer_.Observe(birch_model);
+  }
+}
+
+void BirchBarController::OnItemsFetchedFromModel() {
   // When data fetching completes, use the fetched items to initialize all the
   // bar views.
-  data_fetch_complete_ = true;
+  data_fetch_in_progress_ = false;
   items_ = Shell::Get()->birch_model()->GetItemsForDisplay();
 
   // Record an impression if there are suggestion chips to show.
@@ -125,7 +174,7 @@ void BirchBarController::OnItemsFecthedFromModel() {
 }
 
 void BirchBarController::InitBar(BirchBarView* bar_view) {
-  CHECK(data_fetch_complete_);
+  CHECK(!data_fetch_in_progress_);
 
   for (auto& item : items_) {
     if (bar_view->GetChipsNum() == BirchBarView::kMaxChipsNum) {
@@ -149,9 +198,26 @@ void BirchBarController::OnBirchClientSet() {
   birch_model_observer_.Reset();
 
   // Fetching data from model.
-  Shell::Get()->birch_model()->RequestBirchDataFetch(
-      base::BindOnce(&BirchBarController::OnItemsFecthedFromModel,
-                     weak_ptr_factory_.GetWeakPtr()));
+  MaybeFetchDataFromModel();
+}
+
+void BirchBarController::OnShowSuggestionsPrefChanged() {
+  const bool show = GetShowBirchSuggestions();
+
+  // If to show all birch bars, we should re-fetch data from model.
+  if (show) {
+    MaybeFetchDataFromModel();
+  }
+
+  auto* overview_session = GetOverviewSession();
+  for (auto& root : Shell::GetAllRootWindows()) {
+    auto* overview_grid = overview_session->GetGridWithRootWindow(root);
+    if (show) {
+      overview_grid->MaybeInitBirchBarWidget(/*by_user=*/true);
+    } else {
+      overview_grid->DestroyBirchBarWidget(/*by_user=*/true);
+    }
+  }
 }
 
 }  // namespace ash

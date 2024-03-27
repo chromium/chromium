@@ -62,11 +62,10 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overlay_layout_manager.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/root_window_layout_manager.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
@@ -1442,9 +1441,8 @@ RootWindowController::GetAccessibilityPanelLayoutManager() const {
 std::unique_ptr<AppMenuModelAdapter>
 RootWindowController::BuildBirchMenuModelAdapter(
     ui::MenuSourceType source_type) {
-  const bool is_birch_bar_showing = GetOverviewSession()
-                                        ->GetGridWithRootWindow(GetRootWindow())
-                                        ->IsBirchBarShowing();
+  const bool is_birch_bar_showing =
+      BirchBarController::Get()->GetShowBirchSuggestions();
 
   return std::make_unique<BirchBarMenuModelAdapter>(
       std::make_unique<BirchBarContextMenuModel>(

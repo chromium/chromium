@@ -420,7 +420,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   FasterSplitView* GetFasterSplitView();
 
-  bool IsBirchBarShowing() const;
+  // Initializes the widget that contains the `BirchBarView` contents. `by_user`
+  // is true, if the user selects to show the birch bar from the context menu.
+  void MaybeInitBirchBarWidget(bool by_user = false);
+
+  // Destroys birch bar widget. `by_user` is true, if the user selects to hide
+  // the birch bar from the context menu.
+  void DestroyBirchBarWidget(bool by_user = false);
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
@@ -525,13 +531,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // `LegacyDeskBarView`.
   void MaybeInitDesksWidget();
 
-  // Initializes the widget that contains the `BirchBarView` contents.
-  void MaybeInitBirchBarWidget();
-
+  // Makes the birch bar visible if exists.
   void ShowBirchBarWidget();
-
-  // Destroys birch bar widget.
-  void DestroyBirchBarWidget();
 
   // Gets the layout of the overview items. Layout is done in 2 stages
   // maintaining fixed MRU ordering.

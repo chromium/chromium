@@ -2106,6 +2106,9 @@ inline constexpr char kGameDashboardShowToolbar[] =
 static constexpr char kSoftwareScanningEnabled[] =
     "ash.nearby.software_scanning_enabled";
 
+// A boolean pref indicating whether to show Birch suggestions in Overview mode.
+inline constexpr char kBirchShowSuggestions[] = "ash.birch.show_suggestions";
+
 // A boolean pref indicating whether Birch should use Google Calendar data.
 inline constexpr char kBirchUseCalendar[] = "ash.birch.use_calendar";
 

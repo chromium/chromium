@@ -8,8 +8,7 @@
 #include "ash/style/checkbox.h"
 #include "ash/style/switch.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
-#include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,15 +24,15 @@ std::unique_ptr<Switch> CreateShowSuggestionSwitch(
     BirchBarMenuModelAdapter* model_adapter) {
   auto switch_button = std::make_unique<Switch>(base::BindRepeating(
       [](BirchBarMenuModelAdapter* model_adapter) {
-        // TODO(zxdan): show/hide the birch bar via birch bar controller.
-        //  Dismiss the menu.
+        auto* birch_bar_controller = BirchBarController::Get();
+        CHECK(birch_bar_controller);
+
+        birch_bar_controller->SetShowBirchSuggestions(
+            /*show=*/!birch_bar_controller->GetShowBirchSuggestions());
         model_adapter->Cancel();
       },
       model_adapter));
-  switch_button->SetIsOn(
-      GetOverviewSession()
-          ->GetGridWithRootWindow(model_adapter->root_window())
-          ->IsBirchBarShowing());
+  switch_button->SetIsOn(BirchBarController::Get()->GetShowBirchSuggestions());
   return switch_button;
 }
 
@@ -50,8 +49,7 @@ BirchBarMenuModelAdapter::BirchBarMenuModelAdapter(
                           widget_owner,
                           source_type,
                           std::move(on_menu_closed_callback),
-                          is_tablet_mode),
-      root_window_(widget_owner->GetNativeWindow()->GetRootWindow()) {}
+                          is_tablet_mode) {}
 
 BirchBarMenuModelAdapter::~BirchBarMenuModelAdapter() = default;
 

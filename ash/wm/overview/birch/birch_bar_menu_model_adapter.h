@@ -32,8 +32,6 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
   BirchBarMenuModelAdapter& operator=(const BirchBarMenuModelAdapter&) = delete;
   ~BirchBarMenuModelAdapter() override;
 
-  aura::Window* root_window() { return root_window_; }
-
   // Checkbox::Delegate:
   void OnButtonSelected(OptionButtonBase* button) override;
   void OnButtonClicked(OptionButtonBase* button) override;
@@ -44,9 +42,6 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
                                       ui::MenuModel* model,
                                       size_t index) override;
   void RecordHistogramOnMenuClosed() override;
-
- private:
-  raw_ptr<aura::Window> root_window_;
 };
 
 }  // namespace ash
