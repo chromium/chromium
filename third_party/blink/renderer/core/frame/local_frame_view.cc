@@ -115,6 +115,7 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -3247,26 +3248,8 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   // clip extra content.
   // FIXME: We are assuming a shrink-to-fit printing implementation. A cropping
   // implementation should not do this!
-  float overall_scale_factor = 1.0;
-  for (const PhysicalFragmentLink& link :
-       layout_view->GetPhysicalFragment(0)->Children()) {
-    const auto& page = To<PhysicalBoxFragment>(*link);
-    // Check the inline axis overflow on each individual page, to find the
-    // largest relative overflow.
-    float page_scale_factor;
-    if (layout_view->StyleRef().IsHorizontalWritingMode()) {
-      page_scale_factor = page.ScrollableOverflow().Right().ToFloat() /
-                          page.Size().width.ToFloat();
-    } else {
-      page_scale_factor = page.ScrollableOverflow().Bottom().ToFloat() /
-                          page.Size().height.ToFloat();
-    }
-    overall_scale_factor = std::max(overall_scale_factor, page_scale_factor);
-    if (overall_scale_factor >= maximum_shrink_factor) {
-      overall_scale_factor = maximum_shrink_factor;
-      break;
-    }
-  }
+  float overall_scale_factor =
+      CalculateOverflowShrinkForPrinting(*layout_view, maximum_shrink_factor);
 
   if (overall_scale_factor > 1.0) {
     // Re-layout and apply the same scale factor to all pages. PageScaleFactor()

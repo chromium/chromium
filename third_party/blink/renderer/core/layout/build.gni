@@ -481,6 +481,8 @@ blink_core_sources_layout = [
   "overflow_model.h",
   "paginated_root_layout_algorithm.cc",
   "paginated_root_layout_algorithm.h",
+  "pagination_utils.cc",
+  "pagination_utils.h",
   "physical_box_fragment.cc",
   "physical_box_fragment.h",
   "physical_fragment.cc",
