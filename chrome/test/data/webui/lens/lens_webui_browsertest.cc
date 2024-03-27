@@ -5,6 +5,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -33,8 +34,11 @@ class LensOverlayTest : public LensWebUIBrowserTest {
  protected:
   void RunOverlayTest(const std::string& file, const std::string& trigger) {
     // State should start in off.
-    auto* controller =
-        browser()->tab_strip_model()->GetActiveTab()->lens_overlay_controller();
+    auto* controller = browser()
+                           ->tab_strip_model()
+                           ->GetActiveTab()
+                           ->tab_features()
+                           ->lens_overlay_controller();
     ASSERT_EQ(controller->state(), State::kOff);
 
     // Showing UI should eventually result in overlay state.
