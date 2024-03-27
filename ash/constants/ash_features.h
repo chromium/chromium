@@ -401,6 +401,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOnTime;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime;
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFingerprintAuthFactor);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFocusMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev);
@@ -1021,6 +1022,7 @@ bool IsFederatedStringsServiceScheduleTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerFuseBoxDebugEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesConflictDialogEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesLocalImageSearchEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFingerprintAuthFactorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFirmwareUpdateUIV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexAutoEnrollmentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();

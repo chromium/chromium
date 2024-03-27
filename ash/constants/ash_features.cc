@@ -371,6 +371,11 @@ BASE_FEATURE(kBorealisZinkGlDriver,
              "BorealisZinkGlDriver",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows UserDataAuth client to use fingerprint auth factor.
+BASE_FEATURE(kFingerprintAuthFactor,
+             "FingerprintAuthFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<BorealisZinkGlDriverParam>::Option
     borealis_zink_gl_driver_options[] = {
         {BorealisZinkGlDriverParam::kZinkEnableRecommended,
@@ -3497,6 +3502,10 @@ bool IsFilesConflictDialogEnabled() {
 
 bool IsFilesLocalImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kFilesLocalImageSearch);
+}
+
+bool IsFingerprintAuthFactorEnabled() {
+  return base::FeatureList::IsEnabled(kFingerprintAuthFactor);
 }
 
 bool IsFirmwareUpdateUIV2Enabled() {
