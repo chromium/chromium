@@ -79,9 +79,10 @@ class PlatformVideoFramePoolTestBase : public ::testing::Test {
   PlatformVideoFramePoolTestBase()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         pool_(new PlatformVideoFramePool()) {
-    SetCreateFrameCB(
+    pool_->SetCustomFrameAllocator(
         base::BindRepeating(&CreateGpuMemoryBufferFrameResource<
-                            gfx::NativePixmapHandle::kNoModifier>));
+                            gfx::NativePixmapHandle::kNoModifier>),
+        VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
     pool_->set_parent_task_runner(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
@@ -123,11 +124,6 @@ class PlatformVideoFramePoolTestBase : public ::testing::Test {
     // callback is a fake.
 
     return frame;
-  }
-
-  void SetCreateFrameCB(PlatformVideoFramePool::CreateFrameCB cb) {
-    base::AutoLock auto_lock(pool_->lock_);
-    pool_->create_frame_cb_ = cb;
   }
 
  protected:
@@ -327,14 +323,17 @@ TEST_P(PlatformVideoFramePoolTest,
 TEST_P(PlatformVideoFramePoolTest, InitializeFail) {
   const auto fourcc = Fourcc::FromVideoPixelFormat(GetParam());
   ASSERT_TRUE(fourcc.has_value());
-  SetCreateFrameCB(base::BindRepeating(
-      [](VideoPixelFormat format, const gfx::Size& coded_size,
-         const gfx::Rect& visible_rect, const gfx::Size& natural_size,
-         bool use_protected, bool use_linear_buffers, bool needs_detiling,
-         base::TimeDelta timestamp) {
+  pool_->SetCustomFrameAllocator(
+      base::BindRepeating([](VideoPixelFormat format,
+                             const gfx::Size& coded_size,
+                             const gfx::Rect& visible_rect,
+                             const gfx::Size& natural_size, bool use_protected,
+                             bool use_linear_buffers, bool needs_detiling,
+                             base::TimeDelta timestamp) {
         return CroStatus::Or<scoped_refptr<FrameResource>>(
             CroStatus::Codes::kFailedToCreateVideoFrame);
-      }));
+      }),
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
   EXPECT_FALSE(Initialize(fourcc.value()));
 }
@@ -343,8 +342,9 @@ TEST_P(PlatformVideoFramePoolTest, ModifierIsPassed) {
   const uint64_t kSampleModifier = 0x001234567890abcdULL;
   const auto fourcc = Fourcc::FromVideoPixelFormat(GetParam());
   ASSERT_TRUE(fourcc.has_value());
-  SetCreateFrameCB(base::BindRepeating(
-      &CreateGpuMemoryBufferFrameResource<kSampleModifier>));
+  pool_->SetCustomFrameAllocator(
+      base::BindRepeating(&CreateGpuMemoryBufferFrameResource<kSampleModifier>),
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   ASSERT_TRUE(Initialize(fourcc.value()));
 
   EXPECT_EQ(layout_->modifier(), kSampleModifier);
@@ -391,8 +391,10 @@ TEST_P(PlatformVideoFramePoolWithMediaCompressionTest,
   const auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
   ASSERT_TRUE(fourcc.has_value());
 
-  SetCreateFrameCB(base::BindRepeating(
-      &CreateChromeOSCompressedGpuMemoryBufferFrameResource, modifier));
+  pool_->SetCustomFrameAllocator(
+      base::BindRepeating(&CreateChromeOSCompressedGpuMemoryBufferFrameResource,
+                          modifier),
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
 
   ASSERT_TRUE(Initialize(fourcc.value()));
   EXPECT_EQ(layout_->modifier(), modifier);
