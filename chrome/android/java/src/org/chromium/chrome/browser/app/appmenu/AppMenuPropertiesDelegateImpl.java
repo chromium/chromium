@@ -88,7 +88,6 @@ import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -96,7 +95,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -120,11 +118,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private boolean mUpdateMenuItemVisible;
     private ShareUtils mShareUtils;
-    private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
-    private @Nullable ModelList mModelList;
-    private int mReadAloudPos;
-    @Nullable protected Runnable mReadAloudAppMenuResetter;
-    private boolean mHasReadAloudInserted;
+    @Nullable private final Supplier<ReadAloudController> mReadAloudControllerSupplier;
 
     /**
      * This is non null for the case of ChromeTabbedActivity when the corresponding {@link
@@ -239,22 +233,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        if (mReadAloudControllerSupplier.get() != null) {
-            mReadAloudControllerSupplier
-                    .get()
-                    .removeReadabilityUpdateListener(mReadAloudAppMenuResetter);
-        }
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    Runnable getReadAloudmenuResetter() {
-        return mReadAloudAppMenuResetter;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Nullable
-    ModelList getModelList() {
-        return mModelList;
     }
 
     /**
@@ -338,34 +316,21 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @Override
     public ModelList getMenuItems(
             CustomItemViewTypeProvider customItemViewTypeProvider, AppMenuHandler handler) {
-        mReadAloudPos = -1;
+        ModelList modelList = new ModelList();
+
         PopupMenu popup = new PopupMenu(mContext, mDecorView);
         Menu menu = popup.getMenu();
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(getAppMenuLayoutId(), menu);
 
-        return getMenuItemsForMenu(menu, customItemViewTypeProvider, handler);
-    }
-
-    @VisibleForTesting
-    ModelList getMenuItemsForMenu(
-            Menu menu,
-            CustomItemViewTypeProvider customItemViewTypeProvider,
-            AppMenuHandler handler) {
-        ModelList modelList = new ModelList();
         prepareMenu(menu, handler);
+
         // TODO(crbug.com/1119550): Programmatically create menu item's PropertyModel instead of
         // converting from MenuItems.
-        int visibleBeforeReadAloudCount = 0;
         for (int i = 0; i < menu.size(); ++i) {
             MenuItem item = menu.getItem(i);
-            if (!item.isVisible()) {
-                if (item.getItemId() == R.id.readaloud_menu_id) {
-                    mReadAloudPos = visibleBeforeReadAloudCount;
-                }
-                continue;
-            }
-            visibleBeforeReadAloudCount++;
+            if (!item.isVisible()) continue;
+
             PropertyModel propertyModel = AppMenuUtil.menuItemToPropertyModel(item);
             propertyModel.set(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(item));
             propertyModel.set(
@@ -416,7 +381,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
             modelList.add(new MVCListAdapter.ListItem(menutype, propertyModel));
         }
-        mModelList = modelList;
+
         return modelList;
     }
 
@@ -969,81 +934,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /** Sets visibility of the "Listen to this page" menu item. */
     protected void prepareReadAloudMenuItem(Menu menu, @Nullable Tab currentTab) {
         boolean visible = false;
-
-        if (mReadAloudControllerSupplier.get() != null) {
+        if (mReadAloudControllerSupplier != null) {
             ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
             visible =
                     readAloudController != null
                             && currentTab != null
                             && readAloudController.isReadable(currentTab);
-
-            if (mReadAloudAppMenuResetter == null) {
-                mReadAloudAppMenuResetter =
-                        () -> {
-                            boolean isReadable =
-                                    mReadAloudControllerSupplier.get().isReadable(currentTab);
-                            MenuItem item = menu.findItem(R.id.readaloud_menu_id);
-                            if (isReadable) {
-                                maybeInsertReadAloudItem(item);
-                            } else {
-                                maybeFindAndRemoveReadAloudItem(item);
-                            }
-                        };
-
-                readAloudController.addReadabilityUpdateListener(mReadAloudAppMenuResetter);
-            }
         }
-        mHasReadAloudInserted = visible;
         menu.findItem(R.id.readaloud_menu_id).setVisible(visible);
-    }
-
-    /**
-     * Try finding ReadAloud in the mModelList (being in the model means it was visible in the app
-     * menu). If found, remove it from the model, update MenuItem visibility state and update the
-     * last position on the read aloud item in the menu.
-     */
-    private void maybeFindAndRemoveReadAloudItem(MenuItem item) {
-        if (mModelList == null) {
-            return;
-        }
-        Iterator<ListItem> it = mModelList.iterator();
-        int counter = 0;
-        while (it.hasNext()) {
-            ListItem li = it.next();
-            int id = li.model.get(AppMenuItemProperties.MENU_ITEM_ID);
-            if (id == item.getItemId()) {
-                mReadAloudPos = counter;
-                mModelList.remove(li);
-                mHasReadAloudInserted = false;
-                return;
-            }
-            counter++;
-        }
-    }
-
-    /** If ReadAloud is not present in the mModelList, insert it at the saved position. */
-    private void maybeInsertReadAloudItem(MenuItem item) {
-        if (mModelList == null) {
-            return;
-        }
-        // Already on the list, return early
-        if (mHasReadAloudInserted) {
-            return;
-        }
-
-        // now try to insert it.
-        assert mReadAloudPos != 1 : "Unexpectedly missing position for the read aloud menu item";
-        if (mReadAloudPos != -1) {
-            item.setVisible(true);
-            mHasReadAloudInserted = true;
-            PropertyModel propertyModel = AppMenuUtil.menuItemToPropertyModel(item);
-            propertyModel.set(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(item));
-            propertyModel.set(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true);
-            propertyModel.set(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart());
-            mModelList.add(
-                    mReadAloudPos,
-                    new MVCListAdapter.ListItem(AppMenuItemType.STANDARD, propertyModel));
-        }
     }
 
     /** Returns true if a badge (i.e. a red-dot) should be shown on the menu item icon. */
