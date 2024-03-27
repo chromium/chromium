@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, FkeyRowElement, Keyboard, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, FkeyRowElement, Keyboard, KeyboardRemapModifierKeyRowElement, KeyboardSixPackKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -101,6 +101,63 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         page.shadowRoot!.querySelector<FkeyRowElement>('#f12');
     assertTrue(isVisible(updatedF11KeyRow));
     assertTrue(isVisible(updatedF12KeyRow));
+  });
+
+  /**
+   * Verify that the other keys header and six pack key rows are hidden in the
+   * remap subpage when keyboard has function key as a modifier key.
+   */
+  test('hide other keys header and six pack key rows', async () => {
+    await initializePerDeviceKeyboardRemapKeys(4);
+
+    const otherKeysHeader =
+        page.shadowRoot!.querySelector<HTMLHeadingElement>('#otherKeysHeader');
+    const delRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#del');
+    const pageDownRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>(
+            '#pageDown');
+    const pageUpRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#pageUp');
+    const endRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#end');
+    const homeRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#home');
+    const insertRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#insert');
+    assertFalse(isVisible(otherKeysHeader));
+    assertFalse(isVisible(delRow));
+    assertFalse(isVisible(pageDownRow));
+    assertFalse(isVisible(pageUpRow));
+    assertFalse(isVisible(endRow));
+    assertFalse(isVisible(homeRow));
+    assertFalse(isVisible(insertRow));
+
+    // Initialize a keyboard without function key as a modifier key.
+    await initializePerDeviceKeyboardRemapKeys(1);
+
+    const updatedOtherKeysHeader =
+        page.shadowRoot!.querySelector<HTMLHeadingElement>('#otherKeysHeader');
+    const updatedDelRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#del');
+    const updatedPageDownRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>(
+            '#pageDown');
+    const updatedPageUpRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#pageUp');
+    const updatedEndRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#end');
+    const updatedHomeRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#home');
+    const updatedInsertRow =
+        page.shadowRoot!.querySelector<KeyboardSixPackKeyRowElement>('#insert');
+    assertTrue(isVisible(updatedOtherKeysHeader));
+    assertTrue(isVisible(updatedDelRow));
+    assertTrue(isVisible(updatedPageDownRow));
+    assertTrue(isVisible(updatedPageUpRow));
+    assertTrue(isVisible(updatedEndRow));
+    assertTrue(isVisible(updatedHomeRow));
+    assertTrue(isVisible(updatedInsertRow));
   });
 
   /**

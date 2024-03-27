@@ -181,46 +181,50 @@
         </keyboard-remap-modifier-key-row>
       </template>
     </div>
-    <h2 class="subsection-header" id="otherKeysHeader">
-      $i18n{otherKeysLabel}
-    </h2>
+    <template is="dom-if" if="[[!hasFunctionKey]]">
+      <h2 class="subsection-header" id="otherKeysHeader">
+        $i18n{otherKeysLabel}
+      </h2>
+    </template>
     <div class="subsection">
-      <keyboard-six-pack-key-row
-          modifier="[[keyboard.sixPackKeyRemappings.del]]"
-          key="del"
-          pref="{{deletePref}}"
-          aria-label="$i18n{sixPackKeyLabelDelete}">
-      </keyboard-six-pack-key-row>
-      <keyboard-six-pack-key-row
-          modifier="[[keyboard.sixPackKeyRemappings.pageDown]]"
-          key="pageDown"
-          pref="{{pageDownPref}}"
-          aria-label="$i18n{sixPackKeyLabelPageDown}">
-      </keyboard-six-pack-key-row>
-      <keyboard-six-pack-key-row
-          modifier="[[keyboard.sixPackKeyRemappings.pageUp]]"
-          key="pageUp"
-          pref="{{pageUpPref}}"
-          aria-label="$i18n{sixPackKeyLabelPageUp}">
-      </keyboard-six-pack-key-row>
-      <keyboard-six-pack-key-row
-          modifier="[[keyboard.sixPackKeyRemappings.end]]"
-          key="end"
-          pref="{{endPref}}"
-          aria-label="$i18n{sixPackKeyLabelEnd}">
-      </keyboard-six-pack-key-row>
-      <keyboard-six-pack-key-row
-          modifier="[[keyboard.sixPackKeyRemappings.home]]"
-          key="home"
-          pref="{{homePref}}"
-          aria-label="$i18n{sixPackKeyLabelHome}">
-      </keyboard-six-pack-key-row>
-      <keyboard-six-pack-key-row
-          modifier="[[keyboard.sixPackKeyRemappings.insert]]"
-          key="insert"
-          pref="{{insertPref}}"
-          aria-label="$i18n{sixPackKeyLabelInsert}">
-      </keyboard-six-pack-key-row>
+      <template is="dom-if" if="[[!hasFunctionKey]]">
+        <keyboard-six-pack-key-row id="del"
+            modifier="[[keyboard.sixPackKeyRemappings.del]]"
+            key="del"
+            pref="{{deletePref}}"
+            aria-label="$i18n{sixPackKeyLabelDelete}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="pageDown"
+            modifier="[[keyboard.sixPackKeyRemappings.pageDown]]"
+            key="pageDown"
+            pref="{{pageDownPref}}"
+            aria-label="$i18n{sixPackKeyLabelPageDown}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="pageUp"
+            modifier="[[keyboard.sixPackKeyRemappings.pageUp]]"
+            key="pageUp"
+            pref="{{pageUpPref}}"
+            aria-label="$i18n{sixPackKeyLabelPageUp}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="end"
+            modifier="[[keyboard.sixPackKeyRemappings.end]]"
+            key="end"
+            pref="{{endPref}}"
+            aria-label="$i18n{sixPackKeyLabelEnd}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="home"
+            modifier="[[keyboard.sixPackKeyRemappings.home]]"
+            key="home"
+            pref="{{homePref}}"
+            aria-label="$i18n{sixPackKeyLabelHome}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="insert"
+            modifier="[[keyboard.sixPackKeyRemappings.insert]]"
+            key="insert"
+            pref="{{insertPref}}"
+            aria-label="$i18n{sixPackKeyLabelInsert}">
+        </keyboard-six-pack-key-row>
+      </template>
       <template is="dom-if"
           if="[[shouldShowFkeys(keyboard.*, hasFunctionKey)]]">
         <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}" id="f11"

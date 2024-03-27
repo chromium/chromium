@@ -794,25 +794,15 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, KeyboardFkeys) {
   const DeepQuery kF11DropdownQuery{
-      "os-settings-ui",
-      "os-settings-main",
-      "main-page-container",
-      "settings-device-page",
-      "#remap-keys",
-      "div.subsection > div:nth-child(5) > fkey-row:nth-child(7)",
-      "#keyDropdown",
-      "#dropdownMenu",
+      "os-settings-ui",       "os-settings-main", "main-page-container",
+      "settings-device-page", "#remap-keys",      "#f11",
+      "#keyDropdown",         "#dropdownMenu",
   };
 
   const DeepQuery kF12DropdownQuery{
-      "os-settings-ui",
-      "os-settings-main",
-      "main-page-container",
-      "settings-device-page",
-      "#remap-keys",
-      "div.subsection > div:nth-child(5) > fkey-row:nth-child(8)",
-      "#keyDropdown",
-      "#dropdownMenu",
+      "os-settings-ui",       "os-settings-main", "main-page-container",
+      "settings-device-page", "#remap-keys",      "#f12",
+      "#keyDropdown",         "#dropdownMenu",
   };
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDevToolsId);
