@@ -136,15 +136,15 @@ class RejectedPromises::Message final {
   }
 
   void MakePromiseWeak() {
-    DCHECK(!promise_.IsEmpty());
-    DCHECK(!promise_.IsWeak());
+    CHECK(!promise_.IsEmpty());
+    CHECK(!promise_.IsWeak());
     promise_.SetWeak(this, &Message::DidCollectPromise);
     exception_.SetWeak(this, &Message::DidCollectException);
   }
 
   void MakePromiseStrong() {
-    DCHECK(!promise_.IsEmpty());
-    DCHECK(promise_.IsWeak());
+    CHECK(!promise_.IsEmpty());
+    CHECK(promise_.IsWeak());
     promise_.ClearWeak();
     exception_.ClearWeak();
   }
