@@ -2100,7 +2100,7 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
-    name = "test_sample_jni_apk",
+    name = "jni_zero_sample_apk_test",
 )
 
 targets.tests.gtest_test(

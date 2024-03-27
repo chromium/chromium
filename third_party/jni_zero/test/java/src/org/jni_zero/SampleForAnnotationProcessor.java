@@ -6,10 +6,10 @@ package org.jni_zero;
 import android.content.Context;
 import android.view.View;
 
-import org.dummy.MyClass;
-import org.dummy.MyClass.FirstNestedInterface;
-import org.dummy.MyClass.SecondNestedInterface;
-import org.dummy.MyInterface;
+import org.stubs.MyClass;
+import org.stubs.MyClass.FirstNestedInterface;
+import org.stubs.MyClass.SecondNestedInterface;
+import org.stubs.MyInterface;
 
 import java.util.ArrayList;
 

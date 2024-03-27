@@ -6,6 +6,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 # All targets in this file are meant as compile tests only to make sure the
 # generated code compiles for all edgecases.
+testonly = true
 
 generate_jni("test_jni") {
   sources = [
@@ -14,10 +15,10 @@ generate_jni("test_jni") {
   ]
 }
 
-android_library("dummy_java") {
+android_library("stubs_java") {
   sources = [
-    "java/src/org/dummy/MyClass.java",
-    "java/src/org/dummy/MyInterface.java",
+    "java/src/org/stubs/MyClass.java",
+    "java/src/org/stubs/MyInterface.java",
   ]
 }
 
@@ -29,7 +30,7 @@ android_library("test_java") {
   ]
 
   deps = [
-    ":dummy_java",
+    ":stubs_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
@@ -45,14 +46,14 @@ source_set("test_native_side") {
   ]
 }
 
-shared_library_with_jni("test_lib") {
+shared_library_with_jni("libjni_zero_compile_check") {
   sources = [ "../sample/sample_entry_point.cc" ]
 
   deps = [
     ":test_native_side",
     "//third_party/jni_zero",
   ]
-  java_targets = [ ":compile_only_test_jni_apk" ]
+  java_targets = [ ":jni_zero_compile_check_apk" ]
   remove_uncalled_jni = true
 }
 
@@ -60,10 +61,11 @@ shared_library_with_jni("test_lib") {
 # both java and native, compiles for all the edgecases. APK itself is not meant
 # to be run or installed on a device since a lot of internal implementations are
 # empty stubs and are just meant for the compiler or linker to see.
-android_apk("compile_only_test_jni_apk") {
-  apk_name = "TestJni"
+android_apk("jni_zero_compile_check_apk") {
+  apk_name = "JniZeroCompileCheck"
   android_manifest = "../sample/AndroidManifest.xml"
   deps = [ ":test_java" ]
-  shared_libraries = [ ":test_lib" ]
-  srcjar_deps = [ ":test_lib__jni_registration" ]
+  shared_libraries = [ ":libjni_zero_compile_check" ]
+  srcjar_deps = [ ":libjni_zero_compile_check__jni_registration" ]
+  proguard_enabled = true
 }

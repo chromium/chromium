@@ -56,4 +56,12 @@ if (enable_java_templates && is_android) {
     ]
     proguard_configs = [ "proguard.flags" ]
   }
+
+  group("jni_generator_tests") {
+    testonly = true
+    deps = [
+      "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
+      "//third_party/jni_zero/test:jni_zero_compile_check_apk",
+    ]
+  }
 }

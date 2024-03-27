@@ -976,6 +976,10 @@
     "label": "//ipc:ipc_tests",
     "type": "console_test_launcher",
   },
+  "jni_zero_sample_apk_test": {
+    "label": "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
+    "type": "console_test_launcher",
+  },
   "junit_unit_tests": {
     "label": "//testing/android/junit:junit_unit_tests",
     "type": "generated_script",
@@ -1620,10 +1624,6 @@
   "test_env_py_unittests": {
     "label": "//testing:test_env_py_unittests",
     "type": "generated_script",
-  },
-  "test_sample_jni_apk": {
-    "label": "//third_party/jni_zero/sample:test_sample_jni_apk",
-    "type": "console_test_launcher",
   },
   "test_serde_json_lenient": {
     "label": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",

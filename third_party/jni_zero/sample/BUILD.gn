@@ -5,6 +5,8 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+testonly = true
+
 generate_jni("sample_header") {
   sources = [ "java/src/org/jni_zero/sample/Sample.java" ]
 }
@@ -27,7 +29,7 @@ source_set("sample_native_side") {
   sources = [ "sample.cc" ]
 }
 
-shared_library_with_jni("sample_lib") {
+shared_library_with_jni("libjni_zero_sample") {
   if (allow_jni_multiplexing) {
     _linker_script = "sample_lib_multiplexing_version_script.txt"
   } else {
@@ -42,21 +44,21 @@ shared_library_with_jni("sample_lib") {
   inputs = [ _linker_script ]
   ldflags =
       [ "-Wl,--version-script=" + rebase_path(_linker_script, root_build_dir) ]
-  java_targets = [ ":sample_jni_apk" ]
+  java_targets = [ ":jni_zero_sample_apk" ]
   remove_uncalled_jni = true
 }
 
-android_apk("sample_jni_apk") {
-  apk_name = "SampleJni"
+android_apk("jni_zero_sample_apk") {
+  apk_name = "JniZeroSample"
   android_manifest = "AndroidManifest.xml"
   deps = [ ":sample_java" ]
-  shared_libraries = [ ":sample_lib" ]
-  srcjar_deps = [ ":sample_lib__jni_registration" ]
+  shared_libraries = [ ":libjni_zero_sample" ]
+  srcjar_deps = [ ":libjni_zero_sample__jni_registration" ]
 }
 
-instrumentation_test_apk("test_sample_jni_apk") {
-  apk_name = "SampleJniTest"
-  apk_under_test = ":sample_jni_apk"
+instrumentation_test_apk("jni_zero_sample_apk_test") {
+  apk_name = "JniZeroSampleTest"
+  apk_under_test = ":jni_zero_sample_apk"
   android_manifest = "javatests/AndroidManifest.xml"
   sources = [ "javatests/src/org/jni_zero/test_sample/JniZeroSampleTest.java" ]
   deps = [
@@ -67,13 +69,5 @@ instrumentation_test_apk("test_sample_jni_apk") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
-  ]
-}
-
-# Serves to test that generated bindings compile properly.
-group("jni_generator_tests") {
-  deps = [
-    ":sample_jni_apk",
-    "//third_party/jni_zero/test:compile_only_test_jni_apk",
   ]
 }

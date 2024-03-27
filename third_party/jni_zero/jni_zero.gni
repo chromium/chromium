@@ -489,8 +489,12 @@ template("native_with_jni") {
 
       if (defined(invoker.testonly) && invoker.testonly) {
         enable_native_mocks = true
-        add_stubs_for_missing_jni = true
-        remove_uncalled_jni = true
+        if (!defined(invoker.add_stubs_for_missing_jni)) {
+          add_stubs_for_missing_jni = true
+        }
+        if (!defined(invoker.remove_uncalled_jni)) {
+          remove_uncalled_jni = true
+        }
       }
       if (_needs_cpp_codegen) {
         if (allow_jni_multiplexing) {

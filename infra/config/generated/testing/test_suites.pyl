@@ -4131,7 +4131,7 @@
     },
 
     'jni_zero_sample_apk_test': {
-      'test_sample_jni_apk': {
+      'jni_zero_sample_apk_test': {
         'experiment_percentage': 100,
       },
     },

@@ -1212,8 +1212,8 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
-    name = "test_sample_jni_apk",
-    label = "//third_party/jni_zero/sample:test_sample_jni_apk",
+    name = "jni_zero_sample_apk_test",
+    label = "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
 )
 
 targets.binaries.generated_script(
