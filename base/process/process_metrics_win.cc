@@ -203,16 +203,16 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) {
     return;
   }
   HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
-  BOOL result =
-      ::DuplicateHandle(::GetCurrentProcess(), process, ::GetCurrentProcess(),
-                        &duplicate_handle, PROCESS_QUERY_INFORMATION, FALSE, 0);
+  BOOL result = ::DuplicateHandle(::GetCurrentProcess(), process,
+                                  ::GetCurrentProcess(), &duplicate_handle,
+                                  PROCESS_QUERY_LIMITED_INFORMATION, FALSE, 0);
   if (!result) {
-    // Duplicating a handle can fail with an access error if the target process
-    // has a higher integrity level than the current process.
+    // TODO(crbug.com/326136373): Remove this crash key and just CHECK(result)
+    // after verifying that DuplicateHandle doesn't fail for unexpected reasons
+    // in production.
     const DWORD last_error = ::GetLastError();
     SCOPED_CRASH_KEY_NUMBER("ProcessMetrics", "dup_handle_error", last_error);
-    CHECK_EQ(last_error, static_cast<DWORD>(ERROR_ACCESS_DENIED),
-             NotFatalUntil::M125);
+    NOTREACHED(NotFatalUntil::M126);
     return;
   }
 
