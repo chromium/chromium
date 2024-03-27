@@ -22,6 +22,11 @@ std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
 std::unique_ptr<sync_sessions::SyncedSession>
 SampleSession(const char session_name[], int num_windows, int num_tabs);
 
+std::vector<std::unique_ptr<sync_sessions::SyncedSession>> SampleSessions(
+    int num_sessions,
+    int num_tabs,
+    std::vector<base::Time> timestamps);
+
 base::flat_set<std::string> GetTabResumptionCategories(
     const char* feature_param,
     base::span<const std::string_view> default_categories);

@@ -90,6 +90,19 @@ SampleSession(const char session_name[], int num_windows, int num_tabs) {
   return sample_session;
 }
 
+std::vector<std::unique_ptr<sync_sessions::SyncedSession>> SampleSessions(
+    int num_sessions,
+    int num_tabs,
+    std::vector<base::Time> timestamps) {
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
+  for (int i = 0; i < num_sessions; i++) {
+    sample_sessions.push_back(
+        SampleSession(("Test Name " + base::NumberToString(i)).c_str(), 1,
+                      num_tabs, timestamps));
+  }
+  return sample_sessions;
+}
+
 base::flat_set<std::string> GetTabResumptionCategories(
     const char* feature_param,
     base::span<const std::string_view> default_categories) {
