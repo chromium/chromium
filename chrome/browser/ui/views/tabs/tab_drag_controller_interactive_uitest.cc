@@ -2311,18 +2311,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 // Selects 1 tab out of 4, drags it out and closes the new browser window while
 // dragging.
-#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
-// TODO(crbug.com/1031801) Test is flaky on Windows and Mac.
-#define MAYBE_DeleteTabsWhileDetached DISABLED_DeleteTabsWhileDetached
-#else
-#define MAYBE_DeleteTabsWhileDetached DeleteTabsWhileDetached
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_DeleteTabsWhileDetached) {
+                       DeleteTabsWhileDetached) {
   AddTabsAndResetBrowser(browser(), 3);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   EXPECT_EQ("0 1 2 3", IDString(browser()->tab_strip_model()));
 
+  ui_test_utils::BrowserChangeObserver removed_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
   // Drag the third tab out of its browser window, request to close the detached
   // tab and verify its owning window gets properly closed.
   DragTabAndNotify(
@@ -2339,6 +2335,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
         EXPECT_TRUE(GetTabStripForBrowser(new_browser)->IsTabStripCloseable());
       }),
       2);
+  // Ensure completion of asynchronous browser closure.
+  removed_observer.Wait();
 
   // Should no longer be dragging.
   ASSERT_EQ(1u, browser_list()->size());
@@ -2371,9 +2369,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   tabs::TabHandle dragged_tab = browser()->tab_strip_model()->GetTabHandleAt(0);
 
+  ui_test_utils::BrowserChangeObserver removed_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
   // Move to the first tab and drag it enough so that it detaches.
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&PressEscapeWhileDetachedStep2, this));
+  // Ensure completion of asynchronous browser closure.
+  removed_observer.Wait();
 
   // Should not be dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -2881,9 +2883,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   StopAnimating(tab_strip);
   EnsureFocusToTabStrip(tab_strip);
 
+  ui_test_utils::BrowserChangeObserver removed_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
   DragToDetachGroupAndNotify(
       tab_strip, base::BindOnce(&PressEscapeWhileDetachedHeaderStep2, this),
       group);
+  // Ensure completion of asynchronous browser closure.
+  removed_observer.Wait();
 
   EXPECT_FALSE(tab_strip->group_header(group)->dragging());
 
@@ -2988,9 +2994,13 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   StopAnimating(tab_strip);
   EXPECT_TRUE(model->IsGroupCollapsed(group));
 
+  ui_test_utils::BrowserChangeObserver removed_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
   DragToDetachGroupAndNotify(
       tab_strip, base::BindOnce(&PressEscapeWhileDetachedHeaderStep2, this),
       group);
+  // Ensure completion of asynchronous browser closure.
+  removed_observer.Wait();
 
   EXPECT_FALSE(tab_strip->group_header(group)->dragging());
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
