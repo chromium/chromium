@@ -57,17 +57,10 @@ class JsSandboxArrayBufferAllocator final : public v8::ArrayBuffer::Allocator {
   // in userspace.
   void* AllocateUninitialized(size_t length) override;
   // Deallocate a currently allocated memory region that was previously returned
-  // by Allocate (or Reallocate).
+  // by Allocate.
   //
   // The length must match the current length associated with the region.
   void Free(void* data, size_t length) override;
-  // Attempt to reallocate a region of memory (usually to expand or contract
-  // it).
-  //
-  // In order for a reallocation to work, there must be at least new_length
-  // remaining bytes left in the memory budget up-front, and the inner
-  // allocator's reallocate operation must also succeed.
-  void* Reallocate(void* data, size_t old_length, size_t new_length) override;
 
   // Return the amount of allocated (used) memory budget.
   size_t GetUsage() const;
