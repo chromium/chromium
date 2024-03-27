@@ -82,7 +82,7 @@ void UpdateDataProtectionState(
 }
 
 bool SkipUrl(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) ||
+  return !url.is_valid() || url.SchemeIs(content::kChromeUIScheme) ||
          url.SchemeIs(extensions::kExtensionScheme);
 }
 
