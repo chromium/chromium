@@ -70,7 +70,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
                            const tab_groups::TabGroupId& group,
                            views::View* anchor_view,
                            std::optional<gfx::Rect> anchor_rect,
-                           TabGroupHeader* header_view,
                            bool stop_context_menu_propagation);
   ~TabGroupEditorBubbleView() override;
 
@@ -80,11 +79,15 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void OnSaveTogglePressed();
   void NewTabInGroupPressed();
-  void UngroupPressed(TabGroupHeader* header_view);
+  void UngroupPressed();
   void CloseGroupPressed();
   void MoveGroupToNewWindowPressed();
 
   void OnBubbleClose();
+
+  // the implementation of the ungroup command. This method is static so that
+  // it can be called from dialogs as a callback.
+  static void Ungroup(const Browser* browser, tab_groups::TabGroupId group);
 
   const raw_ptr<const Browser> browser_;
   const tab_groups::TabGroupId group_;

@@ -128,9 +128,9 @@ views::Widget* TabGroupEditorBubbleView::Show(
 
   // If |header_view| is not null, use |header_view| as the |anchor_view|.
   TabGroupEditorBubbleView* tab_group_editor_bubble_view =
-      new TabGroupEditorBubbleView(
-          browser, group, header_view ? header_view : anchor_view, anchor_rect,
-          header_view, stop_context_menu_propagation);
+      new TabGroupEditorBubbleView(browser, group,
+                                   header_view ? header_view : anchor_view,
+                                   anchor_rect, stop_context_menu_propagation);
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(tab_group_editor_bubble_view);
   tab_group_editor_bubble_view->set_adjust_if_offscreen(true);
@@ -212,7 +212,6 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const tab_groups::TabGroupId& group,
     views::View* anchor_view,
     std::optional<gfx::Rect> anchor_rect,
-    TabGroupHeader* header_view,
     bool stop_context_menu_propagation)
     : browser_(browser),
       group_(group),
@@ -289,6 +288,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         std::make_unique<views::ToggleButton>(
             base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
                                 base::Unretained(this))));
+    save_group_toggle_->SetID(TAB_GROUP_HEADER_CXMENU_SAVE_GROUP);
 
     const tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
         tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -316,7 +316,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       TAB_GROUP_HEADER_CXMENU_UNGROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
-                          base::Unretained(this), header_view),
+                          base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
                                          ? kUngroupRefreshIcon
                                          : kUngroupIcon))));
@@ -507,28 +507,30 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
   model->delegate()->AddTabAt(GURL(), tabs.end(), true, group_);
   // Close the widget to allow users to continue their work in their newly
   // created tab.
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  GetWidget()->Close();
 }
 
-void TabGroupEditorBubbleView::UngroupPressed(TabGroupHeader* header_view) {
+void TabGroupEditorBubbleView::UngroupPressed() {
+  Ungroup(browser_, group_);
+  GetWidget()->Close();
+}
+
+// static
+void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
+                                       tab_groups::TabGroupId group) {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
-      browser_->profile()->IsRegularProfile() &&
-      save_group_toggle_->GetIsOn()) {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
     tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
         tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser_->profile());
+            browser->profile());
     CHECK(saved_tab_group_service);
-    saved_tab_group_service->DisconnectLocalTabGroup(group_);
+    saved_tab_group_service->DisconnectLocalTabGroup(group);
   }
-  if (header_view) {
-    header_view->RemoveObserverFromWidget(GetWidget());
-  }
-  TabStripModel* const model = browser_->tab_strip_model();
 
+  TabStripModel* const model = browser->tab_strip_model();
   const gfx::Range tab_range =
-      model->group_model()->GetTabGroup(group_)->ListTabs();
+      model->group_model()->GetTabGroup(group)->ListTabs();
 
   std::vector<int> tabs;
   tabs.reserve(tab_range.length());
@@ -537,8 +539,6 @@ void TabGroupEditorBubbleView::UngroupPressed(TabGroupHeader* header_view) {
   }
 
   model->RemoveFromGroup(tabs);
-  // Close the widget because it is no longer applicable.
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
 void TabGroupEditorBubbleView::CloseGroupPressed() {
@@ -567,7 +567,7 @@ void TabGroupEditorBubbleView::CloseGroupPressed() {
 
   model->CloseAllTabsInGroup(group_);
   // Close the widget because it is no longer applicable.
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  GetWidget()->Close();
 }
 
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {

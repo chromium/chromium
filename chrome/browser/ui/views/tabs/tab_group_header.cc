@@ -598,10 +598,9 @@ TabGroupHeader::EditorBubbleTracker::EditorBubbleTracker(
     : tab_slot_controller_(tab_slot_controller) {}
 
 TabGroupHeader::EditorBubbleTracker::~EditorBubbleTracker() {
-  if (is_open_) {
+  if (is_open_ && widget_) {
     widget_->RemoveObserver(this);
-    widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-    OnWidgetDestroyed(widget_);
+    widget_->Close();
   }
   CHECK(!IsInObserverList());
 }
@@ -615,8 +614,11 @@ void TabGroupHeader::EditorBubbleTracker::Opened(views::Widget* bubble_widget) {
   tab_slot_controller_->NotifyTabGroupEditorBubbleOpened();
 }
 
-void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroyed(
-    views::Widget* widget) {
+void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroying(
+    views::Widget* bubble_widget) {
+  CHECK(widget_ == bubble_widget);
   is_open_ = false;
+  widget_->RemoveObserver(this);
+  widget_ = nullptr;
   tab_slot_controller_->NotifyTabGroupEditorBubbleClosed();
 }

@@ -124,7 +124,7 @@ class TabGroupHeader : public TabSlotView,
     views::Widget* widget() const { return widget_; }
 
     // views::WidgetObserver:
-    void OnWidgetDestroyed(views::Widget* widget) override;
+    void OnWidgetDestroying(views::Widget* widget) override;
 
    private:
     bool is_open_ = false;
