@@ -4855,6 +4855,7 @@ static_library("test_support") {
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//dbus",
+    "//google_apis/calendar",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
     "//ui/display:display_manager_test_api",
