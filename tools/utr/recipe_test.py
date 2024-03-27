@@ -93,14 +93,14 @@ class LegacyRunnerTests(unittest.TestCase):
       # Input "n" to the first re-run prompt.
       self.mock_input.return_value = 'n'
       with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
-        json.dump({'some-new-prop': 'some-val'}, f)
+        json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)
       _, error_msg = runner.run_recipe()
       self.assertEqual(error_msg, 'User-aborted due to warning')
 
       # Input "y" to too many re-runs.
       self.mock_input.return_value = 'y'
       with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
-        json.dump({'some-new-prop': 'some-val'}, f)
+        json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)
       _, error_msg = runner.run_recipe()
       self.assertEqual(error_msg, 'Exceeded too many recipe re-runs')
 
@@ -111,7 +111,7 @@ class LegacyRunnerTests(unittest.TestCase):
       self.addCleanup(shutil.rmtree, second_tmp_dir)
       self.mock_input.return_value = 'y'
       with open(first_tmp_dir.joinpath('rerun_props.json'), 'w') as f:
-        json.dump({'some-new-prop': 'some-val'}, f)
+        json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)
       self.mock_tempdir.side_effect = [first_tmp_dir, second_tmp_dir]
       _, error_msg = runner.run_recipe()
       self.assertIsNone(error_msg)
@@ -130,7 +130,7 @@ class LegacyRunnerTests(unittest.TestCase):
       second_tmp_dir = pathlib.Path(tempfile.mkdtemp())
       self.addCleanup(shutil.rmtree, second_tmp_dir)
       with open(first_tmp_dir.joinpath('rerun_props.json'), 'w') as f:
-        json.dump({'some-new-prop': 'some-val'}, f)
+        json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)
       self.mock_tempdir.side_effect = [first_tmp_dir, second_tmp_dir]
       _, error_msg = runner.run_recipe()
       self.assertIsNone(error_msg)

@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import tempfile
 
+from collections import namedtuple
 from rich import markdown
 from rich import console
 
@@ -22,6 +23,8 @@ logging.getLogger('asyncio').setLevel(logging.WARNING)
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
+
+RerunOption = namedtuple('RerunOption', ['prompt', 'properties'])
 
 
 def check_rdb_auth():
@@ -45,12 +48,26 @@ def check_rdb_auth():
   return True
 
 
-def get_yn_resp():
-  prompt = 'Do you wish to proceed? Please enter Y/N to confirm: '
-  resp = input(prompt).strip()
-  if resp and resp.lower() == 'y':
-    return True
-  return False
+def get_prompt_resp(rerun_props):
+  """Prompts the user for how to continue based on recipe output
+
+  Args:
+    rerun_props: A list of namedtuples[str, dict] containing the prompt to show
+        and the dict of properties to use if that prompt is selected.
+  Returns:
+    Dict of properties to use for the next recipe invocation. None or an empty
+        dict of properties indicate the recipe should not be reinvoked.
+  """
+  options = '/'.join(f'({option.prompt[0]}){option.prompt[1:]}'
+                     for option in rerun_props)
+  prompt = (f'How do you wish to proceed? Please enter {options} to confirm: ')
+  resp = input(prompt).strip().lower()
+
+  for option in rerun_props:
+    # An empty resp will default to the first option like a --force run
+    if option.prompt.lower().startswith(resp):
+      return option.properties
+  return None
 
 
 class LegacyRunner:
@@ -217,10 +234,13 @@ class LegacyRunner:
       # If this file exists, the recipe is signalling to us that there's an
       # issue, and that we need to re-run if we're sure we want to proceed.
       # The contents of the file are the properties we should re-run it with.
-      rerun_props = None
+      rerun_props = []
       if rerun_props_path.exists():
         with open(rerun_props_path) as f:
-          rerun_props = json.load(f)
+          raw_json = json.load(f)
+          for prompt in raw_json:
+            rerun_props.append(
+                RerunOption(prompt=prompt[0], properties=prompt[1]))
 
       return returncode, failure_md, rerun_props
 
@@ -232,7 +252,7 @@ class LegacyRunner:
     Returns:
       Tuple of (exit code, error message) of the `recipes.py` invocation.
     """
-    rerun_props = None
+    props_to_use = None
     if filter_stdout:
       adapter = output_adapter.LegacyOutputAdapter()
     else:
@@ -240,8 +260,9 @@ class LegacyRunner:
     # We might need to run the recipe a handful of times before we receive a
     # final result. Put a cap on the amount of re-runs though, just in case.
     for _ in range(10):
-      exit_code, failure_md, rerun_props = self._run(adapter, rerun_props)
-      if not rerun_props:
+      exit_code, failure_md, rerun_prop_options = self._run(
+          adapter, props_to_use)
+      if not rerun_prop_options:
         if exit_code:
           # Use the markdown printer from "rich" to better format the text in
           # a terminal.
@@ -261,13 +282,16 @@ class LegacyRunner:
       logging.warning(failure_md)
       logging.warning('')
       if not self._skip_prompts:
-        should_continue = get_yn_resp()
+        props_to_use = get_prompt_resp(rerun_prop_options)
       else:
         logging.warning(
             output_adapter.as_yellow(
                 'Proceeding despite the recipe warning due to the presence '
                 'of "--force".'))
-        should_continue = True
-      if not should_continue:
+        if len(rerun_prop_options) < 1 or len(rerun_prop_options[0]) < 2:
+          return 1, 'Received bad run options from the recipe'
+        # Properties of the first option is the default path
+        props_to_use = rerun_prop_options[0].properties
+      if not props_to_use:
         return exit_code, 'User-aborted due to warning'
     return 1, 'Exceeded too many recipe re-runs'
