@@ -7,6 +7,8 @@
 
 #include "printing/buildflags/buildflags.h"
 
+static_assert(BUILDFLAG(ENABLE_OOP_PRINTING), "OOPPD must be enabled");
+
 namespace printing {
 
 // This file contains queries to determine behavior related to the
@@ -14,7 +16,6 @@ namespace printing {
 // parts of it should be enabled or not.  It encapsulates the results from
 // feature flag, its parameters, and any policy overrides.
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
 // Determine if out-of-process printing support is enabled.
 bool IsOopPrintingEnabled();
 
@@ -24,7 +25,6 @@ bool ShouldPrintJobOop();
 // Determine if a Print Backend service should be launched early, after the
 // browser has finished its startup.
 bool ShouldEarlyStartPrintBackendService();
-#endif
 
 }  // namespace printing
 
