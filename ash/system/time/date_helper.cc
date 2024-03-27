@@ -127,7 +127,16 @@ icu::SimpleDateFormat DateHelper::CreateHoursFormatter(const char* pattern) {
   icu::UnicodeString generated_pattern =
       generator->getBestPattern(icu::UnicodeString(pattern), status);
   DCHECK(U_SUCCESS(status));
-
+  // Since ICU 74, getBestPattern can return a gibberish pattern ""H
+  // ├'Minute': m┤ ├'Dayperiod': a┤"" if the locale resource is missing. Instead
+  // of using the gibberish pattern, this should fallback to the proposed
+  // pattern.
+  std::string gen_string;
+  generated_pattern.toUTF8String(gen_string);
+  if (base::Contains(gen_string, "├")) {
+    // Fallback to the suggested pattern.
+    generated_pattern = icu::UnicodeString(pattern);
+  }
   // Extract the hours from the generated pattern.
   icu::UnicodeString hours_pattern = getHoursPattern(generated_pattern);
   icu::SimpleDateFormat formatter(hours_pattern, status);
