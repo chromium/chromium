@@ -86,26 +86,32 @@ void CaptivePortalDetector::OnSimpleLoaderComplete(
   CHECK(FetchingURL());
   DCHECK(!detection_callback_.is_null());
 
-  int response_code = 0;
   net::HttpResponseHeaders* headers = nullptr;
+  int response_code = 0;
+  std::optional<size_t> content_length;
   if (simple_loader_->ResponseInfo() &&
       simple_loader_->ResponseInfo()->headers) {
     headers = simple_loader_->ResponseInfo()->headers.get();
-    response_code = simple_loader_->ResponseInfo()->headers->response_code();
+    response_code = headers->response_code();
+    if (response_body) {
+      content_length = response_body->size();
+    }
   }
   state_ = State::kCompleted;
   OnSimpleLoaderCompleteInternal(simple_loader_->NetError(), response_code,
-                                 simple_loader_->GetFinalURL(), headers);
+                                 content_length, simple_loader_->GetFinalURL(),
+                                 headers);
 }
 
 void CaptivePortalDetector::OnSimpleLoaderCompleteInternal(
     int net_error,
     int response_code,
+    std::optional<size_t> content_length,
     const GURL& url,
     net::HttpResponseHeaders* headers) {
   Results results;
-  GetCaptivePortalResultFromResponse(net_error, response_code, url, headers,
-                                     &results);
+  GetCaptivePortalResultFromResponse(net_error, response_code, content_length,
+                                     url, headers, &results);
   simple_loader_.reset();
   std::move(detection_callback_).Run(results);
 }
@@ -113,6 +119,7 @@ void CaptivePortalDetector::OnSimpleLoaderCompleteInternal(
 void CaptivePortalDetector::GetCaptivePortalResultFromResponse(
     int net_error,
     int response_code,
+    std::optional<size_t> content_length,
     const GURL& url,
     net::HttpResponseHeaders* headers,
     Results* results) const {
@@ -120,9 +127,11 @@ void CaptivePortalDetector::GetCaptivePortalResultFromResponse(
   results->response_code = response_code;
   results->retry_after_delta = base::TimeDelta();
   results->landing_url = url;
+  results->content_length = content_length;
 
   VLOG(1) << "Getting captive portal result"
           << " response code: " << results->response_code
+          << " content_length: " << results->content_length.value_or(-1)
           << " landing_url: " << results->landing_url;
 
   // If there's a network error of some sort when fetching a file via HTTP,
@@ -163,6 +172,18 @@ void CaptivePortalDetector::GetCaptivePortalResultFromResponse(
 
   // A 204 response code indicates there's no captive portal.
   if (results->response_code == 204) {
+    results->result = captive_portal::RESULT_INTERNET_CONNECTED;
+    return;
+  }
+
+  // A 200 response code is treated the same as a 204 if there is no content.
+  // This is consistent with AOSP and helps support networks that transparently
+  // proxy or redirect web content but do not handle 204 content completely
+  // correctly. See b/33498325 for an example of a captive portal returning a
+  // 200 response code with content.
+  // This matches the logic in PortalDetector::ProcessHTTPProbeResult in shill.
+  if (results->response_code == 200 && content_length.has_value() &&
+      (content_length == 0 || content_length == 1)) {
     results->result = captive_portal::RESULT_INTERNET_CONNECTED;
     return;
   }

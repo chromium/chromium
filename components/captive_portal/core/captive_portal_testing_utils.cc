@@ -42,12 +42,13 @@ bool CaptivePortalDetectorTestBase::FetchingURL() {
 void CaptivePortalDetectorTestBase::CompleteURLFetch(
     int net_error,
     int status_code,
+    std::optional<size_t> content_length,
     const char* response_headers) {
   scoped_refptr<net::HttpResponseHeaders> headers;
   if (response_headers)
     headers = CreateResponseHeaders(response_headers);
-  detector()->OnSimpleLoaderCompleteInternal(net_error, status_code, GURL(),
-                                             headers.get());
+  detector()->OnSimpleLoaderCompleteInternal(
+      net_error, status_code, content_length, GURL(), headers.get());
 }
 
 }  // namespace captive_portal

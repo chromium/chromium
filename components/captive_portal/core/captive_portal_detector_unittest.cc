@@ -64,6 +64,7 @@ class CaptivePortalDetectorTest : public testing::Test,
   void RunTest(const CaptivePortalDetector::Results& expected_results,
                int net_error,
                int status_code,
+               std::optional<size_t> content_length,
                const char* response_headers) {
     ASSERT_FALSE(FetchingURL());
 
@@ -79,7 +80,7 @@ class CaptivePortalDetectorTest : public testing::Test,
     ASSERT_TRUE(FetchingURL());
     base::RunLoop().RunUntilIdle();
 
-    CompleteURLFetch(net_error, status_code, response_headers);
+    CompleteURLFetch(net_error, status_code, content_length, response_headers);
 
     EXPECT_FALSE(FetchingURL());
     EXPECT_EQ(1, client.num_results_received());
@@ -88,6 +89,8 @@ class CaptivePortalDetectorTest : public testing::Test,
               client.captive_portal_results().response_code);
     EXPECT_EQ(expected_results.retry_after_delta,
               client.captive_portal_results().retry_after_delta);
+    EXPECT_EQ(expected_results.content_length,
+              client.captive_portal_results().content_length);
   }
 
   void RunCancelTest() {
@@ -122,30 +125,39 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalResultCodes) {
   CaptivePortalDetector::Results results;
   results.result = captive_portal::RESULT_INTERNET_CONNECTED;
   results.response_code = 204;
-
-  RunTest(results, net::OK, 204, nullptr);
+  results.content_length = 0;
+  RunTest(results, net::OK, /*status_code=*/204, /*content_length=*/0, nullptr);
 
   // The server may return an HTTP error when it's acting up.
   results.result = captive_portal::RESULT_NO_RESPONSE;
   results.response_code = 500;
-  RunTest(results, net::OK, 500, nullptr);
+  RunTest(results, net::OK, /*status_code=*/500, /*content_length=*/0, nullptr);
 
   // Generic network error case.
   results.result = captive_portal::RESULT_NO_RESPONSE;
-  results.response_code = 0;
-  RunTest(results, net::ERR_TIMED_OUT, 0, nullptr);
+  results.response_code = -1;
+  results.content_length = std::nullopt;
+  RunTest(results, net::ERR_TIMED_OUT, /*status_code=*/-1,
+          /*content_length=*/std::nullopt, nullptr);
 
   // In the general captive portal case, the portal will return a page with a
   // 200 status.
   results.result = captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL;
   results.response_code = 200;
-  RunTest(results, net::OK, 200, nullptr);
+  results.content_length = 2;
+  RunTest(results, net::OK, /*status_code=*/200, /*content_length=*/2, nullptr);
+
+  // A 200 status with no content is treated as online.
+  results.result = captive_portal::RESULT_INTERNET_CONNECTED;
+  results.response_code = 200;
+  results.content_length = 0;
+  RunTest(results, net::OK, /*status_code=*/200, /*content_length=*/0, nullptr);
 
   // Some captive portals return 511 instead, to advertise their captive
   // portal-ness.
   results.result = captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL;
   results.response_code = 511;
-  RunTest(results, net::OK, 511, nullptr);
+  RunTest(results, net::OK, /*status_code=*/511, /*content_length=*/0, nullptr);
 }
 
 // Check a Retry-After header that contains a delay in seconds.
@@ -157,13 +169,16 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterSeconds) {
   // result and on subsequent requests.
   results.result = captive_portal::RESULT_NO_RESPONSE;
   results.response_code = 503;
+  results.content_length = 0;
   results.retry_after_delta = base::Seconds(101);
-  RunTest(results, net::OK, 503, retry_after);
+  RunTest(results, net::OK, /*status_code=*/503, /*content_length=*/0,
+          retry_after);
 
   results.result = captive_portal::RESULT_INTERNET_CONNECTED;
   results.response_code = 204;
+  results.content_length = 0;
   results.retry_after_delta = base::TimeDelta();
-  RunTest(results, net::OK, 204, nullptr);
+  RunTest(results, net::OK, /*status_code=*/204, /*content_length=*/0, nullptr);
 }
 
 // Check a Retry-After header that contains a date.
@@ -185,8 +200,10 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterDate) {
 
   results.result = captive_portal::RESULT_NO_RESPONSE;
   results.response_code = 503;
+  results.content_length = 0;
   results.retry_after_delta = retry_after_time - start_time;
-  RunTest(results, net::OK, 503, retry_after);
+  RunTest(results, net::OK, /*status_code=*/503, /*content_length=*/0,
+          retry_after);
 }
 
 // Check invalid Retry-After headers are ignored.
@@ -196,7 +213,9 @@ TEST_F(CaptivePortalDetectorTest, CaptivePortalRetryAfterInvalid) {
 
   results.result = captive_portal::RESULT_NO_RESPONSE;
   results.response_code = 503;
-  RunTest(results, net::OK, 503, retry_after);
+  results.content_length = 0;
+  RunTest(results, net::OK, /*status_code=*/503, /*content_length=*/0,
+          retry_after);
 }
 
 TEST_F(CaptivePortalDetectorTest, Cancel) {
@@ -204,7 +223,8 @@ TEST_F(CaptivePortalDetectorTest, Cancel) {
   CaptivePortalDetector::Results results;
   results.result = captive_portal::RESULT_INTERNET_CONNECTED;
   results.response_code = 204;
-  RunTest(results, net::OK, 204, nullptr);
+  results.content_length = 0;
+  RunTest(results, net::OK, /*status_code=*/204, /*content_length=*/0, nullptr);
 }
 
 }  // namespace captive_portal

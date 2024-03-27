@@ -380,8 +380,8 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   NET_LOG(EVENT) << "NetworkPortalDetector: AttemptCompleted: id="
                  << NetworkGuidId(default_network_id_) << ", result="
                  << captive_portal::CaptivePortalResultToString(result)
-                 << ", status=" << status
-                 << ", response_code=" << response_code;
+                 << ", status=" << status << ", response_code=" << response_code
+                 << ", content_length=" << results.content_length.value_or(-1);
 
   base::UmaHistogramEnumeration("Network.NetworkPortalDetectorResult", status);
   NetworkState::NetworkTechnologyType type =

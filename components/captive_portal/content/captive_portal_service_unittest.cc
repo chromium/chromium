@@ -140,6 +140,7 @@ class CaptivePortalServiceTest : public testing::Test,
   void RunTest(CaptivePortalResult expected_result,
                int net_error,
                int status_code,
+               int content_length,
                int expected_delay_secs,
                const char* response_headers) {
     base::TimeDelta expected_delay = base::Seconds(expected_delay_secs);
@@ -163,7 +164,7 @@ class CaptivePortalServiceTest : public testing::Test,
     ASSERT_TRUE(FetchingURL());
     EXPECT_FALSE(TimerRunning());
 
-    CompleteURLFetch(net_error, status_code, response_headers);
+    CompleteURLFetch(net_error, status_code, content_length, response_headers);
 
     EXPECT_FALSE(FetchingURL());
     EXPECT_FALSE(TimerRunning());
@@ -200,15 +201,24 @@ class CaptivePortalServiceTest : public testing::Test,
   // starting exponential backoff.
   void RunBackoffTest(CaptivePortalResult expected_result,
                       int net_error,
-                      int status_code) {
-    RunTest(expected_result, net_error, status_code, 0, nullptr);
-    RunTest(expected_result, net_error, status_code, 0, nullptr);
-    RunTest(expected_result, net_error, status_code, 100, nullptr);
-    RunTest(expected_result, net_error, status_code, 200, nullptr);
-    RunTest(expected_result, net_error, status_code, 400, nullptr);
-    RunTest(expected_result, net_error, status_code, 800, nullptr);
-    RunTest(expected_result, net_error, status_code, 1600, nullptr);
-    RunTest(expected_result, net_error, status_code, 1600, nullptr);
+                      int status_code,
+                      int content_length) {
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/0, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/0, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/100, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/200, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/400, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/800, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/1600, nullptr);
+    RunTest(expected_result, net_error, status_code, content_length,
+            /*expected_delay_secs=*/1600, nullptr);
   }
 
   // Changes test time for the service and service's captive portal
@@ -285,7 +295,8 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalTwoBrowserContexts) {
       new CaptivePortalService(&browser_context2, &pref_service2));
   CaptivePortalObserver observer2(service2.get());
 
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 0, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/0, nullptr);
   EXPECT_EQ(0, observer2.num_results_received());
 }
 
@@ -297,13 +308,18 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalRecheckInternetConnected) {
   set_initial_backoff_portal(base::Seconds(1));
 
   set_initial_backoff_no_portal(base::Seconds(100));
-  RunBackoffTest(RESULT_INTERNET_CONNECTED, net::OK, 204);
+  RunBackoffTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+                 /*content_length=*/0);
 
   // Make sure that getting a new result resets the timer.
-  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, 200, 1600, nullptr);
-  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, 200, 0, nullptr);
-  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, 200, 1, nullptr);
-  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, 200, 2, nullptr);
+  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, /*status_code=*/200,
+          /*content_length=*/2, /*expected_delay_secs=*/1600, nullptr);
+  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, /*status_code=*/200,
+          /*content_length=*/2, /*expected_delay_secs=*/0, nullptr);
+  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, /*status_code=*/200,
+          /*content_length=*/2, /*expected_delay_secs=*/1, nullptr);
+  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, /*status_code=*/200,
+          /*content_length=*/2, /*expected_delay_secs=*/2, nullptr);
 }
 
 // Checks exponential backoff when there's an HTTP error.
@@ -314,12 +330,16 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalRecheckError) {
   set_initial_backoff_portal(base::Days(1));
 
   set_initial_backoff_no_portal(base::Seconds(100));
-  RunBackoffTest(RESULT_NO_RESPONSE, net::OK, 500);
+  RunBackoffTest(RESULT_NO_RESPONSE, net::OK, /*status_code=*/500,
+                 /*content_length=*/0);
 
   // Make sure that getting a new result resets the timer.
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 1600, nullptr);
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 0, nullptr);
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 100, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/1600, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/0, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/100, nullptr);
 }
 
 // Checks exponential backoff when there's a captive portal.
@@ -330,12 +350,16 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalRecheckBehindPortal) {
   set_initial_backoff_no_portal(base::Seconds(250));
 
   set_initial_backoff_portal(base::Seconds(100));
-  RunBackoffTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, 200);
+  RunBackoffTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, /*status_code=*/200,
+                 /*content_length=*/2);
 
   // Make sure that getting a new result resets the timer.
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 1600, nullptr);
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 0, nullptr);
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 250, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/1600, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/0, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/250, nullptr);
 }
 
 // Check that everything works as expected when captive portal checking is
@@ -356,7 +380,8 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalPrefDisabled) {
 
   EnableCaptivePortalDetectionPreference(true);
 
-  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, 200, 0, nullptr);
+  RunTest(RESULT_BEHIND_CAPTIVE_PORTAL, net::OK, /*status_code=*/200,
+          /*content_length=*/2, /*expected_delay_secs=*/0, nullptr);
 }
 
 // Check that disabling the captive portal service while a check is running
@@ -432,7 +457,7 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalPrefEnabledWhilePending) {
   ASSERT_TRUE(FetchingURL());
   EXPECT_FALSE(TimerRunning());
 
-  CompleteURLFetch(net::OK, 200, nullptr);
+  CompleteURLFetch(net::OK, /*status_code=*/200, /*content_length=*/2, nullptr);
   EXPECT_FALSE(FetchingURL());
   EXPECT_FALSE(TimerRunning());
 
@@ -451,8 +476,10 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalJitter) {
   Initialize(CaptivePortalService::NOT_TESTING);
   set_jitter_factor(0.3);
   set_initial_backoff_no_portal(base::Seconds(100));
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 0, nullptr);
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 0, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/0, nullptr);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/0, nullptr);
 
   for (int i = 0; i < 50; ++i) {
     int interval_sec = GetTimeUntilNextRequest().InSeconds();
@@ -470,9 +497,12 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalRetryAfterSeconds) {
 
   // Check that Retry-After headers work both on the first request to return a
   // result and on subsequent requests.
-  RunTest(RESULT_NO_RESPONSE, net::OK, 503, 0, retry_after);
-  RunTest(RESULT_NO_RESPONSE, net::OK, 503, 101, retry_after);
-  RunTest(RESULT_INTERNET_CONNECTED, net::OK, 204, 101, nullptr);
+  RunTest(RESULT_NO_RESPONSE, net::OK, /*status_code=*/503,
+          /*content_length=*/0, /*expected_delay_secs=*/0, retry_after);
+  RunTest(RESULT_NO_RESPONSE, net::OK, /*status_code=*/503,
+          /*content_length=*/0, /*expected_delay_secs=*/101, retry_after);
+  RunTest(RESULT_INTERNET_CONNECTED, net::OK, /*status_code=*/204,
+          /*content_length=*/0, /*expected_delay_secs=*/101, nullptr);
 
   // Make sure that there's no effect on the next captive portal check after
   // login.
@@ -486,9 +516,11 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalRetryAfterSecondsTooShort) {
   set_initial_backoff_no_portal(base::Seconds(100));
   const char* retry_after = "HTTP/1.1 503 OK\nRetry-After: 99\n\n";
 
-  RunTest(RESULT_NO_RESPONSE, net::OK, 503, 0, retry_after);
+  RunTest(RESULT_NO_RESPONSE, net::OK, /*status_code=*/503,
+          /*content_length=*/0, /*expected_delay_secs=*/0, retry_after);
   // Normally would be no delay on the first check with a new result.
-  RunTest(RESULT_NO_RESPONSE, net::OK, 503, 99, retry_after);
+  RunTest(RESULT_NO_RESPONSE, net::OK, /*status_code=*/503,
+          /*content_length=*/0, /*expected_delay_secs=*/99, retry_after);
   EXPECT_EQ(base::Seconds(100), GetTimeUntilNextRequest());
 }
 
@@ -504,7 +536,8 @@ TEST_F(CaptivePortalServiceTest, CaptivePortalRetryAfterDate) {
       base::Time::FromString("Tue, 17 Apr 2012 18:02:00 GMT", &start_time));
   SetTime(start_time);
 
-  RunTest(RESULT_NO_RESPONSE, net::OK, 503, 0,
+  RunTest(RESULT_NO_RESPONSE, net::OK, /*status_code=*/503,
+          /*content_length=*/0, /*expected_delay_secs=*/0,
           "HTTP/1.1 503 OK\nRetry-After: Tue, 17 Apr 2012 18:02:51 GMT\n\n");
   EXPECT_EQ(base::Seconds(51), GetTimeUntilNextRequest());
 }
