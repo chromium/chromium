@@ -22,6 +22,7 @@ template("swift_source_set") {
   }
 
   _target_name = target_name
+  not_needed([ "_target_name" ])
   source_set(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
