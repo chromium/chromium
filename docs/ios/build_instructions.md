@@ -212,8 +212,11 @@ to send commands to Chromium.
 `${prefix}.chrome.ios.dev` and
 `${prefix}.chrome.ios.dev.CredentialProviderExtension` need the AutoFill
 Credential Provider Entitlement, which corresponds to the key
-`com.apple.developer.authentication-services.autofill-credential-provider`
-Please refer to Apple's documentation on how to set this up.
+`com.apple.developer.authentication-services.autofill-credential-provider`.
+
+`${prefix}.chrome.ios.dev` additionally needs the
+`com.apple.developer.kernel.extended-virtual-addressing` entitlement when
+running on a real device.
 
 ### Mobile provisioning profiles for tests
 
@@ -233,13 +236,6 @@ profiles for EarlGrey and OCHamcrest frameworks:
 In addition to that, then you'll need one additional provisioning profile for
 the XCTest module too. It must match the pattern:
 `${prefix}.gtest.${test-suite-name}-module`.
-
-
-### Entitlements
-
-PartitionAlloc-Everywhere is now enabled by default on iOS builds. When running
-on a real device you will need to set the
-`com.apple.developer.kernel.extended-virtual-addressing` entitlement.
 
 ### Other applications
 
