@@ -473,8 +473,19 @@ bool FullRestoreService::CanBeInited() const {
 
 void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                                       bool& show_notification) {
-  if (!app_launch_handler_ || ::first_run::IsChromeFirstRun() ||
-      close_notification_) {
+  if (!app_launch_handler_) {
+    return;
+  }
+
+  // Do not show the notification if we have no restore data.
+  if (!features::IsForestFeatureEnabled() &&
+      !app_launch_handler_->HasRestoreData()) {
+    return;
+  }
+
+  // Do not show the notification if it is the first run or the notification is
+  // being closed.
+  if (::first_run::IsChromeFirstRun() || close_notification_) {
     return;
   }
 
@@ -487,9 +498,8 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
 
   const bool last_session_crashed = id == kRestoreForCrashNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
-    if (features::IsForestFeatureEnabled()) {
-      MaybeStartPineOverviewSession(last_session_crashed);
-    }
+    CHECK(features::IsForestFeatureEnabled());
+    MaybeStartPineOverviewSession(last_session_crashed);
     return;
   }
   CHECK(app_launch_handler_->HasRestoreData());

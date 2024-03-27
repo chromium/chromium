@@ -385,8 +385,6 @@ TEST_F(FullRestoreServiceTest, AskEveryTime) {
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 }
 
-// TODO(http://b/326982900): Migrate this test suite to test with forest
-// enabled.
 class FullRestoreServiceTestHavingFullRestoreFile
     : public FullRestoreServiceTest {
  public:
@@ -1018,6 +1016,9 @@ class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
   ForestFullRestoreServiceTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kNoFirstRun);
   }
   ForestFullRestoreServiceTest(const ForestFullRestoreServiceTest&) = delete;
   ForestFullRestoreServiceTest& operator=(const ForestFullRestoreServiceTest&) =
@@ -1035,25 +1036,25 @@ class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
   }
 };
 
-// If the system is crash, and there is no full restore file, don't show the
-// pine dialog.
+// Tests that if the system is crash, even if there is no full restore file, we
+// show the pine dialog.
 TEST_F(ForestFullRestoreServiceTest, Crash) {
   ExitTypeService::GetInstanceForProfile(profile())
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .Times(0);
+      .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
 }
 
-// If the OS restore setting is 'Ask every time', and there is no full restore
-// file, don't show the pine dialog.
+// Tests that if the OS restore setting is 'Ask every time', even if there is no
+// full restore file, we show the pine dialog.
 TEST_F(ForestFullRestoreServiceTest, AskEveryTime) {
   SetRestoreOption(RestoreOption::kAskEveryTime);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .Times(0);
+      .Times(1);
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -1297,6 +1298,9 @@ class ForestFullRestoreServiceMultipleUsersTest
   ForestFullRestoreServiceMultipleUsersTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(features::kForestFeature);
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kNoFirstRun);
   }
   ForestFullRestoreServiceMultipleUsersTest(
       const ForestFullRestoreServiceMultipleUsersTest&) = delete;
