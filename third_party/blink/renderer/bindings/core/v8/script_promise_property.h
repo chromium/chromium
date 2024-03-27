@@ -17,13 +17,10 @@ namespace blink {
 
 class ExecutionContext;
 
-// ScriptPromiseProperty is a helper for implementing a DOM method or
-// attribute whose value is a Promise, and the same Promise must be
-// returned each time.
-//
-// Use ScriptPromiseUntyped if the property is associated with only one world
-// (e.g., FetchEvent.preloadResponse). Use ScriptPromiseProperty if the property
-// can be accessed from multiple worlds (e.g., ServiceWorkerContainer.ready).
+// ScriptPromiseProperty is a helper for implementing a DOM attribute (or
+// occasionally a method) whose value is a Promise, and the same Promise must be
+// returned each time. ScriptPromiseProperty contains multiple promises
+// internally, one for each world that accesses the property.
 template <typename IDLResolvedType, typename IDLRejectedType>
 class ScriptPromiseProperty final
     : public GarbageCollected<
