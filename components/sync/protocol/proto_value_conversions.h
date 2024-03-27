@@ -63,7 +63,6 @@ class ReadingListSpecifics;
 class SavedTabGroupSpecifics;
 class SearchEngineSpecifics;
 class SecurityEventSpecifics;
-class SegmentationSpecifics;
 class SendTabToSelfSpecifics;
 class SessionHeader;
 class SessionSpecifics;
@@ -244,9 +243,6 @@ base::Value SavedTabGroupSpecificsToValue(
 
 base::Value SearchEngineSpecificsToValue(
     const sync_pb::SearchEngineSpecifics& search_engine_specifics);
-
-base::Value SegmentationSpecificsToValue(
-    const sync_pb::SegmentationSpecifics& segmentation_specifics);
 
 base::Value SendTabToSelfSpecificsToValue(
     const sync_pb::SendTabToSelfSpecifics& send_tab_specifics);

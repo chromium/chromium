@@ -58,7 +58,6 @@ sync_protocol_sources = [
   "saved_tab_group_specifics.proto",
   "search_engine_specifics.proto",
   "security_event_specifics.proto",
-  "segmentation_specifics.proto",
   "send_tab_to_self_specifics.proto",
   "session_specifics.proto",
   "shared_tab_group_data_specifics.proto",

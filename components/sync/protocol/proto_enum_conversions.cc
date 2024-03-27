@@ -256,29 +256,6 @@ const char* ProtoEnumToString(
   return "";
 }
 
-const char* ProtoEnumToString(
-    sync_pb::SegmentationSpecifics::DeviceMetadata::PlatformType
-        platform_type) {
-  ASSERT_ENUM_BOUNDS(sync_pb::SegmentationSpecifics::DeviceMetadata,
-                     PlatformType, PLATFORM_TYPE_UNSPECIFIED,
-                     PLATFORM_CHROMEOS_LACROS);
-  switch (platform_type) {
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata,
-              PLATFORM_TYPE_UNSPECIFIED);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_WINDOWS);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_MAC);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_LINUX);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata,
-              PLATFORM_CHROMEOS_ASH);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_ANDROID);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata, PLATFORM_IOS);
-    ENUM_CASE(sync_pb::SegmentationSpecifics::DeviceMetadata,
-              PLATFORM_CHROMEOS_LACROS);
-  }
-  NOTREACHED();
-  return "";
-}
-
 const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SessionTab, FaviconType, TYPE_WEB_FAVICON,
                      TYPE_WEB_FAVICON);
