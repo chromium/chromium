@@ -513,9 +513,10 @@ VRP Panel members are also members of that chat.
 
 ### There is PII or other data in a report we do not want to publicly disclose.
 
-For these cases, please add the `SecurityEmbargo` hotlist (hotlistID: 5432549)
-to the report. For cases of PII that can’t be permanently deleted for the
-report, this label should remain indefinitely.
+For cases of PII, simply delete the attachment or comment with that contains PII
+within the issue tracker. If PII is contained in the text of the original
+description of the report, simply choose the `Edit description` option and
+remove any PII.
 
 For cases in which we are just delaying public disclosure (such as when a
 security issue impacts other products or vendors), please use this label and set
@@ -530,6 +531,13 @@ researcher by the email username directly in any comments of the report.
 When reports are publicly disclosed, that becomes visible to all and we have to
 delete those comments to protect that information. To direct a comment at an
 external security researcher, please use “OP”, “reporter”, or "researcher”.
+
+### Deleted Reports / Issues Marked as Spam or Abuse
+
+You may come across some reports in the security bug triage queue with a red
+banner, "The issue has been deleted. Reason: ABUSE," this is generally due to
+the overactive spam filtering in the issue tracker. Just click `Undelete` in the
+right side of the banner, and triage the report as you normally would.
 
 ### Shepherding Scheduling
 
