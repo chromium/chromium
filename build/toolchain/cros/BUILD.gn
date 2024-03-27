@@ -24,6 +24,13 @@ template("cros_toolchain") {
       toolchain_args.cc_wrapper = ""
       toolchain_args.clang_use_chrome_plugins = false
 
+      # CrOS's target toolchain wrapper prefers to invoke gomacc itself, so pass
+      # it the gomacc path via cmd-line arg. Otherwise, for both CrOS's host
+      # wrapper (used in the ebuild) and Chrome's clang (used in Simple Chrome),
+      # prepend gomacc like normal.
+      if (use_goma && invoker.needs_gomacc_path_arg) {
+        extra_cppflags += " --gomacc-path $goma_dir/gomacc"
+      }
       if (use_remoteexec && invoker.needs_gomacc_path_arg) {
         extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
       }
