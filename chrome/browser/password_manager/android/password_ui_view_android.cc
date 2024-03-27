@@ -42,10 +42,6 @@
 
 namespace {
 
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -120,14 +116,14 @@ void PasswordUIViewAndroid::Destroy(JNIEnv*, const JavaRef<jobject>&) {
 
 void PasswordUIViewAndroid::InsertPasswordEntryForTesting(
     JNIEnv* env,
-    const JavaRef<jstring>& origin,
-    const JavaRef<jstring>& username,
-    const JavaRef<jstring>& password) {
+    const std::u16string& origin,
+    const std::u16string& username,
+    const std::u16string& password) {
   password_manager::PasswordForm form;
-  form.url = GURL(ConvertJavaStringToUTF16(env, origin));
+  form.url = GURL(origin);
   form.signon_realm = password_manager::GetSignonRealm(form.url);
-  form.username_value = ConvertJavaStringToUTF16(env, username);
-  form.password_value = ConvertJavaStringToUTF16(env, password);
+  form.username_value = username;
+  form.password_value = password;
 
   profile_store_->AddLogin(form);
 }
@@ -145,27 +141,21 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
   DCHECK_EQ(State::ALIVE, state_);
   if ((size_t)index >= passwords_.size()) {
     return Java_PasswordUIView_createSavedPasswordEntry(
-        env, ConvertUTF8ToJavaString(env, std::string()),
-        ConvertUTF16ToJavaString(env, std::u16string()),
-        ConvertUTF16ToJavaString(env, std::u16string()));
+        env, std::string(), std::u16string(), std::u16string());
   }
   return Java_PasswordUIView_createSavedPasswordEntry(
-      env,
-      ConvertUTF8ToJavaString(
-          env, password_manager::GetShownOrigin(passwords_[index])),
-      ConvertUTF16ToJavaString(env, passwords_[index].username),
-      ConvertUTF16ToJavaString(env, passwords_[index].password));
+      env, password_manager::GetShownOrigin(passwords_[index]),
+      passwords_[index].username, passwords_[index].password);
 }
 
-ScopedJavaLocalRef<jstring> PasswordUIViewAndroid::GetSavedPasswordException(
+std::string PasswordUIViewAndroid::GetSavedPasswordException(
     JNIEnv* env,
     const JavaRef<jobject>&,
     int index) {
   DCHECK_EQ(State::ALIVE, state_);
   if ((size_t)index >= blocked_sites_.size())
-    return ConvertUTF8ToJavaString(env, std::string());
-  return ConvertUTF8ToJavaString(
-      env, password_manager::GetShownOrigin(blocked_sites_[index]));
+    return "";
+  return password_manager::GetShownOrigin(blocked_sites_[index]);
 }
 
 void PasswordUIViewAndroid::HandleRemoveSavedPasswordEntry(
@@ -197,7 +187,7 @@ void PasswordUIViewAndroid::HandleRemoveSavedPasswordException(
 void PasswordUIViewAndroid::HandleSerializePasswords(
     JNIEnv* env,
     const JavaRef<jobject>&,
-    const JavaRef<jstring>& java_target_directory,
+    const std::string& java_target_directory,
     const JavaRef<jobject>& success_callback,
     const JavaRef<jobject>& error_callback) {
   switch (state_) {
@@ -229,10 +219,8 @@ void PasswordUIViewAndroid::HandleSerializePasswords(
   // but to simply avoid use after free from the background task runner.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(
-          &SerializePasswords,
-          base::FilePath(ConvertJavaStringToUTF8(env, java_target_directory)),
-          std::move(credentials)),
+      base::BindOnce(&SerializePasswords, base::FilePath(java_target_directory),
+                     std::move(credentials)),
       base::BindOnce(&PasswordUIViewAndroid::PostSerializedPasswords,
                      base::Unretained(this),
                      base::android::ScopedJavaGlobalRef<jobject>(
@@ -294,15 +282,12 @@ void PasswordUIViewAndroid::OnEditUIDismissed() {
   credential_edit_bridge_.reset();
 }
 
-ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(
-    JNIEnv* env) {
-  return ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK));
+std::string JNI_PasswordUIView_GetAccountDashboardURL(JNIEnv* env) {
+  return l10n_util::GetStringUTF8(IDS_PASSWORDS_WEB_LINK);
 }
 
-ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetTrustedVaultLearnMoreURL(
-    JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, chrome::kSyncTrustedVaultLearnMoreURL);
+std::string JNI_PasswordUIView_GetTrustedVaultLearnMoreURL(JNIEnv* env) {
+  return chrome::kSyncTrustedVaultLearnMoreURL;
 }
 
 jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {

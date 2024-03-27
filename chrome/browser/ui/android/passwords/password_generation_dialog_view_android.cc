@@ -66,18 +66,16 @@ void PasswordGenerationDialogViewAndroid::Show(
         l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
   }
 
-  Java_PasswordGenerationDialogBridge_showDialog(
-      env, java_object_, base::android::ConvertUTF16ToJavaString(env, password),
-      base::android::ConvertUTF16ToJavaString(env, explanation_text));
+  Java_PasswordGenerationDialogBridge_showDialog(env, java_object_, password,
+                                                 explanation_text);
 }
 
 void PasswordGenerationDialogViewAndroid::PasswordAccepted(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& password) {
+    const std::u16string& password) {
   controller_->GeneratedPasswordAccepted(
-      base::android::ConvertJavaStringToUTF16(env, password),
-      std::move(target_frame_driver_), generation_type_);
+      password, std::move(target_frame_driver_), generation_type_);
 }
 
 void PasswordGenerationDialogViewAndroid::PasswordRejected(

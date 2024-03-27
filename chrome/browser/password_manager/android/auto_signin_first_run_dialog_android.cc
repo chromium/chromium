@@ -66,11 +66,8 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
       native_window->GetJavaObject();
   if (java_dialog) {
     dialog_jobject_.Reset(Java_AutoSigninFirstRunDialog_createAndShowDialog(
-        env, java_dialog, reinterpret_cast<intptr_t>(this),
-        base::android::ConvertUTF16ToJavaString(env, message),
-        base::android::ConvertUTF16ToJavaString(env, explanation),
-        base::android::ConvertUTF16ToJavaString(env, ok_button_text),
-        base::android::ConvertUTF16ToJavaString(env, turn_off_button_text)));
+        env, java_dialog, reinterpret_cast<intptr_t>(this), message,
+        explanation, ok_button_text, turn_off_button_text));
   }
 }
 

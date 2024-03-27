@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.PopupWindow;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -76,11 +77,12 @@ public class PasswordGenerationPopupBridge implements PopupWindow.OnDismissListe
     /**
      * Shows a password generation popup with specified data. Should be called after
      * setAnchorRect().
+     *
      * @param isRtl True if the popup should be RTL.
      * @param explanationText The translated text that explains the popup.
      */
     @CalledByNative
-    private void show(boolean isRtl, String explanationText) {
+    private void show(boolean isRtl, @JniType("std::u16string") String explanationText) {
         if (mPopup != null) {
             float anchorWidth = mAnchorView.getLayoutParams().width;
             assert anchorWidth > 0;

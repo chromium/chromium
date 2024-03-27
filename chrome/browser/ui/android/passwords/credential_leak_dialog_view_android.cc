@@ -27,12 +27,8 @@ void CredentialLeakDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
       env, window_android->GetJavaObject(), reinterpret_cast<intptr_t>(this)));
 
   Java_CredentialLeakDialogBridge_showDialog(
-      env, java_object_,
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetTitle()),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              controller_->GetDescription()),
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetAcceptButtonLabel()),
+      env, java_object_, controller_->GetTitle(), controller_->GetDescription(),
+      controller_->GetAcceptButtonLabel(),
       controller_->ShouldShowCancelButton()
           ? base::android::ConvertUTF16ToJavaString(
                 env, controller_->GetCancelButtonLabel())

@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -22,7 +23,9 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 public final class PasswordUIView implements PasswordManagerHandler {
     @CalledByNative
     private static SavedPasswordEntry createSavedPasswordEntry(
-            String url, String name, String password) {
+            @JniType("std::string") String url,
+            @JniType("std::u16string") String name,
+            @JniType("std::u16string") String password) {
         return new SavedPasswordEntry(url, name, password);
     }
 
@@ -183,13 +186,17 @@ public final class PasswordUIView implements PasswordManagerHandler {
         long init(PasswordUIView caller);
 
         void insertPasswordEntryForTesting(
-                long nativePasswordUIViewAndroid, String origin, String username, String password);
+                long nativePasswordUIViewAndroid,
+                @JniType("std::u16string") String origin,
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password);
 
         void updatePasswordLists(long nativePasswordUIViewAndroid, PasswordUIView caller);
 
         SavedPasswordEntry getSavedPasswordEntry(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
 
+        @JniType("std::string")
         String getSavedPasswordException(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
 
@@ -199,8 +206,10 @@ public final class PasswordUIView implements PasswordManagerHandler {
         void handleRemoveSavedPasswordException(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
 
+        @JniType("std::string")
         String getAccountDashboardURL();
 
+        @JniType("std::string")
         String getTrustedVaultLearnMoreURL();
 
         boolean hasAccountForLeakCheckRequest();
@@ -212,7 +221,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
         void handleSerializePasswords(
                 long nativePasswordUIViewAndroid,
                 PasswordUIView caller,
-                String targetPath,
+                @JniType("std::string") String targetPath,
                 IntStringCallback successCallback,
                 Callback<String> errorCallback);
 

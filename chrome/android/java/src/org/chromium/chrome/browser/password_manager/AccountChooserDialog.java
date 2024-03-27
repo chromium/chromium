@@ -30,6 +30,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -91,23 +92,24 @@ public class AccountChooserDialog
     }
 
     /**
-     *  Creates and shows the dialog which allows user to choose credentials for login.
-     *  @param credentials Credentials to display in the dialog.
-     *  @param title Title message for the dialog, which can contain Smart Lock branding.
-     *  @param titleLinkStart Start of a link in case title contains Smart Lock branding.
-     *  @param titleLinkEnd End of a link in case title contains Smart Lock branding.
-     *  @param origin Address of the web page, where dialog was triggered.
+     * Creates and shows the dialog which allows user to choose credentials for login.
+     *
+     * @param credentials Credentials to display in the dialog.
+     * @param title Title message for the dialog, which can contain Smart Lock branding.
+     * @param titleLinkStart Start of a link in case title contains Smart Lock branding.
+     * @param titleLinkEnd End of a link in case title contains Smart Lock branding.
+     * @param origin Address of the web page, where dialog was triggered.
      */
     @CalledByNative
     private static AccountChooserDialog createAndShowAccountChooser(
             WindowAndroid windowAndroid,
             long nativeAccountChooserDialog,
             Credential[] credentials,
-            String title,
+            @JniType("std::u16string") String title,
             int titleLinkStart,
             int titleLinkEnd,
-            String origin,
-            String signinButtonText) {
+            @JniType("std::string") String origin,
+            @JniType("std::u16string") String signinButtonText) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
         AccountChooserDialog chooser =

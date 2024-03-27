@@ -42,7 +42,7 @@ class PasswordGenerationDialogViewAndroid
   // Called from Java via JNI.
   void PasswordAccepted(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
-                        const base::android::JavaParamRef<jstring>& password);
+                        const std::u16string& password);
 
   // Called from Java via JNI.
   void PasswordRejected(JNIEnv* env,

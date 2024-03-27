@@ -8,8 +8,10 @@ import android.app.Activity;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -47,10 +49,10 @@ public class CredentialLeakDialogBridge {
 
     @CalledByNative
     public void showDialog(
-            String credentialLeakTitle,
-            String credentialLeakDetails,
-            String positiveButton,
-            String negativeButton) {
+            @JniType("std::u16string") String credentialLeakTitle,
+            @JniType("std::u16string") String credentialLeakDetails,
+            @JniType("std::u16string") String positiveButton,
+            @Nullable String negativeButton) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
 

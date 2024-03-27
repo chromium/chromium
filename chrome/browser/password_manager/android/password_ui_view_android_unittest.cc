@@ -128,10 +128,7 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords) {
   PasswordUIViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
   password_ui_view->HandleSerializePasswords(
-      env(), nullptr,
-      base::android::ConvertUTF8ToJavaString(
-          env(), temp_dir().GetPath().AsUTF8Unsafe()),
-      nullptr, nullptr);
+      env(), nullptr, temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
 
   content::RunAllTasksUntilIdle();
   // The buffer for actual result is 1 byte longer than the expected data to be
@@ -164,13 +161,8 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_Cancelled) {
   serialized_passwords.entries_count = 123;
   serialized_passwords.exported_file_path = "somepath";
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
-  base::android::ScopedJavaLocalRef<jstring> java_target_dir =
-      base::android::ConvertUTF8ToJavaString(
-          env(), temp_dir().GetPath().AsUTF8Unsafe());
   password_ui_view->HandleSerializePasswords(
-      env(), nullptr,
-      base::android::JavaParamRef<jstring>(env(), java_target_dir.obj()),
-      nullptr, nullptr);
+      env(), nullptr, temp_dir().GetPath().AsUTF8Unsafe(), nullptr, nullptr);
   // Register the PasswordUIView for deletion. It should not destruct itself
   // before the background tasks are run. The results of the background tasks
   // are waited for and then thrown out, so |serialized_passwords| should not be
@@ -195,13 +187,8 @@ TEST_F(PasswordUIViewAndroidTest, GetSerializedPasswords_WriteFailed) {
 
   PasswordUIViewAndroid::SerializationResult serialized_passwords;
   password_ui_view->set_export_target_for_testing(&serialized_passwords);
-  base::android::ScopedJavaLocalRef<jstring> java_temp_file =
-      base::android::ConvertUTF8ToJavaString(
-          env(), "/This directory cannot be created");
   password_ui_view->HandleSerializePasswords(
-      env(), nullptr,
-      base::android::JavaParamRef<jstring>(env(), java_temp_file.obj()),
-      nullptr, nullptr);
+      env(), nullptr, "/This directory cannot be created", nullptr, nullptr);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(0, serialized_passwords.entries_count);
   EXPECT_FALSE(serialized_passwords.error.empty());

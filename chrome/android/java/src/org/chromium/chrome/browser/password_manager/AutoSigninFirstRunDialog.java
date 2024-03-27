@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -54,10 +55,10 @@ public class AutoSigninFirstRunDialog
     private static AutoSigninFirstRunDialog createAndShowDialog(
             WindowAndroid windowAndroid,
             long nativeAutoSigninFirstRunDialog,
-            String title,
-            String explanation,
-            String okButtonText,
-            String turnOffButtonText) {
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String explanation,
+            @JniType("std::u16string") String okButtonText,
+            @JniType("std::u16string") String turnOffButtonText) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
 

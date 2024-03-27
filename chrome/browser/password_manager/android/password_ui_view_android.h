@@ -59,15 +59,13 @@ class PasswordUIViewAndroid
       JNIEnv* env,
       const base::android::JavaRef<jobject>&,
       int index);
-  base::android::ScopedJavaLocalRef<jstring> GetSavedPasswordException(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>&,
-      int index);
-  void InsertPasswordEntryForTesting(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& origin,
-      const base::android::JavaRef<jstring>& username,
-      const base::android::JavaRef<jstring>& password);
+  std::string GetSavedPasswordException(JNIEnv* env,
+                                        const base::android::JavaRef<jobject>&,
+                                        int index);
+  void InsertPasswordEntryForTesting(JNIEnv* env,
+                                     const std::u16string& origin,
+                                     const std::u16string& username,
+                                     const std::u16string& password);
   void UpdatePasswordLists(JNIEnv* env, const base::android::JavaRef<jobject>&);
   void HandleRemoveSavedPasswordEntry(JNIEnv* env,
                                       const base::android::JavaRef<jobject>&,
@@ -79,7 +77,7 @@ class PasswordUIViewAndroid
   void HandleSerializePasswords(
       JNIEnv* env,
       const base::android::JavaRef<jobject>&,
-      const base::android::JavaRef<jstring>& java_target_directory,
+      const std::string& java_target_directory,
       const base::android::JavaRef<jobject>& success_callback,
       const base::android::JavaRef<jobject>& error_callback);
   void HandleShowPasswordEntryEditingView(

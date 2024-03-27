@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.ui.base.WindowAndroid;
@@ -30,7 +31,9 @@ public class PasswordGenerationDialogBridge {
     }
 
     @CalledByNative
-    public void showDialog(String generatedPassword, String explanationString) {
+    public void showDialog(
+            @JniType("std::u16string") String generatedPassword,
+            @JniType("std::u16string") String explanationString) {
         mGeneratedPassword = generatedPassword;
         mPasswordGenerationDialog.showDialog(
                 generatedPassword, explanationString, this::onPasswordAcceptedOrRejected);
@@ -65,7 +68,7 @@ public class PasswordGenerationDialogBridge {
         void passwordAccepted(
                 long nativePasswordGenerationDialogViewAndroid,
                 PasswordGenerationDialogBridge caller,
-                String generatedPassword);
+                @JniType("std::u16string") String generatedPassword);
 
         void passwordRejected(
                 long nativePasswordGenerationDialogViewAndroid,

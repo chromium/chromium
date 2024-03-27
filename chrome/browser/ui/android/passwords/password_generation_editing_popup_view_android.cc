@@ -87,11 +87,9 @@ bool PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
 
   view_android->SetAnchorRect(view, controller_->element_bounds());
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> help =
-      base::android::ConvertUTF16ToJavaString(env, controller_->HelpText());
 
-  Java_PasswordGenerationPopupBridge_show(env, java_object_,
-                                          base::i18n::IsRTL(), help);
+  Java_PasswordGenerationPopupBridge_show(
+      env, java_object_, base::i18n::IsRTL(), controller_->HelpText());
   return true;
 }
 
