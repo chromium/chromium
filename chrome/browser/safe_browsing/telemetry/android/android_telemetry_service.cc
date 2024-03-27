@@ -161,6 +161,10 @@ void AndroidTelemetryService::FillReferrerChain(download::DownloadItem* item) {
     rfh = web_contents->GetPrimaryMainFrame();
   }
 
+  if (rfh && rfh->GetLastCommittedURL().is_empty()) {
+    rfh = rfh->GetOutermostMainFrame();
+  }
+
   SafeBrowsingNavigationObserverManager* observer_manager =
       web_contents
           ? SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
