@@ -43,10 +43,7 @@ constexpr int kInvalidRootId = -1;
 std::vector<WebContentsStateByteBuffer> AllTabsWebContentsStateByteBuffer(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& jbyte_buffers,
-    const JavaParamRef<jintArray>& jsaved_state_versions) {
-  std::vector<int> saved_state_versions;
-  base::android::JavaIntArrayToIntVector(env, jsaved_state_versions,
-                                         &saved_state_versions);
+    std::vector<int> saved_state_versions) {
   int jbyte_buffers_count = env->GetArrayLength(jbyte_buffers);
   std::vector<WebContentsStateByteBuffer> web_contents_states;
   web_contents_states.reserve(jbyte_buffers_count);
@@ -297,23 +294,22 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab_model,
     const JavaParamRef<jobject>& jtab_group_id,
-    const JavaParamRef<jstring>& jtitle,
+    std::u16string& title,
     jint jcolor,
     const JavaParamRef<jobjectArray>& jtabs_android,
     const JavaParamRef<jobjectArray>& jbyte_buffers,
-    const JavaParamRef<jintArray>& jsaved_state_versions) {
+    std::vector<int32_t>& saved_state_versions) {
   std::optional<tab_groups::TabGroupId> tab_group_id =
       JavaTokenToTabGroupId(env, jtab_group_id);
-  std::u16string title = base::android::ConvertJavaStringToUTF16(env, jtitle);
   auto tabs_android = TabAndroid::GetAllNativeTabs(
       env, base::android::ScopedJavaLocalRef<jobjectArray>(jtabs_android));
   int tabs_android_count = env->GetArrayLength(jtabs_android);
   DCHECK_EQ(tabs_android_count, env->GetArrayLength(jbyte_buffers));
-  DCHECK_EQ(tabs_android_count, env->GetArrayLength(jsaved_state_versions));
+  DCHECK_EQ(tabs_android_count, static_cast<int>(saved_state_versions.size()));
 
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(env, jbyte_buffers,
-                                        jsaved_state_versions);
+                                        std::move(saved_state_versions));
   CreateHistoricalGroup(TabModelList::FindNativeTabModelForJavaObject(
                             ScopedJavaLocalRef<jobject>(env, jtab_model.obj())),
                         tab_group_id, title, (int)jcolor,
@@ -324,33 +320,23 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab_model,
-    const JavaParamRef<jintArray>& jroot_ids,
+    std::vector<int32_t>& root_ids,
     const JavaParamRef<jobjectArray>& jtab_group_ids,
-    const JavaParamRef<jobjectArray>& jgroup_titles,
-    const JavaParamRef<jintArray>& jgroup_colors,
-    const JavaParamRef<jintArray>& jper_tab_root_id,
+    std::vector<std::u16string>& group_titles,
+    std::vector<int32_t>& group_colors,
+    std::vector<int32_t>& per_tab_root_id,
     const JavaParamRef<jobjectArray>& jtabs_android,
     const JavaParamRef<jobjectArray>& jbyte_buffers,
-    const JavaParamRef<jintArray>& jsaved_state_versions) {
-  std::vector<int> root_ids;
-  base::android::JavaIntArrayToIntVector(env, jroot_ids, &root_ids);
+    std::vector<int32_t>& saved_state_versions) {
   std::vector<std::optional<tab_groups::TabGroupId>> tab_group_ids =
       JavaTokensToTabGroupIds(env, jtab_group_ids);
-  std::vector<std::u16string> group_titles;
-  base::android::AppendJavaStringArrayToStringVector(env, jgroup_titles,
-                                                     &group_titles);
-  std::vector<int> group_colors;
-  base::android::JavaIntArrayToIntVector(env, jgroup_colors, &group_colors);
-  std::vector<int> per_tab_root_id;
-  base::android::JavaIntArrayToIntVector(env, jper_tab_root_id,
-                                         &per_tab_root_id);
   int tabs_android_count = env->GetArrayLength(jtabs_android);
   DCHECK_EQ(tabs_android_count, env->GetArrayLength(jbyte_buffers));
-  DCHECK_EQ(tabs_android_count, env->GetArrayLength(jsaved_state_versions));
+  DCHECK_EQ(tabs_android_count, static_cast<int>(saved_state_versions.size()));
 
   std::vector<WebContentsStateByteBuffer> web_contents_states =
       AllTabsWebContentsStateByteBuffer(env, jbyte_buffers,
-                                        jsaved_state_versions);
+                                        std::move(saved_state_versions));
   CreateHistoricalBulkClosure(
       TabModelList::FindNativeTabModelForJavaObject(
           ScopedJavaLocalRef<jobject>(env, jtab_model.obj())),

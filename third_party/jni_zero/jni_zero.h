@@ -756,7 +756,7 @@ struct ConvertArray<std::vector<int32_t>> {
     size_t array_size = static_cast<size_t>(array_jsize);
     std::vector<int32_t> ret;
     ret.resize(array_size);
-    env->GetIntArrayRegion(j_array.obj(), 0, array_jsize, &ret[0]);
+    env->GetIntArrayRegion(j_array.obj(), 0, array_jsize, ret.data());
     return ret;
   }
 
@@ -766,7 +766,7 @@ struct ConvertArray<std::vector<int32_t>> {
     jsize array_jsize = static_cast<jsize>(vec.size());
     jintArray jia = env->NewIntArray(array_jsize);
     CheckException(env);
-    env->SetIntArrayRegion(jia, 0, array_jsize, &vec[0]);
+    env->SetIntArrayRegion(jia, 0, array_jsize, vec.data());
     return ScopedJavaLocalRef<jintArray>(env, jia);
   }
 };
