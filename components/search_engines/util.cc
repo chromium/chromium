@@ -72,8 +72,12 @@ MergeEngineRequirements ComputeMergeEnginesRequirements(
   const int milestone = version_info::GetMajorVersionNumberAsInt();
 
   bool update_builtin_keywords;
-  if (keywords_metadata.builtin_keyword_data_version >
-      prepopulate_resource_keyword_version) {
+  if (search_engines::HasSearchEngineCountryListOverride()) {
+    // The search engine list is being explicitly overridden, so also force
+    // recomputing it for the keywords database.
+    update_builtin_keywords = true;
+  } else if (keywords_metadata.builtin_keyword_data_version >
+             prepopulate_resource_keyword_version) {
     // The version in the database is more recent than the version in the Chrome
     // binary. Downgrades are not supported, so don't update it.
     update_builtin_keywords = false;

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class PrefService;
 struct TemplateURLData;
@@ -139,6 +140,27 @@ enum class RepromptResult {
 
   kMaxValue = kRecentChoice,
 };
+
+// The state of the search engine choice country command line override.
+enum class SearchEngineCountryListOverride {
+  // Display all the search engines used in the EEA region.
+  kEeaAll,
+  // Display the search engines that we default to when the country is unknown.
+  kEeaDefault,
+};
+
+using SearchEngineCountryOverride =
+    absl::variant<int, SearchEngineCountryListOverride>;
+
+// Gets the search engine country command line override.
+// Returns an int if the country id is passed to the command line or a
+// `SearchEngineCountryListOverride` if the special values of
+// `kDefaultListCountryOverride` or `kEeaListCountryOverride` are passed.
+std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride();
+
+// Returns whether the search engine list is overridden in the command line to
+// return the default list or the list of all eea engines.
+bool HasSearchEngineCountryListOverride();
 
 // Whether the choice screen flag is generally enabled for the specific flow.
 // TODO(b/318824817): To be removed post-launch.
