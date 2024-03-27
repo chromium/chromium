@@ -437,7 +437,7 @@ def _ClearDir(dirpath):
   """
   for e in os.scandir(dirpath):
     if e.is_dir():
-      shutil.rmtree(e.path)
+      shutil.rmtree(e.path, ignore_errors=True)
     elif e.is_file():
       os.remove(e.path)
 
