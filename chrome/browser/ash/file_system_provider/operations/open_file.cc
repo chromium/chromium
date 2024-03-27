@@ -62,11 +62,11 @@ void OpenFile::OnSuccess(int request_id,
   std::move(callback_).Run(request_id, base::File::FILE_OK);
 }
 
-void OpenFile::OnError(int /* request_id */,
-                       const RequestValue& /* result */,
+void OpenFile::OnError(/*request_id=*/int,
+                       /*result=*/const RequestValue&,
                        base::File::Error error) {
   DCHECK(callback_);
-  std::move(callback_).Run(0 /* file_handle */, error);
+  std::move(callback_).Run(/*file_handle=*/0, error);
 }
 
 }  // namespace ash::file_system_provider::operations

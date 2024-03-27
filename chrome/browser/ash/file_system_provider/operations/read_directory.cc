@@ -33,7 +33,7 @@ bool ConvertRequestValueToEntryList(const RequestValue& value,
             entry_metadata,
             ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY |
                 ProvidedFileSystemInterface::METADATA_FIELD_NAME,
-            false /* root_entry */)) {
+            /*root_entry=*/false)) {
       return false;
     }
 
@@ -80,7 +80,7 @@ bool ReadDirectory::Execute(int request_id) {
           options));
 }
 
-void ReadDirectory::OnSuccess(int /* request_id */,
+void ReadDirectory::OnSuccess(/*request_id=*/int,
                               const RequestValue& result,
                               bool has_more) {
   storage::AsyncFileUtil::EntryList entry_list;
@@ -92,18 +92,17 @@ void ReadDirectory::OnSuccess(int /* request_id */,
         << "Failed to parse a response for the read directory operation.";
     callback_.Run(base::File::FILE_ERROR_IO,
                   storage::AsyncFileUtil::EntryList(),
-                  false /* has_more */);
+                  /*has_more=*/false);
     return;
   }
 
   callback_.Run(base::File::FILE_OK, entry_list, has_more);
 }
 
-void ReadDirectory::OnError(int /* request_id */,
-                            const RequestValue& /* result */,
+void ReadDirectory::OnError(/*request_id=*/int,
+                            /*result=*/const RequestValue&,
                             base::File::Error error) {
-  callback_.Run(
-      error, storage::AsyncFileUtil::EntryList(), false /* has_more */);
+  callback_.Run(error, storage::AsyncFileUtil::EntryList(), /*has_more=*/false);
 }
 
 }  // namespace ash::file_system_provider::operations

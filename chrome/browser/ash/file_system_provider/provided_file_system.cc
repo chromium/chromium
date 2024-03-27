@@ -314,7 +314,7 @@ AbortCallback ProvidedFileSystem::ReadDirectory(
   if (!request_id) {
     callback.Run(base::File::FILE_ERROR_SECURITY,
                  storage::AsyncFileUtil::EntryList(),
-                 false /* has_more */);
+                 /*has_more=*/false);
     return AbortCallback();
   }
 
@@ -335,9 +335,8 @@ AbortCallback ProvidedFileSystem::ReadFile(int file_handle,
                                              file_system_info_, file_handle,
                                              buffer, offset, length, callback));
   if (!request_id) {
-    callback.Run(0 /* chunk_length */,
-                 false /* has_more */,
-                 base::File::FILE_ERROR_SECURITY);
+    callback.Run(/*chunk_length=*/0,
+                 /*has_more=*/false, base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
@@ -361,7 +360,7 @@ AbortCallback ProvidedFileSystem::OpenFile(const base::FilePath& file_path,
                          std::move(split_callback.first))));
   if (!request_id) {
     std::move(split_callback.second)
-        .Run(0 /* file_handle */, base::File::FILE_ERROR_SECURITY);
+        .Run(/*file_handle=*/0, base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
@@ -733,7 +732,7 @@ AbortCallback ProvidedFileSystem::RemoveWatcherInQueue(
   if (it == watchers_.end() ||
       it->second.subscribers.find(origin) == it->second.subscribers.end()) {
     OnRemoveWatcherInQueueCompleted(token, origin, key, std::move(callback),
-                                    false /* extension_response */,
+                                    /*extension_response=*/false,
                                     base::File::FILE_ERROR_NOT_FOUND);
     return AbortCallback();
   }
@@ -742,7 +741,7 @@ AbortCallback ProvidedFileSystem::RemoveWatcherInQueue(
   // return a success.
   if (it->second.subscribers.size() > 1) {
     OnRemoveWatcherInQueueCompleted(token, origin, key, std::move(callback),
-                                    false /* extension_response */,
+                                    /*extension_response=*/false,
                                     base::File::FILE_OK);
     return AbortCallback();
   }
@@ -754,7 +753,7 @@ AbortCallback ProvidedFileSystem::RemoveWatcherInQueue(
           request_dispatcher_.get(), file_system_info_, entry_path, recursive,
           base::BindOnce(&ProvidedFileSystem::OnRemoveWatcherInQueueCompleted,
                          weak_ptr_factory_.GetWeakPtr(), token, origin, key,
-                         std::move(callback), true /* extension_response */)));
+                         std::move(callback), /*extension_response=*/true)));
 
   return AbortCallback();
 }

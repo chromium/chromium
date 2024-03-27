@@ -43,15 +43,15 @@ bool ExecuteAction::Execute(int request_id) {
           options));
 }
 
-void ExecuteAction::OnSuccess(int /* request_id */,
+void ExecuteAction::OnSuccess(/*request_id=*/int,
                               const RequestValue& result,
                               bool has_more) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void ExecuteAction::OnError(int /* request_id */,
-                            const RequestValue& /* result */,
+void ExecuteAction::OnError(/*request_id=*/int,
+                            /*result=*/const RequestValue&,
                             base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

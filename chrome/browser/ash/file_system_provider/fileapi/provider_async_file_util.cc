@@ -109,7 +109,7 @@ void ReadDirectoryOnUIThread(
   util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     callback.Run(base::File::FILE_ERROR_INVALID_OPERATION,
-                 storage::AsyncFileUtil::EntryList(), false /* has_more */);
+                 storage::AsyncFileUtil::EntryList(), /*has_more=*/false);
     return;
   }
 

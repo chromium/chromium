@@ -30,15 +30,15 @@ bool Unmount::Execute(int request_id) {
           options));
 }
 
-void Unmount::OnSuccess(int /* request_id */,
-                        const RequestValue& /* result */,
-                        bool /* has_more */) {
+void Unmount::OnSuccess(/*request_id=*/int,
+                        /*result=*/const RequestValue&,
+                        /*has_more=*/bool) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void Unmount::OnError(int /* request_id */,
-                      const RequestValue& /* result */,
+void Unmount::OnError(/*request_id=*/int,
+                      /*result=*/const RequestValue&,
                       base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

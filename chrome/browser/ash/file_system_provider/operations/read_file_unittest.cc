@@ -84,8 +84,8 @@ class FileSystemProviderOperationsReadFileTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
     io_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kOffset + kLength);
   }
@@ -97,7 +97,7 @@ class FileSystemProviderOperationsReadFileTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   using extensions::api::file_system_provider::ReadFileRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
@@ -129,7 +129,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsReadFileTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   CallbackLogger callback_logger;
 
   ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
@@ -144,7 +144,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   using extensions::api::file_system_provider_internal::
       ReadFileRequestedSuccess::Params;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,
@@ -181,7 +181,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
 }
 
 TEST_F(FileSystemProviderOperationsReadFileTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   ReadFile read_file(&dispatcher, file_system_info_, kFileHandle,

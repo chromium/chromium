@@ -55,7 +55,7 @@ void AddWatcherOnUIThread(const storage::FileSystemURL& url,
   }
 
   parser.file_system()->AddWatcher(url.origin().GetURL(), parser.file_path(),
-                                   recursive, false /* persistent */,
+                                   recursive, /*persistent=*/false,
                                    std::move(callback),
                                    std::move(notification_callback));
 }

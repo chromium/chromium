@@ -38,8 +38,8 @@ class FileSystemProviderOperationsAddWatcherTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
   }
 
@@ -49,12 +49,12 @@ class FileSystemProviderOperationsAddWatcherTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
   using extensions::api::file_system_provider::AddWatcherRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
       &dispatcher, file_system_info_, base::FilePath(kEntryPath),
-      true /* recursive */,
+      /*recursive=*/true,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
@@ -80,40 +80,40 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
       &dispatcher, file_system_info_, base::FilePath(kEntryPath),
-      true /* recursive */,
+      /*recursive=*/true,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
 
   EXPECT_FALSE(add_watcher.Execute(kRequestId));
 }
 
 TEST_F(FileSystemProviderOperationsAddWatcherTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
       &dispatcher, file_system_info_, base::FilePath(kEntryPath),
-      true /* recursive */,
+      /*recursive=*/true,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
-  add_watcher.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  add_watcher.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsAddWatcherTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   AddWatcher add_watcher(
       &dispatcher, file_system_info_, base::FilePath(kEntryPath),
-      true /* recursive */,
+      /*recursive=*/true,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));

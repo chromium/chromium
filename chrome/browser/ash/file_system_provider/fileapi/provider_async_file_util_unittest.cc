@@ -193,7 +193,7 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
 
     file_url_ = CreateFileSystemURL(
         mount_point_name_,
-        base::FilePath(kFakeFilePath + 1 /* No leading slash. */));
+        base::FilePath(kFakeFilePath + /*No leading slash.=*/1));
     ASSERT_TRUE(file_url_.is_valid());
     directory_url_ = CreateFileSystemURL(
         mount_point_name_, base::FilePath(FILE_PATH_LITERAL("hello")));
@@ -362,7 +362,7 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest,
   ASSERT_TRUE(logger.result());
   EXPECT_EQ(base::File::FILE_OK, *logger.result());
   EXPECT_EQ(1U, logger.read_directory_list().size());
-  EXPECT_EQ(base::FilePath(kFakeFilePath + 1 /* No leading slash. */),
+  EXPECT_EQ(base::FilePath(kFakeFilePath + /*No leading slash.=*/1),
             logger.read_directory_list()[0].name);
 }
 

@@ -80,7 +80,7 @@ class FileStreamReader::OperationRunner
     // If the file system got unmounted, then abort the reading operation.
     if (!file_system_.get()) {
       content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(callback, 0, false /* has_more */,
+          FROM_HERE, base::BindOnce(callback, 0, /*has_more=*/false,
                                     base::File::FILE_ERROR_ABORT));
       return;
     }

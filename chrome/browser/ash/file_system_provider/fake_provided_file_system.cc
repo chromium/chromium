@@ -220,7 +220,7 @@ AbortCallback FakeProvidedFileSystem::ReadDirectory(
   }
 
   return PostAbortableTask(base::BindOnce(callback, base::File::FILE_OK,
-                                          entry_list, false /* has_more */));
+                                          entry_list, /*has_more=*/false));
 }
 
 AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
@@ -230,7 +230,7 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
 
   if (entry_it == entries_.end()) {
     return PostAbortableTask(base::BindOnce(std::move(callback),
-                                            0 /* file_handle */,
+                                            /*file_handle=*/0,
                                             base::File::FILE_ERROR_NOT_FOUND));
   }
 
@@ -272,7 +272,7 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
   if (opened_file_it == opened_files_.end() ||
       opened_file_it->second.file_path.AsUTF8Unsafe() != kFakeFilePath) {
     return PostAbortableTask(
-        base::BindOnce(callback, 0 /* chunk_length */, false /* has_more */,
+        base::BindOnce(callback, /*chunk_length=*/0, /*has_more=*/false,
                        base::File::FILE_ERROR_INVALID_OPERATION));
   }
 
@@ -280,7 +280,7 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
       entries_.find(opened_file_it->second.file_path);
   if (entry_it == entries_.end()) {
     return PostAbortableTask(
-        base::BindOnce(callback, 0 /* chunk_length */, false /* has_more */,
+        base::BindOnce(callback, /*chunk_length=*/0, /*has_more=*/false,
                        base::File::FILE_ERROR_INVALID_OPERATION));
   }
 
@@ -290,8 +290,8 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
 
   // Reading behind EOF is fine, it will just return 0 bytes.
   if (current_offset >= *entry_it->second->metadata->size || !current_length) {
-    return PostAbortableTask(base::BindOnce(callback, 0 /* chunk_length */,
-                                            false /* has_more */,
+    return PostAbortableTask(base::BindOnce(callback, /*chunk_length=*/0,
+                                            /*has_more=*/false,
                                             base::File::FILE_OK));
   }
 
@@ -303,7 +303,7 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
         (current_offset + 1 < *entry->metadata->size) && (current_length - 1);
     const int task_id = tracker_.PostTask(
         base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
-        base::BindOnce(callback, 1 /* chunk_length */, has_more,
+        base::BindOnce(callback, /*chunk_length=*/1, has_more,
                        base::File::FILE_OK));
     task_ids.push_back(task_id);
     current_offset++;

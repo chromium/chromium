@@ -41,15 +41,15 @@ bool RemoveWatcher::Execute(int request_id) {
           options));
 }
 
-void RemoveWatcher::OnSuccess(int /* request_id */,
-                              const RequestValue& /* result */,
+void RemoveWatcher::OnSuccess(/*request_id=*/int,
+                              /*result=*/const RequestValue&,
                               bool has_more) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void RemoveWatcher::OnError(int /* request_id */,
-                            const RequestValue& /* result */,
+void RemoveWatcher::OnError(/*request_id=*/int,
+                            /*result=*/const RequestValue&,
                             base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

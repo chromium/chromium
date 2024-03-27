@@ -124,7 +124,7 @@ class FileSystemProviderRegistryTest : public testing::Test {
 TEST_F(FileSystemProviderRegistryTest, RestoreFileSystems) {
   // Create a fake entry in the preferences.
   RememberFakeFileSystem(profile_, kProviderId, kFileSystemId, kDisplayName,
-                         true /* writable */, true /* supports_notify_tag */,
+                         /*writable=*/true, /*supports_notify_tag=*/true,
                          kOpenedFilesLimit, fake_watcher_);
 
   std::unique_ptr<RegistryInterface::RestoredFileSystems>
@@ -158,7 +158,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
 
   ProvidedFileSystemInfo file_system_info(
       kProviderId, options, base::FilePath(FILE_PATH_LITERAL("/a/b/c")),
-      false /* configurable */, true /* watchable */, extensions::SOURCE_FILE,
+      /*configurable=*/false, /*watchable=*/true, extensions::SOURCE_FILE,
       IconSet());
 
   Watchers watchers;
@@ -243,7 +243,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
 TEST_F(FileSystemProviderRegistryTest, ForgetFileSystem) {
   // Create a fake file systems in the preferences.
   RememberFakeFileSystem(profile_, kProviderId, kFileSystemId, kDisplayName,
-                         true /* writable */, true /* supports_notify_tag */,
+                         /*writable=*/true, /*supports_notify_tag=*/true,
                          kOpenedFilesLimit, fake_watcher_);
 
   registry_->ForgetFileSystem(kProviderId, kFileSystemId);
@@ -267,7 +267,7 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
 
   ProvidedFileSystemInfo file_system_info(
       kProviderId, options, base::FilePath(FILE_PATH_LITERAL("/a/b/c")),
-      false /* configurable */, true /* watchable */, extensions::SOURCE_FILE,
+      /*configurable=*/false, /*watchable=*/true, extensions::SOURCE_FILE,
       IconSet());
 
   Watchers watchers;

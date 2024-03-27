@@ -37,8 +37,8 @@ class FileSystemProviderOperationsCloseFileTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
   }
 
@@ -48,7 +48,7 @@ class FileSystemProviderOperationsCloseFileTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
   using extensions::api::file_system_provider::CloseFileRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
@@ -76,7 +76,7 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsCloseFileTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
@@ -86,7 +86,7 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsCloseFileTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,
@@ -94,13 +94,13 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnSuccess) {
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 
-  close_file.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  close_file.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsCloseFileTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   CloseFile close_file(&dispatcher, file_system_info_, kOpenRequestId,

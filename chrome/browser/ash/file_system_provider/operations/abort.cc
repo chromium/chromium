@@ -35,15 +35,15 @@ bool Abort::Execute(int request_id) {
       extensions::api::file_system_provider::OnAbortRequested::Create(options));
 }
 
-void Abort::OnSuccess(int /* request_id */,
-                      const RequestValue& /* result */,
+void Abort::OnSuccess(/*request_id=*/int,
+                      /*result=*/const RequestValue&,
                       bool has_more) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void Abort::OnError(int /* request_id */,
-                    const RequestValue& /* result */,
+void Abort::OnError(/*request_id=*/int,
+                    /*result=*/const RequestValue&,
                     base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

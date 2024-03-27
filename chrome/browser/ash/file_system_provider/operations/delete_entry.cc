@@ -43,15 +43,15 @@ bool DeleteEntry::Execute(int request_id) {
           options));
 }
 
-void DeleteEntry::OnSuccess(int /* request_id */,
-                            const RequestValue& /* result */,
+void DeleteEntry::OnSuccess(/*request_id=*/int,
+                            /*result=*/const RequestValue&,
                             bool has_more) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void DeleteEntry::OnError(int /* request_id */,
-                          const RequestValue& /* result */,
+void DeleteEntry::OnError(/*request_id=*/int,
+                          /*result=*/const RequestValue&,
                           base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

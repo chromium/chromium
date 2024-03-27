@@ -56,8 +56,8 @@ class FileSystemProviderThrottledFileSystemTest : public testing::Test {
     options.opened_files_limit = limit;
 
     ProvidedFileSystemInfo file_system_info(
-        kExtensionId, options, base::FilePath() /* mount_path */,
-        false /* configurable */, true /* watchable */, extensions::SOURCE_FILE,
+        kExtensionId, options, /*mount_path=*/base::FilePath(),
+        /*configurable=*/false, /*watchable=*/true, extensions::SOURCE_FILE,
         IconSet());
 
     file_system_ = std::make_unique<ThrottledFileSystem>(

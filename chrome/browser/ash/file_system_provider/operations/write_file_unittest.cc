@@ -40,11 +40,11 @@ class FileSystemProviderOperationsWriteFileTest : public testing::Test {
   ~FileSystemProviderOperationsWriteFileTest() override = default;
 
   void SetUp() override {
-    MountOptions mount_options(kFileSystemId, "" /* display_name */);
+    MountOptions mount_options(kFileSystemId, /*display_name=*/"");
     mount_options.writable = true;
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, mount_options, base::FilePath(), false /* configurable */,
-        true /* watchable */, extensions::SOURCE_FILE, IconSet());
+        kExtensionId, mount_options, base::FilePath(), /*configurable=*/false,
+        /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
     io_buffer_ = base::MakeRefCounted<net::StringIOBuffer>(kWriteData);
   }
 
@@ -55,7 +55,7 @@ class FileSystemProviderOperationsWriteFileTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   using extensions::api::file_system_provider::WriteFileRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
@@ -88,7 +88,7 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
@@ -99,13 +99,13 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_ReadOnly) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   const ProvidedFileSystemInfo read_only_file_system_info(
-      kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-      base::FilePath() /* mount_path */, false /* configurable */,
-      true /* watchable */, extensions::SOURCE_FILE, IconSet());
+      kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+      /*mount_path=*/base::FilePath(), /*configurable=*/false,
+      /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
 
   WriteFile write_file(&dispatcher, read_only_file_system_info, kFileHandle,
                        io_buffer_.get(), kOffset, io_buffer_->size(),
@@ -115,7 +115,7 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_ReadOnly) {
 }
 
 TEST_F(FileSystemProviderOperationsWriteFileTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,
@@ -124,13 +124,13 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnSuccess) {
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 
-  write_file.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  write_file.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsWriteFileTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   WriteFile write_file(&dispatcher, file_system_info_, kFileHandle,

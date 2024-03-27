@@ -43,15 +43,15 @@ bool MoveEntry::Execute(int request_id) {
           options));
 }
 
-void MoveEntry::OnSuccess(int /* request_id */,
-                          const RequestValue& /* result */,
+void MoveEntry::OnSuccess(/*request_id=*/int,
+                          /*result=*/const RequestValue&,
                           bool has_more) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void MoveEntry::OnError(int /* request_id */,
-                        const RequestValue& /* result */,
+void MoveEntry::OnError(/*request_id=*/int,
+                        /*result=*/const RequestValue&,
                         base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

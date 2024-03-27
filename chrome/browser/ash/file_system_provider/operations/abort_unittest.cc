@@ -37,8 +37,8 @@ class FileSystemProviderOperationsAbortTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
   }
 
@@ -48,7 +48,7 @@ class FileSystemProviderOperationsAbortTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsAbortTest, Execute) {
   using extensions::api::file_system_provider::AbortRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
@@ -74,7 +74,7 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsAbortTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
@@ -84,7 +84,7 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsAbortTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   Abort abort(&dispatcher, file_system_info_, kOperationRequestId,
@@ -92,13 +92,13 @@ TEST_F(FileSystemProviderOperationsAbortTest, OnSuccess) {
 
   EXPECT_TRUE(abort.Execute(kRequestId));
 
-  abort.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  abort.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
 
 TEST_F(FileSystemProviderOperationsAbortTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   Abort abort(&dispatcher, file_system_info_, kOperationRequestId,

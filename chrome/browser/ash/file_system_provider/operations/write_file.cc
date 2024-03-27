@@ -62,16 +62,16 @@ bool WriteFile::Execute(int request_id) {
       std::move(event_args));
 }
 
-void WriteFile::OnSuccess(int /* request_id */,
-                          const RequestValue& /* result */,
-                          bool /* has_more */) {
+void WriteFile::OnSuccess(/*request_id=*/int,
+                          /*result=*/const RequestValue&,
+                          /*has_more=*/bool) {
   TRACE_EVENT0("file_system_provider", "WriteFile::OnSuccess");
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void WriteFile::OnError(int /* request_id */,
-                        const RequestValue& /* result */,
+void WriteFile::OnError(/*request_id=*/int,
+                        /*result=*/const RequestValue&,
                         base::File::Error error) {
   TRACE_EVENT0("file_system_provider", "WriteFile::OnError");
   DCHECK(callback_);

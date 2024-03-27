@@ -77,8 +77,8 @@ class FileSystemProviderOperationsOpenFileTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
   }
 
@@ -120,7 +120,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   CallbackLogger callback_logger;
 
   OpenFile open_file(&dispatcher, file_system_info_, base::FilePath(kFilePath),
@@ -132,13 +132,13 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_ReadOnly) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   const ProvidedFileSystemInfo read_only_file_system_info(
-      kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-      base::FilePath() /* mount_path */, false /* configurable */,
-      true /* watchable */, extensions::SOURCE_FILE, IconSet());
+      kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+      /*mount_path=*/base::FilePath(), /*configurable=*/false,
+      /*watchable=*/true, extensions::SOURCE_FILE, IconSet());
 
   // Opening for read on a read-only file system is allowed.
   {
@@ -162,7 +162,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_ReadOnly) {
 }
 
 TEST_F(FileSystemProviderOperationsOpenFileTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   OpenFile open_file(&dispatcher, file_system_info_, base::FilePath(kFilePath),
@@ -180,7 +180,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, OnSuccess) {
 }
 
 TEST_F(FileSystemProviderOperationsOpenFileTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   CallbackLogger callback_logger;
 
   OpenFile open_file(&dispatcher, file_system_info_, base::FilePath(kFilePath),

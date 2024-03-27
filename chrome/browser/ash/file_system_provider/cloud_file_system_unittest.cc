@@ -60,8 +60,8 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     mount_options.writable = true;
     std::unique_ptr<ProvidedFileSystemInfo> file_system_info =
         std::make_unique<ProvidedFileSystemInfo>(
-            kExtensionId, mount_options, mount_path, false /*configurable=*/,
-            true /* watchable */, extensions::SOURCE_NETWORK, IconSet(),
+            kExtensionId, mount_options, mount_path, /*configurable=*/false,
+            /*watchable=*/true, extensions::SOURCE_NETWORK, IconSet(),
             with_cache_manager ? CacheType::LRU : CacheType::NONE);
     std::unique_ptr<FakeProvidedFileSystem> provided_file_system =
         std::make_unique<FakeProvidedFileSystem>(*file_system_info.get());

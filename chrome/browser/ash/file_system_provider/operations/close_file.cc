@@ -37,14 +37,14 @@ bool CloseFile::Execute(int request_id) {
           options));
 }
 
-void CloseFile::OnSuccess(int /* request_id */,
+void CloseFile::OnSuccess(/*request_id=*/int,
                           const RequestValue& result,
                           bool has_more) {
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void CloseFile::OnError(int /* request_id */,
-                        const RequestValue& /* result */,
+void CloseFile::OnError(/*request_id=*/int,
+                        /*result=*/const RequestValue&,
                         base::File::Error error) {
   std::move(callback_).Run(error);
 }
