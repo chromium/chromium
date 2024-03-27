@@ -42,12 +42,12 @@ class SyncModelLoadManagerTest : public testing::Test {
  public:
   SyncModelLoadManagerTest() = default;
 
-  FakeDataTypeController* GetController(ModelType model_type) {
+  FakeModelTypeController* GetController(ModelType model_type) {
     auto it = controllers_.find(model_type);
     if (it == controllers_.end()) {
       return nullptr;
     }
-    return static_cast<FakeDataTypeController*>(it->second.get());
+    return static_cast<FakeModelTypeController*>(it->second.get());
   }
 
  protected:
@@ -61,8 +61,9 @@ class SyncModelLoadManagerTest : public testing::Test {
 // Start a type and make sure ModelLoadManager callst the |Start|
 // method and calls the callback when it is done.
 TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types = {BOOKMARKS, APPS};
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure());
@@ -83,7 +84,8 @@ TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
 
 // Start a type, let it finish and then call stop.
 TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
@@ -104,7 +106,8 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
 
 // Test that a model that failed to load is reported and stopped properly.
 TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "Test error"));
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -121,7 +124,8 @@ TEST_F(SyncModelLoadManagerTest, ModelLoadFail) {
 
 // Test that a runtime error is handled by stopping the type.
 TEST_F(SyncModelLoadManagerTest, StopAfterConfiguration) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
@@ -143,8 +147,9 @@ TEST_F(SyncModelLoadManagerTest, StopAfterConfiguration) {
 // require LoadModels before configuration are loaded.
 TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
   // Create two controllers with delayed model load.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
   GetController(APPS)->model()->EnableManualModelStart();
 
@@ -198,7 +203,7 @@ TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
 // LoadModels fails for one of datatypes.
 TEST_F(SyncModelLoadManagerTest,
        OnAllDataTypesReadyForConfigure_FailedLoadModels) {
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   GetController(APPS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -229,8 +234,9 @@ TEST_F(SyncModelLoadManagerTest,
        OnAllDataTypesReadyForConfigure_TypeFailedAfterLoadModels) {
   // Create two controllers with delayed model load. Both should block
   // configuration.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
   GetController(APPS)->model()->EnableManualModelStart();
 
@@ -272,7 +278,8 @@ TEST_F(SyncModelLoadManagerTest,
 
 // Test that Stop clears metadata for disabled type.
 TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
@@ -297,7 +304,8 @@ TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
 
 // Test that stopping a single type clears the metadata for the disabled type.
 TEST_F(SyncModelLoadManagerTest, StopDataType) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
@@ -323,7 +331,8 @@ TEST_F(SyncModelLoadManagerTest, StopDataType) {
 
 // Test that stopping a single type is ignored when the type is not running.
 TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
@@ -343,8 +352,9 @@ TEST_F(SyncModelLoadManagerTest, StopDataType_NotRunning) {
 // types.
 TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
   // Configure the manager with two data types.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types = {BOOKMARKS, APPS};
   ModelTypeSet desired_types = preferred_types;
@@ -378,8 +388,9 @@ TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
 // no-longer-preferred types.
 TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
   // Configure the manager with two data types.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet preferred_types = {BOOKMARKS, APPS};
   ModelTypeSet desired_types = preferred_types;
@@ -413,9 +424,9 @@ TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
 TEST_F(SyncModelLoadManagerTest,
        SwitchFromFullSyncToTransportModeRestartsTypes) {
   // Configure the manager with two data types.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
+  controllers_[BOOKMARKS] = std::make_unique<FakeModelTypeController>(
       BOOKMARKS, /*enable_transport_only_model=*/true);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(
       APPS, /*enable_transport_only_model=*/true);
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -469,9 +480,9 @@ TEST_F(SyncModelLoadManagerTest,
 TEST_F(SyncModelLoadManagerTest,
        SwitchFromTransportOnlyToFullSyncRestartsTypes) {
   // Configure the manager with two data types.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(
+  controllers_[BOOKMARKS] = std::make_unique<FakeModelTypeController>(
       BOOKMARKS, /*enable_transport_only_model=*/true);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(
       APPS, /*enable_transport_only_model=*/true);
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -521,7 +532,8 @@ TEST_F(SyncModelLoadManagerTest,
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
   types.Put(BOOKMARKS);
@@ -541,7 +553,8 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
@@ -555,7 +568,8 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldNotClearMetadataIfFailed) {
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _)).Times(2);
 
   // Bring the underlying model to a failed state. Note that this does *not*
@@ -588,8 +602,9 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotClearMetadataIfFailed) {
 TEST_F(SyncModelLoadManagerTest,
        ShouldWaitForStoppingDesiredTypesBeforeLoading) {
   // Create two controllers, one with delayed model load.
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -639,8 +654,9 @@ TEST_F(SyncModelLoadManagerTest,
 TEST_F(SyncModelLoadManagerTest,
        ShouldNotWaitForStoppingUndesiredTypesBeforeLoading) {
   // Create two controllers, one with delayed model load.
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -675,8 +691,9 @@ TEST_F(SyncModelLoadManagerTest,
 TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
   // Create two controllers with delayed model load. Both should block
   // configuration.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
   GetController(APPS)->model()->EnableManualModelStart();
 
@@ -706,8 +723,9 @@ TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
 // Tests that if LoadModels is called for a failed type, it's a no-op.
 TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
   // Create two controllers, one with delayed model load.
-  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[APPS] = std::make_unique<FakeModelTypeController>(APPS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
@@ -748,7 +766,8 @@ TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
 TEST_F(SyncModelLoadManagerTest,
        ShouldHandleMultipleStopCallbacksForStoppingType) {
   // Create a controller with manual loading.
-  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  controllers_[BOOKMARKS] =
+      std::make_unique<FakeModelTypeController>(BOOKMARKS);
   GetController(BOOKMARKS)->model()->EnableManualModelStart();
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);

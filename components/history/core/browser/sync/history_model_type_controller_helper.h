@@ -21,7 +21,7 @@ namespace history {
 // Helper class for implementing history-related ModelTypeControllers. It
 // implements the pref/policy kSavingBrowserHistoryDisabled: It calls
 // SyncService::DataTypePreconditionChanged() when the pref changes.
-// DataTypeControllers using this helper must call its GetPreconditionState().
+// ModelTypeControllers using this helper must call its GetPreconditionState().
 class HistoryModelTypeControllerHelper {
  public:
   HistoryModelTypeControllerHelper(syncer::ModelType model_type,

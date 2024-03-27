@@ -253,8 +253,6 @@ class SyncServiceImpl : public SyncService,
   void GetThrottledDataTypesForTest(
       base::OnceCallback<void(ModelTypeSet)> cb) const;
 
-  bool IsDataTypeControllerRunningForTest(ModelType type) const;
-
   // Some tests rely on injecting calls to the encryption observer.
   SyncEncryptionHandler::Observer* GetEncryptionObserverForTest();
 

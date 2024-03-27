@@ -10,11 +10,11 @@
 
 namespace syncer {
 
-FakeDataTypeController::FakeDataTypeController(ModelType type)
-    : FakeDataTypeController(type, /*enable_transport_mode=*/false) {}
+FakeModelTypeController::FakeModelTypeController(ModelType type)
+    : FakeModelTypeController(type, /*enable_transport_mode=*/false) {}
 
-FakeDataTypeController::FakeDataTypeController(ModelType type,
-                                               bool enable_transport_mode)
+FakeModelTypeController::FakeModelTypeController(ModelType type,
+                                                 bool enable_transport_mode)
     : ModelTypeController(
           type,
           /*delegate_for_full_sync_mode=*/
@@ -24,24 +24,24 @@ FakeDataTypeController::FakeDataTypeController(ModelType type,
               ? std::make_unique<FakeModelTypeControllerDelegate>(type)
               : nullptr) {}
 
-FakeDataTypeController::~FakeDataTypeController() = default;
+FakeModelTypeController::~FakeModelTypeController() = default;
 
-void FakeDataTypeController::SetPreconditionState(PreconditionState state) {
+void FakeModelTypeController::SetPreconditionState(PreconditionState state) {
   precondition_state_ = state;
 }
 
-FakeModelTypeControllerDelegate* FakeDataTypeController::model(
+FakeModelTypeControllerDelegate* FakeModelTypeController::model(
     SyncMode sync_mode) {
   return static_cast<FakeModelTypeControllerDelegate*>(
       GetDelegateForTesting(sync_mode));
 }
 
 ModelTypeController::PreconditionState
-FakeDataTypeController::GetPreconditionState() const {
+FakeModelTypeController::GetPreconditionState() const {
   return precondition_state_;
 }
 
-std::unique_ptr<DataTypeActivationResponse> FakeDataTypeController::Connect() {
+std::unique_ptr<DataTypeActivationResponse> FakeModelTypeController::Connect() {
   ++activate_call_count_;
   return ModelTypeController::Connect();
 }

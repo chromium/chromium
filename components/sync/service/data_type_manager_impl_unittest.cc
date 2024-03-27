@@ -241,18 +241,18 @@ class SyncDataTypeManagerImplTest : public testing::Test {
   // Adds a fake controller for the given type to |controllers_|.
   // Should be called only before setting up the DTM.
   void AddController(ModelType model_type, bool enable_transport_mode = false) {
-    controllers_[model_type] = std::make_unique<FakeDataTypeController>(
+    controllers_[model_type] = std::make_unique<FakeModelTypeController>(
         model_type, enable_transport_mode);
   }
 
   // Gets the fake controller for the given type, which should have
   // been previously added via AddController().
-  FakeDataTypeController* GetController(ModelType model_type) const {
+  FakeModelTypeController* GetController(ModelType model_type) const {
     auto it = controllers_.find(model_type);
     if (it == controllers_.end()) {
       return nullptr;
     }
-    return static_cast<FakeDataTypeController*>(it->second.get());
+    return static_cast<FakeModelTypeController*>(it->second.get());
   }
 
   void FailEncryptionFor(ModelTypeSet encrypted_types) {
@@ -1534,9 +1534,10 @@ TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnStarting) {
 
 TEST_F(SyncDataTypeManagerImplTest, PurgeDataOnReconfiguring) {
   AddController(BOOKMARKS);
-  controllers_[AUTOFILL_WALLET_DATA] = std::make_unique<FakeDataTypeController>(
-      AUTOFILL_WALLET_DATA,
-      /*enable_transport_only_model=*/true);
+  controllers_[AUTOFILL_WALLET_DATA] =
+      std::make_unique<FakeModelTypeController>(
+          AUTOFILL_WALLET_DATA,
+          /*enable_transport_only_model=*/true);
 
   // Configure as usual.
   SetConfigureStartExpectation();
@@ -1824,8 +1825,8 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldHandleStoppingTypesFailure) {
 TEST_F(SyncDataTypeManagerImplTest, ShouldHandleStoppedTypesFailure) {
   AddController(BOOKMARKS);
 
-  // Start and stop BOOKMARKS. This is needed to allow FakeDataTypeController to
-  // get into FAILED state from NOT_RUNNING.
+  // Start and stop BOOKMARKS. This is needed to allow FakeModelTypeController
+  // to get into FAILED state from NOT_RUNNING.
   SetConfigureStartExpectation();
   SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
   Configure({BOOKMARKS});

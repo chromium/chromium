@@ -13,13 +13,13 @@
 
 namespace syncer {
 
-// Fake ModelTypeController implementation based on ModelTypeController that
-// simulates the state machine of a typical asynchronous data type.
-class FakeDataTypeController : public ModelTypeController {
+// Fake ModelTypeController implementation that simulates the state machine of a
+// typical asynchronous data type.
+class FakeModelTypeController : public ModelTypeController {
  public:
-  explicit FakeDataTypeController(ModelType type);
-  FakeDataTypeController(ModelType type, bool enable_transport_mode);
-  ~FakeDataTypeController() override;
+  explicit FakeModelTypeController(ModelType type);
+  FakeModelTypeController(ModelType type, bool enable_transport_mode);
+  ~FakeModelTypeController() override;
 
   void SetPreconditionState(PreconditionState state);
 

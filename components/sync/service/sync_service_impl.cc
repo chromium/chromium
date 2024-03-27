@@ -457,15 +457,6 @@ void SyncServiceImpl::GetThrottledDataTypesForTest(
   engine_->GetThrottledDataTypesForTest(std::move(cb));
 }
 
-bool SyncServiceImpl::IsDataTypeControllerRunningForTest(ModelType type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto iter = data_type_controllers_.find(type);
-  if (iter == data_type_controllers_.end()) {
-    return false;
-  }
-  return iter->second->state() == ModelTypeController::RUNNING;
-}
-
 void SyncServiceImpl::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1993,7 +1984,7 @@ void SyncServiceImpl::GetAllNodesForDebugging(
       // ModelTypeController, so just return an empty result.
       // This can happen e.g. if we're waiting for a custom passphrase to be
       // entered - the data types are already considered active in this case,
-      // but their DataTypeControllers are still NOT_RUNNING.
+      // but their ModelTypeControllers are still NOT_RUNNING.
       helper->OnReceivedNodesForType(type, base::Value::List());
     } else {
       controller->GetAllNodes(base::BindRepeating(

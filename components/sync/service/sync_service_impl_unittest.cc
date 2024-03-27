@@ -151,7 +151,7 @@ class SyncServiceImplTest : public ::testing::Test {
     ModelTypeController::TypeVector controllers;
     for (const auto& [type, transport_mode_support] :
          registered_types_and_transport_mode_support) {
-      auto controller = std::make_unique<FakeDataTypeController>(
+      auto controller = std::make_unique<FakeModelTypeController>(
           type, transport_mode_support);
       // Hold a raw pointer to directly interact with the controller.
       controller_map_[type] = controller.get();
@@ -176,8 +176,8 @@ class SyncServiceImplTest : public ::testing::Test {
 
     // Include a regular controller and a transport-mode controller.
     ModelTypeController::TypeVector controllers;
-    controllers.push_back(std::make_unique<FakeDataTypeController>(BOOKMARKS));
-    controllers.push_back(std::make_unique<FakeDataTypeController>(
+    controllers.push_back(std::make_unique<FakeModelTypeController>(BOOKMARKS));
+    controllers.push_back(std::make_unique<FakeModelTypeController>(
         DEVICE_INFO, /*enable_transport_only_modle=*/true));
 
     std::unique_ptr<SyncClientMock> sync_client =
@@ -267,7 +267,7 @@ class SyncServiceImplTest : public ::testing::Test {
     return sync_service_impl_bundle_.trusted_vault_client();
   }
 
-  FakeDataTypeController* get_controller(ModelType type) {
+  FakeModelTypeController* get_controller(ModelType type) {
     return controller_map_[type];
   }
 
@@ -278,7 +278,7 @@ class SyncServiceImplTest : public ::testing::Test {
   raw_ptr<SyncClientMock, DanglingUntriaged> sync_client_ =
       nullptr;  // Owned by |service_|.
   // The controllers are owned by |service_|.
-  std::map<ModelType, FakeDataTypeController*> controller_map_;
+  std::map<ModelType, FakeModelTypeController*> controller_map_;
 };
 
 // Verify that the server URLs are sane.

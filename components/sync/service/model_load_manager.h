@@ -48,7 +48,7 @@ class ModelLoadManagerDelegate {
   virtual ~ModelLoadManagerDelegate() = default;
 };
 
-// `ModelLoadManager` instructs DataTypeControllers to load models and to stop
+// `ModelLoadManager` instructs ModelTypeControllers to load models and to stop
 // (DataTypeManager is responsible for activating/deactivating data types).
 // Since the operations are async it uses an interface to inform DataTypeManager
 // of the results of the operations.
