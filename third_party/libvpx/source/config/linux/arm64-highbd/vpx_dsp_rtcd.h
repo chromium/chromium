@@ -3744,7 +3744,30 @@ void vpx_highbd_convolve8_neon(const uint16_t* src,
                                int w,
                                int h,
                                int bd);
-#define vpx_highbd_convolve8 vpx_highbd_convolve8_neon
+void vpx_highbd_convolve8_sve2(const uint16_t* src,
+                               ptrdiff_t src_stride,
+                               uint16_t* dst,
+                               ptrdiff_t dst_stride,
+                               const InterpKernel* filter,
+                               int x0_q4,
+                               int x_step_q4,
+                               int y0_q4,
+                               int y_step_q4,
+                               int w,
+                               int h,
+                               int bd);
+RTCD_EXTERN void (*vpx_highbd_convolve8)(const uint16_t* src,
+                                         ptrdiff_t src_stride,
+                                         uint16_t* dst,
+                                         ptrdiff_t dst_stride,
+                                         const InterpKernel* filter,
+                                         int x0_q4,
+                                         int x_step_q4,
+                                         int y0_q4,
+                                         int y_step_q4,
+                                         int w,
+                                         int h,
+                                         int bd);
 
 void vpx_highbd_convolve8_avg_c(const uint16_t* src,
                                 ptrdiff_t src_stride,
@@ -8624,6 +8647,10 @@ static void setup_rtcd_internal(void) {
   vpx_highbd_8_variance8x8 = vpx_highbd_8_variance8x8_neon;
   if (flags & HAS_SVE) {
     vpx_highbd_8_variance8x8 = vpx_highbd_8_variance8x8_sve;
+  }
+  vpx_highbd_convolve8 = vpx_highbd_convolve8_neon;
+  if (flags & HAS_SVE2) {
+    vpx_highbd_convolve8 = vpx_highbd_convolve8_sve2;
   }
   vpx_highbd_convolve8_avg_horiz = vpx_highbd_convolve8_avg_horiz_neon;
   if (flags & HAS_SVE) {
