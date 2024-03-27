@@ -245,18 +245,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     }
   }
 
-  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
-    std::u16string tooltip = view_->GetTooltipText(gfx::Point());
-    // Some screen readers announce the accessible description right after the
-    // accessible name. Only use the tooltip as the accessible description if
-    // it's different from the name, otherwise users might be puzzled as to why
-    // their screen reader is announcing the same thing twice.
-    if (!tooltip.empty() && tooltip != data->GetString16Attribute(
-                                           ax::mojom::StringAttribute::kName)) {
-      data->SetDescription(base::UTF16ToUTF8(tooltip));
-    }
-  }
-
   if (override_data_.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
     data->AddBoolAttribute(
         ax::mojom::BoolAttribute::kSelected,
@@ -333,6 +321,24 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   // mimic what Blink does when computing 'ignoredness' of a node.
   if (ViewAccessibility::GetIsIgnored()) {
     data->AddState(ax::mojom::State::kIgnored);
+  }
+
+  // This was previously found earlier in the function. It has been moved here,
+  // after the call to `ViewAccessibility::Merge`, so that we only check the
+  // `data` after all the attributes have been set. Otherwise, there was a bug
+  // where the description was not yet populated into the out `data` member in
+  // `Merge` and so we were falling into the `if` block below, which led to
+  // hangs. See https://crbug.com/326509144 for more details.
+  if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+    std::u16string tooltip = view_->GetTooltipText(gfx::Point());
+    // Some screen readers announce the accessible description right after the
+    // accessible name. Only use the tooltip as the accessible description if
+    // it's different from the name, otherwise users might be puzzled as to why
+    // their screen reader is announcing the same thing twice.
+    if (!tooltip.empty() && tooltip != data->GetString16Attribute(
+                                           ax::mojom::StringAttribute::kName)) {
+      data->SetDescription(base::UTF16ToUTF8(tooltip));
+    }
   }
 
   // Nothing should be added beyond this point. Reach out to the Chromium
