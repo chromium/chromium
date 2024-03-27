@@ -53,6 +53,10 @@ BASE_FEATURE(kLauncherImageSearchOcr,
              "LauncherImageSearchOcr",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLauncherImageSearchIndexingLimit,
+             "LauncherImageSearchIndexingLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLauncherSystemInfoAnswerCards,
              "LauncherSystemInfoAnswerCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -97,6 +101,10 @@ bool IsLauncherImageSearchIcaEnabled() {
 
 bool IsLauncherImageSearchOcrEnabled() {
   return base::FeatureList::IsEnabled(kLauncherImageSearchOcr);
+}
+
+bool IsLauncherImageSearchIndexingLimitEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherImageSearchIndexingLimit);
 }
 
 bool isLauncherSystemInfoAnswerCardsEnabled() {

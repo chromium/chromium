@@ -119,6 +119,10 @@ class ImageAnnotationWorker {
   base::queue<base::FilePath> files_to_process_;
   int num_retries_passed_ = 0;
 
+  // Indexing limit params.
+  const int indexing_limit_;
+  int num_indexing_images_ = 0;
+
   base::OneShotTimer timeout_timer_;
   base::TimeTicks queue_processing_start_time_;
   // Owned by this class.

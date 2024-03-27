@@ -9,10 +9,13 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -311,6 +314,41 @@ TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
 
   EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::UnorderedElementsAreArray({jpg_image}));
+}
+
+TEST_F(ImageAnnotationWorkerTest, IgnoreWhenLimitReachedTest) {
+  // Overwrite the indexing limit to 0, so that no indexing is allowed.
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["indexing_limit"] = "0";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      search_features::kLauncherImageSearchIndexingLimit, params);
+  // Re-construct the annotation worker with the new param.
+  std::vector<base::FilePath> excluded_paths = {
+      test_directory_.AppendASCII("TrashBin")};
+  annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
+      test_directory_, std::move(excluded_paths), /*use_file_watchers=*/false,
+      /*use_ocr=*/false,
+      /*use_ica=*/false);
+
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.RunUntilIdle();
+
+  base::WriteFile(bar_image_path_, kJpeg_image);
+  auto bar_image_time = base::Time::Now();
+  base::TouchFile(bar_image_path_, bar_image_time, bar_image_time);
+
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+
+  ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time,
+                      /*file_size=*/16);
+
+  EXPECT_TRUE(storage_->GetAllAnnotationsForTest().empty());
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace

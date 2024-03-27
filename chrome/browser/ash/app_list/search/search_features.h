@@ -47,6 +47,9 @@ BASE_DECLARE_FEATURE(kICASupportedByHardware);
 // Enable Optical Character Recognition
 BASE_DECLARE_FEATURE(kLauncherImageSearchOcr);
 
+// Applies a hard limit about how many images can be process per user session.
+BASE_DECLARE_FEATURE(kLauncherImageSearchIndexingLimit);
+
 BASE_DECLARE_FEATURE(kLauncherSystemInfoAnswerCards);
 
 // Enable manatee for keyboard shortcuts
@@ -58,6 +61,7 @@ bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
 bool IsLauncherImageSearchEnabled();
 bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();
+bool IsLauncherImageSearchIndexingLimitEnabled();
 bool IsLauncherFuzzyMatchAcrossProvidersEnabled();
 bool isLauncherFuzzyMatchForOmniboxEnabled();
 bool isLauncherSystemInfoAnswerCardsEnabled();

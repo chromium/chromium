@@ -40,6 +40,7 @@ constexpr int kConfidenceThreshold = 79;   // 30% of 255 (max of ICA)
 constexpr int kOcrMinWordLength = 3;
 constexpr int kRetryDelay = 2;  // For exponential delays.
 constexpr int kMaxNumRetries = 10;
+constexpr int kDefaultIndexingLimit = 500;  // 500 images per user session.
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
 constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
 
@@ -182,6 +183,10 @@ ImageAnnotationWorker::ImageAnnotationWorker(
       use_file_watchers_(use_file_watchers),
       use_ica_(use_ica),
       use_ocr_(use_ocr),
+      indexing_limit_(base::GetFieldTrialParamByFeatureAsInt(
+          search_features::kLauncherImageSearchIndexingLimit,
+          "indexing_limit",
+          kDefaultIndexingLimit)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
@@ -393,6 +398,14 @@ void ImageAnnotationWorker::ProcessNextImage() {
   annotation_storage_->Remove(image_path);
   ImageInfo image_info({}, image_path, file_info->last_modified,
                        file_info->size);
+
+  if (search_features::IsLauncherImageSearchIndexingLimitEnabled()) {
+    // Early return if reaches the indexing limit.
+    if (num_indexing_images_ >= indexing_limit_) {
+      return;
+    }
+    num_indexing_images_ += 1;
+  }
 
   if (use_ocr_ || use_ica_) {
     ash::image_util::DecodeImageFile(
