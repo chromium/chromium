@@ -62,7 +62,7 @@ no longer gardener, and thus no longer responsible for triaging these bugs.
 Instead, if you aren't the best owner for the bug, please help to triage it
 more appropriately, since you're probably the test author, familiar with the
 test, or an OWNER. If have no idea who a good owner for the test is (or were
-assigned the bug in error\*), you can reapply the `Sheriff-Chromium` label and
+assigned the bug in error\*), you can reapply the `Gardener-Chromium` label and
 flip the status to `Untriaged`; this will put it back in the gardener queue for
 the next gardener to take a look at. Please only do this as a last resort, since
 the next gardener is unlikely to have any more information about the issue.

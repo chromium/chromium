@@ -119,8 +119,8 @@ Please follow these general guidelines:
 1. Check to see if your patch caused the build failures, and fix if possible.
 1. If compilation or individual tests are failing on one or more CQ bots and you
    suspect that your CL is not responsible, please contact your friendly
-   neighborhood sheriff by filing a
-   [sheriff bug](https://bugs.chromium.org/p/chromium/issues/entry?template=Defect%20report%20from%20developer&labels=Sheriff-Chromium&summary=%5BBrief%20description%20of%20problem%5D&comment=What%27s%20wrong?).
+   neighborhood gardener by filing a
+   [gardener bug](https://bugs.chromium.org/p/chromium/issues/entry?template=Defect%20report%20from%20developer&labels=Gardener-Chromium&summary=%5BBrief%20description%20of%20problem%5D&comment=What%27s%20wrong?).
    If the code in question has appropriate OWNERS, consider contacting or CCing
    them.
 1. If other parts of CQ bot execution (e.g. `bot_update`) are failing, or you
@@ -134,7 +134,7 @@ In both cases, when filing bugs, please include links to the build and/or CL
 
 There are several requirements for a builder to be added to the Commit Queue.
 
-* There must be a "mirrored" (aka matching) CI builder that is sheriffed, to
+* There must be a "mirrored" (aka matching) CI builder that is gardened, to
   ensure that someone is actively keeping the configuration green.
 * All the code for this configuration must be in Chromium's public repository or
   brought in through [src/DEPS](../../DEPS).
