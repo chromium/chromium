@@ -91,6 +91,7 @@ class ExtensionAppsAppServiceBlocklistTest : public ExtensionBrowserTest {
  private:
   // ExtensionBrowserTest:
   void TearDownOnMainThread() override {
+    test_extension_ = nullptr;
     CloseAllAppWindows();
     ExtensionBrowserTest::TearDownOnMainThread();
   }

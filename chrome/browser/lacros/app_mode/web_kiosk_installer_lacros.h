@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_APP_MODE_WEB_KIOSK_INSTALLER_LACROS_H_
 #define CHROME_BROWSER_LACROS_APP_MODE_WEB_KIOSK_INSTALLER_LACROS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,7 +33,8 @@ class WebKioskInstallerLacros : public crosapi::mojom::WebKioskInstaller {
                        InstallWebKioskCallback callback) override;
 
  private:
-  raw_ref<Profile> profile_;
+  // Dangling in WebKioskSessionServiceBrowserTest.VerifyInstallUrl.
+  raw_ref<Profile, DanglingUntriaged> profile_;
 
   mojo::Receiver<crosapi::mojom::WebKioskInstaller> receiver_{this};
 };

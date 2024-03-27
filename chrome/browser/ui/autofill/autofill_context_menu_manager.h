@@ -112,7 +112,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   AutofillField* GetAutofillField(AutofillManager& manager,
                                   const LocalFrameToken& frame_token) const;
 
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  // Dangling on linux-lacros-rel in:
+  // AutofillContextMenuManagerFeedbackUILacrosBrowserTest
+  //   .CloseTabWhileUIIsOpenShouldNotCrash.
+  const raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;
   content::ContextMenuParams params_;
