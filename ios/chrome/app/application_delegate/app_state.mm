@@ -229,6 +229,10 @@ void FlushCookieStoreOnIOThread(
          self.startupInformation.isFirstRun;
 }
 
+- (NSArray<id<AppStateAgent>>*)connectedAgents {
+  return [self.agents copy];
+}
+
 #pragma mark - Public methods.
 
 - (void)applicationDidEnterBackground:(UIApplication*)application

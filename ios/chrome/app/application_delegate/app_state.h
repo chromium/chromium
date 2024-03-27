@@ -100,6 +100,10 @@ enum class PostCrashAction {
 @property(nonatomic, readonly) BOOL appIsTerminating;
 @property(nonatomic, assign, readwrite) BOOL overridePortraitOnly;
 
+// All agents that have been attached. Use -addAgent: and -removeAgent: to
+// add and remove agents.
+@property(nonatomic, readonly) NSArray<id<AppStateAgent>>* connectedAgents;
+
 // Logs duration of the session and records that chrome is no longer in cold
 // start.
 - (void)willResignActive;

@@ -17,6 +17,7 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
+#import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent+private.h"
@@ -123,6 +124,12 @@
       break;
   }
 }
+@end
+
+// Trivial app agent used to test -connectedAgents and agent retrieval.
+@interface TestAppAgent : ObservingAppAgent
+@end
+@implementation TestAppAgent
 @end
 
 #pragma mark - Class definition.
@@ -352,7 +359,7 @@ class AppStateTest : public BlockCleanupTest {
 using AppStateNoFixtureTest = PlatformTest;
 
 // Test that -willResignActive set cold start to NO and launch record.
-TEST_F(AppStateNoFixtureTest, willResignActive) {
+TEST_F(AppStateNoFixtureTest, WillResignActive) {
   // Setup.
   base::test::TaskEnvironment task_environment;
   FakeStartupInformation* startupInformation =
@@ -388,7 +395,7 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
 }
 
 // Test that -applicationWillTerminate clears everything.
-TEST_F(AppStateTest, willTerminate) {
+TEST_F(AppStateTest, WillTerminate) {
   // Setup.
   ios::provider::test::ResetAppDistributionNotificationsState();
   ASSERT_FALSE(ios::provider::test::AreAppDistributionNotificationsCanceled());
@@ -434,7 +441,7 @@ TEST_F(AppStateTest, willTerminate) {
 }
 
 // Tests that -applicationWillEnterForeground resets components as needed.
-TEST_F(AppStateTest, applicationWillEnterForeground) {
+TEST_F(AppStateTest, ApplicationWillEnterForeground) {
   SwizzleSafeModeShouldStart(NO);
   [[GetStartupInformationMock() stub] setIsFirstRun:YES];
   [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
@@ -483,7 +490,7 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
 
 // Tests that -applicationWillEnterForeground starts the browser if the
 // application is in background.
-TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
+TEST_F(AppStateTest, ApplicationWillEnterForegroundFromBackground) {
   // Setup.
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
@@ -508,7 +515,7 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
 
 // Tests that -applicationDidEnterBackground do nothing if the application has
 // never been in a Foreground stage.
-TEST_F(AppStateTest, applicationDidEnterBackgroundStageBackground) {
+TEST_F(AppStateTest, ApplicationDidEnterBackgroundStageBackground) {
   SwizzleSafeModeShouldStart(NO);
   [[GetStartupInformationMock() stub] setIsFirstRun:YES];
   [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
@@ -567,7 +574,7 @@ TEST_F(AppStateTest, queueTransitionToNextInitStageNotifiesObservers) {
 // call, first completes sending previous updates and doesn't change the init
 // stage, then transitions to the next init stage and sends updates.
 TEST_F(AppStateTest,
-       queueTransitionToNextInitStageReentrantFromWillTransitionToInitStage) {
+       QueueTransitionToNextInitStageReentrantFromWillTransitionToInitStage) {
   // Setup.
   AppState* appState = GetAppStateWithMock(/*with_safe_mode_agent=*/false);
   id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
@@ -608,7 +615,7 @@ TEST_F(AppStateTest,
 // call, first completes sending previous updates and doesn't change the init
 // stage, then transitions to the next init stage and sends updates.
 TEST_F(AppStateTest,
-       queueTransitionToNextInitStageReentrantFromdidTransitionFromInitStage) {
+       QueueTransitionToNextInitStageReentrantFromDidTransitionFromInitStage) {
   // Setup.
   AppState* appState = GetAppStateWithMock(/*with_safe_mode_agent=*/false);
   id observer1 = [OCMockObject mockForProtocol:@protocol(AppStateObserver)];
@@ -669,4 +676,18 @@ TEST_F(AppStateTest, BlockIphonePortraitOnly) {
     scopedIphonePortraitOnly.reset();
     ASSERT_FALSE(appState.portraitOnly);
   }
+}
+
+TEST_F(AppStateTest, AppAgentRetrieval) {
+  AppState* appState = GetAppStateWithMock();
+  // There should be the safe mode agent and enterprise agent connected.
+  EXPECT_EQ(appState.connectedAgents.count, 2UL);
+
+  TestAppAgent* agent = [[TestAppAgent alloc] init];
+  [appState addAgent:agent];
+  // `agent` should also now be added.
+  EXPECT_EQ(appState.connectedAgents.count, 3UL);
+
+  TestAppAgent* retrievedAgent = [TestAppAgent agentFromApp:appState];
+  EXPECT_EQ(retrievedAgent, agent);
 }

@@ -14,6 +14,9 @@
 // class that provides universally useful functionality for app agents.
 @interface ObservingAppAgent : NSObject <AppStateAgent, AppStateObserver>
 
+// Returns the agent of this class iff one is already added to `appState`.
++ (instancetype)agentFromApp:(AppState*)appState;
+
 // App state this agent serves and observes.
 @property(nonatomic, weak) AppState* appState;
 

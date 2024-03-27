@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":application_delegate",
     ":application_delegate_internal",
     ":metric_kit_subscriber",
+    ":observing_app_state_agent",
     ":tab_opening",
     ":test_support",
     ":url_opener_params",
