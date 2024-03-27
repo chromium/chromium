@@ -294,13 +294,6 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
 
   std::unique_ptr<OAuth2AccessTokenManager> token_manager_;
 
-  // Callbacks to invoke, if set, for refresh token-related events.
-  RefreshTokenAvailableFromSourceCallback on_refresh_token_available_callback_;
-  RefreshTokenRevokedFromSourceCallback on_refresh_token_revoked_callback_;
-
-  signin_metrics::SourceForRefreshTokenOperation update_refresh_token_source_ =
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown;
-
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceTest,
                            SameScopesRequestedForDifferentClients);
 };

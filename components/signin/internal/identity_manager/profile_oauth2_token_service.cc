@@ -21,54 +21,10 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-using signin_metrics::SourceForRefreshTokenOperation;
-
 namespace {
 
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
-std::string SourceToString(SourceForRefreshTokenOperation source) {
-  switch (source) {
-    case SourceForRefreshTokenOperation::kUnknown:
-      return "Unknown";
-    case SourceForRefreshTokenOperation::kTokenService_LoadCredentials:
-      return "TokenService::LoadCredentials";
-    case SourceForRefreshTokenOperation::kInlineLoginHandler_Signin:
-      return "InlineLoginHandler::Signin";
-    case SourceForRefreshTokenOperation::kPrimaryAccountManager_ClearAccount:
-      return "PrimaryAccountManager::ClearAccount";
-    case SourceForRefreshTokenOperation::kUserMenu_SignOutAllAccounts:
-      return "UserMenu::SignOutAllAccounts";
-    case SourceForRefreshTokenOperation::kSettings_Signout:
-      return "Settings::Signout";
-    case SourceForRefreshTokenOperation::kSettings_PauseSync:
-      return "Settings::PauseSync";
-    case SourceForRefreshTokenOperation::
-        kAccountReconcilor_GaiaCookiesDeletedByUser:
-      return "AccountReconcilor::GaiaCookiesDeletedByUser";
-    case SourceForRefreshTokenOperation::kAccountReconcilor_GaiaCookiesUpdated:
-      return "AccountReconcilor::GaiaCookiesUpdated";
-    case SourceForRefreshTokenOperation::kAccountReconcilor_Reconcile:
-      return "AccountReconcilor::Reconcile";
-    case SourceForRefreshTokenOperation::kDiceResponseHandler_Signin:
-      return "DiceResponseHandler::Signin";
-    case SourceForRefreshTokenOperation::kDiceResponseHandler_Signout:
-      return "DiceResponseHandler::Signout";
-    case SourceForRefreshTokenOperation::kTurnOnSyncHelper_Abort:
-      return "TurnOnSyncHelper::Abort";
-    case SourceForRefreshTokenOperation::kMachineLogon_CredentialProvider:
-      return "MachineLogon::CredentialProvider";
-    case SourceForRefreshTokenOperation::kTokenService_ExtractCredentials:
-      return "TokenService::ExtractCredentials";
-    case SourceForRefreshTokenOperation::kLogoutTabHelper_PrimaryPageChanged:
-      return "LogoutTabHelper::PrimaryPageChanged";
-    case SourceForRefreshTokenOperation::kForceSigninReauthWithDifferentAccount:
-      return "ForceSigninReauthWithDifferentAccount";
-    case SourceForRefreshTokenOperation::
-        kAccountReconcilor_RevokeTokensNotInCookies:
-      return "AccountReconcilor::RevokeTokensNotInCookies";
-  }
-}
 }  // namespace
 
 ProfileOAuth2TokenService::ProfileOAuth2TokenService(
@@ -251,36 +207,30 @@ void ProfileOAuth2TokenService::InvalidateTokenForMultilogin(
 
 void ProfileOAuth2TokenService::SetRefreshTokenAvailableFromSourceCallback(
     RefreshTokenAvailableFromSourceCallback callback) {
-  on_refresh_token_available_callback_ = callback;
+  GetDelegate()->SetRefreshTokenAvailableFromSourceCallback(callback);
 }
 
 void ProfileOAuth2TokenService::SetRefreshTokenRevokedFromSourceCallback(
     RefreshTokenRevokedFromSourceCallback callback) {
-  on_refresh_token_revoked_callback_ = callback;
+  GetDelegate()->SetRefreshTokenRevokedFromSourceCallback(callback);
 }
 
 void ProfileOAuth2TokenService::LoadCredentials(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
-  DCHECK_EQ(SourceForRefreshTokenOperation::kUnknown,
-            update_refresh_token_source_);
-  update_refresh_token_source_ =
-      SourceForRefreshTokenOperation::kTokenService_LoadCredentials;
   GetDelegate()->LoadCredentials(primary_account_id, is_syncing);
 }
 
 void ProfileOAuth2TokenService::UpdateCredentials(
     const CoreAccountId& account_id,
     const std::string& refresh_token,
-    SourceForRefreshTokenOperation source
+    signin_metrics::SourceForRefreshTokenOperation source
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     ,
     const std::vector<uint8_t>& wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
-  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
-      &update_refresh_token_source_, source);
-  GetDelegate()->UpdateCredentials(account_id, refresh_token
+  GetDelegate()->UpdateCredentials(account_id, refresh_token, source
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                                    ,
                                    wrapped_binding_key
@@ -290,19 +240,15 @@ void ProfileOAuth2TokenService::UpdateCredentials(
 
 void ProfileOAuth2TokenService::RevokeCredentials(
     const CoreAccountId& account_id,
-    SourceForRefreshTokenOperation source) {
-  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
-      &update_refresh_token_source_, source);
-  GetDelegate()->RevokeCredentials(account_id);
+    signin_metrics::SourceForRefreshTokenOperation source) {
+  GetDelegate()->RevokeCredentials(account_id, source);
 }
 
 void ProfileOAuth2TokenService::RevokeAllCredentials(
-    SourceForRefreshTokenOperation source) {
-  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
-      &update_refresh_token_source_, source);
+    signin_metrics::SourceForRefreshTokenOperation source) {
   token_manager_->CancelAllRequests();
   token_manager_->ClearCache();
-  GetDelegate()->RevokeAllCredentials();
+  GetDelegate()->RevokeAllCredentials(source);
 }
 
 const net::BackoffEntry* ProfileOAuth2TokenService::GetDelegateBackoffEntry() {
@@ -313,9 +259,6 @@ const net::BackoffEntry* ProfileOAuth2TokenService::GetDelegateBackoffEntry() {
 void ProfileOAuth2TokenService::ExtractCredentials(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
-  base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
-      &update_refresh_token_source_,
-      SourceForRefreshTokenOperation::kTokenService_ExtractCredentials);
   GetDelegate()->ExtractCredentials(to_service, account_id);
 }
 #endif
@@ -325,8 +268,9 @@ bool ProfileOAuth2TokenService::AreAllCredentialsLoaded() const {
 }
 
 std::vector<CoreAccountId> ProfileOAuth2TokenService::GetAccounts() const {
-  if (!AreAllCredentialsLoaded())
+  if (!AreAllCredentialsLoaded()) {
     return std::vector<CoreAccountId>();
+  }
 
   return GetDelegate()->GetAccounts();
 }
@@ -376,26 +320,8 @@ OAuth2AccessTokenManager* ProfileOAuth2TokenService::GetAccessTokenManager() {
 
 void ProfileOAuth2TokenService::OnRefreshTokenAvailable(
     const CoreAccountId& account_id) {
-  // Check if the newly-updated token is valid (invalid tokens are inserted when
-  // the user signs out on the web with DICE enabled).
-  bool is_valid = true;
-  GoogleServiceAuthError token_error = GetAuthError(account_id);
-  if (token_error == GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                         GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                             CREDENTIALS_REJECTED_BY_CLIENT)) {
-    is_valid = false;
-  }
-
   token_manager_->CancelRequestsForAccount(account_id);
   token_manager_->ClearCacheForAccount(account_id);
-
-  signin_metrics::RecordRefreshTokenUpdatedFromSource(
-      is_valid, update_refresh_token_source_);
-
-  std::string source_string = SourceToString(update_refresh_token_source_);
-  if (on_refresh_token_available_callback_)
-    on_refresh_token_available_callback_.Run(account_id, is_valid,
-                                             source_string);
 }
 
 void ProfileOAuth2TokenService::OnRefreshTokenRevoked(
@@ -405,12 +331,6 @@ void ProfileOAuth2TokenService::OnRefreshTokenRevoked(
 
   token_manager_->CancelRequestsForAccount(account_id);
   token_manager_->ClearCacheForAccount(account_id);
-
-  signin_metrics::RecordRefreshTokenRevokedFromSource(
-      update_refresh_token_source_);
-  std::string source_string = SourceToString(update_refresh_token_source_);
-  if (on_refresh_token_revoked_callback_)
-    on_refresh_token_revoked_callback_.Run(account_id, source_string);
 }
 
 void ProfileOAuth2TokenService::OnRefreshTokensLoaded() {
@@ -420,10 +340,6 @@ void ProfileOAuth2TokenService::OnRefreshTokensLoaded() {
             GetDelegate()->load_credentials_state());
   DCHECK_NE(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
             GetDelegate()->load_credentials_state());
-
-  // Reset the state for update refresh token operations to Unknown as this
-  // was the original state before LoadCredentials was called.
-  update_refresh_token_source_ = SourceForRefreshTokenOperation::kUnknown;
 
   // Ensure the device ID is not empty, and recreate it if all tokens were
   // cleared during the loading process.

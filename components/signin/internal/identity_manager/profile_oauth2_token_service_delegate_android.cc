@@ -420,7 +420,8 @@ void ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded() {
   ProfileOAuth2TokenServiceDelegate::FireRefreshTokensLoaded();
 }
 
-void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
+void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
+    signin_metrics::SourceForRefreshTokenOperation source) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials";
   ScopedBatchChange batch(this);
   std::vector<CoreAccountId> accounts_to_revoke = GetAccounts();
@@ -449,7 +450,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
   }
 }
 
-void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentials(
+void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,

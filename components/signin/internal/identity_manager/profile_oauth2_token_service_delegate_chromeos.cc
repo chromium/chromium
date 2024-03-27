@@ -225,7 +225,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::GetAccounts() const {
                                            account_tracker_service_);
 }
 
-void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
+void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -272,7 +272,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
                      weak_factory_.GetWeakPtr()));
 }
 
-void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(
+void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -491,7 +491,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAuthErrorChanged(
   ProfileOAuth2TokenServiceDelegate::UpdateAuthError(account_id, error);
 }
 
-void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
+void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   ScopedBatchChange batch(this);
@@ -506,7 +506,8 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
 #endif
 }
 
-void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {
+void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentialsInternal(
+    signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(!signin_client_->GetInitialPrimaryAccount().has_value());
   ScopedBatchChange batch(this);

@@ -43,20 +43,6 @@ class FakeProfileOAuth2TokenServiceDelegate
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
 
   std::vector<CoreAccountId> GetAccounts() const override;
-  void RevokeAllCredentials() override;
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
-  void UpdateCredentials(
-      const CoreAccountId& account_id,
-      const std::string& refresh_token
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          ) override;
-  void RevokeCredentials(const CoreAccountId& account_id) override;
-  void ExtractCredentials(ProfileOAuth2TokenService* to_service,
-                          const CoreAccountId& account_id) override;
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
@@ -74,6 +60,22 @@ class FakeProfileOAuth2TokenServiceDelegate
   }
 
  private:
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+  void UpdateCredentialsInternal(const CoreAccountId& account_id,
+                                 const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ,
+                                 const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ) override;
+  void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
+  void ExtractCredentialsInternal(ProfileOAuth2TokenService* to_service,
+                                  const CoreAccountId& account_id) override;
+
   void IssueRefreshTokenForUser(const CoreAccountId& account_id,
                                 const std::string& token);
 

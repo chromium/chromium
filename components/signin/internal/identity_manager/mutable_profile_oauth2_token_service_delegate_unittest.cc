@@ -26,6 +26,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -1292,14 +1293,18 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, UpdateBoundToken) {
 
   // Set bound refresh token.
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
-  delegate->UpdateCredentials(account_id, "refresh_token",
-                              kFakeWrappedBindingKey);
+  delegate->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
   EXPECT_EQ(delegate->GetWrappedBindingKey(account_id), kFakeWrappedBindingKey);
 
   // Update bound refresh token.
   const std::vector<uint8_t> kFakeWrappedBindingKey2 = {4, 5, 6};
-  delegate->UpdateCredentials(account_id, "refresh_token2",
-                              kFakeWrappedBindingKey2);
+  delegate->UpdateCredentials(
+      account_id, "refresh_token2",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey2);
   EXPECT_EQ(delegate->GetWrappedBindingKey(account_id),
             kFakeWrappedBindingKey2);
 
@@ -1320,10 +1325,14 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeBoundToken) {
   const CoreAccountId account_id2 = CoreAccountId::FromGaiaId("account_id2");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
   const std::vector<uint8_t> kFakeWrappedBindingKey2 = {4, 5, 6};
-  delegate->UpdateCredentials(account_id, "refresh_token",
-                              kFakeWrappedBindingKey);
-  delegate->UpdateCredentials(account_id2, "refresh_token2",
-                              kFakeWrappedBindingKey2);
+  delegate->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+  delegate->UpdateCredentials(
+      account_id2, "refresh_token2",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey2);
 
   delegate->RevokeCredentials(account_id);
   EXPECT_TRUE(delegate->GetWrappedBindingKey(account_id).empty());
@@ -1350,8 +1359,10 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
       account_tracker_service_.SeedAccountInfo("account_id", "test@google.com");
   const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
 
-  delegate->UpdateCredentials(account_id, "refresh_token",
-                              kFakeWrappedBindingKey);
+  delegate->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
 
   AddSuccessfulBoundTokenResponse();
 

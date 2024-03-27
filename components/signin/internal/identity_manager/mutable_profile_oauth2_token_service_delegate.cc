@@ -362,7 +362,7 @@ void MutableProfileOAuth2TokenServiceDelegate::InvalidateTokenForMultilogin(
                           CREDENTIALS_REJECTED_BY_SERVER));
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::LoadCredentials(
+void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   if (load_credentials_state() ==
@@ -550,7 +550,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
   }
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentials(
+void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -660,7 +660,8 @@ void MutableProfileOAuth2TokenServiceDelegate::PersistCredentials(
   }
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
+void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
+    signin_metrics::SourceForRefreshTokenOperation source) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   VLOG(1) << "MutablePO2TS::RevokeAllCredentials";
@@ -681,7 +682,7 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
   for (const auto& token : refresh_tokens_)
     accounts.push_back(token.first);
   for (const auto& account : accounts)
-    RevokeCredentials(account);
+    RevokeCredentials(account, source);
 
   DCHECK_EQ(0u, refresh_tokens_.size());
 
@@ -690,7 +691,7 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
     token_web_data_->RemoveAllTokens();
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentials(
+void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
   RevokeCredentialsImpl(account_id, /*revoke_on_server=*/true);
 }
@@ -727,7 +728,7 @@ void MutableProfileOAuth2TokenServiceDelegate::CancelWebTokenFetch() {
   }
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentials(
+void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
   to_service->UpdateCredentials(account_id, GetRefreshToken(account_id),

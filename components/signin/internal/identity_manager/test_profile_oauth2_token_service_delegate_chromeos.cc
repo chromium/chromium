@@ -92,7 +92,7 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::ResetBackOffEntry() {
   delegate_->ResetBackOffEntry();
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
+void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   // In tests |LoadCredentials| may be called twice, in this case we call
@@ -113,7 +113,7 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
   delegate_->LoadCredentials(primary_account_id, is_syncing);
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(
+void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
   delegate_->UpdateCredentials(account_id, refresh_token);
@@ -124,13 +124,15 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::GetURLLoaderFactory() const {
   return delegate_->GetURLLoaderFactory();
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
+void TestProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
   delegate_->RevokeCredentials(account_id);
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {
-  delegate_->RevokeAllCredentials();
+void TestProfileOAuth2TokenServiceDelegateChromeOS::
+    RevokeAllCredentialsInternal(
+        signin_metrics::SourceForRefreshTokenOperation source) {
+  delegate_->RevokeAllCredentials(source);
 }
 
 const net::BackoffEntry*

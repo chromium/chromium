@@ -19,6 +19,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "net/base/backoff_entry.h"
@@ -75,20 +76,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
-  void UpdateCredentials(
-      const CoreAccountId& account_id,
-      const std::string& refresh_token
-#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
-#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          ) override;
-  void RevokeAllCredentials() override;
-  void RevokeCredentials(const CoreAccountId& account_id) override;
-  void ExtractCredentials(ProfileOAuth2TokenService* to_service,
-                          const CoreAccountId& account_id) override;
   void Shutdown() override;
 
   // Overridden from NetworkConnectionTracker::NetworkConnectionObserver.
@@ -163,7 +150,23 @@ class MutableProfileOAuth2TokenServiceDelegate
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
 
-  // Loads credentials into in memory stucture.
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+  void UpdateCredentialsInternal(const CoreAccountId& account_id,
+                                 const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ,
+                                 const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ) override;
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
+  void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
+  void ExtractCredentialsInternal(ProfileOAuth2TokenService* to_service,
+                                  const CoreAccountId& account_id) override;
+
+  // Loads credentials into in memory structure.
   void LoadAllCredentialsIntoMemory(
       const std::map<std::string, std::string>& db_tokens);
 

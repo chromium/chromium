@@ -47,13 +47,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   std::vector<CoreAccountId> GetAccounts() const override;
 
-  // Overridden from ProfileOAuth2TokenService to complete signout of all
-  // POA2TService aware accounts.
-  void RevokeAllCredentials() override;
-
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
-
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const std::optional<CoreAccountId>& primary_account_id) override;
 
@@ -99,6 +92,15 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   void FireRefreshTokensLoaded() override;
 
  private:
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  // Overridden from ProfileOAuth2TokenService to complete signout of all
+  // POA2TService aware accounts.
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
+
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+
   std::string MapAccountIdToAccountName(const CoreAccountId& account_id) const;
   CoreAccountId MapAccountNameToAccountId(
       const std::string& account_name) const;
