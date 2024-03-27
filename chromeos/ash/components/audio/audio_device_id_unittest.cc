@@ -59,7 +59,7 @@ class AudioDeviceIdTest : public AudioDeviceSelectionTestBase {};
 
 TEST_F(AudioDeviceIdTest, GetDeviceIdString) {
   struct {
-    const AudioNodeInfo& audio_node_info;
+    const AudioNodeInfo audio_node_info;
     int version;
     const std::string expected_id;
   } items[] = {
@@ -78,7 +78,7 @@ TEST_F(AudioDeviceIdTest, GetDeviceIdString) {
 // to string containing comma separated set of versioned device IDs.
 TEST_F(AudioDeviceIdTest, GetDeviceSetIdString) {
   struct {
-    const AudioDeviceList& audio_device_list;
+    const AudioDeviceList audio_device_list;
     const std::string expected_id;
   } items[] = {
       {{}, ""},
