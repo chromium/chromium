@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -198,43 +197,11 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   // bottom.
   // Once to the bottom, the consent can be confirmed.
   [ChromeEarlGreyUI waitForAppToIdle];
-  id<GREYMatcher> confirmationScrollViewMatcher =
-      grey_accessibilityID(kUnifiedConsentScrollViewIdentifier);
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:confirmationScrollViewMatcher]
-      assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
-                  error:&error];
-  if (error) {
-    [[EarlGrey selectElementWithMatcher:confirmationScrollViewMatcher]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  }
-  id<GREYMatcher> buttonMatcher = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON];
-  [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
-}
-
-+ (void)tapAddAccountButton {
-  id<GREYMatcher> confirmationScrollViewMatcher =
-      grey_accessibilityID(kUnifiedConsentScrollViewIdentifier);
-  [ChromeEarlGreyUI waitForAppToIdle];
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:confirmationScrollViewMatcher]
-      assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
-                  error:&error];
-  if (error) {
-    // If the consent is bigger than the scroll view, the primary button should
-    // be "MORE".
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::ButtonWithAccessibilityLabelId(
-                       IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON)]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:confirmationScrollViewMatcher]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-  }
-  id<GREYMatcher> buttonMatcher = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
-          IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT];
-  [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
+  // TODO(crbug.com/330333634): Update the helper, see below.
+  GREYAssertTrue(false,
+                 @"This helper was relying on deleted UI "
+                 @"(kUnifiedConsentScrollViewIdentifier). All tests calling it "
+                 @"are disabled. Update the helper and re-enable the tests.");
 }
 
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode {

@@ -39,11 +39,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // visible on short devices (e.g. iPhone 5s).
 + (void)tapSigninConfirmationDialog;
 
-// Taps on the "ADD ACCOUNT" button in the unified consent, to display the
-// SSO dialog.
-// This method should only be used with UnifiedConsent flag.
-+ (void)tapAddAccountButton;
-
 // Opens the confirmation dialog to remove an account from the device, without
 // confirming it.
 + (void)openRemoveAccountConfirmationDialogWithFakeIdentity:

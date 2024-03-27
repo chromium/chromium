@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"

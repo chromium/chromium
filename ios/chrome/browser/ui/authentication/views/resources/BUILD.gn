@@ -19,13 +19,3 @@ imageset("identity_picker_view_arrow_right") {
     "identity_picker_view_arrow_right.imageset/identity_picker_view_arrow_right@3x.png",
   ]
 }
-
-imageset("unified_consent_header") {
-  sources = [
-    "unified_consent_header.imageset/Contents.json",
-    "unified_consent_header.imageset/unified_consent_header@2x.png",
-    "unified_consent_header.imageset/unified_consent_header@3x.png",
-    "unified_consent_header.imageset/unified_consent_header_dark@2x.png",
-    "unified_consent_header.imageset/unified_consent_header_dark@3x.png",
-  ]
-}

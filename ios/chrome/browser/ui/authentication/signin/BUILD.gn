@@ -162,7 +162,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/signin/model:test_constants",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/authentication/unified_consent:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/ntp:constants",
