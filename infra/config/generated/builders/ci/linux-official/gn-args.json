@@ -1,6 +1,0 @@
-{
-  "gn_args": {
-    "is_official_build": true,
-    "use_remoteexec": true
-  }
-}

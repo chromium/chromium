@@ -1,7 +1,6 @@
 {
   "chromium": {
     "android-official": "ci/android-official/gn-args.json",
-    "linux-official": "ci/linux-official/gn-args.json",
     "mac-official": "ci/mac-official/gn-args.json",
     "win-official": "ci/win-official/gn-args.json",
     "win32-official": "ci/win32-official/gn-args.json"
@@ -43,7 +42,6 @@
     "linux-lacros-dbg": "ci/linux-lacros-dbg/gn-args.json"
   },
   "chromium.dawn": {
-    "Dawn Linux x64 DEPS Builder": "ci/Dawn Linux x64 DEPS Builder/gn-args.json",
     "Dawn Mac arm64 DEPS Release (Apple M2)": "ci/Dawn Mac arm64 DEPS Release (Apple M2)/gn-args.json",
     "Dawn Mac x64 DEPS Builder": "ci/Dawn Mac x64 DEPS Builder/gn-args.json",
     "Dawn Win10 x64 DEPS Builder": "ci/Dawn Win10 x64 DEPS Builder/gn-args.json",
@@ -57,30 +55,16 @@
   },
   "chromium.gpu": {
     "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
-    "GPU Linux Builder": "ci/GPU Linux Builder/gn-args.json",
     "GPU Mac Builder": "ci/GPU Mac Builder/gn-args.json",
     "GPU Win x64 Builder": "ci/GPU Win x64 Builder/gn-args.json"
   },
   "chromium.gpu.fyi": {
     "GPU FYI Android arm64 Builder": "ci/GPU FYI Android arm64 Builder/gn-args.json"
   },
-  "chromium.linux": {
-    "Cast Linux": "ci/Cast Linux/gn-args.json",
-    "Cast Linux Debug": "ci/Cast Linux Debug/gn-args.json",
-    "Linux Builder": "ci/Linux Builder/gn-args.json",
-    "Linux Builder (Wayland)": "ci/Linux Builder (Wayland)/gn-args.json",
-    "Linux Builder (dbg)": "ci/Linux Builder (dbg)/gn-args.json"
-  },
   "chromium.mac": {
     "Mac Builder": "ci/Mac Builder/gn-args.json",
     "Mac Builder (dbg)": "ci/Mac Builder (dbg)/gn-args.json",
-    "ios-simulator": "ci/ios-simulator/gn-args.json",
-    "ios-simulator-full-configs": "ci/ios-simulator-full-configs/gn-args.json",
     "mac-arm64-rel": "ci/mac-arm64-rel/gn-args.json"
-  },
-  "chromium.memory": {
-    "Linux ASan LSan Builder": "ci/Linux ASan LSan Builder/gn-args.json",
-    "Linux TSan Builder": "ci/Linux TSan Builder/gn-args.json"
   },
   "chromium.win": {
     "Win Builder": "ci/Win Builder/gn-args.json",
@@ -88,7 +72,6 @@
     "Win x64 Builder": "ci/Win x64 Builder/gn-args.json"
   },
   "tryserver.blink": {
-    "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
     "mac10.15-blink-rel": "try/mac10.15-blink-rel/gn-args.json",
     "mac11.0-blink-rel": "try/mac11.0-blink-rel/gn-args.json",
     "mac11.0.arm64-blink-rel": "try/mac11.0.arm64-blink-rel/gn-args.json",
@@ -103,7 +86,6 @@
   },
   "tryserver.chromium": {
     "android-official": "try/android-official/gn-args.json",
-    "linux-official": "try/linux-official/gn-args.json",
     "mac-official": "try/mac-official/gn-args.json",
     "win-official": "try/win-official/gn-args.json",
     "win32-official": "try/win32-official/gn-args.json"
@@ -155,7 +137,6 @@
     "linux-lacros-rel": "try/linux-lacros-rel/gn-args.json"
   },
   "tryserver.chromium.dawn": {
-    "dawn-linux-x64-deps-rel": "try/dawn-linux-x64-deps-rel/gn-args.json",
     "dawn-mac-arm64-deps-rel": "try/dawn-mac-arm64-deps-rel/gn-args.json",
     "dawn-mac-x64-deps-rel": "try/dawn-mac-x64-deps-rel/gn-args.json",
     "dawn-win10-x64-deps-rel": "try/dawn-win10-x64-deps-rel/gn-args.json",
@@ -168,23 +149,7 @@
     "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json",
     "fuchsia-x64-rel": "try/fuchsia-x64-rel/gn-args.json"
   },
-  "tryserver.chromium.linux": {
-    "linux-afl-asan-rel": "try/linux-afl-asan-rel/gn-args.json",
-    "linux-centipede-asan-rel": "try/linux-centipede-asan-rel/gn-args.json",
-    "linux-libfuzzer-asan-rel": "try/linux-libfuzzer-asan-rel/gn-args.json",
-    "linux-rel": "try/linux-rel/gn-args.json",
-    "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
-    "linux-x64-castos": "try/linux-x64-castos/gn-args.json",
-    "linux-x64-castos-dbg": "try/linux-x64-castos-dbg/gn-args.json",
-    "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
-    "linux_chromium_compile_dbg_ng": "try/linux_chromium_compile_dbg_ng/gn-args.json",
-    "linux_chromium_dbg_ng": "try/linux_chromium_dbg_ng/gn-args.json",
-    "linux_chromium_tsan_rel_ng": "try/linux_chromium_tsan_rel_ng/gn-args.json",
-    "linux_optional_gpu_tests_rel": "try/linux_optional_gpu_tests_rel/gn-args.json"
-  },
   "tryserver.chromium.mac": {
-    "ios-simulator": "try/ios-simulator/gn-args.json",
-    "ios-simulator-full-configs": "try/ios-simulator-full-configs/gn-args.json",
     "mac-rel": "try/mac-rel/gn-args.json",
     "mac11-arm64-rel": "try/mac11-arm64-rel/gn-args.json",
     "mac12-arm64-rel": "try/mac12-arm64-rel/gn-args.json",
@@ -192,8 +157,7 @@
     "mac13-arm64-rel": "try/mac13-arm64-rel/gn-args.json",
     "mac_chromium_10.15_rel_ng": "try/mac_chromium_10.15_rel_ng/gn-args.json",
     "mac_chromium_11.0_rel_ng": "try/mac_chromium_11.0_rel_ng/gn-args.json",
-    "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
-    "mac_optional_gpu_tests_rel": "try/mac_optional_gpu_tests_rel/gn-args.json"
+    "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json"
   },
   "tryserver.chromium.win": {
     "win-libfuzzer-asan-rel": "try/win-libfuzzer-asan-rel/gn-args.json",
