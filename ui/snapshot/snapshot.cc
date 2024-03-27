@@ -54,7 +54,7 @@ void EncodeImageAndScheduleCallback(
 
 }  // namespace
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 
 // Note that Android and Aura versions of this function are in
 // snapshot_android.cc and snapshot_aura.cc respectively.
@@ -80,7 +80,7 @@ void GrabWindowSnapshotAndScale(gfx::NativeWindow window,
       base::BindOnce(resize_image, target_size, std::move(callback)));
 }
 
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 
 void GrabWindowSnapshotAsPNG(gfx::NativeWindow window,
                              const gfx::Rect& source_rect,
