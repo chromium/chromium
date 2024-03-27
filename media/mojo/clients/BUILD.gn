@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
+
 # Implementations of media C++ interfaces using corresponding mojo services.
 source_set("clients") {
   visibility = [
@@ -58,6 +60,13 @@ source_set("clients") {
     "mojo_video_encoder_metrics_provider.cc",
     "mojo_video_encoder_metrics_provider.h",
   ]
+
+  if (allow_oop_video_decoder) {
+    sources += [
+      "mojo_stable_video_decoder.cc",
+      "mojo_stable_video_decoder.h",
+    ]
+  }
 
   if (is_android) {
     sources += [
@@ -120,6 +129,10 @@ source_set("unit_tests") {
     "mojo_video_encode_accelerator_unittest.cc",
     "mojo_video_encoder_metrics_provider_unittest.cc",
   ]
+
+  if (allow_oop_video_decoder) {
+    sources += [ "mojo_stable_video_decoder_unittest.cc" ]
+  }
 
   deps = [
     "//base",

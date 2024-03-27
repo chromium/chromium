@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "media/base/media_log.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/gpu/media_gpu_export.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,13 +31,17 @@ class MojoDecoderBufferWriter;
 // video decoder via Mojo. This class should be operated and
 // destroyed on |decoder_task_runner_|.
 //
+// Note: MEDIA_GPU_EXPORT is necessary to expose the OOPVideoDecoder to the
+// MojoStableVideoDecoder.
+//
 // TODO(b/195769334): this class (or most of it) would be unnecessary if the
 // MailboxVideoFrameConverter lived together with the remote decoder in the same
 // process. Then, clients can communicate with that process without the GPU
 // process acting as a proxy.
-class OOPVideoDecoder : public VideoDecoderMixin,
-                        public stable::mojom::VideoDecoderClient,
-                        public stable::mojom::MediaLog {
+class MEDIA_GPU_EXPORT OOPVideoDecoder
+    : public VideoDecoderMixin,
+      public stable::mojom::VideoDecoderClient,
+      public stable::mojom::MediaLog {
  public:
   OOPVideoDecoder(const OOPVideoDecoder&) = delete;
   OOPVideoDecoder& operator=(const OOPVideoDecoder&) = delete;
@@ -71,6 +76,10 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // decoder if known (std::nullopt otherwise). This method is thread- and
   // sequence-safe.
   static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+
+  // Resets the internal singleton state so that we can always run individual
+  // tests as if they ran in dedicated processes.
+  static void ResetGlobalStateForTesting();
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,

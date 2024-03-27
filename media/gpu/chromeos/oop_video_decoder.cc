@@ -169,9 +169,9 @@ class OOPVideoDecoderSupportedConfigsManager {
     // a) We didn't try to get the supported configurations before initializing
     //    OOPVideoDecoder instances. This should be impossible as higher layers
     //    should guarantee that we know the supported configurations before
-    //    creating MojoVideoDecoderService instances (and therefore
-    //    OOPVideoDecoder instances). See, e.g., the logic in
-    //    InterfaceFactoryImpl::CreateVideoDecoder().
+    //    creating OOPVideoDecoder instances. See the logic in
+    //    InterfaceFactoryImpl::CreateVideoDecoder() (for regular OOP-VD) and in
+    //    MojoStableVideoDecoder::Initialize() (for GTFO OOP-VD).
     //
     // b) We did try to get the supported configurations but an error occurred.
     //    This case reduces to no supported configurations in which case, a
@@ -240,6 +240,19 @@ class OOPVideoDecoderSupportedConfigsManager {
     waiting_callbacks_.emplace(
         mojo::PendingRemote<stable::mojom::StableVideoDecoder>(), std::move(cb),
         base::SequencedTaskRunner::GetCurrentDefault());
+  }
+
+  void ResetForTesting() {
+    base::AutoLock lock(lock_);
+    oop_video_decoder_.reset();
+    disconnected_ = false;
+    configs_.reset();
+    decoder_type_.reset();
+    interface_version_.reset();
+    config_retry_count_ = 0u;
+    while (!waiting_callbacks_.empty()) {
+      waiting_callbacks_.pop();
+    }
   }
 
  private:
@@ -413,6 +426,12 @@ void OOPVideoDecoder::NotifySupportKnown(
 std::optional<SupportedVideoDecoderConfigs>
 OOPVideoDecoder::GetSupportedConfigs() {
   return OOPVideoDecoderSupportedConfigsManager::Instance().Get();
+}
+
+// static
+void OOPVideoDecoder::ResetGlobalStateForTesting() {
+  OOPVideoDecoderSupportedConfigsManager::Instance()
+      .ResetForTesting();  // IN-TEST
 }
 
 OOPVideoDecoder::OOPVideoDecoder(

@@ -1,0 +1,293 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "media/mojo/clients/mojo_stable_video_decoder.h"
+
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "media/base/decoder.h"
+#include "media/base/media_util.h"
+#include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_decoder_config.h"
+#include "media/base/video_frame.h"
+#include "media/gpu/chromeos/oop_video_decoder.h"
+#include "media/mojo/common/mojo_decoder_buffer_converter.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
+
+using testing::_;
+using testing::Mock;
+using testing::StrictMock;
+
+namespace media {
+
+namespace {
+
+VideoDecoderConfig CreateValidVideoDecoderConfig() {
+  // Note: the StableVideoDecoder Mojo interface doesn't support
+  // VideoTransformation.
+  const VideoDecoderConfig config(
+      VideoCodec::kH264, VideoCodecProfile::H264PROFILE_BASELINE,
+      VideoDecoderConfig::AlphaMode::kHasAlpha, VideoColorSpace::REC709(),
+      VideoTransformation(),
+      /*coded_size=*/gfx::Size(640, 368),
+      /*visible_rect=*/gfx::Rect(1, 1, 630, 360),
+      /*natural_size=*/gfx::Size(1260, 720),
+      /*extra_data=*/std::vector<uint8_t>{1, 2, 3},
+      EncryptionScheme::kUnencrypted);
+  DCHECK(config.IsValidConfig());
+  return config;
+}
+
+class MockVideoFrameHandleReleaser
+    : public stable::mojom::VideoFrameHandleReleaser {
+ public:
+  explicit MockVideoFrameHandleReleaser(
+      mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>
+          video_frame_handle_releaser)
+      : video_frame_handle_releaser_receiver_(
+            this,
+            std::move(video_frame_handle_releaser)) {}
+  MockVideoFrameHandleReleaser(const MockVideoFrameHandleReleaser&) = delete;
+  MockVideoFrameHandleReleaser& operator=(const MockVideoFrameHandleReleaser&) =
+      delete;
+  ~MockVideoFrameHandleReleaser() override = default;
+
+  // stable::mojom::VideoFrameHandleReleaser implementation.
+  MOCK_METHOD1(ReleaseVideoFrame,
+               void(const base::UnguessableToken& release_token));
+
+ private:
+  mojo::Receiver<stable::mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_receiver_;
+};
+
+class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
+ public:
+  explicit MockStableVideoDecoderService(
+      mojo::PendingReceiver<stable::mojom::StableVideoDecoder> pending_receiver)
+      : receiver_(this, std::move(pending_receiver)) {}
+  MockStableVideoDecoderService(const MockStableVideoDecoderService&) = delete;
+  MockStableVideoDecoderService& operator=(
+      const MockStableVideoDecoderService&) = delete;
+  ~MockStableVideoDecoderService() override = default;
+
+  // stable::mojom::StableVideoDecoder implementation.
+  //
+  // Note: Construct() saves the Mojo endpoints for later usage and to ensure
+  // that the connection between the client and the service is not torn down.
+  MOCK_METHOD1(GetSupportedConfigs, void(GetSupportedConfigsCallback callback));
+  void Construct(
+      mojo::PendingAssociatedRemote<stable::mojom::VideoDecoderClient>
+          stable_video_decoder_client_remote,
+      mojo::PendingRemote<stable::mojom::MediaLog> stable_media_log_remote,
+      mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>
+          stable_video_frame_handle_releaser_receiver,
+      mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
+      const gfx::ColorSpace& target_color_space) override {
+    video_decoder_client_remote_.Bind(
+        std::move(stable_video_decoder_client_remote));
+    media_log_remote_.Bind(std::move(stable_media_log_remote));
+    mock_video_frame_handle_releaser_ =
+        std::make_unique<StrictMock<MockVideoFrameHandleReleaser>>(
+            std::move(stable_video_frame_handle_releaser_receiver));
+    mojo_decoder_buffer_reader_ = std::make_unique<MojoDecoderBufferReader>(
+        std::move(decoder_buffer_pipe));
+    DoConstruct(target_color_space);
+  }
+  MOCK_METHOD4(
+      Initialize,
+      void(const VideoDecoderConfig& config,
+           bool low_delay,
+           mojo::PendingRemote<stable::mojom::StableCdmContext> cdm_context,
+           InitializeCallback callback));
+  MOCK_METHOD2(Decode,
+               void(const scoped_refptr<DecoderBuffer>& buffer,
+                    DecodeCallback callback));
+  MOCK_METHOD1(Reset, void(ResetCallback callback));
+
+  MOCK_METHOD1(DoConstruct, void(const gfx::ColorSpace& target_color_space));
+
+ private:
+  mojo::Receiver<stable::mojom::StableVideoDecoder> receiver_;
+
+  // |video_decoder_client_remote_| is the client endpoint that's received
+  // through the Construct() call.
+  mojo::AssociatedRemote<stable::mojom::VideoDecoderClient>
+      video_decoder_client_remote_;
+
+  // |media_log_remote_| is the MediaLog endpoint that's received through the
+  // Construct() call.
+  mojo::Remote<stable::mojom::MediaLog> media_log_remote_;
+
+  // |mock_video_frame_handle_releaser_| receives frame release events from the
+  // client.
+  std::unique_ptr<StrictMock<MockVideoFrameHandleReleaser>>
+      mock_video_frame_handle_releaser_;
+
+  // |mojo_decoder_buffer_reader_| wraps the reading end of the data pipe that's
+  // received through the Construct() call.
+  std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
+};
+
+// TestEndpoints groups a few members that result from creating and initializing
+// a MojoStableVideoDecoder so that tests can use them to set expectations
+// and/or to poke at them to trigger specific paths.
+class TestEndpoints {
+ public:
+  // Creates a TestEndpoints instance which encapsulates a
+  // MojoStableVideoDecoder client that's connected to a
+  // MockStableVideoDecoderService. |media_task_runner| is the task runner used
+  // for the MojoStableVideoDecoder. The MojoStableVideoDecoder will be
+  // destroyed on that task runner.
+  explicit TestEndpoints(
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner)
+      : media_task_runner_(std::move(media_task_runner)) {
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
+        mojo_stable_vd_pending_remote;
+    service_ = std::make_unique<StrictMock<MockStableVideoDecoderService>>(
+        mojo_stable_vd_pending_remote.InitWithNewPipeAndPassReceiver());
+    client_ = std::make_unique<MojoStableVideoDecoder>(
+        media_task_runner_, &client_media_log_,
+        std::move(mojo_stable_vd_pending_remote));
+  }
+
+  ~TestEndpoints() {
+    media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
+  }
+
+  MojoStableVideoDecoder* client() const { return client_.get(); }
+
+  StrictMock<MockStableVideoDecoderService>* service() const {
+    return service_.get();
+  }
+
+  // Returns a base::MockRepeatingCallback corresponding to the output callback
+  // passed to MojoStableVideoDecoder::Initialize().
+  StrictMock<base::MockRepeatingCallback<void(scoped_refptr<VideoFrame>)>>*
+  client_output_cb() {
+    return &client_output_cb_;
+  }
+
+  // Returns a base::MockRepeatingCallback corresponding to the waiting callback
+  // passed to MojoStableVideoDecoder::Initialize().
+  StrictMock<base::MockRepeatingCallback<void(WaitingReason)>>*
+  client_waiting_cb() {
+    return &client_waiting_cb_;
+  }
+
+ private:
+  NullMediaLog client_media_log_;
+  StrictMock<base::MockRepeatingCallback<void(scoped_refptr<VideoFrame>)>>
+      client_output_cb_;
+  StrictMock<base::MockRepeatingCallback<void(WaitingReason)>>
+      client_waiting_cb_;
+  std::unique_ptr<MojoStableVideoDecoder> client_;
+  std::unique_ptr<StrictMock<MockStableVideoDecoderService>> service_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+};
+
+}  // namespace
+
+class MojoStableVideoDecoderTest : public testing::Test {
+ public:
+  MojoStableVideoDecoderTest()
+      : media_task_runner_(
+            base::ThreadPool::CreateSequencedTaskRunner(/*traits=*/{})) {}
+
+  // testing::Test implementation.
+  void TearDown() override {
+    task_environment_.RunUntilIdle();
+    OOPVideoDecoder::ResetGlobalStateForTesting();
+  }
+
+ protected:
+  // Creates and initializes a new MojoStableVideoDecoder connected to a
+  // MockStableVideoDecoderService (verifying the initialization expectations
+  // along the way). Returns all relevant endpoints or nullptr on failure.
+  std::unique_ptr<TestEndpoints> CreateAndInitializeMojoStableVideoDecoder() {
+    auto endpoints = std::make_unique<TestEndpoints>(media_task_runner_);
+
+    // The first time Initialize() is called on the MojoStableVideoDecoder in a
+    // process, we should get the supported configurations from the service.
+    // We'll store the supported configurations callback in
+    // |received_get_supported_configs_cb| to reply later.
+    //
+    // Note that we always set the expectation that GetSupportedConfigs() is
+    // called, even though we don't know if each test case is going to be run in
+    // its own process. That's because we call
+    // OOPVideoDecoder::ResetGlobalStateForTesting() in TearDown() so that
+    // singleton state is reset in between test cases.
+    stable::mojom::StableVideoDecoder::GetSupportedConfigsCallback
+        received_get_supported_configs_cb;
+    EXPECT_CALL(*endpoints->service(), GetSupportedConfigs(_))
+        .WillOnce(
+            [&](stable::mojom::StableVideoDecoder::GetSupportedConfigsCallback
+                    callback) {
+              received_get_supported_configs_cb = std::move(callback);
+            });
+
+    StrictMock<base::MockOnceCallback<void(DecoderStatus)>> init_cb;
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MojoStableVideoDecoder::Initialize,
+                       base::Unretained(endpoints->client()),
+                       CreateValidVideoDecoderConfig(),
+                       /*low_delay=*/false, /*cdm_context=*/nullptr,
+                       init_cb.Get(), endpoints->client_output_cb()->Get(),
+                       endpoints->client_waiting_cb()->Get()));
+    task_environment_.RunUntilIdle();
+    if (!Mock::VerifyAndClearExpectations(endpoints->service())) {
+      return nullptr;
+    }
+    if (!received_get_supported_configs_cb) {
+      ADD_FAILURE() << "Did not receive a valid GetSupportedConfigsCallback";
+      return nullptr;
+    }
+
+    // Now we'll reply with a list of supported configurations. When the
+    // MojoStableVideoDecoder receives those, it should then create the
+    // OOPVideoDecoder which should result in a call to Construct() on the
+    // service.
+    constexpr VideoDecoderType kDecoderTypeToReplyWith =
+        VideoDecoderType::kVaapi;
+    const std::vector<SupportedVideoDecoderConfig>
+        supported_configs_to_reply_with({
+            {/*profile_min=*/H264PROFILE_MIN, /*profile_max=*/H264PROFILE_MAX,
+             /*coded_size_min=*/gfx::Size(320, 180),
+             /*coded_size_max=*/gfx::Size(1280, 720), /*allow_encrypted=*/false,
+             /*require_encrypted=*/false},
+            {/*profile_min=*/VP9PROFILE_MIN, /*profile_max=*/VP9PROFILE_MAX,
+             /*coded_size_min=*/gfx::Size(8, 8),
+             /*coded_size_max=*/gfx::Size(640, 360), /*allow_encrypted=*/true,
+             /*require_encrypted=*/true},
+        });
+    EXPECT_CALL(*endpoints->service(), DoConstruct(_));
+    std::move(received_get_supported_configs_cb)
+        .Run(supported_configs_to_reply_with, kDecoderTypeToReplyWith);
+    task_environment_.RunUntilIdle();
+
+    return endpoints;
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
+};
+
+TEST_F(MojoStableVideoDecoderTest, InitializeConstructsStableVideoDecoder) {
+  std::unique_ptr<TestEndpoints> endpoints =
+      CreateAndInitializeMojoStableVideoDecoder();
+  ASSERT_TRUE(endpoints);
+}
+
+}  // namespace media
