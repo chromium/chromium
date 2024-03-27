@@ -595,13 +595,7 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
 // image.
 BASE_FEATURE(kUseWritePixelsYUV,
              "UseWritePixelsYUV",
-// Windows requires d3d11 write pixel support in angle.
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables creating single shared image and mailbox for multi-planar formats for
 // hardware video decoders.
