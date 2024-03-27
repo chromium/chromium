@@ -34,7 +34,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -389,9 +388,7 @@ public final class TrackingProtectionNoticeTest {
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
-                            // Allow disk writes and slow calls to render from UI thread.
-                            try (StrictModeContext ignored =
-                                    StrictModeContext.allowAllThreadPolicies()) {
+                            try {
                                 TestThreadUtils.runOnUiThreadBlocking(
                                         () -> RenderTestRule.sanitize(v));
                                 mRenderTestRule.render(v, renderId);

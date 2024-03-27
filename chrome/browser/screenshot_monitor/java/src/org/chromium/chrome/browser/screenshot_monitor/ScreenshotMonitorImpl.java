@@ -19,7 +19,6 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -107,7 +106,7 @@ public class ScreenshotMonitorImpl extends ScreenshotMonitor {
                 return false;
             }
 
-            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            try {
                 ContentResolver contentResolver = mContentResolverForTesting;
                 if (contentResolver == null) {
                     contentResolver = ContextUtils.getApplicationContext().getContentResolver();

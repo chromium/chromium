@@ -21,7 +21,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -612,7 +611,7 @@ public class TabPersistentStore {
         // detection of unbuffered input/output operations.
         // This will no longer be necessary when the TabState schema is replaced with
         // a FlatBuffer approach - go/tabstate-flatbuffer-decision.
-        try (StrictModeContext ignored = StrictModeContext.allowUnbufferedIo()) {
+        try {
             int restoredTabId =
                     ChromeSharedPreferences.getInstance()
                             .readInt(

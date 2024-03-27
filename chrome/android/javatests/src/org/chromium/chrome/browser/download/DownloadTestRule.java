@@ -18,7 +18,6 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -69,7 +68,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
      *     checked.
      */
     public boolean hasDownloaded(String fileName, String expectedContents) {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+        try {
             File downloadedFile = getDownloadedPath(fileName);
             if (!downloadedFile.exists()) {
                 return false;

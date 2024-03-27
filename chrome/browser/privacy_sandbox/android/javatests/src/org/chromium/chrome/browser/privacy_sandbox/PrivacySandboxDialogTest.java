@@ -39,7 +39,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -109,9 +108,7 @@ public final class PrivacySandboxDialogTest {
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
-                            // Allow disk writes and slow calls to render from UI thread.
-                            try (StrictModeContext ignored =
-                                    StrictModeContext.allowAllThreadPolicies()) {
+                            try {
                                 TestThreadUtils.runOnUiThreadBlocking(
                                         () -> RenderTestRule.sanitize(v));
                                 mRenderTestRule.render(v, renderId);

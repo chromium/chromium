@@ -43,7 +43,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -1723,10 +1722,7 @@ public class CustomTabsConnection {
         // world-readable.
         String cgroupFilename = "/proc/" + pid + "/cgroup";
         String controllerName = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? "cpuset" : "cpu";
-        // Reading from /proc does not cause disk IO, but strict mode doesn't like it.
-        // crbug.com/567143
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads();
-                BufferedReader reader = new BufferedReader(new FileReader(cgroupFilename))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(cgroupFilename))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 // line format: 2:cpu:/bg_non_interactive

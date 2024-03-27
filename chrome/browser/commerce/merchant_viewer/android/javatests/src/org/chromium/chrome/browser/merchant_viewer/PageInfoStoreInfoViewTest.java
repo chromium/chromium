@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -206,9 +205,7 @@ public class PageInfoStoreInfoViewTest {
                 .check(
                         (v, noMatchException) -> {
                             if (noMatchException != null) throw noMatchException;
-                            // Allow disk writes and slow calls to render from UI thread.
-                            try (StrictModeContext ignored =
-                                    StrictModeContext.allowAllThreadPolicies()) {
+                            try {
                                 mRenderTestRule.render(v, renderId);
                             } catch (IOException e) {
                                 assert false : "Render test failed due to " + e;
