@@ -9,11 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
 namespace {
+
+using testing::ElementsAre;
 
 struct NonCopyable {
   char c_;
@@ -97,6 +101,36 @@ TEST(ExtendTest, ExtendWithCopy) {
   EXPECT_EQ(dst, expected);
   EXPECT_FALSE(dst[0].copied_);
   EXPECT_TRUE(dst[dst.size() - 1].copied_);
+}
+
+TEST(ExtendTest, ExtendWithSpan) {
+  static constexpr uint8_t kRawArray[] = {3, 4, 5};
+
+  static constexpr auto kVectorGenerator = []() -> std::vector<uint8_t> {
+    return {9, 10, 11};
+  };
+
+  static const std::vector<uint8_t> kConstVector = kVectorGenerator();
+  static std::vector<uint8_t> kMutVector = kVectorGenerator();
+
+  std::vector<uint8_t> dst;
+
+  // Selects overload for span<const uint8_t, 3>.
+  Extend(dst, span(kRawArray));
+  EXPECT_THAT(dst, ElementsAre(3, 4, 5));
+
+  // Selects overload for span<uint8_t, 3>.
+  static std::array<uint8_t, 3> kArray = {6, 7, 8};
+  Extend(dst, span(kArray));
+  EXPECT_THAT(dst, ElementsAre(3, 4, 5, 6, 7, 8));
+
+  // Selects overload for span<const uint8_t, dynamic_extent>.
+  Extend(dst, span(kConstVector));
+  EXPECT_THAT(dst, ElementsAre(3, 4, 5, 6, 7, 8, 9, 10, 11));
+
+  // Selects overload for span<uint8_t, dynamic_extent>.
+  Extend(dst, span(kMutVector));
+  EXPECT_THAT(dst, ElementsAre(3, 4, 5, 6, 7, 8, 9, 10, 11, 9, 10, 11));
 }
 
 }  // namespace base

@@ -8,6 +8,8 @@
 #include <iterator>
 #include <vector>
 
+#include "base/containers/span.h"
+
 namespace base {
 
 // Append to |dst| all elements of |src| by std::move-ing them out of |src|.
@@ -23,6 +25,20 @@ void Extend(std::vector<T>& dst, std::vector<T>&& src) {
 // not changed.
 template <typename T>
 void Extend(std::vector<T>& dst, const std::vector<T>& src) {
+  Extend(dst, make_span(src));
+}
+
+// Append to |dst| all elements of |src| by copying them out of |src|. |src| is
+// not changed.
+template <typename T, size_t N>
+void Extend(std::vector<T>& dst, span<T, N> src) {
+  dst.insert(dst.end(), src.begin(), src.end());
+}
+
+// Append to |dst| all elements of |src| by copying them out of |src|. |src| is
+// not changed.
+template <typename T, size_t N>
+void Extend(std::vector<T>& dst, span<const T, N> src) {
   dst.insert(dst.end(), src.begin(), src.end());
 }
 
