@@ -2840,10 +2840,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTamplate.LaunchAdminTemplate" enum="BooleanHit"
-    expires_after="2024-05-08">
+    expires_after="2025-03-27">
   <owner>hongyulong@google.com</owner>
   <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
   <summary>Emitted when an admin template is launched.</summary>
 </histogram>
 
