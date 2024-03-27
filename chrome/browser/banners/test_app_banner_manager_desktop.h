@@ -70,13 +70,9 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
 
  protected:
   // AppBannerManager:
-  void OnInstall(blink::mojom::DisplayMode display,
-                 bool set_current_web_app_not_installable) override;
-  void DidFinishCreatingWebApp(
-      const webapps::ManifestId& manifest_id,
-      base::WeakPtr<AppBannerManagerDesktop> is_navigation_current,
-      const webapps::AppId& app_id,
-      webapps::InstallResultCode code) override;
+  void OnInstall(blink::mojom::DisplayMode display) override;
+  void DidFinishCreatingWebApp(const webapps::AppId& app_id,
+                               webapps::InstallResultCode code) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void UpdateState(AppBannerManager::State state) override;
