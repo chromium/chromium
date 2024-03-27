@@ -338,7 +338,7 @@
       </message>
 
       <!-- Editor Menu -->
-      <!-- TODO(b/286268215): Finalize these strings and make them translatable. -->
+      <!-- TODO(b/286268215): Finalize these strings. -->
       <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature.">
         Write faster and with more confidence
       </message>
@@ -354,13 +354,13 @@
       <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode.">
         Help me write
       </message>
-      <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode.">
         Enter a prompt like "write a thank you note"
       </message>
-      <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode.">
         Rewrite
       </message>
-      <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
+      <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode.">
         Enter a prompt like "sound more confident"
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu.">
