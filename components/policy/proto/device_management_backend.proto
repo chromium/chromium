@@ -558,14 +558,24 @@ message PolicyFetchRequest {
   //   google/chromeos/device => ChromeDeviceSettingsProto
   //   google/chromeos/user => ChromeSettingsProto
   //   google/chromeos/publicaccount => ChromeSettingsProto
+  //   google/chromeos/signinextension => ExternalPolicyData
+  //   google/chromeos/remotecommand => RemoteCommand (*)
+  //
+  // For users signed in to other Chrome platforms,
+  //   google/android/user => ChromeSettingsProto
+  //   google/chrome/user => ChromeSettingsProto
+  //   google/ios/user => ChromeSettingsProto
+  //
+  // For Chrome Browser Cloud Management,
   //   google/chrome/machine-level-user => ChromeSettingsProto
   //   google/chrome/machine-level-user-android => ChromeSettingsProto
   //   google/chrome/machine-level-user-ios => ChromeSettingsProto
   //   google/chrome/extension => ExternalPolicyData
   //   google/chrome/machine-level-extension => ExternalPolicyData
-  //   google/chromeos/signinextension => ExternalPolicyData
-  //   google/android/user => ChromeSettingsProto
-  //   google/chromeos/remotecommand => RemoteCommand (*)
+  //   google/machine-level-apps =>
+  //       Omaha policy fetch is translated into two policy types
+  //       google/chrome/machine-level-user => ChromeSettingsProto
+  //       google/machine-level-omaha => OmahaSettingsClientProto
   //
   // Types marked with an (*) are not policies, but data signed with the policy
   // key. It is illegal to try to fetch policies with those types.
