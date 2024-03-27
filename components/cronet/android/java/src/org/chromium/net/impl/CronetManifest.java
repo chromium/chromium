@@ -86,7 +86,9 @@ public final class CronetManifest {
                                             | PackageManager.MATCH_DISABLED_COMPONENTS
                                             | PackageManager.MATCH_DIRECT_BOOT_AWARE
                                             | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException | NullPointerException e) {
+            // TODO(b/331573772): Consider removing this NPE check once we can check for
+            // CRONET_SOURCE_FAKE when creating logger.
             serviceInfo = null;
         }
         return serviceInfo != null ? serviceInfo.metaData : new Bundle();
