@@ -6631,6 +6631,21 @@
             ]
         }
     ],
+    "EnableBatchVideoDecodingInRenderer": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VideoDecodeBatching"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableBookmarkFoldersForAccountStorage": [
         {
             "platforms": [
