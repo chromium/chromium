@@ -15,6 +15,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace predictors {
 
 // PrewarmHttpDiskCacheManager prewarms the HTTP disk cache.
@@ -51,6 +55,12 @@ class PrewarmHttpDiskCacheManager
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
 
+  // Called when we are discarding the body inside SimpleURLLoader;
+  void OnHeadersOnly(scoped_refptr<net::HttpResponseHeaders> ignored);
+
+  // Handles completion of a load, and possibly starts a new one.
+  void DoComplete();
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::queue<std::pair<url::Origin, GURL>> queued_jobs_;
   // Keeps recent warm-up history to prevent excessive duplicate
@@ -59,6 +69,7 @@ class PrewarmHttpDiskCacheManager
   base::LRUCache<std::pair<url::Origin, GURL>, base::TimeTicks>
       prewarm_history_;
   const base::TimeDelta reprewarm_period_;
+  const bool use_read_and_discard_body_option_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   base::OnceCallback<void()> prewarm_finished_callback_for_testing_;

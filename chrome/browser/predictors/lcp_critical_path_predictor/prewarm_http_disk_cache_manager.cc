@@ -4,6 +4,7 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 
+#include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/base_tracing.h"
@@ -57,6 +58,9 @@ PrewarmHttpDiskCacheManager::PrewarmHttpDiskCacheManager(
           blink::features::kHttpDiskCachePrewarmingHistorySize.Get()),
       reprewarm_period_(
           blink::features::kHttpDiskCachePrewarmingReprewarmPeriod.Get()),
+      use_read_and_discard_body_option_(
+          blink::features::kHttpDiskCachePrewarmingUseReadAndDiscardBodyOption
+              .Get()),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT_WITH_FLOW0(
@@ -162,7 +166,14 @@ void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
   CHECK(!request->SavesCookies());
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), kTrafficAnnotation);
-  url_loader_->DownloadAsStream(url_loader_factory_.get(), this);
+  if (use_read_and_discard_body_option_) {
+    url_loader_->DownloadHeadersOnly(
+        url_loader_factory_.get(),
+        base::BindOnce(&PrewarmHttpDiskCacheManager::OnHeadersOnly,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    url_loader_->DownloadAsStream(url_loader_factory_.get(), this);
+  }
 }
 
 void PrewarmHttpDiskCacheManager::OnDataReceived(std::string_view string_piece,
@@ -173,6 +184,7 @@ void PrewarmHttpDiskCacheManager::OnDataReceived(std::string_view string_piece,
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "received_data_size", string_piece.size());
+  CHECK(!use_read_and_discard_body_option_);
   std::move(resume).Run();
 }
 
@@ -182,6 +194,26 @@ void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "success", success);
+  CHECK(!use_read_and_discard_body_option_);
+  DoComplete();
+}
+
+void PrewarmHttpDiskCacheManager::OnRetry(base::OnceClosure start_retry) {
+  NOTREACHED_NORETURN();
+}
+
+void PrewarmHttpDiskCacheManager::OnHeadersOnly(
+    scoped_refptr<net::HttpResponseHeaders> ignored) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  TRACE_EVENT_WITH_FLOW0("loading",
+                         "PrewarmHttpDiskCacheManager::OnHeadersOnly",
+                         TRACE_ID_LOCAL(this),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  CHECK(use_read_and_discard_body_option_);
+  DoComplete();
+}
+
+void PrewarmHttpDiskCacheManager::DoComplete() {
   url_loader_ = nullptr;
   task_runner_->PostTask(
       FROM_HERE,
@@ -190,10 +222,6 @@ void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
   if (prewarm_finished_callback_for_testing_) {
     std::move(prewarm_finished_callback_for_testing_).Run();
   }
-}
-
-void PrewarmHttpDiskCacheManager::OnRetry(base::OnceClosure start_retry) {
-  NOTREACHED();
 }
 
 }  // namespace predictors
