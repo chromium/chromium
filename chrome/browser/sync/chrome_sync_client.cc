@@ -353,9 +353,10 @@ ChromeSyncClient::GetPasswordSenderService() {
 }
 
 syncer::ModelTypeController::TypeVector
-ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
+ChromeSyncClient::CreateModelTypeControllers(
+    syncer::SyncService* sync_service) {
   syncer::ModelTypeController::TypeVector controllers =
-      component_factory_->CreateCommonDataTypeControllers(
+      component_factory_->CreateCommonModelTypeControllers(
           GetDisabledCommonDataTypes(), sync_service);
 
   const base::RepeatingClosure dump_stack = GetDumpStackClosure();

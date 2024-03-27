@@ -63,7 +63,7 @@ class SyncServiceImplStartupTest : public testing::Test {
 
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
-    ON_CALL(*sync_client, CreateDataTypeControllers)
+    ON_CALL(*sync_client, CreateModelTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
     sync_service_ = std::make_unique<SyncServiceImpl>(

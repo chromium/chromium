@@ -168,7 +168,7 @@ EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
   return factory_switches;
 }
 
-ModelTypeController::TypeMap BuildDataTypeControllerMap(
+ModelTypeController::TypeMap BuildModelTypeControllerMap(
     ModelTypeController::TypeVector controllers) {
   ModelTypeController::TypeMap type_map;
   for (std::unique_ptr<ModelTypeController>& controller : controllers) {
@@ -279,8 +279,8 @@ void SyncServiceImpl::Initialize() {
   observers_.emplace();
 
   // TODO(mastiz): The controllers map should be provided as argument.
-  data_type_controllers_ =
-      BuildDataTypeControllerMap(sync_client_->CreateDataTypeControllers(this));
+  model_type_controllers_ = BuildModelTypeControllerMap(
+      sync_client_->CreateModelTypeControllers(this));
 
   // It's safe to pass a raw ptr, since SyncServiceImpl outlives
   // SyncUserSettingsImpl.
@@ -390,7 +390,7 @@ void SyncServiceImpl::Initialize() {
   // This allows clearing metadata for types disabled in previous run early-on
   // during initialization.
   ModelTypeSet preferred_types = GetPreferredDataTypes();
-  for (auto& [type, controller] : data_type_controllers_) {
+  for (auto& [type, controller] : model_type_controllers_) {
     if (!preferred_types.Has(type)) {
       controller->Stop(CLEAR_METADATA, base::DoNothing());
     }
@@ -633,7 +633,7 @@ void SyncServiceImpl::Shutdown() {
               ResetEngineReason::kShutdown);
 
   DCHECK(!data_type_manager_);
-  data_type_controllers_.clear();
+  model_type_controllers_.clear();
 
   crypto_.StopObservingTrustedVaultClient();
 
@@ -666,7 +666,7 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
     if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       SyncStopMetadataFate fate =
           ShutdownReasonToSyncStopMetadataFate(shutdown_reason);
-      for (auto& [type, controller] : data_type_controllers_) {
+      for (auto& [type, controller] : model_type_controllers_) {
         controller->Stop(fate, base::DoNothing());
       }
     }
@@ -985,7 +985,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
   data_type_manager_ =
       sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
-          &data_type_controllers_, &crypto_, engine_.get(), this);
+          &model_type_controllers_, &crypto_, engine_.get(), this);
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
@@ -1418,8 +1418,8 @@ SyncClient* SyncServiceImpl::GetSyncClientForTest() {
 void SyncServiceImpl::ReportDataTypeErrorForTest(ModelType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_IS_TEST();
-  CHECK(data_type_controllers_.find(type) != data_type_controllers_.end());
-  data_type_controllers_[type]->ReportBridgeErrorForTest();  // IN-TEST
+  CHECK(model_type_controllers_.find(type) != model_type_controllers_.end());
+  model_type_controllers_[type]->ReportBridgeErrorForTest();  // IN-TEST
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {
@@ -1597,9 +1597,9 @@ bool SyncServiceImpl::UseTransportOnlyMode() const {
 ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ModelTypeSet registered_types;
-  // The |data_type_controllers_| are determined by command-line flags;
+  // The |model_type_controllers_| are determined by command-line flags;
   // that's effectively what controls the values returned here.
-  for (const auto& [type, controller] : data_type_controllers_) {
+  for (const auto& [type, controller] : model_type_controllers_) {
     registered_types.Put(type);
   }
   return registered_types;
@@ -1608,10 +1608,10 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
 ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
   // Control types (in practice, NIGORI) are always supported. This special case
   // is necessary because the NIGORI controller isn't in
-  // `data_type_controllers_`.
+  // `model_type_controllers_`.
   ModelTypeSet allowed_types = ControlTypes();
   // Collect the types from all controllers that support transport-only mode.
-  for (const auto& [type, controller] : data_type_controllers_) {
+  for (const auto& [type, controller] : model_type_controllers_) {
     if (controller->ShouldRunInTransportOnlyMode()) {
       allowed_types.Put(type);
     }
@@ -1692,7 +1692,7 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
                                 .Set("state", "State");
   result.Append(std::move(type_status_header));
 
-  for (const auto& [type, controller] : data_type_controllers_) {
+  for (const auto& [type, controller] : model_type_controllers_) {
     base::Value::Dict type_status;
     type_status.Set("name", ModelTypeToDebugString(type));
 
@@ -1756,7 +1756,7 @@ base::Value::List SyncServiceImpl::GetTypeStatusMapForDebugging() const {
 
 void SyncServiceImpl::GetEntityCountsForDebugging(
     base::RepeatingCallback<void(const TypeEntitiesCount&)> callback) const {
-  for (const auto& [type, controller] : data_type_controllers_) {
+  for (const auto& [type, controller] : model_type_controllers_) {
     controller->GetTypeEntitiesCount(callback);
   }
 }
@@ -1959,8 +1959,8 @@ void SyncServiceImpl::GetAllNodesForDebugging(
       new GetAllNodesRequestHelper(all_types, std::move(callback));
 
   for (ModelType type : all_types) {
-    const auto dtc_iter = data_type_controllers_.find(type);
-    if (dtc_iter == data_type_controllers_.end()) {
+    const auto dtc_iter = model_type_controllers_.find(type);
+    if (dtc_iter == model_type_controllers_.end()) {
       // We should have no data type controller only for Nigori.
       DCHECK_EQ(type, NIGORI);
       engine_->GetNigoriNodeForDebugging(base::BindOnce(
@@ -2260,7 +2260,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
                 ResetEngineReason::kShutdown);
     // The startup logic and DCHECKs require that datatypes start stopped.
     // Since ResetEngine() doesn't do this, it is necessary to stop them here.
-    for (const auto& [type, controller] : data_type_controllers_) {
+    for (const auto& [type, controller] : model_type_controllers_) {
       controller->Stop(SyncStopMetadataFate::KEEP_METADATA, base::DoNothing());
     }
     restart = true;
@@ -2309,8 +2309,8 @@ void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
   CHECK(engine_);
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
-    auto dtc_it = data_type_controllers_.find(type);
-    if (dtc_it != data_type_controllers_.end()) {
+    auto dtc_it = model_type_controllers_.find(type);
+    if (dtc_it != model_type_controllers_.end()) {
       dtc_it->second->RecordMemoryUsageAndCountsHistograms();
     } else if (type == NIGORI) {
       // DTC for NIGORI is stored in the engine on sync thread.

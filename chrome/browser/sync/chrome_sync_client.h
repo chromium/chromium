@@ -51,7 +51,7 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
       override;
   password_manager::PasswordSenderService* GetPasswordSenderService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
-  syncer::ModelTypeController::TypeVector CreateDataTypeControllers(
+  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
       syncer::SyncService* sync_service) override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;

@@ -87,7 +87,7 @@ class SyncServiceFactoryTest : public testing::Test {
     syncer::ModelTypeSet datatypes;
 
     // These preprocessor conditions and their order should be in sync with
-    // preprocessor conditions in ChromeSyncClient::CreateDataTypeControllers:
+    // preprocessor conditions in ChromeSyncClient::CreateModelTypeControllers:
 
     // ChromeSyncClient types.
     datatypes.Put(syncer::READING_LIST);

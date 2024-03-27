@@ -82,19 +82,19 @@ class WebViewSyncClientTest : public PlatformTest {
 };
 
 // Verify enabled data types.
-TEST_F(WebViewSyncClientTest, CreateDataTypeControllers) {
+TEST_F(WebViewSyncClientTest, CreateModelTypeControllers) {
   syncer::TestSyncService sync_service;
-  syncer::ModelTypeController::TypeVector data_type_controllers =
-      client_.CreateDataTypeControllers(&sync_service);
+  syncer::ModelTypeController::TypeVector model_type_controllers =
+      client_.CreateModelTypeControllers(&sync_service);
   syncer::ModelTypeSet allowed_types = {syncer::DEVICE_INFO,
                                         syncer::AUTOFILL,
                                         syncer::AUTOFILL_PROFILE,
                                         syncer::AUTOFILL_WALLET_DATA,
                                         syncer::AUTOFILL_WALLET_METADATA,
                                         syncer::PASSWORDS};
-  for (const auto& data_type_controller : data_type_controllers) {
-    ASSERT_TRUE(allowed_types.Has(data_type_controller->type()));
-    allowed_types.Remove(data_type_controller->type());
+  for (const auto& model_type_controller : model_type_controllers) {
+    ASSERT_TRUE(allowed_types.Has(model_type_controller->type()));
+    allowed_types.Remove(model_type_controller->type());
   }
   EXPECT_TRUE(allowed_types.Empty());
 }

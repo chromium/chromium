@@ -207,7 +207,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
 SyncApiComponentFactoryImpl::~SyncApiComponentFactoryImpl() = default;
 
 syncer::ModelTypeController::TypeVector
-SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
+SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
     syncer::ModelTypeSet disabled_types,
     syncer::SyncService* sync_service) {
   syncer::ModelTypeController::TypeVector controllers;

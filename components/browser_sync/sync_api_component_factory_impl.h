@@ -85,7 +85,7 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   // Creates and returns enabled datatypes and their controllers.
   // `disabled_types` allows callers to prevent certain types from being
   // created.
-  syncer::ModelTypeController::TypeVector CreateCommonDataTypeControllers(
+  syncer::ModelTypeController::TypeVector CreateCommonModelTypeControllers(
       syncer::ModelTypeSet disabled_types,
       syncer::SyncService* sync_service);
 

@@ -214,10 +214,10 @@ IOSChromeSyncClient::GetPasswordSenderService() {
 }
 
 syncer::ModelTypeController::TypeVector
-IOSChromeSyncClient::CreateDataTypeControllers(
+IOSChromeSyncClient::CreateModelTypeControllers(
     syncer::SyncService* sync_service) {
   // The iOS port does not have any platform-specific datatypes.
-  return component_factory_->CreateCommonDataTypeControllers(
+  return component_factory_->CreateCommonModelTypeControllers(
       /*disabled_types=*/{}, sync_service);
 }
 

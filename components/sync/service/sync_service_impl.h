@@ -498,7 +498,7 @@ class SyncServiceImpl : public SyncService,
   DataTypeStatusTable::TypeErrorMap data_type_error_map_;
 
   // List of available data type controllers.
-  ModelTypeController::TypeMap data_type_controllers_;
+  ModelTypeController::TypeMap model_type_controllers_;
 
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 

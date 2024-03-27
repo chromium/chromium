@@ -161,7 +161,7 @@ class SyncServiceImplTest : public ::testing::Test {
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
-    ON_CALL(*sync_client, CreateDataTypeControllers)
+    ON_CALL(*sync_client, CreateModelTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
     ON_CALL(*sync_client, IsPasswordSyncAllowed).WillByDefault(Return(true));
 
@@ -183,7 +183,7 @@ class SyncServiceImplTest : public ::testing::Test {
     std::unique_ptr<SyncClientMock> sync_client =
         sync_service_impl_bundle_.CreateSyncClientMock();
     sync_client_ = sync_client.get();
-    ON_CALL(*sync_client, CreateDataTypeControllers)
+    ON_CALL(*sync_client, CreateModelTypeControllers)
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
     SyncServiceImpl::InitParams init_params =
