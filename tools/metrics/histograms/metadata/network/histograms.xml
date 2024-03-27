@@ -4080,6 +4080,7 @@ chromium-metrics-reviews@google.com.
     event is emitted. Details at go/cros-wifi-metrics-session-tag-dd.
   </summary>
   <token key="Event">
+    <variant name="AuthenticationAttempt"/>
     <variant name="ConnectionAttempt"/>
     <variant name="ConnectionAttemptResult"/>
     <variant name="Disconnection"/>
