@@ -411,7 +411,8 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
         internal::DoRandomizedResponseWithCache(
             specs, max_reports,
             /*epsilon=*/0, map,
-            /*max_trigger_state_cardinality=*/absl::Uint128Max()));
+            /*max_trigger_state_cardinality=*/absl::Uint128Max(),
+            /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
         output_counts.try_emplace(*std::move(response).ResponseForTesting(), 0);
@@ -614,7 +615,8 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
         internal::DoRandomizedResponseWithCache(
             kSpecs, /*max_reports=*/1,
             /*epsilon=*/0, map,
-            /*max_trigger_state_cardinality=*/absl::Uint128Max()));
+            /*max_trigger_state_cardinality=*/absl::Uint128Max(),
+            /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
     response = response_data.response();
   } while (!response.has_value() || response->empty());
 
@@ -622,12 +624,25 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
 }
 
 TEST(PrivacyMathTest, RandomizedResponse_StateLimited) {
-  auto response = DoRandomizedResponse(
+  auto cardinality_response = DoRandomizedResponse(
       TriggerSpecs(), /*max_reports=*/MaxEventLevelReports(1), /*epsilon=*/0,
-      /*max_trigger_state_cardinality=*/0);
+      /*max_trigger_state_cardinality=*/0,
+      /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
 
-  EXPECT_THAT(response,
-              base::test::ErrorIs(ExceedsMaxTriggerStateCardinality()));
+  EXPECT_THAT(
+      cardinality_response,
+      base::test::ErrorIs(
+          RandomizedResponseError::kExceedsTriggerStateCardinalityLimit));
+
+  auto channel_capacity_response = DoRandomizedResponse(
+      TriggerSpecs(SourceType::kNavigation, EventReportWindows()),
+      /*max_reports=*/MaxEventLevelReports(1), /*epsilon=*/1,
+      /*max_trigger_state_cardinality=*/absl::Uint128Max(),
+      /*max_channel_capacity=*/0);
+
+  EXPECT_THAT(channel_capacity_response,
+              base::test::ErrorIs(
+                  RandomizedResponseError::kExceedsChannelCapacityLimit));
 }
 
 // Regression test for http://crbug.com/1504144 in which empty specs cause an
@@ -657,14 +672,16 @@ TEST(PrivacyMathTest, UnaryChannel) {
     EXPECT_EQ(1, GetNumStates(test_case.trigger_specs,
                               test_case.max_event_level_reports));
 
-    EXPECT_EQ(RandomizedResponseData(
-                  /*rate=*/1,
-                  /*channel_capacity=*/0,
-                  /*response=*/std::vector<FakeEventLevelReport>()),
-              DoRandomizedResponse(
-                  test_case.trigger_specs, test_case.max_event_level_reports,
-                  /*epsilon=*/0,
-                  /*max_trigger_state_cardinality=*/absl::Uint128Max()));
+    EXPECT_EQ(
+        RandomizedResponseData(
+            /*rate=*/1,
+            /*channel_capacity=*/0,
+            /*response=*/std::vector<FakeEventLevelReport>()),
+        DoRandomizedResponse(
+            test_case.trigger_specs, test_case.max_event_level_reports,
+            /*epsilon=*/0,
+            /*max_trigger_state_cardinality=*/absl::Uint128Max(),
+            /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
   }
 }
 

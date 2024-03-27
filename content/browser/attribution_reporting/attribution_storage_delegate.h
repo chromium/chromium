@@ -51,11 +51,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
     base::TimeDelta max;
   };
 
-  enum class RandomizedResponseError {
-    kExceedsChannelCapacityLimit,
-    kExceedsTriggerStateCardinalityLimit,
-  };
-
   struct NullAggregatableReport {
     base::Time fake_source_time;
   };
@@ -151,7 +146,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   using GetRandomizedResponseResult =
       base::expected<attribution_reporting::RandomizedResponseData,
-                     RandomizedResponseError>;
+                     attribution_reporting::RandomizedResponseError>;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns an error if the channel capacity exceeds the

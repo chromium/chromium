@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/attribution_reporting/privacy_math.h"
+
+#include <limits>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -12,7 +15,6 @@
 #include "base/types/expected.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
-#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -83,7 +85,8 @@ TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
   do {
     auto response_data = DoRandomizedResponse(
         specs, test_case.max_reports,
-        /*epsilon=*/0, /*max_trigger_state_cardinality=*/absl::Uint128Max());
+        /*epsilon=*/0, /*max_trigger_state_cardinality=*/absl::Uint128Max(),
+        /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
     // Do a trivial check to ensure the call is not optimized by the compiler.
     valid_rates &= response_data->rate() >= 0;
     timer.NextLap();

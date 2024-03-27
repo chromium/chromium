@@ -214,19 +214,11 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     attribution_reporting::EventLevelEpsilon epsilon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ASSIGN_OR_RETURN(
-      auto response,
-      attribution_reporting::DoRandomizedResponse(
-          trigger_specs, max_event_level_reports, epsilon,
-          config_.event_level_limit.max_trigger_state_cardinality),
-      [](auto) {
-        return RandomizedResponseError::kExceedsTriggerStateCardinalityLimit;
-      });
-
-  if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {
-    return base::unexpected(
-        RandomizedResponseError::kExceedsChannelCapacityLimit);
-  }
+  ASSIGN_OR_RETURN(auto response,
+                   attribution_reporting::DoRandomizedResponse(
+                       trigger_specs, max_event_level_reports, epsilon,
+                       config_.event_level_limit.max_trigger_state_cardinality,
+                       GetMaxChannelCapacity(source_type)));
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:

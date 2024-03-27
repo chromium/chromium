@@ -317,8 +317,8 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
       LOG(ERROR) << "invalid randomized response with trigger_specs="
                  << trigger_specs
                  << ", max_event_level_reports=" << max_event_level_reports;
-      return base::unexpected(
-          RandomizedResponseError::kExceedsChannelCapacityLimit);
+      return base::unexpected(attribution_reporting::RandomizedResponseError::
+                                  kExceedsChannelCapacityLimit);
     }
 
     return attribution_reporting::RandomizedResponseData(

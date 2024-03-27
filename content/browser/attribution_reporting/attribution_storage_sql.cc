@@ -619,10 +619,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
           reg.max_event_level_reports, reg.event_level_epsilon),
       [&](auto error) -> StoreSourceResult {
         switch (error) {
-          case AttributionStorageDelegate::RandomizedResponseError::
+          case attribution_reporting::RandomizedResponseError::
               kExceedsChannelCapacityLimit:
             return make_result(StoreSourceResult::ExceedsMaxChannelCapacity());
-          case AttributionStorageDelegate::RandomizedResponseError::
+          case attribution_reporting::RandomizedResponseError::
               kExceedsTriggerStateCardinalityLimit:
             return make_result(
                 StoreSourceResult::ExceedsMaxTriggerStateCardinality());

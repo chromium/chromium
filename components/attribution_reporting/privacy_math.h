@@ -45,9 +45,9 @@ bool IsValid(const RandomizedResponse&,
              const TriggerSpecs&,
              MaxEventLevelReports);
 
-struct ExceedsMaxTriggerStateCardinality {
-  friend bool operator==(ExceedsMaxTriggerStateCardinality,
-                         ExceedsMaxTriggerStateCardinality) = default;
+enum class RandomizedResponseError {
+  kExceedsChannelCapacityLimit,
+  kExceedsTriggerStateCardinalityLimit,
 };
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
@@ -97,11 +97,12 @@ absl::uint128 GetNumStates(const TriggerSpecs& specs, MaxEventLevelReports);
 // Returns `std::nullopt` if the output should be determined truthfully.
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<RandomizedResponseData, ExceedsMaxTriggerStateCardinality>
+base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(const TriggerSpecs& specs,
                      MaxEventLevelReports,
                      double epsilon,
-                     absl::uint128 max_trigger_state_cardinality);
+                     absl::uint128 max_trigger_state_cardinality,
+                     double max_channel_capacity);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -188,12 +189,13 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 // Exposed to speed up tests which perform randomized response many times in a
 // row.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<RandomizedResponseData, ExceedsMaxTriggerStateCardinality>
+base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponseWithCache(const TriggerSpecs& specs,
                               int max_reports,
                               double epsilon,
                               StateMap& map,
-                              absl::uint128 max_trigger_state_cardinality);
+                              absl::uint128 max_trigger_state_cardinality,
+                              double max_channel_capacity);
 
 }  // namespace internal
 
