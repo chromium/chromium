@@ -160,13 +160,6 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void HandleOsRegistration(OsRegistration) override;
 
-  void NotifyOsRegistration(base::Time time,
-                            const attribution_reporting::OsRegistrationItem&,
-                            const url::Origin& top_level_origin,
-                            bool is_debug_key_allowed,
-                            attribution_reporting::mojom::RegistrationType,
-                            attribution_reporting::mojom::OsRegistrationResult);
-
  private:
   friend class AttributionManagerImplTest;
 
@@ -238,6 +231,12 @@ class CONTENT_EXPORT AttributionManagerImpl
   void NotifyTotalOsRegistrationFailure(
       const OsRegistration&,
       attribution_reporting::mojom::OsRegistrationResult);
+  void NotifyOsRegistration(base::Time time,
+                            const attribution_reporting::OsRegistrationItem&,
+                            const url::Origin& top_level_origin,
+                            bool is_debug_key_allowed,
+                            attribution_reporting::mojom::RegistrationType,
+                            attribution_reporting::mojom::OsRegistrationResult);
 
   bool IsReportAllowed(const AttributionReport&) const;
 
