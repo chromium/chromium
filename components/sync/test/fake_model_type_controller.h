@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_CONTROLLER_H_
-#define COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_CONTROLLER_H_
+#ifndef COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_CONTROLLER_H_
+#define COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_CONTROLLER_H_
 
 #include <memory>
 
@@ -40,4 +40,4 @@ class FakeModelTypeController : public ModelTypeController {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_FAKE_DATA_TYPE_CONTROLLER_H_
+#endif  // COMPONENTS_SYNC_TEST_FAKE_MODEL_TYPE_CONTROLLER_H_
