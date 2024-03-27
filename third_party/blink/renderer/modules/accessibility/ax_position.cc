@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -800,11 +801,16 @@ const AXPosition AXPosition::AsValidDOMPosition(
   if (container->GetNode() && !container->GetNode()->IsMarkerPseudoElement())
     return *this;
 
-  DCHECK(IsA<AXLayoutObject>(container))
+  LayoutObject* container_layout_object = container->GetLayoutObject();
+  DCHECK(container_layout_object)
       << "Non virtual and non mock AX objects that are not associated to a DOM "
          "node should have an associated layout object.";
-  const Node* container_node =
-      To<AXLayoutObject>(container)->GetNodeOrContainingBlockNode();
+  const Node* container_node = container->GetNode();
+  if (auto* list_marker = ListMarker::Get(container_layout_object)) {
+    // Return the originating list item node.
+    container_node = list_marker->ListItem(*container_layout_object)->GetNode();
+  }
+
   DCHECK(container_node) << "All anonymous layout objects and list markers "
                             "should have a containing block element.";
   DCHECK(!container->IsDetached());

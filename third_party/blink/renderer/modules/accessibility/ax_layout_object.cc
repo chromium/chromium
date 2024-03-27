@@ -116,20 +116,6 @@ LayoutObject* AXLayoutObject::GetLayoutObject() const {
   return layout_object_.Get();
 }
 
-ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
-  if (IsA<Document>(GetNode())) {
-    return DocumentFrameView()->LayoutViewport();
-  }
-
-  if (auto* box = DynamicTo<LayoutBox>(GetLayoutObject())) {
-    PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
-    if (scrollable_area && scrollable_area->HasOverflow())
-      return scrollable_area;
-  }
-
-  return nullptr;
-}
-
 static bool IsImageOrAltText(LayoutObject* layout_object, Node* node) {
   DCHECK(layout_object);
   if (layout_object->IsImage())
@@ -256,18 +242,6 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   // no node, in-page link targets, and plain elements such as a <span> with
   // an aria- property.
   return ax::mojom::blink::Role::kGenericContainer;
-}
-
-Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {
-  if (IsDetached())
-    return nullptr;
-
-  if (auto* list_marker = ListMarker::Get(layout_object_)) {
-    // Return the originating list item node.
-    return list_marker->ListItem(*layout_object_)->GetNode();
-  }
-
-  return GetNode();
 }
 
 void AXLayoutObject::Detach() {

@@ -6873,6 +6873,21 @@ bool AXNodeObject::UseNameFromSelectedOption() const {
   }
 }
 
+ScrollableArea* AXNodeObject::GetScrollableAreaIfScrollable() const {
+  if (IsA<Document>(GetNode())) {
+    return DocumentFrameView()->LayoutViewport();
+  }
+
+  if (auto* box = DynamicTo<LayoutBox>(GetLayoutObject())) {
+    PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
+    if (scrollable_area && scrollable_area->HasOverflow()) {
+      return scrollable_area;
+    }
+  }
+
+  return nullptr;
+}
+
 void AXNodeObject::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   AXObject::Trace(visitor);

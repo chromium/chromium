@@ -61,6 +61,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Should inline text boxes be considered when adding chldren to this node.
   bool ShouldLoadInlineTextBoxes() const override;
 
+  ScrollableArea* GetScrollableAreaIfScrollable() const final;
+
  protected:
 #if DCHECK_IS_ON()
   bool initialized_ = false;

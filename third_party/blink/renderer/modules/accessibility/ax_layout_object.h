@@ -40,7 +40,6 @@ namespace blink {
 
 class AXObjectCacheImpl;
 class HTMLAreaElement;
-class Node;
 
 class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
  public:
@@ -54,11 +53,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   // AXObject overrides:
   LayoutObject* GetLayoutObject() const final;
-  ScrollableArea* GetScrollableAreaIfScrollable() const final;
-
-  // If this is an anonymous node, returns the node of its containing layout
-  // block, otherwise returns the node of this layout object.
-  Node* GetNodeOrContainingBlockNode() const;
 
   // DOM and layout tree access.
   Document* GetDocument() const override;
