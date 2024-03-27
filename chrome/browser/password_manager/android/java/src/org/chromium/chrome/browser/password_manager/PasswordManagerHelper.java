@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -154,7 +155,8 @@ public class PasswordManagerHelper {
             @ManagePasswordsReferrer int referrer,
             SettingsLauncher settingsLauncher,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            boolean managePasskeys) {
+            boolean managePasskeys,
+            @Nullable String account) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
                 referrer,
@@ -176,7 +178,8 @@ public class PasswordManagerHelper {
                     syncService,
                     loadingDialogCoordinator,
                     modalDialogManagerSupplier,
-                    context);
+                    context,
+                    account);
             return;
         }
 
@@ -446,7 +449,8 @@ public class PasswordManagerHelper {
             SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Context context) {
+            Context context,
+            @Nullable String account) {
         assert syncService != null;
 
         CredentialManagerLauncher credentialManagerLauncher;
@@ -462,9 +466,7 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
 
         long startTimeMs = SystemClock.elapsedRealtime();
-        if (hasChosenToSyncPasswords(syncService)) {
-            String account = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
-            assert account != null;
+        if (!TextUtils.isEmpty(account)) {
             credentialManagerLauncher.getAccountCredentialManagerIntent(
                     referrer,
                     account,

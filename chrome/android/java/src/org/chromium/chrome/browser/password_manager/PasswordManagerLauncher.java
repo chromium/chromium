@@ -11,6 +11,9 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -36,13 +39,19 @@ public class PasswordManagerLauncher {
             boolean managePasskeys) {
         assert profile != null;
         Profile originalProfile = profile.getOriginalProfile();
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        String account =
+                PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                        ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
+                        : null;
         PasswordManagerHelper.getForProfile(originalProfile)
                 .showPasswordSettings(
                         context,
                         referrer,
                         new SettingsLauncherImpl(),
                         modalDialogManagerSupplier,
-                        managePasskeys);
+                        managePasskeys,
+                        account);
     }
 
     @CalledByNative

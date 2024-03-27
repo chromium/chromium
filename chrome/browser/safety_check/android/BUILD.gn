@@ -150,6 +150,7 @@ robolectric_library("junit") {
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
