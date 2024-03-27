@@ -22,9 +22,9 @@ namespace base {
 //     (e.g. integration tests in which a TickClock would be several layers
 //     removed from the test code)
 //
-// For new unit tests, developers are highly encouraged to structure new code
-// around a dependency injected base::Clock, base::TickClock, etc. to be able
-// to supply a mock time in tests without a global override.
+// NOTE: Overriding Time/TimeTicks altogether via
+// TaskEnvironment::TimeSource::MOCK_TIME is now the preferred way of overriding
+// time in unit tests.
 //
 // NOTE: ScopedMockClockOverride should be created while single-threaded and
 // before the first call to Now() to avoid threading issues and inconsistencies
