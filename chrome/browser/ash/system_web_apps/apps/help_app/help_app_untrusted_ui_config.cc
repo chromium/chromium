@@ -111,9 +111,12 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean("HelpAppAutoTriggerInstallDialog",
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
-    // TODO(b/326149929): Disable this feature until the Unified App Installer
-    // feature is ready.
-    source->AddBoolean("AppInstallServiceUri", false);
+    // Only use the action URL if both the uri and dialog features have been
+    // enabled.
+    source->AddBoolean("UseActionUrl",
+                       chromeos::features::IsAppInstallServiceUriEnabled() &&
+                           base::FeatureList::IsEnabled(
+                               chromeos::features::kCrosWebAppInstallDialog));
   }
 
   Profile* profile = Profile::FromWebUI(web_ui);
