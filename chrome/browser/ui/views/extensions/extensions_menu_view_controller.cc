@@ -676,8 +676,10 @@ void ExtensionsMenuViewController::UpdateMainPage(
     ExtensionMenuItemView::SitePermissionsButtonAccess
         site_permissions_button_access = GetSitePermissionsButtonAccess(
             *extension, *browser_->profile(), *toolbar_model_, *web_contents);
+    bool is_enterprise =
+        HasEnterpriseForcedAccess(*extension, *browser_->profile());
     menu_item->Update(site_access_toggle_state, site_permissions_button_state,
-                      site_permissions_button_access);
+                      site_permissions_button_access, is_enterprise);
   }
 
   // Items can be added/removed from the menu, thus we need to resize the menu

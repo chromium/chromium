@@ -754,7 +754,7 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
                           base::Unretained(menu_handler_), extension_id));
   item->Update(site_access_toggle_state, site_permissions_button_state,
-               site_permissions_button_access);
+               site_permissions_button_access, is_enterprise);
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 

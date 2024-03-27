@@ -133,6 +133,24 @@ std::u16string GetSitePermissionsButtonText(
   return l10n_util::GetStringUTF16(label_id);
 }
 
+std::u16string GetSitePermissionsButtonTooltip(
+    bool is_enterprise,
+    ExtensionMenuItemView::SitePermissionsButtonAccess button_access) {
+  if (is_enterprise) {
+    return l10n_util::GetStringUTF16(
+        IDS_EXTENSIONS_MENU_MAIN_PAGE_ENTERPRISE_EXTENSION_SITE_ACCESS_TOOLTIP);
+  }
+
+  if (button_access !=
+      ExtensionMenuItemView::SitePermissionsButtonAccess::kNone) {
+    return l10n_util::GetStringUTF16(
+        IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_TOOLTIP);
+  }
+
+  // No tooltip is shown.
+  return std::u16string();
+}
+
 const gfx::VectorIcon& GetPinIcon(bool is_pinned) {
   if (is_pinned) {
     return features::IsChromeRefresh2023() ? kKeepPinFilledChromeRefreshIcon
@@ -399,7 +417,8 @@ void ExtensionMenuItemView::OnThemeChanged() {
 void ExtensionMenuItemView::Update(
     SiteAccessToggleState site_access_toggle_state,
     SitePermissionsButtonState site_permissions_button_state,
-    SitePermissionsButtonAccess site_permissions_button_access) {
+    SitePermissionsButtonAccess site_permissions_button_access,
+    bool is_enterprise) {
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     bool is_toggle_on = site_access_toggle_state == SiteAccessToggleState::kOn;
@@ -416,7 +435,8 @@ void ExtensionMenuItemView::Update(
     std::u16string site_permissions_text =
         GetSitePermissionsButtonText(site_permissions_button_access);
     site_permissions_button_->SetText(site_permissions_text);
-    // TODO(crbug.com/326111337): Add tooltip based on button state.
+    site_permissions_button_->SetTooltipText(GetSitePermissionsButtonTooltip(
+        is_enterprise, site_permissions_button_access));
     site_permissions_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
         site_permissions_text));

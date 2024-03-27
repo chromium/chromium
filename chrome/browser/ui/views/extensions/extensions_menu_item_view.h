@@ -84,7 +84,8 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   // Updates the controller and child views to be on sync with the parent views.
   void Update(SiteAccessToggleState site_access_toggle_state,
               SitePermissionsButtonState site_permissions_button_state,
-              SitePermissionsButtonAccess site_permissions_button_access);
+              SitePermissionsButtonAccess site_permissions_button_access,
+              bool is_enterprise);
 
   // Updates the pin button.
   void UpdatePinButton(bool is_force_pinned, bool is_pinned);
