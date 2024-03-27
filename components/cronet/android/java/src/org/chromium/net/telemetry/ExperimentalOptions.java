@@ -33,7 +33,7 @@ public final class ExperimentalOptions {
             try {
                 mJson = (JSONObject) new JSONTokener(experimentalOptions).nextValue();
             } catch (JSONException | ClassCastException e) {
-                Log.d(
+                Log.v(
                         TAG,
                         String.format(
                                 "Experimental options could not be parsed, using default values."
@@ -191,19 +191,23 @@ public final class ExperimentalOptions {
             String option,
             T defaultValue,
             Class<T> clazz) {
+        if (mJson.length() == 0) {
+            return defaultValue;
+        }
+
         // check if the field trial name exists
         JSONObject options = null;
         try {
             options = mJson.getJSONObject(experimentalOptionFieldTrialName);
         } catch (JSONException e) {
-            Log.d(
+            Log.v(
                     TAG,
                     String.format(
                             "Failed to get %s options: %s",
                             experimentalOptionFieldTrialName, e.getMessage()));
         }
 
-        if (options == null) {
+        if (options == null || options.length() == 0) {
             return defaultValue;
         }
 
@@ -211,17 +215,21 @@ public final class ExperimentalOptions {
         try {
             value = clazz.cast(options.get(option));
         } catch (JSONException | ClassCastException e) {
-            Log.d(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+            Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
         }
         return value;
     }
 
     private <T> T getOrDefault(String option, T defaultValue, Class<T> clazz) {
+        if (mJson.length() == 0) {
+            return defaultValue;
+        }
+
         T value = defaultValue;
         try {
             value = clazz.cast(mJson.get(option));
         } catch (JSONException | ClassCastException e) {
-            Log.d(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
+            Log.v(TAG, String.format("Failed to get %s options: %s", option, e.getMessage()));
         }
         return value;
     }
