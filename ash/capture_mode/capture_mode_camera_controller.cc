@@ -473,7 +473,7 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 void CaptureModeCameraController::SetShouldShowPreview(bool value) {
   should_show_preview_ = value;
 
-  // TODO(http://b/290363225): Please remove once the crash is fixed.
+  // TODO(http://b/290363225): Remove this if no more crashes after the fix.
   SCOPED_CRASH_KEY_BOOL("SelfieCam", "selected_cam_valid",
                         selected_camera_.is_valid());
   SCOPED_CRASH_KEY_STRING256("SelfieCam", "selected_camera_",
@@ -865,7 +865,9 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     }
   }
 
-  if (!camera_info) {
+  // The supported formats might be empty and then cause a crash. Please see
+  // b/290363225.
+  if (!camera_info || camera_info->supported_formats.empty()) {
     camera_preview_widget_.reset();
     camera_preview_view_ = nullptr;
     if (old_root)
