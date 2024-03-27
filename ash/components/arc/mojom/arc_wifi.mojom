@@ -1,0 +1,39 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This number is frozen to 1 during the migration and that we don't need to
+// continuously update it while moving APIs from net.mojom.
+// Next MinVersion: 1
+
+// (Fields to be added while migration)
+// This file defines the mojo interface between the ARC WiFi stack and
+// Chrome OS. There are several different groups of interactions:
+//  - WiFi RPCs to get/set WiFi enabled state and gets notified when WiFi
+//    enabled state changes.
+
+module arc.mojom;
+
+// Next Method ID: 3
+// Mojo interface exposed by the Chrome browser process for WiFi, ARC is the
+// client.
+interface ArcWifiHost {
+  // Sends a request to get enabled / disabled status of WiFi.
+  GetWifiEnabledState@1() => (bool enabled);
+
+  // Sends a request to enable or disable WiFi. The `enabled_state` is true
+  // when the state has been successfully set or WiFi is already in the desired
+  // state. Otherwise, it is false if the state was not set.
+  SetWifiEnabledState@2(bool enabled) => (bool enabled_state);
+};
+
+// Next Method ID: 3
+// Mojo interface exposed by ARC for WiFi, the Chrome browser process is the
+// client.
+interface ArcWifiInstance {
+  // Establishes full-duplex communication with the host.
+  Init@1(pending_remote<ArcWifiHost> host_remote) => ();
+
+  // Notifies ARC of a change in the state of WiFi on the host.
+  WifiEnabledStateChanged@2(bool enabled);
+};

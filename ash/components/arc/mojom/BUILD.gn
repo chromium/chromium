@@ -15,6 +15,7 @@ mojom("mojom") {
     "app_permissions.mojom",
     "appfuse.mojom",
     "arc_bridge.mojom",
+    "arc_wifi.mojom",
     "audio.mojom",
     "auth.mojom",
     "backup_settings.mojom",
