@@ -8,14 +8,18 @@
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/style/switch.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
@@ -36,6 +40,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -489,9 +494,6 @@ TEST_F(BirchBarMenuTest, RemoveChipFromContextMenu) {
             base::to_underlying(
                 BirchBarContextMenuModel::CommandId::kHideSuggestion));
 
-  // Reset the model adapter pointer before selection to avoid dangling pointer,
-  // since the menu will be closed after selection.
-  model_adapter = nullptr;
   LeftClickOn(hide_suggestion_item);
 
   // Check if the item is removed and the chips on both bars get updated.
@@ -506,10 +508,101 @@ TEST_F(BirchBarMenuTest, RemoveChipFromContextMenu) {
   hide_suggestion_item =
       model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
 
-  model_adapter = nullptr;
   LeftClickOn(hide_suggestion_item);
   // Check if the item is removed and the chips on both bars get updated.
   chips_match_items(3);
+}
+
+// Tests that showing/hiding suggestions from context menu.
+TEST_F(BirchBarMenuTest, ShowHideBarFromContextMenu) {
+  // Create a suggestion for test.
+  SetFileItems(/*rankings=*/{1.0f});
+
+  // Add another screen such that we will have two synchronized bar views.
+  UpdateDisplay("1000x800,1000x800");
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  // Set show suggestions initially.
+  pref_service->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Enter Overview and check the two bar views are created.
+  EnterOverview();
+
+  aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
+  ASSERT_EQ(root_windows.size(), 2u);
+  auto* root_window_1 = root_windows[0].get();
+  auto grid_test_api_1 = std::make_unique<OverviewGridTestApi>(root_window_1);
+  auto* root_window_2 = root_windows[1].get();
+  auto grid_test_api_2 = std::make_unique<OverviewGridTestApi>(root_window_2);
+
+  // The birch bars should be shown on both displays.
+  EXPECT_TRUE(grid_test_api_1->birch_bar_view());
+  EXPECT_TRUE(grid_test_api_2->birch_bar_view());
+
+  auto* root_window_controller_1 =
+      RootWindowController::ForWindow(root_window_1);
+  // Right clicking on the wallpaper of the first display to show the context
+  // menu.
+  RightClickOn(root_window_controller_1->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+
+  auto* model_adapter =
+      root_window_controller_1->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  // Hiding the suggestions by clicking to the switch button.
+  auto* hide_suggestions_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
+  Switch* switch_button =
+      AsViewClass<Switch>(hide_suggestions_item->children()[0]);
+  EXPECT_TRUE(!!switch_button);
+  EXPECT_TRUE(switch_button->GetIsOn());
+
+  // Toggle the switch button to hide the suggestions.
+  LeftClickOn(switch_button);
+
+  // The birch bars should be hidden on both displays.
+  EXPECT_FALSE(grid_test_api_1->birch_bar_view());
+  EXPECT_FALSE(grid_test_api_2->birch_bar_view());
+
+  // Exit and re-enter Overview. The birch bars should be hidden.
+  grid_test_api_1.reset();
+  grid_test_api_2.reset();
+  ExitOverview();
+  EnterOverview();
+
+  grid_test_api_1 = std::make_unique<OverviewGridTestApi>(root_window_1);
+  grid_test_api_2 = std::make_unique<OverviewGridTestApi>(root_window_2);
+
+  // The birch bars should be shown on both displays.
+  EXPECT_FALSE(grid_test_api_1->birch_bar_view());
+  EXPECT_FALSE(grid_test_api_2->birch_bar_view());
+
+  auto* root_window_controller_2 =
+      RootWindowController::ForWindow(root_window_1);
+  // Right clicking on the wallpaper of the second display to show the context
+  // menu.
+  RightClickOn(root_window_controller_2->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+
+  model_adapter = root_window_controller_2->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  // Showing the suggestions by clicking to the switch button.
+  hide_suggestions_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
+  switch_button = AsViewClass<Switch>(hide_suggestions_item->children()[0]);
+  EXPECT_FALSE(switch_button->GetIsOn());
+
+  // Toggle the switch button to show the suggestions.
+  LeftClickOn(switch_button);
+
+  // The birch bars should be hidden on both displays.
+  EXPECT_TRUE(grid_test_api_1->birch_bar_view());
+  EXPECT_TRUE(grid_test_api_2->birch_bar_view());
 }
 
 // The parameter structure for birch bar responsive layout tests.
