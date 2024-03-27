@@ -102,8 +102,8 @@ VideoFramePresentationMetadata MetadataHelper::metadata_;
 class VfcRequesterParameterVerifierCallback
     : public VideoFrameRequestCallbackCollection::VideoFrameCallback {
  public:
-  explicit VfcRequesterParameterVerifierCallback(DocumentLoadTiming& timing)
-      : timing_(timing) {}
+  explicit VfcRequesterParameterVerifierCallback(DocumentLoader* loader)
+      : loader_(loader) {}
   ~VfcRequesterParameterVerifierCallback() override = default;
 
   void Invoke(double now, const VideoFrameMetadata* metadata) override {
@@ -140,6 +140,11 @@ class VfcRequesterParameterVerifierCallback
   double last_now() const { return now_; }
   bool was_invoked() const { return was_invoked_; }
 
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(loader_);
+    VideoFrameRequestCallbackCollection::VideoFrameCallback::Trace(visitor);
+  }
+
  private:
   void VerifyTicksClamping(base::TimeTicks reference,
                            double actual,
@@ -152,12 +157,13 @@ class VfcRequesterParameterVerifierCallback
 
   double TicksToClampedMillisecondsF(base::TimeTicks ticks) {
     return Performance::ClampTimeResolution(
-        timing_->MonotonicTimeToZeroBasedDocumentTime(ticks),
+        loader_->GetTiming().MonotonicTimeToZeroBasedDocumentTime(ticks),
         /*cross_origin_isolated_capability_=*/false);
   }
 
   double TicksToMillisecondsF(base::TimeTicks ticks) {
-    return timing_->MonotonicTimeToZeroBasedDocumentTime(ticks)
+    return loader_->GetTiming()
+        .MonotonicTimeToZeroBasedDocumentTime(ticks)
         .InMillisecondsF();
   }
 
@@ -167,7 +173,7 @@ class VfcRequesterParameterVerifierCallback
 
   double now_;
   bool was_invoked_ = false;
-  const raw_ref<DocumentLoadTiming> timing_;
+  const Member<DocumentLoader> loader_;
 };
 
 }  // namespace
@@ -331,11 +337,12 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
 }
 
 TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_WindowRaf) {
-  auto timing = GetDocument().Loader()->GetTiming();
+  DocumentLoader* loader = GetDocument().Loader();
+  DocumentLoadTiming& timing = loader->GetTiming();
   MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
 
   auto* callback =
-      MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(timing);
+      MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(loader);
 
   // Register the non-V8 callback.
   RegisterCallbackDirectly(callback);
