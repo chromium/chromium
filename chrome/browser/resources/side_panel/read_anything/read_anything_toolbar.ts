@@ -37,6 +37,9 @@ export interface ReadAnythingToolbarElement {
     moreOptionsMenu: CrActionMenuElement,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     fontTemplate: DomRepeat,
+    toolbarContainer: HTMLElement,
+    fontSelect: HTMLSelectElement,
+    more: CrIconButtonElement,
   };
 }
 
@@ -133,15 +136,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   static maybeUpdateMoreOptions(toolbar: HTMLElement) {
     // Hide the more options button first to calculate if we need it
     const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
-    assert(moreOptionsButton);
+    assert(moreOptionsButton, 'more options button doesn\'t exist');
     ReadAnythingToolbarElement.hideElement(moreOptionsButton, false);
 
     // Show all the buttons that would go in the overflow menu to see if they
     // fit
     const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button'));
-    assert(buttons);
+    assert(buttons, 'no toolbar buttons');
     const moreOptionsButtons = toolbar.querySelectorAll(moreOptionsClass);
-    assert(moreOptionsButtons);
+    assert(moreOptionsButtons, 'no buttons to put in the more options menu');
     const buttonsOnToolbarToMaybeHide =
         buttons.slice(buttons.length - moreOptionsButtons.length);
     buttonsOnToolbarToMaybeHide.forEach(btn => {
@@ -149,7 +152,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
 
     const parentWidth = toolbar.offsetParent?.clientWidth;
-    assert(parentWidth);
+    assert(parentWidth, 'parent width is undefined');
 
     // When the toolbar's width exceeds the parent width, then the content has
     // overflowed.
@@ -340,14 +343,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           },
       );
 
-      const shadowRoot = this.shadowRoot;
-      assert(shadowRoot);
-      const toolbar = shadowRoot.getElementById('toolbar-container');
-      assert(toolbar);
-
       this.toolbarContainerObserver_ =
           new ResizeObserver(this.onToolbarResize_);
-      this.toolbarContainerObserver_.observe(toolbar);
+      this.toolbarContainerObserver_.observe(this.$.toolbarContainer);
 
       this.dragResizeCallback_ = this.onDragResize_.bind(this);
       window.addEventListener('resize', this.dragResizeCallback_);
@@ -367,14 +365,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onDragResize_() {
-    const toolbar =
-        this.shadowRoot?.getElementById('toolbar-container') as HTMLElement;
-    assert(toolbar);
-    ReadAnythingToolbarElement.maybeUpdateMoreOptions(toolbar);
+    ReadAnythingToolbarElement.maybeUpdateMoreOptions(this.$.toolbarContainer);
   }
 
   private onToolbarResize_(entries: ResizeObserverEntry[]) {
-    assert(entries.length === 1);
+    assert(entries.length === 1, 'resize observer is expecting one entry');
     const toolbar = entries[0].target as HTMLElement;
     ReadAnythingToolbarElement.maybeUpdateMoreOptions(toolbar);
   }
@@ -386,11 +381,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.setCheckMarkForMenu_(this.$.fontMenu, currentFontIndex);
 
     } else {
-      const shadowRoot = this.shadowRoot;
-      assert(shadowRoot);
-      const select =
-          shadowRoot.getElementById('font-select') as HTMLSelectElement;
-      assert(select);
+      const select = this.$.fontSelect;
+      assert(select, 'no font select menu');
       select.selectedIndex = currentFontIndex;
     }
   }
@@ -496,8 +488,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     target.className += activeClass;
     this.closeMenus_();
 
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
     const minY = target.getBoundingClientRect().bottom;
     if (fullScreen) {
       menuToOpen.showAt(target, {
@@ -517,10 +507,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onHighlightClick_() {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const button = shadowRoot.getElementById('highlight');
-    assert(button);
     if (this.isHighlightOn_) {
       chrome.readingMode.turnedHighlightOff();
     } else {
@@ -530,10 +516,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private setHighlightState_(turnOn: boolean) {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const button = shadowRoot.getElementById('highlight');
-    assert(button);
+    const button = this.$.toolbarContainer.querySelector('#highlight');
+    assert(button, 'no highlight button');
     this.isHighlightOn_ = turnOn;
     if (this.isHighlightOn_) {
       button.setAttribute('iron-icon', 'read-anything:highlight-on');
@@ -619,18 +603,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private setRateIcon_(rate: number) {
-    const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
-    const button = shadowRoot.getElementById('rate');
-    assert(button);
+    const button = this.$.toolbarContainer.querySelector('#rate');
+    assert(button, 'no rate button');
     button.setAttribute('iron-icon', 'voice-rate:' + rate);
   }
 
   private setCheckMarkForMenu_(menu: CrActionMenuElement, index: number) {
     const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
-    assert((index < checkMarks.length) && (index >= 0));
+    assert(
+        (index < checkMarks.length) && (index >= 0),
+        'trying to show a checkmark on an item that doesn\'t exist');
     checkMarks.forEach((element) => {
-      assert(element instanceof HTMLElement);
+      assert(element instanceof HTMLElement, 'checkmark is not an HTMLElement');
       // TODO(crbug.com/1465029): Ensure this works with screen readers
       ReadAnythingToolbarElement.hideElement(element, true);
     });
@@ -700,11 +684,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private onToolbarKeyDown_(e: KeyboardEvent) {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
-    const toolbar = shadowRoot.getElementById('toolbar-container');
+    const toolbar = shadowRoot.getElementById('toolbarContainer');
     assert(toolbar);
     const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button')) as
         HTMLElement[];
-    assert(buttons);
+    assert(buttons, 'no toolbar buttons');
 
     // Only allow focus on the currently visible and actionable elements.
     const focusableElements = buttons.filter(el => {
@@ -715,14 +699,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // Allow focusing the font selection if it's visible.
     if (!this.isReadAloudEnabled_) {
-      const select = shadowRoot.getElementById('font-select') as HTMLElement;
-      assert(select);
+      const select = this.$.fontSelect;
+      assert(select, 'no font select menu');
       focusableElements.unshift(select);
     }
 
     // Allow focusing the more options menu if it's visible.
-    const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
-    assert(moreOptionsButton);
+    const moreOptionsButton = this.$.more;
+    assert(moreOptionsButton, 'no more options button');
     if (moreOptionsButton.style.display &&
         (moreOptionsButton.style.display !== 'none')) {
       focusableElements.push(moreOptionsButton);
@@ -763,14 +747,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // Open the overflow menu if the next button is in that menu. Close it
     // otherwise.
     const elementToFocus = focusableElements[newIndex];
-    assert(elementToFocus);
+    assert(elementToFocus, 'no element to focus');
     if (elementToFocus.className !== moreOptionsClass.slice(1)) {
       this.$.moreOptionsMenu.close();
     } else if (!this.$.moreOptionsMenu.open) {
-      const moreOptionsButton =
-          focusableElements.find(element => element.id === 'more');
-      assert(moreOptionsButton);
-      this.openMenu_(this.$.moreOptionsMenu, moreOptionsButton);
+      this.openMenu_(this.$.moreOptionsMenu, this.$.more);
     }
 
     // When the user tabs away from the toolbar and then tabs back, we want to

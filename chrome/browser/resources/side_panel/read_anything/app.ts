@@ -103,55 +103,55 @@ class TwoWayMap<K, V> extends Map<K, V> {
 if (chrome.readingMode) {
   chrome.readingMode.updateContent = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.updateContent();
   };
 
   chrome.readingMode.updateLinks = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.updateLinks();
   };
 
   chrome.readingMode.updateImage = (nodeId) => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.updateImage(nodeId);
   };
 
   chrome.readingMode.updateSelection = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.updateSelection();
   };
 
   chrome.readingMode.updateTheme = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.updateTheme();
   };
 
   chrome.readingMode.showLoading = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.showLoading();
   };
 
   chrome.readingMode.showEmpty = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.showEmpty();
   };
 
   chrome.readingMode.restoreSettingsFromPrefs = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.restoreSettingsFromPrefs();
   };
 
   chrome.readingMode.updateFonts = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp);
+    assert(readAnythingApp, 'no app');
     readAnythingApp.updateFonts();
   };
 }
@@ -304,9 +304,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         return;
       }
       const shadowRoot = this.shadowRoot;
-      assert(shadowRoot);
+      assert(shadowRoot, 'no shadow root');
       const selection = shadowRoot.getSelection();
-      assert(selection);
+      assert(selection, 'no selection');
       const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
       if (!anchorNode || !focusNode) {
         // The selection was collapsed by clicking inside the selection.
@@ -315,7 +315,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
       const anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
       const focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
-      assert(anchorNodeId && focusNodeId);
+      assert(anchorNodeId && focusNodeId, 'anchor or focus node is undefined');
       chrome.readingMode.onSelectionChange(
           anchorNodeId, anchorOffset, focusNodeId, focusOffset);
     };
@@ -560,7 +560,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   getSelection(): any {
     const shadowRoot = this.shadowRoot;
-    assert(shadowRoot);
+    assert(shadowRoot, 'no shadow root');
     const selection = shadowRoot.getSelection();
     return selection;
   }
@@ -604,9 +604,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const elements = this.shadowRoot.querySelectorAll(selector);
 
     for (const elem of elements) {
-      assert(elem instanceof HTMLElement);
+      assert(elem instanceof HTMLElement, 'link is not an HTMLElement');
       const nodeId = this.domNodeToAxNodeIdMap_.get(elem);
-      assert(nodeId !== undefined);
+      assert(nodeId !== undefined, 'link node id is undefined');
       const replacement = this.buildSubtree_(nodeId);
       this.replaceElement(elem, replacement);
     }
@@ -694,7 +694,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private replaceElement(current: HTMLElement, replacer: Node) {
     const nodeId = this.domNodeToAxNodeIdMap_.get(current);
-    assert(nodeId !== undefined);
+    assert(
+        nodeId !== undefined,
+        'trying to replace an element that doesn\'t exist');
     // Update map.
     this.domNodeToAxNodeIdMap_.delete(current);
     this.domNodeToAxNodeIdMap_.set(replacer, nodeId);
@@ -1039,7 +1041,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private extractTextOf(axNodeIds: number[]): string {
     let utteranceText: string = '';
     for (let i = 0; i < axNodeIds.length; i++) {
-      assert(axNodeIds[i]);
+      assert(axNodeIds[i], 'trying to get text from an undefined node id');
       const nodeId = axNodeIds[i];
       const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
       const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
