@@ -6,9 +6,7 @@
 
 #include "base/win/sid.h"
 
-// clang-format off
-#include <windows.h>  // Must be in front of other Windows header files.
-// clang-format on
+#include <windows.h>
 
 #include <sddl.h>
 

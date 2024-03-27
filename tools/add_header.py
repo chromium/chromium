@@ -342,6 +342,7 @@ def SerializeIncludes(includes):
   """
   source = []
 
+  # LINT.IfChange(winheader)
   special_headers = [
       # Must be included before ws2tcpip.h.
       # Doesn't need to be included before <windows.h> with
@@ -364,7 +365,13 @@ def SerializeIncludes(includes):
       '<objbase.h>',
       # Must be before tpcshrd.h.
       '<tchar.h>',
+      # Must be before functiondiscoverykeys_devpkey.h.
+      '<mmdeviceapi.h>',
+      # Must be before emi.h.
+      '<initguid.h>',
   ]
+
+  # LINT.ThenChange(/.clang-format:winheader)
 
   # Ensure that headers are sorted as follows:
   #

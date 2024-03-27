@@ -5,15 +5,14 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_WIN_UNITTEST_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_WIN_UNITTEST_H_
 
-#include "ui/accessibility/platform/ax_platform_node_unittest.h"
-
 #include <memory>
 #include <unordered_set>
 
 #include "base/test/scoped_feature_list.h"
-#include "base/win/atl.h"  // Must be before UIAutomationCore.h
+#include "base/win/atl.h"
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
+#include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 #include <UIAutomationCore.h>

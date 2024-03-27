@@ -4,7 +4,6 @@
 
 #include "base/win/atl.h"
 
-#include <atlcomcli.h>
 #include <wrl/client.h>
 
 #include "base/command_line.h"

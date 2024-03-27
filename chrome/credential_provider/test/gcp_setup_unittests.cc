@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/win/atl.h"
+#include <unknwn.h>
 
-#include <atlcomcli.h>
 #include <datetimeapi.h>
 #include <lmerr.h>
-#include <unknwn.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -29,6 +27,7 @@
 #include "base/syslog_logging.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
