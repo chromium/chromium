@@ -48,7 +48,6 @@ void PasswordStoreAndroidLocalBackend::InitBackend(
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   Init(std::move(remote_form_changes_received));
-  CHECK(!sync_enabled_or_disabled_cb);
   CHECK(completion);
   std::move(completion).Run(/*success=*/true);
 }
