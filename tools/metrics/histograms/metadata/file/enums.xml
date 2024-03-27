@@ -522,6 +522,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both MS365 PWA and ODFS set up"/>
 </enum>
 
+<enum name="MountStatePostRestore">
+  <int value="0" label="No mounts"/>
+  <int value="1" label="Single authenticated mount"/>
+  <int value="2" label="Single unauthenticated mount"/>
+  <int value="3" label="Single unauthenticated new mount"/>
+  <int value="4" label="Multiple mounts"/>
+  <int value="5"
+      label="Failed to restore with no Chrome mount and multiple storage
+             mounts"/>
+  <int value="6" label="Failed to restore (error thrown)"/>
+  <int value="7" label="Unknown"/>
+</enum>
+
+<enum name="MountStatePreRestore">
+  <int value="0" label="Chrome mounts: 0, Storage mounts: 0"/>
+  <int value="1" label="Chrome mounts: 0, Storage mounts: 1"/>
+  <int value="2" label="Chrome mounts: 0, Storage mounts: many"/>
+  <int value="3" label="Chrome mounts: 1, Storage mounts: 0"/>
+  <int value="4" label="Chrome mounts: 1, Storage mounts: 1"/>
+  <int value="5" label="Chrome mounts: 1, Storage mounts: many"/>
+  <int value="6" label="Chrome mounts: many, Storage mounts: 0"/>
+  <int value="7" label="Chrome mounts: many, Storage mounts: 1"/>
+  <int value="8" label="Chrome mounts: many, Storage mounts: many"/>
+</enum>
+
 <enum name="OfficeDriveOpenErrors">
   <int value="0" label="Offline"/>
   <int value="1" label="DriveFs interface not available"/>

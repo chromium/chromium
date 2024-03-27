@@ -1152,6 +1152,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.ODFS.MountStatePostRestore"
+    enum="MountStatePostRestore" expires_after="2024-08-04">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: ODFS mount state in Chrome and local storage after
+    running the restoration of existing mounts.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.MountStatePreRestore"
+    enum="MountStatePreRestore" expires_after="2024-08-04">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: ODFS mount state in Chrome and local storage before
+    running the restoration of existing mounts.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.ODFS.Throughput.{Direction}"
     units="KiB/s" expires_after="2024-08-04">
   <owner>simmonsjosh@google.com</owner>
