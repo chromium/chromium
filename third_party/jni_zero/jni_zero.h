@@ -595,7 +595,16 @@ class JavaObjectArrayReader {
 };
 
 // Use as: @JniType("jni_zero::ByteArrayView") byte[].
-// Callers must ensure that the passed in array reference outlives this wrapper.
+//
+// This requests a direct pointer to the array data rather than a copy of it,
+// so can be more efficient than std::vector<uint8_t> for large arrays.
+//
+// This helper needs to release the array via its destructor, and as a result
+// has more binary size overhead than using std::vector<uint8_t>. As such, you
+// should prefer std::vector for small arrays.
+//
+// Callers must ensure that the passed in array reference outlives this wrapper
+// (always the case when used with @JniType).
 class ByteArrayView {
  public:
   ByteArrayView(JNIEnv* env, jbyteArray array)
@@ -612,11 +621,13 @@ class ByteArrayView {
   ByteArrayView(ByteArrayView&& other) = delete;
   ByteArrayView& operator=(const ByteArrayView&) = delete;
 
-  size_t length() const { return static_cast<size_t>(length_); }
-  jbyte* bytes() const { return bytes_; }
+  size_t size() const { return static_cast<size_t>(length_); }
+  bool empty() const { return length_ == 0; }
+  const jbyte* bytes() const { return bytes_; }
+  const uint8_t* data() const { return reinterpret_cast<uint8_t*>(bytes_); }
   const char* chars() const { return reinterpret_cast<char*>(bytes_); }
   std::string_view string_view() const {
-    return std::string_view(chars(), length());
+    return std::string_view(chars(), size());
   }
 
  private:

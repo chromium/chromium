@@ -131,7 +131,7 @@ static jlong JNI_SampleForTests_Init(JNIEnv* env,
                                      const JavaParamRef<jobject>& caller,
                                      const JavaParamRef<jstring>& param,
                                      jni_zero::ByteArrayView& bytes) {
-  return static_cast<jlong>(bytes.length());
+  return static_cast<jlong>(bytes.size());
 }
 
 static jdouble JNI_SampleForTests_GetDoubleFunction(
