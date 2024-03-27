@@ -386,7 +386,7 @@
   NSMutableArray<UIMenuElement*>* groupsMenu = [[NSMutableArray alloc] init];
 
   for (const TabGroup* group : groups) {
-    NSString* title = base::SysUTF16ToNSString(group->visual_data().title());
+    NSString* title = group->GetTitle();
     ProceduralBlock groupBlock = ^{
       if (block) {
         block(group);

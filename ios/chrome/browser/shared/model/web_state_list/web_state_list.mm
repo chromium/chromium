@@ -1262,3 +1262,22 @@ void CloseAllWebStatesInGroup(WebStateList& web_state_list,
                                              .count = range.count(),
                                          }));
 }
+
+void CloseOtherWebStates(WebStateList& web_state_list,
+                         int index_to_keep,
+                         int close_flags) {
+  const int count = web_state_list.count();
+  const int pinned_count = web_state_list.pinned_tabs_count();
+  std::vector<int> indexes_to_close;
+  indexes_to_close.reserve(count - pinned_count);
+  for (int index = pinned_count; index < count; ++index) {
+    if (index == index_to_keep) {
+      continue;
+    }
+    indexes_to_close.push_back(index);
+  }
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list.StartBatchOperation();
+  web_state_list.CloseWebStatesAtIndices(
+      close_flags, RemovingIndexes(std::move(indexes_to_close)));
+}

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
@@ -195,7 +194,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   tab_groups::TabGroupColorId colorID =
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
 
-  UIColor* defaultColor = ColorForTabGroupColorId(colorID);
+  UIColor* defaultColor = TabGroup::ColorForTabGroupColorId(colorID);
   _dotView = [self groupDotViewWithColor:defaultColor];
   _tabGroupTextField = [self configuredTabGroupNameTextFieldInput];
 
@@ -343,20 +342,22 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   [_selectedButton setSelected:YES];
   tab_groups::TabGroupColorId colorID =
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
-  [_dotView setBackgroundColor:ColorForTabGroupColorId(colorID)];
+  [_dotView setBackgroundColor:TabGroup::ColorForTabGroupColorId(colorID)];
 }
 
 // Creates all the available color buttons.
 - (void)createColorSelectionButtons {
   NSMutableArray* buttons = [[NSMutableArray alloc] init];
-  for (tab_groups::TabGroupColorId colorID : AllPossibleTabGroupColors()) {
+  for (tab_groups::TabGroupColorId colorID :
+       TabGroup::AllPossibleTabGroupColors()) {
     UIButton* colorButton = [[UIButton alloc] init];
     colorButton.translatesAutoresizingMaskIntoConstraints = NO;
     [colorButton setTag:static_cast<NSInteger>(colorID)];
 
     UIButtonConfiguration* buttonConfiguration =
         [UIButtonConfiguration filledButtonConfiguration];
-    buttonConfiguration.baseBackgroundColor = ColorForTabGroupColorId(colorID);
+    buttonConfiguration.baseBackgroundColor =
+        TabGroup::ColorForTabGroupColorId(colorID);
     buttonConfiguration.background.cornerRadius = kColoredButtonSize / 2;
     colorButton.configuration = buttonConfiguration;
 

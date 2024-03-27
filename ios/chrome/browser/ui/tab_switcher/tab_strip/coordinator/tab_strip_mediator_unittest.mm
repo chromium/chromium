@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -233,7 +232,7 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
   EXPECT_EQ(group_0, consumer_.items[0].tabGroupItem.tabGroup);
   EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
             consumer_.items[1].tabSwitcherItem.identifier);
-  EXPECT_NSEQ(ColorForTabGroupColorId(group_0->visual_data().color()),
+  EXPECT_NSEQ(group_0->GetColor(),
               consumer_.itemData[consumer_.items[1]].groupStrokeColor);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
             consumer_.items[2].tabSwitcherItem.identifier);
@@ -269,10 +268,8 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
 
   const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
   const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
-  const auto group_0_color =
-      ColorForTabGroupColorId(group_0->visual_data().color());
-  const auto group_1_color =
-      ColorForTabGroupColorId(group_1->visual_data().color());
+  const auto group_0_color = group_0->GetColor();
+  const auto group_1_color = group_1->GetColor();
 
   ASSERT_EQ(10ul, consumer_.items.count);
   TabStripItemIdentifier* item_a = consumer_.items[0];
@@ -406,8 +403,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
                                         builder.GetWebStateForIdentifier('h'))},
                                    {});
   builder.SetTabGroupIdentifier(group_2, '2');
-  UIColor* group_2_color =
-      ColorForTabGroupColorId(group_2->visual_data().color());
+  UIColor* group_2_color = group_2->GetColor();
   ASSERT_EQ(builder.GetWebStateListDescription(*web_state_list_),
             "a b | [ 2 c* d f g h ] [ 0 e ]");
   EXPECT_NSEQ(consumer_.itemData[item_c].groupStrokeColor, group_2_color);
@@ -427,7 +423,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   TabStripItemIdentifier* item_2 = consumer_.items[2];
   web_state_list_->UpdateGroupVisualData(
       group_2, {u"Updated Group Name", tab_groups::TabGroupColorId::kRed});
-  group_2_color = ColorForTabGroupColorId(group_2->visual_data().color());
+  group_2_color = group_2->GetColor();
   EXPECT_NSEQ(consumer_.itemData[item_2].groupStrokeColor, group_2_color);
   EXPECT_NSEQ(consumer_.itemData[item_c].groupStrokeColor, group_2_color);
   EXPECT_NSEQ(consumer_.itemData[item_d].groupStrokeColor, group_2_color);

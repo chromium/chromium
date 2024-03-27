@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"

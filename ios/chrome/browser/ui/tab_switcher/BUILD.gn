@@ -43,8 +43,6 @@ source_set("items") {
 
 source_set("utils") {
   sources = [
-    "group_utils.h",
-    "group_utils.mm",
     "item_utils.h",
     "item_utils.mm",
     "tab_utils.h",
@@ -59,8 +57,8 @@ source_set("utils") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/common/ui/colors",
@@ -70,29 +68,5 @@ source_set("utils") {
   allow_circular_includes_from = [
     ":items",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "group_utils_unittests.mm" ]
-  deps = [
-    ":utils",
-    "//base",
-    "//components/favicon/core",
-    "//components/favicon/ios",
-    "//components/keyed_service/core",
-    "//components/tab_groups",
-    "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/history/model",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
-    "//testing/gtest",
   ]
 }

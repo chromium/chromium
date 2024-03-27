@@ -609,4 +609,8 @@ bool IsIOSMagicStackCollectionViewEnabled();
 // Feature flag to disable fullscreen scrolling logic.
 BASE_DECLARE_FEATURE(kDisableFullscreenScrolling);
 
+// Convenience method for determining if Pinned Tabs is enabled.
+// The Pinned Tabs feature is fully enabled on iPhone and disabled on iPad.
+bool IsPinnedTabsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

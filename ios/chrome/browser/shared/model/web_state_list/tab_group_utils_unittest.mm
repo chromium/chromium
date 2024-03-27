@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/core/favicon_url.h"
@@ -101,7 +101,7 @@ class GroupUtilsTest : public PlatformTest {
 
   // Returns the default color for the regular web state list.
   tab_groups::TabGroupColorId DefaultColor() {
-    return DefaultColorForNewTabGroup(web_state_list_.get());
+    return TabGroup::DefaultColorForNewTabGroup(web_state_list_.get());
   }
 
   // Adds the other browsers to the browser list.
@@ -125,7 +125,8 @@ class GroupUtilsTest : public PlatformTest {
 };
 
 TEST_F(GroupUtilsTest, TestDefaultColor) {
-  std::vector<tab_groups::TabGroupColorId> colors = AllPossibleTabGroupColors();
+  std::vector<tab_groups::TabGroupColorId> colors =
+  TabGroup::AllPossibleTabGroupColors();
 
   for (unsigned int i = 0; i < colors.size() * 3 + 1; i++) {
     AddWebState();

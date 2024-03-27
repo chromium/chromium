@@ -16,6 +16,7 @@ source_set("web_state_list") {
     "removing_indexes.h",
     "removing_indexes.mm",
     "tab_group.h",
+    "tab_group.mm",
     "web_state_list.h",
     "web_state_list.mm",
     "web_state_list_delegate.h",
@@ -29,12 +30,29 @@ source_set("web_state_list") {
   deps = [
     "//base",
     "//components/tab_groups",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/navigation",
     "//url",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "tab_group_utils.h",
+    "tab_group_utils.mm",
+    "tab_utils.h",
+    "tab_utils.mm",
+  ]
+  deps = [
+    ":web_state_list",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public",
+  ]
 }
 
 source_set("unit_tests") {
@@ -45,16 +63,28 @@ source_set("unit_tests") {
     "order_controller_source_from_web_state_list_unittest.mm",
     "order_controller_unittest.mm",
     "removing_indexes_unittest.mm",
+    "tab_group_utils_unittest.mm",
     "web_state_list_unittest.mm",
     "web_state_opener_unittest.mm",
   ]
   deps = [
+    ":utils",
     ":web_state_list",
     "test:unit_tests",
     "//base",
+    "//components/favicon/core",
+    "//components/favicon/ios",
+    "//components/keyed_service/core",
     "//components/tab_groups",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/web/public:web_state_observer",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",

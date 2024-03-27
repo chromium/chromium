@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drag_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drop_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_pinned_tab_collection_consumer.h"

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/web_state.h"
@@ -41,11 +40,11 @@ const CGFloat kFaviconSize = 16;
 }
 
 - (NSString*)title {
-  return base::SysUTF16ToNSString(_tabGroup->visual_data().title());
+  return _tabGroup->GetTitle();
 }
 
 - (UIColor*)groupColor {
-  return ColorForTabGroupColorId(_tabGroup->visual_data().color());
+  return _tabGroup->GetColor();
 }
 
 - (NSInteger)numberOfTabsInGroup {

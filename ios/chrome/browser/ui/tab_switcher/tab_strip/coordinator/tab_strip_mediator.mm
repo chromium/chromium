@@ -24,8 +24,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/tabs/model/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
@@ -50,8 +49,7 @@ TabStripItemData* CreateTabItemData(int index,
     const WebStateList::Range range = web_state_list.GetGroupRange(group);
     data.isFirstTabInGroup = range.range_begin() == index;
     data.isLastTabInGroup = range.range_end() == index + 1;
-    data.groupStrokeColor =
-        ColorForTabGroupColorId(group->visual_data().color());
+    data.groupStrokeColor = group->GetColor();
   }
   return data;
 }
@@ -59,7 +57,7 @@ TabStripItemData* CreateTabItemData(int index,
 // Returns the `TabStripItemData` for `group`.
 TabStripItemData* CreateGroupItemData(const TabGroup* group) {
   TabStripItemData* data = [[TabStripItemData alloc] init];
-  data.groupStrokeColor = ColorForTabGroupColorId(group->visual_data().color());
+  data.groupStrokeColor = group->GetColor();
   return data;
 }
 
@@ -482,7 +480,7 @@ NSArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   auto indexToKeepSearchCriteria = WebStateSearchCriteria(item.identifier);
   // Closes all non-pinned items except for `item`.
   CloseOtherWebStates(
-      self.webStateList,
+      *(self.webStateList),
       GetWebStateIndex(self.webStateList, indexToKeepSearchCriteria),
       WebStateList::CLOSE_USER_ACTION);
 }

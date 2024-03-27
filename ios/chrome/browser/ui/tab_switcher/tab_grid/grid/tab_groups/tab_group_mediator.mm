@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
@@ -48,12 +47,9 @@
     self.consumer = gridConsumer;
 
     _tabGroup = tabGroup;
-    const tab_groups::TabGroupVisualData& groupInformations =
-        _tabGroup->visual_data();
-    [_groupConsumer
-        setGroupTitle:base::SysUTF16ToNSString(groupInformations.title())];
-    [_groupConsumer
-        setGroupColor:ColorForTabGroupColorId(groupInformations.color())];
+
+    [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
+    [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
     GridItemIdentifier* identifier = nil;
     int webStateIndex = self.webStateList->active_index();

@@ -16,13 +16,13 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_image_file_manager.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 
 namespace {
 

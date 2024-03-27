@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"

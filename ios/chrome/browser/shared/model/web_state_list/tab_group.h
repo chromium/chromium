@@ -5,9 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_GROUP_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_GROUP_H_
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "components/tab_groups/tab_group_visual_data.h"
+
+class WebStateList;
 
 // The metadata of a tab group, how a group should appear when displayed.
 //
@@ -24,6 +28,12 @@ class TabGroup {
 
   ~TabGroup() {}
 
+  // Returns the title of the group.
+  NSString* GetTitle() const;
+
+  // Returns the color of the group.
+  UIColor* GetColor() const;
+
   // The underlying visual data specific to the group.
   const tab_groups::TabGroupVisualData& visual_data() const {
     return visual_data_;
@@ -31,6 +41,19 @@ class TabGroup {
   void SetVisualData(const tab_groups::TabGroupVisualData& visual_data) {
     visual_data_ = visual_data;
   }
+
+  // Returns all the colors a TabGroup can have.
+  static std::vector<tab_groups::TabGroupColorId> AllPossibleTabGroupColors();
+
+  // Returns a UIColor based on a `tab_group_color_id`.
+  static UIColor* ColorForTabGroupColorId(
+      tab_groups::TabGroupColorId tab_group_color_id);
+
+  // Returns the default color for a new TabGroup in `web_state_list`. This is
+  // based on the colors currently used by this web state list (for this
+  // window).
+  static tab_groups::TabGroupColorId DefaultColorForNewTabGroup(
+      WebStateList* web_state_list);
 
  private:
   tab_groups::TabGroupVisualData visual_data_;

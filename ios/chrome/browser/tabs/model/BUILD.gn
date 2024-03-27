@@ -221,14 +221,6 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  deps = [ "//ui/base" ]
-}
-
 source_set("tab_sync_util") {
   sources = [
     "tab_sync_util.h",
