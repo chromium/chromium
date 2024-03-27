@@ -666,8 +666,7 @@ public class MainActivity extends AppCompatActivity
         mContentScrollCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_CONTENT_SCROLL, UNCHECKED) == CHECKED);
         mSearchInCCTCheckbox = findViewById(R.id.search_in_cct_checkbox);
-        mSearchInCCTCheckbox.setChecked(
-                mSharedPref.getInt(SHARED_PREF_SEARCH_IN_CCT, UNCHECKED) == CHECKED);
+        mSearchInCCTCheckbox.setChecked(mSharedPref.getBoolean(SHARED_PREF_SEARCH_IN_CCT, false));
         mShareIdentityCheckbox = findViewById(R.id.share_identity_checkbox);
         mShareIdentityCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHARE_IDENTITY, UNCHECKED) == CHECKED);
