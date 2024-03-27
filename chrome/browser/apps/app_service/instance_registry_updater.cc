@@ -45,6 +45,9 @@ InstanceRegistryUpdater::InstanceRegistryUpdater(
     InstanceRegistry& instance_registry)
     : browser_app_instance_registry_(browser_app_instance_registry),
       instance_registry_(instance_registry) {
+  if (aura::Env::HasInstance()) {
+    env_observer_.Observe(aura::Env::GetInstance());
+  }
   browser_app_instance_registry_observation_.Observe(
       &*browser_app_instance_registry_);
 }

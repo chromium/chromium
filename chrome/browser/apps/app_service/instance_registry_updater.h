@@ -55,6 +55,7 @@ class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
                   aura::Window* window,
                   InstanceState state);
 
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
   base::ScopedObservation<BrowserAppInstanceRegistry,
