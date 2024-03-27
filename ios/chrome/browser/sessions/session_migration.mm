@@ -212,7 +212,9 @@ SessionWindowIOS* OptimizedSession::ToLegacy() const {
     selected_index = static_cast<NSUInteger>(active_index);
   }
 
+  // TODO(crbug.com/331367877): Implement migration for tab groups.
   return [[SessionWindowIOS alloc] initWithSessions:items
+                                          tabGroups:@[]
                                       selectedIndex:selected_index];
 }
 

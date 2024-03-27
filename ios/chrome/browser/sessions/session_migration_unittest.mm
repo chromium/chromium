@@ -194,6 +194,7 @@ bool GenerateLegacySession(const base::FilePath& root,
 
   SessionWindowIOS* session =
       [[SessionWindowIOS alloc] initWithSessions:sessions
+                                       tabGroups:@[]
                                    selectedIndex:selected_index];
 
   // Write the session file.
@@ -243,6 +244,7 @@ bool GenerateLegacySessionInvalidUniqueIdentifiers(const base::FilePath& root,
 
   SessionWindowIOS* session =
       [[SessionWindowIOS alloc] initWithSessions:sessions
+                                       tabGroups:@[]
                                    selectedIndex:selected_index];
 
   // Write the session file.

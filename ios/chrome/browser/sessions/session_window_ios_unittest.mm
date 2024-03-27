@@ -24,6 +24,7 @@ CRWSessionStorage* CreateSessionForTest(BOOL has_opener) {
 SessionWindowIOS* CreateSessionWindowForTest(NSUInteger selectedIndex) {
   return [[SessionWindowIOS alloc]
       initWithSessions:@[ CreateSessionForTest(YES), CreateSessionForTest(NO) ]
+             tabGroups:@[]
          selectedIndex:selectedIndex];
 }
 
@@ -33,7 +34,10 @@ SessionWindowIOS* CreateSessionWindowForTest(NSUInteger selectedIndex) {
 using SessionWindowIOSTest = PlatformTest;
 
 TEST_F(SessionWindowIOSTest, InitEmpty) {
-  SessionWindowIOS* session_window = [[SessionWindowIOS alloc] init];
+  SessionWindowIOS* session_window =
+      [[SessionWindowIOS alloc] initWithSessions:@[]
+                                       tabGroups:@[]
+                                   selectedIndex:NSNotFound];
   EXPECT_EQ(0u, [session_window.sessions count]);
   EXPECT_EQ(static_cast<NSUInteger>(NSNotFound), session_window.selectedIndex);
 }

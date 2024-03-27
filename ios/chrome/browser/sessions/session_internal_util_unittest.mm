@@ -90,6 +90,7 @@ SessionWindowIOS* CreateSessionWindowIOS() {
   session_storage.itemStorages = @[];
 
   return [[SessionWindowIOS alloc] initWithSessions:@[ session_storage ]
+                                          tabGroups:@[]
                                       selectedIndex:0];
 }
 

@@ -7,6 +7,8 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/sessions/proto/tab_group.pb.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
+#import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "testing/platform_test.h"
 
 // Test suite for sessions `tab_group_util` methods.
@@ -29,6 +31,29 @@ TEST_F(TabSessionGroupUtil, FromSerializedValue) {
 
   DeserializedGroup group_deserialized =
       tab_group_util::FromSerializedValue(group_storage);
+  EXPECT_EQ(group_deserialized.range_start, 2);
+  EXPECT_EQ(group_deserialized.range_count, 3);
+  EXPECT_EQ(group_deserialized.visual_data.title(), u"title");
+  EXPECT_EQ(group_deserialized.visual_data.color(),
+            tab_groups::TabGroupColorId::kGrey);
+}
+
+// Tests the legacy `FromSerializedValue:` method.
+TEST_F(TabSessionGroupUtil, FromSerializedValueLegacy) {
+  SessionTabGroup* session_tab_group = [[SessionTabGroup alloc]
+      initWithRangeStart:2
+              rangeCount:3
+                   title:@"title"
+                 colorId:static_cast<NSInteger>(
+                             tab_groups::TabGroupColorId::kGrey)];
+
+  SessionWindowIOS* session_window =
+      [[SessionWindowIOS alloc] initWithSessions:@[]
+                                       tabGroups:@[ session_tab_group ]
+                                   selectedIndex:NSNotFound];
+
+  DeserializedGroup group_deserialized =
+      tab_group_util::FromSerializedValue(session_window.tabGroups[0]);
   EXPECT_EQ(group_deserialized.range_start, 2);
   EXPECT_EQ(group_deserialized.range_count, 3);
   EXPECT_EQ(group_deserialized.visual_data.title(), u"title");

@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/sessions/tab_group_util.h"
 
 #import "base/notreached.h"
-
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
 
 using tab_groups::TabGroupVisualData;
 
@@ -20,6 +21,16 @@ DeserializedGroup FromSerializedValue(ios::proto::TabGroupStorage group) {
   return DeserializedGroup{
       .range_start = group.range().start(),
       .range_count = group.range().count(),
+      .visual_data = visual_data,
+  };
+}
+
+DeserializedGroup FromSerializedValue(SessionTabGroup* group) {
+  TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
+      base::SysNSStringToUTF16(group.title), group.colorId);
+  return DeserializedGroup{
+      .range_start = static_cast<int>(group.rangeStart),
+      .range_count = static_cast<int>(group.rangeCount),
       .visual_data = visual_data,
   };
 }

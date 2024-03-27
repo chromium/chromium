@@ -544,7 +544,9 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_EmptySession) {
 
   // Write an empty session.
   SessionWindowIOS* session =
-      [[SessionWindowIOS alloc] initWithSessions:@[] selectedIndex:NSNotFound];
+      [[SessionWindowIOS alloc] initWithSessions:@[]
+                                       tabGroups:@[]
+                                   selectedIndex:NSNotFound];
 
   const base::FilePath session_path = storage_path()
                                           .Append(kLegacySessionsDirname)

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios_factory.h"
 #import "ios/chrome/browser/sessions/web_state_list_serialization.h"
@@ -211,7 +212,27 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
     [sessions addObject:session];
   }
 
+  // Create the new list of tab groups, updating the `rangeStart` and
+  // `rangeStart` properties.
+  NSMutableArray<SessionTabGroup*>* groups = [[NSMutableArray alloc] init];
+  for (SessionTabGroup* group in session_window.tabGroups) {
+    WebStateList::Range range(
+        removing_indexes.IndexAfterRemoval(group.rangeStart), group.rangeCount);
+    WebStateList::Range final_range = range;
+    for (int index : range) {
+      if (removing_indexes.Contains(index)) {
+        final_range.ContractRight();
+      }
+    }
+    if (final_range.count() != 0) {
+      group.rangeStart = final_range.range_begin();
+      group.rangeCount = final_range.count();
+      [groups addObject:group];
+    }
+  }
+
   return [[SessionWindowIOS alloc] initWithSessions:sessions
+                                          tabGroups:groups
                                       selectedIndex:selected_index];
 }
 

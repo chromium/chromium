@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/proto/tab_group.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/sessions/tab_group_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -230,15 +231,14 @@ std::unique_ptr<web::WebState> DeserializeFromSessionWindow::RestoreTabAt(
 }
 
 int DeserializeFromSessionWindow::GetTabGroupsCount() const {
-  // TODO(crbug.com/325423826):Impement this.
-  NOTIMPLEMENTED();
-  return 0;
+  return session_window_.tabGroups.count;
 }
 
 DeserializedGroup DeserializeFromSessionWindow::GetDeserializedGroupAt(
     int index) const {
-  // TODO(crbug.com/325423826):Impement this.
-  NOTREACHED_NORETURN();
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, static_cast<int>(session_window_.tabGroups.count));
+  return tab_group_util::FromSerializedValue(session_window_.tabGroups[index]);
 }
 
 // An implementation of Deserializer used to restore from optimized storage.
@@ -484,7 +484,24 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
                                  ? static_cast<NSUInteger>(active_index)
                                  : static_cast<NSUInteger>(NSNotFound);
 
+  NSMutableArray<SessionTabGroup*>* serialized_groups =
+      [[NSMutableArray alloc] init];
+  for (const TabGroup* group : web_state_list->GetGroups()) {
+    const WebStateList::Range group_range =
+        web_state_list->GetGroupRange(group);
+
+    SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
+        initWithRangeStart:group_range.range_begin()
+                rangeCount:group_range.count()
+                     title:base::SysUTF16ToNSString(
+                               group->visual_data().title())
+                   colorId:static_cast<NSInteger>(
+                               group->visual_data().color())];
+    [serialized_groups addObject:serialized_group];
+  }
+
   return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
+                                          tabGroups:[serialized_groups copy]
                                       selectedIndex:selectedIndex];
 }
 

@@ -17,7 +17,6 @@ source_set("sessions") {
   deps = [
     ":serialisation",
     ":session_util",
-    ":tab_group_util",
     "//base",
     "//components/keyed_service/ios",
     "//components/tab_groups",
@@ -94,35 +93,27 @@ source_set("serialisation") {
     "NSCoder+Compatibility.mm",
     "session_ios.h",
     "session_ios.mm",
+    "session_tab_group.h",
+    "session_tab_group.mm",
     "session_window_ios.h",
     "session_window_ios.mm",
+    "tab_group_util.h",
+    "tab_group_util.mm",
     "web_state_list_serialization.h",
     "web_state_list_serialization.mm",
   ]
   deps = [
     ":features",
     ":session_constants",
-    ":tab_group_util",
     "//base",
     "//components/sessions:session_id",
+    "//components/tab_groups",
     "//ios/chrome/browser/sessions/proto",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ios/web/public/session",
-  ]
-}
-
-source_set("tab_group_util") {
-  sources = [
-    "tab_group_util.h",
-    "tab_group_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/tab_groups",
-    "//ios/chrome/browser/sessions/proto",
   ]
 }
 
@@ -387,7 +378,6 @@ source_set("unit_tests") {
     ":session_restoration_service_impl",
     ":session_service",
     ":sessions",
-    ":tab_group_util",
     ":test_support",
     "//base",
     "//base/test:test_support",

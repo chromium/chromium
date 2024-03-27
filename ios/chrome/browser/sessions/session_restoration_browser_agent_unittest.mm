@@ -124,6 +124,7 @@ SessionWindowIOS* CreateSessionWindow(SessionInfo<N> session_info) {
   }
 
   return [[SessionWindowIOS alloc] initWithSessions:sessions
+                                          tabGroups:@[]
                                       selectedIndex:session_info.active_index];
 }
 

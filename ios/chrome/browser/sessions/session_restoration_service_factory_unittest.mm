@@ -58,7 +58,9 @@ base::FilePath LegacySessionPath(const base::FilePath& root,
 bool CreateLegacySession(const base::FilePath& root,
                          const std::string& identifier) {
   SessionWindowIOS* session =
-      [[SessionWindowIOS alloc] initWithSessions:@[] selectedIndex:NSNotFound];
+      [[SessionWindowIOS alloc] initWithSessions:@[]
+                                       tabGroups:@[]
+                                   selectedIndex:NSNotFound];
 
   const base::FilePath session_path = LegacySessionPath(root, identifier);
   return ios::sessions::WriteSessionWindow(session_path, session);

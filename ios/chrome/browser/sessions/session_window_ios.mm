@@ -14,6 +14,7 @@
 namespace {
 // Serialization keys.
 NSString* const kSessionsKey = @"sessions";
+NSString* const kTabGroupsKey = @"tabGroups";
 NSString* const kSessionsSummaryKey = @"sessionsSummary";
 NSString* const kSelectedIndexKey = @"selectedIndex";
 NSString* const kSessionStableIdentifierKey = @"stableIdentifier";
@@ -32,20 +33,19 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
 
 @synthesize sessions = _sessions;
 @synthesize selectedIndex = _selectedIndex;
-
-- (instancetype)init {
-  return [self initWithSessions:@[] selectedIndex:NSNotFound];
-}
+@synthesize tabGroups = _tabGroups;
 
 #pragma mark - Public
 
 - (instancetype)initWithSessions:(NSArray<CRWSessionStorage*>*)sessions
+                       tabGroups:(NSArray<SessionTabGroup*>*)tabgroups
                    selectedIndex:(NSUInteger)selectedIndex {
   DCHECK(sessions);
   DCHECK(IsIndexValidForSessionCount(selectedIndex, [sessions count]));
   self = [super init];
   if (self) {
     _sessions = [sessions copy];
+    _tabGroups = [tabgroups copy];
     _selectedIndex = selectedIndex;
   }
   return self;
@@ -70,6 +70,14 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
     sessions = @[];
   }
 
+  NSArray<SessionTabGroup*>* tabGroups =
+      base::apple::ObjCCast<NSArray<SessionTabGroup*>>(
+          [aDecoder decodeObjectForKey:kTabGroupsKey]);
+
+  if (!tabGroups) {
+    tabGroups = @[];
+  }
+
   if (!IsIndexValidForSessionCount(selectedIndex, [sessions count])) {
     if (![sessions count]) {
       selectedIndex = NSNotFound;
@@ -78,12 +86,15 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
     }
   }
 
-  return [self initWithSessions:sessions selectedIndex:selectedIndex];
+  return [self initWithSessions:sessions
+                      tabGroups:tabGroups
+                  selectedIndex:selectedIndex];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   [aCoder cr_encodeIndex:_selectedIndex forKey:kSelectedIndexKey];
   [aCoder encodeObject:_sessions forKey:kSessionsKey];
+  [aCoder encodeObject:_tabGroups forKey:kTabGroupsKey];
 }
 
 #pragma mark - Debugging
