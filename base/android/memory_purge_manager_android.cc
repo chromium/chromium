@@ -23,7 +23,5 @@ static void JNI_MemoryPurgeManager_PostDelayedPurgeTaskOnUiThread(JNIEnv* env,
 
 static jboolean JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
     JNIEnv* env) {
-  return base::android::PreFreezeBackgroundMemoryTrimmer::
-             IsRespectingModernTrim() &&
-         base::FeatureList::IsEnabled(base::android::kOnPreFreezeMemoryTrim);
+  return base::android::PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim();
 }

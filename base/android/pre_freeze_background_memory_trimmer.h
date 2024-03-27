@@ -88,7 +88,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::OnceClosure task,
       base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
 
-  static void SetIsRespectingModernTrimForTesting(bool is_respecting);
+  static void SetSupportsModernTrimForTesting(bool is_supported);
   size_t GetNumberOfPendingBackgroundTasksForTesting() LOCKS_EXCLUDED(lock_);
 
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock_) { OnPreFreeze(); }
@@ -97,7 +97,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
 
-  static bool IsRespectingModernTrim();
+  static bool SupportsModernTrim();
   static bool ShouldUseModernTrim();
 
  private:
@@ -169,7 +169,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // Keeps track of whether any tasks have been registered so far (set to true
   // once the first task is registered).
   bool did_register_task_ GUARDED_BY(lock_) = false;
-  bool is_respecting_modern_trim_;
+  bool supports_modern_trim_;
 };
 
 }  // namespace base::android

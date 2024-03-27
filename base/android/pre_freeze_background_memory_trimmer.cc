@@ -99,8 +99,8 @@ BASE_FEATURE(kOnPreFreezeMemoryTrim,
              FEATURE_DISABLED_BY_DEFAULT);
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
-    : is_respecting_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
-                                 SDK_VERSION_U) {}
+    : supports_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
+                            SDK_VERSION_U) {}
 
 // static
 PreFreezeBackgroundMemoryTrimmer& PreFreezeBackgroundMemoryTrimmer::Instance() {
@@ -112,7 +112,7 @@ void PreFreezeBackgroundMemoryTrimmer::PostMetricsTask(
     std::optional<uint64_t> pmf_before) {
   // PreFreeze is only for Android U and greater, so no need to record metrics
   // for older versions.
-  if (!IsRespectingModernTrim()) {
+  if (!SupportsModernTrim()) {
     return;
   }
 
@@ -152,7 +152,7 @@ void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskInternal(
     base::OnceClosure task,
     base::TimeDelta delay) {
   // Preserve previous behaviour on versions before Android U.
-  if (!IsRespectingModernTrim()) {
+  if (!SupportsModernTrim()) {
     task_runner->PostDelayedTask(from_here, std::move(task), delay);
     return;
   }
@@ -218,8 +218,7 @@ void PreFreezeBackgroundMemoryTrimmer::OnPreFreezeInternal() {
     PostMetricsTask(GetPrivateMemoryFootprint());
   }
 
-  if (!IsRespectingModernTrim() ||
-      !base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim)) {
+  if (!ShouldUseModernTrim()) {
     return;
   }
 
@@ -248,20 +247,20 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterBackgroundTaskInternal(
 }
 
 // static
-bool PreFreezeBackgroundMemoryTrimmer::IsRespectingModernTrim() {
-  return Instance().is_respecting_modern_trim_;
+bool PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim() {
+  return Instance().supports_modern_trim_;
 }
 
 // static
 bool PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim() {
-  return IsRespectingModernTrim() &&
+  return SupportsModernTrim() &&
          base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim);
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::SetIsRespectingModernTrimForTesting(
-    bool is_respecting) {
-  Instance().is_respecting_modern_trim_ = is_respecting;
+void PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(
+    bool is_supported) {
+  Instance().supports_modern_trim_ = is_supported;
 }
 
 size_t PreFreezeBackgroundMemoryTrimmer::

@@ -42,7 +42,7 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
   }
 
   void SetUp() override {
-    PreFreezeBackgroundMemoryTrimmer::SetIsRespectingModernTrimForTesting(true);
+    PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(true);
     ResetGlobalCounter();
   }
 
@@ -60,7 +60,7 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
 };
 
 TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeDisabled) {
-  PreFreezeBackgroundMemoryTrimmer::SetIsRespectingModernTrimForTesting(false);
+  PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(false);
 
   PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
       SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
