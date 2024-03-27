@@ -239,7 +239,7 @@ As of 2022, PartitionAlloc-Everywhere is supported on
 *   macOS
 *   Fuchsia
 
-[max-bucket-comment]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h;l=345;drc=667e6b001f438521e1c1a1bc3eabeead7aaa1f37
-[pa-thread-cache]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/thread_cache.h
+[max-bucket-comment]: https://source.chromium.org/search?q=-file:third_party%2F(angle%7Cdawn)%20file:partition_alloc_constants.h%20symbol:kMaxBucketed$&ss=chromium
+[pa-thread-cache]: https://source.chromium.org/search?q=-file:third_party%2F(angle%7Cdawn)%20file:partition_alloc/thread_cache.h&ss=chromium
 [v8-sandbox]: https://docs.google.com/document/d/1FM4fQmIhEqPG8uGp5o9A-mnPB5BOeScZYpkHjo0KKA8/preview#
 [v8-cfi]: https://docs.google.com/document/d/1O2jwK4dxI3nRcOJuPYkonhTkNQfbmwdvxQMyXgeaRHo/preview#

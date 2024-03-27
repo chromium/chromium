@@ -111,7 +111,7 @@ partition page that holds metadata (32B struct per partition page).
     * Although only five colors are shown, in reality, a super page holds
       tens of slot spans, some of which belong to the same bucket.
 * The system page that holds metadata tracks each partition page with one 32B
-  [`PartitionPage` struct][PartitionPage], which is either
+  [`PartitionPageMetadata` struct][PartitionPage], which is either
     * a [`SlotSpanMetadata`][SlotSpanMetadata] ("v"s in the diagram) or
     * a [`SubsequentPageMetadata`][SubsequentPageMetadata] ("+"s in the
       diagram).
@@ -197,7 +197,7 @@ the inaccuracy can't happen in the other direction, i.e. an active span can only
 be on the active list, and an empty span can only be on the active or empty
 list.
 
-[PartitionPage]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=314;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
-[SlotSpanMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=120;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
-[SubsequentPageMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=295;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
-[payload-start]: https://source.chromium.org/chromium/chromium/src/+/35b2deed603dedd4abb37f204d516ed62aa2b85c:base/allocator/partition_allocator/src/partition_alloc/partition_page.h;l=454
+[PartitionPage]: https://source.chromium.org/search?q=-file:third_party/(angle|dawn)%20class:PartitionPageMetadata%20file:partition_page.h&ss=chromium
+[SlotSpanMetadata]: https://source.chromium.org/search?q=-file:third_party/(angle|dawn)%20class:SlotSpanMetadata%20file:partition_page.h&ss=chromium
+[SubsequentPageMetadata]: https://source.chromium.org/search?q=-file:third_party/(angle|dawn)%20class:SubsequentPageMetadata%20file:partition_page.h&ss=chromium
+[payload-start]: https://source.chromium.org/search?q=-file:third_party%2F(angle%7Cdawn)%20content:SuperPagePayloadBegin%20file:partition_page.h&ss=chromium
