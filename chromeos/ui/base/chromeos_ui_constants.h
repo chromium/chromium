@@ -36,6 +36,16 @@ constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
 constexpr base::TimeDelta kDefaultFrameColorChangeAnimationDuration =
     base::Milliseconds(240);
 
+enum ViewID {
+  VIEW_ID_NONE = 0,
+
+  // ChromeOS IDs start above the range used in Chrome and Ash.
+  VIEW_ID_CHROMEOS_UI_START = 20000,
+
+  // Frame Caption Button Container used in browser and app frames.
+  VIEW_ID_CAPTION_BUTTON_CONTAINER,
+};
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_

@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -216,6 +217,8 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
     : views::AnimationDelegateViews(frame->GetRootView()), frame_(frame) {
+  SetID(ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
+
   auto default_caption_button_model =
       std::make_unique<DefaultCaptionButtonModel>(frame,
                                                   is_close_button_enabled);
