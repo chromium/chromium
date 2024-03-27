@@ -148,7 +148,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 // Configures the text input dedicated for the group name.
 - (UITextField*)configuredTabGroupNameTextFieldInput {
   UITextField* tabGroupTextField = [[UITextField alloc] init];
-  tabGroupTextField.textColor = [UIColor colorNamed:kSolidWhiteColor];
+  tabGroupTextField.textColor = [UIColor colorNamed:kSolidBlackColor];
   tabGroupTextField.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleLargeTitle];
   tabGroupTextField.adjustsFontForContentSizeCategory = YES;
@@ -229,7 +229,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIColor* textColor = isCompact ? [UIColor colorNamed:kBlue600Color]
-                                 : [UIColor colorNamed:kSolidWhiteColor];
+                                 : [UIColor colorNamed:kSolidBlackColor];
 
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
