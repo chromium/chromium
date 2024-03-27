@@ -51,3 +51,33 @@ source_set("unit_tests") {
     "//ios/web/public/test",
   ]
 }
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "upgrade_signin_promo_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/ios/browser:features",
+    "//components/sync/base:features",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/unified_consent:constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/two_screens_signin/two_screens_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;

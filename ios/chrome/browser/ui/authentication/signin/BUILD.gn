@@ -69,7 +69,6 @@ source_set("signin_impl") {
     "//ios/chrome/browser/ui/authentication/signin/signin_history_sync",
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication",
     "//ios/chrome/browser/ui/authentication/signin/two_screens_signin",
-    "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
   ]
@@ -118,7 +117,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
-    "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//net",
