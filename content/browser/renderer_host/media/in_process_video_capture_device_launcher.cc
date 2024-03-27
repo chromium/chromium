@@ -82,12 +82,12 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
 // The maximum number of video frame buffers in-flight at any one time. This
 // value should be based on the logical capacity of the capture pipeline, and
 // not on hardware performance.
 const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
-
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kScreenCaptureKitMac,
