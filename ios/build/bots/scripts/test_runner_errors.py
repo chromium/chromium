@@ -17,10 +17,9 @@ class IOSRuntimeHandlingError(Error):
 class XcodeEnumerateTestsError(Error):
   """Xcodebuild failed to enumerate test methods present in the EG test app"""
 
-  def __init__(self, returncode, error):
+  def __init__(self, error):
     super(XcodeEnumerateTestsError, self).__init__(
-        f'Xcodebuild failed to enumerate test methods, return code: '
-        f'{returncode}\n{error}')
+        f'Xcodebuild failed to enumerate test methods. Error: \n{error}')
 
 
 class XcodeInstallError(Error):

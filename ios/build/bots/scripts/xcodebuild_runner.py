@@ -368,42 +368,50 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
   def fetch_test_names(self,
                        include_disabled: bool = False) -> List[Tuple[str, str]]:
     xctestrun = self._create_xctest_run_enum_tests(include_disabled)
+    all_test_classes = []
+    error_message, stdout = "", ""
+    num_attempts = 4
+    for attempt in range(num_attempts):
+      enumerate_tests_json = os.path.join(
+          os.path.abspath(self.out_dir),
+          'enumerate_tests_%d.json' % int(time.time()))
 
-    enumerate_tests_json = os.path.join(
-        os.path.abspath(self.out_dir),
-        'enumerate_tests_%d.json' % int(time.time()))
+      cmd = [
+          "xcodebuild", "test-without-building", "-enumerate-tests",
+          "-xctestrun", xctestrun, "-destination",
+          'id=%s' % self.udid, "-test-enumeration-format", "json",
+          "-test-enumeration-output-path", enumerate_tests_json
+      ]
+      LOGGER.info(cmd)
 
-    cmd = [
-        "xcodebuild", "test-without-building", "-enumerate-tests", "-xctestrun",
-        xctestrun, "-destination",
-        'id=%s' % self.udid, "-test-enumeration-format", "json",
-        "-test-enumeration-output-path", enumerate_tests_json
-    ]
+      start = time.perf_counter()
+      stdout = subprocess.check_output(
+          cmd, stderr=subprocess.STDOUT).decode('utf-8')
+      end = time.perf_counter()
+      elapsed = end - start
+      LOGGER.info(f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
+                  f'{num_attempts}) completed in {elapsed:.2f} seconds')
 
-    LOGGER.info(cmd)
-    start = time.perf_counter()
-    stdout = subprocess.check_output(
-        cmd, stderr=subprocess.STDOUT).decode('utf-8')
-    end = time.perf_counter()
-    elapsed = end - start
-    LOGGER.info(
-        f'xcodebuild -enumerate-tests completed in {elapsed:.2f} seconds')
+      with open(enumerate_tests_json, "r") as f:
+        json_output = json.load(f)
 
-    with open(enumerate_tests_json, "r") as f:
-      json_output = json.load(f)
-
-    if 'errors' in json_output.keys() and json_output['errors']:
-      error_message = '\n'.join(json_output['errors'])
-      raise test_runner_errors.XcodeEnumerateTestsError(0, error_message)
-
-    all_test_names = []
-    all_test_classes = json_output['values'][0]['children'][0]['children']
+      if 'errors' in json_output.keys() and json_output['errors']:
+        error_message = '\n'.join(json_output['errors'])
+        LOGGER.error(error_message)
+      else:
+        all_test_classes = json_output['values'][0]['children'][0]['children']
+        if all_test_classes:
+          break
 
     # on certain occasions -enumerate-tests will return code 0 and have an empty
-    # "errors" list in its json output, but still have failed
-    if not all_test_classes:
-      raise test_runner_errors.XcodeEnumerateTestsError(0, stdout)
+    # "errors" list in its json output, but still have failed, in which case
+    # all_test_classes will be empty
+    if error_message:
+      raise test_runner_errors.XcodeEnumerateTestsError(error_message)
+    elif not all_test_classes:
+      raise test_runner_errors.XcodeEnumerateTestsError(stdout)
 
+    all_test_names = []
     for test_class in all_test_classes:
       test_class_name = test_class['name']
       test_methods = test_class['children']
