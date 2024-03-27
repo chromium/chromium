@@ -38,10 +38,6 @@ class PrintCompositeClient
   PrintCompositeClient& operator=(const PrintCompositeClient&) = delete;
   ~PrintCompositeClient() override;
 
-  // Determine the document format type to be generated when compositing full
-  // document.
-  static mojom::PrintCompositor::DocumentType GetDocumentType();
-
   // content::WebContentsObserver
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 

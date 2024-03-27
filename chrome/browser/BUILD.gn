@@ -6973,6 +6973,8 @@ static_library("browser") {
     sources += [
       "policy/printing_restrictions_policy_handler.cc",
       "policy/printing_restrictions_policy_handler.h",
+      "printing/print_compositor_util.cc",
+      "printing/print_compositor_util.h",
       "printing/print_error_dialog.cc",
       "printing/print_error_dialog.h",
       "printing/print_job.cc",
@@ -7008,6 +7010,8 @@ static_library("browser") {
         "printing/pdf_to_emf_converter.cc",
         "printing/pdf_to_emf_converter.h",
         "printing/printer_manager_dialog_win.cc",
+        "printing/xps_features.cc",
+        "printing/xps_features.h",
       ]
     }
     if (is_mac) {

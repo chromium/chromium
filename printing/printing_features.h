@@ -35,15 +35,6 @@ COMPONENT_EXPORT(PRINTING_BASE)
 BASE_DECLARE_FEATURE(kReadPrinterCapabilitiesWithXps);
 COMPONENT_EXPORT(PRINTING_BASE) BASE_DECLARE_FEATURE(kUseXpsForPrinting);
 COMPONENT_EXPORT(PRINTING_BASE) BASE_DECLARE_FEATURE(kUseXpsForPrintingFromPdf);
-
-// Helper function to determine if there is any print path which could require
-// the use of XPS print capabilities.
-COMPONENT_EXPORT(PRINTING_BASE) bool IsXpsPrintCapabilityRequired();
-
-// Helper function to determine if printing of a document from a particular
-// source should be done using XPS printing API instead of with GDI.
-COMPONENT_EXPORT(PRINTING_BASE)
-bool ShouldPrintUsingXps(bool source_is_pdf);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

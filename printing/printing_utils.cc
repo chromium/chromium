@@ -167,14 +167,4 @@ bool LooksLikePdf(base::span<const uint8_t> maybe_pdf_data) {
          std::memcmp(maybe_pdf_data.data(), "%PDF-", 5) == 0;
 }
 
-mojom::SkiaDocumentType GetPrintDocumentType(bool source_is_pdf) {
-#if BUILDFLAG(IS_WIN)
-  return printing::features::ShouldPrintUsingXps(source_is_pdf)
-             ? mojom::SkiaDocumentType::kXPS
-             : mojom::SkiaDocumentType::kPDF;
-#else
-  return mojom::SkiaDocumentType::kPDF;
-#endif
-}
-
 }  // namespace printing

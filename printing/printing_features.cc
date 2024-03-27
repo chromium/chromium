@@ -57,29 +57,6 @@ BASE_FEATURE(kUseXpsForPrinting,
 BASE_FEATURE(kUseXpsForPrintingFromPdf,
              "UseXpsForPrintingFromPdf",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsXpsPrintCapabilityRequired() {
-  // Require XPS printing to be used out-of-process.
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  return features::kEnableOopPrintDriversJobPrint.Get() &&
-         (base::FeatureList::IsEnabled(features::kUseXpsForPrinting) ||
-          base::FeatureList::IsEnabled(features::kUseXpsForPrintingFromPdf));
-#else
-  return false;
-#endif
-}
-
-bool ShouldPrintUsingXps(bool source_is_pdf) {
-  // Require XPS to be used out-of-process.
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  return features::kEnableOopPrintDriversJobPrint.Get() &&
-         base::FeatureList::IsEnabled(source_is_pdf
-                                          ? features::kUseXpsForPrintingFromPdf
-                                          : features::kUseXpsForPrinting);
-#else
-  return false;
-#endif
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

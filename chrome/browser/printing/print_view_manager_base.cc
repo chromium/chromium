@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/print_compositor_util.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -52,7 +53,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
-#include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -64,6 +64,10 @@
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/printing/xps_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -301,7 +305,7 @@ void PrintViewManagerBase::PrintDocument(
 #if BUILDFLAG(IS_WIN)
   const bool source_is_pdf =
       !print_job_->document()->settings().is_modifiable();
-  if (!printing::features::ShouldPrintUsingXps(source_is_pdf)) {
+  if (!ShouldPrintUsingXps(source_is_pdf)) {
     // Print using GDI, which first requires conversion to EMF.
     print_job_->StartConversionToNativeFormat(
         print_data, page_size, content_area, offsets,
@@ -624,7 +628,7 @@ void PrintViewManagerBase::DidPrintDocument(
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->CompositeDocument(
         params->document_cookie, GetCurrentTargetFrame(), content,
-        ui::AXTreeUpdate(), PrintCompositeClient::GetDocumentType(),
+        ui::AXTreeUpdate(), GetCompositorDocumentType(),
         base::BindOnce(&PrintViewManagerBase::OnComposeDocumentDone,
                        weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
                        params->page_size, params->content_area,

@@ -35,11 +35,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/printing/xps_features.h"
 #include "printing/printed_page_win.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "printing/printing_features.h"
 #endif
 
 using content::BrowserThread;
@@ -169,7 +166,7 @@ void PrintJobWorker::OnNewPage() {
 #if BUILDFLAG(IS_WIN)
   const bool source_is_pdf =
       !print_job_->document()->settings().is_modifiable();
-  if (!features::ShouldPrintUsingXps(source_is_pdf)) {
+  if (!ShouldPrintUsingXps(source_is_pdf)) {
     // Using the Windows GDI print API.
     if (!OnNewPageHelperGdi())
       return;

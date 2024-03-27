@@ -74,21 +74,6 @@ PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
 
 PrintCompositeClient::~PrintCompositeClient() {}
 
-// static
-mojom::PrintCompositor::DocumentType PrintCompositeClient::GetDocumentType() {
-  // Using the compositor already means that the source is modifiable (e.g., not
-  // PDF).
-  mojom::SkiaDocumentType skia_document_type =
-      GetPrintDocumentType(/*source_is_pdf=*/false);
-#if BUILDFLAG(IS_WIN)
-  if (skia_document_type == mojom::SkiaDocumentType::kXPS) {
-    return mojom::PrintCompositor::DocumentType::kXPS;
-  }
-#endif
-  CHECK_EQ(skia_document_type, mojom::SkiaDocumentType::kPDF);
-  return mojom::PrintCompositor::DocumentType::kPDF;
-}
-
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (document_cookie_ == 0) {

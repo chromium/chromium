@@ -30,6 +30,7 @@
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
+#include "chrome/browser/printing/print_compositor_util.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
@@ -972,8 +973,7 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
     return;
 
   client->PrepareToCompositeDocument(
-      document_cookie, render_frame_host,
-      PrintCompositeClient::GetDocumentType(),
+      document_cookie, render_frame_host, GetCompositorDocumentType(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PrintPreviewUI::OnPrepareForDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr(), request_id),
