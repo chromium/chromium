@@ -428,11 +428,11 @@ const FeatureEntry::Choice kEnablePasswordSharingChoices[] = {
 const FeatureEntry::Choice kEnableSearchEngineChoice[] = {
     {"Default", "", ""},
     {"Enabled", switches::kEnableFeatures,
-     "SearchEngineChoice,SearchEngineChoiceTrigger"},
+     "SearchEngineChoiceTrigger:for_tagged_profiles_only/false"},
     {"Disabled", switches::kDisableSearchEngineChoiceScreen, ""},
     {"Enabled - WithForcedEeaCountry", switches::kEnableFeatures,
-     "SearchEngineChoice,SearchEngineChoiceTrigger:with_force_eea_country/"
-     "true"},
+     "SearchEngineChoiceTrigger:with_force_eea_country/true/"
+     "for_tagged_profiles_only/false"},
 };
 
 #if BUILDFLAG(IS_WIN)
