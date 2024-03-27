@@ -156,7 +156,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
       &OnGotPrefetchToServe, frame_tree_node_id_, tentative_resource_request,
       std::move(get_prefetch_callback)));
   prefetch_service->GetPrefetchToServe(
-      PrefetchContainer::Key(initiator_document_token_.value(),
+      PrefetchContainer::Key(initiator_document_token_,
                              tentative_resource_request.url),
       serving_page_metrics_container_, prefetch_match_resolver);
 }

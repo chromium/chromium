@@ -110,11 +110,18 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
   // Defines the key to uniquely identify a prefetch.
+  // DocumentToken will be provided from initiating documents on
+  // renderer-initaited prefetches, while it will be nullopt when
+  // browser-initiated ones.
+  // Please see the doc on crbug.com/40946257 for more context.
+  // TODO(crbug.com/40942681): If kPrefetchBrowserInitiatedTriggers is enabeld,
+  // NetworkIsolationKey will be used instead of DocumentToken.
   class CONTENT_EXPORT Key {
    public:
     Key() = delete;
     Key(net::NetworkIsolationKey nik, GURL prefetch_url);
-    Key(blink::DocumentToken referring_document_token, GURL prefetch_url);
+    Key(std::optional<blink::DocumentToken> referring_document_token,
+        GURL prefetch_url);
     ~Key();
 
     Key(const Key&);
@@ -132,7 +139,8 @@ class CONTENT_EXPORT PrefetchContainer {
     const GURL& prefetch_url() const { return prefetch_url_; }
 
     Key WithNewUrl(const GURL& new_url) const {
-      return Key(referring_document_token_or_nik_, new_url);
+      return absl::visit([&](const auto& e) { return Key(e, new_url); },
+                         referring_document_token_or_nik_);
     }
 
     bool NonUrlPartIsSame(const Key& other) const {
@@ -141,14 +149,11 @@ class CONTENT_EXPORT PrefetchContainer {
     }
 
    private:
-    Key(absl::variant<blink::DocumentToken, net::NetworkIsolationKey>
-            referring_document_token_or_nik,
-        GURL prefetch_url);
-
     friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                                    const Key& prefetch_key);
 
-    const absl::variant<blink::DocumentToken, net::NetworkIsolationKey>
+    const absl::variant<std::optional<blink::DocumentToken>,
+                        net::NetworkIsolationKey>
         referring_document_token_or_nik_;
     const GURL prefetch_url_;
   };

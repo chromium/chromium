@@ -479,19 +479,8 @@ PrefetchContainer::~PrefetchContainer() {
 }
 
 PrefetchContainer::Key::Key(
-    absl::variant<blink::DocumentToken, net::NetworkIsolationKey>
-        referring_document_token_or_nik,
+    std::optional<blink::DocumentToken> referring_document_token,
     GURL prefetch_url)
-    : referring_document_token_or_nik_(
-          std::move(referring_document_token_or_nik)),
-      prefetch_url_(std::move(prefetch_url)) {
-  CHECK_EQ(absl::holds_alternative<net::NetworkIsolationKey>(
-               referring_document_token_or_nik_),
-           PrefetchNIKScopeEnabled());
-}
-
-PrefetchContainer::Key::Key(blink::DocumentToken referring_document_token,
-                            GURL prefetch_url)
     : referring_document_token_or_nik_(std::move(referring_document_token)),
       prefetch_url_(std::move(prefetch_url)) {
   CHECK(!PrefetchNIKScopeEnabled());
@@ -1457,9 +1446,10 @@ std::ostream& operator<<(std::ostream& ostream,
 std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer::Key& prefetch_key) {
   ostream << "(";
-  if (const auto* token = absl::get_if<blink::DocumentToken>(
+  if (const auto* token = absl::get_if<std::optional<blink::DocumentToken>>(
           &prefetch_key.referring_document_token_or_nik_)) {
-    ostream << *token;
+    token->has_value() ? ostream << token->value()
+                       : ostream << "(empty document token)";
   } else {
     ostream << absl::get<net::NetworkIsolationKey>(
                    prefetch_key.referring_document_token_or_nik_)
