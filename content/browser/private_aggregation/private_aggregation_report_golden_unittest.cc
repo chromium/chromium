@@ -25,6 +25,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
@@ -128,6 +129,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
 
     AggregatableReportRequest actual_report =
         PrivateAggregationHost::GenerateReportRequest(
+            /*timeout_or_disconnect_timer=*/base::ElapsedTimer(),
             std::move(debug_details),
             /*scheduled_report_time=*/
             base::Time::FromMillisecondsSinceUnixEpoch(1234486400000),

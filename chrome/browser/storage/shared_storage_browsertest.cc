@@ -131,6 +131,10 @@ constexpr char kTimingRemainingBudgetHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.RemainingBudget";
 constexpr char kPrivateAggregationHostPipeResultHistogram[] =
     "PrivacySandbox.PrivateAggregation.Host.PipeResult";
+constexpr char
+    kPrivateAggregationHostTimeToGenerateReportRequestWithContextIdHistogram[] =
+        "PrivacySandbox.PrivateAggregation.Host."
+        "TimeToGenerateReportRequestWithContextId";
 
 const double kBudgetAllowed = 5.0;
 
@@ -3174,6 +3178,10 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
           ? content::GetPrivateAggregationHostPipeReportSuccessValue()
           : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
+
+  histogram_tester_.ExpectTotalCount(
+      kPrivateAggregationHostTimeToGenerateReportRequestWithContextIdHistogram,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
@@ -3203,6 +3211,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
           ? content::GetPrivateAggregationHostPipeReportSuccessValue()
           : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
+  histogram_tester_.ExpectTotalCount(
+      kPrivateAggregationHostTimeToGenerateReportRequestWithContextIdHistogram,
+      0);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
@@ -3232,6 +3243,9 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
           ? content::GetPrivateAggregationHostPipeReportSuccessValue()
           : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
+  histogram_tester_.ExpectTotalCount(
+      kPrivateAggregationHostTimeToGenerateReportRequestWithContextIdHistogram,
+      SuccessExpected() ? 1 : 0);
 }
 
 class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {

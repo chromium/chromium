@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -64,11 +65,15 @@ auto GenerateAndSaveReportRequest(
       };
 }
 
-constexpr char kPipeResultHistogram[] =
+constexpr std::string_view kPipeResultHistogram =
     "PrivacySandbox.PrivateAggregation.Host.PipeResult";
 
-constexpr char kTimeoutResultHistogram[] =
+constexpr std::string_view kTimeoutResultHistogram =
     "PrivacySandbox.PrivateAggregation.Host.TimeoutResult";
+
+constexpr std::string_view kTimeToGenerateReportRequestWithContextIdHistogram =
+    "PrivacySandbox.PrivateAggregation.Host."
+    "TimeToGenerateReportRequestWithContextId";
 
 class PrivateAggregationHostTest : public testing::Test {
  public:
@@ -721,10 +726,18 @@ TEST_F(PrivateAggregationHostTest, ContextIdSet_ReflectedInSingleReport) {
       /*aggregation_coordinator_origin=*/std::nullopt,
       remote.BindNewPipeAndPassReceiver()));
 
+  constexpr base::TimeDelta kTimeToGenerateReportRequest =
+      base::Milliseconds(123);
+
   std::optional<AggregatableReportRequest> validated_request;
   EXPECT_CALL(mock_callback_,
               Run(_, _, _, BudgetDeniedBehavior::kSendNullReport))
-      .WillOnce(GenerateAndSaveReportRequest(&validated_request));
+
+      .WillOnce(testing::DoAll(
+          [&] {
+            task_environment_.FastForwardBy(kTimeToGenerateReportRequest);
+          },
+          GenerateAndSaveReportRequest(&validated_request)));
 
   {
     std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
@@ -747,6 +760,10 @@ TEST_F(PrivateAggregationHostTest, ContextIdSet_ReflectedInSingleReport) {
   histogram.ExpectUniqueSample(
       kPipeResultHistogram, PrivateAggregationHost::PipeResult::kReportSuccess,
       1);
+
+  histogram.ExpectUniqueTimeSample(
+      kTimeToGenerateReportRequestWithContextIdHistogram,
+      kTimeToGenerateReportRequest, 1);
 }
 
 TEST_F(PrivateAggregationHostTest,
@@ -805,6 +822,8 @@ TEST_F(PrivateAggregationHostTest,
 }
 
 TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
+  base::HistogramTester histogram;
+
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -843,6 +862,10 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
     remote.reset();
     host_->FlushReceiverSetForTesting();
   }
+
+  // This histogram should only be recorded when there is a context ID.
+  histogram.ExpectTotalCount(kTimeToGenerateReportRequestWithContextIdHistogram,
+                             0);
 }
 
 TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {

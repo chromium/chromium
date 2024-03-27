@@ -1078,6 +1078,23 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.PrivateAggregation.Host.TimeToGenerateReportRequestWithContextId"
+    units="ms" expires_after="2024-09-21">
+  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <summary>
+    Records the duration of time that elapses from the moment that
+    PrivateAggregationHost is notified of a timeout or mojo pipe disconnection
+    until it generates a report request. It is recorded just before passing the
+    request to the aggregation_service layer. It is only recorded for requests
+    with a context ID; corresponding reports will be sent with a reduced delay
+    and thus may inadvertently reveal more information via their send time. The
+    intent is to capture the duration of time spent in shared resources such as
+    PrivateAggregationBudgeter.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.PrivateAggregation.Manager.RequestResult"
     enum="PrivacySandboxPrivateAggregationManagerRequestResult"
     expires_after="never">

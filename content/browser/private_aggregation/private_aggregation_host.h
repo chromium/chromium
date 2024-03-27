@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_HOST_H_
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/common/content_export.h"
@@ -133,6 +135,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   struct ReceiverContext;
 
   static AggregatableReportRequest GenerateReportRequest(
+      base::ElapsedTimer timeout_or_disconnect_timer,
       blink::mojom::DebugModeDetailsPtr debug_mode_details,
       base::Time scheduled_report_time,
       base::Uuid report_id,

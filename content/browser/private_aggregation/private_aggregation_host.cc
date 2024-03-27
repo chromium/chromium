@@ -278,6 +278,7 @@ void PrivateAggregationHost::ContributeToHistogram(
 }
 
 AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
+    base::ElapsedTimer timeout_or_disconnect_timer,
     blink::mojom::DebugModeDetailsPtr debug_mode_details,
     base::Time scheduled_report_time,
     base::Uuid report_id,
@@ -329,6 +330,13 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
 
   // All failure cases should've been handled by earlier validation code.
   CHECK(report_request.has_value());
+
+  if (context_id.has_value()) {
+    base::UmaHistogramTimes(
+        "PrivacySandbox.PrivateAggregation.Host."
+        "TimeToGenerateReportRequestWithContextId",
+        timeout_or_disconnect_timer.Elapsed());
+  }
 
   return std::move(report_request).value();
 }
@@ -406,6 +414,8 @@ void PrivateAggregationHost::OnReceiverDisconnected() {
 void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
     ReceiverContext& receiver_context,
     base::TimeDelta remaining_timeout) {
+  base::ElapsedTimer timeout_or_disconnect_timer;
+
   const url::Origin& reporting_origin = receiver_context.worklet_origin;
   CHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin),
         base::NotFatalUntil::M128);
@@ -455,7 +465,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
        receiver_context.timeout_enabled);
 
   ReportRequestGenerator report_request_generator = base::BindOnce(
-      GenerateReportRequest, std::move(receiver_context.report_debug_details),
+      GenerateReportRequest, std::move(timeout_or_disconnect_timer),
+      std::move(receiver_context.report_debug_details),
       /*scheduled_report_time=*/
       should_not_delay_this_report ? report_issued_time
                                    : GetScheduledReportTime(report_issued_time),
