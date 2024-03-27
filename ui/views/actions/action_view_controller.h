@@ -15,16 +15,8 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_export.h"
 
-/////////////////////////////////////////////////////////////////////////////
 // ActionViewController is the main view controller to be instantiated or
-// subclassed. It should outlive all the views it manages. Call
-// CreateActionViewRelationship(..) to link a view to an action item. Under
-// the hood the ActionViewController creates the appropriate templated
-// ActionViewControllerTemplate for all classes of views.
-//
-// To allow ActionViewController to support a new view class, implement an
-// ActionViewInterface class for the view class. See action_view_interface.h.
-// ui/views/controls/button/button.* has a concrete example.
+// subclassed. See README.md for more details.
 namespace views {
 
 class View;

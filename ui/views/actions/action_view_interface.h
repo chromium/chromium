@@ -16,42 +16,19 @@ class ActionItem;
 
 namespace views {
 
-// ///////////////////////////////////////////////////////////////////////////
-// How to create an ActionViewInterface:
-// ViewType: Type of your View Class
-
-// Step 1: Override View::GetActionViewInterface
-
-// std::unique_ptr<ActionViewInterface> ViewType::GetActionViewInterface()
-// override {
-//   return std::make_unique<ViewTypeActionViewInterface>(this);
-// }
-
-// Step 2: Create the ActionViewInterface
-
-// Instead of BaseActionViewInterface, subclass the ActionViewInterface subclass
-// associated with the parent view class to get action behaviors of the parent
-// class.
-
-// class ViewTypeActionViewInterface : public BaseActionViewInterface {
-//  public:
-//   explicit ViewTypeActionViewInterface(ViewType* action_view)
-//      : BaseActionViewInterface(action_view), action_view_(action_view) {}
-//   ~ViewTypeActionViewInterface() override = default;
-//
-//   // optional: override virtual methods.
-
-//  private:
-//   raw_ptr<ViewType> action_view_;
-// };
+// See README.md for how to create an ActionViewInterface.
 class VIEWS_EXPORT ActionViewInterface {
  public:
   ActionViewInterface() = default;
   virtual ~ActionViewInterface() = default;
+  // Make any changes to the view when the ActionItem changes.
   virtual void ActionItemChangedImpl(actions::ActionItem* action_item) {}
+  // Used to specify how the view can trigger the action.
   virtual void LinkActionInvocationToView(
       base::RepeatingClosure trigger_action_callback) {}
+  // Triggers the action associated with the ActionItem.
   virtual void InvokeActionImpl(actions::ActionItem* action_item);
+  // Respond to any view changes such as updating ActinoItem properties.
   virtual void OnViewChangedImpl(actions::ActionItem* action_item) {}
 };
 
