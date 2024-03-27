@@ -1,0 +1,98 @@
+name: Docker Build
+
+on: [push]
+
+jobs:
+  docker-build-image:
+    runs-on: ubuntu-latest
+
+    env:
+      docker_tag: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Dump context
+      uses: crazy-max/ghaction-dump-context@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Pull just in case
+      run: docker pull ghcr.io/${{ github.repository }}/linux || true
+    - name: Build containers using docker-compose
+      run: docker-compose build
+    - name: Re-tag
+      run: docker tag ghcr.io/${{ github.repository }}/linux:latest ghcr.io/${{ github.repository }}/linux:${{ env.docker_tag }}
+    - name: Work
+      run: docker push ghcr.io/${{ github.repository }}/linux:${{ env.docker_tag }}
+    outputs:
+      docker_tag: ghcr.io/${{ github.repository }}/linux:${{ env.docker_tag }}
+
+  build:
+    needs: [docker-build-image]
+    runs-on: ubuntu-latest-m # Larger Runner with 150gb ssd
+    container: ${{ needs.docker-build-image.outputs.docker_tag }}
+    env:
+      DEPOT_TOOLS_UPDATE: 0
+      DEPOT_TOOLS_REPORT_BUILD: 0
+      DEPOT_TOOLS_COLLECT_METRICS: 0
+      DEPOT_TOOLS_METRICS: 0
+      SCCACHE_GCS_KEY: ${{ secrets.SCCACHE_GCS_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: src
+      - name: Dump context
+        uses: crazy-max/ghaction-dump-context@v2
+      - name: Get depot tools
+        run: git clone -b dev https://github.com/kaidokert/depot_tools.git
+      - name: Add directory to PATH
+        run: echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
+      - name: Generate gclient file
+        run: gclient config --name=src https://github.com/${{ github.repository }}
+      - name: Gclient sync
+        run: gclient sync -v --shallow --no-history -r ${{ github.sha }}
+      - name: DF
+        run: df -h
+      - name: Du
+        run: du -ht 500M
+      - name: Place sccache key
+        run: echo "$SCCACHE_GCS_KEY" | base64 -d > /root/key.json
+      - name: Cat the key
+        run: cat /root/key.json
+      - name: sccache check
+        run: sccache -s
+      - name: gn gen
+        run: |
+          cd src
+          gn gen out/Default --args='cc_wrapper="sccache"'
+      - name: ninja base_unittests
+        run: |
+          cd src
+          ninja -C out/Default base_unittests
+      - name: ninja sql_unittests
+        run: |
+          cd src
+          ninja -C out/Default sql_unittests
+      - name: ninja net_unittests
+        run: |
+          cd src
+          ninja -C out/Default net_unittests
+      - name: ninja url_unittests
+        run: |
+          cd src
+          ninja -C out/Default url_unittests
+      - name: ninja ipc_tests
+        run: |
+          cd src
+          ninja -C out/Default ipc_tests
+      - name: sccache check
+        run: sccache -s
+      - name: Any speed
+        run: echo Any speed

@@ -1,0 +1,19 @@
+name: pre-commit
+description: Runs pre-commit
+inputs:
+  base_ref:
+    description: "Ref to run from"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: python -m pip install pre-commit
+      shell: bash
+    - run: python -m pip freeze --local
+      shell: bash
+    - uses: actions/cache@v3
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+    - run: pre-commit run --show-diff-on-failure --color=always --all-files
+      shell: bash
