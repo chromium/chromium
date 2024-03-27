@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/chrome_elf/sha1/sha1.h"
@@ -100,7 +101,7 @@ DWORD WINAPI NotificationHandler(LPVOID parameter) {
 
   // Make a buffer big enough for any possible DrainLog call.
   uint32_t buffer_size = args->logs_expected * GetLogEntrySize(0);
-  auto buffer = std::unique_ptr<uint8_t[]>(new uint8_t[buffer_size]);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
   uint32_t bytes_written = 0;
 
   do {
@@ -108,8 +109,8 @@ DWORD WINAPI NotificationHandler(LPVOID parameter) {
             base::Milliseconds(kWaitTimeoutMs)))
       break;
 
-    bytes_written = DrainLog(&buffer[0], buffer_size, nullptr);
-    log_counter += GetLogCount(&buffer[0], bytes_written);
+    bytes_written = DrainLog(buffer.data(), buffer_size, nullptr);
+    log_counter += GetLogCount(buffer.data(), bytes_written);
   } while (log_counter < args->logs_expected);
 
   return (log_counter == args->logs_expected) ? 0 : 1;
@@ -138,13 +139,13 @@ TEST(ThirdParty, Logs) {
   DrainLog(nullptr, 0, &initial_log);
   ASSERT_TRUE(initial_log);
 
-  auto buffer = std::unique_ptr<uint8_t[]>(new uint8_t[initial_log]);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(initial_log);
   uint32_t remaining_log = 0;
-  uint32_t bytes_written = DrainLog(&buffer[0], initial_log, &remaining_log);
+  uint32_t bytes_written = DrainLog(buffer.data(), initial_log, &remaining_log);
   EXPECT_EQ(bytes_written, initial_log);
   EXPECT_EQ(remaining_log, uint32_t{0});
 
-  VerifyBuffer(&buffer[0], bytes_written);
+  VerifyBuffer(buffer.data(), bytes_written);
 
   DeinitLogs();
 }
@@ -207,14 +208,15 @@ TEST(ThirdParty, BlockedLogDuplicates) {
   DrainLog(nullptr, 0, &initial_log);
   ASSERT_TRUE(initial_log);
 
-  auto buffer = std::unique_ptr<uint8_t[]>(new uint8_t[initial_log]);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(initial_log);
   uint32_t remaining_log = 0;
-  uint32_t bytes_written = DrainLog(&buffer[0], initial_log, &remaining_log);
+  uint32_t bytes_written = DrainLog(buffer.data(), initial_log, &remaining_log);
   EXPECT_EQ(bytes_written, initial_log);
   EXPECT_EQ(remaining_log, uint32_t{0});
 
   // Validate that all of the logs have been drained.
-  EXPECT_EQ(GetLogCount(&buffer[0], bytes_written), std::size(kTestLogs) * 2);
+  EXPECT_EQ(GetLogCount(buffer.data(), bytes_written),
+            std::size(kTestLogs) * 2);
 
   // Now the real test.  Add the same log entries again, and expect that the
   // blocked logs will NOT be re-added and drained this time.
@@ -232,14 +234,14 @@ TEST(ThirdParty, BlockedLogDuplicates) {
   DrainLog(nullptr, 0, &initial_log);
   ASSERT_TRUE(initial_log);
 
-  buffer = std::unique_ptr<uint8_t[]>(new uint8_t[initial_log]);
+  buffer = base::HeapArray<uint8_t>::Uninit(initial_log);
   remaining_log = 0;
-  bytes_written = DrainLog(&buffer[0], initial_log, &remaining_log);
+  bytes_written = DrainLog(buffer.data(), initial_log, &remaining_log);
   EXPECT_EQ(bytes_written, initial_log);
   EXPECT_EQ(remaining_log, uint32_t{0});
 
   // Validate that only half of the logs have been drained.
-  EXPECT_EQ(GetLogCount(&buffer[0], bytes_written), std::size(kTestLogs));
+  EXPECT_EQ(GetLogCount(buffer.data(), bytes_written), std::size(kTestLogs));
 
   DeinitLogs();
 }
