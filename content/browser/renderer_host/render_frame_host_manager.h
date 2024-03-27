@@ -352,10 +352,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // delayed, and batched created later when
   // `BatchedProxyIPCSender::CreateAllProxies()` is called. The only
   // case where `batched_proxy_ipc_sender` is not null is when called by
-  // `FrameTree::CreateProxiesForSiteInstance()` in addition to
-  // `kConsolidatedIPCForProxyCreation` being enabled.
-  // TODO(peilinwang): consider refactoring this into 2 code paths if
-  // experiment shows promising results (https://crbug.com/1393697).
+  // `FrameTree::CreateProxiesForSiteInstance()`.
   void CreateRenderFrameProxy(
       SiteInstanceImpl* instance,
       const scoped_refptr<BrowsingContextState>& browsing_context_state,

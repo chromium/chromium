@@ -93,13 +93,6 @@ BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
              "CodeCacheDeletionWithoutFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, when creating new proxies for all nodes in a `FrameTree`, one
-// IPC is sent to create all child frame proxies instead of sending one IPC per
-// proxy.
-BASE_FEATURE(kConsolidatedIPCForProxyCreation,
-             "ConsolidatedIPCForProxyCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, event.movement is calculated in blink instead of in browser.
 BASE_FEATURE(kConsolidatedMovementXY,
              "ConsolidatedMovementXY",

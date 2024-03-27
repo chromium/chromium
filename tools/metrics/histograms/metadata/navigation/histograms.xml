@@ -810,18 +810,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.GetFrameHostForNavigation.Duration" units="ms"
-    expires_after="2024-09-01">
-  <owner>peilinwang@google.com</owner>
-  <owner>woa-performance-bugs+jank@google.com</owner>
-  <summary>
-    Measures the amount of time it takes to call
-    RenderFrameHostManager::GetFrameHostForNavigation(). Logged once per call to
-    RenderFrameHostManager::GetFrameHostForNavigation(), most often two times
-    per navigation.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.GetFrameHostForNavigationTime.InDidCreateNavigationRequest.IsHTTPOrHTTPS"
     units="microseconds" expires_after="2024-09-01">
