@@ -616,7 +616,7 @@ optimize_webui_in_files: See |in_files| in bundle_js().
 
 Other params:
 webui_context_type: See |webui_context_type| in webui_path_mappings(). Optional,
-                    defaults to "trusted".
+                    defaults to "relative".
 generate_grdp: Whether to generate grdp file instead of a grd file. Defaults to
                false.
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.

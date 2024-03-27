@@ -29,6 +29,7 @@ build_webui("build") {
   ]
 
   ts_composite = true
+  webui_context_type = "trusted"
 
   mojo_files_deps =
       [ "//content/browser/tracing/trace_report:mojo_bindings_ts__generator" ]

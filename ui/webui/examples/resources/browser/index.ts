@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
-import {Url as MojoUrl} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {
   DictionaryValue as mojoBase_mojom_DictionaryValue

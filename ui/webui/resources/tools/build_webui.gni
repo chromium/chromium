@@ -294,7 +294,7 @@ template("build_webui") {
       ts_deps = invoker.ts_deps
       visibility = [ ":build_ts" ]
 
-      webui_context_type = "trusted"
+      webui_context_type = "relative"
       if (defined(invoker.webui_context_type)) {
         webui_context_type = invoker.webui_context_type
       }
