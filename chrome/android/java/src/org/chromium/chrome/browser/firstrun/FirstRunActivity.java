@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.metrics.LowEntropySource;
@@ -167,9 +167,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             BooleanSupplier showHistorySync =
                     () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
             if (!showHistorySync.getAsBoolean()) {
-                HistorySyncUtils.recordHistorySyncNotShown(
-                        getProfileProviderSupplier().get().getOriginalProfile(),
-                        SigninAccessPoint.START_PAGE);
+                HistorySyncHelper historySyncHelper =
+                        HistorySyncHelper.getForProfile(
+                                getProfileProviderSupplier().get().getOriginalProfile());
+                historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.START_PAGE);
             }
             mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
         } else {

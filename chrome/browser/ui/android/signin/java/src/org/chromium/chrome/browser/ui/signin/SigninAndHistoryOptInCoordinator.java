@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -329,7 +329,8 @@ public class SigninAndHistoryOptInCoordinator
         Profile profile = mProfileSupplier.get();
         assert profile != null;
         if (!shouldShowHistorySync(profile)) {
-            HistorySyncUtils.recordHistorySyncNotShown(profile, mSigninAccessPoint);
+            HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
+            historySyncHelper.recordHistorySyncNotShown(mSigninAccessPoint);
             onFlowComplete();
             return;
         }
@@ -393,13 +394,14 @@ public class SigninAndHistoryOptInCoordinator
     }
 
     private boolean shouldShowHistorySync(Profile profile) {
-        if (HistorySyncUtils.didAlreadyOptIn(profile)) {
+        HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
+        if (historySyncHelper.didAlreadyOptIn()) {
             return false;
         }
-        if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)) {
+        if (historySyncHelper.isHistorySyncDisabledByPolicy()) {
             return false;
         }
-        return !HistorySyncUtils.isHistorySyncDisabledByCustodian(profile);
+        return !historySyncHelper.isHistorySyncDisabledByCustodian();
     }
 
     private void onFlowComplete() {

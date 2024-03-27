@@ -17,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
@@ -44,10 +43,10 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -56,14 +55,10 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.ViewUtils;
-
-import java.util.Set;
 
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -97,7 +92,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     private SigninAndHistoryOptInActivity mActivity;
     private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
 
-    @Mock private SyncService mSyncServiceMock;
+    @Mock private HistorySyncHelper mHistorySyncHelperMock;
 
     @Before
     public void setUp() {
@@ -108,6 +103,10 @@ public class SigninAndHistoryOptInIntegrationTest {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     FirstRunStatus.setFirstRunFlowComplete(true);
                 });
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
+        when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(false);
+        when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(false);
+        when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(false);
     }
 
     @Test
@@ -137,28 +136,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_historySyncManagedByCustodian() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of());
-        when(mSyncServiceMock.isTypeManagedByCustodian(anyInt())).thenReturn(true);
-        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
-
-        verifyBottomSheetAndSignin(accountInfo);
-
-        // Verify that the flow completion callback, which finishes the activity, is called.
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-    }
-
-    @Test
-    @MediumTest
-    public void testWithExistingAccount_signIn_syncDisabledByPolicy() {
-        when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
-        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+        when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(true);
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
 
@@ -176,9 +154,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_userAlreadyOptedIn() {
-        when(mSyncServiceMock.getSelectedTypes())
-                .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
-        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+        when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(true);
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
 
@@ -196,10 +172,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_historySyncManagedByPolicy() {
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of());
-        when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
-        when(mSyncServiceMock.isTypeManagedByPolicy(anyInt())).thenReturn(true);
-        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
+        when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(true);
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
 

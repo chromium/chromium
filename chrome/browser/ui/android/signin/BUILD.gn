@@ -94,9 +94,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/UMADialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncProperties.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncUtils.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncViewBinder.java",
   ]
@@ -210,6 +210,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTestUtil.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncHelperTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncTest.java",
   ]
