@@ -861,7 +861,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
   GridItemIdentifier* itemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
-  CHECK(itemIdentifier.type == GridItemType::Tab);
   if (_mode != TabGridModeSelection) {
     _draggedItem = itemIdentifier.tabSwitcherItem;
     UIDragItem* dragItem = [self.dragDropHandler dragItemForItem:_draggedItem];
