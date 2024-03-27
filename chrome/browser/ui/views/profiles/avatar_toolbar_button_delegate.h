@@ -74,6 +74,8 @@ class AvatarToolbarButtonDelegate {
   static void SetTextDurationForTesting(base::TimeDelta duration);
 
  private:
+  internal::ButtonState ComputeState() const;
+
   std::u16string GetProfileName() const;
   std::u16string GetShortProfileName() const;
   // Must only be called in states which have an avatar image (i.e. not
@@ -86,6 +88,12 @@ class AvatarToolbarButtonDelegate {
   const raw_ptr<AvatarToolbarButton> avatar_toolbar_button_;
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
+
+  // Text to be displayed while the state is
+  // `ButtonState::kExplicitTextShowing`.
+  // TODO(b/324018028): Move this info into it's own implementation of
+  // StateProvider.
+  std::u16string explicit_text_;
 
   std::unique_ptr<internal::StateManager> state_manager_;
 
