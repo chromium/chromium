@@ -29,24 +29,23 @@ class TabsCloser {
 
   ~TabsCloser();
 
-  // Closes all regular tabs, returning the number of closed tabs.
-  // It is an error to call this method if `CanCloseTabs()` returns false.
-  int CloseTabs();
-
-  // Undo closing regular tabs, returning the number of restored tabs.
-  // It is an error to call this method if `CanUndoCloseTabs()` returns false.
-  int UndoCloseTabs();
-
-  // Drop undo information, returning the number of deletion confirmed.
-  // It is an error to call this method if `CanUndoCloseTabs()` returns false.
-  int ConfirmDeletion();
-
-  // Returns true if there are tabs that can be closed (pinned tabs are
-  // considered as non-closable).
+  // Returns true if there are tabs that can be closed, according to the policy.
   bool CanCloseTabs() const;
+
+  // Closes all tabs according to the policy, returning the number of closed
+  // tabs. It is an error to call this method if `CanCloseTabs()` is `false`.
+  int CloseTabs();
 
   // Returns whether there are tabs that can be restored.
   bool CanUndoCloseTabs() const;
+
+  // Reopens closed tabs, returning the number of restored tabs. It is an error
+  // to call this method if `CanUndoCloseTabs()` is `false`.
+  int UndoCloseTabs();
+
+  // Drops undo information, returning the number of deletions confirmed.
+  // It is an error to call this method if `CanUndoCloseTabs()` is `false`.
+  int ConfirmDeletion();
 
  private:
   class UndoStorage;

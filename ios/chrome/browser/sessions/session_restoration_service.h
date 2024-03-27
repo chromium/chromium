@@ -77,15 +77,14 @@ class SessionRestorationService : public KeyedService {
 
   // Attaches `backup` as a backup Browser for `browser`.
   //
-  // A backup Browser allow freely moving WebState to/from the original
-  // Browser, but without saving the state of `backup`. If any WebState
-  // state changes, the code ensure the data on disk is saved. This can
-  // be used to implement a "close all tabs" operation that can be
-  // reverted.
+  // A backup Browser allows freely moving WebState to/from the original
+  // Browser, but without saving the state of `backup`. If any WebState state
+  // changes, the code ensures the data on disk is saved. This can be used to
+  // implement a "close all tabs" operation that can be reverted.
   //
-  // The `browser` must have been registered via `SetSessionID(...)`
-  // before the call to `AttachBackup(...)`. The `backup` Browser must
-  // be detached with `Disconnect(...)` before `browser`.
+  // The `browser` must have been registered via `SetSessionID(...)` before the
+  // call to `AttachBackup(...)`. The `backup` Browser must be detached with
+  // `Disconnect(...)` before `browser`.
   virtual void AttachBackup(Browser* browser, Browser* backup) = 0;
 
   // Forgets about `browser` (after writing to disk any pending changes).

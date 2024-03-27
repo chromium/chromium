@@ -22,7 +22,7 @@
 
 namespace {
 
-// Moves WebStates in range [start; start+count( from `source` to `target`.
+// Moves WebStates in range [start; start+count) from `source` to `target`.
 void MoveWebStatesInRangeBetweenLists(WebStateList* source,
                                       WebStateList* target,
                                       int start,
@@ -69,16 +69,16 @@ class TabsCloser::UndoStorage {
   // Returns the number of tabs that have been closed.
   int count() const { return temporary_browser_->GetWebStateList()->count(); }
 
-  // Closes tabs in range [start; start+count( from `original_browser_` and
+  // Closes tabs in range [start; start+count) from `original_browser_` and
   // stores state to allow undoing the operation if needed.
   void CloseTabs(int start, int count);
 
-  // Undo the close operation performed in the constructor.
+  // Undoes the close operation performed in `CloseTabs`.
   void Undo();
 
-  // Confirm the close operation performed in the constructor, deleting
-  // the state. This is irreversible and no data can be recovered after
-  // this method has been called.
+  // Confirms the close operation performed in `CloseTabs`, deleting the state.
+  // This is irreversible and no data can be recovered after this method has
+  // been called.
   void Drop();
 
  private:
@@ -173,7 +173,7 @@ void TabsCloser::UndoStorage::Undo() {
 void TabsCloser::UndoStorage::Drop() {
   // Pretend that the original Browser's WebStateList is going through a
   // batched operation. This is a fix for https://crbug.com/1521867 where
-  // RecentTabsMediator observe the TabRestoreService for modification
+  // RecentTabsMediator observes the TabRestoreService for modifications
   // and updates its state each time it is notified by the service.
   //
   // Using a ScopedBatchOperation causes RecentTabsMediator to consider
@@ -194,6 +194,17 @@ TabsCloser::TabsCloser(Browser* browser, ClosePolicy policy)
 }
 
 TabsCloser::~TabsCloser() = default;
+
+bool TabsCloser::CanCloseTabs() const {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  switch (close_policy_) {
+    case ClosePolicy::kAllTabs:
+      return web_state_list->count() != 0;
+
+    case ClosePolicy::kRegularTabs:
+      return web_state_list->regular_tabs_count() != 0;
+  }
+}
 
 int TabsCloser::CloseTabs() {
   DCHECK(CanCloseTabs());
@@ -226,6 +237,10 @@ int TabsCloser::CloseTabs() {
   return state_->count();
 }
 
+bool TabsCloser::CanUndoCloseTabs() const {
+  return state_ != nullptr;
+}
+
 int TabsCloser::UndoCloseTabs() {
   DCHECK(CanUndoCloseTabs());
   const int result = state_->count();
@@ -240,19 +255,4 @@ int TabsCloser::ConfirmDeletion() {
   state_->Drop();
   state_.reset();
   return result;
-}
-
-bool TabsCloser::CanCloseTabs() const {
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  switch (close_policy_) {
-    case ClosePolicy::kAllTabs:
-      return web_state_list->count() != 0;
-
-    case ClosePolicy::kRegularTabs:
-      return web_state_list->regular_tabs_count() != 0;
-  }
-}
-
-bool TabsCloser::CanUndoCloseTabs() const {
-  return state_ != nullptr;
 }
