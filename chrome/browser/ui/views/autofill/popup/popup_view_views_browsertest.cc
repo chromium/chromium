@@ -219,13 +219,19 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_CreditCard_MultipleLabels) {
-  std::vector<std::vector<Suggestion::Text>> labels = {
-      {Suggestion::Text(u"Filling credit card - your card for payments"),
-       Suggestion::Text(u"Alexander Joseph Ricardo Park")},
-      {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}};
-  Suggestion suggestion("Visa", std::move(labels), Suggestion::Icon::kCardVisa,
-                        PopupItemId::kCreditCardEntry);
-  PrepareSuggestions({suggestion});
+  Suggestion suggestion1(
+      "Visa",
+      {{Suggestion::Text(u"Filling credit card - your card for payments"),
+        Suggestion::Text(u"Alexander Joseph Ricardo Park")},
+       {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}},
+      Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry);
+
+  // Also create a 1 label line suggestion to make sure they work well together.
+  Suggestion suggestion2(
+      "Visa",
+      {{Suggestion::Text(u"Filling credit card - your card for payments")}},
+      Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry);
+  PrepareSuggestions({suggestion1, suggestion2});
   ShowAndVerifyUi();
 }
 
