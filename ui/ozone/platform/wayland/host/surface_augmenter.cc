@@ -16,7 +16,7 @@ namespace ui {
 namespace {
 constexpr uint32_t kMinVersion = 1;
 constexpr uint32_t kMaxVersion =
-    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION;
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION + 1;
 
 // The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
 // with a local coordinates bounds.

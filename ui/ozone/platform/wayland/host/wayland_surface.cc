@@ -141,7 +141,13 @@ bool WaylandSurface::Initialize() {
       .enter = &OnEnter,
       .leave = &OnLeave,
   };
-  wl_surface_add_listener(surface_.get(), &kSurfaceListener, this);
+  // If this surface is not the surface for its root_window, it don't need to
+  // listen to output enter/leave events.
+  // Not having a root_window() means this is an icon_surface from
+  // WaylandDataDragController.
+  if (!root_window() || root_window()->root_surface() == this) {
+    wl_surface_add_listener(surface_.get(), &kSurfaceListener, this);
+  }
 
   if (connection_->fractional_scale_manager_v1()) {
     static constexpr wp_fractional_scale_v1_listener kFractionalScaleListener =
@@ -199,7 +205,9 @@ bool WaylandSurface::Initialize() {
     }
   }
 
-  if (auto* surface_augmenter = connection_->surface_augmenter()) {
+  auto* surface_augmenter = connection_->surface_augmenter();
+  if (surface_augmenter && root_window() &&
+      root_window()->root_surface() != this) {
     augmented_surface_ = surface_augmenter->CreateAugmentedSurface(surface());
     if (!augmented_surface_) {
       LOG(ERROR) << "Failed to create augmented_surface.";
