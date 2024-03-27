@@ -2350,6 +2350,11 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Ready"/>
 </enum>
 
+<enum name="BooleanReassigned">
+  <int value="0" label="Not Reassigned"/>
+  <int value="1" label="Reassigned"/>
+</enum>
+
 <enum name="BooleanReceived">
   <int value="0" label="Not Received"/>
   <int value="1" label="Received"/>

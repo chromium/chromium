@@ -12,31 +12,39 @@
 #include "base/strings/strcat.h"
 #include "components/bookmarks/common/url_load_stats.h"
 
+namespace bookmarks::metrics {
+
 namespace {
 
 const int kBytesPerKB = 1024;
 
-void RecordBookmarkParentFolderType(
-    bookmarks::metrics::BookmarkFolderTypeForUMA parent) {
+void RecordBookmarkParentFolderType(BookmarkFolderTypeForUMA parent) {
   base::UmaHistogramEnumeration("Bookmarks.ParentFolderType", parent);
 }
 
-std::string GetStorageStateSuffixForMetrics(
-    bookmarks::metrics::StorageStateForUma storage_state) {
+std::string GetStorageStateSuffixForMetrics(StorageStateForUma storage_state) {
   switch (storage_state) {
-    case bookmarks::metrics::StorageStateForUma::kAccount:
+    case StorageStateForUma::kAccount:
       return std::string(".AccountStorage");
-    case bookmarks::metrics::StorageStateForUma::kLocalOnly:
+    case StorageStateForUma::kLocalOnly:
       return std::string(".LocalStorage");
-    case bookmarks::metrics::StorageStateForUma::kSyncEnabled:
+    case StorageStateForUma::kSyncEnabled:
       return std::string(".LocalStorageSyncing");
   }
   NOTREACHED_NORETURN();
 }
 
-}  // namespace
+std::string GetStorageFileSuffixForMetrics(StorageFileForUma storage_file) {
+  switch (storage_file) {
+    case StorageFileForUma::kLocalOrSyncable:
+      return std::string(".LocalOrSyncable");
+    case StorageFileForUma::kAccount:
+      return std::string(".Account");
+  }
+  NOTREACHED_NORETURN();
+}
 
-namespace bookmarks::metrics {
+}  // namespace
 
 void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
                             StorageStateForUma storage_state) {
@@ -161,6 +169,14 @@ void RecordCloneBookmarkNode(int num_cloned) {
 
 void RecordAverageNodeSizeAtStartup(size_t size_in_bytes) {
   base::UmaHistogramCounts10000("Bookmarks.AverageNodeSize", size_in_bytes);
+}
+
+void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
+                                      bool ids_reassigned) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Bookmarks.IdsReassigned.OnProfileLoad",
+                    GetStorageFileSuffixForMetrics(storage_file)}),
+      ids_reassigned);
 }
 
 }  // namespace bookmarks::metrics

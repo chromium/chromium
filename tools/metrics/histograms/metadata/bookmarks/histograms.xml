@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BookmarksFileType">
+  <variant name=".Account" summary="JSON file containing account bookmarks."/>
+  <variant name=".LocalOrSyncable"
+      summary="JSON file containing local-or-syncable bookmarks."/>
+</variants>
+
 <histogram name="BookmarkManager.CommandExecuted" enum="BookmarkManagerCommand"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
@@ -271,6 +277,17 @@ chromium-metrics-reviews@google.com.
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>How users add a new bookmark.</summary>
+</histogram>
+
+<histogram name="Bookmarks.IdsReassigned.OnProfileLoad{BookmarksFileType}"
+    enum="BooleanReassigned" expires_after="2024-07-01">
+  <owner>mastiz@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs whether or not bookmark node IDs were reassigned when loading the
+    {BookmarksFileType}. Recorded on profile load.
+  </summary>
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
