@@ -10,7 +10,6 @@ import {colorSchemeModeOptions, CustomizeColorSchemeModeElement} from 'chrome://
 import type {ColorSchemeMode, CustomizeColorSchemeModeClientRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -33,7 +32,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
     const element = new CustomizeColorSchemeModeElement();
     callbackRouter.setColorSchemeMode(colorSchemeMode);
     document.body.appendChild(element);
-    await waitAfterNextRender(element);
+    await microtasksFinished();
     return element;
   }
 

@@ -1,24 +1,11 @@
-<style include="cr-icons">
-  #lightMode {
-    --cr-icon-image: url(chrome://resources/cr_components/customize_color_scheme_mode/light_mode.svg);
-  }
-
-  #darkMode {
-    --cr-icon-image: url(chrome://resources/cr_components/customize_color_scheme_mode/dark_mode.svg);
-  }
-
-  #systemMode {
-    --cr-icon-image: url(chrome://resources/cr_components/customize_color_scheme_mode/system_mode.svg);
-  }
-</style>
 <segmented-button
-    selected="[[currentMode_.id]]"
-    group-aria-label="[[i18n('colorSchemeModeLabel')]]"
-    on-selected-changed="onSelectedChanged_">
-  <template is="dom-repeat" id="options" items="[[colorSchemeModeOptions_]]">
-      <segmented-button-option name="[[item.id]]">
-        <div id="[[item.id]]" class="cr-icon" slot="prefix-icon"></div>
-        [[i18n(item.id)]]
-      </segmented-button-option>
-  </template>
+    selected="${this.currentMode_.id}"
+    group-aria-label="${this.i18n('colorSchemeModeLabel')}"
+    @selected-changed="${this.onSelectedChanged_}">
+  ${this.colorSchemeModeOptions_.map(item => html`
+    <segmented-button-option name="${item.id}">
+      <div id="${item.id}" class="cr-icon" slot="prefix-icon"></div>
+      ${this.i18n(item.id)}
+    </segmented-button-option>
+  `)}
 </segmented-button>
