@@ -118,15 +118,6 @@ class AuthenticationService : public KeyedService,
   virtual void SignIn(id<SystemIdentity> identity,
                       signin_metrics::AccessPoint access_point);
 
-  // Grants signin::ConsentLevel::kSync to `identity` and records the event at
-  // `access_point`. This starts setting up Sync-the-feature, but the setup will
-  // only complete once SyncUserSettings::SetInitialSyncFeatureSetupComplete()
-  // is called. This method is used for testing. Virtual for testing.
-  // TODO(crbug.com/40067025): Delete this method after Phase 2 on iOS is
-  // launched. See ConsentLevel::kSync documentation for details.
-  virtual void GrantSyncConsent(id<SystemIdentity> identity,
-                                signin_metrics::AccessPoint access_point);
-
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed. If force_clear_browsing_data is true,
   // clears the browsing data unconditionally.
@@ -150,6 +141,17 @@ class AuthenticationService : public KeyedService,
   // This needs to be invoked when the application enters foreground to
   // sync the accounts between the IdentityManager and the SSO library.
   void OnApplicationWillEnterForeground();
+
+  // Grants signin::ConsentLevel::kSync to `identity` and records the event at
+  // `access_point`. This starts setting up Sync-the-feature, but the setup will
+  // only complete once SyncUserSettings::SetInitialSyncFeatureSetupComplete()
+  // is called.
+  // This should only be called by tests that want to verify the behavior of
+  // legacy syncing users.
+  // TODO(crbug.com/40066949): Delete this method after Phase 3 on iOS is
+  // launched. See ConsentLevel::kSync documentation for details.
+  void GrantSyncConsentForTesting(id<SystemIdentity> identity,
+                                  signin_metrics::AccessPoint access_point);
 
  private:
   friend class FakeAuthenticationService;

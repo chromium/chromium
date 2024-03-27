@@ -133,7 +133,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  authentication_service()->GrantSyncConsent(
+  authentication_service()->GrantSyncConsentForTesting(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
@@ -152,7 +152,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
   authentication_service()->SignIn(
       managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  authentication_service()->GrantSyncConsent(
+  authentication_service()->GrantSyncConsentForTesting(
       managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSync));

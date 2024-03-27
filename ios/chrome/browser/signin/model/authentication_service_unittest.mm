@@ -280,7 +280,7 @@ TEST_F(AuthenticationServiceTest,
   // Sign in.
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  authentication_service()->GrantSyncConsent(
+  authentication_service()->GrantSyncConsentForTesting(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   VerifyLastSigninTimestamp();
 
@@ -304,7 +304,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  authentication_service()->GrantSyncConsent(
+  authentication_service()->GrantSyncConsentForTesting(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   VerifyLastSigninTimestamp();
 
@@ -694,7 +694,7 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
 
   // Grant Sync consent.
   EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
-  authentication_service()->GrantSyncConsent(
+  authentication_service()->GrantSyncConsentForTesting(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
@@ -724,7 +724,7 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   // Sign in.
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  authentication_service()->GrantSyncConsent(
+  authentication_service()->GrantSyncConsentForTesting(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   VerifyLastSigninTimestamp();
 

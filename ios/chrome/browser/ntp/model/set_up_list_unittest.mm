@@ -94,7 +94,7 @@ class SetUpListTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     auth_service_->SignIn(identity,
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-    auth_service_->GrantSyncConsent(
+    auth_service_->GrantSyncConsentForTesting(
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     test_manager_->GetBrowserStateInfoCache()->SetAuthInfoOfBrowserStateAtIndex(
         0, base::SysNSStringToUTF8(identity.gaiaID),
