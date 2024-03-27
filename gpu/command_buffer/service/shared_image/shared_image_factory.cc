@@ -202,6 +202,10 @@ SharedImageFactory::SharedImageFactory(
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL),
       gpu_preferences_(gpu_preferences),
+#if BUILDFLAG(IS_MAC)
+      macos_specific_texture_target_(
+          GetMacOSSpecificTextureTargetForCurrentGLImplementation()),
+#endif
       workarounds_(workarounds) {
 #if defined(USE_OZONE)
   if (!set_format_supported_metric) {
@@ -382,7 +386,12 @@ SharedImageFactory::SharedImageFactory(
     auto iosurface_backing_factory =
         std::make_unique<IOSurfaceImageBackingFactory>(
             gpu_preferences.gr_context_type, max_texture_size,
-            feature_info.get(), progress_reporter);
+            feature_info.get(), progress_reporter,
+#if BUILDFLAG(IS_MAC)
+            macos_specific_texture_target_);
+#else
+            GL_TEXTURE_2D);
+#endif
     factories_.push_back(std::move(iosurface_backing_factory));
   }
 #endif
@@ -897,7 +906,7 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       gpu_preferences_.texture_target_exception_list;
 #if BUILDFLAG(IS_MAC)
   shared_image_caps.macos_specific_texture_target =
-      GetMacOSSpecificTextureTargetForCurrentGLImplementation();
+      macos_specific_texture_target_;
 #endif
 
 #if BUILDFLAG(IS_WIN)

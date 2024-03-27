@@ -65,7 +65,12 @@ class IOSurfaceImageBackingFactoryTest : public SharedImageTestBase {
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
-        context_state_->feature_info(), /*progress_reporter=*/nullptr);
+        context_state_->feature_info(), /*progress_reporter=*/nullptr,
+#if BUILDFLAG(IS_MAC)
+        GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+#else
+        GL_TEXTURE_2D);
+#endif
   }
 
  protected:
@@ -754,7 +759,12 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
 
     backing_factory_ = std::make_unique<IOSurfaceImageBackingFactory>(
         context_state_->gr_context_type(), context_state_->GetMaxTextureSize(),
-        context_state_->feature_info(), &progress_reporter_);
+        context_state_->feature_info(), &progress_reporter_,
+#if BUILDFLAG(IS_MAC)
+        GetMacOSSpecificTextureTargetForCurrentGLImplementation());
+#else
+        GL_TEXTURE_2D);
+#endif
   }
 
   viz::SharedImageFormat get_format() { return std::get<0>(GetParam()); }
