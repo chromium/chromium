@@ -96,7 +96,6 @@ class MockMediaStreamProviderListener : public MediaStreamProviderListener {
 using DeviceIndex = size_t;
 using Resolution = gfx::Size;
 using ExerciseAcceleratedJpegDecoding = bool;
-using UseMojoService = bool;
 
 // For converting the std::tuple<> used as test parameters back to something
 // human-readable.
@@ -104,12 +103,10 @@ struct TestParams {
   TestParams() : device_index_to_use(0u) {}
   TestParams(const std::tuple<DeviceIndex,
                               Resolution,
-                              ExerciseAcceleratedJpegDecoding,
-                              UseMojoService>& params)
+                              ExerciseAcceleratedJpegDecoding>& params)
       : device_index_to_use(std::get<0>(params)),
         resolution_to_use(std::get<1>(params)),
-        exercise_accelerated_jpeg_decoding(std::get<2>(params)),
-        use_mojo_service(std::get<3>(params)) {}
+        exercise_accelerated_jpeg_decoding(std::get<2>(params)) {}
 
   media::VideoPixelFormat GetPixelFormatToUse() {
     return (device_index_to_use == 1u) ? media::PIXEL_FORMAT_Y16
@@ -119,7 +116,6 @@ struct TestParams {
   size_t device_index_to_use;
   gfx::Size resolution_to_use;
   bool exercise_accelerated_jpeg_decoding;
-  bool use_mojo_service;
 };
 
 struct FrameInfo {
@@ -130,20 +126,14 @@ struct FrameInfo {
 
 // Integration test that exercises the VideoCaptureManager instance running in
 // the Browser process.
-class VideoCaptureBrowserTest : public ContentBrowserTest,
-                                public ::testing::WithParamInterface<
-                                    std::tuple<DeviceIndex,
-                                               Resolution,
-                                               ExerciseAcceleratedJpegDecoding,
-                                               UseMojoService>> {
+class VideoCaptureBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<
+          std::
+              tuple<DeviceIndex, Resolution, ExerciseAcceleratedJpegDecoding>> {
  public:
   VideoCaptureBrowserTest() {
     params_ = TestParams(GetParam());
-    if (params_.use_mojo_service) {
-      scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kMojoVideoCapture);
-    }
   }
 
   VideoCaptureBrowserTest(const VideoCaptureBrowserTest&) = delete;
@@ -247,8 +237,6 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   TestParams params_;
   raw_ptr<MediaStreamManager, DanglingUntriaged> media_stream_manager_ =
       nullptr;
@@ -379,7 +367,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          Combine(Values(0, 1, 2),             // DeviceIndex
                                  Values(gfx::Size(640, 480),  // Resolution
                                         gfx::Size(1280, 720)),
-                                 Bool(),    // ExerciseAcceleratedJpegDecoding
-                                 Bool()));  // UseMojoService
+                                 Bool()));  // ExerciseAcceleratedJpegDecoding
 
 }  // namespace content

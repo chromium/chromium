@@ -153,9 +153,6 @@ CastContentBrowserClient::CastContentBrowserClient(
   std::vector<const base::Feature*> extra_enable_features = {
     &::media::kInternalMediaSession,
     &features::kNetworkServiceInProcess,
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
-    &features::kMojoVideoCapture,
-#endif
 #if BUILDFLAG(USE_V4L2_CODEC)
     // Enable accelerated video decode if v4l2 codec is supported.
     &::media::kVaapiVideoDecodeLinux,

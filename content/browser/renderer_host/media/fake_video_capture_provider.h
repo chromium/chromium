@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_FAKE_VIDEO_CAPTURE_PROVIDER_H_
 
 #include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
 
 namespace content {
@@ -14,6 +15,8 @@ namespace content {
 // generating test frames.
 class FakeVideoCaptureProvider : public VideoCaptureProvider {
  public:
+  explicit FakeVideoCaptureProvider(
+      std::unique_ptr<::media::VideoCaptureDeviceFactory> device_factory);
   FakeVideoCaptureProvider();
   ~FakeVideoCaptureProvider() override;
 

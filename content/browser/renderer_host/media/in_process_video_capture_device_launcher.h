@@ -16,7 +16,6 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
-#include "media/capture/video/video_capture_system.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace media {
@@ -33,9 +32,8 @@ struct DesktopMediaID;
 // Instances of this class must be operated from the Browser process IO thread.
 class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
  public:
-  InProcessVideoCaptureDeviceLauncher(
-      scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
-      media::VideoCaptureSystem* video_capture_system);
+  explicit InProcessVideoCaptureDeviceLauncher(
+      scoped_refptr<base::SingleThreadTaskRunner> device_task_runner);
   ~InProcessVideoCaptureDeviceLauncher() override;
 
   void LaunchDeviceAsync(const std::string& device_id,
@@ -69,12 +67,6 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   void OnDeviceStarted(Callbacks* callbacks,
                        base::OnceClosure done_cb,
                        std::unique_ptr<media::VideoCaptureDevice> device);
-
-  void DoStartDeviceCaptureOnDeviceThread(
-      const std::string& device_id,
-      const media::VideoCaptureParams& params,
-      std::unique_ptr<media::VideoCaptureDeviceClient> client,
-      ReceiveDeviceCallback result_callback);
 
   void DoStartTabCaptureOnDeviceThread(
       const std::string& device_id,
@@ -113,8 +105,6 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::vector<media::VideoCaptureDeviceInfo> devices_info);
 
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
-  const raw_ptr<media::VideoCaptureSystem, DanglingUntriaged>
-      video_capture_system_;
   State state_;
   std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
 };

@@ -1613,22 +1613,11 @@ MediaStreamManager::MediaStreamManager(
               &VideoCaptureDependencies::CreateJpegEncodeAccelerator));
     }
 #endif
-
-    if (base::FeatureList::IsEnabled(features::kMojoVideoCapture)) {
-      video_capture_provider = std::make_unique<VideoCaptureProviderSwitcher>(
-          std::make_unique<ServiceVideoCaptureProvider>(
-              base::BindRepeating(&SendVideoCaptureLogMessage)),
-          InProcessVideoCaptureProvider::CreateInstanceForNonDeviceCapture(
-              std::move(device_task_runner),
-              base::BindRepeating(&SendVideoCaptureLogMessage)));
-    } else {
-      video_capture_provider = InProcessVideoCaptureProvider::CreateInstance(
-          std::make_unique<media::VideoCaptureSystemImpl>(
-              media::CreateVideoCaptureDeviceFactory(
-                  GetUIThreadTaskRunner({}))),
-          std::move(device_task_runner),
-          base::BindRepeating(&SendVideoCaptureLogMessage));
-    }
+    video_capture_provider = std::make_unique<VideoCaptureProviderSwitcher>(
+        std::make_unique<ServiceVideoCaptureProvider>(
+            base::BindRepeating(&SendVideoCaptureLogMessage)),
+        InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+            std::move(device_task_runner)));
   }
   InitializeMaybeAsync(std::move(video_capture_provider));
 

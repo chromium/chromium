@@ -53,10 +53,7 @@ static const gfx::Size kVideoSize(320, 200);
 // test exercises through JavaScript.
 class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
  public:
-  WebRtcVideoCaptureSharedDeviceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
-  }
-
+  WebRtcVideoCaptureSharedDeviceBrowserTest() = default;
   WebRtcVideoCaptureSharedDeviceBrowserTest(
       const WebRtcVideoCaptureSharedDeviceBrowserTest&) = delete;
   WebRtcVideoCaptureSharedDeviceBrowserTest& operator=(
@@ -140,8 +137,6 @@ class WebRtcVideoCaptureSharedDeviceBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(result_code->is_success_code());
     subscription_->Activate();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;

@@ -11,8 +11,13 @@
 
 namespace content {
 
+FakeVideoCaptureProvider::FakeVideoCaptureProvider(
+    std::unique_ptr<::media::VideoCaptureDeviceFactory> device_factory)
+    : system_(std::move(device_factory)) {}
+
 FakeVideoCaptureProvider::FakeVideoCaptureProvider()
-    : system_(std::make_unique<media::FakeVideoCaptureDeviceFactory>()) {}
+    : FakeVideoCaptureProvider(
+          std::make_unique<media::FakeVideoCaptureDeviceFactory>()) {}
 
 FakeVideoCaptureProvider::~FakeVideoCaptureProvider() = default;
 

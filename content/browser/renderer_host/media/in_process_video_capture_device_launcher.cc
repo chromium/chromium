@@ -214,10 +214,8 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
 }  // anonymous namespace
 
 InProcessVideoCaptureDeviceLauncher::InProcessVideoCaptureDeviceLauncher(
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
-    media::VideoCaptureSystem* video_capture_system)
+    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner)
     : device_task_runner_(std::move(device_task_runner)),
-      video_capture_system_(video_capture_system),
       state_(State::READY_TO_LAUNCH) {}
 
 InProcessVideoCaptureDeviceLauncher::~InProcessVideoCaptureDeviceLauncher() {
@@ -261,22 +259,10 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
           base::Unretained(this), callbacks, std::move(done_cb)));
 
   switch (stream_type) {
-    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE: {
-      // Clients who create an instance of |this| without providing a
-      // VideoCaptureSystem instance are expected to know that
-      // MEDIA_DEVICE_VIDEO_CAPTURE is not supported in this case.
-      CHECK(video_capture_system_);
-      start_capture_closure = base::BindOnce(
-          &InProcessVideoCaptureDeviceLauncher::
-              DoStartDeviceCaptureOnDeviceThread,
-          base::Unretained(this), device_id, params,
-          CreateDeviceClient(media::VideoCaptureBufferType::kSharedMemory,
-                             kMaxNumberOfBuffers, std::move(receiver),
-                             std::move(receiver_on_io_thread)),
-          std::move(after_start_capture_callback));
-      break;
-    }
-
+    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      // Only the Service-based device launcher is supported for device capture
+      // from cameras etc.
+      NOTREACHED_NORETURN();
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
     case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
       start_capture_closure = base::BindOnce(
@@ -399,16 +385,11 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
 #if BUILDFLAG(IS_WIN)
-  scoped_refptr<media::DXGIDeviceManager> dxgi_device_manager;
-  if (video_capture_system_ && video_capture_system_->GetFactory()) {
-    dxgi_device_manager =
-        video_capture_system_->GetFactory()->GetDxgiDeviceManager();
-  }
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
       base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
           requested_buffer_type, buffer_pool_max_buffer_count,
           std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
-              std::move(dxgi_device_manager)));
+              /*dxgi_device_manager=*/nullptr));
 #else
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
       base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
@@ -470,26 +451,6 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
       return;
     case State::READY_TO_LAUNCH:
       NOTREACHED_NORETURN();
-  }
-}
-
-void InProcessVideoCaptureDeviceLauncher::DoStartDeviceCaptureOnDeviceThread(
-    const std::string& device_id,
-    const media::VideoCaptureParams& params,
-    std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
-    ReceiveDeviceCallback result_callback) {
-  DCHECK(device_task_runner_->BelongsToCurrentThread());
-  DCHECK(video_capture_system_);
-
-  auto device_status = video_capture_system_->CreateDevice(device_id);
-
-  if (device_status.ok()) {
-    std::unique_ptr<media::VideoCaptureDevice> video_capture_device =
-        device_status.ReleaseDevice();
-    video_capture_device->AllocateAndStart(params, std::move(device_client));
-    std::move(result_callback).Run(std::move(video_capture_device));
-  } else {
-    std::move(result_callback).Run(nullptr);
   }
 }
 

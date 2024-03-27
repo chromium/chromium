@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_webcam_browsertest.h"
 #include "content/public/browser/browser_child_process_host.h"
@@ -38,15 +37,12 @@ static const char kVerifyHasReceivedTrackEndedEvent[] =
 // JavaScript level.
 class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
  public:
+  WebRtcVideoCaptureBrowserTest() = default;
   WebRtcVideoCaptureBrowserTest(const WebRtcVideoCaptureBrowserTest&) = delete;
   WebRtcVideoCaptureBrowserTest& operator=(
       const WebRtcVideoCaptureBrowserTest&) = delete;
 
  protected:
-  WebRtcVideoCaptureBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
-  }
-
   ~WebRtcVideoCaptureBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -61,9 +57,6 @@ class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
     embedded_test_server()->StartAcceptingConnections();
     ContentBrowserTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

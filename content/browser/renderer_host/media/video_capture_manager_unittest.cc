@@ -22,9 +22,11 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
+#include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "content/common/buildflags.h"
@@ -46,14 +48,13 @@ using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
 
 namespace content {
 
 namespace {
-
-const auto kIgnoreLogMessageCB = base::DoNothing();
 
 // Wraps FakeVideoCaptureDeviceFactory to allow mocking of the
 // VideoCaptureDevice MaybeSuspend() and Resume() methods. This is used to check
@@ -292,18 +293,21 @@ class VideoCaptureManagerTest : public testing::Test {
     auto video_capture_device_factory =
         std::make_unique<WrappedDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
-    auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
-        std::move(video_capture_device_factory));
-    auto video_capture_provider =
-        std::make_unique<InProcessVideoCaptureProvider>(
-            std::move(video_capture_system),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            kIgnoreLogMessageCB);
+    auto fake_video_capture_provider =
+        std::make_unique<FakeVideoCaptureProvider>(
+            std::move(video_capture_device_factory));
+    auto screencapture_video_capture_provider =
+        InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+    auto video_capture_provider_switcher =
+        std::make_unique<VideoCaptureProviderSwitcher>(
+            std::move(fake_video_capture_provider),
+            std::move(screencapture_video_capture_provider));
     screenlock_monitor_source_ = new ScreenlockMonitorTestSource();
     screenlock_monitor_ = std::make_unique<ScreenlockMonitor>(
         std::unique_ptr<ScreenlockMonitorSource>(screenlock_monitor_source_));
 
-    vcm_ = new VideoCaptureManager(std::move(video_capture_provider),
+    vcm_ = new VideoCaptureManager(std::move(video_capture_provider_switcher),
                                    base::DoNothing());
     const int32_t kNumberOfFakeDevices = 2;
     video_capture_device_factory_->SetToDefaultDevicesConfig(

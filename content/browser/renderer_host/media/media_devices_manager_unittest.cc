@@ -19,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
-#include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -411,23 +410,19 @@ class MediaDevicesManagerTest : public ::testing::Test {
     auto video_capture_device_factory =
         std::make_unique<MockVideoCaptureDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
-    auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
+    video_capture_system_ = std::make_unique<media::VideoCaptureSystemImpl>(
         std::move(video_capture_device_factory));
-    in_process_video_capture_provider_ =
-        std::make_unique<InProcessVideoCaptureProvider>(
-            std::move(video_capture_system),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            kIgnoreLogMessageCB);
 
     auto mock_video_capture_provider =
         std::make_unique<MockVideoCaptureProvider>();
     mock_video_capture_provider_ = mock_video_capture_provider.get();
-    // By default, forward calls to the real InProcessVideoCaptureProvider.
+    // By default, forward calls to the real video_capture_system.
     ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
         .WillByDefault(Invoke(
             [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
-              in_process_video_capture_provider_->GetDeviceInfosAsync(
-                  std::move(result_callback));
+              video_capture_system_->GetDeviceInfosAsync(base::BindOnce(
+                  std::move(result_callback),
+                  media::mojom::DeviceEnumerationResult::kSuccess));
             }));
 
     video_capture_manager_ = new VideoCaptureManager(
@@ -486,8 +481,7 @@ class MediaDevicesManagerTest : public ::testing::Test {
       media_devices_manager_client_;
   std::set<std::string> removed_device_ids_;
   raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_ = nullptr;
-  std::unique_ptr<InProcessVideoCaptureProvider>
-      in_process_video_capture_provider_;
+  std::unique_ptr<media::VideoCaptureSystemImpl> video_capture_system_;
   HistogramTester histogram_tester_;
   RenderViewHostTestEnabler rvh_test_enabler_;
   TestBrowserContext browser_context_;
@@ -1470,7 +1464,7 @@ TEST_F(MediaDevicesManagerTest, DeviceIdSaltReset) {
 
 TEST_F(MediaDevicesManagerTest, EnumerateVideoInputFailsOnce) {
   // Inject an UnknownError on the first call to GetDeviceInfosAsync, otherwise
-  // fall through to the in_process_video_capture_provider_.
+  // fall through to the video_capture_system_.
   EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
       .Times(kNumCalls)
       .WillOnce(Invoke(
@@ -1480,8 +1474,9 @@ TEST_F(MediaDevicesManagerTest, EnumerateVideoInputFailsOnce) {
           }))
       .WillRepeatedly(Invoke(
           [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
-            in_process_video_capture_provider_->GetDeviceInfosAsync(
-                std::move(result_callback));
+            video_capture_system_->GetDeviceInfosAsync(base::BindOnce(
+                std::move(result_callback),
+                media::mojom::DeviceEnumerationResult::kSuccess));
           }));
   EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
       .Times(kNumCalls - 1);

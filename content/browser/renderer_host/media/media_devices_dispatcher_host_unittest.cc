@@ -21,10 +21,12 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,8 +62,6 @@ const char kNoFormatsVideoDeviceID[] = "/dev/video1";
 const char kZeroResolutionVideoDeviceID[] = "/dev/video2";
 const char* const kDefaultVideoDeviceID = kZeroResolutionVideoDeviceID;
 const char kDefaultAudioDeviceID[] = "fake_audio_input_2";
-
-const auto kIgnoreLogMessageCB = base::DoNothing();
 
 void PhysicalDevicesEnumerated(base::OnceClosure quit_closure,
                                MediaDeviceEnumeration* out,
@@ -153,16 +153,19 @@ class MediaDevicesDispatcherHostTest
     auto video_capture_device_factory =
         std::make_unique<media::FakeVideoCaptureDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
-    auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
-        std::move(video_capture_device_factory));
-    auto video_capture_provider =
-        std::make_unique<InProcessVideoCaptureProvider>(
-            std::move(video_capture_system),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            kIgnoreLogMessageCB);
+    auto fake_video_capture_provider =
+        std::make_unique<FakeVideoCaptureProvider>(
+            std::move(video_capture_device_factory));
+    auto screencapture_video_capture_provider =
+        InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+    auto video_capture_provider_switcher =
+        std::make_unique<VideoCaptureProviderSwitcher>(
+            std::move(fake_video_capture_provider),
+            std::move(screencapture_video_capture_provider));
 
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), std::move(video_capture_provider));
+        audio_system_.get(), std::move(video_capture_provider_switcher));
 
     InitializeRenderFrameHost();
     host_ = std::make_unique<MediaDevicesDispatcherHost>(

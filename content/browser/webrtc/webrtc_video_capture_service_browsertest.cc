@@ -9,7 +9,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -417,7 +416,6 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
  public:
   WebRtcVideoCaptureServiceBrowserTest()
       : virtual_device_thread_("Virtual Device Thread") {
-    scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
     virtual_device_thread_.Start();
   }
 
@@ -531,7 +529,6 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     return base::TimeTicks::Now() - first_frame_time_;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
   gfx::Size video_size_;

@@ -14,7 +14,7 @@ std::unique_ptr<VideoCaptureDeviceLauncher>
 VideoCaptureDeviceLauncher::CreateInProcessVideoCaptureDeviceLauncher(
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner) {
   return std::make_unique<InProcessVideoCaptureDeviceLauncher>(
-      device_task_runner, nullptr);
+      device_task_runner);
 }
 
 }  // namespace content

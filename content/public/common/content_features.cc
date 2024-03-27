@@ -576,11 +576,6 @@ const base::FeatureParam<MBIMode> kMBIModeParam {
       &mbi_mode_types
 };
 
-// Enables/disables the video capture service.
-BASE_FEATURE(kMojoVideoCapture,
-             "MojoVideoCapture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When NavigationNetworkResponseQueue is enabled, the browser will schedule
 // some tasks related to navigation network responses in a kHigh priority
 // queue.
@@ -1342,20 +1337,7 @@ enum class VideoCaptureServiceConfiguration {
   kDisabled
 };
 
-// A secondary switch used in combination with kMojoVideoCapture.
-// This is intended as a kill switch to allow disabling the service on
-// particular groups of devices even if they forcibly enable kMojoVideoCapture
-// via a command-line argument.
-BASE_FEATURE(kMojoVideoCaptureSecondary,
-             "MojoVideoCaptureSecondary",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-  if (!base::FeatureList::IsEnabled(features::kMojoVideoCapture) ||
-      !base::FeatureList::IsEnabled(features::kMojoVideoCaptureSecondary)) {
-    return VideoCaptureServiceConfiguration::kDisabled;
-  }
-
 // On ChromeOS the service must run in the browser process, because parts of the
 // code depend on global objects that are only available in the Browser process.
 // See https://crbug.com/891961.

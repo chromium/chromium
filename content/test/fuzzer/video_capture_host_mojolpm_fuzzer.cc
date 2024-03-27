@@ -17,12 +17,15 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
 #include "content/browser/media/media_devices_util.h"  // nogncheck
-#include "content/browser/renderer_host/media/fake_video_capture_provider.h"
+#include "content/browser/media/media_internals.h"     // nogncheck
+#include "content/browser/renderer_host/media/fake_video_capture_provider.h"  // nogncheck
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"  // nogncheck
 #include "content/browser/renderer_host/media/media_stream_manager.h"  // nogncheck
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"  // nogncheck
+#include "content/browser/renderer_host/media/service_video_capture_provider.h"  // nogncheck
 #include "content/browser/renderer_host/media/video_capture_host.h"  // nogncheck
 #include "content/browser/renderer_host/media/video_capture_manager.h"  // nogncheck
+#include "content/browser/renderer_host/media/video_capture_provider_switcher.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -366,12 +369,22 @@ void VideoCaptureHostTestcase::SetUpOnUIThread() {
   video_capture_device_factory->SetV4L2EnvironmentForTesting(
       std::move(fake_v4l2_impl), std::move(fake_device_provider));
 
+  // Ensure MediaInternals is created on the UI thread before starting the
+  // MediaStreamManager instance.
+  content::MediaInternals::GetInstance();
+
+  auto fake_video_capture_provider =
+      std::make_unique<content::FakeVideoCaptureProvider>(
+          std::move(video_capture_device_factory));
+  auto screencapture_video_capture_provider =
+      content::InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+          base::SingleThreadTaskRunner::GetCurrentDefault());
+
   media_stream_manager_ = std::make_unique<content::MediaStreamManager>(
       audio_system_.get(),
-      content::InProcessVideoCaptureProvider::CreateInstance(
-          std::make_unique<media::VideoCaptureSystemImpl>(
-              std::move(video_capture_device_factory)),
-          audio_manager_->GetTaskRunner(), base::DoNothing()));
+      std::make_unique<content::VideoCaptureProviderSwitcher>(
+          std::move(fake_video_capture_provider),
+          std::move(screencapture_video_capture_provider)));
 }
 
 void VideoCaptureHostTestcase::SetUpOnIOThreadSecond() {
