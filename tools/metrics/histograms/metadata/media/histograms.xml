@@ -1679,7 +1679,7 @@ chromium-metrics-reviews@google.com.
   <token key="LatencyTag" variants="AudioLatencyTag"/>
 </histogram>
 
-<histogram name="Media.AudioOutputResampler.OpenLowLatencyStream"
+<histogram name="Media.AudioOutputResampler.OpenLowLatencyStream2"
     enum="AudioOutputResamplerLowLatencyOpenStreamResult"
     expires_after="2024-09-01">
   <owner>olka@chromium.org</owner>
@@ -1691,7 +1691,9 @@ chromium-metrics-reviews@google.com.
     successfully or which type of fallback stream was used instead. In case a
     fake fallback stream is used it means audio rendered through the resampler
     will be muted. In case fallback fails entirely, renderer callback error will
-    be signalled.
+    be signalled. In case audio output stream is opened in offload mode, record
+    successful opening in offload mode explicitly to distinguish from
+    non-offload mode.
   </summary>
 </histogram>
 
@@ -3499,7 +3501,7 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
-<histogram name="Media.FallbackToHighLatencyAudioPath"
+<histogram name="Media.FallbackToHighLatencyAudioPath2"
     enum="BooleanDidFallBack" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 
@@ -3507,7 +3509,9 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
-    Whether Chrome had to fallback to the high latency audio path or not.
+    Whether Chrome had to fallback to the high latency audio path or not. The
+    fallback might be from either low latency offload path, or from low latency
+    non-offload path.
   </summary>
 </histogram>
 

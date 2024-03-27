@@ -104,6 +104,9 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Subsequent creation of linear stream succeeded"/>
   <int value="8" label="Subsequent creation of low latency stream failed"/>
   <int value="9" label="Subsequent creation of low latency stream succeeded"/>
+  <int value="10" label="Fallback to non-offload low latency stream succeeded"/>
+  <int value="11"
+      label="Creation of low latency stream in offload mode succeeded"/>
 </enum>
 
 <enum name="AudioOutputStreamCreationResult">

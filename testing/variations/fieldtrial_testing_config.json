@@ -1114,6 +1114,21 @@
             ]
         }
     ],
+    "AudioOffload": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AudioOffload"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioRendererAlgorithmStartingCapacityForEncrypted": [
         {
             "platforms": [

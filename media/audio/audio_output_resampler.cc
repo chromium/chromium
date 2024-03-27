@@ -179,7 +179,9 @@ enum class OpenStreamResult {
   kFallbackToLinearSuccess = 7,
   kSubsequentFail = 8,
   kSubsequentSuccess = 9,
-  kMaxValue = kSubsequentSuccess,
+  kFallbackToLowLatencySuccess = 10,
+  kOffloadSuccess = 11,
+  kMaxValue = kOffloadSuccess,
 };
 
 OpenStreamResult GetSubsequentStreamCreationResultBucket(
@@ -187,7 +189,9 @@ OpenStreamResult GetSubsequentStreamCreationResultBucket(
     bool success) {
   switch (current_params.format()) {
     case AudioParameters::AUDIO_PCM_LOW_LATENCY:
-      return success ? OpenStreamResult::kSubsequentSuccess
+      return success ? (current_params.RequireOffload()
+                            ? OpenStreamResult::kOffloadSuccess
+                            : OpenStreamResult::kSubsequentSuccess)
                      : OpenStreamResult::kSubsequentFail;
     case AudioParameters::AUDIO_PCM_LINEAR:
       return success ? OpenStreamResult::kFallbackToLinearSuccess
@@ -286,11 +290,11 @@ bool AudioOutputResampler::OpenStream() {
   }
 
   constexpr char kFallbackHistogramName[] =
-      "Media.FallbackToHighLatencyAudioPath";
+      "Media.FallbackToHighLatencyAudioPath2";
   constexpr char kOpenLowLatencyHistogramName[] =
-      "Media.AudioOutputResampler.OpenLowLatencyStream";
+      "Media.AudioOutputResampler.OpenLowLatencyStream2";
   constexpr char kOpenLowLatencyOffloadHistogramName[] =
-      "Media.AudioOutputResampler.OpenLowLatencyStream.Offload";
+      "Media.AudioOutputResampler.OpenLowLatencyStream2.Offload";
 
   if (dispatcher_->OpenStream()) {
     // Only record the UMA statistic if we didn't fallback during construction
@@ -303,7 +307,9 @@ bool AudioOutputResampler::OpenStream() {
       base::UmaHistogramEnumeration(
           kOpenLowLatencyHistogramName,
           first_stream
-              ? OpenStreamResult::kSuccess
+              ? (original_output_params_.RequireOffload()
+                     ? OpenStreamResult::kOffloadSuccess
+                     : OpenStreamResult::kSuccess)
               : GetSubsequentStreamCreationResultBucket(output_params_, true));
     }
     return true;
@@ -330,8 +336,6 @@ bool AudioOutputResampler::OpenStream() {
     return false;
   }
 
-  base::UmaHistogramBoolean(kFallbackHistogramName, true);
-
   // Only Windows has a high latency output driver that is not the same as the
   // low latency path; or it may originally be attempted to be initialized in
   // offload mode while rejected later due to resource limitation.
@@ -350,12 +354,15 @@ bool AudioOutputResampler::OpenStream() {
     if (output_params_.IsValid()) {
       dispatcher_ = MakeDispatcher(device_id_, output_params_);
       if (dispatcher_->OpenStream()) {
-        base::UmaHistogramEnumeration(kOpenLowLatencyHistogramName,
-                                      OpenStreamResult::kFallbackToLinear);
+        base::UmaHistogramEnumeration(
+            kOpenLowLatencyHistogramName,
+            OpenStreamResult::kFallbackToLowLatencySuccess);
         return true;
       }
     }
   }
+
+  base::UmaHistogramBoolean(kFallbackHistogramName, true);
 
   DLOG(ERROR) << "Unable to open audio device in low latency mode.  Falling "
               << "back to high latency audio output.";
