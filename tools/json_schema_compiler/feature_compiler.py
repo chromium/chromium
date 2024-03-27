@@ -169,8 +169,9 @@ FEATURE_GRAMMAR = ({
     'contexts': {
         list: {
             'enum_map': {
-                'blessed_extension': 'mojom::ContextType::kPrivilegedExtension',
-                'blessed_web_page': 'mojom::ContextType::kPrivilegedWebPage',
+                'privileged_extension':
+                    'mojom::ContextType::kPrivilegedExtension',
+                'privileged_web_page': 'mojom::ContextType::kPrivilegedWebPage',
                 'content_script': 'mojom::ContextType::kContentScript',
                 'lock_screen_extension':
                     'mojom::ContextType::kLockscreenExtension',
@@ -180,7 +181,7 @@ FEATURE_GRAMMAR = ({
                 'web_page': 'mojom::ContextType::kWebPage',
                 'webui': 'mojom::ContextType::kWebUi',
                 'webui_untrusted': 'mojom::ContextType::kUntrustedWebUi',
-                'unblessed_extension':
+                'unprivileged_extension':
                     'mojom::ContextType::kUnprivilegedExtension',
             },
             'allow_all': True,

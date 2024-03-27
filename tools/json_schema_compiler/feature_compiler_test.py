@@ -45,8 +45,8 @@ class FeatureCompilerTest(unittest.TestCase):
       'command_line_switch': 'switch',
       'component_extensions_auto_granted': False,
       'contexts': [
-        'blessed_extension',
-        'blessed_web_page',
+        'privileged_extension',
+        'privileged_web_page',
         'lock_screen_extension'
       ],
       'default_parent': True,
@@ -81,7 +81,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testUnknownKeyError(self):
     f = self._parseFeature({
-      'contexts': ['blessed_extension'],
+      'contexts': ['privileged_extension'],
       'channel': 'stable',
       'unknownkey': 'unknownvalue'
     })
@@ -89,7 +89,7 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testUnknownEnumValue(self):
     f = self._parseFeature({
-      'contexts': ['blessed_extension', 'unknown_context'],
+      'contexts': ['privileged_extension', 'unknown_context'],
       'channel': 'stable'
     })
     self._hasError(f, 'Illegal value: "unknown_context"')
@@ -138,7 +138,7 @@ class FeatureCompilerTest(unittest.TestCase):
     f = self._parseFeature({'dependencies': 'alpha',
                             'channel': 'beta',
                             'extension_types': ['extension'],
-                            'contexts': ['blessed_extension']})
+                            'contexts': ['privileged_extension']})
     f.Validate('ManifestFeature', {})
     self._hasError(f, 'ManifestFeatures do not support contexts')
 
@@ -152,12 +152,12 @@ class FeatureCompilerTest(unittest.TestCase):
     f = self._parseFeature({'dependencies': 'alpha',
                             'channel': 'beta',
                             'extension_types': ['extension'],
-                            'contexts': ['blessed_extension']})
+                            'contexts': ['privileged_extension']})
     f.Validate('PermissionFeature', {})
     self._hasError(f, 'PermissionFeatures do not support contexts')
 
   def testAllPermissionsNeedChannelOrDependencies(self):
-    api_feature = self._parseFeature({'contexts': ['blessed_extension']})
+    api_feature = self._parseFeature({'contexts': ['privileged_extension']})
     api_feature.Validate('APIFeature', {})
     self._hasError(
         api_feature, 'Features must specify either a channel or dependencies')
@@ -169,12 +169,12 @@ class FeatureCompilerTest(unittest.TestCase):
     manifest_feature.Validate('ManifestFeature', {})
     self._hasError(manifest_feature,
                    'Features must specify either a channel or dependencies')
-    channel_feature = self._parseFeature({'contexts': ['blessed_extension'],
+    channel_feature = self._parseFeature({'contexts': ['privileged_extension'],
                                           'channel': 'trunk'})
     channel_feature.Validate('APIFeature', {})
     self.assertFalse(channel_feature.GetErrors())
     dependency_feature = self._parseFeature(
-                             {'contexts': ['blessed_extension'],
+                             {'contexts': ['privileged_extension'],
                               'dependencies': ['alpha']})
     dependency_feature.Validate('APIFeature', {})
     self.assertFalse(dependency_feature.GetErrors())
@@ -184,7 +184,7 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_alpha',
         'source': 'feature_alpha'
       }
@@ -200,16 +200,16 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_beta'
       },
       'feature_beta': [{
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'source': 'feature_alpha'
       },{
         'channel': 'dev',
-        'context': ['blessed_extension']
+        'context': ['privileged_extension']
       }]
     };
     compiler.Compile()
@@ -227,12 +227,12 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_beta'
       },
       'feature_beta': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'source': 'feature_alpha'
       }
     };
@@ -251,10 +251,10 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': [{
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_beta'
       }, {
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'channel': 'beta',
         'alias': 'feature_beta'
       }]
@@ -271,15 +271,15 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': [{
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_beta'
       }, {
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'channel': 'beta',
       }],
       'feature_beta': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'source': 'feature_alpha'
       }
     };
@@ -298,11 +298,11 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_beta'
       },
       'feature_beta': {
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'channel': 'beta',
         'source': 'does_not_exist'
       }
@@ -320,10 +320,10 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_alpha': [{
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_beta'
       }, {
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'channel': 'beta'
       }]
     };
@@ -338,12 +338,12 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler = self._createTestFeatureCompiler('APIFeature')
     compiler._json = {
       'feature_alpha': {
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'channel': 'beta',
       },
       'feature_beta': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'alias': 'feature_alpha'
       }
     };
@@ -363,7 +363,7 @@ class FeatureCompilerTest(unittest.TestCase):
         None, None, 'APIFeature', None, None, None, None)
     c._CompileFeature('bookmarks',
         [{
-          'contexts': ['blessed_extension'],
+          'contexts': ['privileged_extension'],
         }, {
           'channel': 'stable',
           'contexts': ['webui'],
@@ -384,7 +384,7 @@ class FeatureCompilerTest(unittest.TestCase):
     with self.assertRaisesRegex(AssertionError, error):
       compiler._CompileFeature('feature_alpha',
         [{
-          'contexts': ['blessed_extension'],
+          'contexts': ['privileged_extension'],
           'channel': 'stable',
         }])
 
@@ -493,7 +493,7 @@ class FeatureCompilerTest(unittest.TestCase):
     compiler._json = {
       'feature_cups': {
         'channel': 'beta',
-        'contexts': ['blessed_extension'],
+        'contexts': ['privileged_extension'],
         'extension_types': ['extension'],
         'required_buildflags': ['use_cups']
       }

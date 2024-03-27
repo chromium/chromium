@@ -5,11 +5,11 @@
   },
   "test1.foo": {
     "channel": "trunk",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "test2": {
     "channel": "trunk",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "test2.foo": {
     "channel": "trunk",
@@ -17,19 +17,19 @@
   },
   "test2.bar": {
     "channel": "trunk",
-    "contexts": ["content_script", "blessed_extension"]
+    "contexts": ["content_script", "privileged_extension"]
   },
   "test2.baz": {
     "channel": "trunk",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "test3": {
     "channel": "trunk",
-    "contexts": ["content_script", "blessed_extension"]
+    "contexts": ["content_script", "privileged_extension"]
   },
   "test3.foo": {
     "channel": "trunk",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "test4": {
     "channel": "trunk",
@@ -38,6 +38,6 @@
   },
   "test5": {
     "channel": "trunk",
-    "contexts": ["blessed_web_page"]
+    "contexts": ["privileged_web_page"]
   }
 }

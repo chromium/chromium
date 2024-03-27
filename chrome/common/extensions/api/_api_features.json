@@ -6,31 +6,31 @@
 // See chrome/common/extensions/api/_features.md to understand this file, as
 // well as feature.h, simple_feature.h, and feature_provider.h.
 //
-// Note that specifying "web_page", "blessed_web_page", or "all" as a context
+// Note that specifying "web_page", "privileged_web_page", or "all" as a context
 // type will require manually updating javascript bindings code in the
 // renderer.
 
 {
   "accessibilityFeatures": [{
     "dependencies": ["permission:accessibilityFeatures.modify"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "dependencies": ["permission:accessibilityFeatures.read"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }],
   "accessibilityPrivate": {
     "dependencies": ["permission:accessibilityPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "accessibilityServicePrivate": {
     "dependencies": ["permission:accessibilityServicePrivate"],
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "platforms": ["chromeos", "lacros"]
   },
   "action": {
     "dependencies": ["manifest:action"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "action.openPopup": [{
     // TODO(https://crbug.com/1245093): Upgrade to stable channel.
@@ -50,7 +50,7 @@
   },
   "activityLogPrivate": [{
     "dependencies": ["permission:activityLogPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -70,11 +70,11 @@
     "channel": "stable",
     "extension_types": ["hosted_app", "extension", "legacy_packaged_app"],
     "contexts": [
-      "blessed_extension",
-      "unblessed_extension",
+      "privileged_extension",
+      "unprivileged_extension",
       "content_script",
       "web_page",
-      "blessed_web_page"
+      "privileged_web_page"
     ],
     "disallow_for_service_workers": true,
     "max_manifest_version": 2,
@@ -84,11 +84,11 @@
   "appviewTag": {
     "internal": true,
     "dependencies": ["permission:appview"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "autofillPrivate": [{
     "dependencies": ["permission:autofillPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -98,7 +98,7 @@
   }],
   "autotestPrivate": {
     "dependencies": ["permission:autotestPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "bookmarkManagerPrivate": {
     "channel": "stable",
@@ -111,7 +111,7 @@
   },
   "bookmarks": [{
     "dependencies": ["permission:bookmarks"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true
   }, {
     "channel": "stable",
@@ -141,11 +141,11 @@
   },
   "brailleDisplayPrivate": {
     "dependencies": ["permission:brailleDisplayPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "browserAction": {
     "dependencies": ["manifest:browser_action"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   // This API is allowlisted on stable and should not be enabled for a wider
   // audience without resolving security issues raised in API proposal and
@@ -153,7 +153,7 @@
   "browserAction.openPopup": [{
     "channel": "dev",
     "dependencies": ["manifest:browser_action"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "dependencies": ["manifest:browser_action"],
@@ -165,15 +165,15 @@
       "A8208CCC87F8261AFAEB6B85D5E8D47372DDEA6B",  // http://crbug.com/497301
       "EFCF5358672FEE04789FD2EC3638A67ADEDB6C8C"   // http://crbug.com/514696
     ],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }],
   "browsingData": {
     "dependencies": ["permission:browsingData"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "certificateProvider": {
     "dependencies": ["permission:certificateProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "certificateProvider.onCertificatesRequested": {
     "max_manifest_version": 2
@@ -184,11 +184,11 @@
   "certificateProviderInternal": {
     "internal": true,
     "dependencies": ["permission:certificateProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "chromeosInfoPrivate": [{
     "dependencies": ["permission:chromeosInfoPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -203,7 +203,7 @@
   "chromeWebViewTag": [{
     "internal": true,
     "dependencies": ["permission:webview"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "internal": true,
     "channel": "stable",
@@ -224,7 +224,7 @@
   "chromeWebViewInternal": [{
     "internal": true,
     "dependencies": ["api:chromeWebViewTag"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "internal": true,
     "dependencies": ["api:chromeWebViewTag"],
@@ -245,30 +245,30 @@
   }],
   "commandLinePrivate": {
     "dependencies": ["permission:commandLinePrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "commands": {
     "dependencies": ["manifest:commands"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "contentSettings": {
     "dependencies": ["permission:contentSettings"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "contentSettings.clipboard": {
     "feature_flag": "ApiContentSettingsClipboard"
   },
   "contextMenus": {
     "dependencies": ["permission:contextMenus"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "cookies": {
     "dependencies": ["permission:cookies"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "crashReportPrivate": [{
     "dependencies": ["permission:crashReportPrivate"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true
   },
   {
@@ -294,26 +294,26 @@
   }],
   "dashboardPrivate": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "allowlist": [
       "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
     ]
   },
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "desktopCapture": {
     "dependencies": ["permission:desktopCapture"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "developerPrivate": [{
     "dependencies": ["permission:developerPrivate", "permission:management"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -323,30 +323,30 @@
   "devtools.inspectedWindow": {
     "nocompile": true,
     "dependencies": ["manifest:devtools_page"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "devtools.network": {
     "nocompile": true,
     "dependencies": ["manifest:devtools_page"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "devtools.panels": {
     "nocompile": true,
     "dependencies": ["manifest:devtools_page"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "documentScan": {
     "dependencies": ["permission:documentScan"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "dom": {
     "channel": "stable",
-    "contexts": ["blessed_extension", "content_script"]
+    "contexts": ["privileged_extension", "content_script"]
   },
   "downloads": [
     {
       "dependencies": ["permission:downloads"],
-      "contexts": ["blessed_extension"]
+      "contexts": ["privileged_extension"]
     },
     {
       "channel": "stable",
@@ -358,7 +358,7 @@
     {
       "internal": true,
       "channel": "stable",
-      "contexts": ["blessed_extension"],
+      "contexts": ["privileged_extension"],
       "dependencies": ["permission:downloads"]
     },
     {
@@ -370,40 +370,40 @@
   ],
   "echoPrivate": {
     "dependencies": ["permission:echoPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.hardwarePlatform": {
     "dependencies": ["permission:enterprise.hardwarePlatform"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.deviceAttributes": {
     "dependencies": ["permission:enterprise.deviceAttributes"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.kioskInput": {
     "dependencies": ["permission:enterprise.kioskInput"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.networkingAttributes": {
     "dependencies": ["permission:enterprise.networkingAttributes"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.platformKeys": {
     "dependencies": ["permission:enterprise.platformKeys"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.platformKeysInternal": {
     "dependencies": ["permission:enterprise.platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.platformKeysPrivate": {
     "dependencies": ["permission:enterprise.platformKeysPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.reportingPrivate": {
     "dependencies": ["permission:enterprise.reportingPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.reportingPrivate.getFileSystemInfo": {
     "platforms": ["win", "mac", "linux"]
@@ -420,53 +420,73 @@
   "experimental.devtools.audits": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "experimental.devtools.console": {
     "nocompile": true,
     "dependencies": ["permission:experimental", "manifest:devtools_page"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "extension": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "extension.getBackgroundPage": {
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "disallow_for_service_workers": true
   },
   "extension.getExtensionTabs": {
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "disallow_for_service_workers": true,
     "max_manifest_version": 2
   },
   "extension.getURL": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ],
     "max_manifest_version": 2
   },
   "extension.getViews": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension", "legacy_packaged_app"],
     "disallow_for_service_workers": true
   },
   "extension.inIncognitoContext": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ]
   },
   "extension.lastError": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ],
     "max_manifest_version": 2
   },
   "extension.onRequest": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ],
     "max_manifest_version": 2
   },
   "extension.onRequestExternal": {
     "max_manifest_version": 2
   },
   "extension.sendRequest": {
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script"],
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ],
     "max_manifest_version": 2
   },
   "extensionOptionsInternal": {
@@ -484,18 +504,18 @@
   },
   "fileBrowserHandler": {
     "dependencies": ["permission:fileBrowserHandler"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "disallow_for_service_workers": true
   },
   "fileBrowserHandlerInternal": {
     "internal": true,
     "dependencies": ["permission:fileBrowserHandler"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "disallow_for_service_workers": true
   },
   "fileManagerPrivate": [{
     "dependencies": ["permission:fileManagerPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -507,7 +527,7 @@
   "fileManagerPrivateInternal": [{
     "internal": true,
     "dependencies": ["permission:fileManagerPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "internal": true,
     "channel": "stable",
@@ -519,7 +539,7 @@
   }],
   "fileSystemProvider": [{
     "dependencies": ["permission:fileSystemProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui_untrusted"],
@@ -531,7 +551,7 @@
   "fileSystemProviderInternal": [{
     "internal": true,
     "dependencies": ["permission:fileSystemProvider"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "internal": true,
     "channel": "stable",
@@ -543,44 +563,44 @@
   }],
   "fontSettings": {
     "dependencies": ["permission:fontSettings"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "gcm": {
     "dependencies": ["permission:gcm"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "sharedStoragePrivate": {
     "dependencies": ["permission:sharedStoragePrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "history": {
     "dependencies": ["permission:history"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "identity": {
     "dependencies": ["permission:identity"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "identity.getAccounts": {
     "channel": "dev",
     "dependencies": ["permission:identity"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "idltest": {
     "dependencies": ["permission:idltest"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "imageLoaderPrivate": {
     "dependencies": ["permission:imageLoaderPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "input.ime": {
     "dependencies": ["permission:input"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "inputMethodPrivate": [{
     "dependencies": ["permission:inputMethodPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -593,11 +613,11 @@
   }],
   "instanceID": {
     "dependencies": ["permission:gcm"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "languageSettingsPrivate": [{
     "dependencies": ["permission:languageSettingsPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -610,11 +630,11 @@
   }],
   "login": [{
     "dependencies": ["behavior:imprivata_extension", "permission:login"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true
   }, {
     "dependencies": ["permission:login"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "allowlist": [
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
@@ -623,7 +643,7 @@
   }],
   "login.exitCurrentSession": [{
     "dependencies": ["behavior:imprivata_extension", "permission:login"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "dependencies": ["permission:login"],
     "allowlist": [
@@ -636,19 +656,19 @@
   }],
   "loginScreenStorage": {
     "dependencies": ["permission:loginScreenStorage"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "loginScreenUi": {
     "dependencies": ["permission:loginScreenUi"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "loginState": {
     "dependencies": ["permission:loginState"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webcamPrivate": {
     "dependencies": ["permission:webcamPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   // This is not a real API, only here for documentation purposes.
   // See http://crbug.com/275944 for background.
@@ -659,11 +679,11 @@
   },
   "mediaPlayerPrivate": {
     "dependencies": ["permission:mediaPlayerPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "mdns": {
     "dependencies": ["permission:mdns"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "mimeHandlerViewGuestInternal": {
     "internal": true,
@@ -673,23 +693,23 @@
   },
   "notifications": {
     "dependencies": ["permission:notifications"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "omnibox": {
     "dependencies": ["manifest:omnibox"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "pageAction": {
     "dependencies": ["manifest:page_action"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "pageCapture": {
     "dependencies": ["permission:pageCapture"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "passwordsPrivate": [{
     "dependencies": ["permission:passwordsPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -706,50 +726,50 @@
       "platform_app",
       "chromeos_system_extension"
     ],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "platformKeysInternal": [{
     "dependencies": ["permission:platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },{
     "dependencies": ["permission:enterprise.platformKeys"],
     "internal": true,
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }],
   "pdfViewerPrivate": {
     "dependencies": ["permission:pdfViewerPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "printing": {
     "dependencies": ["permission:printing"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "required_buildflags": ["use_cups"]
   },
   "printingMetrics": {
     "dependencies": ["permission:printingMetrics"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "required_buildflags": ["use_cups"]
   },
   "privacy": {
     "dependencies": ["permission:privacy"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "processes": {
     "dependencies": ["permission:processes"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "proxy": {
     "dependencies": ["permission:proxy"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "imageWriterPrivate": {
     "dependencies": ["permission:imageWriterPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "quickUnlockPrivate": {
     "channel": "stable",
@@ -764,12 +784,12 @@
   },
   "readingList": {
     "dependencies": ["permission:readingList"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "feature_flag": "ApiReadingList"
   },
   "resourcesPrivate": [{
     "dependencies": ["permission:resourcesPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -779,15 +799,15 @@
   }],
   "rtcPrivate": {
     "dependencies": ["permission:rtcPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "safeBrowsingPrivate": {
     "dependencies": ["permission:safeBrowsingPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "scripting": {
     "dependencies": ["permission:scripting"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "scripting.globalParams": {
     "channel": "trunk",
@@ -796,15 +816,15 @@
   },
   "search": {
     "dependencies": ["permission:search"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "sessions": {
     "dependencies": ["permission:sessions"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "settingsPrivate": [{
     "dependencies": ["permission:settingsPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -816,43 +836,43 @@
   }],
   "sidePanel": {
     "dependencies": ["permission:sidePanel"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "smartCardProviderPrivate": {
     "dependencies": ["permission:smartCardProviderPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "systemIndicator": {
     "dependencies": ["manifest:system_indicator"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "systemLog": {
     "dependencies": ["permission:systemLog"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "systemPrivate": {
     "dependencies": ["permission:systemPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "tabCapture": {
     "dependencies": ["permission:tabCapture"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "tabCapture.capture": {
     "disallow_for_service_workers": true
   },
   "tabGroups": {
     "dependencies": ["permission:tabGroups"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "tabs": [{
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true
   }, {
     "channel": "stable",
@@ -903,7 +923,7 @@
   // chrome-untrusted://crosh, and chrome-untrusted://terminal.
   "terminalPrivate": [{
     "dependencies": ["permission:terminalPrivate"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "default_parent": true,
     "platforms": ["chromeos"]
   }, {
@@ -918,7 +938,7 @@
   // terminalPrivate.openTerminalProcess allowed for nassh extensions,
   // and chrome-untrusted://crosh, but NOT for chrome-untrusted://terminal.
   "terminalPrivate.openTerminalProcess": [{
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "dependencies": [],
     "channel": "stable",
@@ -929,11 +949,11 @@
   }],
   "topSites": {
     "dependencies": ["permission:topSites"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "tts": [{
     "dependencies": ["permission:tts"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -943,11 +963,11 @@
   }],
   "ttsEngine": {
     "dependencies": ["permission:ttsEngine"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "usersPrivate": [{
     "dependencies": ["permission:usersPrivate"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "platforms": ["chromeos"]
   }, {
     "channel": "stable",
@@ -958,11 +978,11 @@
   }],
   "virtualKeyboardPrivate": {
     "dependencies": ["permission:virtualKeyboardPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "wallpaper": [{
     "dependencies": ["permission:wallpaper"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -972,23 +992,23 @@
   }],
   "webAuthenticationProxy": {
     "dependencies": ["permission:webAuthenticationProxy"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webNavigation": {
     "dependencies": ["permission:webNavigation"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webrtcAudioPrivate": {
     "dependencies": ["permission:webrtcAudioPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webrtcDesktopCapturePrivate": {
     "dependencies": ["permission:webrtcDesktopCapturePrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webrtcLoggingPrivate": {
     "dependencies": ["permission:webrtcLoggingPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "webrtcLoggingPrivate.getLogsDirectory": {
     "component_extensions_auto_granted": false,
@@ -1004,9 +1024,9 @@
   "webstorePrivate": [{
     "dependencies": ["permission:webstorePrivate"],
     // NOTE: even though this is only used by the webstore hosted app, which
-    // normally would mean blessed_web_page, component hosted apps are actually
-    // given the blessed_extension denomination. Confusing.
-    "contexts": ["blessed_extension"]
+    // normally would mean privileged_web_page, component hosted apps are
+    // actually given the privileged_extension denomination. Confusing.
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["web_page"],
@@ -1017,11 +1037,11 @@
     "internal": true,
     "channel": "stable",
     "dependencies": ["permission:webview"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "windows": [{
     "dependencies": ["api:tabs"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -1040,6 +1060,6 @@
   }],
   "wmDesksPrivate": {
     "dependencies": ["permission:wmDesksPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }
 }

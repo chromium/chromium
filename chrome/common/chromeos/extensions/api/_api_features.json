@@ -12,7 +12,7 @@
       "permission:os.diagnostics"
     ],
     "contexts": [
-      "blessed_extension"
+      "privileged_extension"
     ],
     "platforms": [
       "chromeos",
@@ -25,7 +25,7 @@
       "permission:os.events"
     ],
     "contexts": [
-      "blessed_extension"
+      "privileged_extension"
     ],
     "platforms": [
       "chromeos",
@@ -39,7 +39,7 @@
       "permission:os.management.audio"
     ],
     "contexts": [
-      "blessed_extension"
+      "privileged_extension"
     ],
     "platforms": [
       "chromeos",
@@ -62,7 +62,7 @@
       "permission:os.telemetry"
     ],
     "contexts": [
-      "blessed_extension"
+      "privileged_extension"
     ],
     "platforms": [
       "chromeos",

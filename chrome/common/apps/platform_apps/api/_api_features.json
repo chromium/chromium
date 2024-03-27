@@ -9,29 +9,29 @@
 {
   "arcAppsPrivate": {
     "dependencies": ["permission:arcAppsPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "browser": {
     "dependencies": ["permission:browser"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.remoteApps": {
     "dependencies": ["permission:enterprise.remoteApps"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "enterprise.remoteApps.setPinnedApps": {
     "dependencies": ["permission:enterprise.remoteApps", "behavior:imprivata_extension"]
   },
   "firstRunPrivate": {
     "dependencies": ["permission:firstRunPrivate"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "mediaGalleries": {
     "dependencies": ["permission:mediaGalleries"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "syncFileSystem": {
     "dependencies": ["permission:syncFileSystem"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }
 }

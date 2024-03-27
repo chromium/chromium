@@ -750,7 +750,8 @@ Feature::Availability SimpleFeature::GetContextAvailability(
 
   // TODO(kalman): Consider checking |matches_| regardless of context type.
   // Fewer surprises, and if the feature configuration wants to isolate
-  // "matches" from say "blessed_extension" then they can use complex features.
+  // "matches" from say "privileged_extension" then they can use complex
+  // features.
   const bool supports_url_matching =
       context == mojom::ContextType::kWebPage ||
       context == mojom::ContextType::kWebUi ||
