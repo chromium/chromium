@@ -67,17 +67,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   void Detach() override;
   bool IsAXLayoutObject() const final;
 
-  // Check object role or purpose.
-  bool IsLinked() const override;
-  bool IsOffScreen() const override;
-  bool IsVisited() const override;
-
-  // Check object state.
-  bool IsNotUserSelectable() const override;
-
-  // Properties of static elements.
-  ax::mojom::blink::ListStyle GetListStyle() const final;
-
   // Inline text boxes.
   //
   // Get either the first inline block descendant or deepest descendant that

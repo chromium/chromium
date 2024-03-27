@@ -45,6 +45,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -202,6 +203,17 @@ bool IsPotentialInPageLinkTarget(blink::Node& node) {
   }
 
   return false;
+}
+
+bool IsLinkable(const blink::AXObject& object) {
+  if (!object.GetLayoutObject()) {
+    return false;
+  }
+
+  // See https://wiki.mozilla.org/Accessibility/AT-Windows-API for the elements
+  // Mozilla considers linkable.
+  return object.IsLink() || object.IsImage() ||
+         object.GetLayoutObject()->IsText();
 }
 
 bool IsNeutralWithinTable(blink::AXObject* obj) {
@@ -2370,13 +2382,37 @@ bool AXNodeObject::IsNativeImage() const {
 }
 
 bool AXNodeObject::IsOffScreen() const {
-  if (IsDetached())
-    return false;
-  DCHECK(GetNode());
-  // Differs fromAXLayoutObject::IsOffScreen() in that there is no bounding box.
+  if (GetLayoutObject()) {
+    gfx::Rect content_rect =
+        ToPixelSnappedRect(GetLayoutObject()->VisualRectInDocument());
+    LocalFrameView* view = GetLayoutObject()->GetFrame()->View();
+    gfx::Rect view_rect(gfx::Point(), view->Size());
+    view_rect.Intersect(content_rect);
+    return view_rect.IsEmpty();
+  }
+
+  // Without a layout object, there is no bounding box.
   // However, we know that if it is display-locked that is an indicator that it
   // is currently offscreen, and will likely be onscreen once scrolled to.
-  return DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode());
+  return GetNode() &&
+         DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode());
+}
+
+bool AXNodeObject::IsLinked() const {
+  if (!IsLinkable(*this)) {
+    return false;
+  }
+
+  if (auto* anchor = DynamicTo<HTMLAnchorElement>(AnchorElement())) {
+    return !anchor->Href().IsEmpty();
+  }
+  return false;
+}
+
+bool AXNodeObject::IsVisited() const {
+  return GetLayoutObject() && GetLayoutObject()->Style()->IsLink() &&
+         GetLayoutObject()->Style()->InsideLink() ==
+             EInsideLink::kInsideVisitedLink;
 }
 
 bool AXNodeObject::IsProgressIndicator() const {
@@ -2533,6 +2569,20 @@ bool AXNodeObject::IsSelectedFromFocus() const {
     return false;
 
   return true;
+}
+
+// Returns true if the object is marked user-select:none
+bool AXNodeObject::IsNotUserSelectable() const {
+  if (!GetLayoutObject()) {
+    return false;
+  }
+
+  const ComputedStyle* style = GetLayoutObject()->Style();
+  if (!style) {
+    return false;
+  }
+
+  return (style->UsedUserSelect() == EUserSelect::kNone);
 }
 
 bool AXNodeObject::IsTabItemSelected() const {
@@ -2895,6 +2945,97 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
       ax::mojom::blink::IntListAttribute::kMarkerStarts, marker_starts);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerEnds, marker_ends);
+}
+
+ax::mojom::blink::ListStyle AXNodeObject::GetListStyle() const {
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return AXObject::GetListStyle();
+  }
+
+  const ComputedStyle* computed_style = layout_object->Style();
+  if (!computed_style) {
+    return AXObject::GetListStyle();
+  }
+
+  const StyleImage* style_image = computed_style->ListStyleImage();
+  if (style_image && !style_image->ErrorOccurred()) {
+    return ax::mojom::blink::ListStyle::kImage;
+  }
+
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
+    if (!computed_style->ListStyleType()) {
+      return ax::mojom::blink::ListStyle::kNone;
+    }
+    if (computed_style->ListStyleType()->IsString()) {
+      return ax::mojom::blink::ListStyle::kOther;
+    }
+
+    DCHECK(computed_style->ListStyleType()->IsCounterStyle());
+    const CounterStyle& counter_style =
+        ListMarker::GetCounterStyle(*GetDocument(), *computed_style);
+    switch (counter_style.EffectiveSpeakAs()) {
+      case CounterStyleSpeakAs::kBullets: {
+        // See |ua_counter_style_map.cc| for predefined symbolic counter styles.
+        UChar symbol = counter_style.GenerateTextAlternative(0)[0];
+        switch (symbol) {
+          case 0x2022:
+            return ax::mojom::blink::ListStyle::kDisc;
+          case 0x25E6:
+            return ax::mojom::blink::ListStyle::kCircle;
+          case 0x25A0:
+            return ax::mojom::blink::ListStyle::kSquare;
+          default:
+            return ax::mojom::blink::ListStyle::kOther;
+        }
+      }
+      case CounterStyleSpeakAs::kNumbers:
+        return ax::mojom::blink::ListStyle::kNumeric;
+      case CounterStyleSpeakAs::kWords:
+        return ax::mojom::blink::ListStyle::kOther;
+      case CounterStyleSpeakAs::kAuto:
+      case CounterStyleSpeakAs::kReference:
+        NOTREACHED();
+        return ax::mojom::blink::ListStyle::kOther;
+    }
+  }
+
+  switch (ListMarker::GetListStyleCategory(*GetDocument(), *computed_style)) {
+    case ListMarker::ListStyleCategory::kNone:
+      return ax::mojom::blink::ListStyle::kNone;
+    case ListMarker::ListStyleCategory::kSymbol: {
+      const AtomicString& counter_style_name =
+          computed_style->ListStyleType()->GetCounterStyleName();
+      if (counter_style_name == keywords::kDisc) {
+        return ax::mojom::blink::ListStyle::kDisc;
+      }
+      if (counter_style_name == keywords::kCircle) {
+        return ax::mojom::blink::ListStyle::kCircle;
+      }
+      if (counter_style_name == keywords::kSquare) {
+        return ax::mojom::blink::ListStyle::kSquare;
+      }
+      return ax::mojom::blink::ListStyle::kOther;
+    }
+    case ListMarker::ListStyleCategory::kLanguage: {
+      const AtomicString& counter_style_name =
+          computed_style->ListStyleType()->GetCounterStyleName();
+      if (counter_style_name == keywords::kDecimal) {
+        return ax::mojom::blink::ListStyle::kNumeric;
+      }
+      if (counter_style_name == "decimal-leading-zero") {
+        // 'decimal-leading-zero' may be overridden by custom counter styles. We
+        // return kNumeric only when we are using the predefined counter style.
+        if (ListMarker::GetCounterStyle(*GetDocument(), *computed_style)
+                .IsPredefined()) {
+          return ax::mojom::blink::ListStyle::kNumeric;
+        }
+      }
+      return ax::mojom::blink::ListStyle::kOther;
+    }
+    case ListMarker::ListStyleCategory::kStaticString:
+      return ax::mojom::blink::ListStyle::kOther;
+  }
 }
 
 AXObject* AXNodeObject::InPageLinkTarget() const {

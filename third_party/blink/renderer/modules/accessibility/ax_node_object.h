@@ -137,6 +137,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsNativeSlider() const override;
   bool IsNativeSpinButton() const override;
   bool IsEmbeddingElement() const override;
+  bool IsLinked() const override;
+  bool IsVisited() const override;
 
   // Check object state.
   bool IsClickable() const final;
@@ -145,6 +147,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AccessibilitySelectedState IsSelected() const override;
   bool IsSelectedFromFocusSupported() const override;
   bool IsSelectedFromFocus() const override;
+  bool IsNotUserSelectable() const override;
   bool IsRequired() const final;
   bool IsControl() const override;
   AXRestriction Restriction() const override;
@@ -163,6 +166,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   int HeadingLevel() const final;
   unsigned HierarchicalLevel() const final;
   void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
+  ax::mojom::blink::ListStyle GetListStyle() const final;
   AXObject* InPageLinkTarget() const override;
   const AtomicString& EffectiveTarget() const override;
   AccessibilityOrientation Orientation() const override;
