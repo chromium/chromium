@@ -382,38 +382,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private restoreFontMenu_() {
     const currentFontIndex =
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
-    let fontOptions: Element[];
     if (this.isReadAloudEnabled_) {
-      fontOptions = Array.from(this.$.fontMenu.children);
       this.setCheckMarkForMenu_(this.$.fontMenu, currentFontIndex);
 
-      // Setting the custom fonts on each of the elements in the dropdown is
-      // technically possible when Read Aloud is disabled, but it can cause
-      // an issue where the first instance of opening the dropdown shows a
-      // scrollbar because the height is calculated before the font is set.
-      // Therefore, only set the custom fonts on the individual items when
-      // Read Aloud is enabled.
-      this.setFontForFontOptions_(fontOptions);
     } else {
       const shadowRoot = this.shadowRoot;
       assert(shadowRoot);
       const select =
           shadowRoot.getElementById('font-select') as HTMLSelectElement;
       assert(select);
-      fontOptions = Array.from(select.options);
       select.selectedIndex = currentFontIndex;
     }
-  }
-
-  private setFontForFontOptions_(fontOptions: Element[]) {
-    fontOptions.forEach(element => {
-      assert(element instanceof HTMLElement);
-      if (!element.innerText) {
-        return;
-      }
-      // Update the font of each button to be the same as the font text.
-      element.style.fontFamily = element.innerText;
-    });
   }
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
@@ -459,11 +438,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
 
     this.$.fontTemplate.render();
-    if (this.isReadAloudEnabled_) {
-      this.setFontForFontOptions_(Array.from(this.$.fontMenu.children));
-    }
   }
-
 
   private playPauseButtonAriaLabel_(paused: boolean) {
     return paused ? loadTimeData.getString('playLabel') :
