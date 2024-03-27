@@ -14,14 +14,19 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/components/data_migration/constants.h"
@@ -86,7 +91,9 @@ class DeviceTest : public ::testing::Test {
   }
 
   void SendRts(int64_t file_payload_id) {
-    static int64_t g_rts_payload_id_assigner = 1000;
+    // Must not intersect with file payload ids, which are assigned starting at
+    // "1" in test cases below.
+    static int64_t g_rts_payload_id_assigner = 1000000;
     ASSERT_TRUE(
         nearby_process_manager_.fake_nearby_connections().SendBytesPayload(
             /*payload_id=*/g_rts_payload_id_assigner,
@@ -100,7 +107,9 @@ class DeviceTest : public ::testing::Test {
     int64_t file_size_in_bytes = 0;
     return base::PathExists(file_path) &&
            base::GetFileSize(file_path, &file_size_in_bytes) &&
-           file_size_in_bytes >= FakeNearbyConnections::kTestFileSizeInBytes;
+           file_size_in_bytes >=
+               nearby_process_manager_.fake_nearby_connections()
+                   .test_file_size_in_bytes();
   }
 
   base::flat_set</*payload_id*/ int64_t> requested_file_payload_ids_;
@@ -161,9 +170,10 @@ TEST_F(DeviceTest, ShutsDownMidTransfer) {
     return false;
   }));
 
-  ASSERT_LT(
-      base::ComputeDirectorySize(temp_dir_.GetPath()),
-      kTotalNumFilesToTransmit * FakeNearbyConnections::kTestFileSizeInBytes);
+  ASSERT_LT(base::ComputeDirectorySize(temp_dir_.GetPath()),
+            kTotalNumFilesToTransmit *
+                nearby_process_manager_.fake_nearby_connections()
+                    .test_file_size_in_bytes());
   device_.reset();
 }
 
@@ -187,6 +197,57 @@ TEST_F(DeviceTest, ContinuesTransmittingFilesAfterFailure) {
             expected_file_content_.at(/*payload_id=*/1));
   EXPECT_EQ(base::ReadFileToBytes(BuildFilePayloadPath(/*payload_id=*/3)),
             expected_file_content_.at(/*payload_id=*/3));
+}
+
+TEST_F(DeviceTest, FileStressTest) {
+  constexpr int64_t kTotalNumFilesToTransmit = 5000;
+  // Reduce these numbers from their defaults otherwise the test takes 3-4x
+  // longer.
+  constexpr int64_t kFileSizeInBytes = 1;
+  constexpr int64_t kNumChunksPerFile = 1;
+
+  // Empirically, this test takes about 15 seconds.
+  base::test::ScopedRunLoopTimeout test_timeout(FROM_HERE, base::Minutes(1));
+
+  nearby_process_manager_.fake_nearby_connections().set_test_file_size_in_bytes(
+      kFileSizeInBytes);
+  nearby_process_manager_.fake_nearby_connections().set_test_file_num_chunks(
+      kNumChunksPerFile);
+
+  // Remote device send RTS for some files.
+  for (int64_t payload_id = 1; payload_id <= kTotalNumFilesToTransmit;
+       ++payload_id) {
+    SendRts(payload_id);
+  }
+
+  base::RepeatingClosure test_complete_signal = task_environment_.QuitClosure();
+  // The `test_completion_check` is expensive, so it's run on a blocking thread,
+  // freeing the main thread for the test itself.
+  base::RepeatingClosure test_completion_check =
+      base::BindLambdaForTesting([this, test_complete_signal]() {
+        if (base::ComputeDirectorySize(GetFilePayloadDirectory()) >=
+            kTotalNumFilesToTransmit * kFileSizeInBytes) {
+          test_complete_signal.Run();
+        }
+      });
+  scoped_refptr<base::SequencedTaskRunner> test_completion_sequence =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  auto test_completion_checker = std::make_unique<base::RepeatingTimer>();
+  test_completion_sequence->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&test_completion_checker,
+                                             test_completion_check]() {
+        constexpr base::TimeDelta kTestCompletionCheckInterval =
+            base::Seconds(1);
+        test_completion_checker->Start(FROM_HERE, kTestCompletionCheckInterval,
+                                       test_completion_check);
+      }));
+
+  task_environment_.RunUntilQuit();
+  test_completion_sequence->DeleteSoon(FROM_HERE,
+                                       std::move(test_completion_checker));
+  // Flush any pending ThreadPool tasks scheduled internally by `DataMigration`
+  // before exiting.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace

@@ -26,9 +26,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   using PayloadStatus = ::nearby::connections::mojom::PayloadStatus;
   using Status = ::nearby::connections::mojom::Status;
 
-  // Size of all test files transmitted via `SendFile()`.
-  static constexpr int kTestFileSizeInBytes = 1000;
-
   // `remote_endpoint_id` is the id of the simulated remote device from whom
   // data will be transferred.
   explicit FakeNearbyConnections(std::string_view remote_endpoint_id);
@@ -77,6 +74,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
       base::RepeatingClosure connection_established_listener) {
     connection_established_listener_ =
         std::move(connection_established_listener);
+  }
+
+  // Size of all test files transmitted via `SendFile()`. Defaults to 1000.
+  void set_test_file_size_in_bytes(size_t test_file_size_in_bytes) {
+    test_file_size_in_bytes_ = test_file_size_in_bytes;
+  }
+  int test_file_size_in_bytes() const { return test_file_size_in_bytes_; }
+
+  // Number of chunks into which files transmitted via `SendFile()` are divided.
+  // Each chunk has the same size:
+  // `test_file_size_in_bytes_` / `test_file_num_chunks_`.
+  //
+  // Defaults to 4.
+  void set_test_file_num_chunks(size_t test_file_num_chunks) {
+    test_file_num_chunks_ = test_file_num_chunks;
   }
 
   // Simulates a bytes payload being sent from the remote device to the local
@@ -211,6 +223,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   base::RepeatingCallback<void(::nearby::connections::mojom::PayloadPtr)>
       local_to_remote_payload_listener_;
   base::RepeatingClosure connection_established_listener_;
+
+  size_t test_file_size_in_bytes_ = 1000;
+  size_t test_file_num_chunks_ = 4;
 };
 
 }  // namespace data_migration

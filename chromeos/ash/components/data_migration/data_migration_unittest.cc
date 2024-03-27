@@ -104,7 +104,9 @@ class DataMigrationTest : public ::testing::Test {
     int64_t file_size_in_bytes = 0;
     return base::PathExists(file_path) &&
            base::GetFileSize(file_path, &file_size_in_bytes) &&
-           file_size_in_bytes >= FakeNearbyConnections::kTestFileSizeInBytes;
+           file_size_in_bytes >=
+               nearby_process_manager_.fake_nearby_connections()
+                   .test_file_size_in_bytes();
   }
 
   base::flat_set</*payload_id*/ int64_t> requested_file_payload_ids_;

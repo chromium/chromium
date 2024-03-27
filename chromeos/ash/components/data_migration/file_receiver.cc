@@ -98,6 +98,9 @@ FileReceiver::~FileReceiver() {
     // Note this is a no-op if the transfer completed with a failure.
     nearby_connections_manager_->Cancel(payload_id_);
   }
+  // Closes all file descriptors associated with this payload. Prevents them
+  // from accumulating over the course of a long data migration.
+  nearby_connections_manager_->ClearIncomingPayloadWithId(payload_id_);
 }
 
 void FileReceiver::RegisterPayloadPath(int attempt_number) {
