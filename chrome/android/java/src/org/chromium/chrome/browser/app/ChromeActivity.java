@@ -541,6 +541,23 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         getWindow().setBackgroundDrawable(getBackgroundDrawable());
+
+        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
+        if (supportsTabModalDialogs()) {
+            mTabModalLifetimeHandler =
+                    new TabModalLifetimeHandler(
+                            this,
+                            getLifecycleDispatcher(),
+                            getModalDialogManager(),
+                            () -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
+                            this::getTabObscuringHandler,
+                            this::getToolbarManager,
+                            getContextualSearchManagerSupplier(),
+                            getTabModelSelectorSupplier(),
+                            this::getBrowserControlsManager,
+                            this::getFullscreenManager,
+                            mBackPressManager);
+        }
     }
 
     private void setupUnownedUserDataSuppliers() {
@@ -1747,22 +1764,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         var dialogManager =
                 new ModalDialogManager(
                         new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
-        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
-        if (supportsTabModalDialogs()) {
-            mTabModalLifetimeHandler =
-                    new TabModalLifetimeHandler(
-                            this,
-                            getLifecycleDispatcher(),
-                            dialogManager,
-                            () -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
-                            this::getTabObscuringHandler,
-                            this::getToolbarManager,
-                            getContextualSearchManagerSupplier(),
-                            getTabModelSelectorSupplier(),
-                            this::getBrowserControlsManager,
-                            this::getFullscreenManager,
-                            mBackPressManager);
-        }
         return dialogManager;
     }
 
@@ -1772,7 +1773,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return True if tab modal dialog is supported.
      */
     protected boolean supportsTabModalDialogs() {
-        return false;
+        return getActivityType() == ActivityType.TABBED
+                || (getActivityType() == ActivityType.CUSTOM_TAB
+                        && ChromeFeatureList.sCctTabModalDialog.isEnabled());
     }
 
     @Nullable

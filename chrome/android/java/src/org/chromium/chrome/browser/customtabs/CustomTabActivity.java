@@ -428,11 +428,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         return new CustomTabLaunchCauseMetrics(this);
     }
 
-    @Override
-    protected boolean supportsTabModalDialogs() {
-        return ChromeFeatureList.sCctTabModalDialog.isEnabled();
-    }
-
     public NightModeStateProvider getNightModeStateProviderForTesting() {
         return super.getNightModeStateProvider();
     }

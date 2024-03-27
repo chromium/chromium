@@ -551,7 +551,7 @@ BASE_FEATURE(kCCTResizableSideSheetForThirdParties,
 
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDontAutoHideBrowserControls,
              "DontAutoHideBrowserControls",

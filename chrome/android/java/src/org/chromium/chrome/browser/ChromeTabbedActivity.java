@@ -3571,11 +3571,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     @Override
-    protected boolean supportsTabModalDialogs() {
-        return true;
-    }
-
-    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         Boolean result =
                 KeyboardShortcuts.dispatchKeyEvent(
