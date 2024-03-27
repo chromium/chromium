@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.appmenu;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,10 +88,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
@@ -113,13 +108,10 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,8 +150,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
-    @Mock private AppMenuHandler mAppMenuHandler;
-    @Mock private AppMenuPropertiesDelegate.CustomItemViewTypeProvider mCustomItemViewTypeProvider;
+
     private OneshotSupplierImpl<IncognitoReauthController> mIncognitoReauthControllerSupplier =
             new OneshotSupplierImpl<>();
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
@@ -1322,62 +1313,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
         assertTrue(menu.findItem(R.id.readaloud_menu_id).isVisible());
-    }
-
-    @Test
-    public void testReadaloudMenuItem_readableBecomesUnreadable() {
-        testReadAloudMenuItemUpdates(/* initiallyReadable= */ true, /* laterReadable= */ false);
-    }
-
-    @Test
-    public void testReadaloudMenuItem_unreadableBecomesReadable() {
-        testReadAloudMenuItemUpdates(/* initiallyReadable= */ false, /* laterReadable= */ true);
-    }
-
-    @Test
-    public void testReadaloudMenuItem_noChangeInReadability_notReadable() {
-        testReadAloudMenuItemUpdates(/* initiallyReadable= */ false, /* laterReadable= */ false);
-    }
-
-    @Test
-    public void testReadaloudMenuItem_noChangeInReadability_readable() {
-        testReadAloudMenuItemUpdates(/* initiallyReadable= */ true, /* laterReadable= */ true);
-    }
-
-    private void testReadAloudMenuItemUpdates(boolean initiallyReadable, boolean laterReadable) {
-        AccessibilityState.setIsScreenReaderEnabledForTesting(false);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mReadAloudController.isReadable(mTab)).thenReturn(initiallyReadable);
-        setUpMocksForPageMenu();
-        Menu menu = createTestMenu();
-        mAppMenuPropertiesDelegate.getMenuItemsForMenu(
-                menu, mCustomItemViewTypeProvider, mAppMenuHandler);
-        // When menu is created, the visibility should match readability state at that time
-        assertEquals(initiallyReadable, hasReadAloudInMenu());
-
-        when(mCustomItemViewTypeProvider.fromMenuItemId(anyInt()))
-                .thenReturn(CustomViewBinder.NOT_HANDLED);
-        when(mReadAloudController.isReadable(mTab)).thenReturn(laterReadable);
-        // When a new readability result is retrieved, ensure that the menu item visibility matches
-        // the current readability state.
-        mAppMenuPropertiesDelegate.getReadAloudmenuResetter().run();
-        assertEquals(laterReadable, hasReadAloudInMenu());
-    }
-
-    private boolean hasReadAloudInMenu() {
-        ModelList modelList = mAppMenuPropertiesDelegate.getModelList();
-        if (modelList == null) {
-            return false;
-        }
-        Iterator<ListItem> it = modelList.iterator();
-        while (it.hasNext()) {
-            ListItem li = it.next();
-            int id = li.model.get(AppMenuItemProperties.MENU_ITEM_ID);
-            if (id == R.id.readaloud_menu_id) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean doTestShouldShowNewMenu(
