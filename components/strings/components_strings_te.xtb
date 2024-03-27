@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">వాటర్ ఫిల్టర్‌లు &amp; ప్యూరిఫైయర్‌లు</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1036881361735705143">ఎన్వలప్ C4</translation>
-<translation id="1036982837258183574">ఫుల్-స్క్రీన్‌‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
 <translation id="1041998700806130099">జాబ్ షీట్ మెసేజ్‌</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">బోట్‌లు &amp; నీటిపై వెళ్లే వాహనాలు</translation>
 <translation id="1283977499362032052">రెజ్యూమ్‌లు &amp; పోర్ట్‌ఫోలియోలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
-<translation id="1288548991597756084">కార్డ్‌ను సురక్షితంగా సేవ్ చేయండి</translation>
 <translation id="1292571435393770077">ట్రే 16</translation>
 <translation id="1292701964462482250">"మీ కంప్యూటర్‌లో ఉన్న సాఫ్ట్‌వేర్ కారణంగా Chrome సురక్షితంగా వెబ్‌కు కనెక్ట్ కాలేకపోతోంది" (Windows కంప్యూటర్‌ల కోసం మాత్రమే)</translation>
 <translation id="1293797321964802402">9 x 11 అంగుళాల ఎన్వలప్</translation>
@@ -281,7 +279,6 @@
 <translation id="1507202001669085618">&lt;p&gt;ఆన్‌లైన్‌కు వెళ్లడం కంటే ముందు సైన్ ఇన్ చేయాల్సిన అవసరం ఉన్న Wi-Fi పోర్టల్‌ను మీరు ఉపయోగిస్తున్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
     &lt;p&gt;ఎర్రర్‌ను పరిష్కరించడానికి, మీరు తెరవాలనుకుంటున్న పేజీలో &lt;strong&gt;కనెక్ట్ చేయి&lt;/strong&gt;ని నొక్కండి.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">హిస్టరీ నమోదుల లిస్ట్‌</translation>
-<translation id="1516097932025103760">ఇది ఎన్‌క్రిప్ట్ చేయబడుతుంది, సురక్షితంగా సేవ్ చేయబడుతుంది, అలాగే CVC ఎప్పుడూ స్టోర్ చేయబడదు.</translation>
 <translation id="151720253492607760">అనుమతించకుండా కొనసాగించండి</translation>
 <translation id="1517433312004943670">ఫోన్ నంబర్ అవసరం</translation>
 <translation id="1519264250979466059">బిల్డ్ తేదీ</translation>
@@ -1016,7 +1013,7 @@
 <translation id="2952904171810469095">A2x5</translation>
 <translation id="2954624054936281172">సేవ్ చేయబడిన పేమెంట్ ఆప్షన్‌ల టేబుల్</translation>
 <translation id="295526156371527179">హెచ్చరిక: ఈ విధానం ఒక నిఘంటువు కానందున, విధానంలో పేర్కొన్నట్లు నిఘంటువు లాగా విలీనం చేయబడలేదు.</translation>
-<translation id="2955913368246107853">కనుగొనండి బార్‌ను మూసివేయి</translation>
+<translation id="2955913368246107853">కనుగొనండి బార్‌ను మూసివేయండి</translation>
 <translation id="2958544468932521864">క్రికెట్</translation>
 <translation id="2959274854674276289">శాకాహార వంటకాలు</translation>
 <translation id="2961809451460302960">జీవిత బీమా</translation>
@@ -1255,7 +1252,6 @@
 <translation id="342781501876943858">మీరు మీ పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates సర్వర్ టెంప్లేట్‌ URIలు చెల్లవు, ఉపయోగించబడవు.</translation>
 <translation id="3428789896412418755">గ్రూప్ చేయబడిన హిస్టరీ</translation>
-<translation id="3431216045099978607">ఫుల్ స్క్రీన్ నుండి నిష్క్రమించి, డౌన్‌లోడ్‌ను చూడటానికి |<ph name="ACCELERATOR" />|ను నొక్కండి.</translation>
 <translation id="3432601291244612633">పేజీని మూసివేయండి</translation>
 <translation id="3433111389595862568">సహకార &amp; కాన్ఫరెన్సింగ్ సాఫ్ట్‌వేర్</translation>
 <translation id="3433144818443565002">వాయిస్ &amp; వీడియో చాట్</translation>
@@ -1982,7 +1978,6 @@
 <translation id="483241715238664915">హెచ్చరికలను ఆన్ చేయండి</translation>
 <translation id="4832961164064927107">బార్బెక్యూ &amp; గ్రిల్లింగ్</translation>
 <translation id="4834250788637067901">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
-<translation id="4839087176073128681">తర్వాతిసారి పేమెంట్‌ను వేగంగా చేయండి, అలాగే Googleకు చెందిన అత్యంత అధునాతనమైన సెక్యూరిటీతో మీ కార్డ్‌ను సంరక్షించుకోండి.</translation>
 <translation id="4840250757394056958">మీ Chrome హిస్టరీని చూడండి</translation>
 <translation id="484462545196658690">ఆటో</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" />, మరి కొందరి నుండి డిస్కౌంట్ పొందండి</translation>
@@ -2582,7 +2577,7 @@
 <translation id="6034514109191629503">ఎకార్డియన్ ఫోల్డ్</translation>
 <translation id="6035491133925068289">ట్రాక్ &amp; ఫీల్డ్</translation>
 <translation id="6039846035001940113">సమస్య కొనసాగుతుంటే, సైట్ యజమానిని సంప్రదించండి.</translation>
-<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
 <translation id="6041777658117377052">చాంబర్ ఉష్ణోగ్రత</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
@@ -2590,7 +2585,6 @@
 <translation id="6045164183059402045">ఇంపోజిషన్ టెంప్లేట్</translation>
 <translation id="6047233362582046994">మీ భద్రతకు వాటిల్లే ఆపదల గురించి మీకు అర్థం అయ్యి ఉంటే, హానికర యాప్‌లు తీసివేయబడటానికి ముందే మీరు <ph name="BEGIN_LINK" />ఈ సైట్‌ను సందర్శించవచ్చు<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">ఈ కంటెంట్ సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడానికి లేదా వ్యక్తిగత సమాచారాన్ని బహిర్గతం చేయడానికి పురిగొల్పేలా మిమ్మల్ని మాయ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏది ఏమైనా చూపు<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />|ని నొక్కి, పట్టుకోండి</translation>
 <translation id="6049056807983403918">ఎన్వలప్ B4</translation>
 <translation id="6049488691372270142">పేజీ డెలివరీ</translation>
 <translation id="6049975101166779351">పిల్లల సంరక్షణ</translation>
@@ -2709,7 +2703,6 @@
 <translation id="6270066318535733958">పడవ విహారం</translation>
 <translation id="6272088941196661550">మీ Chrome హిస్టరీలో మీ సందర్భోచితమైన యాక్టివిటీని చూడటానికి మీ సెర్చ్‌ను కొనసాగించండి</translation>
 <translation id="6272383483618007430">Google అప్‌డేట్</translation>
-<translation id="6279183038361895380">మీ కర్సర్‌ను చూపడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="6280223929691119688">ఈ అడ్రస్‌కు డెలివరీ చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="6284292079994426700">26 x 38 అంగుళాలు</translation>
 <translation id="6284449872909111707">టెక్స్ట్ &amp; ఇన్‌స్టంట్ మెసేజింగ్</translation>
@@ -3750,7 +3743,6 @@
 <translation id="8241707690549784388">మీరు వెతికే పేజీ మీరు ఎంటర్ చేసిన సమాచారాన్ని ఉపయోగించుకుంది. ఆ పేజీకి తిరిగి వెళ్ల‌డం ద్వారా మీరు చేసిన ఏ చర్య అయినా రిపీట్‌ చేయ‌వలసి వస్తుంది. మీరు కొనసాగాలని అనుకుంటున్నారా?</translation>
 <translation id="8241712895048303527">ఈ సైట్‌లో బ్లాక్ చేయండి</translation>
 <translation id="8242426110754782860">కొనసాగు</translation>
-<translation id="8245703462678310750">ఫుల్ స్క్రీన్ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />|ను నొక్కి, పట్టుకోండి, డౌన్‌లోడ్‌ని చూడండి.</translation>
 <translation id="8246482227229072868">రింగ్‌లు</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (ఆటోమేటిక్-గుర్తింపు)ని <ph name="TARGET" />లోకి అనువదించడం</translation>
@@ -4028,7 +4020,7 @@
 <translation id="8763927697961133303">USB పరికరం</translation>
 <translation id="8763986294015493060">ప్రస్తుతం తెరిచి ఉన్న అజ్ఞాత విండోలన్నింటినీ మూసివేయండి</translation>
 <translation id="8766943070169463815">సురక్షిత పేమెంట్ ఆధారాల ప్రామాణీకరణ షీట్ తెరవబడింది</translation>
-<translation id="8767765348545497220">సహాయ బబుల్‌ను మూసివేయి</translation>
+<translation id="8767765348545497220">సహాయ బబుల్‌ను మూసివేయండి</translation>
 <translation id="8768225988514678921">'ప్రెజెంటేషన్‌ను క్రియేట్ చేయండి' బటన్, Slidesలో క్విక్‌గా కొత్త Google ప్రెజెంటేషన్‌ను క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="8770286973007342895">లాన్ మూవర్‌లు</translation>
 <translation id="8772387130037509473">యోగా &amp; పిలాటిస్</translation>

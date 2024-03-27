@@ -301,6 +301,7 @@
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
 <translation id="2652403576514495859">음성기록 사용 설정 또는 전환</translation>
+<translation id="2653659639078652383">제출</translation>
 <translation id="2656001153562991489">Chromebook Plus 전용</translation>
 <translation id="2665671725390405060">발음 듣기</translation>
 <translation id="267442004702508783">새로고침</translation>
@@ -469,6 +470,7 @@
 <translation id="3877066159641251281">번역 듣기</translation>
 <translation id="3885327323343477505">화면 보호기 변경</translation>
 <translation id="3889914174935857450">날짜 재설정</translation>
+<translation id="3897092660631435901">메뉴</translation>
 <translation id="391412459402535266">기기를 테스트할 수 없습니다. 테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="3916998944874125962">스크린샷을 찍습니다</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
@@ -752,6 +754,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5588233547254916455">문자</translation>
 <translation id="5595623927872580850">회색</translation>
+<translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> 키는 테스트했습니다.</translation>
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5630438231335788050">바우하우스</translation>

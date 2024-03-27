@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Ūdens filtri un attīrītāji</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1036881361735705143">Aploksne C4</translation>
-<translation id="1036982837258183574">Lai izietu no pilnekrāna režīma, nospiediet |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1038106730571050514">Rādīt ieteikumus</translation>
 <translation id="1038842779957582377">nezināms nosaukums</translation>
 <translation id="1041998700806130099">Uzdevuma lapas ziņojums</translation>
@@ -160,7 +159,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1282358575813748144">Laivas un peldlīdzekļi</translation>
 <translation id="1283977499362032052">CV un portfolio</translation>
 <translation id="1285320974508926690">Nekad netulkot šo vietni</translation>
-<translation id="1288548991597756084">Droši saglabājiet karti</translation>
 <translation id="1292571435393770077">16. paplāte</translation>
 <translation id="1292701964462482250">“Programmatūra jūsu datorā, kuras dēļ pārlūkā Chrome nevar izveidot drošu tīmekļa savienojumu” (tikai Windows datoros)</translation>
 <translation id="1293797321964802402">Aploksne (9 x 11 collas)</translation>
@@ -286,7 +284,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1507202001669085618">&lt;p&gt;Šis kļūdas ziņojums tiek rādīts, ja izmantojat Wi-Fi portālu, kurā ir jāpierakstās, lai varētu pāriet tiešsaistē.&lt;/p&gt;
     &lt;p&gt;Lai novērstu šo kļūdu, lapā, kuru mēģināt atvērt, noklikšķiniet uz &lt;strong&gt;Izveidot savienojumu&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Vēstures ierakstu saraksts</translation>
-<translation id="1516097932025103760">Karte tiks šifrēta, droši saglabāta, un CVC kods nekad netiks saglabāts.</translation>
 <translation id="151720253492607760">Joprojām neatļaut</translation>
 <translation id="1517433312004943670">Jānorāda tālruņa numurs</translation>
 <translation id="1519264250979466059">Būvējuma datums</translation>
@@ -1260,7 +1257,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="342781501876943858">Chromium iesaka atiestatīt jūsu paroli, ja izmantojāt to citās vietnēs.</translation>
 <translation id="3428151540071562330">Viens vai vairāki DnsOverHttpsTemplates servera veidņu identifikatori URI nav derīgi un netiks izmantoti.</translation>
 <translation id="3428789896412418755">Grupēta vēsture</translation>
-<translation id="3431216045099978607">Nospiediet taustiņu |<ph name="ACCELERATOR" />|, lai izietu no pilnekrāna režīma un skatītu lejupielādi.</translation>
 <translation id="3432601291244612633">Aizvērt lapu</translation>
 <translation id="3433111389595862568">Sadarbības un konferenču programmatūra</translation>
 <translation id="3433144818443565002">Balss un video tērzēšana</translation>
@@ -1986,7 +1982,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="483241715238664915">Ieslēgt brīdinājumus</translation>
 <translation id="4832961164064927107">Grilēšana</translation>
 <translation id="4834250788637067901">Maksājumu veidi, piedāvājumi un adreses no pakalpojuma Google Pay</translation>
-<translation id="4839087176073128681">Nākamreiz maksājiet ātrāk un aizsargājiet savu karti ar nozarē vadošo Google drošības risinājumu.</translation>
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="484671803914931257">Saņemiet atlaides, iepērkoties pie <ph name="MERCHANT_NAME" /> un citiem tirgotājiem</translation>
@@ -2594,7 +2589,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6045164183059402045">Izvietojuma veidne</translation>
 <translation id="6047233362582046994">Ja apzināties drošības risku, varat arī <ph name="BEGIN_LINK" />apmeklēt šo vietni<ph name="END_LINK" />, pirms ir noņemtas kaitīgās lietotnes.</translation>
 <translation id="6047927260846328439">Ar šo saturu jūs var maldināt un panākt, ka instalējat programmatūru vai atklājat personas informāciju. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
-<translation id="6049004884579590341">Nospiediet un turiet |<ph name="ACCELERATOR" />|, lai izietu no pilnekrāna režīma.</translation>
 <translation id="6049056807983403918">Aploksne B4</translation>
 <translation id="6049488691372270142">Lapu izvade</translation>
 <translation id="6049975101166779351">Bērnu aprūpe</translation>
@@ -2713,7 +2707,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6270066318535733958">Laivošana</translation>
 <translation id="6272088941196661550">Atsāciet meklēšanas ceļu, lai skatītu atbilstošās darbības savā Chrome vēsturē</translation>
 <translation id="6272383483618007430">Google atjauninājums</translation>
-<translation id="6279183038361895380">Lai tiktu parādīts kursors, nospiediet |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Nevar piegādāt uz šo adresi. Atlasiet citu adresi.</translation>
 <translation id="6284292079994426700">26 x 38 collas</translation>
 <translation id="6284449872909111707">Īsziņas un tūlītējā ziņojumapmaiņa</translation>
@@ -3754,7 +3747,6 @@ Papildu informācija:
 <translation id="8241707690549784388">Lapa, ko meklējāt, izmantoja jūsu ievadīto informāciju. Atgriešanās lapā var radīt jebkuras jūsu darbības atkārtojumu. Vai vēlaties turpināt?</translation>
 <translation id="8241712895048303527">Bloķēt šajā vietnē</translation>
 <translation id="8242426110754782860">Turpināt</translation>
-<translation id="8245703462678310750">Lai izietu no pilnekrāna režīma un skatītu lejupielādi, nospiediet un turiet taustiņu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8246482227229072868">Gredzeni</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
 <translation id="824968735947741546">Notiek tulkošana no šādas valodas: <ph name="SOURCE" /> (automātiski noteikta); šādā valodā: <ph name="TARGET" /></translation>

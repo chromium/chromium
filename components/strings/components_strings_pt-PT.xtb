@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filtros e purificadores de água</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">Premir |<ph name="ACCELERATOR" />| para sair do ecrã inteiro</translation>
 <translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem da folha da tarefa</translation>
@@ -160,7 +159,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1282358575813748144">Barcos e embarcações</translation>
 <translation id="1283977499362032052">Currículos e portefólios</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
-<translation id="1288548991597756084">Guarde o cartão de forma segura</translation>
 <translation id="1292571435393770077">Tabuleiro 16</translation>
 <translation id="1292701964462482250">"Existe software no computador que está a impedir que o Chrome se ligue à Web em segurança" (apenas para computadores com Windows)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 pol.</translation>
@@ -286,7 +284,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1507202001669085618">&lt;p&gt;Este erro é apresentado se estiver a utilizar um portal Wi-Fi que requer que inicie sessão para poder aceder à Internet.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, clique em &lt;strong&gt;Ligar&lt;/strong&gt; na página que está a tentar abrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista de entradas no histórico</translation>
-<translation id="1516097932025103760">Vai ser encriptado, guardado de forma segura e o CVC (Código de Segurança) nunca é armazenado.</translation>
 <translation id="151720253492607760">Continuar a não permitir</translation>
 <translation id="1517433312004943670">Número de telefone obrigatório</translation>
 <translation id="1519264250979466059">Data da Compilação</translation>
@@ -1260,7 +1257,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="342781501876943858">O Chromium recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
 <translation id="3428151540071562330">Um ou mais URIs de modelos do servidor DnsOverHttpsTemplates são inválidos e não serão utilizados.</translation>
 <translation id="3428789896412418755">Histórico agrupado</translation>
-<translation id="3431216045099978607">Prima |<ph name="ACCELERATOR" />| para sair do modo de ecrã inteiro e ver a transferência.</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software de colaboração e videoconferência</translation>
 <translation id="3433144818443565002">Chat de voz e vídeo</translation>
@@ -1987,7 +1983,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4832961164064927107">Churrascos e grelhados</translation>
 <translation id="4834250788637067901">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
-<translation id="4839087176073128681">Pague mais rápido da próxima vez e proteja o seu cartão com a segurança líder da indústria da Google.</translation>
 <translation id="4840250757394056958">Ver o Histórico do Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Obtenha descontos no comerciante <ph name="MERCHANT_NAME" /> e outros</translation>
@@ -2595,7 +2590,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se compreende os riscos para a sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de as aplicações prejudiciais terem sido removidas.</translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganá-lo de forma a que instale software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Prima |<ph name="ACCELERATOR" />| sem soltar para sair do modo de ecrã inteiro.</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Fornecimento da página</translation>
 <translation id="6049975101166779351">Puericultura</translation>
@@ -2714,7 +2708,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6270066318535733958">Passeios de barco</translation>
 <translation id="6272088941196661550">Retome o percurso para ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Premir |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
 <translation id="6280223929691119688">Não é possível entregar neste endereço. Selecione um diferente.</translation>
 <translation id="6284292079994426700">26 x 38 pol.</translation>
 <translation id="6284449872909111707">Mensagens de texto e instantâneas</translation>
@@ -3754,7 +3747,6 @@ Detalhes adicionais:
 <translation id="8241707690549784388">A página que procura utilizou informações introduzidas por si. Regressar a essa página poderá originar a repetição de qualquer ação que tenha efetuado. Quer continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste site</translation>
 <translation id="8242426110754782860">Continuar</translation>
-<translation id="8245703462678310750">Prima sem soltar |<ph name="ACCELERATOR" />| para sair do modo de ecrã inteiro e ver a transferência.</translation>
 <translation id="8246482227229072868">Anéis</translation>
 <translation id="8249296373107784235">Abortar</translation>
 <translation id="824968735947741546">A traduzir <ph name="SOURCE" /> (detetado automaticamente) para <ph name="TARGET" /></translation>

@@ -301,6 +301,7 @@
 <translation id="2638662041295312666">תמונת המשתמש</translation>
 <translation id="2640549051766135490">האלבום <ph name="TITLE" /> <ph name="DESC" /> נבחר</translation>
 <translation id="2652403576514495859">הפעלה או החלפת המצב של ההכתבה</translation>
+<translation id="2653659639078652383">שליחה</translation>
 <translation id="2656001153562991489">‏בלעדי ב-Chromebook Plus</translation>
 <translation id="2665671725390405060">האזנה להגייה</translation>
 <translation id="267442004702508783">רענון</translation>
@@ -469,6 +470,7 @@
 <translation id="3877066159641251281">האזנה לתרגום</translation>
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
 <translation id="3889914174935857450">תאריך האיפוס</translation>
+<translation id="3897092660631435901">תפריט</translation>
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3916998944874125962">צילום מסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
@@ -752,6 +754,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5588233547254916455">אותיות</translation>
 <translation id="5595623927872580850">אפור</translation>
+<translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5600027863942488546">בוצעה בדיקה של המקש <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5630438231335788050">באוהאוס</translation>

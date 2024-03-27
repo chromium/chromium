@@ -1690,7 +1690,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2252017960592955005">Megtekintési védelem (béta)</translation>
 <translation id="2253318212986772520">Nem sikerült lekérni a(z) <ph name="PRINTER_NAME" /> PPD-jét.</translation>
 <translation id="2253927598983295051">Válassza ki, hogy mit szeretne megosztani a következővel: <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">A Google-fiókjában lévő jelszavak és azonosítókulcsok megjelenítése</translation>
 <translation id="2255077166240162850">Az eszköz másik domainhez vagy módban van zárolva.</translation>
 <translation id="2255317897038918278">Microsoft - időbélyegzés</translation>
 <translation id="2256115617011615191">Újraindítás most</translation>
@@ -5123,7 +5122,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4881695831933465202">Megnyitás</translation>
 <translation id="488211015466188466">Webhely követése</translation>
 <translation id="4882312758060467256">Hozzáfér ehhez a webhelyhez</translation>
-<translation id="4882752944049998623">Jelszó mentve az Ön Google-fiókjába (<ph name="USER_EMAIL" />)</translation>
 <translation id="4882919381756638075">A webhelyek általában kommunikációs szolgáltatások (például videocsevegés) biztosítása érdekében férnek hozzá a mikrofonhoz</translation>
 <translation id="4883436287898674711">Minden <ph name="WEBSITE_1" /> webhelyen</translation>
 <translation id="48838266408104654">&amp;Feladatkezelő</translation>

@@ -1679,7 +1679,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2252017960592955005">Weergavebeveiliging (bèta)</translation>
 <translation id="2253318212986772520">Kan PPD niet ophalen voor <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Kies wat je wilt delen met <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Wachtwoorden en toegangssleutels uit je Google-account tonen</translation>
 <translation id="2255077166240162850">Dit apparaat is vergrendeld in een ander domein of een andere modus.</translation>
 <translation id="2255317897038918278">Microsoft-tijdstempel</translation>
 <translation id="2256115617011615191">Nu opnieuw starten</translation>
@@ -5107,7 +5106,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="488211015466188466">Site volgen</translation>
 <translation id="4882312758060467256">Heeft toegang tot deze site</translation>
-<translation id="4882752944049998623">Wachtwoord opgeslagen in je Google-account, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Sites gebruiken je microfoon vaak voor communicatiefuncties zoals videochatten</translation>
 <translation id="4883436287898674711">Alle sites op <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Taakbeheer</translation>

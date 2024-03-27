@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="8398929769197326728">ಹೊಸ ಫೋಲ್ಡರ್‌ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">ಕಡಿಮೆ ಬೆಲೆ</translation>
+<translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8730999928494395583">ಈ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ತಿಂಗಳ ಹಿಂದೆ ರಚಿಸಲಾಗಿದೆ}one{<ph name="NUM_MONTHS_MANY" /> ತಿಂಗಳುಗಳ ಹಿಂದೆ}other{<ph name="NUM_MONTHS_MANY" /> ತಿಂಗಳುಗಳ ಹಿಂದೆ}}</translation>
 <translation id="8820741577754260431">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆ ಕುಸಿತಗಳನ್ನು ನೋಡಿ</translation>

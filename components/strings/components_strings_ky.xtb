@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Суу чыпкалары жана тазалагычтар</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
-<translation id="1036982837258183574">Толук экрандан чыгуу үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз</translation>
 <translation id="1038106730571050514">Сунуштарды көрсөтүү</translation>
 <translation id="1038842779957582377">белгисиз ат</translation>
 <translation id="1041998700806130099">Жумуш барагынын билдирүүсү</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Кайыктар жана кемелер</translation>
 <translation id="1283977499362032052">Резюмелер жана портфолиолор</translation>
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
-<translation id="1288548991597756084">Карта коопсуз сакталды</translation>
 <translation id="1292571435393770077">16-түпкүч</translation>
 <translation id="1292701964462482250">"Компьютериңизде иштеп жаткан программа Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат" (Windows компьютерлери үчүн гана)</translation>
 <translation id="1293797321964802402">Конверт 9 x 11 дюйм</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Бул ката Интернетке туташуудан мурда кирүүнү талап кылган Wi-Fi порталын колдонгондо көрүнөт.&lt;/p&gt;
     &lt;p&gt;Катаны оңдоо үчүн ачууга аракет кылып жаткан барактан &lt;strong&gt;Туташуу&lt;/strong&gt; дегенди чыкылдатыңыз.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Таржымалдагы жазуулардын тизмеси</translation>
-<translation id="1516097932025103760">Ал шифрленип, коопсуз сакталды. CVC эч качан сакталбайт.</translation>
 <translation id="151720253492607760">Тыюу салынган бойдон калсын</translation>
 <translation id="1517433312004943670">Телефон номери талап кылынат</translation>
 <translation id="1519264250979466059">Курама күнү</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">Сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
 <translation id="3428151540071562330">Бир же бир нече DnsOverHttpsTemplates серверлериндеги URI даректеринин үлгүлөрү жараксыз жана колдонулбайт.</translation>
 <translation id="3428789896412418755">Топторго бириктирилген таржымал</translation>
-<translation id="3431216045099978607">Толук экран режиминен чыгып, жүктөлүп алынган файлды көрүү үчүн |<ph name="ACCELERATOR" />| баскычын басыңыз.</translation>
 <translation id="3432601291244612633">Баракты жабуу</translation>
 <translation id="3433111389595862568">Кызматташуу жана конференциялар үчүн программа</translation>
 <translation id="3433144818443565002">Үн жана видео чат</translation>
@@ -1986,7 +1982,6 @@
 <translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4832961164064927107">Барбекю жана гриль</translation>
 <translation id="4834250788637067901">Google Pay'ди колдонгон төлөм ыкмалары, сунуштар жана даректер</translation>
-<translation id="4839087176073128681">Эмки жолу тез төлөп, картаңыздын коопсуздугун Google'дун жаңы технологиялары менен коргоңуз.</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> сайтынан жана башкалардан арзандатуу алыңыз</translation>
@@ -2594,7 +2589,6 @@
 <translation id="6045164183059402045">Вёрстканын үлгүсү</translation>
 <translation id="6047233362582046994">Эгер коопсуздугуңузга кандай коркунуч келтирилип жаткандыгын жакшы түшүнсөңүз, зыянкеч колдонмолор алынып салынаардан мурун, <ph name="BEGIN_LINK" />бул сайтка кирип көрсөңүз<ph name="END_LINK" /> болот.</translation>
 <translation id="6047927260846328439">Бул баракка кирсеңиз, зыянкеч программа орнотулуп же жеке маалыматыңыз уурдалышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир уланта берем<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Толук экандан чыгуу үчүн |<ph name="ACCELERATOR" />| баскычын басып, кармап туруңуз</translation>
 <translation id="6049056807983403918">Конверт B4</translation>
 <translation id="6049488691372270142">Баракты жеткирүү</translation>
 <translation id="6049975101166779351">Балдарга кам көрүү</translation>
@@ -2713,7 +2707,6 @@
 <translation id="6270066318535733958">Кайыкта</translation>
 <translation id="6272088941196661550">Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн саякатты улантыңыз</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Курсоруңузду көрсөтүү үчүн |<ph name="ACCELERATOR" />| дегенди басыңыз</translation>
 <translation id="6280223929691119688">Бул дарекке жеткирүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
 <translation id="6284449872909111707">SMS жөнөтүү жана ыкчам жазышуу</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">Изделип жаткан бет сиз жазган маалыматты колдонгон. Ал бетке кайтып барсаңыз, жасалган аракеттердин бардыгы кайталанышы мүмкүн. Улантасызбы?</translation>
 <translation id="8241712895048303527">Бул сайтта бөгөттөлсүн</translation>
 <translation id="8242426110754782860">Улантуу</translation>
-<translation id="8245703462678310750">Толук экран режиминен чыгып, жүктөлүп алынган файлды көрүү үчүн |<ph name="ACCELERATOR" />| баскычын коё бербей басып туруңуз.</translation>
 <translation id="8246482227229072868">Шакекчелер</translation>
 <translation id="8249296373107784235">Токтотуу</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> тили (автоматтык түрдө аныкталды) <ph name="TARGET" /> тилине которулууда</translation>

@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Tanca les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="8398929769197326728">Carpeta nova : <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Preu més baix</translation>
+<translation id="8730621377337864115">Fet</translation>
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_MONTHS_ONE" /> mes}other{Creat fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>

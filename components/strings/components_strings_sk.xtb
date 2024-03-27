@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vodné filtre a čistiace zariadenia</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1036881361735705143">Obálka C4</translation>
-<translation id="1036982837258183574">Režim celej obrazovky ukončíte stlačením klávesa |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Zobraziť návrhy</translation>
 <translation id="1038842779957582377">neznámy názov</translation>
 <translation id="1041998700806130099">Správa hárku úlohy</translation>
@@ -160,7 +159,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1282358575813748144">Lode a plavidlá</translation>
 <translation id="1283977499362032052">Životopisy a portfóliá</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
-<translation id="1288548991597756084">Kartu bezpečne uložte</translation>
 <translation id="1292571435393770077">Zásobník č. 16</translation>
 <translation id="1292701964462482250">„Softvér vo vašom počítači bráni Chromu bezpečne sa pripojiť k internetu“ (iba počítače so systémom Windows)</translation>
 <translation id="1293797321964802402">Obálka 228,6 mm × 279,4 mm</translation>
@@ -286,7 +284,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1507202001669085618">&lt;p&gt;Táto chyba sa zobrazí, keď používate portál Wi-Fi, ktorý podmieňuje prístup k internetu prihlásením.&lt;/p&gt;
     &lt;p&gt;Ak ju chcete odstrániť, kliknite na možnosť &lt;strong&gt;Pripojiť&lt;/strong&gt; na stránke, ktorú sa pokúšate otvoriť.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Zoznam historických vstupov</translation>
-<translation id="1516097932025103760">Bude šifrovaná a bezpečne uložená. Overovací kód karty sa neukladá.</translation>
 <translation id="151720253492607760">Ďalej nepovoľovať</translation>
 <translation id="1517433312004943670">Vyžaduje sa telefónne číslo</translation>
 <translation id="1519264250979466059">Dátum zostavenia</translation>
@@ -1257,7 +1254,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="342781501876943858">Ak ste heslo použili aj na iných weboch, Chromium ho odporúča obnoviť.</translation>
 <translation id="3428151540071562330">Minimálne jeden identifikátor URI šablón servera DnsOverHttpsTemplates je neplatný a nebude použitý.</translation>
 <translation id="3428789896412418755">Zoskupená história</translation>
-<translation id="3431216045099978607">Stlačením tlačidla |<ph name="ACCELERATOR" />| ukončíte režim celej obrazovky a zobrazíte stiahnutý obsah.</translation>
 <translation id="3432601291244612633">Zavrieť stránku</translation>
 <translation id="3433111389595862568">Softvér na spoluprácu a konferencie</translation>
 <translation id="3433144818443565002">Hlasové hovory a videohovory</translation>
@@ -1983,7 +1979,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="483241715238664915">Zapnúť upozornenia</translation>
 <translation id="4832961164064927107">Grilovanie</translation>
 <translation id="4834250788637067901">Spôsoby platby, ponuky a adresy používajúce Google Pay</translation>
-<translation id="4839087176073128681">Najlepšie zabezpečenie v odvetví od Googlu vám umožní nabudúce zaplatiť rýchlejšie a ochráni vašu kartu.</translation>
 <translation id="4840250757394056958">Zobraziť históriu Chromu</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="484671803914931257">Získajte zľavu u obchodníka <ph name="MERCHANT_NAME" /> a ďalších</translation>
@@ -2591,7 +2586,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6045164183059402045">Šablóna zavedenia</translation>
 <translation id="6047233362582046994">Ak si uvedomujete bezpečnostné riziko, môžete <ph name="BEGIN_LINK" />tento web navštíviť<ph name="END_LINK" /> ešte skôr, ako budú škodlivé aplikácie odstránené.</translation>
 <translation id="6047927260846328439">Tento obsah sa vás môže podvodom pokúsiť presvedčiť, aby ste si nainštalovali softvér alebo poskytli osobné informácie. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pridržaním klávesa |<ph name="ACCELERATOR" />| ukončite režim celej obrazovky</translation>
 <translation id="6049056807983403918">Obálka B4</translation>
 <translation id="6049488691372270142">Doručenie strany</translation>
 <translation id="6049975101166779351">Starostlivosť o deti</translation>
@@ -2709,7 +2703,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6270066318535733958">Plavba loďou</translation>
 <translation id="6272088941196661550">Pokračujte v ceste a zobrazte si relevantnú aktivitu v histórii Chromu</translation>
 <translation id="6272383483618007430">Aktualizácie Google</translation>
-<translation id="6279183038361895380">Stlačením klávesa |<ph name="ACCELERATOR" />| zobrazíte kurzor</translation>
 <translation id="6280223929691119688">Doručenie na túto adresu nie je možné. Vyberte inú adresu.</translation>
 <translation id="6284292079994426700">26 × 38 palcov</translation>
 <translation id="6284449872909111707">Textové a četové správy</translation>
@@ -3750,7 +3743,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8241707690549784388">Vami hľadaná stránka použila informácie, ktoré ste zadali. Návrat na túto stránku môže spôsobiť zopakovanie akcie, ktorú ste vykonali. Chcete pokračovať?</translation>
 <translation id="8241712895048303527">Blokovať na tomto webe</translation>
 <translation id="8242426110754782860">Pokračovať</translation>
-<translation id="8245703462678310750">Pridržaním tlačidla |<ph name="ACCELERATOR" />| ukončite režim celej obrazovky a zobrazte stiahnutý obsah.</translation>
 <translation id="8246482227229072868">Prstene</translation>
 <translation id="8249296373107784235">Prerušiť</translation>
 <translation id="824968735947741546">Jazyk <ph name="SOURCE" /> (rozpoznáva sa automaticky) sa prekladá do jazyka <ph name="TARGET" /></translation>

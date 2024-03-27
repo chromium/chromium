@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">የውሃ ማጣሪያዎች እና ማጽጃዎች</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1036881361735705143">ሲ4 ፖስታ</translation>
-<translation id="1036982837258183574">ከሙሉ ማያ ገፅ ለመውጣት |<ph name="ACCELERATOR" />|ን ይጫኑ</translation>
 <translation id="1038106730571050514">የአስተያየት ጥቆማዎችን አሳይ</translation>
 <translation id="1038842779957582377">ያልታወቀ ስም</translation>
 <translation id="1041998700806130099">የስራ ሉህ መልዕክት</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">ጀልባዎች እና የውሃ መጓጓዣዎች</translation>
 <translation id="1283977499362032052">የስራ ልምዶች እና ፖርትፎሊዮዎች</translation>
 <translation id="1285320974508926690">ይህን ጣቢያ በጭራሽ አትተርጉም</translation>
-<translation id="1288548991597756084">ካርድ ደህንነቱ በተጠበቀ ሁኔታ ያስቀምጡ</translation>
 <translation id="1292571435393770077">መሳቢያ 16</translation>
 <translation id="1292701964462482250">«በእርስዎ ኮምፒውተር ላይ ያለ ሶፍትዌር Chrome ደህንነቱ በተጠበቀ ሁኔታ ከድር ጋር እንዳይገናኝ እያስቆመው ነው» (የWindows ኮምፒውተሮች ብቻ)</translation>
 <translation id="1293797321964802402">9 x 11 ኢንች ፖስታ</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;መስመር ላይ መሆን ከመቻልዎ በፊት በመለያ መግባት የሚያስፈልግበት የWi-Fi መግቢያ እየተጠቀሙ ከሆኑ ይህን ስህተት ይመለከታሉ።&lt;/p&gt;
     &lt;p&gt;ይህን ስህተት ለመፍታት ለመክፈት እየሞከሩ ባለው ገፅ ላይ &lt;strong&gt;ተገናኝ&lt;/strong&gt;ን ጠቅ ያድርጉ።&lt;/p&gt;</translation>
 <translation id="1513706915089223971">የታሪክ ግቤቶች ዝርዝር</translation>
-<translation id="1516097932025103760">የተመሰጠረ ይሆናል፣ ደህንነቱ በተጠበቀ ሁኔታ ይቀመጣል እና የካርድ ማረጋገጫ ኮዱ በፍጹም አይከማችም።</translation>
 <translation id="151720253492607760">አለመፍቀድ ቀጥል</translation>
 <translation id="1517433312004943670">ስልክ ቁጥር ያስፈልጋል</translation>
 <translation id="1519264250979466059">የግንብ ቀን</translation>
@@ -1259,7 +1256,6 @@
 <translation id="342781501876943858">Chromium የእርስዎን ይለፍ ቃል በሌሎች ጣቢያዎች ላይ ዳግም ከተጠቀሙበት እንደገና እንዲያዋቅሩት ይመክራል።</translation>
 <translation id="3428151540071562330">አንድ ወይም ተጨማሪ የDnsOverHttpsTemplates አገልጋይ ቅንብር ደንብ ዩአርአዮች ልክ ያልሆኑ ናቸው፣ እና ሥራ ላይ አይውሉም።</translation>
 <translation id="3428789896412418755">የተቦደነ ታሪክ</translation>
-<translation id="3431216045099978607">ከሙሉ ገፅ ዕይታ ለመውጣት እና ውርድን ለማየት |<ph name="ACCELERATOR" />|ን ይጫኑ።</translation>
 <translation id="3432601291244612633">ገፅ ይዝጉ</translation>
 <translation id="3433111389595862568">የትብብር እና ጉባዔ የማድረግ ሶፍትዌር</translation>
 <translation id="3433144818443565002">የድምጽ እና ቪድዮ ውይይት</translation>
@@ -1986,7 +1982,6 @@
 <translation id="483241715238664915">ማስጠንቀቂያዎችን አብራ</translation>
 <translation id="4832961164064927107">ባርቢኪው እና መጥበስ</translation>
 <translation id="4834250788637067901">Google Payን የሚጠቀሙ የመክፈያ ዘዴዎች፣ ቅናሾች እና አድራሻዎች</translation>
-<translation id="4839087176073128681">በGoogle ኢንዱስትሪ-መሪ ደህንነት በሚቀጥለው ጊዜ በፍጥነት ይክፈሉ እና ካርድዎን ይጠብቁ።</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ላይ ተጨማሪ ቅናሽ ያግኙ እና ሌሎች</translation>
@@ -2594,7 +2589,6 @@
 <translation id="6045164183059402045">የማስፈጸሚያ ቅንብር ደንብ</translation>
 <translation id="6047233362582046994">በእርስዎ ደህንነት ላይ የሚያመጣቸውን ስጋቶች ከተረዱ አደገኛ መተግበሪያዎቹ ከመወገዳቸው በፊት <ph name="BEGIN_LINK" />ይህን ጣቢያ መጎብኘት<ph name="END_LINK" /> ይችላሉ።</translation>
 <translation id="6047927260846328439">ይህ ይዘት ሶፍትዌር እንዲጭኑ ወይም የግል መረጃ ገልጸው እንዲያሳዩ እርስዎን ለማሳሳት ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">ከሙሉ ማያ ገፅ ለመውጣት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="6049056807983403918">ቢ4 ፖስታ</translation>
 <translation id="6049488691372270142">ገፅ ማድረስ</translation>
 <translation id="6049975101166779351">የልጅ እንክብካቤ</translation>
@@ -2713,7 +2707,6 @@
 <translation id="6270066318535733958">ጀልባ ቀዘፋ</translation>
 <translation id="6272088941196661550">በእርስዎ የChrome ታሪክ ውስጥ አግባብነት ያለው እንቅስቃሴን ለማየት ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="6272383483618007430">የGoogle ዝማኔ</translation>
-<translation id="6279183038361895380">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR" />| ይጫኑ</translation>
 <translation id="6280223929691119688">ወደዚህ አድራሻ ማድረስ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="6284292079994426700">26 x 38 ኢንች</translation>
 <translation id="6284449872909111707">ጽሁፍ እና ቅጽበታዊ መልዕክት መላላክ</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">እየፈለጉት ያሉት ገፅ ያስገቡትን መረጃ ተጥቅሟል። ወደዛ ገፅ መመለስ ወስደውት የነበረውን ርምጃ እንዲደገም ሊያደርግ ይችላል። ለመቀጠል ይፈልጋሉ?</translation>
 <translation id="8241712895048303527">በዚህ ጣቢያ ላይ አግድ</translation>
 <translation id="8242426110754782860">ቀጥል</translation>
-<translation id="8245703462678310750">ከሙሉ ገፅ ዕይታ ለመውጣት እና ውርድን ለማየት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ።</translation>
 <translation id="8246482227229072868">ቀለበቶች</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
 <translation id="824968735947741546"><ph name="SOURCE" />ን (በራስ-ሰር ሰርዝ) ወደ <ph name="TARGET" /> በመተርጎም ላይ</translation>

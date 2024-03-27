@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filtros de água e purificadores</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">Pressione |<ph name="ACCELERATOR" />| para sair do modo tela cheia</translation>
 <translation id="1038106730571050514">Exibir sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem de página de tarefa</translation>
@@ -160,7 +159,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1282358575813748144">Barcos e embarcações</translation>
 <translation id="1283977499362032052">Currículos e portfólios</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
-<translation id="1288548991597756084">Salvar cartão de forma segura</translation>
 <translation id="1292571435393770077">Bandeja 16</translation>
 <translation id="1292701964462482250">"Algum software no seu computador está impedindo o Google Chrome de se conectar com segurança à Web" (somente computadores Windows)</translation>
 <translation id="1293797321964802402">Envelope de 23 cm x 28 cm</translation>
@@ -286,7 +284,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1507202001669085618">&lt;p&gt;Você verá esse erro se estiver usando um portal Wi-Fi em que precise fazer login para poder se conectar.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, clique em &lt;strong&gt;Conectar&lt;/strong&gt; na página que você está tentando abrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista de entradas no histórico</translation>
-<translation id="1516097932025103760">Ele será criptografado e salvo de forma segura. O CVC nunca é armazenado.</translation>
 <translation id="151720253492607760">Continuar sem permissão</translation>
 <translation id="1517433312004943670">Número de telefone necessário</translation>
 <translation id="1519264250979466059">Data da versão</translation>
@@ -1260,7 +1257,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="342781501876943858">O Chromium recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="3428151540071562330">Um ou mais dos URIs de modelo de servidor da DnsOverHttpsTemplates é inválido e não será usado.</translation>
 <translation id="3428789896412418755">Histórico agrupado</translation>
-<translation id="3431216045099978607">Pressione |<ph name="ACCELERATOR" />| para sair da tela cheia e ver o download.</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software para conferências e colaboração</translation>
 <translation id="3433144818443565002">Chat por voz e vídeo</translation>
@@ -1987,7 +1983,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4832961164064927107">Churrasco e grelhados</translation>
 <translation id="4834250788637067901">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
-<translation id="4839087176073128681">Pague de forma mais rápida da próxima vez e proteja seu cartão com a segurança de ponta do Google.</translation>
 <translation id="4840250757394056958">Ver seu histórico do Chrome</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="484671803914931257">Receba descontos para <ph name="MERCHANT_NAME" /> e mais</translation>
@@ -2595,7 +2590,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se você conhece os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os apps prejudiciais serem removidos.</translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganar você para que instale um software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Toque em |<ph name="ACCELERATOR" />| e mantenha essa tecla pressionada para sair do modo tela cheia</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Entrega de página</translation>
 <translation id="6049975101166779351">Cuidado infantil</translation>
@@ -2714,7 +2708,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6270066318535733958">Atividades em barcos</translation>
 <translation id="6272088941196661550">Retomar a jornada para ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Pressione |<ph name="ACCELERATOR" />| para exibir seu cursor</translation>
 <translation id="6280223929691119688">Não é possível entregar nesse endereço. Selecione um endereço diferente.</translation>
 <translation id="6284292079994426700">26 x 38 pol.</translation>
 <translation id="6284449872909111707">Mensagens de texto e instantâneas</translation>
@@ -3756,7 +3749,6 @@ Mais detalhes:
 <translation id="8241707690549784388">A página que você está procurando usou as informações inseridas. Voltar à essa página poderá fazer com que todas as ações realizadas antes sejam repetidas. Quer continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste site</translation>
 <translation id="8242426110754782860">Continuar</translation>
-<translation id="8245703462678310750">Toque em |<ph name="ACCELERATOR" />| e mantenha essa tecla pressionada para sair do modo tela cheia e conferir o download.</translation>
 <translation id="8246482227229072868">Anéis</translation>
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="824968735947741546">Traduzindo do <ph name="SOURCE" /> (detectado automaticamente) para <ph name="TARGET" /></translation>

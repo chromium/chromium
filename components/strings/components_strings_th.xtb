@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">เครื่องกรองน้ำ</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">กด |<ph name="ACCELERATOR" />| เพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="1038106730571050514">แสดงคำแนะนำ</translation>
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">เรือและยานพาหนะทางน้ำ</translation>
 <translation id="1283977499362032052">ประวัติย่อและประวัติการทำงาน</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
-<translation id="1288548991597756084">บันทึกบัตรไว้อย่างปลอดภัย</translation>
 <translation id="1292571435393770077">ถาด 16</translation>
 <translation id="1292701964462482250">"ซอฟต์แวร์ในคอมพิวเตอร์ของคุณทำให้ Chrome เชื่อมต่อกับเว็บอย่างปลอดภัยไม่ได้" (คอมพิวเตอร์ที่ใช้ระบบปฏิบัติการ Windows เท่านั้น)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 นิ้ว</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;คุณจะเห็นข้อผิดพลาดนี้ หากใช้พอร์ทัล Wi-Fi ที่คุณต้องลงชื่อเข้าใช้ก่อนจึงจะสามารถออนไลน์ได้&lt;/p&gt;
     &lt;p&gt;ในการแก้ไขข้อผิดพลาด ให้คลิก&lt;strong&gt;เชื่อมต่อ&lt;/strong&gt;บนหน้าเว็บที่คุณพยายามจะเปิด&lt;/p&gt;</translation>
 <translation id="1513706915089223971">ลิสต์ประวัติรายการ</translation>
-<translation id="1516097932025103760">ระบบจะเข้ารหัส บันทึกไว้อย่างปลอดภัย และจะไม่จัดเก็บ CVC</translation>
 <translation id="151720253492607760">ไม่อนุญาตต่อไป</translation>
 <translation id="1517433312004943670">ต้องระบุหมายเลขโทรศัพท์</translation>
 <translation id="1519264250979466059">วันที่สร้าง</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">Chromium ขอแนะนำให้รีเซ็ตรหัสผ่านหากคุณใช้รหัสผ่านนี้ซ้ำในเว็บไซต์อื่น</translation>
 <translation id="3428151540071562330">URI ของเซิร์ฟเวอร์เทมเพลต DnsOverHttpsTemplates อย่างน้อย 1 รายการไม่ถูกต้องและจะไม่มีการนำไปใช้</translation>
 <translation id="3428789896412418755">ประวัติที่จัดกลุ่ม</translation>
-<translation id="3431216045099978607">กด |<ph name="ACCELERATOR" />| เพื่อออกจากการแสดงเต็มหน้าจอและดูการดาวน์โหลด</translation>
 <translation id="3432601291244612633">ปิดหน้า</translation>
 <translation id="3433111389595862568">ซอฟต์แวร์เพื่อการทำงานร่วมกันและการประชุม</translation>
 <translation id="3433144818443565002">การแชทด้วยเสียงและวิดีโอแชท</translation>
@@ -1986,7 +1982,6 @@
 <translation id="483241715238664915">เปิดคำเตือน</translation>
 <translation id="4832961164064927107">ปิ้งย่างและบาร์บีคิว</translation>
 <translation id="4834250788637067901">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
-<translation id="4839087176073128681">ชำระเงินได้เร็วขึ้นในครั้งถัดไปและปกป้องบัตรของคุณด้วยการรักษาความปลอดภัยระดับแนวหน้าของอุตสาหกรรมจาก Google</translation>
 <translation id="4840250757394056958">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="484671803914931257">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME" /> และอื่นๆ</translation>
@@ -2594,7 +2589,6 @@
 <translation id="6045164183059402045">เทมเพลตการจัดเรียงหน้าก่อนพิมพ์</translation>
 <translation id="6047233362582046994">หากคุณเข้าใจความเสี่ยงต่อความปลอดภัย คุณสามารถ<ph name="BEGIN_LINK" />ไปยังไซต์นี้<ph name="END_LINK" />ก่อนที่จะมีการนำแอปอันตรายออก</translation>
 <translation id="6047927260846328439">เนื้อหานี้อาจพยายามหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูลส่วนบุคคล <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">กด |<ph name="ACCELERATOR" />| ค้างไว้เพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">หน้าที่แสดง</translation>
 <translation id="6049975101166779351">การดูแลเด็ก</translation>
@@ -2713,7 +2707,6 @@
 <translation id="6270066318535733958">การแล่นเรือ</translation>
 <translation id="6272088941196661550">สำรวจต่อเพื่อดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="6272383483618007430">Google อัปเดต</translation>
-<translation id="6279183038361895380">กด |<ph name="ACCELERATOR" />| เพื่อแสดงเคอร์เซอร์ของคุณ</translation>
 <translation id="6280223929691119688">ไม่สามารถนำส่งสินค้าไปยังที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="6284292079994426700">26 x 38 นิ้ว</translation>
 <translation id="6284449872909111707">การส่ง SMS และการรับส่งข้อความโต้ตอบแบบทันที</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">หน้าที่คุณกำลังมองหาใช้ข้อมูลที่คุณได้ป้อนไว้แล้ว การกลับไปสู่หน้านั้นอาจทำให้คุณต้องทำซ้ำการดำเนินการใดๆ ที่คุณทำแล้ว คุณต้องการดำเนินการต่อหรือไม่</translation>
 <translation id="8241712895048303527">บล็อกในไซต์นี้</translation>
 <translation id="8242426110754782860">ดำเนินการต่อ</translation>
-<translation id="8245703462678310750">กด |<ph name="ACCELERATOR" />| ค้างไว้เพื่อออกจากการแสดงเต็มหน้าจอและดูการดาวน์โหลด</translation>
 <translation id="8246482227229072868">แหวน</translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
 <translation id="824968735947741546">กำลังแปลจาก <ph name="SOURCE" /> (ตรวจพบอัตโนมัติ) เป็น <ph name="TARGET" /></translation>

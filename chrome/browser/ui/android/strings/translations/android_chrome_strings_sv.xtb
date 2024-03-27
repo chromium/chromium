@@ -638,6 +638,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="4425173294238317796">Bekräftelseark för nyckel</translation>
 <translation id="442518031075347249">Du kommer inte längre att kunna använda det virtuella kortet med Google Pay. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">En del av webbhistoriken kanske inte visas här. Om det behövs trycker du på Öppna hela Chrome-historiken. Det även kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> är valt just nu. Välj ett konto.</translation>
 <translation id="4452411734226507615">Stäng fliken <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bokmärkt i <ph name="FOLDER_NAME" /></translation>
@@ -1107,6 +1108,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6719634564325948108">Vill du ansluta med QR-kod?</translation>
 <translation id="6723740634201835758">I Google-kontot</translation>
 <translation id="6738867403308150051">Laddar ned …</translation>
+<translation id="67404633032079629">En del av webbhistoriken kanske inte visas här. Om du vill se hela webbhistoriken trycker du på Öppna hela Chrome-historiken.</translation>
 <translation id="674388916582496364">Det är vanligt att webbplatser du besöker kommer ihåg sådant som intresserar dig för att anpassa din upplevelse. Webbplatser kan även lagra information om dina intressen i Chrome.</translation>
 <translation id="6751521182688001123">Öppna en ny flik snabbt. Tryck länge om du vill ändra genvägen.</translation>
 <translation id="6756507620369789050">Dela feedback</translation>

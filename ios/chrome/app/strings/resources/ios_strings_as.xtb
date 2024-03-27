@@ -631,6 +631,7 @@
 <translation id="4282944936010261425">আপুনি সমাধান কৰিবলগীয়া কোনো সুৰক্ষা সমস্যা নাই।</translation>
 <translation id="4286718549648564014">আপোনাৰ একাউণ্ট <ph name="USER_EMAIL" />লৈ ঠিকনা স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="428768789042547925">নতুন কি আছে</translation>
+<translation id="429074084062258019">{count,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="4293080268407233932">সন্ধান কৰক</translation>
 <translation id="4302248187517737842">কোনো ব্যৱহাৰকাৰীৰ নাম নাই ••••••••</translation>
 <translation id="4302415908542657649">পাছৱৰ্ড শ্বেয়াৰ কৰি থকা হৈছে</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7524055474074101597">এপ্‌সমূহত আপোনাৰ পাছৱৰ্ড আৰু অধিক সুবিধা এক্সেছ কৰক।</translation>
 <translation id="7527917367892640435">পেকেজটো ইতিমধ্যে ট্ৰেক কৰা হৈছে</translation>
 <translation id="7531345132340165516">বৰ্তমানৰ ছাইট</translation>
+<translation id="75362970626182391">নতুন টেবৰ গোট</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ত আপোনাৰ পাছ Passbookত ইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="754655535278952384"><ph name="TIME" /> পৰীক্ষা কৰা হৈছে</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" />ত ব্যৱহাৰ কৰা অন্তিমটো টেব</translation>

@@ -207,6 +207,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
       Se questo criterio viene impostato su Disabled, la funzionalità della lista della spesa non sarà disponibile.
       </translation>
 <translation id="1144147113722324623">Attiva gli upgrade automatici a HTTPS di audio e video e mostra l'avviso "Non sicuro" per le immagini.</translation>
+<translation id="1145928409398419809">Disattiva integrazione di <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="1147732569915511430">L'hash SHA-256 dell'immagine dell'avatar.</translation>
 <translation id="1148415065145333943">Disattiva la modalità di ricarica avanzata della batteria</translation>
 <translation id="1149203480502386713">Attiva l'accordo chiave post-quantistico per TLS</translation>
@@ -3256,6 +3257,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Disattiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
+<translation id="3546271546272655966">È possibile utilizzare <ph name="DBSC_FEATURE_NAME" />, a seconda del processo di implementazione della funzionalità.</translation>
 <translation id="3547954654003013442">Impostazioni proxy</translation>
 <translation id="3548064438634502368">Chiudi i browser</translation>
 <translation id="3548642468619496972">Blocca download dannosi, download insoliti o indesiderati e tipi di file pericolosi.</translation>
@@ -4813,6 +4815,15 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene impostato su Disattivato o non viene impostato, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> diventa facoltativo e non blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
 
       Questo criterio viene utilizzato su desktop dalla registrazione con criteri cloud in ambito macchina. Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="4889589161838982604">Consente di controllare lo stato della funzionalità <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> protegge i cookie di autenticazione di Google dal furto fornendo regolarmente una prova crittografica del possesso del dispositivo ai server di Google.
+
+Se questo criterio viene impostato su false, la funzionalità <ph name="DBSC_FEATURE_NAME" /> viene disattivata.
+
+Se viene impostato su true, la funzionalità di <ph name="DBSC_FEATURE_NAME" /> viene attivata.
+
+Se non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per la funzionalità <ph name="DBSC_FEATURE_NAME" />, il che significa che la funzionalità viene implementata gradualmente per un numero crescente di utenti.</translation>
 <translation id="488996881569316769">Telemetria di rete</translation>
 <translation id="4890453377345554695">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
 
@@ -5591,6 +5602,7 @@ Questo criterio è stato rimosso nella versione M112.</translation>
       Se il criterio non viene configurato, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
+<translation id="552607466422196365">Disattiva <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Consenti le query a Quirks Server e il download di file di configurazione specifici per l'hardware</translation>
 <translation id="5526701598901867718">Tutto (non sicuro)</translation>
 <translation id="5534079385061985566">Attiva la funzionalità di ripristino completo.</translation>
@@ -5996,6 +6008,7 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 
       Se il criterio è impostato su False o se non viene configurato, <ph name="PLUGIN_VM_NAME" /> non è autorizzato a raccogliere i dati.
       Se è impostato su True, <ph name="PLUGIN_VM_NAME" /> potrebbe raccogliere i dati sull'utilizzo di <ph name="PLUGIN_VM_NAME" /> che verranno poi combinati e analizzati nel dettaglio per migliorare l'esperienza di <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5872738620659477303">Associa le credenziali Google a un dispositivo</translation>
 <translation id="5875873062228321803">Consente di configurare il requisito della versione minima consentita di <ph name="PRODUCT_OS_NAME" />.
 
       Se per questo criterio viene impostato un elenco non vuoto:
@@ -6021,6 +6034,11 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
       Il valore <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> è una proprietà facoltativa, il cui valore predefinito è Falso.</translation>
 <translation id="5879014913445067283">Consente di controllare la funzione Condivisioni file di rete tramite il protocollo <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Attiva la funzione Tocca per cercare</translation>
+<translation id="5881715931837589500">Attiva l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> su <ph name="PRODUCT_OS_NAME" />.
+
+Se questo criterio viene attivato o se non viene configurato, l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> viene attivata per gli utenti aziendali.
+
+Se viene disattivato, l'integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /> viene disattivata per gli utenti aziendali.</translation>
 <translation id="5882345429632338713">Ritardo prima di avviare il browser alternativo (in millisecondi)</translation>
 <translation id="5883015257301027298">Impostazione cookie predefiniti</translation>
 <translation id="5883754873839596178">La configurazione del criterio consente di specificare il numero massimo di connessioni simultanee al server proxy. Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare il criterio su un numero inferiore per risolvere questo problema. Il valore deve essere inferiore a 100 e superiore a 6. Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo. È sconsigliato utilizzare un valore inferiore a quello predefinito.
@@ -6057,6 +6075,11 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 <translation id="5897913798715600338">Carica la batteria con la tecnologia di ricarica veloce.</translation>
 <translation id="5898486742390981550">Quando più utenti eseguono l'accesso, solo l'utente principale può utilizzare le app Android.</translation>
 <translation id="5899751601113377553">Impedisci agli utenti di usare <ph name="LACROS_NAME" /></translation>
+<translation id="5900000623536207626">Attiva l'integrazione di <ph name="GOOGLE_TASKS_NAME" /> su <ph name="PRODUCT_OS_NAME" />.
+
+Se questo criterio viene attivato o se non viene configurato, l'integrazione di <ph name="GOOGLE_TASKS_NAME" /> viene attivata per gli utenti aziendali.
+
+Se viene disattivato, l'integrazione di <ph name="GOOGLE_TASKS_NAME" /> viene disattivata per gli utenti aziendali.</translation>
 <translation id="5900919753933009463">Segnala la configurazione di rete</translation>
 <translation id="5901427587865226597">Solo stampa fronte/retro</translation>
 <translation id="5905114360004248993">Consenti popup su questi siti</translation>
@@ -6206,6 +6229,7 @@ Questo criterio è stato ritirato a partire dalla versione M124.</translation>
 <translation id="6049117606554031363">Attiva i report sullo stato della scheda del dispositivo</translation>
 <translation id="6050796253724099706">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="605132676434455096">Non consentire l'aggiunta di nuovi profili</translation>
+<translation id="6052660755155321371">Disattiva integrazione di <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="6053260874233331700">Non consentire l'accesso alla geolocalizzazione nella schermata di accesso.</translation>
 <translation id="6053681087509103368">Consenti a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
 <translation id="6056517174496942473">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL</translation>
@@ -7818,6 +7842,7 @@ certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto att
 
       Nota: il criterio non interessa Google Drive e la memoria interna. Gli utenti possono comunque accedere ai file salvati nella cartella Download.</translation>
 <translation id="7177857088692019405">Sblocco rapido</translation>
+<translation id="7177980542896745343">Attiva integrazione di <ph name="GOOGLE_CLASSROOM_NAME" /></translation>
 <translation id="7179157174254421614">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere cambiato dagli utenti.
 
 Se il criterio viene impostato su:
@@ -8051,6 +8076,7 @@ Il criterio deve essere impostato come un elenco di nomi di dominio completi. No
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7372210077527987724">Attiva integrazione di <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
 <translation id="7373200034079131670">Riavvia all'uscita dell'utente se si avvia Android o una VM.</translation>
 <translation id="7374784840090523241">Imposta come predefinita la creazione di passkey in altri spazi di archiviazione, ad esempio il profilo <ph name="PRODUCT_NAME" />.</translation>
@@ -8560,6 +8586,7 @@ Per maggiori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Int
       Se il criterio viene impostato su Falso o se non viene configurato, i contenuti <ph name="FLASH_PLUGIN_NAME" /> di altre origini o i contenuti ridotti potrebbero essere bloccati.
 
       Nota: per stabilire quali siti web possono eseguire <ph name="FLASH_PLUGIN_NAME" />, controlla questi criteri: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801833005984890634">Attiva integrazione di <ph name="GOOGLE_TASKS_NAME" /></translation>
 <translation id="7804859754080118507">Segnala gli eventi di intensità del segnale e di connessione di rete sui dispositivi registrati.
 
       Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
@@ -9623,6 +9650,7 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
 <translation id="8685748277907759932">Impedisci agli utenti di usare la funzionalità Tocca per cercare</translation>
 <translation id="8686700500128191717">Attiva i report sugli utenti del dispositivo</translation>
 <translation id="8687958770985542440">Riattiva l'API Web Components v0 fino alla versione M84</translation>
+<translation id="8690591325980850680">Attiva integrazione di <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="8693243869659262736">Utilizza client DNS integrato</translation>
 <translation id="8695006038397632296">Crea o carica richieste di installazione di estensioni nella Console di amministrazione</translation>
 <translation id="8695108198606654558">Questo criterio consente di controllare soltanto il comportamento di importazione alla prima esecuzione dopo l'installazione. Consente una transizione più semplice a <ph name="PRODUCT_NAME" /> negli ambienti in cui è stato ampiamente utilizzato un browser diverso prima dell'installazione del browser. Questo criterio non influisce sulle funzionalità del gestore delle password per gli Account Google.
@@ -10324,6 +10352,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
       Se viene configurato, gli utenti non possono modificarlo nelle impostazioni del browser. In caso contrario, la modalità in background è disabilitata, ma gli utenti possono abilitarla.</translation>
 <translation id="981245424658084931">Attiva l'heartbeat dell'attività del dispositivo</translation>
 <translation id="981346395360763138">Servizi di geolocalizzazione di Google disabilitati</translation>
+<translation id="982195863867062122">Attiva <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Attiva il controllo ortografico</translation>
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>
 <translation id="984365509386992443">Se questo criterio viene attivato o se non viene impostato, l'utente potrebbe ricevere sondaggi relativi a Navigazione sicura.

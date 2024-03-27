@@ -1692,7 +1692,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2252017960592955005">Visningsbeskyttelse (beta)</translation>
 <translation id="2253318212986772520">PPD-filen for <ph name="PRINTER_NAME" /> kunne ikke vises.</translation>
 <translation id="2253927598983295051">Vælg, hvad du vil dele med <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Vis adgangskoder og adgangsnøgler på din Google-konto</translation>
 <translation id="2255077166240162850">Denne enhed blev låst til brug på et andet domæne eller i en anden tilstand.</translation>
 <translation id="2255317897038918278">Microsoft-tidsstempling</translation>
 <translation id="2256115617011615191">Genstart nu</translation>
@@ -3415,6 +3414,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3577487026101678864">Filsynkronisering er aktiveret</translation>
 <translation id="3577745545227000795">Indsamling af hardwaredata for <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Konfigurer IP-adressen automatisk</translation>
+<translation id="3581861561942370740">Søg i downloadhistorik</translation>
 <translation id="3582057310199111521">Adgangskoden blev angivet på et vildledende website og blev fundet i et brud på datasikkerheden</translation>
 <translation id="3582299299336701326">Gør en mørk skærm lys og en lys skærm mørk. Tryk på søgetasten+Ctrl+H for at aktivere eller deaktivere ombytning af farver.</translation>
 <translation id="3584169441612580296">Læs og rediger billeder, musik og andre medier på din computer</translation>
@@ -5126,7 +5126,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="488211015466188466">Følg website</translation>
 <translation id="4882312758060467256">Udvidelsen har adgang til dette website.</translation>
-<translation id="4882752944049998623">Adgangskoden er gemt på din Google-konto, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883436287898674711">Alle websites på <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Jobliste</translation>
@@ -5333,6 +5332,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5056950756634735043">Opretter forbindelse til containeren</translation>
 <translation id="5057110919553308744">Når du klikker på udvidelsen</translation>
 <translation id="5057127674016624293">Scanningen tager længere tid end forventet</translation>
+<translation id="5057480703570202545">Downloadhistorik</translation>
 <translation id="5059241099014281248">Begræns login</translation>
 <translation id="5059429103770496207">Visningsstil</translation>
 <translation id="5059526285558225588">Vælg, hvad du vil dele</translation>
@@ -5742,6 +5742,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5390677308841849479">Mørkerød og orange</translation>
 <translation id="5392192690789334093">Har tilladelse til at sende notifikationer</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# links}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Standardskrifttype</translation>
 <translation id="5397378439569041789">Tilmeld terminal- eller signeringsenhed</translation>
 <translation id="5397794290049113714">Dig</translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Hidlau Dŵr a Phurwyr</translation>
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1036881361735705143">Amlen C4</translation>
-<translation id="1036982837258183574">Pwyswch |<ph name="ACCELERATOR" />| i adael y modd sgrîn lawn</translation>
 <translation id="1038106730571050514">Dangos awgrymiadau</translation>
 <translation id="1038842779957582377">enw anhysbys</translation>
 <translation id="1041998700806130099">Neges taflen swyddi</translation>
@@ -160,7 +159,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1282358575813748144">Cychod a Nwyddau Dŵr</translation>
 <translation id="1283977499362032052">Crynodebau a Phortffolios</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
-<translation id="1288548991597756084">Cadw cerdyn yn ddiogel</translation>
 <translation id="1292571435393770077">Hambwrdd 16</translation>
 <translation id="1292701964462482250">"Mae meddalwedd ar eich cyfrifiadur yn atal Chrome rhag cysylltu'n ddiogel â'r we" (cyfrifiaduron Windows yn unig)</translation>
 <translation id="1293797321964802402">Amlen Envelope 9 x 11 o fodfeddi</translation>
@@ -286,7 +284,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1507202001669085618">&lt;p&gt;Byddwch yn gweld y gwall hwn os ydych yn defnyddio porth Wi-Fi lle bydd rhaid i chi fewngofnodi cyn y gallwch fynd ar-lein.&lt;/p&gt;
     &lt;p&gt;Er mwyn datrys y gwall, cliciwch &lt;strong&gt;Cysylltu&lt;/strong&gt; ar y dudalen rydych yn ceisio ei hagor.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Rhestr o gofnodion hanes</translation>
-<translation id="1516097932025103760">Bydd yn cael ei amgryptio, ei gadw'n ddiogel ac nid yw'r CVC byth yn cael ei storio.</translation>
 <translation id="151720253492607760">Parhau i beidio â chaniatáu</translation>
 <translation id="1517433312004943670">Angen rhif ffôn</translation>
 <translation id="1519264250979466059">Dyddiad y datblygiad</translation>
@@ -1260,7 +1257,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="342781501876943858">Mae Chromium yn argymell ailosod eich cyfrinair os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
 <translation id="3428151540071562330">Mae un neu fwy o'r URI templed gweinydd DnsOverHttpsTemplates yn annilys ac ni chaiff ei ddefnyddio.</translation>
 <translation id="3428789896412418755">Hanes wedi'i Grwpio</translation>
-<translation id="3431216045099978607">Pwyswch |<ph name="ACCELERATOR" />| i adael y sgrîn lawn a gweld y lawrlwythiad.</translation>
 <translation id="3432601291244612633">Cau'r dudalen</translation>
 <translation id="3433111389595862568">Meddalwedd Cydweithio a Chynadledda</translation>
 <translation id="3433144818443565002">Sgwrs Llais a Fideo</translation>
@@ -1987,7 +1983,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="483241715238664915">Troi rhybuddion ymlaen</translation>
 <translation id="4832961164064927107">Barbeciw a Grilio</translation>
 <translation id="4834250788637067901">Dulliau talu, cynigion a chyfeiriadau sy'n defnyddio Google Pay</translation>
-<translation id="4839087176073128681">Gallwch dalu'n gyflymach y tro nesaf a diogelu'ch cerdyn gyda diogelwch sy'n arwain y diwydiant Google.</translation>
 <translation id="4840250757394056958">Gweld eich hanes Chrome</translation>
 <translation id="484462545196658690">Awtomatig</translation>
 <translation id="484671803914931257">Cael gostyngiad ar <ph name="MERCHANT_NAME" /> a rhagor</translation>
@@ -2595,7 +2590,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6045164183059402045">Templed gosod</translation>
 <translation id="6047233362582046994">Os ydych yn deall y risgiau i'ch diogelwch, gallwch <ph name="BEGIN_LINK" />fynd i'r wefan hon<ph name="END_LINK" /> cyn i'r apiau niweidiol gael eu tynnu.</translation>
 <translation id="6047927260846328439">Mae'n bosib y bydd y cynnwys hwn yn ceisio eich twyllo i osod meddalwedd neu ddatgelu gwybodaeth bersonol. <ph name="BEGIN_LINK" />Dangos beth bynnag<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pwyswch a daliwch |<ph name="ACCELERATOR" />| i adael y sgrîn lawn</translation>
 <translation id="6049056807983403918">Amlen B4</translation>
 <translation id="6049488691372270142">Darparu tudalennau</translation>
 <translation id="6049975101166779351">Gofal Plant</translation>
@@ -2714,7 +2708,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6270066318535733958">Hwylio</translation>
 <translation id="6272088941196661550">Parhewch â'ch taith i weld gweithgarwch perthnasol yn eich hanes Chrome</translation>
 <translation id="6272383483618007430">Diweddariad Google</translation>
-<translation id="6279183038361895380">Pwyswch |<ph name="ACCELERATOR" />| i ddangos eich cyrchwr</translation>
 <translation id="6280223929691119688">Methu ag anfon i'r cyfeiriad hwn. Dewiswch gyfeiriad gwahanol.</translation>
 <translation id="6284292079994426700">26 x 38 modfedd</translation>
 <translation id="6284449872909111707">Tecstio a Negeseuo Gwib</translation>
@@ -3755,7 +3748,6 @@ Manylion ychwanegol:
 <translation id="8241707690549784388">Gwnaeth y dudalen rydych yn chwilio amdani ddefnyddio gwybodaeth y gwnaethoch ei rhoi. Mae'n bosib y bydd dychwelyd i'r dudalen honno achosi i unrhyw gamau a gymerwyd gennych gael eu hailadrodd. Ydych chi am barhau?</translation>
 <translation id="8241712895048303527">Rhwystro ar y wefan hon</translation>
 <translation id="8242426110754782860">Parhau</translation>
-<translation id="8245703462678310750">Pwyswch a daliwch |<ph name="ACCELERATOR" />| i adael y sgrîn lawn a gweld y lawrlwythiad.</translation>
 <translation id="8246482227229072868">Cylchoedd</translation>
 <translation id="8249296373107784235">Terfynu</translation>
 <translation id="824968735947741546">Wrthi'n cyfieithu <ph name="SOURCE" /> (awto-ganfod) i <ph name="TARGET" /></translation>

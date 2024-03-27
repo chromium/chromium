@@ -26,7 +26,6 @@
 Ջրի զտիչներ և մաքրիչներ</translation>
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Ցուցադրել առաջարկները</translation>
 <translation id="1038842779957582377">անհայտ անուն</translation>
 <translation id="1041998700806130099">Հաղորդագրություն առաջադրանքի թերթի վրա</translation>
@@ -164,7 +163,6 @@
 <translation id="1282358575813748144">Նավեր և ջրային տրանսպորտ</translation>
 <translation id="1283977499362032052">Ռեզյումեներ և աշխատանքային պորտֆոլիոներ</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
-<translation id="1288548991597756084">Ապահով պահեք քարտի տվյալները</translation>
 <translation id="1292571435393770077">Դարակ 16</translation>
 <translation id="1292701964462482250">«Համակարգչում տեղադրված ծրագիրը Chrome-ին թույլ չի տալիս անվտանգ միանալ համացանցին» (միայն Windows համակարգիչներում)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 դյմ</translation>
@@ -290,7 +288,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Այս սխալը կցուցադրվի, եթե դուք օգտագործում եք Wi-Fi պորտալ, որտեղ ցանցին միանալու համար անհրաժեշտ է մտնել հաշիվ։&lt;/p&gt;
     &lt;p&gt;Սխալը շտկելու համար սեղմեք &lt;strong&gt;Միանալ&lt;/strong&gt; այն էջում, որը փորձում եք բացել։&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Պատմության գրառումների ցանկ</translation>
-<translation id="1516097932025103760">Քարտի տվյալները կգաղտնագրվեն և ապահով կպահվեն, իսկ CVC կոդը երբեք չի պահվում։</translation>
 <translation id="151720253492607760">Նախկինի պես չթույլատրել</translation>
 <translation id="1517433312004943670">Անհրաժեշտ է մուտքագրել հեռախոսահամար</translation>
 <translation id="1519264250979466059">Կառույցի ամսաթիվ</translation>
@@ -1266,7 +1263,6 @@
 <translation id="342781501876943858">Խորհուրդ ենք տալիս վերակայել ձեր գաղտնաբառը, եթե այն օգտագործել եք այլ կայքերում:</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates կանոնի սերվերի ձևանմուշների URI-ներից առնվազն մեկն անվավեր է և չի կարող օգտագործվել:</translation>
 <translation id="3428789896412418755">Խմբավորված պատմություն</translation>
-<translation id="3431216045099978607">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնումը տեսնելու համար սեղմեք |<ph name="ACCELERATOR" />|։</translation>
 <translation id="3432601291244612633">Փակել էջը</translation>
 <translation id="3433111389595862568">Համատեղ աշխատանքի և տեսակոնֆերանսների կազմակերպման ծրագրեր</translation>
 <translation id="3433144818443565002">Ձայնային և տեսազրույց</translation>
@@ -1995,7 +1991,6 @@
 <translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4832961164064927107">Խորոված և գրիլ</translation>
 <translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
-<translation id="4839087176073128681">Հաջորդ անգամ ավելի արագ վճարեք և պաշտպանեք ձեր քարտի տվյալները Google-ի նորագույն տեխնոլոգիաների շնորհիվ։</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
 <translation id="484671803914931257">Ստացեք զեղչ <ph name="MERCHANT_NAME" /> և այլ խանութներում</translation>
@@ -2606,7 +2601,6 @@
 <translation id="6045164183059402045">Էջքի ձևանմուշ</translation>
 <translation id="6047233362582046994">Եթե դուք գիտակցում եք անվտանգության հետ կապված ռիսկերը, ապա կարող եք <ph name="BEGIN_LINK" />այցելել այս կայքը<ph name="END_LINK" /> նախքան վնասարար հավելվածները հեռացնելը:</translation>
 <translation id="6047927260846328439">Այս բովանդակությունը կարող է ձեզ խաբեությամբ ստիպել ծրագիր տեղադրել կամ անձնական տեղեկություններ հայտնել։ <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Սեղմեք և պահեք |<ph name="ACCELERATOR" />| ստեղնը՝ լիաէկրան ռեժիմից դուրս գալու համար</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Էջերի մատուցում</translation>
 <translation id="6049975101166779351">Երեխաների խնամք</translation>
@@ -2725,7 +2719,6 @@
 <translation id="6270066318535733958">Թիավարում</translation>
 <translation id="6272088941196661550">Շարունակել որոնումը՝ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Նշորդը ցուցադրելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
 <translation id="6284292079994426700">26 x 38 դյույմ</translation>
 <translation id="6284449872909111707">SMS-ներ և ակնթարթային հաղորդակցում</translation>
@@ -3766,7 +3759,6 @@
 <translation id="8241707690549784388">Ձեր փնտրած էջում օգտագործվեցին ձեր մուտքագրած տեղեկությունները: Եթե վերադառնաք այդ էջ, կարող է պահանջվել, որ կրկնեք ձեր կատարած բոլոր գործողությունները: Ուզո՞ւմ եք շարունակել:</translation>
 <translation id="8241712895048303527">Արգելափակել այս կայքում</translation>
 <translation id="8242426110754782860">Շարունակել</translation>
-<translation id="8245703462678310750">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնված ֆայլերը տեսնելու համար սեղմեք և պահեք |<ph name="ACCELERATOR" />| ստեղնը։</translation>
 <translation id="8246482227229072868">Մատանիներ</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="824968735947741546">Թարգմանվում է <ph name="SOURCE" /> լեզվից (ավտոմատ որոշված) <ph name="TARGET" /> լեզվի</translation>

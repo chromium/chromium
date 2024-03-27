@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Mga Filter at Purifier ng Tubig</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">Pindutin ang |<ph name="ACCELERATOR" />| upang lumabas sa full screen</translation>
 <translation id="1038106730571050514">Ipakita ang mga suhestyon</translation>
 <translation id="1038842779957582377">Hindi kilalang pangalan</translation>
 <translation id="1041998700806130099">Mensahe sa sheet ng trabaho</translation>
@@ -160,7 +159,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1282358575813748144">Mga Bangka at Watercraft</translation>
 <translation id="1283977499362032052">Mga Resume at Portfolio</translation>
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
-<translation id="1288548991597756084">Secure na i-save ang card</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">"Pinipigilan ng software sa iyong computer na makakonekta nang ligtas ang Chrome sa web" (mga Windows computer lang)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
@@ -286,7 +284,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1507202001669085618">&lt;p&gt;Makikita mo ang error na ito kung gumagamit ka ng Wi-Fi portal kung saan kailangan mong mag-sign in bago ka makapag-online.&lt;/p&gt;
     &lt;p&gt;Para maayos ang error, i-click ang &lt;strong&gt;Kumonekta&lt;/strong&gt; sa page na sinusubukan mong buksan.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Listahan ng mga entry sa history</translation>
-<translation id="1516097932025103760">Naka-encrypt ito, secure na mase-save at hindi kailanman iso-store ang CVC.</translation>
 <translation id="151720253492607760">Patuloy na hindi payagan</translation>
 <translation id="1517433312004943670">Kinakailangan ang numero ng telepono</translation>
 <translation id="1519264250979466059">Petsa ng Build</translation>
@@ -1260,7 +1257,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="342781501876943858">Inirerekomenda ng Chromium na i-reset ang iyong password kung ginamit mo ito sa iba pang site.</translation>
 <translation id="3428151540071562330">Invalid at hindi gagamitin ang isa o higit pa sa mga URI ng template ng server ng DnsOverHttpsTemplates.</translation>
 <translation id="3428789896412418755">Nakagrupong History</translation>
-<translation id="3431216045099978607">Pindutin ang |<ph name="ACCELERATOR" />| para lumabas sa full screen at makita ang download.</translation>
 <translation id="3432601291244612633">Isara ang page</translation>
 <translation id="3433111389595862568">Software para sa Pakikipag-collaborate at Pakikipagkumperensya</translation>
 <translation id="3433144818443565002">Voice at Video Chat</translation>
@@ -1987,7 +1983,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="483241715238664915">I-on ang mga babala</translation>
 <translation id="4832961164064927107">BBQ at Pag-iihaw</translation>
 <translation id="4834250788637067901">Mga paraan ng pagbabayad, alok, at address na gumagamit ng Google Pay</translation>
-<translation id="4839087176073128681">Mas mabilis na magbayad sa susunod at protektahan ang iyong card gamit ang nangunguna sa industriyang seguridad ng Google.</translation>
 <translation id="4840250757394056958">Tingnan ang iyong history sa Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Makakuha ng diskwento sa <ph name="MERCHANT_NAME" /> at higit pa</translation>
@@ -2595,7 +2590,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6045164183059402045">Template ng imposition</translation>
 <translation id="6047233362582046994">Kung nauunawaan mo ang mga panganib sa iyong seguridad, maaari mong <ph name="BEGIN_LINK" />bisitahin ang site na ito<ph name="END_LINK" /> bago maalis ang mga mapaminsalang app.</translation>
 <translation id="6047927260846328439">Maaaring subukan ng content na ito na linlangin kang mag-install ng software o maghayag ng personal na impormasyon. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">I-press nang matagal ang |<ph name="ACCELERATOR" />| upang lumabas sa full screen</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Paghahatid ng page</translation>
 <translation id="6049975101166779351">Pangangalaga sa Bata</translation>
@@ -2714,7 +2708,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6270066318535733958">Pamamangka</translation>
 <translation id="6272088941196661550">Ipagpatuloy ang iyong journey para makakita ng nauugnay na aktibidad sa history mo sa Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Pindutin ang |<ph name="ACCELERATOR" />| upang ipakita ang iyong cursor</translation>
 <translation id="6280223929691119688">Hindi maaaring maghatid sa address na ito. Pumili ng ibang address.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284449872909111707">Text at Instant Messaging</translation>
@@ -3755,7 +3748,6 @@ Mga karagdagang detalye:
 <translation id="8241707690549784388">Ang pahina na hinahanap mo para sa paggamit ng impormasyon na ipinasok mo. Ang pagbalik sa pahinang iyon maaaring magsanhi ng anumang aksyon na akalo mo ay naulit. Nais mo bang ipagpatuloy?</translation>
 <translation id="8241712895048303527">I-block sa site na ito</translation>
 <translation id="8242426110754782860">Magpatuloy</translation>
-<translation id="8245703462678310750">Pindutin nang matagal ang |<ph name="ACCELERATOR" />| para lumabas sa full screen at makita ang download.</translation>
 <translation id="8246482227229072868">Mga Singsing</translation>
 <translation id="8249296373107784235">I-abort</translation>
 <translation id="824968735947741546">Isinasalin ang <ph name="SOURCE" /> (awtomatikong na-detect) sa <ph name="TARGET" /></translation>

@@ -1680,7 +1680,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2252017960592955005">Protection anti-regard (bêta)</translation>
 <translation id="2253318212986772520">Impossible de récupérer le PPD pour <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Choisir les informations à partager avec <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Afficher les mots de passe et clés d'accès de votre compte Google</translation>
 <translation id="2255077166240162850">Cet appareil a été verrouillé dans un autre mode ou avec un autre domaine.</translation>
 <translation id="2255317897038918278">Enregistrement des informations de date Microsoft</translation>
 <translation id="2256115617011615191">Redémarrer maintenant</translation>
@@ -5110,7 +5109,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="488211015466188466">Suivre le site</translation>
 <translation id="4882312758060467256">A accès à ce site</translation>
-<translation id="4882752944049998623">Mot de passe enregistré dans votre compte Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="4882919381756638075">Les sites utilisent généralement votre micro pour proposer des fonctionnalités de communication, comme le chat vidéo</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Gestionnaire de tâches</translation>

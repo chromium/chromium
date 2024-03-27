@@ -1694,7 +1694,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2252017960592955005">Zaščita pred ogledovanjem (beta)</translation>
 <translation id="2253318212986772520">Datoteke PPD za <ph name="PRINTER_NAME" /> ni mogoče pridobiti.</translation>
 <translation id="2253927598983295051">Izberite, kaj želite deliti z aplikacijo <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Prikaz gesel in ključev za dostop iz računa Google</translation>
 <translation id="2255077166240162850">Ta naprava je bila zaklenjena na drugo domeno ali način.</translation>
 <translation id="2255317897038918278">Microsoftovo časovno žigosanje</translation>
 <translation id="2256115617011615191">Znova zaženi</translation>
@@ -3417,6 +3416,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3577487026101678864">Sinhronizacija datotek je vklopljena</translation>
 <translation id="3577745545227000795">Zbiranje podatkov o strojni opremi v sistemu <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Samodejno konfiguriranje naslova IP</translation>
+<translation id="3581861561942370740">Iskanje po zgodovini prenosov</translation>
 <translation id="3582057310199111521">Vneseno na zavajajočem spletnem mestu in odkrito v podatkovni kršitvi</translation>
 <translation id="3582299299336701326">Svetle zaslone spremenite v temne in obratno. Pritisnite tipko za iskanje + Ctrl + H, če želite vklopiti in izklopiti inverzijo barv.</translation>
 <translation id="3584169441612580296">Branje in spreminjanje fotografij, glasbe in drugih predstavnosti v računalniku</translation>
@@ -5128,7 +5128,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="488211015466188466">Spremljaj spletno mesto</translation>
 <translation id="4882312758060467256">Ima dostop do tega spletnega mesta</translation>
-<translation id="4882752944049998623">Geslo je shranjeno v računu Google, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Spletna mesta običajno uporabljajo mikrofon za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="4883436287898674711">Vsa spletna mesta <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Upravitelj opravil</translation>
@@ -5335,6 +5334,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5056950756634735043">Povezovanje z vsebnikom</translation>
 <translation id="5057110919553308744">Ko kliknete razširitev</translation>
 <translation id="5057127674016624293">Pregledovanje traja dlje, kot je pričakovano</translation>
+<translation id="5057480703570202545">Zgodovina prenosov</translation>
 <translation id="5059241099014281248">Omejitev prijave</translation>
 <translation id="5059429103770496207">Slog prikaza</translation>
 <translation id="5059526285558225588">Izberite, kaj deliti z drugimi</translation>
@@ -5744,6 +5744,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5390677308841849479">Temno rdeča in oranžna</translation>
 <translation id="5392192690789334093">Pošiljanje obvestil je dovoljeno</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Povezava}one{# povezava}two{# povezavi}few{# povezave}other{# povezav}}</translation>
+<translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395498824851198390">Privzeta pisava</translation>
 <translation id="5397378439569041789">Včlanitev naprave za kiosk ali reklamne napise</translation>
 <translation id="5397794290049113714">Vi</translation>

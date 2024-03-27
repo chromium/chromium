@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Wasserfilter und ‑reiniger</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
 <translation id="1036881361735705143">Umschlag C4</translation>
-<translation id="1036982837258183574">Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR" />| drücken</translation>
 <translation id="1038106730571050514">Vorschläge anzeigen</translation>
 <translation id="1038842779957582377">Unbekannter Name</translation>
 <translation id="1041998700806130099">Auftragsblattnachricht</translation>
@@ -160,7 +159,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1282358575813748144">Wasserfahrzeuge</translation>
 <translation id="1283977499362032052">Lebensläufe und Portfolios</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
-<translation id="1288548991597756084">Karte sicher speichern</translation>
 <translation id="1292571435393770077">Fach 16</translation>
 <translation id="1292701964462482250">"Software auf deinem Computer verhindert, dass Chrome eine sichere Internetverbindung herstellt" (nur Windows-Computer)</translation>
 <translation id="1293797321964802402">Umschlag 9 × 11 Zoll</translation>
@@ -286,7 +284,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1507202001669085618">&lt;p&gt;Diese Fehlermeldung wird angezeigt, wenn du ein WLAN-Portal verwendest, bei dem eine Anmeldung erforderlich ist, bevor du online gehen kannst.&lt;/p&gt;
     &lt;p&gt;Klicke auf der Seite, die du öffnen möchtest, auf &lt;strong&gt;Verbinden&lt;/strong&gt;, um den Fehler zu beheben.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste der Verlaufseinträge</translation>
-<translation id="1516097932025103760">Sie wird verschlüsselt und sicher gespeichert – der CVC wird jedoch nie gespeichert.</translation>
 <translation id="151720253492607760">Fortsetzen nicht zulassen</translation>
 <translation id="1517433312004943670">Telefonnummer erforderlich</translation>
 <translation id="1519264250979466059">Build-Datum</translation>
@@ -1260,7 +1257,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="342781501876943858">Chromium empfiehlt, dein Passwort zurückzusetzen, wenn du es auf anderen Websites verwendet hast.</translation>
 <translation id="3428151540071562330">Einer oder mehrere der "DnsOverHttpsTemplates"-Servervorlagen-URIs sind ungültig und werden nicht verwendet.</translation>
 <translation id="3428789896412418755">Gruppierter Verlauf</translation>
-<translation id="3431216045099978607">Drücke auf die |<ph name="ACCELERATOR" />|-Taste, um den Vollbildmodus zu beenden und den Download zu sehen.</translation>
 <translation id="3432601291244612633">Seite schließen</translation>
 <translation id="3433111389595862568">Software für Zusammenarbeit und Konferenzen</translation>
 <translation id="3433144818443565002">Sprach- und Video-Chats</translation>
@@ -1985,7 +1981,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="483241715238664915">Warnmeldungen aktivieren</translation>
 <translation id="4832961164064927107">Barbecue und Grillen</translation>
 <translation id="4834250788637067901">Zahlungsmethoden, Angebote und Adressen aus Google Pay</translation>
-<translation id="4839087176073128681">Bezahle beim nächsten Mal schneller und schütze deine Karte mit der branchenführenden Sicherheit von Google.</translation>
 <translation id="4840250757394056958">Chrome-Verlauf ansehen</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Erhalte Rabatte bei <ph name="MERCHANT_NAME" /> und weiteren Händlern</translation>
@@ -2593,7 +2588,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6045164183059402045">Vorlage für Ausschießen</translation>
 <translation id="6047233362582046994">Wenn du die Sicherheitsrisiken kennst, kannst du <ph name="BEGIN_LINK" />diese Website aufrufen<ph name="END_LINK" />, bevor die schädlichen Apps entfernt wurden.</translation>
 <translation id="6047927260846328439">Mit diesen Inhalten wird möglicherweise versucht, dich zu täuschen und so zur Installation von Software oder der Offenlegung personenbezogener Daten zu bringen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">|<ph name="ACCELERATOR" />| gedrückt halten, um den Vollbildmodus zu beenden</translation>
 <translation id="6049056807983403918">Umschlag B4</translation>
 <translation id="6049488691372270142">Ausgabe der Seiten</translation>
 <translation id="6049975101166779351">Kinderbetreuung</translation>
@@ -2712,7 +2706,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6270066318535733958">Bootsfahrten</translation>
 <translation id="6272088941196661550">Du kannst weiter stöbern, um relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Zum Einblenden des Cursors |<ph name="ACCELERATOR" />| drücken</translation>
 <translation id="6280223929691119688">Die Lieferadresse wird nicht unterstützt. Bitte wähle eine andere Adresse aus.</translation>
 <translation id="6284292079994426700">26 x 38 Zoll</translation>
 <translation id="6284449872909111707">SMS und Chat</translation>
@@ -3753,7 +3746,6 @@ Weitere Details:
 <translation id="8241707690549784388">Die gesuchte Seite hat die von dir eingegebenen Informationen verwendet bzw. verarbeitet. Wenn du zu dieser Seite zurückgehst, wird eventuell eine schon ausgeführte Aktion wiederholt. Möchtest du fortfahren?</translation>
 <translation id="8241712895048303527">Auf dieser Website blockieren</translation>
 <translation id="8242426110754782860">Fortfahren</translation>
-<translation id="8245703462678310750">Halte die Taste |<ph name="ACCELERATOR" />| gedrückt, um den Vollbildmodus zu beenden und den Download zu sehen.</translation>
 <translation id="8246482227229072868">Ringe</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="824968735947741546">„<ph name="SOURCE" />“ (automatisch erkannt) wird in die Sprache „<ph name="TARGET" />“ übersetzt</translation>
@@ -3960,7 +3952,7 @@ Weitere Details:
 <translation id="8601456038554914806">Wassersportausrüstung</translation>
 <translation id="8601782593888534566">Science-Fiction und Fantasy</translation>
 <translation id="8606988009912891950">Werbethemen unterstützen Websites dabei, dir relevante Werbung zu zeigen – deine Identität und dein Browserverlauf werden dabei geschützt. Chrome kann aufgrund deines aktuellen Browserverlaufs auf Themen schließen, die dich interessieren könnten. Websites, die du besuchst, können dann relevante Themen von Chrome anfordern, um die dir angezeigte Werbung zu personalisieren.</translation>
-<translation id="8612919051706159390">Online-Communities</translation>
+<translation id="8612919051706159390">Online-Communitys</translation>
 <translation id="8617269623452051934">Informationen zu deiner Gerätenutzung</translation>
 <translation id="861775596732816396">Größe 4</translation>
 <translation id="8618975513789458065">Werbethemen sind nur eine von vielen Möglichkeiten, um Werbung auf einer Website zu personalisieren. Websites können dir auch ohne Werbethemen Werbung zeigen. Diese ist aber möglicherweise weniger interessant für dich.</translation>

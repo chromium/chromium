@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">हाइड्रैंजा</translation>
 <translation id="2533048460510040082">सुझाया गया सहायता कॉन्टेंट</translation>
 <translation id="2536159006530886390">इंटरनेट से कनेक्ट नहीं किया जा सका.</translation>
+<translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> और</translation>
 <translation id="2561093647892030937">नींबू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> की जांच की जा रही है...</translation>
 <translation id="2584547424703650812">ग्लोस्केप्स</translation>
@@ -300,6 +301,7 @@
 <translation id="2638662041295312666">साइन इन इमेज</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चुना गया</translation>
 <translation id="2652403576514495859">लिखवाने की सुविधा को चालू या टॉगल करता है</translation>
+<translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2656001153562991489">Chromebook Plus के लिए खास तौर पर उपलब्ध</translation>
 <translation id="2665671725390405060">उच्चारण सुनें</translation>
 <translation id="267442004702508783">रीफ्रेश करें</translation>
@@ -468,6 +470,7 @@
 <translation id="3877066159641251281">अनुवाद सुनें</translation>
 <translation id="3885327323343477505">स्क्रीन सेवर बदलें</translation>
 <translation id="3889914174935857450">तारीख रीसेट करें</translation>
+<translation id="3897092660631435901">मेन्यू</translation>
 <translation id="391412459402535266">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए, लैपटॉप मोड पर स्विच करें.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट लें</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
@@ -751,6 +754,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5588233547254916455">लेटर</translation>
 <translation id="5595623927872580850">ग्रे</translation>
+<translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की जांच की गई</translation>
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5630438231335788050">बाओहाउस</translation>

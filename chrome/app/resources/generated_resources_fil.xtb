@@ -1692,7 +1692,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2252017960592955005">Proteksyon sa pagtingin (Beta)</translation>
 <translation id="2253318212986772520">Hindi makuha ang PPD para sa <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Piliin kung ano ang ise-share sa <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Ipakita ang mga password at passkey mula sa iyong Google Account</translation>
 <translation id="2255077166240162850">Na-lock ang device na ito sa ibang domain o mode.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">I-restart ngayon</translation>
@@ -5127,7 +5126,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="488211015466188466">Magsubaybay ng Site</translation>
 <translation id="4882312758060467256">May access sa site na ito</translation>
-<translation id="4882752944049998623">Na-save ang password sa iyong Google Account na <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Karaniwang ginagamit ng mga site ang iyong mikropono para sa mga feature sa pakikipag-ugnayan gaya ng pakikipag-video chat</translation>
 <translation id="4883436287898674711">Lahat ng site ng <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>

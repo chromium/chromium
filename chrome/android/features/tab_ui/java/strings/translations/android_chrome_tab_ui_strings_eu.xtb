@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Itxi hautatutako <ph name="TABS_COUNT_ONE" /> fitxa}other{Itxi hautatutako <ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="8398929769197326728">Karpeta berria (<ph name="CURRENT_TIMESTAMP_MS" />)</translation>
 <translation id="8714939927607906138">Merkeagoa</translation>
+<translation id="8730621377337864115">Eginda</translation>
 <translation id="8730999928494395583">Ezkutuko moduko fitxa hauetan egin dituzun jarduerak kendu egingo dira gailu honetatik</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Duela <ph name="NUM_MONTHS_ONE" /> hilabete sortua}other{Duela <ph name="NUM_MONTHS_MANY" /> hilabete sortua}}</translation>
 <translation id="8820741577754260431">Ikusi prezio-jaitsierak fitxetan</translation>

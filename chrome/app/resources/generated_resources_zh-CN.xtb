@@ -1672,7 +1672,6 @@
 <translation id="2252017960592955005">防窥探（Beta 版）</translation>
 <translation id="2253318212986772520">无法检索<ph name="PRINTER_NAME" />的 PPD。</translation>
 <translation id="2253927598983295051">选择要与“<ph name="APP_NAME" />”分享的内容</translation>
-<translation id="2254263139042585032">显示保存在您 Google 账号中的密码和通行密钥</translation>
 <translation id="2255077166240162850">此设备已锁定到其他网域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 时间戳</translation>
 <translation id="2256115617011615191">立即重新启动</translation>
@@ -5100,7 +5099,6 @@
 <translation id="4881695831933465202">打开</translation>
 <translation id="488211015466188466">关注网站</translation>
 <translation id="4882312758060467256">可以访问此网站</translation>
-<translation id="4882752944049998623">密码已保存到您的 Google 账号 <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">网站通常会使用您的麦克风以实现通信功能（例如视频聊天）</translation>
 <translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="48838266408104654">任务管理器(&amp;T)</translation>

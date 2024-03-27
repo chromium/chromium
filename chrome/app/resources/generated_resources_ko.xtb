@@ -1692,7 +1692,6 @@
 <translation id="2252017960592955005">사생활 보호(베타)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" />의 PPD를 가져올 수 없습니다.</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" />님과 공유할 항목을 선택하세요</translation>
-<translation id="2254263139042585032">Google 계정의 비밀번호 및 패스키 표시</translation>
 <translation id="2255077166240162850">이 기기가 다른 도메인 또는 모드로 잠겼습니다.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">지금 다시 시작</translation>
@@ -5125,7 +5124,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="488211015466188466">사이트 팔로우</translation>
 <translation id="4882312758060467256">이 사이트의 액세스 권한이 있습니다.</translation>
-<translation id="4882752944049998623">비밀번호가 Google 계정(<ph name="USER_EMAIL" />)에 저장되었습니다.</translation>
 <translation id="4882919381756638075">사이트에서는 일반적으로 영상 채팅 같은 커뮤니케이션 기능에 마이크를 사용합니다.</translation>
 <translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="48838266408104654">작업 관리자(&amp;T)</translation>

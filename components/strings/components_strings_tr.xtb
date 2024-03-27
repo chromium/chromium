@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Su Filtreleri ve Arıtıcılar</translation>
 <translation id="1036348656032585052">Kapat</translation>
 <translation id="1036881361735705143">Zarf C4</translation>
-<translation id="1036982837258183574">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="1038106730571050514">Önerileri göster</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
 <translation id="1041998700806130099">İş sayfası mesajı</translation>
@@ -160,7 +159,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1282358575813748144">Tekneler ve Su Taşıtları</translation>
 <translation id="1283977499362032052">Özgeçmişler ve Portfolyolar</translation>
 <translation id="1285320974508926690">Bu siteyi asla çevirme</translation>
-<translation id="1288548991597756084">Kartı güvenli bir şekilde kaydedin</translation>
 <translation id="1292571435393770077">Tepsi 16</translation>
 <translation id="1292701964462482250">"Bilgisayarınızdaki yazılım, Chrome'un web'e güvenli bir şekilde bağlanmasını engelliyor" (yalnızca Windows bilgisayarlar)</translation>
 <translation id="1293797321964802402">Zarf 9 x 11 inç</translation>
@@ -286,7 +284,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1507202001669085618">&lt;p&gt;İnternete girmek için oturum açmanızı gerektiren bir kablosuz portal kullanıyorsanız bu hatayı görürsünüz.&lt;/p&gt;
     &lt;p&gt;Hatayı gidermek için, açmaya çalıştığınız sayfada &lt;strong&gt;Bağlan&lt;/strong&gt;'ı tıklayın.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Geçmiş girişlerin listesi</translation>
-<translation id="1516097932025103760">Kart bilgileri şifrelenir ve güvenli bir şekilde kaydedilir. CVC ise hiçbir zaman saklanmaz.</translation>
 <translation id="151720253492607760">İzin vermemeye devam et</translation>
 <translation id="1517433312004943670">Telefon numarası gerekli</translation>
 <translation id="1519264250979466059">Oluşturma Tarihi</translation>
@@ -1260,7 +1257,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="342781501876943858">Chromium, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates sunucu şablonu URI'larından biri veya daha fazlası geçersiz olduğundan kullanılmayacak.</translation>
 <translation id="3428789896412418755">Gruplandırılmış Geçmiş</translation>
-<translation id="3431216045099978607">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşuna basın.</translation>
 <translation id="3432601291244612633">Sayfayı kapat</translation>
 <translation id="3433111389595862568">Ortak Çalışma ve Konferans Yazılımları</translation>
 <translation id="3433144818443565002">Sesli ve Görüntülü Sohbet</translation>
@@ -1987,7 +1983,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="483241715238664915">Uyarıları açın</translation>
 <translation id="4832961164064927107">Barbekü ve Izgara</translation>
 <translation id="4834250788637067901">Google Pay'i kullanan ödeme yöntemleri, teklifler ve adresler</translation>
-<translation id="4839087176073128681">Google'ın sektör lideri güvenliği sayesinde bir dahaki sefer daha hızlı ödeme yapın ve kartınızı koruyun.</translation>
 <translation id="4840250757394056958">Chrome geçmişimi göster</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>
@@ -2595,7 +2590,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6045164183059402045">Tanzim şablonu</translation>
 <translation id="6047233362582046994">Güvenliğinize ilişkin riskleri anladıysanız zararlı programlar kaldırılmadan önce <ph name="BEGIN_LINK" />bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">Bu içerik sizi kandırarak yazılım yüklemenizi veya kişisel bilgilerinizi ifşa etmenizi sağlamaya çalışabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Tam ekrandan çıkmak için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="6049056807983403918">Zarf B4</translation>
 <translation id="6049488691372270142">Sayfa teslimi</translation>
 <translation id="6049975101166779351">Çocuk Bakımı</translation>
@@ -2714,7 +2708,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6270066318535733958">Tekne Sporları</translation>
 <translation id="6272088941196661550">Chrome geçmişinizde alakalı etkinlikleri görmek için arama yolculuğunuzu devam ettirin.</translation>
 <translation id="6272383483618007430">Google Güncelleme</translation>
-<translation id="6279183038361895380">İmlecinizi göstermek için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
 <translation id="6280223929691119688">Bu adrese teslimat yapılamıyor. Farklı bir adres seçin.</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
 <translation id="6284449872909111707">Metin Mesajlar ve Anlık Mesajlaşma</translation>
@@ -3755,7 +3748,6 @@ Ek ayrıntılar:
 <translation id="8241707690549784388">Aradığınız sayfa, girdiğiniz bilgileri kullandı. O sayfaya dönmeniz, gerçekleştirdiğiniz işlemlerin tekrarlanmasına yol açabilir. Devam etmek istiyor musunuz?</translation>
 <translation id="8241712895048303527">Bu sitede engelle</translation>
 <translation id="8242426110754782860">Devam et</translation>
-<translation id="8245703462678310750">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşuna basılı tutun.</translation>
 <translation id="8246482227229072868">Yüzükler</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> dilindeki metin (otomatik algılandı) <ph name="TARGET" /> diline çevriliyor</translation>

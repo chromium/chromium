@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
 <translation id="8398929769197326728">Neuer Ordner – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
+<translation id="8730621377337864115">Fertig</translation>
 <translation id="8730999928494395583">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_MONTHS_ONE" /> Monat erstellt}other{Vor <ph name="NUM_MONTHS_MANY" /> Monaten erstellt}}</translation>
 <translation id="8820741577754260431">Preisnachlässe auf deinen Tabs sehen</translation>

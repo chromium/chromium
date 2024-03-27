@@ -1684,7 +1684,6 @@
 <translation id="2252017960592955005">ರಕ್ಷಣೆಯನ್ನು ನೋಡಲಾಗುತ್ತಿದೆ (ಬೀಟಾ ಆವೃತ್ತಿ)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> ಗಾಗಿ PPD ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ.</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> ಜೊತೆಗೆ ಏನನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="2254263139042585032">ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2255077166240162850">ಈ ಸಾಧನವನ್ನು ಬೇರೊಂದು ಡೊಮೇನ್ ಅಥವಾ ಮೋಡ್‌ಗೆ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">ಈಗ ಮರುಪ್ರಾರಂಭಿಸು</translation>
@@ -3407,6 +3406,7 @@
 <translation id="3577487026101678864">ಫೈಲ್ ಸಿಂಕ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ಹಾರ್ಡ್‌ವೇರ್ ಡೇಟಾ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="3581605050355435601">IP ವಿಳಾಸವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
+<translation id="3581861561942370740">ಡೌನ್‌ಲೋಡ್ ಇತಿಹಾಸವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="3582057310199111521">ವಂಚಕ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ ಮತ್ತು ಡೇಟಾ ಉಲ್ಲಂಘಿಸಿದ ಪಟ್ಟಿಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="3582299299336701326">ಬೆಳಕಿನ ಪರದೆಗಳನ್ನು ಡಾರ್ಕ್ ಮಾಡಿ, ಮತ್ತು ಡಾರ್ಕ್ ಸ್ಕ್ರೀನ್‌ಗಳನ್ನು ಲೈಟ್ ಮಾಡಿ. ಬಣ್ಣ ವಿಲೋಮವನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು Search + Ctrl + H ಒತ್ತಿರಿ.</translation>
 <translation id="3584169441612580296">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಫೋಟೋಗಳು, ಸಂಗೀತ, ಮತ್ತು ಇತರ ಮಾಧ್ಯಮವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಿಸಿ</translation>
@@ -5119,7 +5119,6 @@
 <translation id="4881695831933465202">ತೆರೆ</translation>
 <translation id="488211015466188466">ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="4882312758060467256">ಈ ಸೈಟ್‌ಗೆ ಪ್ರವೇಶವಿದೆ</translation>
-<translation id="4882752944049998623">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">ಸೈಟ್‌ಗಳು ಸಾಮಾನ್ಯವಾಗಿ, ಮೈಕ್ರೋಫೋನ್‌ನಂತಹ ಸಂವಾದಾತ್ಮಕ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ನಿಮ್ಮ ವೀಡಿಯೊ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="4883436287898674711">ಎಲ್ಲಾ <ph name="WEBSITE_1" /> ಸೈಟ್‌ಗಳು</translation>
 <translation id="48838266408104654">&amp;ಕಾರ್ಯ ನಿರ್ವಾಹಕ</translation>
@@ -5326,6 +5325,7 @@
 <translation id="5056950756634735043">ಕಂಟೇನರ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5057110919553308744">ನೀವು ವಿಸ್ತರಣೆಯನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ</translation>
 <translation id="5057127674016624293">ಸ್ಕ್ಯಾನಿಂಗ್ ನಿರೀಕ್ಷೆಗಿಂತ ಹೆಚ್ಚು ಸಮಯ ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದೆ</translation>
+<translation id="5057480703570202545">ಇತಿಹಾಸವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5059241099014281248">ಸೈನ್-ಇನ್ ನಿಂರ್ಬಂಧಿಸಿ</translation>
 <translation id="5059429103770496207">ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿ</translation>
 <translation id="5059526285558225588">ಏನನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -5735,6 +5735,7 @@
 <translation id="5390677308841849479">ಗಾಢ ಕೆಂಪು ಮತ್ತು ಕಿತ್ತಳೆ</translation>
 <translation id="5392192690789334093">ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ಲಿಂಕ್}one{# ಲಿಂಕ್‌ಗಳು}other{# ಲಿಂಕ್‌ಗಳು}}</translation>
+<translation id="5394529681046491727">Wi-Fi ಡೈರೆಕ್ಟ್</translation>
 <translation id="5395498824851198390">ಡೀಫಾಲ್ಟ್ ಫಾಂಟ್</translation>
 <translation id="5397378439569041789">ಕಿಯೋಸ್ಕ್ ಅಥವಾ ಸಂಕೇತ ಸಾಧನವನ್ನು ನೋಂದಾಯಿಸಿ</translation>
 <translation id="5397794290049113714">ನೀವು</translation>

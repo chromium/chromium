@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Thiết bị lọc và máy lọc nước</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1036881361735705143">Phong bì C4</translation>
-<translation id="1036982837258183574">Nhấn |<ph name="ACCELERATOR" />| để thoát khỏi chế độ toàn màn hình</translation>
 <translation id="1038106730571050514">Hiển thị các đề xuất</translation>
 <translation id="1038842779957582377">tên không biết</translation>
 <translation id="1041998700806130099">Thông báo tờ công việc</translation>
@@ -160,7 +159,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1282358575813748144">Thuyền và tàu bè</translation>
 <translation id="1283977499362032052">Lý lịch nghề nghiệp và danh mục đầu tư</translation>
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
-<translation id="1288548991597756084">Lưu thẻ một cách an toàn</translation>
 <translation id="1292571435393770077">Khay 16</translation>
 <translation id="1292701964462482250">"Phần mềm trên máy tính của bạn đang ngăn không cho Chrome kết nối an toàn với web" (chỉ trên máy tính Windows)</translation>
 <translation id="1293797321964802402">Phong bì 9 x 11 inch</translation>
@@ -286,7 +284,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1507202001669085618">&lt;p&gt;Bạn sẽ gặp lỗi này nếu đang sử dụng cổng Wi-Fi yêu cầu bạn đăng nhập để có thể vào mạng.&lt;/p&gt;
     &lt;p&gt;Để khắc phục lỗi này, hãy nhấp vào &lt;strong&gt;Kết nối&lt;/strong&gt; trên trang mà bạn đang cố mở.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Danh sách các mục lịch sử</translation>
-<translation id="1516097932025103760">Thẻ sẽ được mã hóa, lưu một cách bảo mật, còn CVC sẽ không được lưu trữ.</translation>
 <translation id="151720253492607760">Vẫn không cho phép</translation>
 <translation id="1517433312004943670">Phải có số điện thoại</translation>
 <translation id="1519264250979466059">Ngày tạo</translation>
@@ -1260,7 +1257,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="342781501876943858">Chromium khuyên bạn nên đặt lại mật khẩu của mình nếu đã sử dụng lại mật khẩu này trên các trang web khác.</translation>
 <translation id="3428151540071562330">Một hoặc nhiều URI mẫu máy chủ DnsOverHttpsTemplates là không hợp lệ và sẽ không được dùng.</translation>
 <translation id="3428789896412418755">Nhật ký sắp xếp theo nhóm</translation>
-<translation id="3431216045099978607">Nhấn |<ph name="ACCELERATOR" />| để thoát chế độ toàn màn hình và xem tệp đã tải xuống.</translation>
 <translation id="3432601291244612633">Đóng trang</translation>
 <translation id="3433111389595862568">Phần mềm hội nghị và cộng tác</translation>
 <translation id="3433144818443565002">Trò chuyện thoại và video</translation>
@@ -1987,7 +1983,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="483241715238664915">Bật cảnh báo</translation>
 <translation id="4832961164064927107">BBQ và đồ nướng</translation>
 <translation id="4834250788637067901">Phương thức thanh toán, ưu đãi và địa chỉ sử dụng Google Pay</translation>
-<translation id="4839087176073128681">Thanh toán nhanh hơn lần sau và bảo vệ thẻ của bạn bằng tính năng bảo mật hàng đầu trong ngành của Google.</translation>
 <translation id="4840250757394056958">Xem nhật ký duyệt web trên Chrome</translation>
 <translation id="484462545196658690">Tự động</translation>
 <translation id="484671803914931257">Nhận chiết khấu tại <ph name="MERCHANT_NAME" /> và nhiều nơi khác</translation>
@@ -2595,7 +2590,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6045164183059402045">Mẫu áp dụng</translation>
 <translation id="6047233362582046994">Nếu bạn hiểu các rủi ro về bảo mật, bạn có thể <ph name="BEGIN_LINK" />truy cập trang này<ph name="END_LINK" /> trước khi các ứng dụng có hại bị xóa.</translation>
 <translation id="6047927260846328439">Nội dung này có thể tìm cách đánh lừa bạn cài đặt phần mềm hoặc tiết lộ thông tin cá nhân. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Hãy nhấn và giữ |<ph name="ACCELERATOR" />| để thoát khỏi toàn màn hình</translation>
 <translation id="6049056807983403918">Phong bì B4</translation>
 <translation id="6049488691372270142">Phân phối trang</translation>
 <translation id="6049975101166779351">Chăm sóc trẻ em</translation>
@@ -2714,7 +2708,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6270066318535733958">Đi thuyền</translation>
 <translation id="6272088941196661550">Tiếp tục hành trình của bạn để xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Nhấn |<ph name="ACCELERATOR" />| để hiển thị con trỏ của bạn</translation>
 <translation id="6280223929691119688">Không thể phân phối đến địa chỉ này. Chọn một địa chỉ khác.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
 <translation id="6284449872909111707">Nhắn tin văn bản và nhắn tin nhanh</translation>
@@ -3755,7 +3748,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8241707690549784388">Trang mà bạn đang tìm sử dụng thông tin bạn đã nhập vào. Việc quay lại trang đó có thể lặp lại bất kỳ tác vụ nào bạn đã thực hiện. Bạn có muốn tiếp tục không?</translation>
 <translation id="8241712895048303527">Chặn trên trang web này</translation>
 <translation id="8242426110754782860">Tiếp tục</translation>
-<translation id="8245703462678310750">Nhấn và giữ |<ph name="ACCELERATOR" />| để thoát chế độ toàn màn hình và xem tệp đã tải xuống.</translation>
 <translation id="8246482227229072868">Nhẫn</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
 <translation id="824968735947741546">Đang dịch <ph name="SOURCE" /> (được tự động phát hiện) sang <ph name="TARGET" /></translation>

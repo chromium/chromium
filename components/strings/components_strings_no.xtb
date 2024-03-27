@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vannfiltre og vannrensere</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1036881361735705143">C4-konvolutt</translation>
-<translation id="1036982837258183574">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm</translation>
 <translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038842779957582377">ukjent navn</translation>
 <translation id="1041998700806130099">Jobbarkmelding</translation>
@@ -160,7 +159,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1282358575813748144">Båter og fartøy</translation>
 <translation id="1283977499362032052">CV-er og porteføljer</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
-<translation id="1288548991597756084">Lagre kortet sikkert</translation>
 <translation id="1292571435393770077">Skuff 16</translation>
 <translation id="1292701964462482250">«Det er programvare på datamaskinen din som hindrer Chrome i å koble trygt til Internett» (bare på Windows-datamaskiner)</translation>
 <translation id="1293797321964802402">Konvolutt 9 x 11 tommer</translation>
@@ -286,7 +284,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1507202001669085618">&lt;p&gt;Du ser denne feilmeldingen hvis du bruker en Wifi-portal hvor du må logge på før du kommer deg på nettet.&lt;/p&gt;
     &lt;p&gt;For å fikse feilen, klikk på &lt;strong&gt;Koble til&lt;/strong&gt; på siden du prøver å åpne.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste over loggoppføringer</translation>
-<translation id="1516097932025103760">Det blir kryptert og lagret sikkert, og verifiseringskoden lagres aldri.</translation>
 <translation id="151720253492607760">Fortsett å ikke tillate</translation>
 <translation id="1517433312004943670">Det kreves et telefonnummer</translation>
 <translation id="1519264250979466059">Versjonsdato</translation>
@@ -1260,7 +1257,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="342781501876943858">Chromium anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="3428151540071562330">Én eller flere av URI-ene for DnsOverHttpsTemplates-tjenermaler er ugyldige og blir ikke brukt.</translation>
 <translation id="3428789896412418755">Gruppert logg</translation>
-<translation id="3431216045099978607">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm og se nedlastingen.</translation>
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3433111389595862568">Samarbeids- og konferanseprogramvare</translation>
 <translation id="3433144818443565002">Tale- og videochat</translation>
@@ -1987,7 +1983,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4832961164064927107">Grilling</translation>
 <translation id="4834250788637067901">Betalingsmåter, tilbud og adresser som bruker Google Pay</translation>
-<translation id="4839087176073128681">Betal raskere neste gang, og beskytt kortet ditt med Googles bransjeledende sikkerhet.</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Få rabatt hos <ph name="MERCHANT_NAME" /> og flere</translation>
@@ -2595,7 +2590,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6045164183059402045">Imposisjonsmal</translation>
 <translation id="6047233362582046994">Hvis du forstår sikkerhetsrisikoen, kan du <ph name="BEGIN_LINK" />gå til dette nettstedet<ph name="END_LINK" /> før de skadelige appene er fjernet.</translation>
 <translation id="6047927260846328439">Dette innholdet kan prøve å lure deg til å installere programvare eller oppgi personopplysninger. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Trykk og hold på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm</translation>
 <translation id="6049056807983403918">B4-konvolutt</translation>
 <translation id="6049488691372270142">Sidelevering</translation>
 <translation id="6049975101166779351">Barnepleie</translation>
@@ -2714,7 +2708,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6270066318535733958">Båtsport</translation>
 <translation id="6272088941196661550">Fortsett reisen for å se relevant aktivitet i Chrome-loggen</translation>
 <translation id="6272383483618007430">Google Oppdatering</translation>
-<translation id="6279183038361895380">Trykk på |<ph name="ACCELERATOR" />| for å se markøren</translation>
 <translation id="6280223929691119688">Kan ikke levere til denne adressen. Velg en annen adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284449872909111707">Tekstmeldinger og chat</translation>
@@ -3754,7 +3747,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8241707690549784388">Siden du ser etter, brukte informasjon som du anga. Hvis du går tilbake til denne siden, kan det føre til at handlinger som er utført, blir gjentatt. Vil du fortsette?</translation>
 <translation id="8241712895048303527">Blokkér på dette nettstedet</translation>
 <translation id="8242426110754782860">Gå videre</translation>
-<translation id="8245703462678310750">Trykk og hold |<ph name="ACCELERATOR" />| for å avslutte fullskjerm og se nedlastingen.</translation>
 <translation id="8246482227229072868">Ringer</translation>
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="824968735947741546">Oversetter <ph name="SOURCE" /> (automatisk identifisert) til <ph name="TARGET" /></translation>

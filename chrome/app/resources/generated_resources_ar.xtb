@@ -1684,7 +1684,6 @@
 <translation id="2252017960592955005">‏ميزة Viewing Protection (إصدار تجريبي)</translation>
 <translation id="2253318212986772520">‏يتعذَّر استرداد ملف PPD للطابعة <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">اختيار المحتوى الذي تتم مشاركته مع "<ph name="APP_NAME" />"</translation>
-<translation id="2254263139042585032">‏عرض كلمات المرور ومفاتيح المرور من حسابك على Google</translation>
 <translation id="2255077166240162850">تم تقييد الجهاز بوضع أو بنطاق آخر.</translation>
 <translation id="2255317897038918278">‏الطابع الزمني لـ Microsoft</translation>
 <translation id="2256115617011615191">إعادة التشغيل الآن</translation>
@@ -5112,7 +5111,6 @@
 <translation id="4881695831933465202">فتح</translation>
 <translation id="488211015466188466">متابعة الموقع الإلكتروني</translation>
 <translation id="4882312758060467256">يمكنها الوصول إلى الموقع الإلكتروني هذا</translation>
-<translation id="4882752944049998623">‏تم حفظ كلمة المرور في حسابك على Google، <ph name="USER_EMAIL" />.</translation>
 <translation id="4882919381756638075">تستخدم المواقع الإلكترونية عادةً الميكروفون لتتيح ميزات التواصل، مثل محادثة الفيديو.</translation>
 <translation id="4883436287898674711">جميع مواقع <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;مدير المهام</translation>
@@ -9210,7 +9208,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{ورقة واحدة}zero{{COUNT} ورقة}two{ورقتان ({COUNT})}few{{COUNT} أوراق}many{{COUNT} ورقة}other{{COUNT} ورقة}}</translation>
 <translation id="8063235345342641131">الصورة الرمزية التلقائية الخضراء</translation>
 <translation id="8063535366119089408">قراءة الملف</translation>
-<translation id="8064015041956107954">‏يمكنك فتح الإشارات المرجعية وتفعيل وضع القراءة والمزيد من قائمة Chrome في أعلى يسار الشاشة</translation>
+<translation id="8064015041956107954">‏يمكنك فتح الإشارات المرجعية وتفعيل "وضع القراءة" والمزيد من قائمة Chrome في أعلى يسار الشاشة</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
 <translation id="8064279191081105977">مجموعة <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">مربع حوار الاتصال</translation>
@@ -9459,7 +9457,7 @@
 <translation id="8253198102038551905">انقر '+' للحصول على خصائص الشبكة</translation>
 <translation id="8255212965098517578">الصور والإشعارات والتطبيقات الحديثة</translation>
 <translation id="8256319818471787266">اللامع</translation>
-<translation id="8257796129973882597">‏يمكنك فتح الإشارات المرجعية وتفعيل وضع القراءة وأكثر من قائمة Chrome</translation>
+<translation id="8257796129973882597">‏يمكنك فتح الإشارات المرجعية وتفعيل "وضع القراءة" وأكثر من قائمة Chrome</translation>
 <translation id="8257950718085972371">متابعة حظر الدخول إلى الكاميرا</translation>
 <translation id="8258027225380843424">تم الاستيراد</translation>
 <translation id="8259048637628995340">‏اربط هاتفك الذي يعمل بنظام تشغيل Android للحصول على تجربة استخدام سلسة</translation>

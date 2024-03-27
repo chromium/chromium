@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
 <translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
+<translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8730999928494395583">આ ડિવાઇસમાંથી આ છૂપા ટૅબમાંની તમારી પ્રવૃત્તિ કાઢી નાખવામાં આવશે</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં બનાવ્યું}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}}</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>

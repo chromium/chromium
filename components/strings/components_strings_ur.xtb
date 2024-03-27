@@ -25,7 +25,6 @@
 <translation id="1035709686865413354">پانی کے فلٹرز اور پیوریفائرز</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1036881361735705143">‏C4 لفافہ</translation>
-<translation id="1036982837258183574">پوری اسکرین سے باہر نکلنے کیلئے |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="1038106730571050514">تجاویز دکھائیں</translation>
 <translation id="1038842779957582377">نامعلوم نام</translation>
 <translation id="1041998700806130099">جاب شیٹ کا پیغام</translation>
@@ -161,7 +160,6 @@
 <translation id="1282358575813748144">کشتیاں اور واٹرکرافٹ</translation>
 <translation id="1283977499362032052">ریزیومیز اور پورٹ فولیوز</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
-<translation id="1288548991597756084">کارڈ کو محفوظ طریقے سے محفوظ کریں</translation>
 <translation id="1292571435393770077">ٹرے 16</translation>
 <translation id="1292701964462482250">‏"آپ کے کمپیوٹر میں موجود سافٹ ویئر Chrome کو محفوظ طور پر ویب سے منسلک ہونے سے روک رہا ہے" (صرف Windows کمپیوٹرز کیلئے)</translation>
 <translation id="1293797321964802402">‏‎9 x 11انچ لفافہ</translation>
@@ -287,7 +285,6 @@
 <translation id="1507202001669085618">‏&lt;p&gt;اگر آپ کسی ایسے Wi-Fi پورٹل کا استعمال کر رہے ہیں، جس میں آپ کو آن لائن جانے سے پہلے سائن ان کرنا پڑتا ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
     &lt;p&gt;خرابی ٹھیک کرنے کیلئے، اس صفحے پر &lt;strong&gt;منسلک کریں&lt;/strong&gt; پر کلک کریں جسے آپ کھولنے کی کوشش کر رہے ہیں۔&lt;/p&gt;</translation>
 <translation id="1513706915089223971">سرگزشت کے اندراجات کی فہرست</translation>
-<translation id="1516097932025103760">‏اسے مرموز کیا جائے گا، محفوظ طریقے سے محفوظ کیا جائے گا اور CVC کو کبھی بھی اسٹور نہیں کیا جائے گا۔</translation>
 <translation id="151720253492607760">جاری رکھنے کی اجازت نہیں دی جا رہی ہے</translation>
 <translation id="1517433312004943670">فون نمبر درکار ہے</translation>
 <translation id="1519264250979466059">بلڈ کی تاریخ</translation>
@@ -1262,7 +1259,6 @@
 <translation id="342781501876943858">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chromium آپ کو اپنا پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3428151540071562330">‏ایک یا ایک سے زیادہ DnsOverHttpsTemplates سرور تمثیل URIs غلط ہیں اور استعمال نہیں کیے جائیں گے۔</translation>
 <translation id="3428789896412418755">گروپ کردہ سرگزشت</translation>
-<translation id="3431216045099978607">فُل اسکرین سے باہر نکلنے اور ڈاؤن لوڈ دیکھنے کے لیے |<ph name="ACCELERATOR" />| دبائیں۔</translation>
 <translation id="3432601291244612633">صفحہ بند کریں</translation>
 <translation id="3433111389595862568">معاونت اور کانفرنسنگ سافٹ ویئر</translation>
 <translation id="3433144818443565002">صوتی اور ویڈیو چیٹ</translation>
@@ -1989,7 +1985,6 @@
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
 <translation id="4832961164064927107">‏BBQ اور گرِلنگ</translation>
 <translation id="4834250788637067901">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے، پیشکشیں اور پتے</translation>
-<translation id="4839087176073128681">‏اگلی بار تیزی سے ادائیگی کریں اور Google کی انڈسٹری کی صف اول کی سیکیورٹی کے ساتھ اپنے کارڈ کی حفاظت کریں۔</translation>
 <translation id="4840250757394056958">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> اور مزید پر رعایت حاصل کریں</translation>
@@ -2597,7 +2592,6 @@
 <translation id="6045164183059402045">نفاذ کی تمثیل</translation>
 <translation id="6047233362582046994">اگر آپ اپنی سیکیورٹی کے خطرات کو سمجھتے ہیں تو آپ نقصان دہ ایپس کو ہٹائے جانے سے پہلے <ph name="BEGIN_LINK" />یہ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="6047927260846328439">یہ مواد آپ سے دھوکہ سے سافٹ ویئر انسٹال کروا سکتا ہے یا ذاتی معلومات حاصل کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">پوری اسکرین سے باہر نکلنے کے لیے |<ph name="ACCELERATOR" />| کو دبائے رکھیں</translation>
 <translation id="6049056807983403918">‏B4 لفافہ</translation>
 <translation id="6049488691372270142">صفحہ کی ڈیلیوری</translation>
 <translation id="6049975101166779351">بچے کی نگہداشت</translation>
@@ -2717,7 +2711,6 @@
 <translation id="6270066318535733958">بوٹنگ</translation>
 <translation id="6272088941196661550">‏اپنی Chrome کی سرگزشت میں متعلقہ سرگرمی دیکھنے کے لیے دوبارہ اپنا صارف کا تجربہ شروع کریں</translation>
 <translation id="6272383483618007430">‏Google اپ ڈیٹ</translation>
-<translation id="6279183038361895380">اپنا کرسر دکھانے کیلئے |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="6280223929691119688">اس پتے پر ڈیلیوری نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="6284292079994426700">‏‎26 x 38 انچ</translation>
 <translation id="6284449872909111707">ٹیکسٹ اور فوری پیغام رسانی</translation>
@@ -3758,7 +3751,6 @@
 <translation id="8241707690549784388">آپ جو صفحہ تلاش کر رہے ہیں اس نے آپ کی درج کردہ معلومات کا استعمال کیا۔ اس صفحہ پر واپس جانا کسی ایسی کارروائی کا سبب بن سکتا ہے جسے آپ نے دہرائے جانے کیلئے کیا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="8241712895048303527">اس سائٹ پر مسدود کریں</translation>
 <translation id="8242426110754782860">آگے بڑھیں</translation>
-<translation id="8245703462678310750">فُل اسکرین سے باہر نکلنے اور ڈاؤن لوڈ دیکھنے کے لیے |<ph name="ACCELERATOR" />| چھوئیں اور دبائے رکھیں۔</translation>
 <translation id="8246482227229072868">رِنگز</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (خودکار طور پر شناخت کردہ) کا <ph name="TARGET" /> میں ترجمہ کیا جا رہا ہے</translation>

@@ -1692,7 +1692,6 @@
 <translation id="2252017960592955005">Заштита од прегледување (Бета)</translation>
 <translation id="2253318212986772520">Не може да се вчита PPD за <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Изберете што да се споделува со <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Прикажи ги лозинките и криптографските клучеви од сметката на Google</translation>
 <translation id="2255077166240162850">Уредов беше заклучен за друг домен или режим.</translation>
 <translation id="2255317897038918278">Временско означување на Microsoft</translation>
 <translation id="2256115617011615191">Рестартирај сега</translation>
@@ -5126,7 +5125,6 @@
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="488211015466188466">Следете го сајтот</translation>
 <translation id="4882312758060467256">Има пристап до сајтов</translation>
-<translation id="4882752944049998623">Лозинката е зачувана во вашата сметка на Google, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Сајтовите обично го користат микрофонот за функциите за комуникација како што е видеоразговорот</translation>
 <translation id="4883436287898674711">Сите локации на <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Управник со &amp;задачи</translation>

@@ -1677,7 +1677,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2252017960592955005">Zaštita od pregleda (beta)</translation>
 <translation id="2253318212986772520">Preuzimanje PPD-a za štampač <ph name="PRINTER_NAME" /> nije uspelo.</translation>
 <translation id="2253927598983295051">Odaberite šta ćete deliti sa aplikacijom <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Prikaži lozinke i pristupne kodove sa Google naloga</translation>
 <translation id="2255077166240162850">Ovaj uređaj je zaključan na neki drugi domen ili režim.</translation>
 <translation id="2255317897038918278">Microsoft označavanje vremena</translation>
 <translation id="2256115617011615191">Restartuj odmah</translation>
@@ -5108,7 +5107,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488211015466188466">Pratite sajt</translation>
 <translation id="4882312758060467256">Može da pristupa ovom sajtu</translation>
-<translation id="4882752944049998623">Lozinka je sačuvana na Google nalogu, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Sajtovi obično koriste mikrofon za potrebe funkcija za komunikaciju poput video ćaskanja</translation>
 <translation id="4883436287898674711">Svi <ph name="WEBSITE_1" /> sajtovi</translation>
 <translation id="48838266408104654">&amp;Menadžer zadataka</translation>

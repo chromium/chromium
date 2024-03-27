@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">فیلتر آب و تصفیه‌کننده</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1036881361735705143">پاکت سی۴</translation>
-<translation id="1036982837258183574">برای خروج از حالت تمام صفحه |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="1038106730571050514">نمایش پیشنهادها</translation>
 <translation id="1038842779957582377">نام ناشناس</translation>
 <translation id="1041998700806130099">پیام برگ کار</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">قایق و شناور</translation>
 <translation id="1283977499362032052">رزومه و نمونه کار</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
-<translation id="1288548991597756084">ذخیره ایمن کارت</translation>
 <translation id="1292571435393770077">سینی ۱۶</translation>
 <translation id="1292701964462482250">‏«نرم‌افزاری در رایانه شما مانع از اتصال ایمن Chrome به وب می‌شود» (فقط رایانه‌های Windows)</translation>
 <translation id="1293797321964802402">پاکت ۱۱×۹ اینچی</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">‏&lt;p&gt;اگر از پورتالی از Wi-Fi استفاده می‌کنید که پیش از آنلاین شدن شما را ملزم به ورود به سیستم می‌کند، این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، در صفحه‌ای که می‌خواهید باز کنید روی &lt;strong&gt;اتصال&lt;/strong&gt; کلیک کنید.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">فهرست ورودی‌های سابقه</translation>
-<translation id="1516097932025103760">رمزگذاری خواهد شد، به‌طور ایمن ذخیره خواهد شد، و کد تأیید کارت هرگز ذخیره نمی‌شود.</translation>
 <translation id="151720253492607760">همچنان مجاز نباشد</translation>
 <translation id="1517433312004943670">شماره تلفن ضروری است</translation>
 <translation id="1519264250979466059">تاریخ ساخت</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">‏Chromium توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="3428151540071562330">‏یک یا چند سرور نشانی وب الگوی سرور DnsOverHttpsTemplates نامعتبر است و استفاده نخواهد شد.</translation>
 <translation id="3428789896412418755">سابقه گروه‌بندی‌شده</translation>
-<translation id="3431216045099978607">برای خروج از حالت تمام صفحه و دیدن بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید.</translation>
 <translation id="3432601291244612633">بستن صفحه</translation>
 <translation id="3433111389595862568">نرم‌افزار کنفرانس و مشارکت</translation>
 <translation id="3433144818443565002">گپ صوتی و ویدیویی</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4832961164064927107">باربیکیو و کباب کردن</translation>
 <translation id="4834250788637067901">‏روش‌های پرداخت، پیشنهادها، و نشانی‌های استفاده‌شده در Google Pay</translation>
-<translation id="4839087176073128681">‏دفعه بعد سریع‌تر پرداخت کنید و با امنیت Google که امنیتی پیشرو در این صنعت است از کارتتان محافظت کنید.</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="484671803914931257">دریافت تخفیف از <ph name="MERCHANT_NAME" /> و موارد دیگر</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">الگوی چاپ مضاعف</translation>
 <translation id="6047233362582046994">اگر خطری را که امنیتتان را تهدید می‌کند درک می‌کنید، می‌توانید قبل از حذف برنامه‌های مضر، <ph name="BEGIN_LINK" />از این سایت بازدید کنید<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">شاید محتوای این صفحه تلاش کند شما را فریب دهد تا نرم‌افزاری نصب کنید یا اطلاعات شخصی را افشا سازید. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">برای خروج از حالت تمام صفحه، |<ph name="ACCELERATOR" />| را فشار دهید و نگه‌دارید</translation>
 <translation id="6049056807983403918">پاکت بی۴</translation>
 <translation id="6049488691372270142">ارائه صفحه</translation>
 <translation id="6049975101166779351">مراقبت از کودکان</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">قایق‌رانی</translation>
 <translation id="6272088941196661550">‏سفر جستجو را ازسر بگیرید تا فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">برای نمایش نشان‌گر |<ph name="ACCELERATOR" />| را فشار دهید</translation>
 <translation id="6280223929691119688">تحویل به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
 <translation id="6284292079994426700">۳۸ × ۲۶ اینچ</translation>
 <translation id="6284449872909111707">پیامک و پیام‌رسانی فوری</translation>
@@ -3755,7 +3748,6 @@
 <translation id="8241707690549784388">صفحه‌ای که جستجو می‌کنید از اطلاعاتی استفاده می‌کند که شما وارد کرده‌اید. بازگشت به آن صفحه ممکن است باعث شود اقدامی را که قبلاً انجام دادید دوباره تکرار کنید. آیا می‌خواهید ادامه دهید؟</translation>
 <translation id="8241712895048303527">مسدود کردن در این سایت</translation>
 <translation id="8242426110754782860">ادامه دادن</translation>
-<translation id="8245703462678310750">برای خروج از حالت تمام‌صفحه و دیدن بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید.</translation>
 <translation id="8246482227229072868">حلقه</translation>
 <translation id="8249296373107784235">لغو</translation>
 <translation id="824968735947741546">درحال ترجمه از <ph name="SOURCE" /> (به‌طور خودکار شناسایی شده) به <ph name="TARGET" /></translation>

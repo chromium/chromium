@@ -631,6 +631,7 @@
 <translation id="4282944936010261425">तपाईंले निवारण गर्नु पर्ने सुरक्षासम्बन्धी कुनै पनि समस्या भेटिएन।</translation>
 <translation id="4286718549648564014">ठेगाना तपाईंको खाता <ph name="USER_EMAIL" /> मा सारियो</translation>
 <translation id="428768789042547925">नयाँ के छ</translation>
+<translation id="429074084062258019">{count,plural, =1{समूहमा ट्याब हाल्नुहोस्}other{समूहमा ट्याबहरू हाल्नुहोस्}}</translation>
 <translation id="4293080268407233932">खोज्नुहोस्</translation>
 <translation id="4302248187517737842">युजरनेम चाहिँदैन ••••••••</translation>
 <translation id="4302415908542657649">पासवर्ड सेयर गरिँदै छ</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7524055474074101597">एपहरूमा भएका पासवर्ड र अन्य कुराहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="7527917367892640435">यो प्याकेज पहिल्यैदेखि ट्र्याक गरिराखिएको छ</translation>
 <translation id="7531345132340165516">हालको साइट</translation>
+<translation id="75362970626182391">नयाँ ट्याब समूह</translation>
 <translation id="7537586195939242955">माफ गर्नुहोस्, यस समयमा तपाईंको पासलाई पासबुकमा स्थापना गर्न सकिदैन।</translation>
 <translation id="754655535278952384"><ph name="TIME" /> जाँच गरियो</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> मा अन्तिम पटक प्रयोग गरिएको ट्याब</translation>

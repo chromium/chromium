@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Su filtri və təmizləyicilər</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1036881361735705143">Zərf C4</translation>
-<translation id="1036982837258183574">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| basın</translation>
 <translation id="1038106730571050514">Təklifləri göstərin</translation>
 <translation id="1038842779957582377">bilinməyən ad</translation>
 <translation id="1041998700806130099">İş vərəqi mesajı</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Qayıq və su nəqliyyat vasitələri</translation>
 <translation id="1283977499362032052">Rezüme və portfolio</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
-<translation id="1288548991597756084">Kartı etibarlı şəkildə saxlayın</translation>
 <translation id="1292571435393770077">Qab 16</translation>
 <translation id="1292701964462482250">"Kompüterdəki proqram təminatı Chrome'un vebə təhlükəsiz şəkildə qoşulmağına mane olur" (yalnız Windows kompüterləri)</translation>
 <translation id="1293797321964802402">Zərf 9 x 11 düym</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Onlayn olmadan öncə giriş tələb edilən Wi-Fi portalından istifadə edirsinizsə, bu xətanı görəcəksiniz.&lt;/p&gt;
     &lt;p&gt;Bunu həlle etmək üçün açdığınız səhifədə &lt;strong&gt;Connect&lt;/strong&gt; üzərinə klikləyin.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Tarixçə daxiletmələrinin siyahısı</translation>
-<translation id="1516097932025103760">O, şifrələnəcək, təhlükəsiz saxlanacaq və CVC heç vaxt saxlanmayacaq.</translation>
 <translation id="151720253492607760">İcazə verməməyə davam edin</translation>
 <translation id="1517433312004943670">Telefon nömrəsi tələb olunur</translation>
 <translation id="1519264250979466059">Yaratma Tarixi</translation>
@@ -1258,7 +1255,6 @@
 <translation id="342781501876943858">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chromium onu sıfırlamağınızı tövsiyə edir.</translation>
 <translation id="3428151540071562330">Bir və ya bir neçə DnsOverHttpsTemplates server şablonu URI'si yanlışdır və istifadə edilməyəcək.</translation>
 <translation id="3428789896412418755">Qruplaşdırılmış tarixçə</translation>
-<translation id="3431216045099978607">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basın.</translation>
 <translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3433111389595862568">Əməkdaşlıq və konfrans təşkili üzrə proqram təminatı</translation>
 <translation id="3433144818443565002">Səsli və videoçat</translation>
@@ -1983,7 +1979,6 @@
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4832961164064927107">Barbekü və Qril</translation>
 <translation id="4834250788637067901">Google Pay istifadə edən ödəniş metodları, təkliflər və ünvanlar</translation>
-<translation id="4839087176073128681">Növbəti dəfə daha sürətli ödəyin və kartınızı Google'un qabaqcıl təhlükəsizliyi ilə qoruyun.</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> və digərləri üçün endirim əldə edin</translation>
@@ -2591,7 +2586,6 @@
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
 <translation id="6047233362582046994">Təhlükəsizliklə bağlı riskləri başa düşürsünüzsə, zərərli tətbiqlər silinmədən əvvəl <ph name="BEGIN_LINK" />bu sayta daxil ola<ph name="END_LINK" /> bilərsiniz.</translation>
 <translation id="6047927260846328439">Bu kontent Sizi proqram təminatı quraşdırmaq və ya şəxsi məlumatı aşkar etmək üçün aldatmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| düyməsinə basıb saxlayın</translation>
 <translation id="6049056807983403918">Zərf B4</translation>
 <translation id="6049488691372270142">Səhifə çatdırılması</translation>
 <translation id="6049975101166779351">Uşağa qayğı</translation>
@@ -2710,7 +2704,6 @@
 <translation id="6270066318535733958">Qayıqla səyahət</translation>
 <translation id="6272088941196661550">Chrome tarixçəsində əlaqəli fəaliyyəti görmək üçün baxışa davam edin</translation>
 <translation id="6272383483618007430">Google Güncəlləməsi</translation>
-<translation id="6279183038361895380">Kursorunuzu göstərmək üçün |<ph name="ACCELERATOR" />| basın</translation>
 <translation id="6280223929691119688">Bu ünvana çatdırmaq mümkün deyil. Başqa ünvan seçin.</translation>
 <translation id="6284292079994426700">26 x 38 düym</translation>
 <translation id="6284449872909111707">Mətn və Ani Mesajlaşma</translation>
@@ -3751,7 +3744,6 @@
 <translation id="8241707690549784388">Baxdığınız səhifə daxil etdiyiniz məlumatı işlədir. Həmin səhifəyə qayıtmaq, etdiyiniz istənilən əməlin təkrarlanmasına səbəb ola bilər. Davam edirsiniz?</translation>
 <translation id="8241712895048303527">Bu saytda blok edin</translation>
 <translation id="8242426110754782860">Davam edin</translation>
-<translation id="8245703462678310750">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
 <translation id="8246482227229072868">Üzüklər</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> dilindən (avtomatik aşkarlanıb) <ph name="TARGET" /> dilinə tərcümə edilir</translation>

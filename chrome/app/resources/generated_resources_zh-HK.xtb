@@ -1691,7 +1691,6 @@
 <translation id="2252017960592955005">檢視保護 (Beta 版本)</translation>
 <translation id="2253318212986772520">無法擷取「<ph name="PRINTER_NAME" />」的 PPD。</translation>
 <translation id="2253927598983295051">選擇要與「<ph name="APP_NAME" />」分享的內容</translation>
-<translation id="2254263139042585032">顯示 Google 帳戶中的密碼和密鑰</translation>
 <translation id="2255077166240162850">此裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
@@ -5121,7 +5120,6 @@
 <translation id="4881695831933465202">開啟</translation>
 <translation id="488211015466188466">追蹤網站</translation>
 <translation id="4882312758060467256">可以在此網站上執行</translation>
-<translation id="4882752944049998623">密碼已儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
 <translation id="4882919381756638075">網站通常會使用麥克風來提供視像通訊等通訊功能</translation>
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="48838266408104654">工作管理員(&amp;T)</translation>

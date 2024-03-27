@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Ur-iragazleak eta -araztaileak</translation>
 <translation id="1036348656032585052">Desaktibatu</translation>
 <translation id="1036881361735705143">C4 gutun-azala</translation>
-<translation id="1036982837258183574">Pantaila osoko ikuspegitik irteteko, sakatu |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Erakutsi iradokizunak</translation>
 <translation id="1038842779957582377">izen ezezaguna</translation>
 <translation id="1041998700806130099">Lan-orriko mezua</translation>
@@ -160,7 +159,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1282358575813748144">Itsasontziak eta ontziak</translation>
 <translation id="1283977499362032052">Curriculumak eta lan-sortak</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
-<translation id="1288548991597756084">Gorde txartela modu seguruan</translation>
 <translation id="1292571435393770077">16. erretilua</translation>
 <translation id="1292701964462482250">"Ordenagailuan dagoen software batek ez dio uzten Chrome-ri sarera segurtasunez konektatzen" (Windows ordenagailuak soilik)</translation>
 <translation id="1293797321964802402">23 cm × 28 cm-ko gutun-azala</translation>
@@ -286,7 +284,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1507202001669085618">&lt;p&gt;Internetera konektatzeko saioa hastea eskatzen dizun Wi-Fi atari bat erabiltzen ari bazara ikusiko duzu errore hori.&lt;/p&gt;
     &lt;p&gt;Errorea konpontzeko, sakatu ireki nahi duzun orriko &lt;strong&gt;Konektatu&lt;/strong&gt; aukera.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Historiako sarreren zerrenda</translation>
-<translation id="1516097932025103760">Enkriptatu eta segurtasunez gordeko da. CVCa ez da inoiz gordetzen.</translation>
 <translation id="151720253492607760">Jarraitu baimenik ez ematen</translation>
 <translation id="1517433312004943670">Telefono-zenbakia behar da</translation>
 <translation id="1519264250979466059">Konpilazioaren data</translation>
@@ -1257,7 +1254,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="342781501876943858">Pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chromium-ek.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates aukeraren zerbitzariko txantiloien URI batek edo gehiagok ez dute balio, eta ez dira erabiliko.</translation>
 <translation id="3428789896412418755">Taldekatutako historia</translation>
-<translation id="3431216045099978607">Sakatu |<ph name="ACCELERATOR" />| pantaila osoko modutik irteteko eta deskarga ikusteko.</translation>
 <translation id="3432601291244612633">Itxi orria</translation>
 <translation id="3433111389595862568">Elkarlanean jarduteko eta bideokonferentziak egiteko softwarea</translation>
 <translation id="3433144818443565002">Ahots- eta bideodeiak</translation>
@@ -1983,7 +1979,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="483241715238664915">Aktibatu abisuak</translation>
 <translation id="4832961164064927107">Barbakoa eta parrilla</translation>
 <translation id="4834250788637067901">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak, eskaintzak eta helbideak</translation>
-<translation id="4839087176073128681">Ordaindu bizkorrago hurrengoan eta babestu txartela Google-ren puntako segurtasun-neurriekin.</translation>
 <translation id="4840250757394056958">Ikusi Chrome-ko historia</translation>
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="484671803914931257">Eskuratu deskontuak <ph name="MERCHANT_NAME" /> eta beste saltzaile batzuen produktuetan</translation>
@@ -2591,7 +2586,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6045164183059402045">Ezarritako txantiloia</translation>
 <translation id="6047233362582046994">Eragiten dituen segurtasun-arriskuak ulertzen badituzu, <ph name="BEGIN_LINK" />webgune hau ikusi beharko zenuke<ph name="END_LINK" /> aplikazio kaltegarriak kendu aurretik.</translation>
 <translation id="6047927260846328439">Eduki hau iruzur egiten saia liteke softwarea instala dezazun edo informazio pertsonala eman diezaiozun. <ph name="BEGIN_LINK" />Erakutsi, hala ere<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pantaila osotik irteteko, eduki sakatuta |<ph name="ACCELERATOR" />|</translation>
 <translation id="6049056807983403918">B4 gutun-azala</translation>
 <translation id="6049488691372270142">Orrien entrega</translation>
 <translation id="6049975101166779351">Haurren zaintza</translation>
@@ -2709,7 +2703,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6270066318535733958">Txalupan ibiltzea</translation>
 <translation id="6272088941196661550">Berrekin bilaketa-ibilbideari Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="6272383483618007430">Google-ren eguneratzea</translation>
-<translation id="6279183038361895380">Kurtsorea ikusteko, sakatu |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Ezin da entregatu helbide horretan. Hautatu beste helbide bat.</translation>
 <translation id="6284292079994426700">66,04 × 96,52 cm (26 × 38 in)</translation>
 <translation id="6284449872909111707">Testu-mezuak eta istanteko mezularitza</translation>
@@ -3750,7 +3743,6 @@ Xehetasun gehiago:
 <translation id="8241707690549784388">Bilatzen ari zaren orriak idatzi duzun informazioa erabili du. Orrira itzultzen bazara, baliteke egin dituzun ekintzak errepikatzea. Jarraitu nahi duzu?</translation>
 <translation id="8241712895048303527">Blokeatu webgune honetan</translation>
 <translation id="8242426110754782860">Egin aurrera</translation>
-<translation id="8245703462678310750">Eduki sakatuta |<ph name="ACCELERATOR" />| pantaila osoko modutik irteteko eta deskarga ikusteko.</translation>
 <translation id="8246482227229072868">Eraztunak</translation>
 <translation id="8249296373107784235">Utzi bertan behera</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (automatikoki hauteman da) hizkuntzatik <ph name="TARGET" /> hizkuntzara itzultzen</translation>

@@ -1692,7 +1692,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2252017960592955005">Proteção de visualização (Beta)</translation>
 <translation id="2253318212986772520">Não foi possível recuperar o arquivo PPD da <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Escolha o que compartilhar com o app <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Mostrar senhas e chaves de acesso da sua Conta do Google</translation>
 <translation id="2255077166240162850">Este dispositivo foi bloqueado para um domínio ou modo diferente.</translation>
 <translation id="2255317897038918278">Carimbo de data/hora da Microsoft</translation>
 <translation id="2256115617011615191">Reiniciar agora</translation>
@@ -5126,7 +5125,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488211015466188466">Seguir site</translation>
 <translation id="4882312758060467256">Tem acesso a este site</translation>
-<translation id="4882752944049998623">Senha salva na sua Conta do Google <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Os sites geralmente usam o microfone para recursos de comunicação, como chat por vídeo</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Gerenciador de tarefas</translation>

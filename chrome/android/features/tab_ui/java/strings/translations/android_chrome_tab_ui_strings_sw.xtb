@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Funga kichupo <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vichupo <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="8398929769197326728">Folda Mpya - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Bei nafuu</translation>
+<translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8730999928494395583">Shughuli yako katika vichupo fiche hivi itaondolewa kwenye kifaa hiki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Kiliundwa mwezi <ph name="NUM_MONTHS_ONE" /> uliopita}other{Kiliundwa miezi <ph name="NUM_MONTHS_MANY" /> iliyopita}}</translation>
 <translation id="8820741577754260431">Angalia puzungo la bei kwenye vichupo vyako</translation>

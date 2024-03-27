@@ -1681,7 +1681,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2252017960592955005">Zaštita prilikom pregleda (beta)</translation>
 <translation id="2253318212986772520">Nije moguće dohvatiti PPD za <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Odaberite što će se dijeliti s aplikacijom <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Prikaži zaporke i pristupne ključeve s Google računa</translation>
 <translation id="2255077166240162850">Uređaj je zaključan za neku drugu domenu ili način rada.</translation>
 <translation id="2255317897038918278">Microsoftovo vremensko označavanje</translation>
 <translation id="2256115617011615191">Ponovo pokreni sad</translation>
@@ -3402,6 +3401,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3577487026101678864">Sinkronizacija datoteka je uključena</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> – prikupljanje podataka o hardveru</translation>
 <translation id="3581605050355435601">Automatsko konfiguriranje IP adrese</translation>
+<translation id="3581861561942370740">Pretraživanje povijesti preuzimanja</translation>
 <translation id="3582057310199111521">Unesena na obmanjujućoj web-lokaciji i pronađena među zaporkama otkrivenim u povredi podataka</translation>
 <translation id="3582299299336701326">Potamnite svijetle zaslone i posvijetlite tamne zaslone. Pritisnite Pretraživanje + Ctrl + H da biste uključili ili isključili inverziju boja.</translation>
 <translation id="3584169441612580296">čitati i mijenjati fotografije, glazbu i druge medije s vašeg računala</translation>
@@ -5112,7 +5112,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488211015466188466">Prati web-lokaciju</translation>
 <translation id="4882312758060467256">Ima pristup ovoj web-lokaciji</translation>
-<translation id="4882752944049998623">Zaporka je spremljena na vaš Google račun, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Web-lokacije obično upotrebljavaju mikrofon za komunikacijske značajke poput videochata</translation>
 <translation id="4883436287898674711">Sve web-lokacije <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Upravitelj zadataka</translation>
@@ -5319,6 +5318,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete proširenje</translation>
 <translation id="5057127674016624293">Skeniranje traje dulje od očekivanog</translation>
+<translation id="5057480703570202545">Povijest preuzimanja</translation>
 <translation id="5059241099014281248">Ograničenje prijave</translation>
 <translation id="5059429103770496207">Stil prikaza</translation>
 <translation id="5059526285558225588">Odaberite što želite dijeliti</translation>
@@ -5728,6 +5728,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5390677308841849479">Tamnocrvena i narančasta</translation>
 <translation id="5392192690789334093">Dopušteno je slanje obavijesti</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Veza}one{# veza}few{# veze}other{# veza}}</translation>
+<translation id="5394529681046491727">Izravni Wi-Fi</translation>
 <translation id="5395498824851198390">Zadani font</translation>
 <translation id="5397378439569041789">Prijavi kiosk uređaj ili uređaj za znakovlje</translation>
 <translation id="5397794290049113714">Vi</translation>

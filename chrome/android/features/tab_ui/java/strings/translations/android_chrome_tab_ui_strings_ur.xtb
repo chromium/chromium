@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب بند کریں}other{<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز بند کریں}}</translation>
 <translation id="8398929769197326728">نیا فولڈر - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">کم قیمت</translation>
+<translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8730999928494395583">ان پوشیدگی ٹیبز میں موجود آپ کی سرگرمی اس آلے سے ہٹائی جائے گی</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ماہ پہلے تخلیق کیا گیا}other{<ph name="NUM_MONTHS_MANY" /> ماہ پہلے تخلیق کیا گیا}}</translation>
 <translation id="8820741577754260431">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں</translation>

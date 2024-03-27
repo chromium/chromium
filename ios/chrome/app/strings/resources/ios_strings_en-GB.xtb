@@ -631,6 +631,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4282944936010261425">There are no security issues for you to fix.</translation>
 <translation id="4286718549648564014">Address moved to your account <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">What's new</translation>
+<translation id="429074084062258019">{count,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
 <translation id="4293080268407233932">Search</translation>
 <translation id="4302248187517737842">No username ••••••••</translation>
 <translation id="4302415908542657649">Sharing password</translation>
@@ -1268,6 +1269,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7524055474074101597">Access your passwords and more across apps.</translation>
 <translation id="7527917367892640435">Package Already Tracked</translation>
 <translation id="7531345132340165516">Current site</translation>
+<translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Last tab used on <ph name="SOURCE_DEVICE" /></translation>

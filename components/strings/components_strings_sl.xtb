@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vodni filtri in čistilniki</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1036881361735705143">Kuverta C4</translation>
-<translation id="1036982837258183574">Pritisnite |<ph name="ACCELERATOR" />| za zapiranje celozaslonskega načina</translation>
 <translation id="1038106730571050514">Prikaz predlogov</translation>
 <translation id="1038842779957582377">neznano ime</translation>
 <translation id="1041998700806130099">Sporočilo glede delovnega lista</translation>
@@ -160,7 +159,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1282358575813748144">Čolni in plovila</translation>
 <translation id="1283977499362032052">Življenjepisi in portfelji</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
-<translation id="1288548991597756084">Varno shranite kartico</translation>
 <translation id="1292571435393770077">Pladenj 16</translation>
 <translation id="1292701964462482250">»Programska oprema v računalniku Chromu preprečuje vzpostavitev varne povezave s spletom« (samo računalniki s sistemom Windows)</translation>
 <translation id="1293797321964802402">Kuverta 9 x 11 palcev</translation>
@@ -286,7 +284,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1507202001669085618">&lt;p&gt;Ta napaka se prikaže, če uporabljate portal Wi-Fi, ki pred uporabo spleta zahteva prijavo.&lt;/p&gt;
     &lt;p&gt;Napravo odpravite tako, da na strani, ki jo poskušate odpreti, kliknete &lt;strong&gt;Poveži&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Seznam vnosov v zgodovino</translation>
-<translation id="1516097932025103760">Podatki o kartici bodo šifrirani in varno shranjeni, CVC pa se nikoli ne shrani.</translation>
 <translation id="151720253492607760">Še naprej ne dovoli</translation>
 <translation id="1517433312004943670">Telefonska številka je obvezna</translation>
 <translation id="1519264250979466059">Datum gradnje</translation>
@@ -1260,7 +1257,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="342781501876943858">Chromium priporoča, da ponastavite geslo, če ste ga uporabljali tudi na drugih spletnih mestih.</translation>
 <translation id="3428151540071562330">Eden ali več URI-jev strežniških predlog pravilnika DnsOverHttpsTemplates je neveljaven in ne bo uporabljen.</translation>
 <translation id="3428789896412418755">Združena zgodovina</translation>
-<translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| za izhod iz celozaslonskega načina in prikaz prenosa.</translation>
 <translation id="3432601291244612633">Zapri stran</translation>
 <translation id="3433111389595862568">Programska oprema za sodelovanje in konference</translation>
 <translation id="3433144818443565002">Glasovni klepet in videoklepet</translation>
@@ -1987,7 +1983,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4832961164064927107">Peka na žaru</translation>
 <translation id="4834250788637067901">Plačilna sredstva, ponudbe in naslovi z Googlom Pay</translation>
-<translation id="4839087176073128681">Naslednjič plačajte hitreje in zaščitite kartico z Googlovo najboljšo varnostno zaščito v panogi.</translation>
 <translation id="4840250757394056958">Ogled zgodovine v Chromu</translation>
 <translation id="484462545196658690">Samodejno</translation>
 <translation id="484671803914931257">Prejmite popust pri trgovcu <ph name="MERCHANT_NAME" /> in drugo</translation>
@@ -2595,7 +2590,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6045164183059402045">Predloga za razvrstitev strani za tiskanje</translation>
 <translation id="6047233362582046994">Če se zavedate varnostnega tveganja, lahko <ph name="BEGIN_LINK" />obiščete to spletno mesto<ph name="END_LINK" />, preden bodo škodljive aplikacije odstranjene.</translation>
 <translation id="6047927260846328439">Ta vsebina vas morda poskuša zavesti, da namestite programsko opremo ali razkrijete osebne podatke. <ph name="BEGIN_LINK" />Vseeno prikaži<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pridržite |<ph name="ACCELERATOR" />| za zapiranje celozaslonskega načina</translation>
 <translation id="6049056807983403918">Kuverta B4</translation>
 <translation id="6049488691372270142">Dostava strani</translation>
 <translation id="6049975101166779351">Varstvo otrok</translation>
@@ -2714,7 +2708,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6270066318535733958">Čolnarjenje</translation>
 <translation id="6272088941196661550">Nadaljujte pot, če si želite ogledati pomembno dejavnost v zgodovini uporabe Chroma.</translation>
 <translation id="6272383483618007430">Google Posodobitve</translation>
-<translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| za prikaz kazalca</translation>
 <translation id="6280223929691119688">Dostava na ta naslov ni mogoča. Izberite drugega.</translation>
 <translation id="6284292079994426700">26 x 38 palcev</translation>
 <translation id="6284449872909111707">Pošiljanje sporočil SMS in neposredno sporočanje</translation>
@@ -3755,7 +3748,6 @@ Dodatne podrobnosti:
 <translation id="8241707690549784388">Stran, ki jo iščete, je uporabila informacije, ki ste jih vnesli. Z vrnitvijo na to stran se bodo morda ponovila vsa vaša dejanja, ki ste jih opravili. Ali želite nadaljevati?</translation>
 <translation id="8241712895048303527">Blokiraj na tem spletnem mestu</translation>
 <translation id="8242426110754782860">Naprej</translation>
-<translation id="8245703462678310750">Pridržite |<ph name="ACCELERATOR" />| za izhod iz celozaslonskega načina in prikaz prenosa.</translation>
 <translation id="8246482227229072868">Obroči</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="824968735947741546">Prevajanje iz (samodejno zaznanega) jezika <ph name="SOURCE" /> v jezik <ph name="TARGET" /></translation>

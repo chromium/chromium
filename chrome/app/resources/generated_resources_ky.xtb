@@ -1691,7 +1691,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2252017960592955005">Көрүүдөн коргоо (Бета)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> үчүн PPD алынган жок.</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> менен эмнелерди бөлүшүүнү тандаңыз</translation>
-<translation id="2254263139042585032">Google аккаунтуңуздагы сырсөздөрдү жана киргизүүчү ачкычтарды көрсөтүү</translation>
 <translation id="2255077166240162850">Түзмөк башка доменде же режимде бөгөттөлгөн.</translation>
 <translation id="2255317897038918278">Microsoft Убакыт мөөрү</translation>
 <translation id="2256115617011615191">Азыр өчүрүп күйгүзүү</translation>
@@ -3414,6 +3413,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3577487026101678864">Файлдарды шайкештирүү күйүк</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> аппараттык камсыздоо маалыматын чогултуу</translation>
 <translation id="3581605050355435601">IP дарегин автоматтык түрдө конфигурациялоо</translation>
+<translation id="3581861561942370740">Жүктөп алуу таржымалынан издөө</translation>
 <translation id="3582057310199111521">Жалган сайтка киргизилип, сырсөз уурдалды</translation>
 <translation id="3582299299336701326">Жарык экранды караңгылатып, караңгы экранды жарык кылыңыз. Түстөрдү инверсиялоону күйгүзүү жана өчүрүү үчүн Издөө + Ctrl + H баскычтарын басыңыз.</translation>
 <translation id="3584169441612580296">Компьютериңизден сүрөттөр, музыка жана башка медиа файлдарын окуп жана өзгөртүңүз</translation>
@@ -5125,7 +5125,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="488211015466188466">Сайтка жазылуу</translation>
 <translation id="4882312758060467256">Бул сайтка кирүү мүмкүнчүлүгү бар</translation>
-<translation id="4882752944049998623">Сырсөз Google аккаунтуңузга (<ph name="USER_EMAIL" />) сакталды</translation>
 <translation id="4882919381756638075">Сайттар видео маек сыяктуу байланыш функциялары үчүн микрофонуңузду колдонот</translation>
 <translation id="4883436287898674711">Бардык <ph name="WEBSITE_1" /> сайттар</translation>
 <translation id="48838266408104654">&amp;Тапшырмаларды башкаргыч</translation>
@@ -5332,6 +5331,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5056950756634735043">Контейнерге туташууда</translation>
 <translation id="5057110919553308744">Кеңейтүүнү чыкылдатканда</translation>
 <translation id="5057127674016624293">Текшерүү күтүлгөндөн узагыраакка созулуп жатат</translation>
+<translation id="5057480703570202545">Жүктөп алуу таржымалы</translation>
 <translation id="5059241099014281248">Кирүүнү чектөө</translation>
 <translation id="5059429103770496207">Дисплей стили</translation>
 <translation id="5059526285558225588">Бөлүшө турган нерсени тандаңыз</translation>
@@ -5741,6 +5741,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5390677308841849479">Күңүрт кызыл жана кызгылт сары</translation>
 <translation id="5392192690789334093">Билдирмелерди жөнөтө алат</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Шилтеме}other{# шилтеме}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Демейки арип</translation>
 <translation id="5397378439569041789">Киоскту же белгилөөчү түзмөктү каттоо</translation>
 <translation id="5397794290049113714">Сиз</translation>

@@ -637,6 +637,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4425140285732600465">Monitoraggio del prezzo attivato. Ricevi avvisi se il prezzo cala su qualsiasi sito.</translation>
 <translation id="4425173294238317796">Foglio di conferma della passkey</translation>
 <translation id="442518031075347249">Non potrai più utilizzare la tua carta virtuale con Google Pay. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Parte della tua cronologia web potrebbe non essere visualizzata qui. Se necessario, tocca Apri la cronologia completa di Chrome. Inoltre, il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951">Selezione attuale: <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6719634564325948108">Vuoi eseguire la connessione con il codice QR?</translation>
 <translation id="6723740634201835758">Nell'Account Google</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
+<translation id="67404633032079629">Parte della tua cronologia web potrebbe non essere visualizzata qui. Per visualizzare una cronologia web completa, tocca Apri la cronologia completa di Chrome.</translation>
 <translation id="674388916582496364">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chrome informazioni relative ai tuoi interessi.</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6756507620369789050">Condividi feedback</translation>

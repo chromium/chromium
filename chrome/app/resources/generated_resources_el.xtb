@@ -1691,7 +1691,6 @@
 <translation id="2252017960592955005">Προστασία προβολής (Beta)</translation>
 <translation id="2253318212986772520">Δεν είναι δυνατή η ανάκτηση του PPD για τον εκτυπωτή <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Επιλέξτε τι περιεχόμενο θα κοινοποιείται στην εφαρμογή <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Εμφάνιση κωδικών πρόσβασης και κλειδιών πρόσβασης από τον Λογαριασμό σας Google</translation>
 <translation id="2255077166240162850">Αυτή η συσκευή κλειδώθηκε σε διαφορετικό τομέα ή λειτουργία.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">Άμεση επανεκκίνηση</translation>
@@ -5125,7 +5124,6 @@
 <translation id="4881695831933465202">Άνοιγμα</translation>
 <translation id="488211015466188466">Ακολουθήστε τον ιστότοπο</translation>
 <translation id="4882312758060467256">Έχει πρόσβαση σε αυτόν τον ιστότοπο</translation>
-<translation id="4882752944049998623">Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Οι ιστότοποι χρησιμοποιούν συνήθως το μικρόφωνό σας για λειτουργίες επικοινωνίας, όπως η συνομιλία μέσω βίντεο.</translation>
 <translation id="4883436287898674711">Όλοι οι ιστότοποι <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Διαχείριση Εργασιών</translation>

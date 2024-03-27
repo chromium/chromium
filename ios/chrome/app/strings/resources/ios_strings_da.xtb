@@ -631,6 +631,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4282944936010261425">Der er ingen sikkerhedsrelaterede problemer, som du skal løse.</translation>
 <translation id="4286718549648564014">Adressen er flyttet til din konto: <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Nyheder</translation>
+<translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="4293080268407233932">Søg</translation>
 <translation id="4302248187517737842">Der er intet brugernavn ••••••••</translation>
 <translation id="4302415908542657649">Deler adgangskode</translation>
@@ -1268,6 +1269,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7524055474074101597">Få adgang til dine adgangskoder og meget mere i apps.</translation>
 <translation id="7527917367892640435">Pakken spores allerede</translation>
 <translation id="7531345132340165516">Aktuelt website</translation>
+<translation id="75362970626182391">Ny fanegruppe</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
 <translation id="754655535278952384">Tjek udført for <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Sidste fane er blevet brugt på <ph name="SOURCE_DEVICE" /></translation>

@@ -727,6 +727,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="47677902929517676">Om du vill spara lösenord i ditt konto måste du först ställa in ett lösenord på enheten.</translation>
 <translation id="4775879719735953715">Standardwebbläsare</translation>
 <translation id="4779732376610430319">Öppna inställningarna …</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vill du öppna i inkognitoläge?</translation>
 <translation id="4803185665210547709">Hanteras av organisationen.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -835,6 +836,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5283494734135414249">Tryck på genvägen som visas under adressfältet.</translation>
 <translation id="5295239312320826323">Vill du ta bort kontot <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Visa</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5318298563956633672">Du bevakar redan den här produkten.</translation>
 <translation id="5327753393331509826">Få innehållsaviseringar</translation>

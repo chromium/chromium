@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="8398929769197326728">Нова папка - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Пониска цена</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Вашата активност во картичкиве „Инкогнито“ ќе се отстрани од уредов</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Создадено пред <ph name="NUM_MONTHS_ONE" /> месец}one{Создадено пред <ph name="NUM_MONTHS_MANY" /> месец}other{Создадено пред <ph name="NUM_MONTHS_MANY" /> месеци}}</translation>
 <translation id="8820741577754260431">Гледајте ги попустите на вашите картички</translation>

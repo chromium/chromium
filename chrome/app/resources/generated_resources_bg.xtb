@@ -1687,7 +1687,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2252017960592955005">Защита срещу надничане (бета-версия)</translation>
 <translation id="2253318212986772520">PPD файлът за <ph name="PRINTER_NAME" /> не може да бъде извлечен.</translation>
 <translation id="2253927598983295051">Избиране какво да се споделя с(ъс) <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Показване на паролите и ключовете за достъп от профила ви в Google</translation>
 <translation id="2255077166240162850">Това устройство е заключено в друг домейн или режим.</translation>
 <translation id="2255317897038918278">Поставяне на времево клеймо от Microsoft</translation>
 <translation id="2256115617011615191">Рестартиране сега</translation>
@@ -5122,7 +5121,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="488211015466188466">Следване на сайта</translation>
 <translation id="4882312758060467256">Има достъп до този сайт</translation>
-<translation id="4882752944049998623">Паролата е запазена в профила ви в Google <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Сайтовете обикновено използват микрофона, за да осигуряват функции за комуникация, като например видеочат</translation>
 <translation id="4883436287898674711">Всички <ph name="WEBSITE_1" /> сайта</translation>
 <translation id="48838266408104654">&amp;Диспечер на задачите</translation>

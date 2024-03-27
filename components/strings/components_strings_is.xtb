@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vatnssíur og -hreinsarar</translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1036881361735705143">Umslag: C4</translation>
-<translation id="1036982837258183574">Ýttu á |<ph name="ACCELERATOR" />| til að hætta birtingu á öllum skjánum</translation>
 <translation id="1038106730571050514">Sýna tillögur</translation>
 <translation id="1038842779957582377">óþekkt heiti</translation>
 <translation id="1041998700806130099">Skilaboð vinnslublaðs</translation>
@@ -160,7 +159,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1282358575813748144">Bátar og skip</translation>
 <translation id="1283977499362032052">Ferilsskrár og verkefnamöppur</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
-<translation id="1288548991597756084">Vistaðu kortið á öruggan hátt</translation>
 <translation id="1292571435393770077">Bakki 16</translation>
 <translation id="1292701964462482250">„Hugbúnaður í tölvunni þinni hindrar Chrome í að tengjast netinu á öruggan máta“ (einungis Windows-tölvur)</translation>
 <translation id="1293797321964802402">Umslag: 23 x 28 cm</translation>
@@ -286,7 +284,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1507202001669085618">&lt;p&gt;Þú sérð þessa villu ef þú notar Wi-Fi gátt sem þú þarft að skrá þig inn á áður en þú tengist internetinu.&lt;/p&gt;
     &lt;p&gt;Til að leysa vandann skaltu smella á &lt;strong&gt;Tengjast&lt;/strong&gt; á síðunni sem þú ert að reyna að opna.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Listi yfir færslur í ferli</translation>
-<translation id="1516097932025103760">Það verður dulkóðað, vistað á öruggan hátt og CVC-númerið er aldrei geymt.</translation>
 <translation id="151720253492607760">Halda áfram að leyfa ekki</translation>
 <translation id="1517433312004943670">Símanúmers er krafist</translation>
 <translation id="1519264250979466059">Dagsetning smíðar</translation>
@@ -1260,7 +1257,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="342781501876943858">Chromium mælir með því að þú endurstillir aðgangsorðið þitt ef þú notaðir það einnig á öðrum síðum.</translation>
 <translation id="3428151540071562330">Eitt eða fleiri af URI sniðmátum netþjóns DnsOverHttpsTemplates eru ógild og verða ekki notuð.</translation>
 <translation id="3428789896412418755">Flokkaður ferill</translation>
-<translation id="3431216045099978607">Ýttu á |<ph name="ACCELERATOR" />| til að hætta að nota allan skjáinn og sjá niðurhal.</translation>
 <translation id="3432601291244612633">Loka síðu</translation>
 <translation id="3433111389595862568">Samstarfs- og fundarhugbúnaður</translation>
 <translation id="3433144818443565002">Tal- og myndspjall</translation>
@@ -1987,7 +1983,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="483241715238664915">Kveikja á viðvörunum</translation>
 <translation id="4832961164064927107">Grill</translation>
 <translation id="4834250788637067901">Greiðslumátar, tilboð og heimilisföng sem nota Google Pay</translation>
-<translation id="4839087176073128681">Greiddu hraðar næst og verndaðu kortið þitt með framúrskarandi öryggislausnum Google.</translation>
 <translation id="4840250757394056958">Skoða Chrome ferilinn þinn</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="484671803914931257">Fáðu afslátt hjá <ph name="MERCHANT_NAME" /> og fleirum</translation>
@@ -2595,7 +2590,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6045164183059402045">Ásetningarsniðmát</translation>
 <translation id="6047233362582046994">Ef þú skilur öryggisáhættuna sem það hefur í för með sér geturðu <ph name="BEGIN_LINK" />heimsótt þetta vefsvæði<ph name="END_LINK" /> áður en skaðlegu forritin hafa verið fjarlægð.</translation>
 <translation id="6047927260846328439">Þetta efni kann að reyna að fá þig til að setja upp hugbúnað eða gefa upp persónuupplýsingar. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Haltu inni |<ph name="ACCELERATOR" />| til að hætta birtingu á öllum skjánum</translation>
 <translation id="6049056807983403918">Umslag: B4</translation>
 <translation id="6049488691372270142">Síðuafhending</translation>
 <translation id="6049975101166779351">Barnaumönnun</translation>
@@ -2714,7 +2708,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6270066318535733958">Siglingar</translation>
 <translation id="6272088941196661550">Haltu ferðinni áfram til að sjá viðkomandi virkni í Chrome ferlinum</translation>
 <translation id="6272383483618007430">Google uppfærslur</translation>
-<translation id="6279183038361895380">Ýttu á |<ph name="ACCELERATOR" />| til að sýna bendilinn</translation>
 <translation id="6280223929691119688">Ekki er hægt að senda á þetta heimilisfang. Veldu annað heimilisfang.</translation>
 <translation id="6284292079994426700">26 x 38 to.</translation>
 <translation id="6284449872909111707">SMS- og spjallþjónusta</translation>
@@ -3755,7 +3748,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8241707690549784388">Síðan sem þú ert að leita að notaðist við upplýsingar sem þú færðir inn. Ef þú ferð aftur á þá síðu er hugsanlegt að aðgerðir þínar verði endurteknar. Viltu halda áfram?</translation>
 <translation id="8241712895048303527">Útiloka á þessu vefsvæði</translation>
 <translation id="8242426110754782860">Halda áfram</translation>
-<translation id="8245703462678310750">Haltu |<ph name="ACCELERATOR" />| inni til að hætta að nota allan skjáinn og sjá niðurhal.</translation>
 <translation id="8246482227229072868">Hringir</translation>
 <translation id="8249296373107784235">Hætta</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (greind sjálfkrafa) þýdd yfir á <ph name="TARGET" /></translation>

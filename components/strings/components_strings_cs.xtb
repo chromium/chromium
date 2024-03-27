@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vodní filtry a čističky</translation>
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1036881361735705143">Obálka C4</translation>
-<translation id="1036982837258183574">Režim celé obrazovky ukončíte stisknutím klávesy |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Zobrazit návrhy</translation>
 <translation id="1038842779957582377">neznámé jméno</translation>
 <translation id="1041998700806130099">Zpráva listu úlohy</translation>
@@ -160,7 +159,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1282358575813748144">Lodě a plavidla</translation>
 <translation id="1283977499362032052">Resumé a portfolia</translation>
 <translation id="1285320974508926690">Tento web nikdy nepřekládat</translation>
-<translation id="1288548991597756084">Bezpečně si uložte kartu</translation>
 <translation id="1292571435393770077">Přihrádka 16</translation>
 <translation id="1292701964462482250">Software na počítači Chromu brání v bezpečném připojení k webu (pouze počítače se systémem Windows)</translation>
 <translation id="1293797321964802402">Obálka 9 × 11 palců</translation>
@@ -286,7 +284,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1507202001669085618">&lt;p&gt;Tato chyba se zobrazí při použití portálu Wi-Fi, na kterém je třeba se před přístupem na internet přihlásit.&lt;/p&gt;
     &lt;p&gt;Chybu odstraníte tím, že na stránce, kterou se snažíte otevřít, kliknete na &lt;strong&gt;Připojení&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Seznam položek v historii</translation>
-<translation id="1516097932025103760">Karta bude zašifrována a bezpečně uložena (kód CVC uložen nebude).</translation>
 <translation id="151720253492607760">Nadále nepovolovat</translation>
 <translation id="1517433312004943670">Je vyžadováno telefonní číslo</translation>
 <translation id="1519264250979466059">Datum sestavení</translation>
@@ -1257,7 +1254,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="342781501876943858">Pokud jste heslo použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="3428151540071562330">Některé identifikátory URI šablon serverů DnsOverHttpsTemplates jsou neplatné a nebudou použity.</translation>
 <translation id="3428789896412418755">Seskupená historie</translation>
-<translation id="3431216045099978607">Stisknutím tlačítka |<ph name="ACCELERATOR" />| ukončíte režim celé obrazovky a zobrazíte stažený obsah.</translation>
 <translation id="3432601291244612633">Zavřít stránku</translation>
 <translation id="3433111389595862568">Konferenční software a software pro spolupráci</translation>
 <translation id="3433144818443565002">Hlasový chat a videochat</translation>
@@ -1983,7 +1979,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="483241715238664915">Zapnout upozornění</translation>
 <translation id="4832961164064927107">Barbecue a grilování</translation>
 <translation id="4834250788637067901">Platební metody, nabídky a adresy z Google Pay</translation>
-<translation id="4839087176073128681">Plaťte rychleji a chraňte svou kartu pomocí špičkového zabezpečení od Googlu.</translation>
 <translation id="4840250757394056958">Zobrazit historii Chromu</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="484671803914931257">Získejte slevu u obchodníka <ph name="MERCHANT_NAME" /> a dalších</translation>
@@ -2591,7 +2586,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6045164183059402045">Šablona zavedení</translation>
 <translation id="6047233362582046994">Pokud bezpečnostní rizika chápete, můžete <ph name="BEGIN_LINK" />tento web navštívit<ph name="END_LINK" /> před tím, než budou nebezpečné aplikace odstraněny.</translation>
 <translation id="6047927260846328439">Tento obsah by se vás podvodem mohl pokusit přimět k instalaci softwaru nebo odhalení osobních údajů. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Režim celé obrazovky ukončíte podržením klávesy |<ph name="ACCELERATOR" />|</translation>
 <translation id="6049056807983403918">Obálka B4</translation>
 <translation id="6049488691372270142">Dodání stránky</translation>
 <translation id="6049975101166779351">Péče o děti</translation>
@@ -2709,7 +2703,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6270066318535733958">Plavby na lodi</translation>
 <translation id="6272088941196661550">Obnovením cesty zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="6272383483618007430">Aktualizace Google</translation>
-<translation id="6279183038361895380">Kurzor zobrazíte stisknutím klávesy |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Doručení na tuto adresu není možné. Vyberte jinou adresu.</translation>
 <translation id="6284292079994426700">26 × 38 palců</translation>
 <translation id="6284449872909111707">Textové zprávy a chat</translation>
@@ -3749,7 +3742,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8241707690549784388">Stránka, kterou hledáte, používala vámi zadané informace. Návrat na tuto stránku by mohl způsobit, že akce, kterou jste provedli, bude opakována. Přejete si pokračovat?</translation>
 <translation id="8241712895048303527">Na tomto webu blokovat</translation>
 <translation id="8242426110754782860">Pokračovat</translation>
-<translation id="8245703462678310750">Podržením tlačítka |<ph name="ACCELERATOR" />| ukončíte režim celé obrazovky a zobrazíte stažený obsah.</translation>
 <translation id="8246482227229072868">Kruhy</translation>
 <translation id="8249296373107784235">Zrušit</translation>
 <translation id="824968735947741546">Překlad z jazyka <ph name="SOURCE" /> (automaticky zjištěno) do jazyka <ph name="TARGET" /></translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">필터 및 정수기</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1036881361735705143">봉투 C4</translation>
-<translation id="1036982837258183574">전체화면을 종료하려면 |<ph name="ACCELERATOR" />|을(를) 누르세요.</translation>
 <translation id="1038106730571050514">추천 보기</translation>
 <translation id="1038842779957582377">알 수 없는 이름</translation>
 <translation id="1041998700806130099">작업 시트 메시지</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">보트 및 선박</translation>
 <translation id="1283977499362032052">이력서 및 포트폴리오</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
-<translation id="1288548991597756084">카드 안전하게 저장하기</translation>
 <translation id="1292571435393770077">트레이 16</translation>
 <translation id="1292701964462482250">'컴퓨터의 소프트웨어로 인해 Chrome이 안전하게 웹에 접속할 수 없습니다'(Windows 컴퓨터만 해당)</translation>
 <translation id="1293797321964802402">봉투 9 x 11 in</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;온라인에 접속하기 위해 로그인해야 하는 Wi-Fi 포털을 사용하면 이 오류가 표시됩니다.&lt;/p&gt;
     &lt;p&gt;오류를 수정하려면 열려는 페이지에서 &lt;strong&gt;연결&lt;/strong&gt;을 클릭하세요.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">방문 기록 항목 목록</translation>
-<translation id="1516097932025103760">암호화되어 안전하게 저장되며 CVC는 저장되지 않습니다.</translation>
 <translation id="151720253492607760">계속 허용하지 않음</translation>
 <translation id="1517433312004943670">전화번호 필요</translation>
 <translation id="1519264250979466059">생성 날짜</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="3428151540071562330">하나 이상의 DnsOverHttpsTemplates 서버 템플릿 URI가 유효하지 않아 앞으로 사용되지 않습니다.</translation>
 <translation id="3428789896412418755">그룹화된 기록</translation>
-<translation id="3431216045099978607">|<ph name="ACCELERATOR" />|를 눌러서 전체 화면을 종료하고 다운로드를 확인합니다.</translation>
 <translation id="3432601291244612633">페이지 닫기</translation>
 <translation id="3433111389595862568">협업 및 회의용 소프트웨어</translation>
 <translation id="3433144818443565002">음성 및 영상 채팅</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">경고 켜기</translation>
 <translation id="4832961164064927107">BBQ 및 그릴</translation>
 <translation id="4834250788637067901">Google Pay에 사용되는 결제 수단, 쿠폰, 주소</translation>
-<translation id="4839087176073128681">다음에는 Google의 선도적인 보안 기술로 더 빠르고 안전한 카드 결제를 이용해 보세요.</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> 등에서 할인을 받으세요</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6047233362582046994">유해한 앱이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />하는 경우 보안상 위험을 반드시 이해하시기 바랍니다.</translation>
 <translation id="6047927260846328439">이 콘텐츠는 사용자를 속여 소프트웨어를 설치하거나 개인정보를 유출할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">전체화면을 종료하려면 |<ph name="ACCELERATOR" />|을(를) 길게 누르기</translation>
 <translation id="6049056807983403918">봉투 B4</translation>
 <translation id="6049488691372270142">페이지 제공</translation>
 <translation id="6049975101166779351">육아</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">보트 타기</translation>
 <translation id="6272088941196661550">Chrome 방문 기록에서 관련 활동을 보려면 탐색 여정을 재개하세요.</translation>
 <translation id="6272383483618007430">Google 업데이트</translation>
-<translation id="6279183038361895380">|<ph name="ACCELERATOR" />|을(를) 눌러 커서 표시</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6284292079994426700">26x38인치</translation>
 <translation id="6284449872909111707">문자 메시지 및 채팅</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="8241712895048303527">이 사이트에서 차단</translation>
 <translation id="8242426110754782860">계속</translation>
-<translation id="8245703462678310750">|<ph name="ACCELERATOR" />|를 길게 눌러서 전체 화면을 종료하고 다운로드를 확인합니다.</translation>
 <translation id="8246482227229072868">고리</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="824968735947741546"><ph name="SOURCE" />(자동 감지)를 <ph name="TARGET" />로 번역 중</translation>

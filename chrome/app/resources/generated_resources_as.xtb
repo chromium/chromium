@@ -1689,7 +1689,6 @@
 <translation id="2252017960592955005">আনে গোপনে চোৱাৰ বিৰুদ্ধে সুৰক্ষা (বিটা)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" />ৰ বাবে PPD পুনৰুদ্ধাৰ কৰিব পৰা নগ’ল।</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" />ৰ সৈতে কি শ্বেয়াৰ কৰিব বাছনি কৰক</translation>
-<translation id="2254263139042585032">আপোনাৰ Google একাউণ্টৰ পৰা পাছৱৰ্ড আৰু পাছকী দেখুৱাওক</translation>
 <translation id="2255077166240162850">এই ডিভাইচটো অন্য ড’মেইন বা ম’ডত লক কৰা হৈছে।</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">এতিয়াই ৰিষ্টার্ট কৰক</translation>
@@ -3412,6 +3411,7 @@
 <translation id="3577487026101678864">ফাইলৰ ছিংক অন আছে</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ৰ হাৰ্ডৱেৰৰ ডেটা সংগ্ৰহ</translation>
 <translation id="3581605050355435601">আইপি ঠিকনা স্বয়ংক্ৰিয়ভাৱে কনফিগাৰ কৰক</translation>
+<translation id="3581861561942370740">ডাউনল’ডৰ ইতিহাস সন্ধান কৰক</translation>
 <translation id="3582057310199111521">প্ৰৱঞ্চনামূলক ছাইটত দিয়া হৈছিল আৰু ডেটা উলংঘনত পোৱা গৈছিল</translation>
 <translation id="3582299299336701326">পাতল স্ক্ৰীন গাঢ় কৰক আৰু গাঢ় স্ক্ৰীন পাতল কৰক। ৰঙৰ বিপৰীতকৰণ সুবিধাটো অন আৰু অফ কৰিবলৈ Search + Ctrl + H টিপক।</translation>
 <translation id="3584169441612580296">আপোনাৰ কম্পিউটাৰৰ ফট’, সংগীত আৰু অন্য মিডিয়া পঢ়ক তথা সলনি কৰক</translation>
@@ -5122,7 +5122,6 @@
 <translation id="4881695831933465202">খোলক</translation>
 <translation id="488211015466188466">ছাইটটো ফ’ল’ কৰক</translation>
 <translation id="4882312758060467256">এই ছাইটটো এক্সেছ কৰিব পাৰে</translation>
-<translation id="4882752944049998623">পাছৱৰ্ডটো আপোনাৰ Google একাউণ্ট, <ph name="USER_EMAIL" />ত ছেভ কৰা হৈছে</translation>
 <translation id="4882919381756638075">ছাইটসমূহে সচৰাচৰ ভিডিঅ' চাটৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰে</translation>
 <translation id="4883436287898674711">সকলো <ph name="WEBSITE_1" /> ছাইট</translation>
 <translation id="48838266408104654">&amp;কাৰ্য পৰিচালক</translation>
@@ -5329,6 +5328,7 @@
 <translation id="5056950756634735043">কণ্টেইনাৰৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="5057110919553308744">যেতিয়া আপুনি এক্সটেনশ্বনটো ক্লিক কৰে</translation>
 <translation id="5057127674016624293">স্কেন কৰাটোৱে আশা কৰাতকৈ অধিক সময় লৈছে</translation>
+<translation id="5057480703570202545">ডাউনল’ডৰ ইতিহাস</translation>
 <translation id="5059241099014281248">ছাইন ইন সীমাবদ্ধ কৰক</translation>
 <translation id="5059429103770496207">ডিছপ্লে’ শৈলী</translation>
 <translation id="5059526285558225588">কি শ্বেয়াৰ কৰিব সেয়া বাছনি কৰক</translation>
@@ -5738,6 +5738,7 @@
 <translation id="5390677308841849479">গাঢ় ৰঙা আৰু কমলা</translation>
 <translation id="5392192690789334093">জাননী পঠিওৱাৰ অনুমতি আছে</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{লিংক}one{# টা লিংক}other{# টা লিংক}}</translation>
+<translation id="5394529681046491727">ৱাই-ফাই ডাইৰেক্ট</translation>
 <translation id="5395498824851198390">ডিফ’ল্ট ফণ্ট</translation>
 <translation id="5397378439569041789">কিঅ’স্ক অথবা ছাইনে’জ ডিভাইচ পঞ্জীয়ন কৰক</translation>
 <translation id="5397794290049113714">আপুনি</translation>

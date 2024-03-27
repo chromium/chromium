@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="8398929769197326728">Dosje e re - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Çmim më i ulët</translation>
+<translation id="8730621377337864115">U krye</translation>
 <translation id="8730999928494395583">Aktiviteti yt në këto skeda "të fshehta" do të hiqet nga kjo pajisje</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_MONTHS_ONE" /> muaj më parë}other{Krijuar <ph name="NUM_MONTHS_MANY" /> muaj më parë}}</translation>
 <translation id="8820741577754260431">Shiko rëniet e çmimeve në skeda</translation>

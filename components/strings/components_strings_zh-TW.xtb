@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">濾水器與淨水器</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">按下 |<ph name="ACCELERATOR" />| 即可結束全螢幕模式</translation>
 <translation id="1038106730571050514">顯示搜尋建議</translation>
 <translation id="1038842779957582377">不明名稱</translation>
 <translation id="1041998700806130099">工作表訊息</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">船舶與水運工具</translation>
 <translation id="1283977499362032052">履歷與作品集</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
-<translation id="1288548991597756084">安全地儲存卡片</translation>
 <translation id="1292571435393770077">紙匣 16</translation>
 <translation id="1292701964462482250">「你的電腦上有軟體阻止 Chrome 建立安全的網路連線」(僅限 Windows 電腦)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
@@ -285,7 +283,6 @@
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 入口網站必須先登入才能連上網路，系統就會顯示這則錯誤訊息。&lt;/p&gt;
     &lt;p&gt;如要修正這個錯誤，請在您要嘗試開啟的網頁上按一下 [連線]&lt;strong&gt;&lt;/strong&gt;。&lt;/p&gt;</translation>
 <translation id="1513706915089223971">歷史記錄項目清單</translation>
-<translation id="1516097932025103760">系統會將卡片加密並以安全的方式儲存，但絕不會儲存信用卡驗證碼。</translation>
 <translation id="151720253492607760">繼續不允許存取</translation>
 <translation id="1517433312004943670">必須輸入電話號碼</translation>
 <translation id="1519264250979466059">建立日期</translation>
@@ -1258,7 +1255,6 @@
 <translation id="342781501876943858">如果你在其他網站上重複使用過你的密碼，Chromium 會建議你重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
 <translation id="3428789896412418755">分類歷史記錄</translation>
-<translation id="3431216045099978607">按下 |<ph name="ACCELERATOR" />| 鍵即可結束全螢幕模式以查看下載內容。</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3433111389595862568">協作和會議通訊軟體</translation>
 <translation id="3433144818443565002">語音及視訊通訊</translation>
@@ -1985,7 +1981,6 @@
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4832961164064927107">烤肉與燒烤</translation>
 <translation id="4834250788637067901">儲存在 Google Pay 的付款方式、優惠和地址資訊</translation>
-<translation id="4839087176073128681">透過 Google 領先業界的安全防護機制，加快下次結帳速度並保護你的卡片。</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="484671803914931257">取得 <ph name="MERCHANT_NAME" /> 和其他商家的折扣</translation>
@@ -2593,7 +2588,6 @@
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果你瞭解安全性風險，也可以選擇在有害應用程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個網站<ph name="END_LINK" />。</translation>
 <translation id="6047927260846328439">這項內容可能會試圖誘使你安裝軟體或提供個人資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可結束全螢幕模式</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">頁面傳送</translation>
 <translation id="6049975101166779351">兒童照護</translation>
@@ -2712,7 +2706,6 @@
 <translation id="6270066318535733958">泛舟遊艇</translation>
 <translation id="6272088941196661550">繼續瀏覽歷程即可查看 Chrome 歷史記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
-<translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
 <translation id="6280223929691119688">快遞無法送貨到這個地址，請改用其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284449872909111707">文字與即時通訊</translation>
@@ -3753,7 +3746,6 @@
 <translation id="8241707690549784388">你尋找的網頁使用了你輸入的資料。返回該頁會重複你剛才的行動。你確定要繼續嗎？</translation>
 <translation id="8241712895048303527">禁止這個網站顯示廣告</translation>
 <translation id="8242426110754782860">Proceed</translation>
-<translation id="8245703462678310750">按住 |<ph name="ACCELERATOR" />| 鍵即可結束全螢幕模式並查看下載內容。</translation>
 <translation id="8246482227229072868">戒指</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="824968735947741546">正在將<ph name="SOURCE" /> (自動偵測) 的內容翻譯成<ph name="TARGET" /></translation>

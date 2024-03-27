@@ -1679,7 +1679,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2252017960592955005">Proteção contra visualização (beta)</translation>
 <translation id="2253318212986772520">Não é possível obter o PPD da <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Escolha o que quer partilhar com a app <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Mostrar palavras-passe e chaves de acesso da sua Conta Google</translation>
 <translation id="2255077166240162850">Este dispositivo foi bloqueado para um domínio ou um modo diferente.</translation>
 <translation id="2255317897038918278">Carimbo de data/hora da Microsoft</translation>
 <translation id="2256115617011615191">Reiniciar agora</translation>
@@ -5111,7 +5110,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488211015466188466">Seguir site</translation>
 <translation id="4882312758060467256">Tem acesso a este site</translation>
-<translation id="4882752944049998623">Palavra-passe guardada na sua Conta Google, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestor de &amp;Tarefas</translation>

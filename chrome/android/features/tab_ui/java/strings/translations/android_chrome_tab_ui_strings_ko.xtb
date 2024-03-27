@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
 <translation id="8398929769197326728">새 폴더: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">더 낮은 가격</translation>
+<translation id="8730621377337864115">완료</translation>
 <translation id="8730999928494395583">시크릿 탭의 활동 내역이 이 기기에서 삭제됩니다.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" />개월 전 생성됨}other{<ph name="NUM_MONTHS_MANY" />개월 전 생성됨}}</translation>
 <translation id="8820741577754260431">탭에서 가격 인하를 확인합니다.</translation>

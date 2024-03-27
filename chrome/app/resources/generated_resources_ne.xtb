@@ -1676,7 +1676,6 @@
 <translation id="2252017960592955005">सुरक्षित रूपमा हेर्ने सुविधा (बिटा)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> को PPD प्राप्त गर्न सकिएन।</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> सँग सेयर गर्नु पर्ने कुरा छनौट गर्नुहोस्</translation>
-<translation id="2254263139042585032">आफ्नो Google खातामा सेभ गरिएका पासवर्ड तथा पासकीहरू देखाउनुहोस्</translation>
 <translation id="2255077166240162850">यो डिभाइस अर्कै डोमेन वा मोडमा लक गरिएको छ।</translation>
 <translation id="2255317897038918278">Microsoft समय मुद्रांकन</translation>
 <translation id="2256115617011615191">अब फेरि सुरु गर्नुहोस्</translation>
@@ -3397,6 +3396,7 @@
 <translation id="3577487026101678864">फाइल सिंक गर्ने सुविधा अन छ</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ले हार्डवेयरसम्बन्धी डेटा सङ्कलन गर्ने सम्बन्धमा</translation>
 <translation id="3581605050355435601">IP एड्रेस स्वतः कन्फिगर गर्नुहोस्</translation>
+<translation id="3581861561942370740">डाउनलोड हिस्ट्री खोज्नुहोस्</translation>
 <translation id="3582057310199111521">यो पासवर्ड भ्रामक साइटमा प्रविष्टि गरिएको थियो र पासवर्डको खुलासा भएको पाइयो</translation>
 <translation id="3582299299336701326">उज्यालो स्क्रिनलाई अँध्यारो र अँध्यारो स्क्रिनलाई उज्यालो बनाउनुहोस्। कलर इन्भर्सन अन र अफ गर्न Search + Ctrl + H थिच्नुहोस्।</translation>
 <translation id="3584169441612580296">तपाईंको कम्प्युटरबाट तस्बिरहरू, सङ्गीत र अन्य मिडिया पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
@@ -5106,7 +5106,6 @@
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="488211015466188466">साइट फलो गर्नुहोस्</translation>
 <translation id="4882312758060467256">यो साइटमाथि पहुँच राख्न सक्छ</translation>
-<translation id="4882752944049998623">यो पासवर्ड तपाईंको Google खाता <ph name="USER_EMAIL" /> मा सेभ गरिएको छ</translation>
 <translation id="4882919381756638075">साइटहरूले भिडियो च्याट जस्ता सञ्चार सुविधाहरू प्रदान गर्न सामान्यतया तपाईंको माइक्रोफोन प्रयोग गर्छन्</translation>
 <translation id="4883436287898674711">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
 <translation id="48838266408104654">&amp;काम प्रबन्धक</translation>
@@ -5313,6 +5312,7 @@
 <translation id="5056950756634735043">कन्टेनरमा कनेक्ट गरिँदै छ</translation>
 <translation id="5057110919553308744">तपाईंले विस्तारमा क्लिक गर्दा</translation>
 <translation id="5057127674016624293">स्क्यान गर्न अपेक्षा गरेभन्दा बढी समय लागिरहेको छ</translation>
+<translation id="5057480703570202545">हिस्ट्री डाउनलोड गर्नुहोस्</translation>
 <translation id="5059241099014281248">साइन इन गर्ने कार्य प्रतिबन्धित गर्नुहोस्</translation>
 <translation id="5059429103770496207">डिस्प्लेको शैली</translation>
 <translation id="5059526285558225588">सेयर गरिनु पर्ने जानकारी छनौट गर्नुहोस्</translation>
@@ -5722,6 +5722,7 @@
 <translation id="5390677308841849479">गाढा रातो र सुन्तले</translation>
 <translation id="5392192690789334093">सूचना पठाउने अनुमति दिइएका साइटहरू</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}other{# वटा लिंक}}</translation>
+<translation id="5394529681046491727">सीधा Wi-Fi</translation>
 <translation id="5395498824851198390">डिफल्ट फन्ट</translation>
 <translation id="5397378439569041789">किअस्क वा साइनेज डिभाइस दर्ता गर्नुहोस्</translation>
 <translation id="5397794290049113714">तपाइँ</translation>

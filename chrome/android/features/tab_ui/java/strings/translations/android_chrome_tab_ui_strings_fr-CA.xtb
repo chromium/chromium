@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
+<translation id="8730621377337864115">Terminé</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera retirée de cet appareil</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>

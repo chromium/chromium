@@ -1678,7 +1678,6 @@
 <translation id="2252017960592955005">കാണുന്നതുമായി ബന്ധപ്പെട്ട പരിരക്ഷ (ബീറ്റ)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> എന്നതിനുള്ള PPD വീണ്ടെടുക്കാനായില്ല.</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> എന്നതുമായി എന്താണ് പങ്കിടേണ്ടത് എന്നു തിരഞ്ഞെടുക്കുക</translation>
-<translation id="2254263139042585032">നിങ്ങളുടെ Google Account-ൽ നിന്നുള്ള പാസ്‌വേഡുകളും പാസ്‌കീകളും കാണിക്കുക</translation>
 <translation id="2255077166240162850">മറ്റൊരു ഡൊമെയ്‌‌നോ മോഡോ ഉപയോഗിച്ച് ഈ ഉപകരണം ലോക്ക് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">ഇപ്പോൾ വീണ്ടും ആരംഭിക്കുക</translation>
@@ -3398,6 +3397,7 @@
 <translation id="3577487026101678864">ഫയൽ സമന്വയിപ്പിക്കൽ ഓണാണ്</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> ഹാർഡ്‌വെയർ ഡാറ്റാ ശേഖരണം</translation>
 <translation id="3581605050355435601">IP വിലാസം സ്വയമേവ കോണ്‍ഫിഗര്‍ ചെയ്യുക</translation>
+<translation id="3581861561942370740">ഡൗൺലോഡ് ചരിത്രം തിരയുക</translation>
 <translation id="3582057310199111521">വഞ്ചനാപരമായ സൈറ്റിൽ നൽകിയതിനാൽ ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തി</translation>
 <translation id="3582299299336701326">ലൈറ്റ് സ്ക്രീനുകൾ ഡാർക്ക് ആക്കാനും ഡാർക്ക് സ്ക്രീനുകൾ ലൈറ്റ് ആക്കാനും. നിറം വിപരീതമാക്കൽ ഓണാക്കാനും ഓഫാക്കാനും Search + Ctrl + H അമർത്തുക.</translation>
 <translation id="3584169441612580296">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് ഫോട്ടോകൾ, സംഗീതം, മറ്റ് മീഡിയ എന്നിവ വായിക്കുക, മാറ്റുക</translation>
@@ -5107,7 +5107,6 @@
 <translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="488211015466188466">സൈറ്റ് ഫോളോ ചെയ്യുക</translation>
 <translation id="4882312758060467256">ഈ സൈറ്റിലേക്ക് ആക്‌സസ് ഉണ്ട്</translation>
-<translation id="4882752944049998623">നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന Google Account-ൽ സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
 <translation id="4882919381756638075">വീഡിയോ ചാറ്റിംഗ് പോലുള്ള ആശയവിനിമയ ഫീച്ചറുകൾക്ക്, സൈറ്റുകൾ സാധാരണയായി നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാറുണ്ട്</translation>
 <translation id="4883436287898674711">എല്ലാ <ph name="WEBSITE_1" /> സൈറ്റുകളും</translation>
 <translation id="48838266408104654">&amp;ടാസ്‌ക് മാനേജര്‍</translation>
@@ -5314,6 +5313,7 @@
 <translation id="5056950756634735043">കണ്ടെയ്‌നറിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="5057110919553308744">നിങ്ങൾ വിപുലീകരണം ക്ലിക്ക് ചെയ്യുമ്പോൾ</translation>
 <translation id="5057127674016624293">സ്‌കാൻ ചെയ്യുന്നതിന് പ്രതീക്ഷിച്ചതിലും കൂടുതൽ സമയമെടുക്കുന്നു</translation>
+<translation id="5057480703570202545">ഡൗൺലോഡ് ചരിത്രം</translation>
 <translation id="5059241099014281248">സൈൻ ഇൻ ചെയ്യൽ നിയന്ത്രിക്കുക</translation>
 <translation id="5059429103770496207">ഡിസ്‌പ്ലേ സ്‌റ്റൈൽ</translation>
 <translation id="5059526285558225588">എന്ത് പങ്കിടണമെന്ന് തിരഞ്ഞെടുക്കൂ</translation>
@@ -5723,6 +5723,7 @@
 <translation id="5390677308841849479">ഇരുണ്ട ചുവപ്പും ഓറഞ്ചും</translation>
 <translation id="5392192690789334093">അറിയിപ്പുകൾ അയയ്ക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
+<translation id="5394529681046491727">വൈഫൈ ഡയറക്റ്റ്</translation>
 <translation id="5395498824851198390">ഡിഫോൾട്ട് ഫോണ്ട്</translation>
 <translation id="5397378439569041789">കിയോസ്‌ക് അല്ലെങ്കിൽ സൈനേജ് ഉപകരണം എൻറോൾ ചെയ്യുക</translation>
 <translation id="5397794290049113714">നിങ്ങള്‍</translation>

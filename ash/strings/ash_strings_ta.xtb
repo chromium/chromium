@@ -356,7 +356,7 @@
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2484513351006226581">கீபோர்டைத் தளவமைப்பை மாற்ற, <ph name="KEYBOARD_SHORTCUT" /> விசையை அழுத்தவும்.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> மாதிரிக்காட்சி. செயலில் உள்ள டெஸ்க்.</translation>
-<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" காட்சியின் தெளிவுத்திறன் <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) என்று மாற்றப்பட்டது. இதை உறுதிப்படுத்தவில்லை என்றால், இன்னும் <ph name="TIMEOUT_SECONDS" /> முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" டிஸ்ப்ளே <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) தெளிவுத்திறனுக்கு மாற்றப்பட்டது. இதை உறுதிப்படுத்தவில்லை என்றால், இன்னும் <ph name="TIMEOUT_SECONDS" /> முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="2487915095798731898">சேர்</translation>
 <translation id="2499445554382787206">டெஸ்க் சுயவிவர மெனு. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ஸ்டிக்கி விசைகள்</translation>
@@ -1677,7 +1677,7 @@
 <translation id="7647488630410863958">அறிவிப்புகளைப் பார்க்க, சாதனத்தை அன்லாக் செய்யவும்</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7654687942625752712">பேச்சுவடிவ கருத்தை முடக்க, ஐந்து வினாடிகளுக்கு இரண்டு ஒலியளவு விசைகளையும் அழுத்திப் பிடித்திருக்கவும்.</translation>
-<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" காட்சியின் தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) என்று மாற்றப்பட்டது. போர்ட்டின் இணைய வேக வரம்புகள் காரணமாக, உங்கள் காட்சி <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) தெளிவுத்திறனை ஆதரிக்கவில்லை. இதை உறுதிப்படுத்தவில்லை என்றால், இன்னும் <ph name="TIMEOUT_SECONDS" /> முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" டிஸ்ப்ளே <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) தெளிவுத்திறனுக்கு மாற்றப்பட்டது. போர்ட்டின் இணைய வேக வரம்புகள் காரணமாக, உங்கள் டிஸ்ப்ளே <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) தெளிவுத்திறனை ஆதரிக்கவில்லை. இதை உறுதிப்படுத்தவில்லை என்றால், இன்னும் <ph name="TIMEOUT_SECONDS" /> முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7659861092419699379">டெஸ்க் மற்றும் சாளரங்கள் மூடப்பட்டன</translation>
 <translation id="7660160718439869192"><ph name="EMAIL" /> என்ற முகவரியுடன் இணைக்கப்பட்டுள்ள சாதனங்களில் உங்கள் <ph name="NAME" /> காட்டப்படும்</translation>

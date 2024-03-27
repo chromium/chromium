@@ -1676,7 +1676,6 @@
 <translation id="2252017960592955005">のぞき見防止（ベータ版）</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> の PPD を取得できません。</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> と共有する情報を選択する</translation>
-<translation id="2254263139042585032">Google アカウントのパスワードとパスキーを表示</translation>
 <translation id="2255077166240162850">このデバイスは別のドメインまたはモードにロックされています。</translation>
 <translation id="2255317897038918278">Microsoft タイム スタンプ</translation>
 <translation id="2256115617011615191">今すぐ再起動</translation>
@@ -5097,7 +5096,6 @@
 <translation id="4881695831933465202">開く</translation>
 <translation id="488211015466188466">サイトをフォロー</translation>
 <translation id="4882312758060467256">このサイトへのアクセスが許可されています</translation>
-<translation id="4882752944049998623">Google アカウント（<ph name="USER_EMAIL" />）に保存されたパスワード</translation>
 <translation id="4882919381756638075">多くのサイトは、ビデオチャットなどの通信機能にマイクを使用します。</translation>
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="48838266408104654">タスク マネージャ(&amp;T)</translation>

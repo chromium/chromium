@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Close <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="8398929769197326728">Nový priečinok – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Nižšia cena</translation>
+<translation id="8730621377337864115">Hotovo</translation>
 <translation id="8730999928494395583">Vaša aktivita v týchto kartách inkognito bude odstránená z tohto zariadenia</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vytvorená pred <ph name="NUM_MONTHS_ONE" /> mesiacom}few{Vytvorená pred <ph name="NUM_MONTHS_MANY" /> mesiacmi}many{Vytvorená pred <ph name="NUM_MONTHS_MANY" /> mesiaca}other{Vytvorená pred <ph name="NUM_MONTHS_MANY" /> mesiacmi}}</translation>
 <translation id="8820741577754260431">Zobrazte si na kartách poklesy cien</translation>

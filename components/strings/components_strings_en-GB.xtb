@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Water Filters and Purifiers</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">Press |<ph name="ACCELERATOR" />| to exit full screen</translation>
 <translation id="1038106730571050514">Show suggestions</translation>
 <translation id="1038842779957582377">unknown name</translation>
 <translation id="1041998700806130099">Job sheet message</translation>
@@ -160,7 +159,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1282358575813748144">Boats and Watercraft</translation>
 <translation id="1283977499362032052">CVs and Portfolios</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
-<translation id="1288548991597756084">Save card securely</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">'Software on your computer is stopping Chrome from safely connecting to the web' (Windows computers only)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
@@ -286,7 +284,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1507202001669085618">&lt;p&gt;You'll see this error if you're using a Wi-Fi portal where you have to sign in before you can get online.&lt;/p&gt;
     &lt;p&gt;To fix the error, click &lt;strong&gt;Connect&lt;/strong&gt; on the page that you're trying to open.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">List of history entries</translation>
-<translation id="1516097932025103760">It’ll be encrypted, saved securely and the CVC is never stored.</translation>
 <translation id="151720253492607760">Continue not allowing</translation>
 <translation id="1517433312004943670">Phone number required</translation>
 <translation id="1519264250979466059">Build Date</translation>
@@ -1260,7 +1257,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="342781501876943858">Chromium recommends resetting your password if you reused it on other sites.</translation>
 <translation id="3428151540071562330">One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.</translation>
 <translation id="3428789896412418755">Grouped history</translation>
-<translation id="3431216045099978607">Press |<ph name="ACCELERATOR" />| to exit full screen and see download.</translation>
 <translation id="3432601291244612633">Close page</translation>
 <translation id="3433111389595862568">Collaboration and Conferencing Software</translation>
 <translation id="3433144818443565002">Voice and Video Chat</translation>
@@ -1987,7 +1983,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4832961164064927107">BBQ and grilling</translation>
 <translation id="4834250788637067901">Payment methods, offers and addresses using Google Pay</translation>
-<translation id="4839087176073128681">Pay faster next time and protect your card with Google’s industry-leading security.</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Get discount on <ph name="MERCHANT_NAME" /> and more</translation>
@@ -2595,7 +2590,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6045164183059402045">Imposition template</translation>
 <translation id="6047233362582046994">If you understand the risks to your security, you may <ph name="BEGIN_LINK" />visit this site<ph name="END_LINK" /> before the harmful apps have been removed.</translation>
 <translation id="6047927260846328439">This content might try to trick you into installing software or revealing personal information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Press and hold |<ph name="ACCELERATOR" />| to exit full screen</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Page delivery</translation>
 <translation id="6049975101166779351">Child Care</translation>
@@ -2714,7 +2708,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6270066318535733958">Boating</translation>
 <translation id="6272088941196661550">Resume your journey to see relevant activity in your Chrome history</translation>
 <translation id="6272383483618007430">Google update</translation>
-<translation id="6279183038361895380">Press |<ph name="ACCELERATOR" />| to show your cursor</translation>
 <translation id="6280223929691119688">Can’t deliver to this address. Select a different address.</translation>
 <translation id="6284292079994426700">26 in x 38 in</translation>
 <translation id="6284449872909111707">Text and instant messaging</translation>
@@ -3755,7 +3748,6 @@ Additional details:
 <translation id="8241707690549784388">The page that you're looking for used information that you entered. Returning to that page might cause any action that you took to be repeated. Do you want to continue?</translation>
 <translation id="8241712895048303527">Block on this site</translation>
 <translation id="8242426110754782860">Proceed</translation>
-<translation id="8245703462678310750">Press and hold |<ph name="ACCELERATOR" />| to exit full screen and see download.</translation>
 <translation id="8246482227229072868">Rings</translation>
 <translation id="8249296373107784235">Abort</translation>
 <translation id="824968735947741546">Translating <ph name="SOURCE" /> (auto-detected) to <ph name="TARGET" /></translation>

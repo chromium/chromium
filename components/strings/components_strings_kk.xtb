@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Су сүзгілері және тазартқыштар</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1036881361735705143">C4 хатқалтасы</translation>
-<translation id="1036982837258183574">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Қайықтар және кемелер</translation>
 <translation id="1283977499362032052">Түйіндемелер мен портфолиолар</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
-<translation id="1288548991597756084">Картаңызды қауіпсіз сақтаңыз</translation>
 <translation id="1292571435393770077">16-науа</translation>
 <translation id="1292701964462482250">"Компьютердегі бағдарламалық құрал Chrome жүйесінің интернетке қауіпсіз қосылуына жол бермей тұр" (тек Windows компьютерлерінде)</translation>
 <translation id="1293797321964802402">229 x 279 мм хатқалта</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Интернетке кірерде аккаунтқа кіру сұралатын Wi-Fi порталын пайдаланған кезде, осы қате шығады.&lt;/p&gt;
     &lt;p&gt;Қатені түзету үшін ашқыңыз келетін бетте &lt;strong&gt;Қосылу&lt;/strong&gt; түймесін басыңыз.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Тарихтағы жазбалар тізімі</translation>
-<translation id="1516097932025103760">Ол шифрланады, қауіпсіз сақталады. CVC ешқашан сақталмайды.</translation>
 <translation id="151720253492607760">Бұрынғыдай рұқсат бермеу</translation>
 <translation id="1517433312004943670">Телефон нөмірі қажет</translation>
 <translation id="1519264250979466059">Жасалған күні</translation>
@@ -1259,7 +1256,6 @@
 <translation id="342781501876943858">Chromium басқа сайттарда пайдаланылған құпия сөзіңізді қайта орнатуды ұсынады.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates серверінің бір немесе бірнеше URI үлгісі жарамсыз және пайдаланылмайды.</translation>
 <translation id="3428789896412418755">Топтастырылған тарих</translation>
-<translation id="3431216045099978607">Толық экраннан шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басыңыз.</translation>
 <translation id="3432601291244612633">Бетті жабу</translation>
 <translation id="3433111389595862568">Конференция мен бірлесе жұмыс істеуге арналған бағдарламалық құралдар</translation>
 <translation id="3433144818443565002">Дауыс және бейнечат</translation>
@@ -1986,7 +1982,6 @@
 <translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4832961164064927107">Гриль және барбекю</translation>
 <translation id="4834250788637067901">Google Pay қызметіндегі төлеу әдістері, ұсыныстар және мекенжайлар</translation>
-<translation id="4839087176073128681">Google-дың үздік қауіпсіздік жүйесімен картаңызды қорғаңыз және жылдамырақ төлеңіз.</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> және т. б. дүкендердің жеңілдіктерін алыңыз</translation>
@@ -2594,7 +2589,6 @@
 <translation id="6045164183059402045">Жолақтарды түсіру үлгісі</translation>
 <translation id="6047233362582046994">Қауіпсіздігіңізге келетін қатерлерді түсінсеңіз, зиянды қолданбалар жойылмай жатып, <ph name="BEGIN_LINK" />осы сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
 <translation id="6047927260846328439">Бұл контент бағдарламалық құрал орнату немесе жеке ақпаратыңызды көрсету мақсатында сізді алдауы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Толық экраннан шығу үшін |<ph name="ACCELERATOR" />| түймесін басып тұрыңыз</translation>
 <translation id="6049056807983403918">B4 хатқалтасы</translation>
 <translation id="6049488691372270142">Бетті беру</translation>
 <translation id="6049975101166779351">Бала күтімі</translation>
@@ -2713,7 +2707,6 @@
 <translation id="6270066318535733958">Қайықпен серуендеу</translation>
 <translation id="6272088941196661550">Chrome тарихынан сәйкес сұрауларды көру үшін шарлауды жалғастыру</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| басыңыз</translation>
 <translation id="6280223929691119688">Бұл мекенжайға жеткізілмейді. Басқа мекенжайды таңдаңыз.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
 <translation id="6284449872909111707">Мәтін және лезде хабар алмасу</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">Ізделіп жатқан бет сіз енгізген ақпаратты пайдаланды. Аталмыш бетке қайту сіз орындаған әрекетті қайталауға себеп болуы мүмкін. Жалғастыру керек пе?</translation>
 <translation id="8241712895048303527">Осы сайтта бөгеу</translation>
 <translation id="8242426110754782860">Жалғастыру</translation>
-<translation id="8245703462678310750">Толық экраннан шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басып тұрыңыз.</translation>
 <translation id="8246482227229072868">Сақиналар</translation>
 <translation id="8249296373107784235">Доғару</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (автоматты анықталған) тілінен <ph name="TARGET" /> тіліне аударылуда</translation>

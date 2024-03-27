@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">浄水器</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1036881361735705143">C4 封筒</translation>
-<translation id="1036982837258183574">全画面表示を終了するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038842779957582377">不明な名前</translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">ボート、水上の乗り物</translation>
 <translation id="1283977499362032052">履歴書、職歴</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
-<translation id="1288548991597756084">カードを安全に保存</translation>
 <translation id="1292571435393770077">トレイ 16</translation>
 <translation id="1292701964462482250">「パソコンにインストールされているソフトウェアが原因で、Chrome からインターネットに安全に接続することができません」（Windows パソコンのみ）</translation>
 <translation id="1293797321964802402">9x11 インチ封筒</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;インターネットに接続するために Wi-Fi ポータルへのログインが必要な場合は、このエラーが表示されます。&lt;/p&gt;
     &lt;p&gt;エラーを解決するには、開こうとしているページで [&lt;strong&gt;接続&lt;/strong&gt;] をクリックします。&lt;/p&gt;</translation>
 <translation id="1513706915089223971">履歴項目のリスト</translation>
-<translation id="1516097932025103760">カード情報は暗号化されて安全に保存されます。ただし、CVC は保存されません。</translation>
 <translation id="151720253492607760">引き続き許可しない</translation>
 <translation id="1517433312004943670">電話番号が必要です</translation>
 <translation id="1519264250979466059">ビルド日</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates サーバー テンプレートの一部の URI が無効なため、使用されません。</translation>
 <translation id="3428789896412418755">グループに分類した履歴</translation>
-<translation id="3431216045099978607">|<ph name="ACCELERATOR" />| を押すと、全画面表示を終了してダウンロードを表示します。</translation>
 <translation id="3432601291244612633">ページを閉じる</translation>
 <translation id="3433111389595862568">コラボレーション、会議用ソフトウェア</translation>
 <translation id="3433144818443565002">ボイスチャット、ビデオチャット</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4832961164064927107">バーベキュー、グリル</translation>
 <translation id="4834250788637067901">Google Pay を使用したお支払方法、クーポン、住所</translation>
-<translation id="4839087176073128681">次回から支払い処理をすばやく行うことができます。カード情報は Google の業界最高水準のセキュリティで保護されます。</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> などの割引を取得</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">面付けテンプレート</translation>
 <translation id="6047233362582046994">有害なアプリがまだ存在する可能性があるにもかかわらず<ph name="BEGIN_LINK" />このサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上の危険性をあらかじめご認識ください。</translation>
 <translation id="6047927260846328439">アクセス先のコンテンツは、ユーザーをだましてソフトウェアをインストールさせようとしたり、個人情報を危険にさらしたりする可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">全画面表示を終了するには |<ph name="ACCELERATOR" />| キーを押し続けます</translation>
 <translation id="6049056807983403918">B4 封筒</translation>
 <translation id="6049488691372270142">排紙</translation>
 <translation id="6049975101166779351">幼児保育</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">ボート</translation>
 <translation id="6272088941196661550">ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認します</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6280223929691119688">この住所には配達できません。別の住所を選択してください。</translation>
 <translation id="6284292079994426700">26x38 インチ</translation>
 <translation id="6284449872909111707">テキスト メッセージ、インスタント メッセージ</translation>
@@ -3756,7 +3749,6 @@
 <translation id="8241707690549784388">検索しているページは、入力した情報を使用しています。このページに戻った場合、操作のやり直しが発生する可能性があります。続行しますか？</translation>
 <translation id="8241712895048303527">このサイトでブロック</translation>
 <translation id="8242426110754782860">続行</translation>
-<translation id="8245703462678310750">|<ph name="ACCELERATOR" />| を長押しすると、全画面表示を終了してダウンロードを表示します。</translation>
 <translation id="8246482227229072868">指輪</translation>
 <translation id="8249296373107784235">中止</translation>
 <translation id="824968735947741546"><ph name="SOURCE" />（自動検出）を <ph name="TARGET" /> に翻訳しています</translation>

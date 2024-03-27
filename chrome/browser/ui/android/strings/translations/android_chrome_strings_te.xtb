@@ -113,7 +113,7 @@
 <translation id="1549000191223877751">వేరే విండోకు తరలించు</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1554532453982918912">మీరు ఉపయోగించే విధంగా Chromeను ఉపయోగించే ఇతర యూజర్‌ల కోసం దాన్ని మెరుగుపరచడంలో సహాయపడండి</translation>
-<translation id="1558391695376153246">అజ్ఞాత ట్యాబ్‌లను మూసివేయి</translation>
+<translation id="1558391695376153246">అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="1568636008098739136">ఈ పేజీ‌లోని కంటెంట్‌ను వినండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1584648915421894279">ప్రస్తుతం, ఈ పరికరంలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లు Chrome ఛానెల్స్‌లో ఉపయోగించబడవు. Chrome 125 తర్వాత, Chrome, <ph name="CHROME_CHANNEL" /> కోసం మీ పరికరంలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లు విలీనం చేయబడతాయి, రెండు యాప్‌లలో ఉపయోగించవచ్చు.</translation>
@@ -621,7 +621,7 @@
 <translation id="4326079409704643112">మీ Google ఖాతాలో Chrome డేటాను ఉపయోగించడానికి, దానిలో డేటాను సేవ్ చేయడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="433213510553688132">ఫాలో చేస్తున్నారు...</translation>
 <translation id="4335835283689002019">సురక్షిత బ్రౌజింగ్ ఆఫ్‌లో ఉంది</translation>
-<translation id="4351244548802238354">డైలాగ్‌ను మూసివేయి</translation>
+<translation id="4351244548802238354">డైలాగ్‌ను మూసివేయండి</translation>
 <translation id="4355272626458588338">బుక్‌మార్క్‌ను జోడించడం ద్వారా మీకు ముఖ్యమైన పేజీకి తిరిగి వెళ్లవచ్చు</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
 <translation id="4378154925671717803">ఫోన్</translation>
@@ -803,7 +803,7 @@
 <translation id="5204967432542742771">పాస్‌వర్డ్‌ని నమోదు చేయండి</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ఫైల్‌ను డౌన్‌లోడ్ చేస్తోంది…}other{# ఫైల్‌లను డౌన్‌లోడ్ చేస్తోంది…}}</translation>
 <translation id="5210286577605176222">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
-<translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
+<translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="5216863793077689658">పేజీ గణాంకాలలో మీ యాక్టివిటీ మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేయబడింది.</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5226378907213531272">మీరు కారును ఉపయోగించిన ప్రతిసారి మీ స్క్రీన్‌ను అన్‌లాక్ చేస్తారు</translation>
@@ -959,7 +959,7 @@
 <translation id="6026538407078977628">ఫుల్ స్క్రీన్‌కు విస్తరింపజేయండి</translation>
 <translation id="6030719887161080597">యాడ్ పనితీరును అంచనా వేయడానికి సైట్‌లు ఉపయోగించే సమాచారాన్ని మేనేజ్ చేయండి</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
-<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="604996488070107836">తెలియని ఎర్ర‌ర్‌ కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
@@ -1321,7 +1321,7 @@
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
 <translation id="7766587497031415281">బ్రౌజింగ్ డేటాను క్లియర్ చేయడానికి మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
-<translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయి</translation>
+<translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయండి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
@@ -1630,7 +1630,7 @@
 <translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
-<translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
+<translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>
 <translation id="987264212798334818">సాధారణం</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ట్యాబ్‌లు</translation>
 <translation id="993520549480398880">ఈ కారు నుండి బుక్‌మార్క్‌లు, హిస్టరీ, మరిన్నింటిని కూడా క్లియర్ చేయండి</translation>

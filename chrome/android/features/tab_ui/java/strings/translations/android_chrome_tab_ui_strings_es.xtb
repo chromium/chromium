@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cerrar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
+<translation id="8730621377337864115">Hecho</translation>
 <translation id="8730999928494395583">Tu actividad en estas pestañas de Incógnito se eliminará de este dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creado hace <ph name="NUM_MONTHS_ONE" /> mes}other{Creado hace <ph name="NUM_MONTHS_MANY" /> meses}}</translation>
 <translation id="8820741577754260431">Consulta las bajadas de precio en las pestañas</translation>

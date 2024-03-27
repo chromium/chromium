@@ -1680,7 +1680,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2252017960592955005">Protecție pentru afișare (beta)</translation>
 <translation id="2253318212986772520">Nu se poate prelua fișierul PPD pentru <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Alege la ce informații are acces <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Afișează parolele și cheile de acces din Contul Google</translation>
 <translation id="2255077166240162850">Acest dispozitiv a fost blocat pe un alt domeniu sau mod.</translation>
 <translation id="2255317897038918278">Marcare temporală Microsoft</translation>
 <translation id="2256115617011615191">Repornește acum</translation>
@@ -5110,7 +5109,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="488211015466188466">Urmărește site-ul</translation>
 <translation id="4882312758060467256">Are acces la acest site</translation>
-<translation id="4882752944049998623">Parola s-a salvat în Contul Google, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Site-urile folosesc de obicei microfonul pentru opțiuni de comunicare, cum ar fi chatul video</translation>
 <translation id="4883436287898674711">Toate site-urile <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Manager de ac&amp;tivități</translation>

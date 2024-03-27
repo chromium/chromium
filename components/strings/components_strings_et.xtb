@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Veefiltrid ja -puhastid</translation>
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1036881361735705143">Ümbrik C4</translation>
-<translation id="1036982837258183574">Täisekraanilt väljumiseks vajutage klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Kuva soovitused</translation>
 <translation id="1038842779957582377">tundmatu nimi</translation>
 <translation id="1041998700806130099">Töölehe sõnum</translation>
@@ -160,7 +159,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1282358575813748144">Paadid ja veesõidukid</translation>
 <translation id="1283977499362032052">Elulookirjeldused ja portfooliod</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
-<translation id="1288548991597756084">Salvestage kaart turvaliselt</translation>
 <translation id="1292571435393770077">Salv 16</translation>
 <translation id="1292701964462482250">„Teie arvutis olev tarkvara ei luba Chrome'il veebiga turvaliselt ühendust luua” (ainult Windowsi arvutid)</translation>
 <translation id="1293797321964802402">9 × 11-tolline ümbrik</translation>
@@ -286,7 +284,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1507202001669085618">&lt;p&gt;Seda viga näete juhul, kui kasutate WiFi-portaali, kuhu tuleb enne võrguühenduse loomist sisse logida.&lt;/p&gt;
     &lt;p&gt;Vea parandamiseks klõpsake avataval lehel käsul &lt;strong&gt;Loo ühendus&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Ajalookannete loend</translation>
-<translation id="1516097932025103760">See krüpteeritakse, salvestatakse turvaliselt ja CVC-d ei talletata.</translation>
 <translation id="151720253492607760">Jätka mitte lubamisega</translation>
 <translation id="1517433312004943670">Telefoninumber on nõutav</translation>
 <translation id="1519264250979466059">Järgu kuupäev</translation>
@@ -1260,7 +1257,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="342781501876943858">Chromium soovitab teil parooli lähtestada, kui kasutasite seda ka muudel saitidel.</translation>
 <translation id="3428151540071562330">Vähemalt üks reegli DnsOverHttpsTemplates serveri malli URI on kehtetu ja seda ei kasutata.</translation>
 <translation id="3428789896412418755">Rühmitatud ajalugu</translation>
-<translation id="3431216045099978607">Täisekraanilt väljumiseks ja allalaaditud faili(de) nägemiseks vajutage klahvi |<ph name="ACCELERATOR" />|.</translation>
 <translation id="3432601291244612633">Sule leht</translation>
 <translation id="3433111389595862568">Koostöö- ja konverentsitarkvara</translation>
 <translation id="3433144818443565002">Hääl- ja videovestlus</translation>
@@ -1987,7 +1983,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="483241715238664915">Lülita hoiatused sisse</translation>
 <translation id="4832961164064927107">Grillimine ja BBQ</translation>
 <translation id="4834250788637067901">Makseviisid, pakkumised ja aadressid, mis kasutavad Google Payd</translation>
-<translation id="4839087176073128681">Makske järgmisel korral kiiremini ja kaitske oma kaarti Google'i valdkonna parimate turvameetmetega.</translation>
 <translation id="4840250757394056958">Chrome’i ajaloo vaatamine</translation>
 <translation id="484462545196658690">Automaatne</translation>
 <translation id="484671803914931257">Saage allahindlust kaupmehe <ph name="MERCHANT_NAME" /> juures ja mujalgi</translation>
@@ -2595,7 +2590,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6045164183059402045">Kehtestamise mall</translation>
 <translation id="6047233362582046994">Kui mõistate, kuidas see teie turvalisust ohustab, siis võite <ph name="BEGIN_LINK" />seda saiti külastada<ph name="END_LINK" /> enne, kui kahjulikud rakendused on eemaldatud.</translation>
 <translation id="6047927260846328439">See sisu võib meelitada teid installima tarkvara või avaldama isiklikke andmeid. <ph name="BEGIN_LINK" />Kuva ikkagi<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Täisekraanilt väljumiseks vajutage pikalt klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="6049056807983403918">Ümbrik B4</translation>
 <translation id="6049488691372270142">Lehe esitamine</translation>
 <translation id="6049975101166779351">Lastehoid</translation>
@@ -2714,7 +2708,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6270066318535733958">Paadi- ja laevasõit</translation>
 <translation id="6272088941196661550">Jätkake oma teekonda, et näha Chrome'i ajaloos asjakohaseid tegevusi</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Kursori kuvamiseks vajutage klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Sellele aadressile ei saa kaupa kohale toimetada. Valige mõni teine aadress.</translation>
 <translation id="6284292079994426700">26 × 38 tolli</translation>
 <translation id="6284449872909111707">Tekst- ja kiirsõnumside</translation>
@@ -3755,7 +3748,6 @@ Lisateave:
 <translation id="8241707690549784388">Teie poolt otsitav lehekülg kasutas teie sisestatud andmeid. Sellele leheküljele naasmine võib kaasa tuua kõikide sooritatud tegevuste kordamise. Soovite jätkata?</translation>
 <translation id="8241712895048303527">Blokeeri sellel saidil</translation>
 <translation id="8242426110754782860">Jätka</translation>
-<translation id="8245703462678310750">Täisekraanilt väljumiseks ja allalaaditud faili(de) nägemiseks vajutage pikalt klahvi |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8246482227229072868">Sõrmused</translation>
 <translation id="8249296373107784235">Katkesta</translation>
 <translation id="824968735947741546">Keele <ph name="SOURCE" /> (automaatselt tuvastatud) tõlkimine keelde <ph name="TARGET" /></translation>

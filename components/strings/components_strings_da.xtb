@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vandfiltre og vandrensningsudstyr</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1036881361735705143">Konvolut C4</translation>
-<translation id="1036982837258183574">Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038842779957582377">ukendt navn</translation>
 <translation id="1041998700806130099">Jobarksmeddelelse</translation>
@@ -160,7 +159,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1282358575813748144">Både og vandfartøjer</translation>
 <translation id="1283977499362032052">CV'er og levnedsbeskrivelser</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
-<translation id="1288548991597756084">Gem kort på en sikker måde</translation>
 <translation id="1292571435393770077">Bakke 16</translation>
 <translation id="1292701964462482250">"Der er software på computeren, som forhindrer, at Chrome kan oprette en sikker forbindelse til nettet" (kun Windows-computere)</translation>
 <translation id="1293797321964802402">Konvolut 9 x 11 tommer</translation>
@@ -286,7 +284,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1507202001669085618">&lt;p&gt;Denne fejl vises, hvis du bruger en Wi-Fi-portal, hvor du skal logge ind, før du kan komme på nettet.&lt;/p&gt;
     &lt;p&gt;Du kan rette fejlen ved at klikke på &lt;strong&gt;Opret forbindelse&lt;/strong&gt; på den side, du forsøger at åbne.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste over historiske poster</translation>
-<translation id="1516097932025103760">Oplysningerne krypteres og gemmes på sikker vis. Din CVC gemmes aldrig.</translation>
 <translation id="151720253492607760">Fortsæt ikke med at tillade</translation>
 <translation id="1517433312004943670">Telefonnummer er påkrævet</translation>
 <translation id="1519264250979466059">Versionsdato</translation>
@@ -1260,7 +1257,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="342781501876943858">Chromium anbefaler, at du nulstiller din adgangskode, hvis du har brugt den på andre websites.</translation>
 <translation id="3428151540071562330">En eller flere af serverskabelon-URI'erne for DnsOverHttpsTemplates er ugyldige og anvendes ikke.</translation>
 <translation id="3428789896412418755">Grupperet historik</translation>
-<translation id="3431216045099978607">Tryk på |<ph name="ACCELERATOR" />| for at afslutte visningen i fuld skærm og se downloadfilen.</translation>
 <translation id="3432601291244612633">Luk side</translation>
 <translation id="3433111389595862568">Software til samarbejde og kommunikation</translation>
 <translation id="3433144818443565002">Tale- og videochat</translation>
@@ -1987,7 +1983,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="483241715238664915">Aktivér advarsler</translation>
 <translation id="4832961164064927107">BBQ og grill</translation>
 <translation id="4834250788637067901">Betalingsmetoder, tilbud og adresser, der bruger Google Pay</translation>
-<translation id="4839087176073128681">Betal hurtigere næste gang, og beskyt dit kort med Googles brancheførende sikkerhed.</translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="484671803914931257">Få rabat på <ph name="MERCHANT_NAME" /> og meget mere</translation>
@@ -2595,7 +2590,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6045164183059402045">Skabelon for indførelse</translation>
 <translation id="6047233362582046994">Hvis du er indforstået med de forbundne sikkerhedsrisici, kan du <ph name="BEGIN_LINK" />besøge dette website<ph name="END_LINK" />, inden de skadelige apps fjernes.</translation>
 <translation id="6047927260846328439">Dette indhold forsøger muligvis at narre dig til at installere software eller afsløre personlige oplysninger. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Hold |<ph name="ACCELERATOR" />| nede for at afslutte fuld skærm</translation>
 <translation id="6049056807983403918">Konvolut B4</translation>
 <translation id="6049488691372270142">Sidelevering</translation>
 <translation id="6049975101166779351">Barnepleje</translation>
@@ -2714,7 +2708,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6270066318535733958">Med båd</translation>
 <translation id="6272088941196661550">Genoptag din søgning for at se relevant aktivitet i din Chrome-historik</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Tryk på |<ph name="ACCELERATOR" />| at se markøren</translation>
 <translation id="6280223929691119688">Der kan ikke leveres til denne adresse. Vælg en anden adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284449872909111707">Beskeder og chatfunktioner</translation>
@@ -3755,7 +3748,6 @@ Yderligere oplysninger:
 <translation id="8241707690549784388">Siden, du søger, benyttede oplysninger, du har indtastet. Vender du tilbage til denne side kan det betyde, at enhver handling, du har foretaget, skal gentages. Vil du fortsætte?</translation>
 <translation id="8241712895048303527">Bloker på dette website</translation>
 <translation id="8242426110754782860">Fortsæt</translation>
-<translation id="8245703462678310750">Hold fingeren på |<ph name="ACCELERATOR" />| for at afslutte visningen i fuld skærm og se downloadfilen.</translation>
 <translation id="8246482227229072868">Ringe</translation>
 <translation id="8249296373107784235">Annuller</translation>
 <translation id="824968735947741546">Oversætter <ph name="SOURCE" /> (automatisk registreret) til <ph name="TARGET" /></translation>

@@ -1679,7 +1679,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2252017960592955005">Visualizzazione protetta (beta)</translation>
 <translation id="2253318212986772520">Impossibile recuperare il file PPD di <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Scegli cosa condividere con <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Mostra password e passkey del tuo Account Google</translation>
 <translation id="2255077166240162850">Questo dispositivo è stato bloccato con un dominio o una modalità diversi.</translation>
 <translation id="2255317897038918278">Timestamp Microsoft</translation>
 <translation id="2256115617011615191">Riavvia adesso</translation>
@@ -2495,6 +2494,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2845382757467349449">Mostra sempre barra dei preferiti</translation>
 <translation id="2845751331501453107">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK1" />annunci suggeriti dai siti<ph name="LINK_END1" />, dalle <ph name="BEGIN_LINK2" />impostazioni dei cookie<ph name="LINK_END2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="284581348330507117">Crea password univoche</translation>
+<translation id="284884486564166077">Cerca immagini con Lens</translation>
 <translation id="2849035674501872372">Ricerca</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Il PIN è stato aggiunto</translation>
@@ -5109,7 +5109,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="488211015466188466">Segui Sito</translation>
 <translation id="4882312758060467256">Ha accesso a questo sito</translation>
-<translation id="4882752944049998623">Password salvata nel tuo Account Google: <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">In genere, i siti usano il microfono per funzionalità di comunicazione come la chat video</translation>
 <translation id="4883436287898674711">Tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filteri i prečišćivači za vodu</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
-<translation id="1036982837258183574">Pritisnite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="1038106730571050514">Prikažite predloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
@@ -160,7 +159,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1282358575813748144">Čamci i plovila</translation>
 <translation id="1283977499362032052">Radne biografije i portfoliji</translation>
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
-<translation id="1288548991597756084">Bezbedno sačuvajte karticu</translation>
 <translation id="1292571435393770077">16. fioka</translation>
 <translation id="1292701964462482250">„Softver na vašem računaru onemogućava Chrome-u da se bezbedno poveže na veb“ (samo na Windows računarima)</translation>
 <translation id="1293797321964802402">Koverta 23×28 cm</translation>
@@ -286,7 +284,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1507202001669085618">&lt;p&gt;Ova greška se prikazuje ako koristite WiFi portal na kome morate da se prijavite da biste se povezali na internet.&lt;/p&gt;
     &lt;p&gt;Da biste otklonili tu grešku, kliknite na &lt;strong&gt;Poveži se&lt;/strong&gt; na stranici koju pokušavate da otvorite.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista unosa u istoriji</translation>
-<translation id="1516097932025103760">Biće šifrovana, bezbedno sačuvana, a CVC se nikad ne čuva.</translation>
 <translation id="151720253492607760">I dalje ne dozvoljavaj</translation>
 <translation id="1517433312004943670">Broj telefona je obavezan</translation>
 <translation id="1519264250979466059">Datum verzije</translation>
@@ -1260,7 +1257,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="342781501876943858">Chromium vam preporučuje da resetujete lozinku ako ste je koristili na drugim sajtovima.</translation>
 <translation id="3428151540071562330">Jedan ili više URI-ja šablona DnsOverHttpsTemplates servera su nevažeći i neće se koristiti.</translation>
 <translation id="3428789896412418755">Grupisana istorija</translation>
-<translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana i videli preuzimanje.</translation>
 <translation id="3432601291244612633">Zatvori stranicu</translation>
 <translation id="3433111389595862568">Softver za saradnju i konferencije</translation>
 <translation id="3433144818443565002">Glasovno i video ćaskanje</translation>
@@ -1987,7 +1983,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="483241715238664915">Uključi upozorenja</translation>
 <translation id="4832961164064927107">Roštilj</translation>
 <translation id="4834250788637067901">Načini plaćanja, ponude i adrese koji koriste Google Pay</translation>
-<translation id="4839087176073128681">Sledećeg puta platite brže i zaštitite karticu pomoću vrhunske Google bezbednosti.</translation>
 <translation id="4840250757394056958">Pregledajte istoriju Chrome-a</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="484671803914931257">Ostvarite popust kod prodavca <ph name="MERCHANT_NAME" /> i drugih prodavaca</translation>
@@ -2595,7 +2590,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6045164183059402045">Šablon rasporeda stranice</translation>
 <translation id="6047233362582046994">Ako razumete bezbednosne rizike, možete da <ph name="BEGIN_LINK" />posetite ovaj sajt<ph name="END_LINK" /> pre nego što uklonimo štetne aplikacije.</translation>
 <translation id="6047927260846328439">Ovaj sadržaj će pokušati da vas prevari da instalirate softver ili otkrijete lične podatke. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pritisnite i zadržite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="6049056807983403918">Koverta B4</translation>
 <translation id="6049488691372270142">Isporuka stranica</translation>
 <translation id="6049975101166779351">Briga o detetu</translation>
@@ -2713,7 +2707,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6270066318535733958">Vožnja čamcem</translation>
 <translation id="6272088941196661550">Nastavite put da biste videli relevantne aktivnosti u istoriji Chrome-a</translation>
 <translation id="6272383483618007430">Google ažuriranje</translation>
-<translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| da biste prikazali pokazivač</translation>
 <translation id="6280223929691119688">Isporuka na ovu adresu nije moguća. Izaberite drugu adresu.</translation>
 <translation id="6284292079994426700">26×38 in</translation>
 <translation id="6284449872909111707">Razmena tekstualnih i trenutnih poruka</translation>
@@ -3754,7 +3747,6 @@ Dodatni detalji:
 <translation id="8241707690549784388">Stranica koju tražite koristila je informacije koje ste uneli. Povratak na tu stranicu može da prouzrokuje potrebnu ponavljanja radnji koje ste izvršili. Želite li da nastavite?</translation>
 <translation id="8241712895048303527">Blokiraj na ovom sajtu</translation>
 <translation id="8242426110754782860">Nastavi</translation>
-<translation id="8245703462678310750">Pritisnite i zadržite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana i videli preuzimanje.</translation>
 <translation id="8246482227229072868">Prstenje</translation>
 <translation id="8249296373107784235">Otkaži</translation>
 <translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>

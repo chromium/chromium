@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Purificadors i filtres d'aigua</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
-<translation id="1036982837258183574">Premeu |<ph name="ACCELERATOR" />| per sortir de la pantalla completa</translation>
 <translation id="1038106730571050514">Mostra els suggeriments</translation>
 <translation id="1038842779957582377">nom desconegut</translation>
 <translation id="1041998700806130099">Missatge del full de treball</translation>
@@ -160,7 +159,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1282358575813748144">Embarcacions i vehicles aquàtics</translation>
 <translation id="1283977499362032052">Currículum i portafolis</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
-<translation id="1288548991597756084">Desa la targeta de manera segura</translation>
 <translation id="1292571435393770077">Safata 16</translation>
 <translation id="1292701964462482250">"L'ordinador conté programari que impedeix que Chrome es connecti de manera segura al web" (només en ordinadors Windows)</translation>
 <translation id="1293797321964802402">Sobre de 9 x 11 polzades</translation>
@@ -286,7 +284,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1507202001669085618">&lt;p&gt;Aquest error es mostra si utilitzeu un portal Wi-Fi en què cal que inicieu la sessió per connectar-vos a Internet.&lt;/p&gt;
     &lt;p&gt;Per solucionar l'error, feu clic a &lt;strong&gt;Connecta&lt;/strong&gt; a la pàgina que proveu d'obrir.</translation>
 <translation id="1513706915089223971">Llista d'entrades de l'historial</translation>
-<translation id="1516097932025103760">Les dades estaran encriptades, es desaran de manera segura i el CVC mai no s'emmagatzemarà.</translation>
 <translation id="151720253492607760">Continua sense permetre</translation>
 <translation id="1517433312004943670">El número de telèfon és obligatori</translation>
 <translation id="1519264250979466059">Data de creació</translation>
@@ -1260,7 +1257,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="342781501876943858">Chromium et recomana que restableixis la contrasenya si l'has fet servir en altres llocs web.</translation>
 <translation id="3428151540071562330">Un o més dels URI de plantilla de servidor corresponents a DnsOverHttpsTemplates no són vàlids i no s'utilitzaran.</translation>
 <translation id="3428789896412418755">Historial agrupat</translation>
-<translation id="3431216045099978607">Prem |<ph name="ACCELERATOR" />| per sortir de la pantalla completa i veure la baixada.</translation>
 <translation id="3432601291244612633">Tanca la pàgina</translation>
 <translation id="3433111389595862568">Programari de col·laboració i conferències</translation>
 <translation id="3433144818443565002">Xat de veu i vídeo</translation>
@@ -1987,7 +1983,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="483241715238664915">Activa els advertiments</translation>
 <translation id="4832961164064927107">Barbacoa i cuina a la brasa</translation>
 <translation id="4834250788637067901">Formes de pagament, ofertes i adreces que fan servir Google Pay</translation>
-<translation id="4839087176073128681">Paga més ràpidament la propera vegada i protegeix la teva targeta amb la seguretat líder del sector de Google.</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="484671803914931257">Obtén un descompte a <ph name="MERCHANT_NAME" /> i més</translation>
@@ -2595,7 +2590,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6045164183059402045">Plantilla d'imposició</translation>
 <translation id="6047233362582046994">Si entens el risc que suposa per a la teva seguretat, pots <ph name="BEGIN_LINK" />visitar aquest lloc web<ph name="END_LINK" /> abans que no s'hagin suprimit les aplicacions perjudicials.</translation>
 <translation id="6047927260846328439">Aquest contingut pot provar d'enganyar-te perquè instal·lis programari o proporcionis informació personal. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" />.</translation>
-<translation id="6049004884579590341">Mantén premut |<ph name="ACCELERATOR" />| per sortir del mode de pantalla completa</translation>
 <translation id="6049056807983403918">Sobre B4</translation>
 <translation id="6049488691372270142">Lliurament de les pàgines</translation>
 <translation id="6049975101166779351">Cura infantil</translation>
@@ -2714,7 +2708,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6270066318535733958">Navegació</translation>
 <translation id="6272088941196661550">Reprèn el recorregut per veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Premeu |<ph name="ACCELERATOR" />| per veure el cursor</translation>
 <translation id="6280223929691119688">No es pot entregar a aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="6284292079994426700">26 x 38 polzades</translation>
 <translation id="6284449872909111707">Missatgeria de text i instantània</translation>
@@ -3755,7 +3748,6 @@ Detalls addicionals:
 <translation id="8241707690549784388">La pàgina que busques utilitzava informació que vas introduir. Tornar a aquesta pàgina podria provocar una repetició de qualsevol acció realitzada. Vols continuar?</translation>
 <translation id="8241712895048303527">Bloqueja en aquest lloc web</translation>
 <translation id="8242426110754782860">Continua</translation>
-<translation id="8245703462678310750">Mantén premuda la tecla |<ph name="ACCELERATOR" />| per sortir de la pantalla completa i veure la baixada.</translation>
 <translation id="8246482227229072868">Anells</translation>
 <translation id="8249296373107784235">Cancel·la</translation>
 <translation id="824968735947741546">S'està traduint <ph name="SOURCE" /> (detectat automàticament) a <ph name="TARGET" /></translation>

@@ -1694,7 +1694,6 @@
 <translation id="2252017960592955005">Безпечний перегляд (бета)</translation>
 <translation id="2253318212986772520">Не вдалось отримати файл PPD для принтера <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Виберіть, до яких даних надати доступ додатку <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Показувати паролі й ключі доступу з вашого облікового запису Google</translation>
 <translation id="2255077166240162850">Пристрій заблоковано в іншому домені або режимі.</translation>
 <translation id="2255317897038918278">Встановлення позначки часу Microsoft</translation>
 <translation id="2256115617011615191">Перезапустити</translation>
@@ -5128,7 +5127,6 @@
 <translation id="4881695831933465202">Відкрити</translation>
 <translation id="488211015466188466">Підписатися на сайт</translation>
 <translation id="4882312758060467256">Може запускатися на цьому сайті</translation>
-<translation id="4882752944049998623">Пароль збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="4882919381756638075">Сайти зазвичай використовують мікрофон для роботи функцій спілкування, як-от відеочати</translation>
 <translation id="4883436287898674711">Усі сайти <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Диспетчер завдань</translation>
@@ -7265,7 +7263,7 @@
 <translation id="6586099239452884121">Гостьовий режим</translation>
 <translation id="6586213706115310390">Активуйте Асистента командою "Ok Google".</translation>
 <translation id="6586451623538375658">Змінити основну кнопку миші</translation>
-<translation id="6588043302623806746">Використовувати безпечну систему DNS</translation>
+<translation id="6588043302623806746">Використовувати захищений DNS-сервер</translation>
 <translation id="659005207229852190">Перевірку безпеки завершено.</translation>
 <translation id="6590458744723262880">Перейменувати папку</translation>
 <translation id="6592267180249644460">Журнал WebRTC створено: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>

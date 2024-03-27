@@ -1689,7 +1689,6 @@
 <translation id="2252017960592955005">ການປົກປ້ອງການເບິ່ງ (ເບຕ້າ)</translation>
 <translation id="2253318212986772520">ບໍ່ສາມາດດຶງຂໍ້ມູນ PPD ສຳລັບ <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">ເລືອກສິ່ງທີ່ຈະແບ່ງປັນກັບ <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">ສະແດງລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານຈາກບັນຊີ Google​ ຂອງທ່ານ</translation>
 <translation id="2255077166240162850">ອຸປະກອນນີ້ຖືກລັອກຕໍ່ກັບໂດເມນ ຫຼື ໂໝດຕ່າງກັນ.</translation>
 <translation id="2255317897038918278">ການຕິດສະແຕັມເວລາ Microsoft</translation>
 <translation id="2256115617011615191">ເລີ່ມລະບົບໃໝ່ດຽວນີ້</translation>
@@ -3413,6 +3412,7 @@
 <translation id="3577487026101678864">ເປີດຊິ້ງຂໍ້ມູນໄຟລ໌ແລ້ວ</translation>
 <translation id="3577745545227000795">ການເກັບກຳຂໍ້ມູນຮາດແວ <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">ຕັ້ງຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="3581861561942370740">ຊອກຫາປະຫວັດການດາວໂຫຼດ</translation>
 <translation id="3582057310199111521">ປ້ອນໃສ່ເວັບໄຊຫຼອກລວງ ແລະ ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="3582299299336701326">ປ່ຽນໜ້າຈໍແຈ້ງໃຫ້ມືດ ແລະ ມືດໃຫ້ແຈ້ງ. ກົດຊອກຫາ + Ctrl + H ເພື່ອເປີດ ແລະ ປິດການປີ້ນສີ.</translation>
 <translation id="3584169441612580296">ອ່ານ ແລະປ່ຽນແປງຮູບ, ເພງ, ແລະມີເດຍອື່ນໆຈາກຄອມພິວເຕີຂອງທ່ານ</translation>
@@ -5124,7 +5124,6 @@
 <translation id="4881695831933465202">ເປີດ</translation>
 <translation id="488211015466188466">ຕິດຕາມເວັບໄຊ</translation>
 <translation id="4882312758060467256">ມີສິດເຂົ້າເຖິງເວັບໄຊນີ້</translation>
-<translation id="4882752944049998623">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">ໂດຍປົກກະຕິ ເວັບໄຊຈະໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານສຳລັບຄຸນສົມບັດການສື່ສານ ເຊັ່ນ: ການສົນທະນາວິດີໂອ</translation>
 <translation id="4883436287898674711">ທຸກເວັບໄຊທ໌ <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">ຕົວຈັດການໜ້າວຽກ</translation>
@@ -5331,6 +5330,7 @@
 <translation id="5056950756634735043">ກຳລັງເຊື່ອມຕໍ່ຫາກ່ອງບັນຈຸ</translation>
 <translation id="5057110919553308744">ເມື່ອທ່ານຄລິກສ່ວນຂະຫຍາຍ</translation>
 <translation id="5057127674016624293">ການສະແກນໃຊ້ເວລາດົນກວ່າທີ່ຄາດໄວ້</translation>
+<translation id="5057480703570202545">ປະຫວັດການດາວໂຫຼດ</translation>
 <translation id="5059241099014281248">ຈຳກັດການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="5059429103770496207">ຮູບແບບສະແດງຜົນ</translation>
 <translation id="5059526285558225588">ເລືອກສິ່ງທີ່ຈະແບ່ງປັນ</translation>
@@ -5740,6 +5740,7 @@
 <translation id="5390677308841849479">ສີແດງເຂັ້ມ ແລະ ສີສົ້ມ</translation>
 <translation id="5392192690789334093">ໄດ້ຮັບອະນຸຍາດໃຫ້ສົ່ງການແຈ້ງເຕືອນ</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ລິ້ງ}other{# ລິ້ງ}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">ຟອນເລີ່ມຕົ້ນ</translation>
 <translation id="5397378439569041789">ລົງທະບຽນອຸປະກອນຄີອອສ ຫຼື ອຸປະກອນປ້າຍ</translation>
 <translation id="5397794290049113714">ທ່ານ</translation>

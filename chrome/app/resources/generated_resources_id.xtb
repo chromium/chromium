@@ -1691,7 +1691,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2252017960592955005">Perlindungan dari pengintip (Beta)</translation>
 <translation id="2253318212986772520">Tidak dapat mengambil PPD untuk <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Pilih informasi yang akan dibagikan ke <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Tampilkan sandi dan kunci sandi dari Akun Google Anda</translation>
 <translation id="2255077166240162850">Perangkat ini terkunci ke domain atau mode lain.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">Mulai ulang sekarang</translation>
@@ -5125,7 +5124,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="488211015466188466">Ikuti Situs</translation>
 <translation id="4882312758060467256">Memiliki akses ke situs ini</translation>
-<translation id="4882752944049998623">Sandi disimpan di Akun Google Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Situs biasanya menggunakan mikrofon Anda untuk fitur komunikasi seperti video chat</translation>
 <translation id="4883436287898674711">Semua situs <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Pengelola &amp;Tugas</translation>

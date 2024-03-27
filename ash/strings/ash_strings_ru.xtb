@@ -356,7 +356,7 @@
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2486214324139475545">Предпросмотр активного рабочего стола "<ph name="DESK_NAME" />".</translation>
-<translation id="2486405091093637109">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Если не предпринять никаких действий, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="2486405091093637109">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Если вы не подтвердите изменение, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Присоединиться</translation>
 <translation id="2499445554382787206">Меню профиля рабочего стола. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -1028,7 +1028,7 @@
 <translation id="5062496344832867502">озу</translation>
 <translation id="5068762093486106012">Если вы будете говорить при выключенном микрофоне, появится уведомление. Аудио с вашего устройства никуда не передается.</translation>
 <translation id="5077416371682039027">Настроить просмотр недавних фотографий, медиафайлов, уведомлений и приложений с телефона</translation>
-<translation id="5077936103761694531">Разрешение экрана было изменено</translation>
+<translation id="5077936103761694531">Подтвердите изменение</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083035541015925118">Ctrl + Alt + Стрелка вверх</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
@@ -1677,7 +1677,7 @@
 <translation id="7647488630410863958">Чтобы просмотреть уведомления, разблокируйте устройство</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7654687942625752712">Чтобы отключить озвучивание текста на экране, удерживайте обе кнопки громкости в течение пяти секунд.</translation>
-<translation id="7654916369822103315">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Из-за ограниченной пропускной способности порта экран не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Если не предпринять никаких действий, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="7654916369822103315">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Из-за ограниченной пропускной способности порта экран не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Если вы не подтвердите изменение, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7659861092419699379">Рабочий стол и окна закрыты.</translation>
 <translation id="7660160718439869192">Устройство <ph name="NAME" /> будет видно на устройствах, связанных с адресом электронной почты <ph name="EMAIL" />.</translation>
@@ -1768,7 +1768,7 @@
 <translation id="7945357288295809525">Открыть настройки специальных возможностей. Включенные функции: <ph name="ENABLED_FEATURES" />.</translation>
 <translation id="7947798320695032612">Приложению "<ph name="APP_NAME" />" требуется разрешение (<ph name="DEVICE_NAME" />)</translation>
 <translation id="7951630946012935453">Уменьшить яркость подсветки клавиатуры</translation>
-<translation id="7953994493035617347">Разрешение экрана было изменено</translation>
+<translation id="7953994493035617347">Подтвердите изменение</translation>
 <translation id="7963689218131240420">Сейчас он отключен.</translation>
 <translation id="7963992254934562106">С <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбрать папку</translation>

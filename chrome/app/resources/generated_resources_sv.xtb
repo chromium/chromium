@@ -1691,7 +1691,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2252017960592955005">Skydd mot smygtittare (beta)</translation>
 <translation id="2253318212986772520">Det gick inte att hämta PPD-filen för <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Välj vad du vill dela med <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Visa lösenord och nycklar från Google-kontot</translation>
 <translation id="2255077166240162850">Enheten är låst till en annan domän eller ett annat läge.</translation>
 <translation id="2255317897038918278">Microsofts tidsstämpling</translation>
 <translation id="2256115617011615191">Starta om nu</translation>
@@ -2510,6 +2509,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2845382757467349449">Visa alltid bokmärkesfältet</translation>
 <translation id="2845751331501453107">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, <ph name="BEGIN_LINK1" />föreslagna annonser på webbplatser<ph name="LINK_END1" />, dina <ph name="BEGIN_LINK2" />cookieinställningar<ph name="LINK_END2" /> och om webbplatsen du besöker anpassar annonser</translation>
 <translation id="284581348330507117">Skapa unika lösenord</translation>
+<translation id="284884486564166077">Sök med valfri bild med Lens</translation>
 <translation id="2849035674501872372">Slå upp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Pinkoden har lagts till</translation>
@@ -5126,7 +5126,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="488211015466188466">Följ webbplatsen</translation>
 <translation id="4882312758060467256">Har åtkomst till webbplatsen</translation>
-<translation id="4882752944049998623">Lösenordet har sparats i Google-kontot <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Åtkomst till mikrofonen brukar kunna behövas för kommunikationsfunktioner på webbplatsen, t.ex. videochatt</translation>
 <translation id="4883436287898674711">Alla <ph name="WEBSITE_1" />-webbplatser</translation>
 <translation id="48838266408104654">&amp;Aktivitetshanteraren</translation>

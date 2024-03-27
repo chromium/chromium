@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filtry i oczyszczacze wody</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1036881361735705143">Koperta C4</translation>
-<translation id="1036982837258183574">Aby zamknąć pełny ekran, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Pokaż sugestie</translation>
 <translation id="1038842779957582377">nieznana nazwa</translation>
 <translation id="1041998700806130099">Komunikat dotyczący arkusza zadań</translation>
@@ -160,7 +159,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1282358575813748144">Łodzie i jednostki pływające</translation>
 <translation id="1283977499362032052">CV i portfolia</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
-<translation id="1288548991597756084">Zapisz bezpiecznie kartę</translation>
 <translation id="1292571435393770077">Taca 16</translation>
 <translation id="1292701964462482250">„Oprogramowanie na Twoim komputerze uniemożliwia Chrome bezpieczne połączenie się z internetem” (tylko na komputerach z systemem Windows)</translation>
 <translation id="1293797321964802402">Koperta 9 x 11 cali</translation>
@@ -286,7 +284,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1507202001669085618">&lt;p&gt;Ten komunikat pojawia się, jeśli do połączenia z internetem wymagane jest zalogowanie się w portalu Wi-Fi.&lt;/p&gt;
     &lt;p&gt;Aby naprawić błąd, kliknij &lt;strong&gt;Połącz&lt;/strong&gt; na stronie, którą chcesz otworzyć.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista wpisów historii</translation>
-<translation id="1516097932025103760">Zostanie ona zaszyfrowana i bezpiecznie zapisana. Kod CVC nigdy nie jest zapisywany.</translation>
 <translation id="151720253492607760">Nadal nie zezwalaj</translation>
 <translation id="1517433312004943670">Numer telefonu jest wymagany</translation>
 <translation id="1519264250979466059">Data kompilacji</translation>
@@ -1260,7 +1257,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="342781501876943858">Chromium zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
 <translation id="3428151540071562330">Co najmniej jeden identyfikator URI szablonu serwera DnsOverHttpsTemplates jest nieprawidłowy i nie zostanie użyty.</translation>
 <translation id="3428789896412418755">Historia zgrupowana</translation>
-<translation id="3431216045099978607">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij |<ph name="ACCELERATOR" />|.</translation>
 <translation id="3432601291244612633">Zamknij stronę</translation>
 <translation id="3433111389595862568">Oprogramowanie do współpracy i rozmów wideo</translation>
 <translation id="3433144818443565002">Czaty głosowe i wideo</translation>
@@ -1987,7 +1983,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="483241715238664915">Włącz ostrzeżenia</translation>
 <translation id="4832961164064927107">Barbecue i grill</translation>
 <translation id="4834250788637067901">Formy płatności, oferty i adresy korzystające z Google Pay</translation>
-<translation id="4839087176073128681">Następnym razem zapłać szybciej i zadbaj o bezpieczeństwo swojej karty, korzystając z najlepszych w branży zabezpieczeń od Google.</translation>
 <translation id="4840250757394056958">Wyświetl historię Chrome</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="484671803914931257">Otrzymaj rabat w sklepie <ph name="MERCHANT_NAME" /> i nie tylko</translation>
@@ -2595,7 +2590,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6045164183059402045">Szablon impozycji</translation>
 <translation id="6047233362582046994">Jeśli rozumiesz zagrożenie, możesz <ph name="BEGIN_LINK" />wejść na tę stronę<ph name="END_LINK" />, zanim szkodliwe aplikacje zostaną usunięte.</translation>
 <translation id="6047927260846328439">Te treści mogą próbować podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia danych osobowych. <ph name="BEGIN_LINK" />Wyświetl mimo to<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|, by zamknąć pełny ekran</translation>
 <translation id="6049056807983403918">Koperta B4</translation>
 <translation id="6049488691372270142">Podawanie stron</translation>
 <translation id="6049975101166779351">Pielęgnacja dzieci</translation>
@@ -2714,7 +2708,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6270066318535733958">Wioślarstwo</translation>
 <translation id="6272088941196661550">Wznów swoją serię czynności, aby zobaczyć odpowiednią aktywność w historii Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Naciśnij |<ph name="ACCELERATOR" />|, by wyświetlić kursor</translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6284292079994426700">26 x 38 cali</translation>
 <translation id="6284449872909111707">Wiadomości tekstowe i czat</translation>
@@ -3755,7 +3748,6 @@ Dodatkowe informacje:
 <translation id="8241707690549784388">Strona, na której wyszukiwane są wprowadzone przez Ciebie informacje. Powrót do tej strony może spowodować konieczność powtórzenia wykonanych czynności. Czy chcesz kontynuować?</translation>
 <translation id="8241712895048303527">Blokuj na tej stronie</translation>
 <translation id="8242426110754782860">Dalej</translation>
-<translation id="8245703462678310750">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij i przytrzymaj <ph name="ACCELERATOR" />|.</translation>
 <translation id="8246482227229072868">Obrączki i pierścionki</translation>
 <translation id="8249296373107784235">Przerwij</translation>
 <translation id="824968735947741546">Tłumaczę z języka: <ph name="SOURCE" /> (wykrytego automatycznie) na <ph name="TARGET" /></translation>

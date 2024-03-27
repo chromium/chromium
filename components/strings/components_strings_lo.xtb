@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">ເຄື່ອງກອງນ້ຳ ແລະ ຟອກນ້ຳ</translation>
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">ກົດ |<ph name="ACCELERATOR" />| ເພື່ອອອກຈາກເຕັມຈໍ</translation>
 <translation id="1038106730571050514">ສະແດງການແນະນຳ</translation>
 <translation id="1038842779957582377">ຊື່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="1041998700806130099">ຂໍ້ຄວາມແຜ່ນວຽກ</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">ເຮືອ ແລະ ການຂັບຂີ່ເຮືອ</translation>
 <translation id="1283977499362032052">ປະຫວັດ ແລະ ພອດໂຟລິໂອ</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
-<translation id="1288548991597756084">ບັນທຶກບັດໄວ້ຢ່າງປອດໄພ</translation>
 <translation id="1292571435393770077">ຖາດ 16</translation>
 <translation id="1292701964462482250">"ຊອບແວຢູ່ໃນຄອມພິວເຕີຂອງທ່ານກຳລັງປ້ອງກັນບໍ່ໃຫ້ Chrome ເຊື່ອມຕໍ່ກັບເວັບໄຊໄດ້ຢ່າງປອດໄພ" (ຄອມພິວເຕີ Windows ເທົ່ານັ້ນ)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 ນິ້ວ</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;ທ່ານຈະເຫັນຂໍ້ຜິດພາດນີ້ຖ້າທ່ານກຳລັງໃຊ້ໜ້າເວັບ Wi-Fi ບ່ອນທີ່ທ່ານຈຳເປັນຕ້ອງເຂົ້າສູ່ລະບົບກ່ອນທີ່ທ່ານຈະສາມາດອອນລາຍໄດ້.&lt;/p&gt;
     &lt;p&gt;ເພື່ອແກ້ໄຂຂໍ້ຜິດພາດ, ກະລຸນາຄລິກ &lt;strong&gt;ເຊື່ອມຕໍ່&lt;/strong&gt; ຢູ່ໃນໜ້າທີ່ທ່ານກຳລັງພະຍາຍາມເປີດ.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">ລາຍຊື່ລາຍການປະຫວັດ</translation>
-<translation id="1516097932025103760">ມັນຈະຖືກເຂົ້າລະຫັດ, ບັນທຶກໄວ້ຢ່າງປອດໄພ ແລະ ຈະບໍ່ມີການຈັດເກັບ CVC ໄວ້ເດັດຂາດ.</translation>
 <translation id="151720253492607760">ສືບຕໍ່ບໍ່ອະນຸຍາດ</translation>
 <translation id="1517433312004943670">ຈຳເປັນຕ້ອງມີເບີໂທລະສັບ</translation>
 <translation id="1519264250979466059">​ວັນ​ທີສ້າງ</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">Chromium ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
 <translation id="3428151540071562330">ໜຶ່ງ ຫຼື ຫຼາຍ URI ຂອງແມ່ແບບເຊີບເວີ DnsOverHttpsTemplates ບໍ່ຖືກຕ້ອງ ແລະ ຈະບໍ່ຖືກນຳໃຊ້.</translation>
 <translation id="3428789896412418755">ປະຫວັດທີ່ຈັດກຸ່ມ</translation>
-<translation id="3431216045099978607">ກົດ |<ph name="ACCELERATOR" />| ເພື່ອອອກຈາກການສະແດງເຕັມຈໍ ແລະ ເບິ່ງການດາວໂຫຼດ.</translation>
 <translation id="3432601291244612633">ປິດໜ້າ</translation>
 <translation id="3433111389595862568">ຊອບແວການເຮັດວຽກຮ່ວມກັນ ແລະ ການປະຊຸມສາຍ</translation>
 <translation id="3433144818443565002">ການສົນທະນາວິດີໂອ ແລະ ສຽງ</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">ເປີດໃຊ້ຄຳເຕືອນ</translation>
 <translation id="4832961164064927107">ບາບີຄິວ ແລະ ການປີ້ງ</translation>
 <translation id="4834250788637067901">ວິທີການຈ່າຍເງິນ, ຂໍ້ສະເໜີ ແລະ ທີ່ຢູ່ໂດຍໃຊ້ Google Pay</translation>
-<translation id="4839087176073128681">ຈ່າຍເງິນໄດ້ໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ ແລະ ປົກປ້ອງບັດຂອງທ່ານດ້ວຍຄວາມປອດໄພລະດັບແນວໜ້າຂອງອຸດສາຫະກຳຂອງ Google.</translation>
 <translation id="4840250757394056958">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
 <translation id="484671803914931257">ຮັບສ່ວນຫຼຸດຢູ່ <ph name="MERCHANT_NAME" /> ແລະ ອື່ນໆ</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">ແມ່ແບບການຈັດຮຽງໜ້າກ່ອນພິມ</translation>
 <translation id="6047233362582046994">ຖ້າທ່ານເຂົ້າໃຈຄວາມສ່ຽງຕໍ່ຄວາມປອດໄພຂອງທ່ານ, ທ່ານອາດຈະ <ph name="BEGIN_LINK" />ເຂົ້າເບິ່ງເວັບໄຊນີ້<ph name="END_LINK" /> ກ່ອນທີ່ແອັບອັນຕະລາຍຈະຖືກລຶບອອກກໍໄດ້.</translation>
 <translation id="6047927260846328439">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">ກົດ |<ph name="ACCELERATOR" />| ຄ້າງໄວ້ເພື່ອອອກຈາກໜ້າຈໍເຕັມ</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">ໜ້າທີ່ສະແດງ</translation>
 <translation id="6049975101166779351">ບໍລິການເບິ່ງແຍງເດັກນ້ອຍ</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">ຂີ່ເຮືອ</translation>
 <translation id="6272088941196661550">ສືບຕໍ່ບັນທຶກຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວທີ່ກ່ຽວຂ້ອງໃນປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">ກົດ |<ph name="ACCELERATOR" />| ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ</translation>
 <translation id="6280223929691119688">ບໍ່ສາມາດສົ່ງຫາທີ່ຢູ່ນີ້ໄດ້. ກະລຸນາເລືອກທີ່ຢູ່ອື່ນ.</translation>
 <translation id="6284292079994426700">26 x 38 ນິ້ວ</translation>
 <translation id="6284449872909111707">ຂໍ້ຄວາມ ແລະ ຂໍ້ຄວາມດ່ວນ</translation>
@@ -3755,7 +3748,6 @@
 <translation id="8241707690549784388">ໜ້າທີ່ທ່ານກໍາລັງຊອກຫາຂໍ້ມູນໃຊ້ແລ້ວທີ່ທ່ານປ້ອນເຂົ້າໄປ. ການກັບຄືນມາຫາໜ້ານັ້ນອາດຈະເຮັດໃຫ້ການກະທໍາໃດໜຶ່ງທີ່ທ່ານເຮັດແລ້ວຖືກເຮັດຊໍ້າຄືນ. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</translation>
 <translation id="8241712895048303527">ບລັອກໄວ້ໃນເວັບໄຊນີ້</translation>
 <translation id="8242426110754782860">ດຳ​ເນີນ​ຕໍ່</translation>
-<translation id="8245703462678310750">ກົດ |<ph name="ACCELERATOR" />| ຄ້າງໄວ້ເພື່ອອອກຈາກການສະແດງເຕັມຈໍ ແລະ ເບິ່ງການດາວໂຫຼດ.</translation>
 <translation id="8246482227229072868">ແຫວນ</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
 <translation id="824968735947741546">ກຳລັງແປພາສາ <ph name="SOURCE" /> (ກວດພົບອັດຕະໂນມັດ) ເປັນ <ph name="TARGET" /></translation>

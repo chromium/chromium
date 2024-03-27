@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Фильтры для воды и водоочистители</translation>
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
-<translation id="1036982837258183574">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1038842779957582377">неизвестное имя</translation>
 <translation id="1041998700806130099">Сообщение на листе задания</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Водные суда и судоходство</translation>
 <translation id="1283977499362032052">Резюме и портфолио</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
-<translation id="1288548991597756084">Храните данные карты в безопасности</translation>
 <translation id="1292571435393770077">Лоток 16</translation>
 <translation id="1292701964462482250">"ПО, установленное на компьютере, не позволяет Chrome безопасно подключиться к Интернету" (только для Windows)</translation>
 <translation id="1293797321964802402">Конверт 229 x 279 мм</translation>
@@ -276,7 +274,7 @@
 <translation id="1476595624592550506">Смените пароль</translation>
 <translation id="1482879811280872320">Езда на велосипеде</translation>
 <translation id="1483493594462132177">Отправить</translation>
-<translation id="1484449009683144042">Это экспериментальная функция для создания текстов с применением ИИ, которая не всегда дает правильный результат.
+<translation id="1484449009683144042">Это экспериментальная ИИ-функция для создания текстов, и она не всегда дает правильный результат.
     <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Обновление правил:</translation>
 <translation id="1495677929897281669">Вернуться на вкладку</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Эта ошибка может возникать при использовании портала Wi-Fi, для работы с которым требуется выполнить вход.&lt;/p&gt;
     &lt;p&gt;Чтобы устранить проблему, нажмите &lt;strong&gt;Подключиться&lt;/strong&gt; на нужной веб-странице.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Список записей из истории</translation>
-<translation id="1516097932025103760">Данные карты шифруются и хранятся в безопасности. CVC-код никогда не записывается.</translation>
 <translation id="151720253492607760">Оставить запрет</translation>
 <translation id="1517433312004943670">Укажите номер телефона</translation>
 <translation id="1519264250979466059">Дата сборки</translation>
@@ -1259,7 +1256,6 @@
 <translation id="342781501876943858">Chromium рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="3428151540071562330">Один или несколько серверных шаблонов URI DnsOverHttpsTemplates недействительны и не будут использоваться.</translation>
 <translation id="3428789896412418755">История с распределением по группам</translation>
-<translation id="3431216045099978607">Нажмите |<ph name="ACCELERATOR" />|, чтобы выйти из полноэкранного режима и посмотреть скачанные файлы.</translation>
 <translation id="3432601291244612633">Закрыть страницу</translation>
 <translation id="3433111389595862568">ПО для конференц-связи и совместной работы</translation>
 <translation id="3433144818443565002">Голосовой и видеочат</translation>
@@ -1986,7 +1982,6 @@
 <translation id="483241715238664915">Включить предупреждения</translation>
 <translation id="4832961164064927107">Барбекю и гриль</translation>
 <translation id="4834250788637067901">Способы оплаты, адреса и специальные предложения из Google Pay</translation>
-<translation id="4839087176073128681">Быстрее оплачивайте покупки и защищайте данные карты с помощью современных технологий безопасности Google.</translation>
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>
 <translation id="484462545196658690">Выбрать автоматически</translation>
 <translation id="484671803914931257">Получите скидку в магазине "<ph name="MERCHANT_NAME" />" и у других продавцов</translation>
@@ -2594,7 +2589,6 @@
 <translation id="6045164183059402045">Шаблон спуска полос</translation>
 <translation id="6047233362582046994">Если вы осознаете, что можете подвергнуть риску свои личные данные, то можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносных приложений.</translation>
 <translation id="6047927260846328439">Посещение этой страницы может привести к установке вредоносной программы или хищению вашей личной информации. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Чтобы выйти из полноэкранного режима, нажмите и удерживайте клавишу |<ph name="ACCELERATOR" />|</translation>
 <translation id="6049056807983403918">Конверт B4</translation>
 <translation id="6049488691372270142">Выдача страниц</translation>
 <translation id="6049975101166779351">Уход за ребенком</translation>
@@ -2713,7 +2707,6 @@
 <translation id="6270066318535733958">Лодочный спорт</translation>
 <translation id="6272088941196661550">Посмотреть похожие действия в истории Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Чтобы показать курсор, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Невозможно доставить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="6284292079994426700">26 x 38 дюймов</translation>
 <translation id="6284449872909111707">Текстовые и мгновенные сообщения</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">На странице, которую вы ищете, использовалась введенная вами информация. При возврате на эту страницу может потребоваться повторить выполненные ранее действия. Продолжить?</translation>
 <translation id="8241712895048303527">Блокировать на этом сайте</translation>
 <translation id="8242426110754782860">Продолжить</translation>
-<translation id="8245703462678310750">Чтобы выйти из полноэкранного режима и посмотреть скачанные файлы, нажмите и удерживайте |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8246482227229072868">Кольца</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="824968735947741546">Перевод: <ph name="SOURCE" /> (распознан автоматически) – <ph name="TARGET" /></translation>

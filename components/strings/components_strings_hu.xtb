@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vízszűrők és víztisztítók</translation>
 <translation id="1036348656032585052">Kikapcsolás</translation>
 <translation id="1036881361735705143">C4 boríték</translation>
-<translation id="1036982837258183574">A teljes képernyős nézetből való kilépéshez nyomja meg a következő billentyűt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="1038106730571050514">Javaslatok megjelenítése</translation>
 <translation id="1038842779957582377">Ismeretlen név</translation>
 <translation id="1041998700806130099">Munkalapi üzenet</translation>
@@ -160,7 +159,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1282358575813748144">Csónakok és vízi járművek</translation>
 <translation id="1283977499362032052">Önéletrajzok és portfóliók</translation>
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
-<translation id="1288548991597756084">Kártya biztonságos mentése</translation>
 <translation id="1292571435393770077">16. tálca</translation>
 <translation id="1292701964462482250">„A számítógépen található valamelyik szoftver megakadályozza a Chrome-ot abban, hogy biztonságosan csatlakozzon az internetre” (csak Windows rendszerű számítógépeken)</translation>
 <translation id="1293797321964802402">9 × 11 hüvelykes boríték</translation>
@@ -286,7 +284,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1507202001669085618">&lt;p&gt;Ez a hiba akkor fordul elő, ha olyan Wi-Fi-portált használ, amely bejelentkezést igényel, mielőtt kapcsolódna az internethez.&lt;/p&gt;
     &lt;p&gt;A hiba kijavításához kattintson a &lt;strong&gt;Csatlakozás&lt;/strong&gt; lehetőségre a megnyitni próbált oldalon.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Előzménybejegyzések listája</translation>
-<translation id="1516097932025103760">Titkosítja, biztonságos helyre menti, a CVC-t pedig nem tárolja a rendszer.</translation>
 <translation id="151720253492607760">Engedélyezés továbbra sem</translation>
 <translation id="1517433312004943670">Telefonszám szükséges</translation>
 <translation id="1519264250979466059">Build dátuma</translation>
@@ -1258,7 +1255,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="342781501876943858">A Chromium azt javasolja, hogy adjon meg új jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
 <translation id="3428151540071562330">A DnsOverHttpsTemplates szerversablon-URI-k közül legalább egy érvénytelen, és nem használható.</translation>
 <translation id="3428789896412418755">Csoportosított előzmények</translation>
-<translation id="3431216045099978607">Nyomja meg a(z) |<ph name="ACCELERATOR" />| gombot a teljes képernyős nézetből való kilépéshez és a letöltés megjelenítéséhez.</translation>
 <translation id="3432601291244612633">Oldal bezárása</translation>
 <translation id="3433111389595862568">Együttműködési és konferenciaszoftverek</translation>
 <translation id="3433144818443565002">Audio- és videocsevegés</translation>
@@ -1985,7 +1981,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="483241715238664915">Figyelmeztetések bekapcsolása</translation>
 <translation id="4832961164064927107">Barbecue és grillezés</translation>
 <translation id="4834250788637067901">A Google Pay szolgáltatásban használt fizetési módok, ajánlatok és címek</translation>
-<translation id="4839087176073128681">Fizessen gyorsabban legközelebb, és védje meg kártyáját a Google iparági szinten vezető biztonsági megoldásával.</translation>
 <translation id="4840250757394056958">Chrome-előzmények megtekintése</translation>
 <translation id="484462545196658690">Automatikus</translation>
 <translation id="484671803914931257">Kedvezmények <ph name="MERCHANT_NAME" /> keresekedőnél és másoknál</translation>
@@ -2593,7 +2588,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6045164183059402045">Ráhelyezési sablon</translation>
 <translation id="6047233362582046994">Ha tisztában van a biztonságát fenyegető kockázatokkal, a káros alkalmazások eltávolítása előtt is <ph name="BEGIN_LINK" />felkeresheti ezt a webhelyet<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">Lehet, hogy ez a tartalom megpróbálja rávenni Önt szoftver telepítésére vagy személyes adatok kiadására. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" />.</translation>
-<translation id="6049004884579590341">Tartsa lenyomva a(z) |<ph name="ACCELERATOR" />| gombot a teljes képernyős mód elhagyásához</translation>
 <translation id="6049056807983403918">B4 boríték</translation>
 <translation id="6049488691372270142">Oldalkézbesítés</translation>
 <translation id="6049975101166779351">Gyermekgondozás</translation>
@@ -2712,7 +2706,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6270066318535733958">Csónakázás</translation>
 <translation id="6272088941196661550">Utazás folytatása a Chrome-előzmények között található releváns tevékenységek megtekintéséhez</translation>
 <translation id="6272383483618007430">Google Frissítés</translation>
-<translation id="6279183038361895380">Az egérmutató megjelenítéséhez nyomja meg a következő billentyűt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Erre a címre nem lehetséges a kézbesítés. Válasszon másik címet.</translation>
 <translation id="6284292079994426700">26 × 38 hüvelyk</translation>
 <translation id="6284449872909111707">Szöveges és azonnali üzenetek</translation>
@@ -3753,7 +3746,6 @@ További részletek:
 <translation id="8241707690549784388">A keresett oldal a megadott információt használta. Ha visszatér arra az oldalra, akkor lehet, hogy az egyszer már megtett mozdulatok ismétlésre kerülnek. Mégis továbblép?</translation>
 <translation id="8241712895048303527">Letiltás ezen a webhelyen</translation>
 <translation id="8242426110754782860">Folytatás</translation>
-<translation id="8245703462678310750">Tartsa lenyomva a(z) |<ph name="ACCELERATOR" />| gombot a teljes képernyős nézetből való kilépéshez és a letöltés megjelenítéséhez.</translation>
 <translation id="8246482227229072868">Körök</translation>
 <translation id="8249296373107784235">Megszakítás</translation>
 <translation id="824968735947741546">A(z) <ph name="SOURCE" /> nyelv automatikus fordítása <ph name="TARGET" /> nyelvre</translation>

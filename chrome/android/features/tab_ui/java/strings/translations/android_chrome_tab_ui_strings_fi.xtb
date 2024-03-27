@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
+<translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Luotu <ph name="NUM_MONTHS_ONE" /> kuukausi sitten}other{Luotu <ph name="NUM_MONTHS_MANY" /> kuukautta sitten}}</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>

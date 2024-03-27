@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{የተመረጠ <ph name="TABS_COUNT_ONE" /> ትር ዝጋ}one{የተመረጡ <ph name="TABS_COUNT_MANY" /> ትሮችን ዝጋ}other{የተመረጡ <ph name="TABS_COUNT_MANY" /> ትሮችን ዝጋ}}</translation>
 <translation id="8398929769197326728">አዲስ አቃፊ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">ዝቅተኛ ዋጋ</translation>
+<translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8730999928494395583">በእነዚህ ማንነትን የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይወገዳል</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_MONTHS_ONE" /> ወር በፊት የተፈጠረ}one{ከ<ph name="NUM_MONTHS_MANY" /> ወር በፊት የተፈጠረ}other{ከ<ph name="NUM_MONTHS_MANY" /> ወሮች በፊት የተፈጠረ}}</translation>
 <translation id="8820741577754260431">በትሮችዎ ላይ የዋጋ ቅነሳዎችን ይመልከቱ</translation>

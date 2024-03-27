@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Waterfilters en -zuiveraars</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1036881361735705143">Envelop C4</translation>
-<translation id="1036982837258183574">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten</translation>
 <translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
@@ -160,7 +159,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1282358575813748144">Boten en vaartuigen</translation>
 <translation id="1283977499362032052">CV's en portfolio's</translation>
 <translation id="1285320974508926690">Deze site nooit vertalen</translation>
-<translation id="1288548991597756084">Kaart beveiligd opslaan</translation>
 <translation id="1292571435393770077">Lade 16</translation>
 <translation id="1292701964462482250">'Software op je computer voorkomt dat Chrome veilig verbinding kan maken met internet' (alleen Windows-computers)</translation>
 <translation id="1293797321964802402">Envelop 9 x 11 inch</translation>
@@ -286,7 +284,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1507202001669085618">&lt;p&gt;J​e ​zi​et​ d​ez​e ​fo​ut​ a​ls​ j​e ​ee​n ​wi​fi​-p​or​ta​l ​ge​br​ui​kt​ w​aa​ro​p ​je​ m​oe​t ​in​lo​gg​en​ v​oo​rd​at​ j​e ​on​li​ne​ k​un​t ​ga​an​.&lt;/p&gt;
    &lt;p&gt;​K​li​k ​op​ &lt;​st​ro​ng​&gt;V​er​bi​nd​in​g ​ma​ke​n&lt;​/s​tr​on​g&gt;​ o​p ​de​ p​ag​in​a ​di​e ​je​ p​ro​be​er​t ​te​ o​pe​ne​n ​om​ d​ez​e ​fo​ut​ o​p ​te​ l​os​se​n.​&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lijst met geschiedenisitems</translation>
-<translation id="1516097932025103760">De kaart wordt versleuteld en beveiligd opgeslagen en de CVC wordt nooit opgeslagen.</translation>
 <translation id="151720253492607760">Doorgaan met niet toestaan</translation>
 <translation id="1517433312004943670">Telefoonnummer vereist</translation>
 <translation id="1519264250979466059">Datum van build</translation>
@@ -1257,7 +1254,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="342781501876943858">Chromium raadt je aan je wachtwoord te resetten als je het voor andere sites hebt hergebruikt.</translation>
 <translation id="3428151540071562330">Een of meer van de servertemplate-URI's voor DnsOverHttpsTemplates zijn ongeldig en worden niet gebruikt.</translation>
 <translation id="3428789896412418755">Gegroepeerde geschiedenis</translation>
-<translation id="3431216045099978607">Druk op |<ph name="ACCELERATOR" />| om het volledige scherm te sluiten en de download te bekijken.</translation>
 <translation id="3432601291244612633">Pagina sluiten</translation>
 <translation id="3433111389595862568">Samenwerkings- en conferentiesoftware</translation>
 <translation id="3433144818443565002">Spraak- en videochat</translation>
@@ -1982,7 +1978,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="483241715238664915">Waarschuwingen aanzetten</translation>
 <translation id="4832961164064927107">Barbecue en grillen</translation>
 <translation id="4834250788637067901">Betaalmethoden, aanbiedingen en adressen via Google Pay</translation>
-<translation id="4839087176073128681">Betaal de volgende keer sneller en bescherm je kaart met de toonaangevende beveiliging van Google.</translation>
 <translation id="4840250757394056958">Je Chrome-geschiedenis bekijken</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Krijg korting bij onder andere <ph name="MERCHANT_NAME" /></translation>
@@ -2590,7 +2585,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6045164183059402045">Plaatsingstemplate</translation>
 <translation id="6047233362582046994">Als je de beveiligingsrisico's begrijpt, kun je <ph name="BEGIN_LINK" />deze site bezoeken<ph name="END_LINK" /> voordat de schadelijke apps zijn verwijderd.</translation>
 <translation id="6047927260846328439">Deze content probeert je mogelijk te misleiden om software te installeren of persoonlijke informatie openbaar te maken. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Houd |<ph name="ACCELERATOR" />| ingedrukt om volledig scherm af te sluiten</translation>
 <translation id="6049056807983403918">Envelop B4</translation>
 <translation id="6049488691372270142">Pagina-uitvoer</translation>
 <translation id="6049975101166779351">Kinderverzorging</translation>
@@ -2708,7 +2702,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6270066318535733958">Roeien en zeilen</translation>
 <translation id="6272088941196661550">Hervat je traject om relevante activiteit in je Chrome-geschiedenis te bekijken</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Druk op |<ph name="ACCELERATOR" />| om je cursor te bekijken</translation>
 <translation id="6280223929691119688">Kan niet bezorgen op dit adres. Selecteer een ander adres.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
 <translation id="6284449872909111707">Sms en chatten</translation>
@@ -3749,7 +3742,6 @@ Aanvullende informatie:
 <translation id="8241707690549784388">De pagina die je zoekt, heeft informatie gebruikt die je hebt opgegeven Als je terugkeert naar deze pagina, worden acties die je hebt uitgevoerd, mogelijk herhaald. Wil je doorgaan?</translation>
 <translation id="8241712895048303527">Blokkeren op deze site</translation>
 <translation id="8242426110754782860">Doorgaan</translation>
-<translation id="8245703462678310750">Houd |<ph name="ACCELERATOR" />| ingedrukt om het volledige scherm te sluiten en de download te bekijken.</translation>
 <translation id="8246482227229072868">Ringen</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (automatisch gedetecteerd) vertalen naar het <ph name="TARGET" /></translation>

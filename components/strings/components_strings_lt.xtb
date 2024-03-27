@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vandens filtrai ir valytuvai</translation>
 <translation id="1036348656032585052">Išjungti</translation>
 <translation id="1036881361735705143">C4 vokas</translation>
-<translation id="1036982837258183574">Paspauskite |<ph name="ACCELERATOR" />|, kad išeitumėte iš viso ekrano režimo</translation>
 <translation id="1038106730571050514">Rodyti pasiūlymus</translation>
 <translation id="1038842779957582377">nežinomas pavadinimas</translation>
 <translation id="1041998700806130099">Užduoties lapo pranešimas</translation>
@@ -160,7 +159,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1282358575813748144">Valtys ir laivai</translation>
 <translation id="1283977499362032052">Gyvenimo aprašymai ir portfeliai</translation>
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
-<translation id="1288548991597756084">Patikima kortelės duomenų apsauga</translation>
 <translation id="1292571435393770077">Šešioliktas dėklas</translation>
 <translation id="1292701964462482250">„Programinė įranga jūsų kompiuteryje neleidžia „Chrome“ saugiai prisijungti prie žiniatinklio“ (tik „Windows“ kompiuteriuose)</translation>
 <translation id="1293797321964802402">9 x 11 col. vokas</translation>
@@ -286,7 +284,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1507202001669085618">&lt;p&gt;Ši klaida rodoma, jei naudojate „Wi-Fi“ portalą, prie kurio reikia prisijungti, kad galėtumėte naudotis internetu.&lt;/p&gt;
     &lt;p&gt;Kad ištaisytumėte šią klaidą, puslapyje, kurį bandote atidaryti, spustelėkite &lt;strong&gt;Prisijungti&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Istorijos įrašų sąrašas</translation>
-<translation id="1516097932025103760">Ji bus užšifruota, patikimai saugoma, o kortelės saugos kodas (CVC) niekada nesaugomas.</translation>
 <translation id="151720253492607760">Toliau neleisti</translation>
 <translation id="1517433312004943670">Būtinas telefono numeris</translation>
 <translation id="1519264250979466059">Sukūrimo data</translation>
@@ -1261,7 +1258,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="342781501876943858">„Chromium“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="3428151540071562330">Vienas arba keli „DnsOverHttpsTemplates“ serverio šablono URI yra netinkami ir nebus naudojami.</translation>
 <translation id="3428789896412418755">Sugrupuota istorija</translation>
-<translation id="3431216045099978607">Paspauskite „|<ph name="ACCELERATOR" />|“, jei norite išeiti iš viso ekrano režimo ir peržiūrėti atsisiuntimą.</translation>
 <translation id="3432601291244612633">Uždaryti puslapį</translation>
 <translation id="3433111389595862568">Bendradarbiavimo ir konferencijų programinė įranga</translation>
 <translation id="3433144818443565002">Balso ir vaizdo pokalbiai</translation>
@@ -1988,7 +1984,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="483241715238664915">Įjungti įspėjimus</translation>
 <translation id="4832961164064927107">Kepsniai ir kepimas ant grotelių</translation>
 <translation id="4834250788637067901">Mokėjimo metodai, pasiūlymai ir adresai naudojant „Google Pay“</translation>
-<translation id="4839087176073128681">Sparčiau mokėkite kitą kartą ir apsaugokite kortelę naudodami geriausias šiame sektoriuje „Google“ saugos priemones.</translation>
 <translation id="4840250757394056958">Peržiūrėti „Chrome“ istoriją</translation>
 <translation id="484462545196658690">Automatiškai</translation>
 <translation id="484671803914931257">Gaukite nuolaidą iš „<ph name="MERCHANT_NAME" />“ ir kt.</translation>
@@ -2596,7 +2591,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6045164183059402045">Paskyrimo šablonas</translation>
 <translation id="6047233362582046994">Jei suprantate, kokia rizika gali kilti jūsų saugai, galite <ph name="BEGIN_LINK" />apsilankyti šioje svetainėje<ph name="END_LINK" />, kol iš jos dar nepašalintos kenkėjiškos programos.</translation>
 <translation id="6047927260846328439">Šiuo turiniu gali būti bandoma apgaule priversti jus įdiegti programinę įrangą arba atskleisti asmens informaciją. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Paspauskite ir palaikykite |<ph name="ACCELERATOR" />|, kad išeitumėte iš viso ekrano režimo.</translation>
 <translation id="6049056807983403918">B4 vokas</translation>
 <translation id="6049488691372270142">Puslapių teikimas</translation>
 <translation id="6049975101166779351">Vaikų priežiūra</translation>
@@ -2715,7 +2709,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6270066318535733958">Valčių sportas</translation>
 <translation id="6272088941196661550">Tęsti veiksmus, norint matyti atitinkamą veiklą „Chrome“ istorijoje</translation>
 <translation id="6272383483618007430">„Google“ naujinys</translation>
-<translation id="6279183038361895380">Paspauskite |<ph name="ACCELERATOR" />|, kad būtų rodomas žymeklis</translation>
 <translation id="6280223929691119688">Negalima pristatyti šiuo adresu. Pasirinkite kitą adresą.</translation>
 <translation id="6284292079994426700">26 x 38 col.</translation>
 <translation id="6284449872909111707">Teksto ir tikralaikio pokalbio žinutės</translation>
@@ -3756,7 +3749,6 @@ Papildoma išsami informacija:
 <translation id="8241707690549784388">Jūsų ieškomas puslapis ieškojo informacijos, kurią įvedėte. Grįžus į tą puslapį bet kokie jūsų atliekami veiksmai gali būti kartojami. Ar norite tęsti?</translation>
 <translation id="8241712895048303527">Blokuoti šioje svetainėje</translation>
 <translation id="8242426110754782860">Tęsti</translation>
-<translation id="8245703462678310750">Paspauskite ir palaikykite „|<ph name="ACCELERATOR" />|“, jei norite išeiti iš viso ekrano režimo ir peržiūrėti atsisiuntimą.</translation>
 <translation id="8246482227229072868">Žiedai</translation>
 <translation id="8249296373107784235">Nutraukti</translation>
 <translation id="824968735947741546">Verčiama iš <ph name="SOURCE" /> (automatiškai aptinkama) į <ph name="TARGET" /></translation>

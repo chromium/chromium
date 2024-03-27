@@ -301,6 +301,7 @@
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="2652403576514495859">включить или отключить голосовой ввод</translation>
+<translation id="2653659639078652383">Отправить</translation>
 <translation id="2656001153562991489">Только для Chromebook Plus</translation>
 <translation id="2665671725390405060">Озвучить произношение</translation>
 <translation id="267442004702508783">обновить</translation>
@@ -469,6 +470,7 @@
 <translation id="3877066159641251281">Озвучить перевод</translation>
 <translation id="3885327323343477505">Изменить заставку</translation>
 <translation id="3889914174935857450">Дата сброса данных</translation>
+<translation id="3897092660631435901">Меню</translation>
 <translation id="391412459402535266">Не удается протестировать устройство. Перейдите в режим ноутбука.</translation>
 <translation id="3916998944874125962">сделать скриншот</translation>
 <translation id="3923184630988645767">Передача данных</translation>
@@ -752,6 +754,7 @@
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5588233547254916455">Буквы</translation>
 <translation id="5595623927872580850">серый</translation>
+<translation id="5596627076506792578">Ещё</translation>
 <translation id="5600027863942488546">Клавиша <ph name="KEY_NAME" /> протестирована</translation>
 <translation id="5620281292257375798">Конфиденциально</translation>
 <translation id="5630438231335788050">баухаус</translation>

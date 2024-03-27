@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>
+<translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8730999928494395583">Η δραστηριότητά σας σε αυτές τις καρτέλες ανώνυμης περιήγησης θα καταργηθεί από αυτήν τη συσκευή.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_MONTHS_ONE" /> μήνα}other{Δημιουργήθηκε πριν από <ph name="NUM_MONTHS_MANY" /> μήνες}}</translation>
 <translation id="8820741577754260431">Δείτε πτώσεις τιμών στις καρτέλες σας.</translation>

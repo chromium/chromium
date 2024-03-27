@@ -727,6 +727,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="47677902929517676">Untuk menyimpan kata laluan ini dalam akaun anda, anda mestilah menetapkan kod laluan pada peranti anda dahulu.</translation>
 <translation id="4775879719735953715">Penyemak Imbas Lalai</translation>
 <translation id="4779732376610430319">Akses Tetapan...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buka dalam Inkognito?</translation>
 <translation id="4803185665210547709">Diurus oleh organisasi anda.
 <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -835,6 +836,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5283494734135414249">Ketik pintasan yang dipaparkan di bawah bar alamat.</translation>
 <translation id="5295239312320826323">Alih keluar akaun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Paparkan</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> daripada <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda telah menjejaki produk ini.</translation>
 <translation id="5327753393331509826">Dapatkan Pemberitahuan Kandungan</translation>

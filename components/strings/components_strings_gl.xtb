@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filtros e purificadores de auga</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
-<translation id="1036982837258183574">Preme |<ph name="ACCELERATOR" />| para saír da pantalla completa</translation>
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
@@ -160,7 +159,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1282358575813748144">Barcos e embarcacións</translation>
 <translation id="1283977499362032052">Currículos e carteiras</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
-<translation id="1288548991597756084">Garda a tarxeta de forma segura</translation>
 <translation id="1292571435393770077">Bandexa 16</translation>
 <translation id="1292701964462482250">"Hai software no teu ordenador que está evitando que Chrome se conecte de forma segura á web" (só para ordenadores con Windows)</translation>
 <translation id="1293797321964802402">Sobre 9 x 11 polgadas</translation>
@@ -286,7 +284,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1507202001669085618">&lt;p&gt;Verás este erro se utilizas un portal wifi no que tes que iniciar sesión para poder conectarte a Internet.&lt;/p&gt;
     &lt;p&gt;Para solucionar o erro, fai clic en &lt;strong&gt;Conectar&lt;/strong&gt; na páxina que tentas abrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista de entradas do historial</translation>
-<translation id="1516097932025103760">Encriptarase e gardarase de forma segura. O CVC nunca se almacena.</translation>
 <translation id="151720253492607760">Continuar sen conceder permiso</translation>
 <translation id="1517433312004943670">O número de teléfono é obrigatorio</translation>
 <translation id="1519264250979466059">Data de compilación</translation>
@@ -1260,7 +1257,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="342781501876943858">Chromium recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="3428151540071562330">Un ou varios URI do modelo do servidor DnsOverHttpsTemplates non son válidos e non se utilizarán.</translation>
 <translation id="3428789896412418755">Historial agrupado</translation>
-<translation id="3431216045099978607">Preme |<ph name="ACCELERATOR" />| para saír de pantalla completa e ver a descarga.</translation>
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3433111389595862568">Software de colaboración e conferencia</translation>
 <translation id="3433144818443565002">Chat de voz e vídeo</translation>
@@ -1987,7 +1983,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Grelladas e churrascadas</translation>
 <translation id="4834250788637067901">Métodos de pago, ofertas e enderezos que usan Google Pay</translation>
-<translation id="4839087176073128681">Paga máis rápido a próxima vez e protexe a tarxeta coas medidas de seguranza de Google líderes no sector.</translation>
 <translation id="4840250757394056958">Ver historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="484671803914931257">Obtén un desconto en <ph name="MERCHANT_NAME" /> e noutros comerciantes</translation>
@@ -2595,7 +2590,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6045164183059402045">Modelo de imposición</translation>
 <translation id="6047233362582046994">Se aceptas os riscos para a túa seguranza, podes <ph name="BEGIN_LINK" />acceder a este sitio<ph name="END_LINK" /> antes de que se eliminen as aplicacións prexudiciais.</translation>
 <translation id="6047927260846328439">É posible que con este contido se pretenda enganarte para instalar software ou revelar información persoal. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Mantén premida a tecla |<ph name="ACCELERATOR" />| para saír do modo de pantalla completa</translation>
 <translation id="6049056807983403918">Sobre B4</translation>
 <translation id="6049488691372270142">Entrega da páxina</translation>
 <translation id="6049975101166779351">Coidado de nenos</translation>
@@ -2714,7 +2708,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6270066318535733958">Actividades en barco</translation>
 <translation id="6272088941196661550">Retomar o percorrido para ver a actividade relevante do teu historial de Chrome</translation>
 <translation id="6272383483618007430">Actualización de Google</translation>
-<translation id="6279183038361895380">Preme |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
 <translation id="6280223929691119688">Non se pode realizar a entrega neste enderezo. Selecciona un diferente.</translation>
 <translation id="6284292079994426700">26 × 38 in</translation>
 <translation id="6284449872909111707">Mensaxaría instantánea e de texto</translation>
@@ -3755,7 +3748,6 @@ Detalles adicionais:
 <translation id="8241707690549784388">A páxina que estás buscando utilizou información que inseriches ti. Se volves a esa páxina é posible que se repita algunha das accións que levaches a cabo. Queres continuar?</translation>
 <translation id="8241712895048303527">Bloquear neste sitio</translation>
 <translation id="8242426110754782860">Continuar</translation>
-<translation id="8245703462678310750">Mantén premido |<ph name="ACCELERATOR" />| para saír da pantalla completa e ver a descarga.</translation>
 <translation id="8246482227229072868">Aneis</translation>
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="824968735947741546">Traducindo de <ph name="SOURCE" /> (detectado automaticamente) a <ph name="TARGET" /></translation>

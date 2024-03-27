@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
+<translation id="8730621377337864115">Tapos na</translation>
 <translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ginawa <ph name="NUM_MONTHS_ONE" /> buwan ang nakalipas}one{Ginawa <ph name="NUM_MONTHS_MANY" /> buwan ang nakalipas}other{Ginawa <ph name="NUM_MONTHS_MANY" /> na buwan ang nakalipas}}</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>

@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব বন্ধ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}}</translation>
 <translation id="8398929769197326728">নতুন ফ’ল্ডাৰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">কম মূল্য</translation>
+<translation id="8730621377337864115">হ’ল</translation>
 <translation id="8730999928494395583">এই ইনক’গনিট’ টেবসমূহত আপুনি কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_MONTHS_MANY" /> মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_MONTHS_MANY" /> মাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="8820741577754260431">আপোনাৰ টেবসমূহত মূল্য কমাৰ বিষয়ে তথ্য চাওক</translation>

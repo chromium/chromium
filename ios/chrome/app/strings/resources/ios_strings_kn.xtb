@@ -631,6 +631,7 @@
 <translation id="4282944936010261425">ನೀವು ಸರಿಪಡಿಸುವ ಯಾವುದೇ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಲ್ಲ.</translation>
 <translation id="4286718549648564014">ವಿಳಾಸವನ್ನು ನಿಮ್ಮ ಖಾತೆಗೆ ಸರಿಸಲಾಗಿದೆ <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">ಹೊಸತೇನಿದೆ</translation>
+<translation id="429074084062258019">{count,plural, =1{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="4293080268407233932">ಹುಡುಕಾಟ</translation>
 <translation id="4302248187517737842">ಯಾವುದೇ ಬಳಕೆದಾರರ ಹೆಸರಿಲ್ಲ ••••••••</translation>
 <translation id="4302415908542657649">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7524055474074101597">ಆ್ಯಪ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
 <translation id="7527917367892640435">ಪ್ಯಾಕೇಜ್ ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7531345132340165516">ಪ್ರಸ್ತುತ ಸೈಟ್</translation>
+<translation id="75362970626182391">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="7537586195939242955">ಕ್ಷಮಿಸಿ, ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್ ಅನ್ನು ಪಾಸ್‌ಬುಕ್‌ನಲ್ಲಿ ಸ್ಥಾಪಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> ಸಮಯಕ್ಕೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> ನಲ್ಲಿ ಬಳಸಲಾದ ಕೊನೆಯ ಟ್ಯಾಬ್</translation>

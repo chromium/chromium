@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Ус шүүгч болон цэвэршүүлэгчид</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1036881361735705143">Дугтуй C4</translation>
-<translation id="1036982837258183574">Бүтэн дэлгэцээс гарах бол |<ph name="ACCELERATOR" />|-г дарна уу</translation>
 <translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
 <translation id="1041998700806130099">Ажлын хүснэгтийн мессеж</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Завь болон хөлөг онгоц</translation>
 <translation id="1283977499362032052">Ажлын анкет болон портфолионууд</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
-<translation id="1288548991597756084">Картыг аюулгүй хадгалах</translation>
 <translation id="1292571435393770077">Тавиур 16</translation>
 <translation id="1292701964462482250">"Таны компьютер дээрх программ хангамж Chrome-г вебэд аюулгүй холбогдохыг зогсоож байна" (зөвхөн Windows компьютерт боломжтой)</translation>
 <translation id="1293797321964802402">Дугтуй 9 x 11 инч</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Хэрэв та онлайн болохоосоо өмнө нэвтрэх шаардлагатай Wi-Fi портал ашиглаж байгаа бол тус алдааг харах болно.&lt;/p&gt;
     &lt;p&gt;Алдааг засахын тулд нээхийг оролдож буй нүүр хуудасны &lt;strong&gt;Холбогдох&lt;/strong&gt; гэснийг товшино уу.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Түүхийн жагсаалт</translation>
-<translation id="1516097932025103760">Энэ нь шифрлэгдсэн, найдвартай хадгалагдсан ба Карт баталгаажуулалтын код хэзээ ч хадгалагдаггүй.</translation>
 <translation id="151720253492607760">Үргэлжлүүлэн зөвшөөрөхгүй байх</translation>
 <translation id="1517433312004943670">Утасны дугаар шаардлагатай</translation>
 <translation id="1519264250979466059">Огноо суулгах</translation>
@@ -1261,7 +1258,6 @@
 <translation id="342781501876943858">Хэрэв та нууц үгээ бусад сайтад дахин ашигласан бол Chromium-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates серверийн загварын нэг буюу түүнээс олон URI нь буруу байгаа бөгөөд тэднийг ашиглахгүй.</translation>
 <translation id="3428789896412418755">Бүлэглэсэн түүх</translation>
-<translation id="3431216045099978607">|<ph name="ACCELERATOR" />| дарж бүтэн дэлгэцээс гарах ба татаж авахыг харна уу.</translation>
 <translation id="3432601291244612633">Хуудсыг хаах</translation>
 <translation id="3433111389595862568">Хамтын ажиллагаа болон хурлын программ хангамж</translation>
 <translation id="3433144818443565002">Дуут болон видео чат</translation>
@@ -1988,7 +1984,6 @@
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4832961164064927107">BBQ, мах шарах</translation>
 <translation id="4834250788637067901">Google Pay-г ашиглаж буй төлбөрийн хэрэгсэл, санал болон хаяг</translation>
-<translation id="4839087176073128681">Дараагийн удаа илүү хурдан төлж, Google-н салбартаа тэргүүлэгч хамгаалалтаар картаа хамгаалаарай.</translation>
 <translation id="4840250757394056958">Chrome-н түүхээ үзэх</translation>
 <translation id="484462545196658690">Автомат</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> болон бусад худалдаачны хөнгөлөлт аваарай</translation>
@@ -2596,7 +2591,6 @@
 <translation id="6045164183059402045">Байршуулах загвар</translation>
 <translation id="6047233362582046994">Таны аюулгүй байдалд гарч болох эрсдлийг ойлгож байгаа бол аюултай аппыг устгахаас өмнө <ph name="BEGIN_LINK" />энэ сайтад зочилно уу<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">Энэ агуулга танаар программ суулгуулах эсвэл таны хувийн мэдээллийг авах зорилгоор таныг мэхэлж болзошгүй. <ph name="BEGIN_LINK" />Ямартай ч харуулна уу<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Бүтэн дэлгэцээс гарах бол |<ph name="ACCELERATOR" />|-г удаан дарна уу</translation>
 <translation id="6049056807983403918">Дугтуй B4</translation>
 <translation id="6049488691372270142">Цаасны гаралт</translation>
 <translation id="6049975101166779351">Хүүхдийн асаргаа</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">Завиар явах</translation>
 <translation id="6272088941196661550">Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд аяллаа үргэлжлүүлнэ үү</translation>
 <translation id="6272383483618007430">Google Шинэчлэл</translation>
-<translation id="6279183038361895380">Курсороо харуулахын тулд |<ph name="ACCELERATOR" />|-г дарна уу</translation>
 <translation id="6280223929691119688">Энэ хаяг руу хүргэх боломжгүй тул өөр хаяг сонгоно уу.</translation>
 <translation id="6284292079994426700">26 x 38 инч</translation>
 <translation id="6284449872909111707">Мессеж, шуурхай мессеж</translation>
@@ -3755,7 +3748,6 @@
 <translation id="8241707690549784388">Таны хайж буй хуудас нь таны оруулсан мэдээллийг ашиглаж байна.  Энэ хуудас руу буцсанаар та хийсэн үйлдлээ дахин давтах хэрэгтэй болж магадгүй. Та үргэлжлүүлэхийг хүсч байна уу?</translation>
 <translation id="8241712895048303527">Энэ сайтад блоклох</translation>
 <translation id="8242426110754782860">Үргэлжлүүлнэ үү</translation>
-<translation id="8245703462678310750">|<ph name="ACCELERATOR" />|-г удаан дарж бүтэн дэлгэцээс гарах ба татаж авахыг харна уу.</translation>
 <translation id="8246482227229072868">Бөгжнүүд</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="824968735947741546"><ph name="SOURCE" />-с (автоматаар илрүүлсэн) <ph name="TARGET" /> руу орчуулж байна</translation>

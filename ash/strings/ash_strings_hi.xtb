@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">आपके फ़ोन में मोबाइल नेटवर्क उपलब्ध नहीं है</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> पर स्क्रीन शेयर कर रहा है</translation>
 <translation id="1885785240814121742">फ़िंगरप्रिंट से अनलॉक करें</translation>
+<translation id="1904997243703671177">ब्लूटूथ बंद करने पर, <ph name="DEVICE_COUNT" /> बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएंगे. इनमें ये डिवाइस भी शामिल हैं:</translation>
 <translation id="1908992311423394684">अभी इंस्टॉल किया गया है</translation>
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1918022425394817322">कैमरा इनपुट की झलक, अब ऊपर दाएं कोने में दिखेगी</translation>
@@ -958,6 +959,7 @@
 <translation id="4813311884204119883">लिंक को टैब बार पर, खाली जगह में खींचें और छोड़ें</translation>
 <translation id="4814539958450445987">लॉगिन स्क्रीन</translation>
 <translation id="481455355267255546">आने वाले दिनों में होने वाले इवेंट</translation>
+<translation id="481749895090480684">टास्क की सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">कैमरा और माइक्रोफ़ोन</translation>
 <translation id="482908187605862807">Play Store पर उपलब्ध ऐप्लिकेशन</translation>
 <translation id="4831034276697007977">क्या आप वाकई अपने-आप क्लिक होने की सुविधा बंद करना चाहते हैं?</translation>
@@ -999,6 +1001,7 @@
 <translation id="4952936045814352993">अलार्म की आवाज़ें बंद करने पर, फ़ोन का पता लगाने की सुविधा उपलब्ध नहीं होती</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अपने <ph name="DEVICE_TYPE" /> को पिछले वर्शन पर रोल बैक करें. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
+<translation id="4964188651935955085">ब्लूटूथ बंद करने पर, यह बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएगा:</translation>
 <translation id="4966431234408005599">आवाज़ बढ़ाएं</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />घं॰ <ph name="MINUTES" />मि॰ <ph name="SECONDS" />से॰</translation>
 <translation id="4975771730019223894">ऐप बैजिंग</translation>
@@ -1825,6 +1828,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> के लिए, जानकारी वाला डायलॉग खोलें.</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> का इस्तेमाल किया जा रहा है</translation>
 <translation id="8185090165691050712">मेन्यू को चालू या बंद करने के लिए, ताकि लॉक मोड का साइज़ बदला जा सके</translation>
+<translation id="8192727139462702395">ब्लूटूथ बंद करने पर, ये बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएंगे:</translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8203795194971602413">राइट क्लिक करें</translation>

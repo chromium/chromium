@@ -1277,7 +1277,7 @@
 <translation id="1949332606889020901">କ୍ରାସ IDଗୁଡ଼ିକ</translation>
 <translation id="1949584741547056205">ଦ୍ରୁତ ଉତ୍ତରଗୁଡ଼ିକ</translation>
 <translation id="1949849604471335579">ୱାଲପେପର, ସ୍କ୍ରିନ ସେଭର, ଆକ୍ସେଣ୍ଟ ରଙ୍ଗ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ପର୍ସନାଲାଇଜ କରନ୍ତୁ</translation>
-<translation id="1949980990364952348">ଆପ୍‌ର ନାମ</translation>
+<translation id="1949980990364952348">ଆପର ନାମ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">USB ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ କରିବାକୁ ସାଇଟଗୁଡ଼ିକ ପଚାରିପାରିବ</translation>
 <translation id="1954813140452229842">ସେୟାର୍ ଖଞ୍ଜିବାରେ ତ୍ରୁଟି। ଦୟାକରି ଆପଣଙ୍କର କ୍ରେଡେନ୍ସିଆଲ୍ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -1676,7 +1676,6 @@
 <translation id="2252017960592955005">ଦେଖିବା ସୁରକ୍ଷା (ବିଟା)</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> ପାଇଁ PPD ରିଟ୍ରିଭ କରିବାରେ ଅସମର୍ଥ।</translation>
 <translation id="2253927598983295051"><ph name="APP_NAME" /> ସହ କଣ ସେୟାର କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
-<translation id="2254263139042585032">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ପାସୱାର୍ଡ ଏବଂ ପାସକୀ'ଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="2255077166240162850">ଏହି ଡିଭାଇସ୍‌ ବିଭିନ୍ନ ଡୋମେନ୍‌ କିମ୍ବା ମୋଡ୍‌ରେ ଲକ୍‌ କରାଯାଇଥିଲା।</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
@@ -2603,7 +2602,7 @@
 <translation id="2932483646085333864">ସିଙ୍କ୍‍ ଆରମ୍ଭ କରିବାକୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରନ୍ତୁ, ଏହାପରେ ସାଇନ୍‍ ଇନ୍‍ କରନ୍ତୁ</translation>
 <translation id="2932883381142163287">ନିର୍ଯ୍ୟାତନାର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2933632078076743449">ଗତ ଅପଡେଟ୍</translation>
-<translation id="2934225044529065415">କେମେରାକୁ ଆକ୍ସେସ କରିପାରିବ ନାହିଁ</translation>
+<translation id="2934225044529065415">କେମେରାକୁ ଆକ୍ସେସ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="2935225303485967257">ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2935314715123552088">ସକ୍ରିୟ ଥିବା eSIM ପ୍ରୋଫାଇଲକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="2935654492420446828">ପରେ ଏକ ସ୍କୁଲ ଆକାଊଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
@@ -3397,6 +3396,7 @@
 <translation id="3577487026101678864">ଫାଇଲ ସିଙ୍କ ଚାଲୁ ଅଛି</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" />ର ହାର୍ଡୱେର ଡାଟା ସଂଗ୍ରହ</translation>
 <translation id="3581605050355435601">IP ଠିକଣା ସ୍ୱଚାଳିତ ଭାବେ କନଫିଗର୍ କରନ୍ତୁ</translation>
+<translation id="3581861561942370740">ଡାଉନଲୋଡ ଇତିହାସ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3582057310199111521">ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଲେଖାଯାଇଛି ଏବଂ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି</translation>
 <translation id="3582299299336701326">ଲାଇଟ ସ୍କ୍ରିନକୁ ଡାର୍କରେ ଏବଂ ଡାର୍କ ସ୍କ୍ରିନକୁ ଲାଇଟରେ ପରିଣତ କରନ୍ତୁ। ରଙ୍ଗ ଇନଭର୍ସନକୁ ଚାଲୁ ଏବଂ ବନ୍ଦ କରିବା ପାଇଁ Search + Ctrl + H ଦବାନ୍ତୁ।</translation>
 <translation id="3584169441612580296">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍ରୁ ଫଟୋ, ସଙ୍ଗୀତ ଓ ଅନ୍ୟ ମିଡିଆ ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -5107,7 +5107,6 @@
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="488211015466188466">ସାଇଟକୁ ଫଲୋ କରନ୍ତୁ</translation>
 <translation id="4882312758060467256">ଏହି ସାଇଟ୍‍କୁ ଆକ୍ସେସ୍‌ ଅଛି</translation>
-<translation id="4882752944049998623">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ <ph name="USER_EMAIL" />ରେ ପାସୱାର୍ଡ ସେଭ କରାଯାଇଛି</translation>
 <translation id="4882919381756638075">ଭିଡିଓ ଚାଟିଂ ପରି କମ୍ୟୁନିକେସନ୍ ଫିଚରଗୁଡ଼ିକ ପାଇଁ ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିଥାଏ</translation>
 <translation id="4883436287898674711">ସମସ୍ତ <ph name="WEBSITE_1" /> ସାଇଟ୍</translation>
 <translation id="48838266408104654">&amp;ଟାସ୍କ ପରିଚାଳକ</translation>
@@ -5314,6 +5313,7 @@
 <translation id="5056950756634735043">କଣ୍ଟେନର୍ ସହ ସଂଯୋଗ କରାଯାଉଛି</translation>
 <translation id="5057110919553308744">ଆପଣ ଯେତେବେଳେ ଏକ୍ସଟେନ୍‍ସନ୍‍କୁ କ୍ଲିକ୍ କରିବେ</translation>
 <translation id="5057127674016624293">ସ୍କାନିଂ ପାଇଁ ଆଶା କରାଯାଉଥିବା ସମୟଠାରୁ ଅଧିକ ସମୟ ଲାଗୁଛି</translation>
+<translation id="5057480703570202545">ଡାଉନଲୋଡ ଇତିହାସ</translation>
 <translation id="5059241099014281248">ସାଇନ୍-ଇନ୍ ପ୍ରତିବନ୍ଧିତ କରନ୍ତୁ</translation>
 <translation id="5059429103770496207">ଡିସପ୍ଲେ ଷ୍ଟାଇଲ</translation>
 <translation id="5059526285558225588">କଣ ସେୟାର୍ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
@@ -5723,6 +5723,7 @@
 <translation id="5390677308841849479">ଗାଢ଼ ଲାଲ ଓ କମଳା</translation>
 <translation id="5392192690789334093">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{ଲିଙ୍କ୍}other{#ଟି ଲିଙ୍କ୍}}</translation>
+<translation id="5394529681046491727">ୱାଇ-ଫାଇ ଡାଇରେକ୍ଟ</translation>
 <translation id="5395498824851198390">ଡିଫଲ୍ଟ ଫଣ୍ଟ</translation>
 <translation id="5397378439569041789">କିଓସ୍କ ଏବଂ ସିଗ୍ନେଜ ଡିଭାଇସକୁ ପଞ୍ଜିକରଣ କରନ୍ତୁ</translation>
 <translation id="5397794290049113714">ଆପଣ</translation>

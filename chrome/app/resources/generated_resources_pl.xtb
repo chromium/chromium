@@ -726,7 +726,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1549275686094429035">Włączono ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> chce uzyskać dostęp do dysku <ph name="VOLUME_NAME" />. Będzie mogła tam zmieniać i usuwać pliki.</translation>
 <translation id="1549966883323105187">Szybsze otwieranie zapisanych haseł</translation>
-<translation id="1550656959113606473">Domyślna przeglądarka Chrome</translation>
+<translation id="1550656959113606473">Domyślny motyw Chrome</translation>
 <translation id="1552301827267621511">Rozszerzenie „<ph name="EXTENSION_NAME" />” zmieniło domenę wyszukiwania na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
 <translation id="1552752544932680961">Zarządzaj rozszerzeniem</translation>
 <translation id="1553538517812678578">nieograniczona</translation>
@@ -1676,7 +1676,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2252017960592955005">Ochrona przeglądania (beta)</translation>
 <translation id="2253318212986772520">Nie udało się pobrać pliku PPD dla drukarki <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Wybierz, co chcesz udostępnić aplikacji <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Pokaż hasła i klucze dostępu z konta Google</translation>
 <translation id="2255077166240162850">To urządzenie zostało zablokowane w innej domenie lub innym trybie.</translation>
 <translation id="2255317897038918278">Dodawanie sygnatury czasowej firmy Microsoft</translation>
 <translation id="2256115617011615191">Uruchom ponownie teraz</translation>
@@ -5091,7 +5090,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="488211015466188466">Obserwuj witrynę</translation>
 <translation id="4882312758060467256">Ma dostęp do tej strony</translation>
-<translation id="4882752944049998623">Hasło zostało zapisane na Twoim koncie Google <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883436287898674711">Wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Menedżer zadań</translation>

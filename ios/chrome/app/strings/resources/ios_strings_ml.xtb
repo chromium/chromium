@@ -631,6 +631,7 @@
 <translation id="4282944936010261425">നിങ്ങൾക്ക് പരിഹരിക്കാൻ സുരക്ഷാ പ്രശ്‌നങ്ങളൊന്നുമില്ല.</translation>
 <translation id="4286718549648564014">വിലാസം നിങ്ങളുടെ <ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിലേക്ക് നീക്കി</translation>
 <translation id="428768789042547925">പുതുതായി എന്താണുള്ളത്</translation>
+<translation id="429074084062258019">{count,plural, =1{ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="4293080268407233932">തിരയുക</translation>
 <translation id="4302248187517737842">ഉപയോക്തൃനാമമില്ല ••••••••</translation>
 <translation id="4302415908542657649">പാസ്‌വേഡ് പങ്കിടുന്നു</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7524055474074101597">ആപ്പുകളിലുടനീളം നിങ്ങളുടെ പാസ്‌വേഡുകളും മറ്റും ആക്‌സസ് ചെയ്യുക.</translation>
 <translation id="7527917367892640435">പാക്കേജ് മുമ്പേ ട്രാക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7531345132340165516">നിലവിലെ സൈറ്റ്</translation>
+<translation id="75362970626182391">പുതിയ ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="7537586195939242955">ക്ഷമിക്കണം, നിങ്ങളുടെ പാസ് ഈ സമയം പാസ്‌ബുക്കിൽ ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിയില്ല.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> പരിശോധിച്ചു</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> എന്നതിൽ ഉപയോഗിച്ച അവസാനത്തെ ടാബ്</translation>

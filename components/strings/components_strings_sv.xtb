@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vattenfilter och -renare</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1036881361735705143">C4-kuvert</translation>
-<translation id="1036982837258183574">Tryck på |<ph name="ACCELERATOR" />| för att stänga helskärmen</translation>
 <translation id="1038106730571050514">Visa förslag</translation>
 <translation id="1038842779957582377">okänt namn</translation>
 <translation id="1041998700806130099">Meddelande på arbetsorder</translation>
@@ -160,7 +159,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1282358575813748144">Båtar och fartyg</translation>
 <translation id="1283977499362032052">CV och portfolio</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
-<translation id="1288548991597756084">Spara kortet säkert</translation>
 <translation id="1292571435393770077">Fack 16</translation>
 <translation id="1292701964462482250">Programvara på datorn förhindrar att Chrome ansluter till internet på ett säkert sätt (endast Windows-datorer)</translation>
 <translation id="1293797321964802402">Kuvert, 9 x 11 tum</translation>
@@ -286,7 +284,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1507202001669085618">&lt;p&gt;Felmeddelandet visas om du använder en wifi-portal där du måste logga in innan du kommer ut på internet.&lt;/p&gt;
     &lt;p&gt;Åtgärda problemet genom att klicka på &lt;strong&gt;Anslut&lt;/strong&gt; på sidan du försöker öppna.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista över historikposter</translation>
-<translation id="1516097932025103760">Det krypteras och sparas säkert. CVC-koden lagras aldrig.</translation>
 <translation id="151720253492607760">Fortsätt att inte tillåta</translation>
 <translation id="1517433312004943670">Telefonnummer är obligatoriskt</translation>
 <translation id="1519264250979466059">Programversionsdatum</translation>
@@ -1260,7 +1257,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="342781501876943858">Du rekommenderas att återställa lösenordet om du har återanvänt det på andra webbplatser.</translation>
 <translation id="3428151540071562330">Minst en av URI:erna i servermallen för DnsOverHttpsTemplates är ogiltig och kommer inte att användas.</translation>
 <translation id="3428789896412418755">Grupperad historik</translation>
-<translation id="3431216045099978607">Tryck på |<ph name="ACCELERATOR" />| för att avsluta helskärmsläget och se nedladdningen.</translation>
 <translation id="3432601291244612633">Stäng sidan</translation>
 <translation id="3433111389595862568">Programvara för samarbete och konferens</translation>
 <translation id="3433144818443565002">Röst- och videochatt</translation>
@@ -1987,7 +1983,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="483241715238664915">Aktivera varningar</translation>
 <translation id="4832961164064927107">Grillning</translation>
 <translation id="4834250788637067901">Betalningsmetoder, erbjudanden och adresser med Google Pay</translation>
-<translation id="4839087176073128681">Betala snabbare nästa gång och skydda kortet med Googles branschledande säkerhet.</translation>
 <translation id="4840250757394056958">Visa Chrome-historiken</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Få rabatt på <ph name="MERCHANT_NAME" /> med mera</translation>
@@ -2595,7 +2590,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6045164183059402045">Utskjutningsmall</translation>
 <translation id="6047233362582046994">Om du är medveten om säkerhetsriskerna kan du <ph name="BEGIN_LINK" />besöka webbplatsen<ph name="END_LINK" /> innan de skadliga apparna har tagits bort.</translation>
 <translation id="6047927260846328439">Sidan kan ha till syfte att försöka lura dig att installera programvara eller avslöja personliga uppgifter. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Avsluta helskärmsläget genom att trycka på |<ph name="ACCELERATOR" />| och hålla kvar</translation>
 <translation id="6049056807983403918">B4-kuvert</translation>
 <translation id="6049488691372270142">Sidvisning</translation>
 <translation id="6049975101166779351">Barnavård</translation>
@@ -2714,7 +2708,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6270066318535733958">Båt</translation>
 <translation id="6272088941196661550">Återuppta sökningen för att se relevant aktivitet i Chrome-historiken</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Tryck på |<ph name="ACCELERATOR" />| om du vill visa markören</translation>
 <translation id="6280223929691119688">Det går inte att leverera till den här adressen. Välj en annan adress.</translation>
 <translation id="6284292079994426700">26 x 38 tum</translation>
 <translation id="6284449872909111707">Sms och snabbmeddelanden</translation>
@@ -3755,7 +3748,6 @@ Mer information.
 <translation id="8241707690549784388">Önskad sida använder information som du har angett. Om du återgår till sidan kan eventuella åtgärder på sidan upprepas. Vill du fortsätta?</translation>
 <translation id="8241712895048303527">Blockera på den här webbplatsen</translation>
 <translation id="8242426110754782860">Fortsätt</translation>
-<translation id="8245703462678310750">Håll |<ph name="ACCELERATOR" />| nedtryckt för att avsluta helskärmsläget och se nedladdningen.</translation>
 <translation id="8246482227229072868">Ringar</translation>
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="824968735947741546">Översätter <ph name="SOURCE" /> (identifierades automatiskt) till <ph name="TARGET" /></translation>

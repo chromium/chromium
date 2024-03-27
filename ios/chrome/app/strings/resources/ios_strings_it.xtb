@@ -726,6 +726,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="47677902929517676">Per salvare le password nel tuo account, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="4775879719735953715">Browser predefinito</translation>
 <translation id="4779732376610430319">Vai alle Impostazioni…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Aprire in modalità di navigazione in incognito?</translation>
 <translation id="4803185665210547709">Gestito dalla tua organizzazione.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5283494734135414249">Tocca la scorciatoia visualizzata sotto la barra degli indirizzi.</translation>
 <translation id="5295239312320826323">Vuoi rimuovere l'account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> di <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318298563956633672">Stai già monitorando questo prodotto.</translation>
 <translation id="5327753393331509826">Ricevi notifiche sui contenuti</translation>

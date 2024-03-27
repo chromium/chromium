@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Филтери и пречишћивачи за воду</translation>
 <translation id="1036348656032585052">Искључи</translation>
 <translation id="1036881361735705143">Коверта C4</translation>
-<translation id="1036982837258183574">Притисните |<ph name="ACCELERATOR" />| да бисте изашли из режима целог екрана</translation>
 <translation id="1038106730571050514">Прикажите предлоге</translation>
 <translation id="1038842779957582377">непознато име</translation>
 <translation id="1041998700806130099">Порука о радном листу</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Чамци и пловила</translation>
 <translation id="1283977499362032052">Радне биографије и портфолији</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
-<translation id="1288548991597756084">Безбедно сачувајте картицу</translation>
 <translation id="1292571435393770077">16. фиока</translation>
 <translation id="1292701964462482250">„Софтвер на вашем рачунару онемогућава Chrome-у да се безбедно повеже на веб“ (само на Windows рачунарима)</translation>
 <translation id="1293797321964802402">Коверта 23×28 cm</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Ова грешка се приказује ако користите WiFi портал на коме морате да се пријавите да бисте се повезали на интернет.&lt;/p&gt;
     &lt;p&gt;Да бисте отклонили ту грешку, кликните на &lt;strong&gt;Повежи се&lt;/strong&gt; на страници коју покушавате да отворите.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Листа уноса у историји</translation>
-<translation id="1516097932025103760">Биће шифрована, безбедно сачувана, а CVC се никад не чува.</translation>
 <translation id="151720253492607760">И даље не дозвољавај</translation>
 <translation id="1517433312004943670">Број телефона је обавезан</translation>
 <translation id="1519264250979466059">Датум верзије</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">Chromium вам препоручује да ресетујете лозинку ако сте је користили на другим сајтовима.</translation>
 <translation id="3428151540071562330">Један или више URI-ја шаблона DnsOverHttpsTemplates сервера су неважећи и неће се користити.</translation>
 <translation id="3428789896412418755">Груписана историја</translation>
-<translation id="3431216045099978607">Притисните |<ph name="ACCELERATOR" />| да бисте изашли из режима целог екрана и видели преузимање.</translation>
 <translation id="3432601291244612633">Затвори страницу</translation>
 <translation id="3433111389595862568">Софтвер за сарадњу и конференције</translation>
 <translation id="3433144818443565002">Гласовно и видео ћаскање</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">Укључи упозорења</translation>
 <translation id="4832961164064927107">Роштиљ</translation>
 <translation id="4834250788637067901">Начини плаћања, понуде и адресе који користе Google Pay</translation>
-<translation id="4839087176073128681">Следећег пута платите брже и заштитите картицу помоћу врхунске Google безбедности.</translation>
 <translation id="4840250757394056958">Прегледајте историју Chrome-а</translation>
 <translation id="484462545196658690">Аутоматски</translation>
 <translation id="484671803914931257">Остварите попуст код продавца <ph name="MERCHANT_NAME" /> и других продаваца</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">Шаблон распореда странице</translation>
 <translation id="6047233362582046994">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај сајт<ph name="END_LINK" /> пре него што уклонимо штетне апликације.</translation>
 <translation id="6047927260846328439">Овај садржај ће покушати да вас превари да инсталирате софтвер или откријете личне податке. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Притисните и задржите |<ph name="ACCELERATOR" />| да бисте изашли из режима целог екрана</translation>
 <translation id="6049056807983403918">Коверта B4</translation>
 <translation id="6049488691372270142">Испорука страница</translation>
 <translation id="6049975101166779351">Брига о детету</translation>
@@ -2713,7 +2707,6 @@
 <translation id="6270066318535733958">Вожња чамцем</translation>
 <translation id="6272088941196661550">Наставите пут да бисте видели релевантне активности у историји Chrome-а</translation>
 <translation id="6272383483618007430">Google ажурирање</translation>
-<translation id="6279183038361895380">Притисните |<ph name="ACCELERATOR" />| да бисте приказали показивач</translation>
 <translation id="6280223929691119688">Испорука на ову адресу није могућа. Изаберите другу адресу.</translation>
 <translation id="6284292079994426700">26×38 in</translation>
 <translation id="6284449872909111707">Размена текстуалних и тренутних порука</translation>
@@ -3754,7 +3747,6 @@
 <translation id="8241707690549784388">Страница коју тражите користила је информације које сте унели. Повратак на ту страницу може да проузрокује потребну понављања радњи које сте извршили. Желите ли да наставите?</translation>
 <translation id="8241712895048303527">Блокирај на овом сајту</translation>
 <translation id="8242426110754782860">Настави</translation>
-<translation id="8245703462678310750">Притисните и задржите |<ph name="ACCELERATOR" />| да бисте изашли из режима целог екрана и видели преузимање.</translation>
 <translation id="8246482227229072868">Прстење</translation>
 <translation id="8249296373107784235">Откажи</translation>
 <translation id="824968735947741546">Преводи се <ph name="SOURCE" /> (аутоматски откривено) на <ph name="TARGET" /></translation>

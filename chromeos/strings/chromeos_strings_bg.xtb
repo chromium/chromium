@@ -301,6 +301,7 @@
 <translation id="2638662041295312666">Изображение при вход</translation>
 <translation id="2640549051766135490">Избран албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="2652403576514495859">активиране или превключване на функцията за диктуване</translation>
+<translation id="2653659639078652383">Изпращане</translation>
 <translation id="2656001153562991489">Специално за Chromebook Plus</translation>
 <translation id="2665671725390405060">Слушане на произношението</translation>
 <translation id="267442004702508783">опресняване</translation>
@@ -469,6 +470,7 @@
 <translation id="3877066159641251281">Слушане на превода</translation>
 <translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
 <translation id="3889914174935857450">Дата на нулиране</translation>
+<translation id="3897092660631435901">Меню</translation>
 <translation id="391412459402535266">Устройството не може да бъде тествано. За целта превключете към режим на лаптоп.</translation>
 <translation id="3916998944874125962">създаване на екранна снимка</translation>
 <translation id="3923184630988645767">Пренос на данни</translation>
@@ -752,6 +754,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5588233547254916455">Букви</translation>
 <translation id="5595623927872580850">сив</translation>
+<translation id="5596627076506792578">Още опции</translation>
 <translation id="5600027863942488546">Клавишът <ph name="KEY_NAME" /> е тестван</translation>
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5630438231335788050">Баухаус</translation>

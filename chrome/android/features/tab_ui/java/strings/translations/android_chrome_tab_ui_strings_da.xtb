@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Luk <ph name="TABS_COUNT_ONE" /> valgt fane}one{Luk <ph name="TABS_COUNT_MANY" /> valgt fane}other{Luk de <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="8398929769197326728">Ny mappe – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Lavere pris</translation>
+<translation id="8730621377337864115">Udfør</translation>
 <translation id="8730999928494395583">Din aktivitet i disse inkognitofaner fjernes fra denne enhed</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Oprettet for <ph name="NUM_MONTHS_ONE" /> måned siden}one{Oprettet for <ph name="NUM_MONTHS_MANY" /> måned siden}other{Oprettet for <ph name="NUM_MONTHS_MANY" /> måneder siden}}</translation>
 <translation id="8820741577754260431">Se prisfald på dine faner</translation>

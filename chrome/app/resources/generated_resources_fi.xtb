@@ -1690,7 +1690,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2252017960592955005">Urkinnan esto (beta)</translation>
 <translation id="2253318212986772520">PPD:n noutaminen ei onnistu: <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Valitse, mitä sisältöä <ph name="APP_NAME" /> saa</translation>
-<translation id="2254263139042585032">Näytä Google-tilisi salasanat ja avainkoodit</translation>
 <translation id="2255077166240162850">Laite on lukittu toiseen verkkotunnukseen tai tilaan.</translation>
 <translation id="2255317897038918278">Microsoftin aikaleimaus</translation>
 <translation id="2256115617011615191">Käynnistä uudelleen</translation>
@@ -5121,7 +5120,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="488211015466188466">Seuraa sivustoa</translation>
 <translation id="4882312758060467256">Saa toimia tällä sivustolla</translation>
-<translation id="4882752944049998623">Salasana tallennettu Google-tilille: <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Sivustot käyttävät mikrofonia yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="4883436287898674711">Kaikki verkkotunnuksen <ph name="WEBSITE_1" /> sivustot</translation>
 <translation id="48838266408104654">&amp;Tehtävänhallinta</translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filter &amp; Penjernih Air</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
-<translation id="1036982837258183574">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari mode layar penuh</translation>
 <translation id="1038106730571050514">Tampilkan saran</translation>
 <translation id="1038842779957582377">nama tidak diketahui</translation>
 <translation id="1041998700806130099">Pesan lembar tugas</translation>
@@ -160,7 +159,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1282358575813748144">Perahu &amp; Kendaraan Air</translation>
 <translation id="1283977499362032052">Riwayat Hidup &amp; Portofolio</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
-<translation id="1288548991597756084">Simpan kartu dengan aman</translation>
 <translation id="1292571435393770077">Baki 16</translation>
 <translation id="1292701964462482250">"Software di komputer mencegah Chrome terhubung dengan aman ke web" (khusus komputer Windows)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 inci</translation>
@@ -286,7 +284,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1507202001669085618">&lt;p&gt;Anda akan melihat error ini jika menggunakan portal Wi-Fi yang mengharuskan Anda login sebelum terhubung online.&lt;/p&gt;
     &lt;p&gt;Untuk memperbaiki error, klik &lt;strong&gt;Sambungkan&lt;/strong&gt; di halaman yang ingin Anda buka.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Daftar entri histori</translation>
-<translation id="1516097932025103760">Kartu akan dienkripsi dan disimpan dengan aman, serta CVC tidak akan disimpan.</translation>
 <translation id="151720253492607760">Tetap tidak mengizinkan</translation>
 <translation id="1517433312004943670">Perlu nomor telepon</translation>
 <translation id="1519264250979466059">Tanggal Dibuat</translation>
@@ -1261,7 +1258,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="342781501876943858">Chromium menyarankan untuk menyetel ulang sandi jika Anda juga menggunakannya di situs lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI template server DnsOverHttpsTemplates tidak valid dan tidak akan digunakan.</translation>
 <translation id="3428789896412418755">Histori yang Dikelompokkan</translation>
-<translation id="3431216045099978607">Tekan |<ph name="ACCELERATOR" />| untuk keluar dari layar penuh dan melihat download.</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3433111389595862568">Software Kolaborasi &amp; Konferensi</translation>
 <translation id="3433144818443565002">Chat Suara &amp; Video Chat</translation>
@@ -1987,7 +1983,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="483241715238664915">Aktifkan peringatan</translation>
 <translation id="4832961164064927107">BBQ &amp; Memanggang</translation>
 <translation id="4834250788637067901">Metode pembayaran, penawaran, dan alamat yang menggunakan Google Pay</translation>
-<translation id="4839087176073128681">Bayar lebih cepat dan lindungi kartu Anda dengan keamanan terbaik di industri dari Google.</translation>
 <translation id="4840250757394056958">Lihat histori Chrome Anda</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="484671803914931257">Dapatkan diskon di <ph name="MERCHANT_NAME" /> dan lainnya</translation>
@@ -2595,7 +2590,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6045164183059402045">Template imposisi</translation>
 <translation id="6047233362582046994">Jika Anda memahami risiko keamanan tersebut, Anda dapat <ph name="BEGIN_LINK" />mengunjungi situs ini<ph name="END_LINK" /> sebelum aplikasi berbahaya tersebut dihapus.</translation>
 <translation id="6047927260846328439">Konten ini mungkin mencoba mengelabui Anda agar menginstal software atau mengungkapkan informasi pribadi. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Tekan dan tahan |<ph name="ACCELERATOR" />| untuk keluar dari layar penuh</translation>
 <translation id="6049056807983403918">Envelope B4</translation>
 <translation id="6049488691372270142">Pengiriman halaman</translation>
 <translation id="6049975101166779351">Perawatan Anak</translation>
@@ -2714,7 +2708,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6270066318535733958">Berperahu</translation>
 <translation id="6272088941196661550">Lanjutkan perjalanan Anda untuk melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
 <translation id="6280223929691119688">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6284292079994426700">26 x 38 inci (66 x 96 cm)</translation>
 <translation id="6284449872909111707">Pesan Teks &amp; Fitur Pesan Instan</translation>
@@ -3753,7 +3746,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8241707690549784388">Halaman yang dicari menggunakan informasi yang Anda masukkan. Kembali ke halaman tersebut dapat menyebabkan pengulangan tindakan apa pun yang Anda lakukan. Apakah Anda ingin melanjutkan?</translation>
 <translation id="8241712895048303527">Blokir di situs ini</translation>
 <translation id="8242426110754782860">Lanjutkan</translation>
-<translation id="8245703462678310750">Tekan dan tahan |<ph name="ACCELERATOR" />| untuk keluar dari layar penuh dan melihat download.</translation>
 <translation id="8246482227229072868">Cincin</translation>
 <translation id="8249296373107784235">Batalkan</translation>
 <translation id="824968735947741546">Menerjemahkan <ph name="SOURCE" /> (terdeteksi otomatis) ke <ph name="TARGET" /></translation>

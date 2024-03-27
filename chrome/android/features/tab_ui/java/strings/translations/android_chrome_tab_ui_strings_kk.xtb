@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны жабу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны жабу}}</translation>
 <translation id="8398929769197326728">Жаңа қалта – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
+<translation id="8730621377337864115">Дайын</translation>
 <translation id="8730999928494395583">Бұл инкогнито қойындыларындағы әрекетіңіз осы құрылғыдан өшіріледі.</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ай бұрын жасалды.}other{<ph name="NUM_MONTHS_MANY" /> ай бұрын жасалды.}}</translation>
 <translation id="8820741577754260431">Баға төмендеген кезде, оны қойындыдан көріңіз.</translation>

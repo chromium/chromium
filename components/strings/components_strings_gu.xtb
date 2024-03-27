@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">વૉટર ફિલ્ટર અને પ્યુરિફાયર</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1036881361735705143">એન્વલપ C4</translation>
-<translation id="1036982837258183574">બહાર નીકળવા માટે |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="1038106730571050514">સૂચનો બતાવો</translation>
 <translation id="1038842779957582377">અજ્ઞાત નામ</translation>
 <translation id="1041998700806130099">જોબ શીટ સંદેશ</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">હોડીઓ અને નૌકા</translation>
 <translation id="1283977499362032052">રેઝ્યૂમે અને પોર્ટફોલિયો</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
-<translation id="1288548991597756084">કાર્ડને સુરક્ષિત રીતે સાચવો</translation>
 <translation id="1292571435393770077">ટ્રે 16</translation>
 <translation id="1292701964462482250">"તમારા કમ્પ્યુટરમાંનું સૉફ્ટવેર Chromeને સુરક્ષિત રીતે વેબ સાથે કનેક્ટ થવાથી અટકાવે છે" (માત્ર Windows કમ્પ્યુટર)</translation>
 <translation id="1293797321964802402">એન્વલપ 9 x 11 ઇંચ</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;જો તમે ઑનલાઇન થાઓ એ પહેલાં જ્યાં તમારે સાઇન ઇન કરવું જરૂરી હોય તેવા વાઇ-ફાઇ પોર્ટલનો ઉપયોગ કરી રહ્યા હો, તો તમને આ ભૂલ દેખાશે.&lt;/p&gt;
     &lt;p&gt;આ સમસ્યા ઉકેલવા માટે, તમે ખોલવાનો પ્રયાસ કરી રહ્યા છો એ પેજ પર &lt;strong&gt;કનેક્ટ કરો&lt;/strong&gt; પર ક્લિક કરો.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">ઇતિહાસના એન્ટ્રીની સૂચિ</translation>
-<translation id="1516097932025103760">તેને એન્ક્રિપ્ટ કરવામાં આવશે, તેને સુરક્ષિત રીતે સાચવવામાં આવશે અને CVC ક્યારેય સ્ટોર કરવામાં આવશે નહીં.</translation>
 <translation id="151720253492607760">મંજૂરી નકારવાનું ચાલુ રાખો</translation>
 <translation id="1517433312004943670">ફોન નંબર આવશ્યક</translation>
 <translation id="1519264250979466059">નિર્માણ તારીખ</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">જો તમે અન્ય સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chromium તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates સર્વરના નમૂનાની એક કે તેથી વધુ URI અમાન્ય છે અને તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="3428789896412418755">ગ્રૂપ કરેલો ઇતિહાસ</translation>
-<translation id="3431216045099978607">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળીને ડાઉનલોડ જોવા માટે |<ph name="ACCELERATOR" />| દબાવો.</translation>
 <translation id="3432601291244612633">પેજ બંધ કરો</translation>
 <translation id="3433111389595862568">સહયોગ અને કૉન્ફરન્સ માટેના સૉફ્ટવેર</translation>
 <translation id="3433144818443565002">વૉઇસ અને વીડિયો ચૅટ</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">ચેતવણીઓ ચાલુ કરો</translation>
 <translation id="4832961164064927107">BBQ અને ગ્રિલિંગ</translation>
 <translation id="4834250788637067901">Google Payનો ઉપયોગ કરતી ચુકવણી પદ્ધતિઓ, ઑફરો અને સરનામાં</translation>
-<translation id="4839087176073128681">Googleની ઉદ્યોગ જગતની અગ્રણી સુરક્ષા સુવિધા વડે આગલી વખતે વધુ ઝડપથી ચુકવણી કરો અને તમારા કાર્ડને સુરક્ષિત રાખો.</translation>
 <translation id="4840250757394056958">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="484462545196658690">ઑટો</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> અને અન્ય ઘણા પર ડિસ્કાઉન્ટ મેળવો</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">લાગુ કરવા માટેનો નમૂનો</translation>
 <translation id="6047233362582046994">જો તમે તમારી સુરક્ષાના જોખમોને સમજો છો, તો તમે જોખમકારક ઍપ્લિકેશનો દૂર કરતા પહેલા <ph name="BEGIN_LINK" />આ સાઇટની મુલાકાત<ph name="END_LINK" /> લઈ શકો છો.</translation>
 <translation id="6047927260846328439">આ કન્ટેન્ટ કદાચ સૉફ્ટવેર ઇન્સ્ટૉલ કરવા માટે અથવા વ્યક્તિગત માહિતી કઢાવવા માટે તમારી સાથે કપટ કરવાનો પ્રયાસ કરી શકે છે. <ph name="BEGIN_LINK" />છતાં પણ બતાવો<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">પૂર્ણ સ્ક્રીનથી બહાર નીકળવા માટે |<ph name="ACCELERATOR" />|ને દબાવી રાખો</translation>
 <translation id="6049056807983403918">એન્વલપ B4</translation>
 <translation id="6049488691372270142">પેજની ડિલિવરી</translation>
 <translation id="6049975101166779351">બાળ સંભાળ</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">નૌકાવિહાર</translation>
 <translation id="6272088941196661550">તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે, તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="6272383483618007430">Google અપડેટ</translation>
-<translation id="6279183038361895380">તમારા કર્સરને બતાવવા માટે |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="6280223929691119688">આ સરનામે વિતરણ કરી શકતા નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="6284292079994426700">26 x 38 ઇંચ</translation>
 <translation id="6284449872909111707">ટેક્સ્ટ અને ઇન્સ્ટન્ટ મેસેજિંગ</translation>
@@ -3755,7 +3748,6 @@
 <translation id="8241707690549784388">તમારા દ્વારા દાખલ કરાયેલી વપરાયેલી માહિતી માટે આ પેજ તમે જોઈ રહ્યા છો. તે પેજ પર પાછા જવાથી એવી કોઈપણ ક્રિયા ફરીથી થઈ શકે છે જે તમે પહેલા કરી હતી. શું તમે ચાલુ રાખવા માંગો છો?</translation>
 <translation id="8241712895048303527">આ સાઇટ પર અવરોધિત કરો</translation>
 <translation id="8242426110754782860">આગળ વધો</translation>
-<translation id="8245703462678310750">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળીને ડાઉનલોડ જોવા માટે |<ph name="ACCELERATOR" />| દબાવી રાખો.</translation>
 <translation id="8246482227229072868">રિંગ</translation>
 <translation id="8249296373107784235">છોડો</translation>
 <translation id="824968735947741546">(ઑટોમૅટિક રીતે ભાળ મેળવેલી) <ph name="SOURCE" />નો <ph name="TARGET" />માં અનુવાદ કરી રહ્યાં છીએ</translation>

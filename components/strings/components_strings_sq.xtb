@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filtra dhe pastrues uji</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1036881361735705143">Zarf C4</translation>
-<translation id="1036982837258183574">Shtyp |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë</translation>
 <translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1038842779957582377">emër i panjohur</translation>
 <translation id="1041998700806130099">Mesazhi i fletës së punës</translation>
@@ -160,7 +159,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1282358575813748144">Varka dhe mjete ujore</translation>
 <translation id="1283977499362032052">Rezyme dhe portofola pune</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
-<translation id="1288548991597756084">Ruaje kartën në mënyrë të sigurt</translation>
 <translation id="1292571435393770077">Tabakaja 16</translation>
 <translation id="1292701964462482250">"Një softuer në kompjuterin tënd po e ndalon Chrome që të lidhet në mënyrë të sigurt me uebin" (vetëm kompjuterët me Windows)</translation>
 <translation id="1293797321964802402">Zarf 9 x 11 inç</translation>
@@ -286,7 +284,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1507202001669085618">&lt;p&gt;Do të shikosh këtë gabim nëse përdor një portal Wi-Fi ku duhet të identifikohesh përpara se të hysh online.&lt;/p&gt;
     &lt;p&gt;Për të rregulluar gabimin, kliko te &lt;strong&gt;Lidhu&lt;/strong&gt; në faqen që po përpiqesh të hapësh.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista e regjistrimeve të historikut</translation>
-<translation id="1516097932025103760">Ajo do të enkriptohet, do të ruhet në mënyrë të sigurt dhe kodi CVC nuk do të ruhet asnjëherë.</translation>
 <translation id="151720253492607760">Vazhdo të mos lejosh</translation>
 <translation id="1517433312004943670">Numri i telefonit është i detyrueshëm</translation>
 <translation id="1519264250979466059">Data e ndërtimit</translation>
@@ -1260,7 +1257,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="342781501876943858">Chromium rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="3428151540071562330">Një ose disa nga URI-të e shablloneve të serverit DnsOverHttpsTemplates janë të pavlefshme dhe nuk do të përdoren.</translation>
 <translation id="3428789896412418755">Historiku i grupimit</translation>
-<translation id="3431216045099978607">Shtyp |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë dhe për të parë shkarkimin.</translation>
 <translation id="3432601291244612633">Mbyll faqen</translation>
 <translation id="3433111389595862568">Softuer bashkëpunimi dhe konferencash</translation>
 <translation id="3433144818443565002">Biseda zanore dhe me video</translation>
@@ -1987,7 +1983,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="483241715238664915">Aktivizo paralajmërimet</translation>
 <translation id="4832961164064927107">Skara dhe pjekja në skarë</translation>
 <translation id="4834250788637067901">Mënyrat e pagesës, ofertat dhe adresat që përdorin Google Pay</translation>
-<translation id="4839087176073128681">Paguaj më shpejt herën tjetër dhe mbroje kartën tënde me sigurinë e nivelit më të lartë në këtë industri nga Google.</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="484671803914931257">Merr zbritje në <ph name="MERCHANT_NAME" /> dhe të tjera</translation>
@@ -2595,7 +2590,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6045164183059402045">Shablloni i vendosjes</translation>
 <translation id="6047233362582046994">Nëse i kupton rreziqet për sigurinë tënde, mund <ph name="BEGIN_LINK" />ta vizitosh këtë sajt<ph name="END_LINK" /> para se të jenë hequr aplikacionet e dëmshme.</translation>
 <translation id="6047927260846328439">Kjo përmbajtje mund të përpiqet të të mashtrojë që të instalosh softuerë ose të zbulosh informacionet e tua personale. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë</translation>
 <translation id="6049056807983403918">Zarf B4</translation>
 <translation id="6049488691372270142">Dorëzimi i faqes</translation>
 <translation id="6049975101166779351">Përkujdesje për fëmijët</translation>
@@ -2713,7 +2707,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6270066318535733958">Lundrim me barkë</translation>
 <translation id="6272088941196661550">Vazhdo udhëtimin për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="6272383483618007430">Përditësimi i Google</translation>
-<translation id="6279183038361895380">Shtyp |<ph name="ACCELERATOR" />| për të shfaqur kursorin</translation>
 <translation id="6280223929691119688">Nuk mund të dorëzohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
 <translation id="6284449872909111707">Mesazhe me tekst dhe të çastit</translation>
@@ -3754,7 +3747,6 @@ Detaje shtesë:
 <translation id="8241707690549784388">Faqja që po kërkon i përdori informacionet që fute. Kthimi tek ajo faqe mund të bëjë që çdo veprim që bëre të përsëritet përsëri. Dëshiron që të vazhdosh?</translation>
 <translation id="8241712895048303527">Blloko në këtë sajt</translation>
 <translation id="8242426110754782860">Vazhdo</translation>
-<translation id="8245703462678310750">Shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë dhe për të parë shkarkimin.</translation>
 <translation id="8246482227229072868">Unaza</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="824968735947741546">Po përkthen nga <ph name="SOURCE" /> (zbuluar automatikisht) në <ph name="TARGET" /></translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Purificateurs d'eau et filtres</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1036881361735705143">Enveloppe C4</translation>
-<translation id="1036982837258183574">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran</translation>
 <translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1038842779957582377">nom inconnu</translation>
 <translation id="1041998700806130099">Message de la feuille de travail</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Bateaux et embarcations</translation>
 <translation id="1283977499362032052">CV et dossiers de présentation</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
-<translation id="1288548991597756084">Enregistrez la carte de façon sécurisée</translation>
 <translation id="1292571435393770077">Bac 16</translation>
 <translation id="1292701964462482250">« Un logiciel installé sur votre ordinateur empêche Chrome de se connecter au Web de manière sécurisée » (sous Windows uniquement)</translation>
 <translation id="1293797321964802402">Enveloppe 9 x 11 po</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Cette erreur s'affiche si vous utilisez un portail Wi-Fi auquel vous devez vous connecter avant de pouvoir aller en ligne.&lt;/p&gt;
     &lt;p&gt;Pour corriger l'erreur, cliquez sur &lt;strong&gt;Connexion&lt;/strong&gt; sur la page que vous essayez d'ouvrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste des entrées d'historique</translation>
-<translation id="1516097932025103760">Elle sera chiffrée et enregistrée de façon sécurisée, et le code CVC ne sera jamais stocké.</translation>
 <translation id="151720253492607760">Continuer à ne pas autoriser</translation>
 <translation id="1517433312004943670">Un numéro de téléphone est requis</translation>
 <translation id="1519264250979466059">Date de création</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">Chromium recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="3428151540071562330">Une ou plusieurs des URL de modèle de serveur DnsOverHttpsTemplates sont incorrectes et ne seront pas utilisées.</translation>
 <translation id="3428789896412418755">Historique regroupé</translation>
-<translation id="3431216045099978607">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran et voir le téléchargement.</translation>
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3433111389595862568">Logiciels de collaboration et de conférence</translation>
 <translation id="3433144818443565002">Clavardage audio et vidéo</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">Activer les avertissements</translation>
 <translation id="4832961164064927107">Barbecue et grillade</translation>
 <translation id="4834250788637067901">Modes de paiement, offres et adresses utilisant Google Pay</translation>
-<translation id="4839087176073128681">Payez plus rapidement la prochaine fois et protégez votre carte grâce à la sécurité de pointe de Google.</translation>
 <translation id="4840250757394056958">Afficher votre historique de Chrome</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="484671803914931257">Bénéficiez d'un rabais sur <ph name="MERCHANT_NAME" /> et d'autres</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">Modèle d'imposition</translation>
 <translation id="6047233362582046994">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />vous rendre sur ce site<ph name="END_LINK" /> avant que les applications malveillantes aient été supprimées.</translation>
 <translation id="6047927260846328439">Ce contenu pourrait essayer de vous faire installer un logiciel ou de vous faire dévoiler des renseignements personnels. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Maintenez le doigt sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran</translation>
 <translation id="6049056807983403918">Enveloppe B4</translation>
 <translation id="6049488691372270142">Livraison de la page</translation>
 <translation id="6049975101166779351">Garderie</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">Navigation de plaisance</translation>
 <translation id="6272088941196661550">Reprenez votre exploration pour consulter l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="6272383483618007430">Mise à jour Google</translation>
-<translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher votre curseur</translation>
 <translation id="6280223929691119688">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="6284292079994426700">26 po x 38 po</translation>
 <translation id="6284449872909111707">Messagerie texte et clavardage</translation>
@@ -3755,7 +3748,6 @@ Détails supplémentaires :
 <translation id="8241707690549784388">La page que vous recherchez a utilisé de l'information que vous avez envoyée. Si vous revenez sur cette page, chaque action précédemment effectuée sera peut-être répétée. Souhaitez-vous continuer?</translation>
 <translation id="8241712895048303527">Bloquer sur ce site</translation>
 <translation id="8242426110754782860">Continuer</translation>
-<translation id="8245703462678310750">Appuyer de manière prolongée sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran et voir le téléchargement.</translation>
 <translation id="8246482227229072868">Anneaux</translation>
 <translation id="8249296373107784235">Interrompre</translation>
 <translation id="824968735947741546">Traduction : <ph name="SOURCE" /> (détecté automatiquement) en <ph name="TARGET" /></translation>

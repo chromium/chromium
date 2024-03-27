@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დახურვა}}</translation>
 <translation id="8398929769197326728">ახალი საქაღალდე — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
+<translation id="8730621377337864115">მზადაა</translation>
 <translation id="8730999928494395583">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა წაიშლება ამ მოწყობილობიდან</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{შეიქმნა <ph name="NUM_MONTHS_ONE" /> თვის წინ}other{შეიქმნა <ph name="NUM_MONTHS_MANY" /> თვის წინ}}</translation>
 <translation id="8820741577754260431">იხილეთ ინფორმაცია ფასების დაწევის შესახებ თქვენს ჩანართებზე</translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Filtre și purificatoare de apă</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
 <translation id="1036881361735705143">Plic C4</translation>
-<translation id="1036982837258183574">Apasă pe |<ph name="ACCELERATOR" />| pentru a ieși din ecranul complet</translation>
 <translation id="1038106730571050514">Afișează sugestii</translation>
 <translation id="1038842779957582377">nume necunoscut</translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Bărci și vehicule acvatice</translation>
 <translation id="1283977499362032052">CV-uri și portofolii</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
-<translation id="1288548991597756084">Salvează cardul în siguranță</translation>
 <translation id="1292571435393770077">Tava 16</translation>
 <translation id="1292701964462482250">„Pe computer există software care împiedică browserul Chrome să se conecteze în siguranță la internet” (doar pentru computerele Windows)</translation>
 <translation id="1293797321964802402">Plic de 9 x 11 inchi</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Această eroare se va afișa dacă folosești un portal Wi-Fi la care trebuie să te conectezi înainte de a putea fi online.&lt;/p&gt;
     &lt;p&gt;Pentru a remedia eroarea, dă clic pe &lt;strong&gt;Conectează-te&lt;/strong&gt;, în pagina pe care încerci să o deschizi.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Lista intrărilor în istoric</translation>
-<translation id="1516097932025103760">Va fi criptat, salvat în siguranță și codul CVC nu este stocat niciodată.</translation>
 <translation id="151720253492607760">Continuă să nu permiți</translation>
 <translation id="1517433312004943670">Numărul de telefon este obligatoriu</translation>
 <translation id="1519264250979466059">Dată versiune:</translation>
@@ -1260,7 +1257,6 @@
 <translation id="342781501876943858">Chromium îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="3428151540071562330">Una sau mai multe dintre adresele URI pentru șabloanele de server DnsOverHttpsTemplates este nevalidă și nu va fi folosită.</translation>
 <translation id="3428789896412418755">Istoric grupat</translation>
-<translation id="3431216045099978607">Apasă pe |<ph name="ACCELERATOR" />| ca să ieși din ecranul complet și să vezi descărcarea.</translation>
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3433111389595862568">Software pentru colaborare și conferințe</translation>
 <translation id="3433144818443565002">Chat vocal și video</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">Activează avertizările</translation>
 <translation id="4832961164064927107">Grătare</translation>
 <translation id="4834250788637067901">Metode de plată, oferte și adrese care folosesc Google Pay</translation>
-<translation id="4839087176073128681">Plătește mai rapid data viitoare și protejează-ți cardul cu cele mai bune funcții de securitate din domeniu de la Google.</translation>
 <translation id="4840250757394056958">Vezi istoricul Chrome</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="484671803914931257">Obține reduceri de la <ph name="MERCHANT_NAME" /> și mulți alții</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">Șablon de impunere</translation>
 <translation id="6047233362582046994">Dacă îți asumi riscurile de securitate, poți să <ph name="BEGIN_LINK" />accesezi acest site<ph name="END_LINK" /> înainte ca aplicațiile dăunătoare să fie eliminate.</translation>
 <translation id="6047927260846328439">Acest conținut ar putea încerca să te păcălească să instalezi software sau să dezvălui informații cu caracter personal. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Pentru a ieși din ecranul complet, apasă lung |<ph name="ACCELERATOR" />|</translation>
 <translation id="6049056807983403918">Plic B4</translation>
 <translation id="6049488691372270142">Scoaterea paginilor</translation>
 <translation id="6049975101166779351">Îngrijirea copilului</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">Navigație recreativă</translation>
 <translation id="6272088941196661550">Continuă-ți parcursul pentru a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="6272383483618007430">Actualizare Google</translation>
-<translation id="6279183038361895380">Apasă pe |<ph name="ACCELERATOR" />| pentru a fi afișat cursorul</translation>
 <translation id="6280223929691119688">Nu se poate livra la această adresă. Selectează altă adresă.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
 <translation id="6284449872909111707">Mesaje text și instantanee</translation>
@@ -3755,7 +3748,6 @@ Detalii suplimentare:
 <translation id="8241707690549784388">Pagina pe care o cauți a utilizat informațiile pe care le-ai introdus. Întoarcerea la acea pagină ar putea face ca orice acțiune să fie repetată. Vrei să continui?</translation>
 <translation id="8241712895048303527">Blochează pe acest site</translation>
 <translation id="8242426110754782860">Continuă</translation>
-<translation id="8245703462678310750">Apasă lung |<ph name="ACCELERATOR" />| pentru a ieși din ecranul complet și a vedea descărcarea.</translation>
 <translation id="8246482227229072868">Inele</translation>
 <translation id="8249296373107784235">Abandonați</translation>
 <translation id="824968735947741546">Se traduce din <ph name="SOURCE" /> (detectată automat) în <ph name="TARGET" /></translation>

@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Активността ви в съответните раздели в режим „инкогнито“ ще бъде премахната от това устройство</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_MONTHS_ONE" /> месец}other{Създадено преди <ph name="NUM_MONTHS_MANY" /> месеца}}</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>

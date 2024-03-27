@@ -1679,7 +1679,6 @@
 <translation id="2252017960592955005">การป้องกันการดู (เบต้า)</translation>
 <translation id="2253318212986772520">เรียกดู PPD ของ <ph name="PRINTER_NAME" /> ไม่ได้</translation>
 <translation id="2253927598983295051">เลือกสิ่งที่จะแชร์กับ <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">แสดงรหัสผ่านและพาสคีย์จากบัญชี Google</translation>
 <translation id="2255077166240162850">อุปกรณ์นี้ล็อกอยู่ในโดเมนหรือโหมดอื่น</translation>
 <translation id="2255317897038918278">การระบุเวลาของ Microsoft</translation>
 <translation id="2256115617011615191">รีสตาร์ทเลย</translation>
@@ -5109,7 +5108,6 @@
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="488211015466188466">ติดตามเว็บไซต์</translation>
 <translation id="4882312758060467256">มีสิทธิ์เข้าถึงเว็บไซต์นี้</translation>
-<translation id="4882752944049998623">บันทึกรหัสผ่านไว้ในบัญชี Google <ph name="USER_EMAIL" /> แล้ว</translation>
 <translation id="4882919381756638075">โดยปกติแล้วเว็บไซต์จะใช้ไมโครโฟนเพื่อดำเนินการตามฟีเจอร์ในการสื่อสาร เช่น วิดีโอแชท</translation>
 <translation id="4883436287898674711">ไซต์ <ph name="WEBSITE_1" /> ทั้งหมด</translation>
 <translation id="48838266408104654">&amp;ตัวจัดการงาน</translation>

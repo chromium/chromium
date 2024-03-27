@@ -1681,7 +1681,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2252017960592955005">Ochrana před špehováním (beta)</translation>
 <translation id="2253318212986772520">PPD pro tiskárnu <ph name="PRINTER_NAME" /> se nepodařilo načíst.</translation>
 <translation id="2253927598983295051">Vyberte, co chcete sdílet s aplikací <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Zobrazit hesla a přístupové klíče z účtu Google</translation>
 <translation id="2255077166240162850">Toto zařízení bylo uzamknuto pro jinou doménu nebo režim.</translation>
 <translation id="2255317897038918278">Časové razítko standardu Microsoft</translation>
 <translation id="2256115617011615191">Restartovat</translation>
@@ -5110,7 +5109,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="488211015466188466">Sledovat web</translation>
 <translation id="4882312758060467256">Má přístup k tomuto webu</translation>
-<translation id="4882752944049998623">Heslo bylo uloženo do vašeho účtu Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="4882919381756638075">Weby obvykle používají mikrofon ke komunikačním funkcím, jako je videohovor</translation>
 <translation id="4883436287898674711">Všechny weby <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Správce úloh</translation>

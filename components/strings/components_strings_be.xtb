@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Фільтры і ачышчальнікі для вады</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1036881361735705143">Канверт C4</translation>
-<translation id="1036982837258183574">Націсніце "<ph name="ACCELERATOR" />", каб выйсці з поўнаэкраннага рэжыму</translation>
 <translation id="1038106730571050514">Паказаць прапановы</translation>
 <translation id="1038842779957582377">невядомае імя</translation>
 <translation id="1041998700806130099">Паведамленне аркуша задання</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">Лодкі і водны транспарт</translation>
 <translation id="1283977499362032052">Рэзюмэ і партфоліа</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
-<translation id="1288548991597756084">Захоўвайце даныя карткі ў бяспецы</translation>
 <translation id="1292571435393770077">Латок 16</translation>
 <translation id="1292701964462482250">"Праграмнае забеспячэнне на камп'ютары не дае браўзеру Chrome устанавіць бяспечнае падключэнне да інтэрнэту" (толькі камп'ютары пад кіраваннем Windows)</translation>
 <translation id="1293797321964802402">Канверт 9 x 11 цаляў</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">&lt;p&gt;Гэта памылка ўзнікае, калі вы карыстаецеся парталам Wi-Fi, на якім перад выхадам у інтэрнэт трэба выканаць уваход.&lt;/p&gt;
     &lt;p&gt;Каб выправіць памылку, націсніце &lt;strong&gt;Падключыцца&lt;/strong&gt; на старонцы, якую вы спрабуеце адкрыць.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Спіс запісаў гісторыі</translation>
-<translation id="1516097932025103760">Пасля шыфравання даных яны будуць захоўвацца ў бяспецы. Код CVC не захоўваецца ніколі.</translation>
 <translation id="151720253492607760">Па-ранейшаму не дазваляць</translation>
 <translation id="1517433312004943670">Патрабуецца нумар тэлефона</translation>
 <translation id="1519264250979466059">Дата зборкі</translation>
@@ -1261,7 +1258,6 @@
 <translation id="342781501876943858">Chromium рэкамендуе скінуць ваш пароль, калі вы карысталіся ім на іншых сайтах.</translation>
 <translation id="3428151540071562330">Адзін або некалькі URI шаблонаў сервераў з палітыкі DnsOverHttpsTemplates няправільныя і выкарыстоўвацца не будуць.</translation>
 <translation id="3428789896412418755">Згрупаваная гісторыя</translation>
-<translation id="3431216045099978607">Націсніце |<ph name="ACCELERATOR" />|, каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку.</translation>
 <translation id="3432601291244612633">Закрыць старонку</translation>
 <translation id="3433111389595862568">Праграмнае забеспячэнне для сумеснай працы і канферэнцый</translation>
 <translation id="3433144818443565002">Галасавы і відэачат</translation>
@@ -1987,7 +1983,6 @@
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4832961164064927107">Барбекю і грыль</translation>
 <translation id="4834250788637067901">Спосабы аплаты, прапановы і адрасы, якія выкарыстоўваюць Google Pay</translation>
-<translation id="4839087176073128681">Плаціце карткай хутчэй і абараняйце яе даныя з дапамогай перадавых тэхналогій бяспекі Google.</translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
 <translation id="484671803914931257">Атрымайце скідку ад прадаўца "<ph name="MERCHANT_NAME" />" і не толькі</translation>
@@ -2595,7 +2590,6 @@
 <translation id="6045164183059402045">Шаблон накладання</translation>
 <translation id="6047233362582046994">Калі вы разумееце рызыкі бяспекі, можаце <ph name="BEGIN_LINK" />наведаць гэты сайт<ph name="END_LINK" /> да таго, як шкодныя праграмы будуць выдалены.</translation>
 <translation id="6047927260846328439">Праз гэта змесціва вас могуць падмануць і прымусіць усталяваць праграмнае забеспячэнне або выдаць асабістую інфармацыю. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Каб выйсці з поўнаэкраннага рэжыму, націсніце і ўтрымлівайце "<ph name="ACCELERATOR" />"</translation>
 <translation id="6049056807983403918">Канверт B4</translation>
 <translation id="6049488691372270142">Дастаўка старонак</translation>
 <translation id="6049975101166779351">Догляд дзіцяці</translation>
@@ -2714,7 +2708,6 @@
 <translation id="6270066318535733958">Лодачны спорт</translation>
 <translation id="6272088941196661550">Пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome</translation>
 <translation id="6272383483618007430">Абнаўленне Google</translation>
-<translation id="6279183038361895380">Націсніце "<ph name="ACCELERATOR" />", каб убачыць курсор</translation>
 <translation id="6280223929691119688">Немагчыма адправіць на гэты адрас. Выберыце іншы адрас.</translation>
 <translation id="6284292079994426700">26 x 38 цаляў</translation>
 <translation id="6284449872909111707">Абмен тэкставымі і імгненнымі паведамленнямі</translation>
@@ -3756,7 +3749,6 @@
 <translation id="8241707690549784388">Старонка, на якую вы спрабуеце перайсці, выкарыстоўвала ўведзеныя вамі звесткі. Калі вярнуцца на яе, у выніку можа быць паўторна зробленае вамі дзеянне. Працягнуць?</translation>
 <translation id="8241712895048303527">Блакіраваць на гэтым сайце</translation>
 <translation id="8242426110754782860">Працягнуць</translation>
-<translation id="8245703462678310750">Націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|, каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку.</translation>
 <translation id="8246482227229072868">Пярсцёнкі</translation>
 <translation id="8249296373107784235">Скасаваць</translation>
 <translation id="824968735947741546">Выконваецца пераклад з мовы "<ph name="SOURCE" />" (распазнана аўтаматычна) на мову "<ph name="TARGET" />"</translation>

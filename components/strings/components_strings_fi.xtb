@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">Vedensuodattimet ja -puhdistimet</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1036881361735705143">Kirjekuori C4</translation>
-<translation id="1036982837258183574">Poistu koko näytön tilasta painikkeella |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1038106730571050514">Näytä ehdotukset</translation>
 <translation id="1038842779957582377">tuntematon nimi</translation>
 <translation id="1041998700806130099">Työpaikkasivun viesti</translation>
@@ -160,7 +159,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1282358575813748144">Veneet ja muut vesikulkuneuvot</translation>
 <translation id="1283977499362032052">Ansioluettelot ja portfoliot</translation>
 <translation id="1285320974508926690">Älä käännä tätä sivustoa</translation>
-<translation id="1288548991597756084">Tallenna kortti turvallisesti</translation>
 <translation id="1292571435393770077">Lokero 16</translation>
 <translation id="1292701964462482250">Tietokoneelle asennettu ohjelmisto estää Chromea muodostamasta turvallista yhteyttä verkkoon (vain Windows-tietokoneilla)</translation>
 <translation id="1293797321964802402">Kirjekuori 228mm x 279 mm</translation>
@@ -286,7 +284,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1507202001669085618">&lt;p&gt;Näet tämän virheen, jos käyttämäsi Wi-Fi-portaali edellyttää kirjautumista ennen verkon käyttöä.&lt;/p&gt;
     &lt;p&gt;Korjaa virhe valitsemalla &lt;strong&gt;Yhdistä&lt;/strong&gt; sivulla, jota yrität avata.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Luettelo historiamerkinnöistä</translation>
-<translation id="1516097932025103760">Se salataan ja tallennetaan turvallisesti. CVC:tä ei koskaan tallenneta.</translation>
 <translation id="151720253492607760">Jatka kieltämistä</translation>
 <translation id="1517433312004943670">Puhelinnumero vaaditaan</translation>
 <translation id="1519264250979466059">Koontipäivä</translation>
@@ -1261,7 +1258,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="342781501876943858">Chromium suosittelee salasanan vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
 <translation id="3428151540071562330">Yksi tai useampi DnsOverHttpsTemplates-palvelinmallien URI-tunnuksista on virheellinen, eikä niitä käytetä.</translation>
 <translation id="3428789896412418755">Ryhmittelyhistoria</translation>
-<translation id="3431216045099978607">Voit poistua koko näytön tilasta ja nähdä latauksen painamalla |<ph name="ACCELERATOR" />|.</translation>
 <translation id="3432601291244612633">Sulje sivu</translation>
 <translation id="3433111389595862568">Yhteiskäyttö- ja konferenssiohjelmistot</translation>
 <translation id="3433144818443565002">Ääni- ja videopuhelut</translation>
@@ -1988,7 +1984,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="483241715238664915">Laita varoitukset päälle</translation>
 <translation id="4832961164064927107">Grillaus</translation>
 <translation id="4834250788637067901">Maksutavat, tarjoukset ja osoitteet Google Payta käyttäen</translation>
-<translation id="4839087176073128681">Maksa seuraavalla kerralla nopeammin ja suojaa korttisi Googlen alan johtavalla suojauksella.</translation>
 <translation id="4840250757394056958">Tarkista Chrome-historiasi</translation>
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ja muut voivat tarjota alennuksia</translation>
@@ -2596,7 +2591,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6045164183059402045">Asetusmalli</translation>
 <translation id="6047233362582046994">Jos ymmärrät käyntiä koskevat turvallisuusriskit, voit <ph name="BEGIN_LINK" />siirtyä tälle sivustolle<ph name="END_LINK" /> jo ennen haitallisten sovellusten poistamista.</translation>
 <translation id="6047927260846328439">Tämä sisältö saattaa yrittää huijata sinua asentamaan ohjelmistoja tai paljastamaan henkilökohtaisia tietoja. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">Paina pitkään |<ph name="ACCELERATOR" />|, niin poistut koko näytön tilasta.</translation>
 <translation id="6049056807983403918">Kirjekuori B4</translation>
 <translation id="6049488691372270142">Sivun toimitus</translation>
 <translation id="6049975101166779351">Lastenhoito</translation>
@@ -2715,7 +2709,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6270066318535733958">Veneily</translation>
 <translation id="6272088941196661550">Jatka toimintoa, niin näet oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="6272383483618007430">Google-päivitys</translation>
-<translation id="6279183038361895380">Näytä kursori painamalla |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6280223929691119688">Toimitus ei onnistu tähän osoitteeseen. Valitse eri osoite.</translation>
 <translation id="6284292079994426700">26 x 38 tuumaa</translation>
 <translation id="6284449872909111707">Tekstiviestit ja pikaviestit</translation>
@@ -3756,7 +3749,6 @@ Lisätietoja:
 <translation id="8241707690549784388">Etsimäsi sivu käytti antamiasi tietoja. Sivulle palaaminen voi johtaa jokaisen tekemäsi toiminnon toistamiseen. Haluatko jatkaa?</translation>
 <translation id="8241712895048303527">Estä tällä sivustolla</translation>
 <translation id="8242426110754782860">Jatka</translation>
-<translation id="8245703462678310750">Voit poistua koko näytön tilasta ja nähdä latauksen painamalla pitkään |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8246482227229072868">Sormukset</translation>
 <translation id="8249296373107784235">Keskeytä</translation>
 <translation id="824968735947741546">Käännetään <ph name="SOURCE" /> (automaattisesti tunnistettu) kielelle <ph name="TARGET" /></translation>

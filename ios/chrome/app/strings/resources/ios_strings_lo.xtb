@@ -631,6 +631,7 @@
 <translation id="4282944936010261425">ບໍ່ມີບັນຫາດ້ານຄວາມປອດໄພທີ່ທ່ານຄວນແກ້ໄຂ.</translation>
 <translation id="4286718549648564014">ຍ້າຍທີ່ຢູ່ໄປໃສ່ບັນຊີ <ph name="USER_EMAIL" /> ຂອງທ່ານແລ້ວ</translation>
 <translation id="428768789042547925">ມີຫຍັງໃໝ່</translation>
+<translation id="429074084062258019">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="4293080268407233932">ຊອກຫາ</translation>
 <translation id="4302248187517737842">ບໍ່ມີຊື່ຜູ້ໃຊ້ ••••••••</translation>
 <translation id="4302415908542657649">ການແບ່ງປັນລະຫັດຜ່ານ</translation>
@@ -1268,6 +1269,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7524055474074101597">ເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານ ແລະ ອື່ນໆທົ່ວແອັບ.</translation>
 <translation id="7527917367892640435">ຕິດຕາມພັດສະດຸຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="7531345132340165516">ເວັບໄຊປັດຈຸບັນ</translation>
+<translation id="75362970626182391">ກຸ່ມແຖບໃໝ່</translation>
 <translation id="7537586195939242955">ຂໍ​ອະ​ໄພ​, ບັດຜ່ານ​ຂອງ​ທ່ານ​ບໍ່​ສາ​ມາດຕິດ​ຕັ້ງ​ໃສ່​ປຶ້ມ​ຜ່ານ​ໃນ​ເວ​ລາ​ນີ້​ໄດ້.</translation>
 <translation id="754655535278952384">ກວດສອບແລ້ວ <ph name="TIME" /></translation>
 <translation id="7552154146060018538">ແຖບຫຼ້າສຸດທີ່ໃຊ້ໃນ <ph name="SOURCE_DEVICE" /></translation>

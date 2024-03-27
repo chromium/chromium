@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
+<translation id="8730621377337864115">Fine</translation>
 <translation id="8730999928494395583">La tua attività in queste schede di navigazione in incognito verrà rimossa da questo dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_MONTHS_ONE" /> mese fa}other{Creato <ph name="NUM_MONTHS_MANY" /> mesi fa}}</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>

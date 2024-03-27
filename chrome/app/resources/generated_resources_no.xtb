@@ -1686,7 +1686,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2252017960592955005">Visningsbeskyttelse (betaversjon)</translation>
 <translation id="2253318212986772520">Kan ikke hente PPD for <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Velg hva du vil dele med <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Vis passord og passnøkler fra Google-kontoen din</translation>
 <translation id="2255077166240162850">Denne enheten er låst til et annet domene eller en annen modus.</translation>
 <translation id="2255317897038918278">Microsoft tidsangivelse</translation>
 <translation id="2256115617011615191">Start på nytt nå</translation>
@@ -5118,7 +5117,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="488211015466188466">Følg nettstedet</translation>
 <translation id="4882312758060467256">Har tilgang til dette nettstedet</translation>
-<translation id="4882752944049998623">Passordet er lagret i Google-kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Nettsteder bruker vanligvis mikrofonen din for å kunne tilby kommunikasjonsfunksjoner, som videochat</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-nettsteder</translation>
 <translation id="48838266408104654">&amp;Oppgavebehandling</translation>

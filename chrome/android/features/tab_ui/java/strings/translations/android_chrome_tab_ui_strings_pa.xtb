@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਬੰਦ ਕਰੋ}other{ਚੁਣੀਆਂ ਹੋਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="8398929769197326728">ਨਵਾਂ ਫੋਲਡਰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">ਘੱਟ ਕੀਮਤ</translation>
+<translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8730999928494395583">ਇਨ੍ਹਾਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਵਿਚਲੀ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> ਮਹੀਨਾ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}one{<ph name="NUM_MONTHS_MANY" /> ਮਹੀਨਾ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}other{<ph name="NUM_MONTHS_MANY" /> ਮਹੀਨੇ ਪਹਿਲਾਂ ਬਣਾਇਆ ਗਿਆ}}</translation>
 <translation id="8820741577754260431">ਆਪਣੀਆਂ ਟੈਬਾਂ 'ਤੇ ਘਟੀ ਕੀਮਤ ਦੇਖੋ</translation>

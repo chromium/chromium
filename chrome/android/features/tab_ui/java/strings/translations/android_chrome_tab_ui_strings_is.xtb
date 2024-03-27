@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Loka <ph name="TABS_COUNT_ONE" /> völdum flipa}one{Loka <ph name="TABS_COUNT_MANY" /> völdum flipa}other{Loka <ph name="TABS_COUNT_MANY" /> völdum flipum}}</translation>
 <translation id="8398929769197326728">Ný mappa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Lægra verð</translation>
+<translation id="8730621377337864115">Lokið</translation>
 <translation id="8730999928494395583">Virknin þín í þessum huliðsflipum verður fjarlægð úr þessu tæki</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Búinn til fyrir <ph name="NUM_MONTHS_ONE" /> mánuði}one{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuði}other{Búinn til fyrir <ph name="NUM_MONTHS_MANY" /> mánuðum}}</translation>
 <translation id="8820741577754260431">Sjá verðlækkanir á flipum</translation>

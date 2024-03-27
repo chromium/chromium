@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Закрити <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Дешевше</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Дані про ваші дії на цих анонімних вкладках буде вилучено з пристрою</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Створено <ph name="NUM_MONTHS_ONE" /> місяць тому}one{Створено <ph name="NUM_MONTHS_MANY" /> місяць тому}few{Створено <ph name="NUM_MONTHS_MANY" /> місяці тому}many{Створено <ph name="NUM_MONTHS_MANY" /> місяців тому}other{Створено <ph name="NUM_MONTHS_MANY" /> місяця тому}}</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>

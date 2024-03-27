@@ -631,6 +631,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4282944936010261425">Ni varnostnih težav, ki bi jih morali odpraviti.</translation>
 <translation id="4286718549648564014">Naslov je bil premaknjen v račun <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novosti</translation>
+<translation id="429074084062258019">{count,plural, =1{Dodaj zavihek skupini}one{Dodaj zavihke skupini}two{Dodaj zavihke skupini}few{Dodaj zavihke skupini}other{Dodaj zavihke skupini}}</translation>
 <translation id="4293080268407233932">Iskanje</translation>
 <translation id="4302248187517737842">Ni uporabniškega imena ••••••••</translation>
 <translation id="4302415908542657649">Deljenje gesla</translation>
@@ -1268,6 +1269,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7524055474074101597">Dostopajte do gesel in drugega v aplikacijah.</translation>
 <translation id="7527917367892640435">Paketu že sledite</translation>
 <translation id="7531345132340165516">Trenutna stran</translation>
+<translation id="75362970626182391">Nova skupina zavihkov</translation>
 <translation id="7537586195939242955">Elementa trenutno ni mogoče namesiti v Passbook.</translation>
 <translation id="754655535278952384">Preverjeno: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Zadnji zavihek, odprt v napravi <ph name="SOURCE_DEVICE" /></translation>

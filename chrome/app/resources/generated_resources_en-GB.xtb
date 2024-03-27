@@ -1691,7 +1691,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2252017960592955005">Viewing protection (beta)</translation>
 <translation id="2253318212986772520">Unable to retrieve PPD for <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Choose what to share with <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Show passwords and passkeys from your Google Account</translation>
 <translation id="2255077166240162850">This device was locked to different domain or mode.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">Restart now</translation>
@@ -3414,6 +3413,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3577487026101678864">File sync on</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardware data collection</translation>
 <translation id="3581605050355435601">Auto configure IP address</translation>
+<translation id="3581861561942370740">Search download history</translation>
 <translation id="3582057310199111521">Entered on deceptive site and found in data breach</translation>
 <translation id="3582299299336701326">Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn colour inversion on and off.</translation>
 <translation id="3584169441612580296">Read and change photos, music and other media from your computer</translation>
@@ -5125,7 +5125,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="488211015466188466">Follow Site</translation>
 <translation id="4882312758060467256">Has access to this site</translation>
-<translation id="4882752944049998623">Password saved in your Google Account, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Sites usually use your microphone for communication features like video chatting</translation>
 <translation id="4883436287898674711">All <ph name="WEBSITE_1" /> sites</translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
@@ -5332,6 +5331,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="5057127674016624293">Scanning is taking longer than expected</translation>
+<translation id="5057480703570202545">Download history</translation>
 <translation id="5059241099014281248">Restrict sign-in</translation>
 <translation id="5059429103770496207">Display style</translation>
 <translation id="5059526285558225588">Choose what to share</translation>
@@ -5741,6 +5741,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5390677308841849479">Dark red and orange</translation>
 <translation id="5392192690789334093">Allowed to send notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
+<translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395498824851198390">Default font</translation>
 <translation id="5397378439569041789">Enrol kiosk or signage device</translation>
 <translation id="5397794290049113714">You</translation>

@@ -631,6 +631,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4282944936010261425">Nema sigurnosnih problema koje biste trebali riješiti.</translation>
 <translation id="4286718549648564014">Adresa je premještena na račun <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Šta je novo</translation>
+<translation id="429074084062258019">{count,plural, =1{Dodaj karticu grupi}one{Dodaj kartice grupi}few{Dodaj kartice grupi}other{Dodaj kartice grupi}}</translation>
 <translation id="4293080268407233932">Pretraži</translation>
 <translation id="4302248187517737842">Nema korisničkog imena ••••••••</translation>
 <translation id="4302415908542657649">Dijeljenje lozinke</translation>
@@ -1268,6 +1269,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7524055474074101597">Pristupajte lozinkama i još mnogo toga na svim aplikacijama.</translation>
 <translation id="7527917367892640435">Paket se već prati</translation>
 <translation id="7531345132340165516">Trenutna web lokacija</translation>
+<translation id="75362970626182391">Nova grupa kartica</translation>
 <translation id="7537586195939242955">Nažalost, trenutno nije moguće instalirati Pass na Passbook.</translation>
 <translation id="754655535278952384">Označeno <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Posljednja korištena kartica na <ph name="SOURCE_DEVICE" /></translation>

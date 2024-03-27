@@ -301,6 +301,7 @@
 <translation id="2638662041295312666">መግቢያ ምስል</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> አልበም ተመርጧል</translation>
 <translation id="2652403576514495859">በቃል ማስጻፍን ያንቁ ወይም ይቀያይሩ</translation>
+<translation id="2653659639078652383">አስገባ</translation>
 <translation id="2656001153562991489">ለChromebook Plus ለሚመለከተው የተወሰነ</translation>
 <translation id="2665671725390405060">የአነጋገር ስርዓትን ያዳምጡ</translation>
 <translation id="267442004702508783">አድስ</translation>
@@ -469,6 +470,7 @@
 <translation id="3877066159641251281">ትርጉምን ያዳምጡ</translation>
 <translation id="3885327323343477505">የማያ ገፅ አሳራፊን ቀይር</translation>
 <translation id="3889914174935857450">ቀንን ዳግም አስጀምር</translation>
+<translation id="3897092660631435901">ምናሌ</translation>
 <translation id="391412459402535266">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ።</translation>
 <translation id="3916998944874125962">ቅጽበታዊ ገጽ እይታን የሚያነሳ</translation>
 <translation id="3923184630988645767">የውሂብ አጠቃቀም</translation>
@@ -752,6 +754,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5588233547254916455">ደብዳቤዎች</translation>
 <translation id="5595623927872580850">ግራጫ</translation>
+<translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5600027863942488546">የ<ph name="KEY_NAME" /> ቁልፍ ተሞክሯል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5630438231335788050">ባውሃስ</translation>

@@ -116,6 +116,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Jauna mape — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
+<translation id="8730621377337864115">Gatavs</translation>
 <translation id="8730999928494395583">Jūsu darbības šajās inkognito cilnēs tiks noņemtas no šīs ierīces</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_MONTHS_ONE" /> mēneša}zero{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}one{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēneša}other{Izveidota pirms <ph name="NUM_MONTHS_MANY" /> mēnešiem}}</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>

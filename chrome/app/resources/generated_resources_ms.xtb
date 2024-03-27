@@ -1691,7 +1691,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2252017960592955005">Perlindungan tontonan (Beta)</translation>
 <translation id="2253318212986772520">Tidak dapat mendapatkan PPD untuk <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253927598983295051">Pilih kandungan yang mahu dikongsi dengan <ph name="APP_NAME" /></translation>
-<translation id="2254263139042585032">Tunjukkan kata laluan dan kunci laluan daripada Google Account anda</translation>
 <translation id="2255077166240162850">Peranti ini telah dikunci pada domain atau mod yang lain.</translation>
 <translation id="2255317897038918278">Pengecopan Waktu Microsoft</translation>
 <translation id="2256115617011615191">Mulakan semula sekarang</translation>
@@ -2510,6 +2509,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2845382757467349449">Sentiasa Paparkan Bar Penanda Halaman</translation>
 <translation id="2845751331501453107">Semasa anda menyemak imbas, sama ada iklan yang anda lihat diperibadikan atau tidak adalah bergantung pada tetapan ini, <ph name="BEGIN_LINK1" />Iklan yang dicadangkan laman<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />tetapan kuki<ph name="LINK_END2" /> anda dan sama ada laman yang anda lihat memeribadikan iklan atau tidak</translation>
 <translation id="284581348330507117">Buat kata laluan yang unik</translation>
+<translation id="284884486564166077">Cari sebarang imej dengan Lens</translation>
 <translation id="2849035674501872372">Cari</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN anda telah ditambah</translation>
@@ -5126,7 +5126,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="488211015466188466">Ikuti Laman</translation>
 <translation id="4882312758060467256">Boleh mengakses tapak ini</translation>
-<translation id="4882752944049998623">Kata laluan disimpan dalam Google Account anda, <ph name="USER_EMAIL" /></translation>
 <translation id="4882919381756638075">Tapak biasanya menggunakan mikrofon anda untuk ciri komunikasi seperti sembang video</translation>
 <translation id="4883436287898674711">Semua tapak <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Pengurus Tugas</translation>

@@ -24,7 +24,6 @@
 <translation id="1035709686865413354">فلاتر مياه ومطهّرات</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1036881361735705143">‏ظرف C4</translation>
-<translation id="1036982837258183574">اضغط على |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة</translation>
 <translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038842779957582377">اسم غير معروف</translation>
 <translation id="1041998700806130099">رسالة ورقة المهمة</translation>
@@ -160,7 +159,6 @@
 <translation id="1282358575813748144">قوارب ومراكب</translation>
 <translation id="1283977499362032052">سير ذاتية وسابقات أعمال</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
-<translation id="1288548991597756084">حفظ البطاقة بأمان</translation>
 <translation id="1292571435393770077">الدُرج 16</translation>
 <translation id="1292701964462482250">‏"هناك برامج على جهاز الكمبيوتر تمنع اتصال Chrome بالويب بأمان" (أجهزة الكمبيوتر المزوّدة بنظام التشغيل Windows فقط)</translation>
 <translation id="1293797321964802402">ظرف مقاس 23 × 28 سم</translation>
@@ -286,7 +284,6 @@
 <translation id="1507202001669085618">‏&lt;p&gt;سيظهر هذا الخطأ عند استخدام بوابة شبكة Wi-Fi تتطلّب تسجيل الدخول قبل الاتصال بالإنترنت.&lt;/p&gt;
     &lt;p&gt;لإصلاح الخطأ، انقر على &lt;strong&gt;"اتصال"&lt;/strong&gt; في الصفحة التي تحاول فتحها.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">قائمة إدخالات السجل</translation>
-<translation id="1516097932025103760">‏ستكون البطاقة مشفّرة، وسيتم حفظها بأمان ولن يتم تخزين رمز التحقق من البطاقة (CVC) مطلقًا.</translation>
 <translation id="151720253492607760">مواصلة عدم السماح</translation>
 <translation id="1517433312004943670">رقم الهاتف مطلوب</translation>
 <translation id="1519264250979466059">تاريخ الإصدار</translation>
@@ -1261,7 +1258,6 @@
 <translation id="342781501876943858">‏يُوصي Chromium بإعادة تحديد كلمة المرور في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="3428151540071562330">‏إنّ معرّف واحد أو أكثر من معرّفات الموارد المنتظمة (URI) لنموذج خادم DnsOverHttpsTemplates غير صالح وبالتالي لن يتم استخدامه.</translation>
 <translation id="3428789896412418755">السجلّ المجمَّع</translation>
-<translation id="3431216045099978607">اضغط على مفتاح |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة والاطّلاع على عملية التنزيل.</translation>
 <translation id="3432601291244612633">إغلاق الصفحة</translation>
 <translation id="3433111389595862568">برامج تعاون ومكالمات الفيديو</translation>
 <translation id="3433144818443565002">محادثة الفيديو والمحادثة الصوتية</translation>
@@ -1990,7 +1986,6 @@
 <translation id="483241715238664915">تفعيل التحذيرات</translation>
 <translation id="4832961164064927107">شواء</translation>
 <translation id="4834250788637067901">‏طرق الدفع والعروض الترويجية والعناوين التي تستخدم Google Pay</translation>
-<translation id="4839087176073128681">‏يمكنك الدفع بشكل أسرع في المرة القادمة وحماية بطاقتك باستخدام ميزات الأمان الرائدة من Google.</translation>
 <translation id="4840250757394056958">‏عرض سجلّ Chrome</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="484671803914931257">الحصول على خصم على منتجات <ph name="MERCHANT_NAME" /> والمزيد</translation>
@@ -2598,7 +2593,6 @@
 <translation id="6045164183059402045">نموذج الأمر</translation>
 <translation id="6047233362582046994">إذا كنت على دراية بالمخاطر التي تهدد أمانك، يمكنك <ph name="BEGIN_LINK" />زيارة الموقع الإلكتروني هذا<ph name="END_LINK" /> قبل أن تتم إزالة التطبيقات الضارة.</translation>
 <translation id="6047927260846328439">قد يحاول هذا المحتوى خداعك لتثبيت برامج أو الكشف عن معلومات شخصية. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">الضغط مع الاستمرار على |<ph name="ACCELERATOR" />| للخروج من وضع ملء الشاشة</translation>
 <translation id="6049056807983403918">‏ظرف B4</translation>
 <translation id="6049488691372270142">تسليم الصفحة</translation>
 <translation id="6049975101166779351">عناية بالأطفال</translation>
@@ -2717,7 +2711,6 @@
 <translation id="6270066318535733958">ركوب قوارب</translation>
 <translation id="6272088941196661550">‏يمكنك استئناف سجلّ أنشطة البحث والتصفُّح للاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="6272383483618007430">‏تحديث Google</translation>
-<translation id="6279183038361895380">اضغط على |<ph name="ACCELERATOR" />| لعرض المؤشر</translation>
 <translation id="6280223929691119688">لا يمكن التسليم على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="6284292079994426700">26 × 38 بوصة</translation>
 <translation id="6284449872909111707">رسائل نصية وفورية</translation>
@@ -3759,7 +3752,6 @@
 <translation id="8241707690549784388">استخدمت الصفحة التي تبحث عنها المعلومات التي أدخلتها وقد يؤدّي الرجوع إليها  إلى تكرار  جميع الإجراءات السابقة. هل تريد المتابعة؟</translation>
 <translation id="8241712895048303527">الحظر على هذا الموقع</translation>
 <translation id="8242426110754782860">متابعة</translation>
-<translation id="8245703462678310750">اضغط مع الاستمرار على |<ph name="ACCELERATOR" />| للخروج من وضع "ملء الشاشة" والاطّلاع على عملية التنزيل.</translation>
 <translation id="8246482227229072868">خواتم</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="824968735947741546">جارٍ ترجمة اللغة <ph name="SOURCE" /> (التي تم رصدها تلقائيًا) إلى اللغة <ph name="TARGET" /></translation>

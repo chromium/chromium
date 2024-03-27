@@ -301,6 +301,7 @@
 <translation id="2638662041295312666">Oturum açma resmi</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albümü seçildi</translation>
 <translation id="2652403576514495859">dikteyi etkinleştirin veya devre dışı bırakın</translation>
+<translation id="2653659639078652383">Gönder</translation>
 <translation id="2656001153562991489">Chromebook Plus'a özel</translation>
 <translation id="2665671725390405060">Telaffuzunu dinleyin</translation>
 <translation id="267442004702508783">yenile</translation>
@@ -469,6 +470,7 @@
 <translation id="3877066159641251281">Çeviriyi dinle</translation>
 <translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
 <translation id="3889914174935857450">Tarihi sıfırlayın</translation>
+<translation id="3897092660631435901">Menü</translation>
 <translation id="391412459402535266">Cihaz test edilemiyor. Test etmek için dizüstü bilgisayar moduna geçin.</translation>
 <translation id="3916998944874125962">ekran görüntüsü al</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
@@ -752,6 +754,7 @@
 <translation id="5583640892426849032">Geri al tuşu</translation>
 <translation id="5588233547254916455">Mektuplar</translation>
 <translation id="5595623927872580850">gri</translation>
+<translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tuşu test edildi</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5630438231335788050">bauhaus</translation>
@@ -837,7 +840,7 @@
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
-<translation id="6108952804512516814">Yapay zeka ile oluştur</translation>
+<translation id="6108952804512516814">Yapay zeka ile üret</translation>
 <translation id="6112878310391905610">Bu ayar, yöneticiniz tarafından belirleniyor</translation>
 <translation id="6113701710518389813">Yukarı ok</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> albüm daha</translation>
