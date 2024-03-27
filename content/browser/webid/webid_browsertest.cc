@@ -1029,63 +1029,59 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
       static_cast<MockDigitalIdentityProvider*>(
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
-  const char request[] = R"(
+  std::string_view request = R"(
   {
    "providers": [ {
-      "params": {
-         "extraParamAsNeededByDigitalCredentials": "true",
-         "nonce": "1234",
-         "readerPublicKey": "test_reader_public_key"
-      },
-      "responseFormat": [ "mdoc" ],
-      "selector": {
-         "fields": [ {
-            "equals": "org.iso.18013.5.1.mDL",
-            "name": "doctype"
-         }, {
-            "name": "org.iso.18013.5.1.family_name"
-         }, {
-            "name": "org.iso.18013.5.1.portrait"
-         } ]
-      }
+      "protocol": "urn:openid.net:oid4vp",
+      "request": "{
+        \"client_id\": \"client.example.org\",
+        \"client_id_scheme\": \"web-origin\",
+        \"nonce\": \"n-0S6_WzA2Mj\",
+        \"presentation_definition\": {
+        }
+      }",
    } ]
   }
   )";
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
+  std::string json;
+  // Invalid whitespace and newlines are added to the request string to make it
+  // easier to read in this test, so we remove them before actually making the
+  // JSON comparison in IsJson below.
+  base::RemoveChars(request, "\n ", &json);
+
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(json), _))
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
-                "test-mdoc",
+                "&vp_token=token&presentation_submission=bar",
                 DigitalIdentityProvider::RequestStatusForMetrics::kSuccess);
           }));
 
   std::string script = R"(
         (async () => {
-          const credential = await navigator.identity.get({
+          const {data} = await navigator.identity.get({
             digital: {
               providers: [{
-                selector: {
-                  format: ['mdoc'],
-                  doctype: 'org.iso.18013.5.1.mDL',
-                  fields: [
-                    'org.iso.18013.5.1.family_name',
-                    'org.iso.18013.5.1.portrait',
-                  ]
-                },
-                params: {
-                  nonce: '1234',
-                  readerPublicKey: 'test_reader_public_key',
-                  extraParamAsNeededByDigitalCredentials: true,
-                },
+                protocol: "urn:openid.net:oid4vp",
+                request: JSON.stringify({
+                  // Based on https://github.com/openid/OpenID4VP/issues/125
+                  client_id: "client.example.org",
+                  client_id_scheme: "web-origin",
+                  nonce: "n-0S6_WzA2Mj",
+                  presentation_definition: {
+                    // Presentation Exchange request, omitted for brevity
+                  }
+                })
               }],
             },
           });
-          return credential.data;
+          const response = new URLSearchParams(data);
+          return response.get("vp_token");
         }) ()
     )";
 
-  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+  EXPECT_EQ("token", EvalJs(shell(), script));
 }
 
 // Test that when there's a pending mdoc request, a second `get` call should be
