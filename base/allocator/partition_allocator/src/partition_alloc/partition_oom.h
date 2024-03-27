@@ -5,8 +5,8 @@
 // Holds functions for generating OOM errors from PartitionAlloc. This is
 // distinct from oom.h in that it is meant only for use in PartitionAlloc.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_OOM_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_OOM_H_
+#ifndef PARTITION_ALLOC_PARTITION_OOM_H_
+#define PARTITION_ALLOC_PARTITION_OOM_H_
 
 #include <cstddef>
 
@@ -37,4 +37,4 @@ extern OomFunction g_oom_handling_function;
 
 }  // namespace partition_alloc
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_OOM_H_
+#endif  // PARTITION_ALLOC_PARTITION_OOM_H_

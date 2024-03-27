@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
+#ifdef PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 #error This header is meant to be included only once by allocator_shim*.cc
 #endif
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
+#ifndef PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
+#define PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 
 #include <bit>
 #include <cerrno>
@@ -286,4 +286,4 @@ PA_ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 
 }  // extern "C"
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
+#endif  // PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_

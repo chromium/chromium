@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
 
 #include <cassert>
 #include <cstddef>
@@ -395,4 +395,4 @@ void RawLog(int level, const char* message);
 
 }  // namespace partition_alloc::internal::logging
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_

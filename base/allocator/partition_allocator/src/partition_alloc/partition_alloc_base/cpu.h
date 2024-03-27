@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
@@ -106,4 +106,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CPU final {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_CPU_H_

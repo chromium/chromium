@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
+#ifndef PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
+#define PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
 
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -65,4 +65,4 @@ PartitionDirectMapExtent::FromSlotSpanMetadata(SlotSpanMetadata* slot_span) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
+#endif  // PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_

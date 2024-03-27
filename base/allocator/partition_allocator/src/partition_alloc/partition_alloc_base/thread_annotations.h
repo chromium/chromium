@@ -34,8 +34,8 @@
 // you want to refer to is not in scope, you may use a member pointer
 // (e.g. &MyClass::mutex_) to refer to a mutex in some (unknown) object.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
@@ -261,4 +261,4 @@ inline T& ts_unchecked_read(T& v) PA_NO_THREAD_SAFETY_ANALYSIS {
 
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_

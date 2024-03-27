@@ -9,8 +9,8 @@
 // to an address space. The code below creates VMOs for each memory allocations
 // and maps them to the default address space of the current process.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
+#ifndef PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
+#define PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
 
 #include <fidl/fuchsia.kernel/cpp/fidl.h>
 #include <lib/component/incoming/cpp/protocol.h>
@@ -266,4 +266,4 @@ bool TryRecommitSystemPagesInternal(
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
+#endif  // PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POOL_OFFSET_FREELIST_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POOL_OFFSET_FREELIST_H_
+#ifndef PARTITION_ALLOC_POOL_OFFSET_FREELIST_H_
+#define PARTITION_ALLOC_POOL_OFFSET_FREELIST_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -153,4 +153,4 @@ class PoolOffsetFreelistEntry {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POOL_OFFSET_FREELIST_H_
+#endif  // PARTITION_ALLOC_POOL_OFFSET_FREELIST_H_

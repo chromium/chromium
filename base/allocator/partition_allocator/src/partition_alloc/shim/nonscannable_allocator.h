@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_NONSCANNABLE_ALLOCATOR_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_NONSCANNABLE_ALLOCATOR_H_
+#ifndef PARTITION_ALLOC_SHIM_NONSCANNABLE_ALLOCATOR_H_
+#define PARTITION_ALLOC_SHIM_NONSCANNABLE_ALLOCATOR_H_
 
 #include <atomic>
 #include <cstddef>
@@ -87,4 +87,4 @@ using NonQuarantinableAllocator = internal::NonScannableAllocatorImpl<false>;
 
 }  // namespace allocator_shim
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_NONSCANNABLE_ALLOCATOR_H_
+#endif  // PARTITION_ALLOC_SHIM_NONSCANNABLE_ALLOCATOR_H_

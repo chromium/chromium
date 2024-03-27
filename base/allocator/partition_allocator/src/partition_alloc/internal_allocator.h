@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
+#ifndef PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
+#define PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
 
 #include <new>
 #include <type_traits>
@@ -58,4 +58,4 @@ void DestroyAtInternalPartition(T* ptr) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
+#endif  // PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_

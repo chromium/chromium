@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STACK_STACK_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STACK_STACK_H_
+#ifndef PARTITION_ALLOC_STACK_STACK_H_
+#define PARTITION_ALLOC_STACK_STACK_H_
 
 #include <cstdint>
 #include <functional>
@@ -34,7 +34,8 @@ class StackVisitor {
 
 // Abstraction over the stack. Supports handling of:
 // - native stack;
-// - SafeStack: https://releases.llvm.org/10.0.0/tools/clang/docs/SafeStack.html
+// - SafeStack:
+// https://releases.llvm.org/10.0.0/tools/clang/docs/SafeStack.html
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Stack final {
  public:
   // Sets start of the stack.
@@ -81,4 +82,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) StackTopRegistry {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_STACK_STACK_H_
+#endif  // PARTITION_ALLOC_STACK_STACK_H_

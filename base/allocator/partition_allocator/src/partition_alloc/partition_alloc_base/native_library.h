@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NATIVE_LIBRARY_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NATIVE_LIBRARY_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_NATIVE_LIBRARY_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_NATIVE_LIBRARY_H_
 
 // This file defines a cross-platform "NativeLibrary" type which represents
 // a loadable module.
@@ -94,4 +94,4 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NATIVE_LIBRARY_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_NATIVE_LIBRARY_H_

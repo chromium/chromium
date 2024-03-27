@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
+#ifndef PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
+#define PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
 
 #include "build/build_config.h"
 
@@ -28,4 +28,4 @@ void arm_bti_test_function_end(void);
 }
 #endif  // defined(ARCH_CPU_ARM64)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
+#endif  // PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
 
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/memory/scoped_policy.h"
@@ -148,4 +148,4 @@ class ScopedTypeRef {
 
 }  // namespace partition_alloc::internal::base::apple
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_

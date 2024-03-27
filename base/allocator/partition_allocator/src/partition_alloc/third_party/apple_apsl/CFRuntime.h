@@ -24,8 +24,8 @@
         Copyright (c) 1999-2009, Apple Inc. All rights reserved.
 */
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_THIRD_PARTY_APPLE_APSL_CFRUNTIME_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_THIRD_PARTY_APPLE_APSL_CFRUNTIME_H_
+#ifndef PARTITION_ALLOC_THIRD_PARTY_APPLE_APSL_CFRUNTIME_H_
+#define PARTITION_ALLOC_THIRD_PARTY_APPLE_APSL_CFRUNTIME_H_
 
 /* All CF "instances" start with this structure.  Never refer to
  * these fields directly -- they are for CF's use and may be added
@@ -41,4 +41,4 @@ typedef struct __ChromeCFRuntimeBase {
 #endif
 } ChromeCFRuntimeBase;
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_THIRD_PARTY_APPLE_APSL_CFRUNTIME_H_
+#endif  // PARTITION_ALLOC_THIRD_PARTY_APPLE_APSL_CFRUNTIME_H_

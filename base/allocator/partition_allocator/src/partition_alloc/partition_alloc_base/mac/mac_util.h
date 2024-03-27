@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
 
 #include <AvailabilityMacros.h>
 #include <CoreGraphics/CoreGraphics.h>
@@ -22,4 +22,4 @@ __attribute__((const)) int MacOSMajorVersion();
 
 }  // namespace partition_alloc::internal::base::mac
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
