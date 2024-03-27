@@ -339,16 +339,16 @@
 
       <!-- Editor Menu -->
       <!-- TODO(b/286268215): Finalize these strings and make them translatable. -->
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature.">
         Write faster and with more confidence
       </message>
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_DESC" desc="Description text in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
-        Use Help me write to create a draft or refine existing work, powered by Google AI.
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_DESC" desc="Description text in the dialog that is shown to introduce the Editor Menu feature.">
+        Use Help me write to create a draft or refine existing work, powered by Google AI
       </message>
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature.">
         No thanks
       </message>
-      <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature.">
         Try it
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode.">
