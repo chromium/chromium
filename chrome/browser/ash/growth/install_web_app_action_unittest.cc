@@ -28,12 +28,10 @@ constexpr char kTestProfileName[] = "user@gmail.com";
 
 constexpr char kAppInstallTemplate[] = R"(
     {
-      "installWebAppParams": {
-          "appTitle": "Test App 1",
-          "%s": "%s",
-          "iconPath": "https://www.test.com/icon",
-          "launchInStandaloneWindow": true
-      }
+      "appTitle": "Test App 1",
+      "%s": "%s",
+      "iconPath": "https://www.test.com/icon",
+      "launchInStandaloneWindow": true
     }
 )";
 
