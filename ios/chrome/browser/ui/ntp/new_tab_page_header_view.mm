@@ -55,10 +55,8 @@ const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
-const CGFloat kHintLabelFakeboxLeadingSpace = 18.0;
-const CGFloat kHintLabelOmniboxLeadingSpace = 13.0;
-const CGFloat kLargeFakeboxHintLabelFakeboxLeadingSpace = 26.0;
-const CGFloat kLargeFakeboxHintLabelOmniboxLeadingSpace = 20.0;
+const CGFloat kHintLabelFakeboxLeadingSpace = 26.0;
+const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
 
 // The amount to inset the Fakebox from the rest of the modules on Home, when
 // Large Fakebox is enabled.
@@ -73,14 +71,12 @@ const CGFloat kIconDividerHeight = 13.0;
 
 // The leading space / padding in the unscrolled fakebox.
 CGFloat HintLabelFakeboxLeadingSpace() {
-  return IsIOSLargeFakeboxEnabled() ? kLargeFakeboxHintLabelFakeboxLeadingSpace
-                                    : kHintLabelFakeboxLeadingSpace;
+  return kHintLabelFakeboxLeadingSpace;
 }
 
 // The leading space / padding in the scrolled fakebox.
 CGFloat HintLabelOmniboxLeadingSpace() {
-  return IsIOSLargeFakeboxEnabled() ? kLargeFakeboxHintLabelOmniboxLeadingSpace
-                                    : kHintLabelOmniboxLeadingSpace;
+  return kHintLabelOmniboxLeadingSpace;
 }
 
 // The amount to inset the Fakebox from the rest of the modules on Home.
@@ -621,12 +617,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   if (previousTraitCollection.userInterfaceStyle !=
       self.traitCollection.userInterfaceStyle) {
-    if (IsIOSLargeFakeboxEnabled()) {
-      // The fakebox background can be a blended color, which will not
-      // automatically update when dark/light mode is changed. It needs to be
-      // manually updated here.
-      [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
-    }
+    // The fakebox background can be a blended color, which will not
+    // automatically update when dark/light mode is changed. It needs to be
+    // manually updated here.
+    [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
   }
 }
 

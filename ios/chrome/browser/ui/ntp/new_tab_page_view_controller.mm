@@ -43,7 +43,6 @@
 
 namespace {
 // Animation time for the shift up/down animations to focus/defocus omnibox.
-const CGFloat kShiftTilesDownAnimationDuration = 0.2;
 const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // The minimum height of the feed container.
 const CGFloat kFeedContainerMinimumHeight = 1000;
@@ -242,9 +241,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   [super viewWillAppear:animated];
   _appearing = YES;
 
-  if (IsIOSLargeFakeboxEnabled()) {
-    self.headerViewController.view.alpha = 1;
-  }
+  self.headerViewController.view.alpha = 1;
   self.headerViewController.showing = YES;
 
   [self updateNTPLayout];
@@ -772,18 +769,14 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 - (void)omniboxDidBecomeFirstResponder {
   self.omniboxFocused = YES;
-  if (IsIOSLargeFakeboxEnabled()) {
-    self.headerViewController.view.alpha = 0.01;
-  }
+  self.headerViewController.view.alpha = 0.01;
 }
 
 - (void)omniboxWillResignFirstResponder {
   self.omniboxFocused = NO;
-  if (IsIOSLargeFakeboxEnabled()) {
-    if ([self isFakeboxPinned]) {
-      // Return early to allow the omnibox defocus animation show.
-      return;
-    }
+  if ([self isFakeboxPinned]) {
+    // Return early to allow the omnibox defocus animation to show.
+    return;
   }
 
   [self omniboxDidResignFirstResponder];
@@ -794,9 +787,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     return;
   }
 
-  if (IsIOSLargeFakeboxEnabled()) {
-    self.headerViewController.view.alpha = 1;
-  }
+  self.headerViewController.view.alpha = 1;
   [self shiftTilesDownForOmniboxDefocus];
 }
 
@@ -934,41 +925,16 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 #pragma mark - Scrolling Animations
 
-// Updates the collection view's scroll view offset for the next frame of the
-// shiftTilesDownForOmniboxDefocus animation.
-- (void)shiftTilesDownAnimationDidFire:(CADisplayLink*)link {
-  // If this is the first frame of the animation, store the starting timestamp
-  // and do nothing.
-  if (self.shiftTileStartTime == -1) {
-    self.shiftTileStartTime = link.timestamp;
-    return;
-  }
-
-  CFTimeInterval timeElapsed = link.timestamp - self.shiftTileStartTime;
-  double percentComplete = timeElapsed / kShiftTilesDownAnimationDuration;
-  // Ensure that the percentage cannot be above 1.0.
-  if (percentComplete > 1.0) {
-    percentComplete = 1.0;
-  }
-
-  // Find how much the collection view should be scrolled up in the next frame.
-  CGFloat yOffset = (1.0 - percentComplete) * [self pinnedOffsetY] +
-                    percentComplete * MAX([self pinnedOffsetY] -
-                                              self.collectionShiftingOffset,
-                                          -[self heightAboveFeed]);
-  self.collectionView.contentOffset = CGPointMake(0, yOffset);
-
-  if (percentComplete == 1.0) {
-    [link invalidate];
-    self.collectionShiftingOffset = 0;
-    // Reset `shiftTileStartTime` to its sentinel value.
-    self.shiftTileStartTime = -1;
-  }
-}
-
 - (void)shiftTilesUpToFocusOmnibox {
   // Add gesture recognizer to collection view when the omnibox is focused.
   [self.view addGestureRecognizer:self.tapGestureRecognizer];
+
+  // Stop any existing focus/defocus animation.
+  if (self.animator.running) {
+    [self.animator stopAnimation:NO];
+    [self.animator finishAnimationAtPosition:UIViewAnimatingPositionStart];
+    self.animator = nil;
+  }
 
   if (self.collectionView.decelerating) {
     // Stop the scrolling if the scroll view is decelerating to prevent the
@@ -990,13 +956,6 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
         MAX(-[self heightAboveFeed],
             AlignValueToPixel([self.headerViewController pinnedOffsetY] -
                               [self adjustedOffset].y));
-  }
-
-  // Stop any existing focus/defocus animation.
-  if (self.animator.running) {
-    [self.animator stopAnimation:NO];
-    [self.animator finishAnimationAtPosition:UIViewAnimatingPositionStart];
-    self.animator = nil;
   }
 
   // If the fake omnibox is already at the final position, just focus it and
@@ -1092,8 +1051,7 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 // Returns YES if scroll should be skipped when focusing the omnibox.
 - (BOOL)shouldSkipScrollToFocusOmnibox {
-  return self.scrolledToMinimumHeight ||
-         (IsIOSLargeFakeboxEnabled() && IsSplitToolbarMode(self));
+  return self.scrolledToMinimumHeight || IsSplitToolbarMode(self);
 }
 
 // Returns the collection view containing all NTP content.
@@ -1175,49 +1133,29 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     return;
   }
 
-  if (IsIOSLargeFakeboxEnabled()) {
-    // Skip the full CADisplayLink animation below, and use a simpler animation
-    // to scroll back into position.
-    CGFloat yOffset = MAX([self pinnedOffsetY] - self.collectionShiftingOffset,
-                          -[self heightAboveFeed]);
-    self.headerViewController.view.alpha = 0;
-    __weak __typeof(self) weakSelf = self;
-    self.inhibitScrollPositionUpdates = YES;
-    self.animator = [[UIViewPropertyAnimator alloc]
-        initWithDuration:kMaterialDuration6
-                   curve:UIViewAnimationCurveEaseInOut
-              animations:^{
-                weakSelf.headerViewController.view.alpha = 1;
-                weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
-                [weakSelf updateFakeOmniboxForScrollPosition];
-              }];
-    [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-      weakSelf.inhibitScrollPositionUpdates = NO;
-      weakSelf.collectionShiftingOffset = 0;
-      weakSelf.headerViewController.view.alpha = 1;
-      weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
-      weakSelf.scrolledToMinimumHeight = NO;
-    }];
-    self.animator.interruptible = YES;
-    [self.animator startAnimation];
-    return;
-  }
-
-  self.scrolledToMinimumHeight = NO;
-
-  // CADisplayLink is used for this animation instead of the standard UIView
-  // animation because the standard animation did not properly convert the
-  // fakebox from its scrolled up mode to its scrolled down mode. Specifically,
-  // calling `UICollectionView reloadData` adjacent to the standard animation
-  // caused the fakebox's views to jump incorrectly. CADisplayLink avoids this
-  // problem because it allows `shiftTilesDownAnimationDidFire` to directly
-  // control each frame.
-  // TODO(crbug.com/1403613): Remove the use of this, listen to the UIScrollView
-  // delegate.
-  CADisplayLink* link = [CADisplayLink
-      displayLinkWithTarget:self
-                   selector:@selector(shiftTilesDownAnimationDidFire:)];
-  [link addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+  // Use a simple animation to scroll back into position.
+  CGFloat yOffset = MAX([self pinnedOffsetY] - self.collectionShiftingOffset,
+                        -[self heightAboveFeed]);
+  self.headerViewController.view.alpha = 0;
+  __weak __typeof(self) weakSelf = self;
+  self.inhibitScrollPositionUpdates = YES;
+  self.animator = [[UIViewPropertyAnimator alloc]
+      initWithDuration:kMaterialDuration6
+                 curve:UIViewAnimationCurveEaseInOut
+            animations:^{
+              weakSelf.headerViewController.view.alpha = 1;
+              weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
+              [weakSelf updateFakeOmniboxForScrollPosition];
+            }];
+  [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+    weakSelf.inhibitScrollPositionUpdates = NO;
+    weakSelf.collectionShiftingOffset = 0;
+    weakSelf.headerViewController.view.alpha = 1;
+    weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
+    weakSelf.scrolledToMinimumHeight = NO;
+  }];
+  self.animator.interruptible = YES;
+  [self.animator startAnimation];
 }
 
 // Pins the fake omnibox to the top of the NTP.

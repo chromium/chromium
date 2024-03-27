@@ -626,7 +626,8 @@
     return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedLargeFakebox
                           : OmniboxFocusTrigger::kUnpinnedLargeFakebox;
   }
-  return OmniboxFocusTrigger::kPinnedFakebox;
+  return _fakeboxPinned ? OmniboxFocusTrigger::kPinnedFakebox
+                        : OmniboxFocusTrigger::kUnpinnedFakebox;
 }
 
 - (void)focusTransitionDidComplete:(BOOL)focused

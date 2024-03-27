@@ -2104,12 +2104,9 @@ enum HeaderBehaviour {
         [self.typingShield setHidden:YES];
       }];
 
-  ProceduralBlock completion = nil;
-  if (IsIOSLargeFakeboxEnabled()) {
+  ProceduralBlock completion = ^{
     // Show the NTP's fake toolbar after the defocus animation completes.
-    completion = ^{
-      [self.ntpCoordinator locationBarDidResignFirstResponder];
-    };
+    [self.ntpCoordinator locationBarDidResignFirstResponder];
   };
 
   [self.toolbarCoordinator transitionToLocationBarFocusedState:NO

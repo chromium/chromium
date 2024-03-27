@@ -19,6 +19,7 @@ enum class OmniboxFocusTrigger {
   kPinnedFakebox,
   kPinnedLargeFakebox,
   kUnpinnedLargeFakebox,
+  kUnpinnedFakebox,
 };
 
 // Orchestrator for the animation occurring when the omnibox is

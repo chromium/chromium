@@ -104,7 +104,8 @@
   if (animated) {
     // Prepare for animation.
     BOOL shouldCrossfadeEditAndSteadyViews =
-        _trigger != OmniboxFocusTrigger::kUnpinnedLargeFakebox;
+        _trigger != OmniboxFocusTrigger::kUnpinnedLargeFakebox &&
+        _trigger != OmniboxFocusTrigger::kUnpinnedFakebox;
     if (shouldCrossfadeEditAndSteadyViews) {
       [self.locationBarAnimatee offsetTextFieldToMatchSteadyView];
       [self.locationBarAnimatee setEditViewFaded:YES];
