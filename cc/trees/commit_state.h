@@ -159,6 +159,11 @@ struct CC_EXPORT CommitState {
   PropertyTreesChangeState property_trees_change_state;
   base::flat_set<raw_ptr<Layer, CtnExperimental>>
       layers_that_should_push_properties;
+
+  // Specific scrollers may request clobbering the active delta value on the
+  // compositor when committing the current scroll offset to ensure the scroll
+  // is set to a specific value, overriding any compositor updates.
+  base::flat_set<ElementId> scrollers_clobbering_active_value;
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <script src="view_transition_util.js"></script>
+    <style>
+      :root {
+        width: 100%;
+        height: 100%;
+      }
+      :root.finished {
+        background: red;
+      }
+      body {
+        width: 100%;
+        margin: 0;
+      }
+      .strip {
+        width: 100%;
+        height: 20svh;
+        background-color: dodgerblue;
+        margin-bottom: 20svh;
+      }
+      .transitioned .strip {
+        background-color: limegreen;
+      }
+      /* Step function means we'll keep the old snapshots in their initial state
+       * for half the duration, then the new snapshots in their final state for
+       * the last half of the duration. Note that tests pause the animation
+       * and control the progress programmatically so the duration is used only
+       * for live testing. */
+      ::view-transition-group(*),
+      ::view-transition-new(*),
+      ::view-transition-old(*) {
+        animation-duration: 5s;
+        animation-timing-function: steps(2, jump-none);
+      }
+      @view-transition {
+        navigation: auto;
+      }
+      ::view-transition-old(root) {
+        transform: translateX(-50vw);
+        animation: none;
+        opacity: 1;
+      }
+      ::view-transition-new(root) {
+        transform: translateX(50vw);
+        animation: none;
+        opacity: 1;
+      }
+      #top {
+        background-color: peachpuff;
+        height: 30px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      #controlsEdge {
+        background-color: peachpuff;
+        height: 30px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        top: 56px;
+        left: 0;
+      }
+    </style>
+    <script>
+      const params = new URLSearchParams(location.search);
+      if (params.has('next')) {
+        document.documentElement.classList.add('transitioned');
+      }
+      addEventListener('pagereveal', e => {
+        // Ensure the live page looks sufficiently different from the transition
+        // to prevent confusion when triaging screenshots.
+        if (e.viewTransition) {
+          e.viewTransition.finished.then(
+              () => document.documentElement.classList.add('finished'));
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="top">
+      <div>
+        TOP LEFT
+      </div>
+      <div>
+        TOP RIGHT
+      </div>
+    </div>
+    <div id="controlsEdge">
+      <div>
+        CONTROLS LEFT
+      </div>
+      <div>
+        CONTROLS RIGHT
+      </div>
+    </div>
+    <div class="strip"></div>
+    <div class="strip"></div>
+    <div class="strip"></div>
+    <div class="strip"></div>
+    <div class="strip"></div>
+    <div style="height:200vh">
+    </div>
+  </body>
+</html>

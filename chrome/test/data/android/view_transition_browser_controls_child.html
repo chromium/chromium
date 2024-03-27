@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <script src="view_transition_util.js"></script>
+    <style>
+      :root {
+        width: 100%;
+        height: 100%;
+        background: red;
+        view-transition-name: none;
+      }
+      :root.transitioned {
+        background: limegreen;
+      }
+      :root.finished {
+        background: red;
+      }
+      body {
+        width: 100%;
+        margin: 0;
+      }
+      @view-transition {
+        navigation: auto;
+      }
+      /* Step function means we'll keep the old snapshots in their initial state
+       * for half the duration, then the new snapshots in their final state for
+       * the last half of the duration. Note that tests pause the animation
+       * and control the progress programmatically so the duration is used only
+       * for live testing. */
+      ::view-transition-group(*),
+      ::view-transition-new(*),
+      ::view-transition-old(*) {
+        animation-duration: 5s;
+        animation-timing-function: steps(2, jump-none);
+      }
+      #fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: thistle;
+        height: 70px;
+        width: 100%;
+        view-transition-name: fixed;
+      }
+      #nonfixed {
+        position: absolute;
+        left: calc(50vw - 100px/2 + 5px);
+        top: calc(56px + 70px + 30px + 5px);
+        width: 90px;
+        height: 90px;
+        background-color: lightgreen;
+        view-transition-name: nonfixed;
+      }
+      #target {
+        height: 100px;
+        width: 100px;
+        position: absolute;
+        left: calc(50vw - 100px/2);
+        top: calc(56px + 70px + 30px);
+        background-color: dodgerblue;
+      }
+      #top {
+        background-color: peachpuff;
+        height: 56px;
+        border-top: 2px solid black;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: top;
+        position: absolute;
+        top: 70px;
+        left: 0;
+      }
+      #controlsEdge {
+        background-color: peachpuff;
+        height: 30px;
+        border-top: 2px solid black;
+        box-sizing: border-box;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: top;
+        position: absolute;
+        top: calc(56px + 70px);
+        left: 0;
+      }
+    </style>
+    <script>
+      const params = new URLSearchParams(location.search);
+      if (params.has('next')) {
+        document.documentElement.classList.add('transitioned');
+      }
+      addEventListener('pagereveal', e => {
+        // Ensure the live page looks sufficiently different from the transition
+        // to prevent confusion when triaging screenshots.
+        if (e.viewTransition) {
+          e.viewTransition.finished.then(
+              () => document.documentElement.classList.add('finished'));
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="top">
+      <div>
+        TOP LEFT
+      </div>
+      <div>
+        TOP RIGHT
+      </div>
+    </div>
+    <div id="controlsEdge">
+      <div>
+        CONTROLS LEFT
+      </div>
+      <div>
+        CONTROLS RIGHT
+      </div>
+    </div>
+    <div id="target"></div>
+    <div id="nonfixed"></div>
+    <div id="fixed"></div>
+    <div style="height:200vh"></div>
+  </body>
+</html>

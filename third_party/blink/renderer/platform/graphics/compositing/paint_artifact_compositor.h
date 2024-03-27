@@ -169,6 +169,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   bool DirectlySetScrollOffset(CompositorElementId,
                                const gfx::PointF& scroll_offset);
 
+  void DropCompositorScrollDeltaNextCommit(CompositorElementId);
+
   uint32_t GetMainThreadScrollingReasons(const ScrollPaintPropertyNode&) const;
   // Returns true if the scroll node is currently composited in cc.
   bool UsesCompositedScrolling(const ScrollPaintPropertyNode&) const;

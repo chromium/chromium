@@ -688,6 +688,13 @@ std::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
   return std::nullopt;
 }
 
+void VisualViewport::DropCompositorScrollDeltaNextCommit() {
+  if (auto* paint_artifact_compositor = GetPaintArtifactCompositor()) {
+    paint_artifact_compositor->DropCompositorScrollDeltaNextCommit(
+        scroll_element_id_);
+  }
+}
+
 int VisualViewport::ScrollbarThickness() const {
   DCHECK(IsActiveViewport());
   return ScrollbarThemeOverlayMobile::GetInstance().ScrollbarThickness(

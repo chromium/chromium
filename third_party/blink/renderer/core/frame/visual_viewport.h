@@ -313,6 +313,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   }
   std::optional<blink::Color> CSSScrollbarThumbColor() const;
 
+  void DropCompositorScrollDeltaNextCommit() override;
+
  private:
   bool DidSetScaleOrLocation(float scale,
                              bool is_pinch_gesture_active,

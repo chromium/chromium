@@ -2057,4 +2057,10 @@ double LayerTreeHost::GetPercentDroppedFrames() const {
   return proxy_->GetPercentDroppedFrames();
 }
 
+void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {
+  pending_commit_state()->scrollers_clobbering_active_value.insert(
+      scroll_element);
+  SetNeedsCommit();
+}
+
 }  // namespace cc

@@ -216,6 +216,12 @@ void PropertyTreeManager::DirectlySetScrollOffset(
   }
 }
 
+void PropertyTreeManager::DropCompositorScrollDeltaNextCommit(
+    cc::LayerTreeHost& host,
+    CompositorElementId element_id) {
+  host.DropActiveScrollDeltaNextCommit(element_id);
+}
+
 static uint32_t NonCompositedMainThreadScrollingReasons(
     const ScrollPaintPropertyNode& scroll) {
   // TODO(crbug.com/1414885): We can't distinguish kNotOpaqueForTextAndLCDText

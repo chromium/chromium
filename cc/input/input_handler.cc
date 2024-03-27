@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"

@@ -88,9 +88,11 @@ class ViewTransitionStyleTracker
                          const AtomicString& view_transition_name) const;
 
   // Indicate that capture was requested. This verifies that the combination of
-  // set elements and names is valid. Returns true if capture phase started, and
-  // false if the transition should be aborted.
-  bool Capture();
+  // set elements and names is valid. Returns true if capture phase started,
+  // and false if the transition should be aborted. If `snap_browser_controls`
+  // is set, browser controls will be forced to a fully shown state to ensure a
+  // consistent state for cross-document transitions.
+  bool Capture(bool snap_browser_controls);
 
   // Notifies when caching snapshots for elements in the old DOM finishes. This
   // is dispatched before script is notified to ensure this class releases any
@@ -316,6 +318,8 @@ class ViewTransitionStyleTracker
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
   viz::ViewTransitionElementResourceId GenerateResourceId() const;
+
+  void SnapBrowserControlsToFullyShown();
 
   Member<Document> document_;
 

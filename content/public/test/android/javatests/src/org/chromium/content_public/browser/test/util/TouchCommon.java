@@ -16,11 +16,17 @@ import java.util.concurrent.ExecutionException;
 /**
  * Touch-related functionality reused across test cases.
  *
- * Differs from {@link TestTouchUtils} as this does not rely on injecting events via
+ * <p>Differs from {@link TestTouchUtils} as this does not rely on injecting events via
  * Instrumentation. Injecting events is more brittle (e.g. it will fail if a dialog pops up in front
  * of the test), and simulating the touch events in the manner used here is just as effective.
  */
 public class TouchCommon {
+
+    // The amount of time between a pointer up and the last move event such that the pointer is
+    // considered to be stopped. This must be larger than kAssumePointerUpStoppedTime in
+    // ui/events/velocity_tracker/velocity_tracker.cc.
+    private static final int POINTER_UP_STOPPED_TIME_MS = 200;
+
     // Prevent instantiation.
     private TouchCommon() {}
 
@@ -44,6 +50,46 @@ public class TouchCommon {
             float toY,
             int stepCount,
             long duration) {
+        performDragInternal(
+                view, fromX, toX, fromY, toY, stepCount, duration, /* preventFling= */ false);
+    }
+
+    /**
+     * Synchronously perform a start-to-end drag event on the specified view with deterministic
+     * timing (events do not use system time).
+     *
+     * <p>Differs from the plain performDrag method by pausing before dispatching the up event to
+     * avoid generating a fling gesture.
+     *
+     * @param view The view to dispatch events to.
+     * @param fromX X coordinate of the initial touch, in screen coordinates.
+     * @param toX X coordinate of the drag destination, in screen coordinates.
+     * @param fromY X coordinate of the initial touch, in screen coordinates.
+     * @param toY Y coordinate of the drag destination, in screen coordinates.
+     * @param stepCount How many move steps to include in the drag.
+     * @param duration The amount of time that will be simulated for the event stream in ms.
+     */
+    public static void performDragNoFling(
+            View view,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long duration) {
+        performDragInternal(
+                view, fromX, toX, fromY, toY, stepCount, duration, /* preventFling= */ true);
+    }
+
+    private static void performDragInternal(
+            View view,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long duration,
+            boolean preventFling) {
         // Use the current time as the base to add to.
         final long downTime = SystemClock.uptimeMillis();
         float[] windowXY = screenToWindowCoordinates(view, fromX, fromY);
@@ -64,7 +110,7 @@ public class TouchCommon {
         for (int i = 0; i < stepCount; ++i) {
             y += yStep;
             x += xStep;
-            eventTime += i * duration / stepCount;
+            eventTime += duration / stepCount;
             windowXY = screenToWindowCoordinates(view, x, y);
             dispatchTouchEvent(
                     view,
@@ -75,6 +121,11 @@ public class TouchCommon {
                             windowXY[0],
                             windowXY[1],
                             0));
+        }
+
+        if (preventFling) {
+            eventTime += POINTER_UP_STOPPED_TIME_MS;
+            SystemClock.sleep(POINTER_UP_STOPPED_TIME_MS);
         }
 
         // Finally send the up event.
@@ -106,6 +157,33 @@ public class TouchCommon {
             int stepCount,
             long duration) {
         performDrag(getRootViewForActivity(activity), fromX, toX, fromY, toY, stepCount, duration);
+    }
+
+    /**
+     * Synchronously perform a start-to-end drag event on the specified view with deterministic
+     * timing (events do not use system time).
+     *
+     * <p>Differs from the plain performDrag method by pausing before dispatching the up event to
+     * avoid generating a fling gesture.
+     *
+     * @param activity The main activity to dispatch events to.
+     * @param fromX X coordinate of the initial touch, in screen coordinates.
+     * @param toX X coordinate of the drag destination, in screen coordinates.
+     * @param fromY X coordinate of the initial touch, in screen coordinates.
+     * @param toY Y coordinate of the drag destination, in screen coordinates.
+     * @param stepCount How many move steps to include in the drag.
+     * @param duration The amount of time that will be simulated for the event stream in ms.
+     */
+    public static void performDragNoFling(
+            Activity activity,
+            float fromX,
+            float toX,
+            float fromY,
+            float toY,
+            int stepCount,
+            long duration) {
+        performDragNoFling(
+                getRootViewForActivity(activity), fromX, toX, fromY, toY, stepCount, duration);
     }
 
     /**

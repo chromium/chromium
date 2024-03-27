@@ -714,7 +714,7 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
   return true;
 }
 
-bool ViewTransitionStyleTracker::Capture() {
+bool ViewTransitionStyleTracker::Capture(bool snap_browser_controls) {
   DCHECK_EQ(state_, State::kIdle);
 
   // Flatten `pending_transition_element_names_` into a vector of names and
@@ -725,6 +725,16 @@ bool ViewTransitionStyleTracker::Capture() {
   bool success = FlattenAndVerifyElements(elements, transition_names);
   if (!success)
     return false;
+
+  // In a cross-document transition, top controls are animated to shown when
+  // the navigation starts. When capturing the outgoing snapshots, the
+  // animation may still be in progress. Ensure controls are snapped to fully
+  // showing before capturing. This ensures the root clip is at the correct
+  // size and that fixed elements are positioned by layout in the same way they
+  // will be on the incoming view.
+  if (snap_browser_controls) {
+    SnapBrowserControlsToFullyShown();
+  }
 
   // Now we know that we can start a transition. Update the state and populate
   // `element_data_map_`.
@@ -1510,14 +1520,15 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
   int left = 0;
 
   if (document.GetFrame()->IsOutermostMainFrame()) {
-    // TODO(bokan): This assumes any shown ratio implies controls are shown. We
-    // many need to do some synchronization to make this work seamlessly with
-    // URL bar animations.
     BrowserControls& controls = document.GetPage()->GetBrowserControls();
-    if (controls.TopShownRatio())
+    // If Blink's size is currently smaller to accommodate the browser controls,
+    // outset the snapshot root to include the area occupied by browser
+    // controls. Note: for cross-document transitions, this relies on the
+    // browser resizing Blink before requesting the outgoing document snapshot.
+    if (controls.ShrinkViewport()) {
       top += controls.TopHeight() - controls.TopMinHeight();
-    if (controls.BottomShownRatio())
       bottom += controls.BottomHeight() - controls.BottomMinHeight();
+    }
 
     bottom += document.GetFrame()
                   ->GetWidgetForLocalRoot()
@@ -2024,6 +2035,50 @@ ViewTransitionStyleTracker::GenerateResourceId() const {
   auto* supplement = ViewTransitionSupplement::FromIfExists(*document_);
   CHECK(supplement);
   return supplement->GenerateResourceId(transition_id_);
+}
+
+void ViewTransitionStyleTracker::SnapBrowserControlsToFullyShown() {
+  CHECK(document_->GetFrame()->IsOutermostMainFrame());
+  BrowserControls& controls = document_->GetPage()->GetBrowserControls();
+  ScrollableArea& root_scroller = *document_->View()->GetScrollableArea();
+
+  // If (and only if) the page is scrolled to a non-0 offset, the top controls
+  // animation keeps content from moving by producing a "counter-scroll" as the
+  // controls animate. Preemptively perform this counter-scroll now, so that it
+  // is included when snapshot transforms are computed.
+  if (root_scroller.ScrollPosition().y()) {
+    float counter_scroll = controls.TopHeight() - controls.ContentOffset();
+
+    // Without FractionalScrollOffsets, the compositor commits only integer
+    // values of scroll delta, but it always sends exact browser controls
+    // delta. This means our computed counter-scroll does not include the
+    // fractional part remaining in the compositor delta. The full counter
+    // scroll will be an integer, since the compositor rounds the sent
+    // offset, we round the counter-scroll as well which snaps it in the
+    // opposing direction the compositor snapped to account for the missing
+    // (or additional) pixel in the compositor's committed delta.
+    if (!RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
+      counter_scroll = base::ClampRound(counter_scroll);
+    }
+
+    // Fully show the controls also ensures scroll bounds can accommodate the
+    // counter-scroll so do this before scrolling.
+    controls.SetShownRatio(1, 1);
+    root_scroller.ScrollBy(ScrollOffset(0, counter_scroll),
+                           mojom::blink::ScrollType::kCompositor);
+
+    // The next commit should overwrite any scrolling that occurred on the
+    // compositor thread since it last committed values. Since the compositor
+    // may still be animating the browser controls, and we add the full
+    // controls distance here, any deltas that have occurred since this
+    // BeginMainFrame would be double-applied. More generally, the snapshot
+    // transform matrices will be computed in this Blink frame; any deltas
+    // that have occurred on the compositor since this frame was issued won't
+    // be accounted for in snapshot transforms.
+    root_scroller.DropCompositorScrollDeltaNextCommit();
+  } else {
+    controls.SetShownRatio(1, 1);
+  }
 }
 
 }  // namespace blink

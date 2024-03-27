@@ -19,7 +19,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -898,6 +897,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool WaitedForCommitForTesting() const {
     return waited_for_protected_sequence_;
   }
+
+  // See CommitState::scrollers_clobbering_active_value_.
+  void DropActiveScrollDeltaNextCommit(ElementId scroll_element);
 
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);

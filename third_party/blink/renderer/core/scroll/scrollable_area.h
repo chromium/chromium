@@ -612,6 +612,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   }
   virtual void SetTargetedSnapAreaId(const std::optional<cc::ElementId>&) {}
 
+  virtual void DropCompositorScrollDeltaNextCommit() {}
+
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either

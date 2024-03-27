@@ -445,8 +445,14 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       // Capture request pending -- create the request
-      case State::kCaptureRequestPending:
-        if (!style_tracker_->Capture()) {
+      case State::kCaptureRequestPending: {
+        // If we're capturing during a navigation, browser controls will be
+        // forced to show via animation. Ensure they're fully showing when
+        // performing the capture.
+        bool snap_browser_controls =
+            document_->GetFrame()->IsOutermostMainFrame() &&
+            creation_type_ == CreationType::kForSnapshot;
+        if (!style_tracker_->Capture(snap_browser_controls)) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
           break;
         }
@@ -473,7 +479,7 @@ void ViewTransition::ProcessCurrentState() {
         process_next_state = AdvanceTo(State::kCapturing);
         DCHECK(!process_next_state);
         break;
-
+      }
       case State::kCapturing:
         DCHECK(WaitsForNotification(state_));
         break;

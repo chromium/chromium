@@ -163,6 +163,13 @@ class PropertyTreeManager {
                                       CompositorElementId,
                                       const gfx::PointF&);
 
+  // Sets a bit so that the next commit from main will clear out any unsent
+  // scroll delta that's occurred on the compositor thread since the last
+  // BeginMainFrame. This can be used when Blink wants to ensure a commit will
+  // land on a specific scroll offset in the presence of composited animations.
+  static void DropCompositorScrollDeltaNextCommit(cc::LayerTreeHost&,
+                                                  CompositorElementId);
+
   static uint32_t GetMainThreadScrollingReasons(const cc::LayerTreeHost&,
                                                 const ScrollPaintPropertyNode&);
   static bool UsesCompositedScrolling(const cc::LayerTreeHost&,

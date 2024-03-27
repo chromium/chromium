@@ -13,6 +13,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/features.h"
+#include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/layers/layer.h"

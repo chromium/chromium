@@ -3060,6 +3060,16 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedBorderBoxSize() const {
       GetLayoutBox()->FirstFragment().PaintOffset().ToLayoutPoint());
 }
 
+void PaintLayerScrollableArea::DropCompositorScrollDeltaNextCommit() {
+  auto* frame_view = GetLayoutBox()->GetFrameView();
+  CHECK(frame_view);
+  if (auto* paint_artifact_compositor =
+          frame_view->GetPaintArtifactCompositor()) {
+    paint_artifact_compositor->DropCompositorScrollDeltaNextCommit(
+        GetScrollElementId());
+  }
+}
+
 gfx::Rect PaintLayerScrollableArea::ScrollingBackgroundVisualRect(
     const PhysicalOffset& paint_offset) const {
   const auto* box = GetLayoutBox();

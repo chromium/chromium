@@ -1075,6 +1075,19 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
   return true;
 }
 
+void PaintArtifactCompositor::DropCompositorScrollDeltaNextCommit(
+    CompositorElementId element_id) {
+  if (!root_layer_ || !root_layer_->layer_tree_host()) {
+    return;
+  }
+  auto* property_trees = root_layer_->layer_tree_host()->property_trees();
+  if (!property_trees->scroll_tree().FindNodeFromElementId(element_id)) {
+    return;
+  }
+  PropertyTreeManager::DropCompositorScrollDeltaNextCommit(
+      *root_layer_->layer_tree_host(), element_id);
+}
+
 uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
     const ScrollPaintPropertyNode& scroll) const {
   CHECK(root_layer_);

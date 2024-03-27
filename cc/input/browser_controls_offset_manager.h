@@ -120,6 +120,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
   double PredictViewportBoundsDelta(double current_bounds_delta,
                                     gfx::Vector2dF scroll_distance);
 
+  void ResetAnimations();
+
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
                                float controls_show_threshold,
@@ -128,7 +130,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
  private:
   class Animation;
 
-  void ResetAnimations();
   void SetupAnimation(AnimationDirection direction);
   void StartAnimationIfNecessary();
   void ResetBaseline();

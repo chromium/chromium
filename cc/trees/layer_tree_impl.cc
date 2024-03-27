@@ -34,6 +34,7 @@
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "cc/base/synced_property.h"
+#include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
@@ -626,8 +627,14 @@ void LayerTreeImpl::PullPropertiesFrom(
   TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
   lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
 
+  for (const ElementId& id : commit_state.scrollers_clobbering_active_value) {
+    property_trees()->scroll_tree_mutable().SetScrollOffsetClobberActiveValue(
+        id);
+  }
+
   // This must happen after synchronizing property trees and after pushing
-  // properties, which updates the clobber_active_value flag.
+  // properties,  which updates the clobber_active_value flag (specifically in
+  // Layer::PushPropertiesTo).
   // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
   property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
       unsafe_state.property_trees, this,
@@ -2894,6 +2901,14 @@ std::string LayerTreeImpl::LayerListAsJson() const {
 
 void LayerTreeImpl::AddViewTransitionRequest(
     std::unique_ptr<ViewTransitionRequest> request) {
+  if (IsActiveTree() && request->type() == ViewTransitionRequest::Type::kSave) {
+    // If the next frame will capture view transition snapshots, the main
+    // thread will have already computed all transforms based on the current
+    // location. Prevent any browser controls animation from ticking which
+    // would make the transition state inconsistent with what is visually
+    // displayed.
+    host_impl_->browser_controls_manager()->ResetAnimations();
+  }
   view_transition_requests_.push_back(std::move(request));
   // We need to send the request to viz.
   SetNeedsRedraw();

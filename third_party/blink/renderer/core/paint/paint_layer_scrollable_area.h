@@ -628,6 +628,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
     EnsureRareData().targeted_snap_area_id_ = id;
   }
 
+  void DropCompositorScrollDeltaNextCommit() override;
+
  private:
   bool NeedsHypotheticalScrollbarThickness(ScrollbarOrientation) const;
   int ComputeHypotheticalScrollbarThickness(

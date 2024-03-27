@@ -27,16 +27,21 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
+import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -54,7 +59,14 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>See https://www.w3.org/TR/css-view-transitions-1/
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=ViewTransitionOnNavigation",
+    // Resampling can make scroll offsets non-deterministic so turn it off to ensure hiding browser
+    // controls works reliably.
+    "disable-features=ResamplingScrollEvents",
+    "hide-scrollbars"
+})
 @Batch(Batch.PER_CLASS)
 public class ViewTransitionPixelTest {
     @Rule
@@ -82,6 +94,9 @@ public class ViewTransitionPixelTest {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
+        TestThreadUtils.runOnUiThreadBlocking(
+                TabStateBrowserControlsVisibilityDelegate::disablePageLoadDelayForTests);
+        FullscreenManagerTestUtils.disableBrowserOverrides();
     }
 
     private void startKeyboardTest(@VirtualKeyboardMode.EnumType int vkMode) throws Throwable {
@@ -207,8 +222,81 @@ public class ViewTransitionPixelTest {
         }
     }
 
+    private double getDeviceScaleFactor() {
+        return Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
+    }
+
+    private String getCurrentUrl() {
+        return ChromeTabUtils.getUrlStringOnUiThread(
+                mActivityTestRule.getActivity().getActivityTab());
+    }
+
+    private int getTopControlsHeightPx() {
+        BrowserControlsStateProvider browserControlsStateProvider =
+                mActivityTestRule.getActivity().getBrowserControlsManager();
+        return browserControlsStateProvider.getTopControlsHeight();
+    }
+
+    private int getTopControlsHeightDp() {
+        return (int) Math.floor(getTopControlsHeightPx() / getDeviceScaleFactor());
+    }
+
+    private void waitForBrowserControlsState(boolean shown) {
+        int topControlsHeight = getTopControlsHeightPx();
+        BrowserControlsStateProvider browserControlsStateProvider =
+                mActivityTestRule.getActivity().getBrowserControlsManager();
+
+        // The TopControlOffset is the offset of the controls top edge from the viewport top edge.
+        // So fully shown the offset is 0, fully hidden it is -controls_height.
+        int expectedPosition = shown ? 0 : -topControlsHeight;
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            browserControlsStateProvider.getTopControlOffset(),
+                            Matchers.is(expectedPosition));
+                });
+    }
+
+    private void hideBrowserControls() throws Throwable {
+        // Ensure controls start fully shown. A new renderer initializes with controls hidden and
+        // receives a signal to animate them to showing. Trying to hide the controls before that
+        // animation has completed is flaky.
+        waitForBrowserControlsState(/* shown= */ true);
+
+        FullscreenManagerTestUtils.waitForPageToBeScrollable(
+                mActivityTestRule.getActivity().getActivityTab());
+        waitForFramePresented();
+        int initialPageHeight = getPageInnerHeight();
+
+        int topControlsHeight = getTopControlsHeightPx();
+
+        float dragX = 50f;
+
+        // Drag slightly less than the full height of the controls. Releasing at this point will
+        // animate the controls to hidden but ensure we don't accidentally cause any scrolling of
+        // the page.
+        float dragStartY = topControlsHeight * 3;
+        float dragEndY = dragStartY - topControlsHeight * 0.85f;
+
+        long duration_ms = 1000;
+        int steps = 60;
+        TouchCommon.performDragNoFling(
+                mActivityTestRule.getActivity(),
+                dragX,
+                dragX,
+                dragStartY,
+                dragEndY,
+                steps,
+                duration_ms);
+
+        waitForBrowserControlsState(/* shown= */ false);
+
+        // Also wait for the browser controls to resize Blink before returning.
+        assertWaitForPageHeight(initialPageHeight + getTopControlsHeightDp());
+    }
+
     private double getKeyboardHeightDp() {
-        final double dpi = Coordinates.createFor(getWebContents()).getDeviceScaleFactor();
         double keyboardHeightPx =
                 mActivityTestRule
                         .getKeyboardDelegate()
@@ -218,7 +306,21 @@ public class ViewTransitionPixelTest {
                                         .getWindow()
                                         .getDecorView()
                                         .getRootView());
-        return keyboardHeightPx / dpi;
+        return keyboardHeightPx / getDeviceScaleFactor();
+    }
+
+    private void setLocationAndWaitForLoad(String url) {
+        ChromeTabUtils.waitForTabPageLoaded(
+                mActivityTestRule.getActivity().getActivityTab(),
+                url,
+                () -> {
+                    try {
+                        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                getWebContents(), "location = '" + url + "'");
+                    } catch (Throwable e) {
+                    }
+                },
+                /* secondsToWait= */ 10);
     }
 
     private Bitmap takeScreenshot() throws Throwable {
@@ -262,6 +364,12 @@ public class ViewTransitionPixelTest {
         JavaScriptUtils.runJavascriptWithAsyncResult(
                 getWebContents(),
                 "readyToStartPromise.then(() => domAutomationController.send(true));");
+    }
+
+    private void waitForTransitionReady() throws Throwable {
+        JavaScriptUtils.runJavascriptWithAsyncResult(
+                getWebContents(),
+                "transition.ready.then(() => domAutomationController.send(true));");
     }
 
     // After calling createTransitionAndWaitUntilDomUpdateDispatched to create a transition, this
@@ -458,6 +566,187 @@ public class ViewTransitionPixelTest {
 
         Bitmap newState = takeScreenshot();
         mRenderTestRule.compareForResult(newState, "wider-than-icb");
+
+        finishAnimations();
+    }
+
+    /**
+     * Test the root snapshot is correctly displayed when browser controls overlay the page.
+     *
+     * <p>Perform a cross-document transition from a starting state where the browser controls are
+     * hidden. The navigation will cause the browser controls to animate in, overlaying the content.
+     * Ensure the root snapshot is correctly captured and displayed so that the old snapshot matches
+     * the live incoming page.
+     *
+     * <p>The output screenshot should show blue strips (old snapshot) on the left and green strips
+     * (new snapshot) on the right. The strips should line up exactly. Only the "OVERLAY" peach bar
+     * should be visible and aligned with the viewport top edge.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
+    public void testBrowserControlsRootSnapshotControlsOverlay() throws Throwable {
+        String url = "/chrome/test/data/android/view_transition_browser_controls.html";
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        hideBrowserControls();
+
+        // Scrolling to a non-0 y offset will cause controls to overlay content when they're shown.
+        // Ensure we wait a frame before navigating so that the compositor receives the new scroll
+        // offset before controls start to show.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.scrollTo(0, 1)");
+        waitForFramePresented();
+        setLocationAndWaitForLoad(getCurrentUrl() + "?next");
+
+        waitForFramePresented();
+        waitForTransitionReady();
+
+        int oldPageScrollOffset = getTopControlsHeightDp() + 1;
+
+        // Scroll the incoming page too just so the strips should line up.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.scrollTo(0, " + oldPageScrollOffset + ")");
+
+        waitForFramePresented();
+        waitForFramePresented();
+        Bitmap newState = takeScreenshot();
+        mRenderTestRule.compareForResult(newState, "browser-controls-overlay-root");
+
+        finishAnimations();
+    }
+
+    /**
+     * Test the root snapshot is correctly displayed when browser controls push the page.
+     *
+     * <p>Perform a cross-document transition from a starting state where the browser controls are
+     * hidden. The navigation will cause the browser controls to animate in and push down the
+     * content (as opposed to overlaying it). Ensure the root snapshot is correctly captured and
+     * displayed so that the old snapshot matches the live incoming page.
+     *
+     * <p>The output screenshot should show blue strips (old snapshot) on the left and green strips
+     * (new snapshot) on the right. The strips should line up exactly. Both peach bars should be
+     * visible, with the "TOP" one at the viewport top edge.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
+    public void testBrowserControlsRootSnapshotControlsPush() throws Throwable {
+        String url = "/chrome/test/data/android/view_transition_browser_controls.html";
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        hideBrowserControls();
+
+        // Ensure the page is at offset 0. When scrolled to the top the controls animation will push
+        // the page down, rather than overlaying it. Ensure we wait a frame before navigating so
+        // that the compositor receives the new scroll offset before controls start to show.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.scrollTo(0, 0)");
+        waitForFramePresented();
+        setLocationAndWaitForLoad(getCurrentUrl() + "?next");
+
+        waitForFramePresented();
+        waitForTransitionReady();
+
+        waitForFramePresented();
+        waitForFramePresented();
+        Bitmap newState = takeScreenshot();
+        mRenderTestRule.compareForResult(newState, "browser-controls-push-root");
+
+        finishAnimations();
+    }
+
+    /**
+     * Test child snapshots are correctly displayed when browser controls overlay the page.
+     *
+     * <p>Ensures child snapshots are correctly positioned on the new page when the browser controls
+     * animation overlays page content. Tests for both in-flow (green box) and fixed (purple box)
+     * children.
+     *
+     * <p>The output should show a green box exactly centered in a blue box. The purple bar at the
+     * top should line up exactly with the black line on top of the "CONTROLS" peach bar.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
+    public void testBrowserControlsChildSnapshotControlsOverlay() throws Throwable {
+        String url = "/chrome/test/data/android/view_transition_browser_controls_child.html";
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        hideBrowserControls();
+
+        // Scrolling to a non-0 y offset will cause controls to overlay content when they're shown.
+        // Ensure we wait a frame before navigating so that the compositor receives the new scroll
+        // offset before controls start to show.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.scrollTo(0, 1)");
+        waitForFramePresented();
+        setLocationAndWaitForLoad(getCurrentUrl() + "?next");
+
+        waitForFramePresented();
+        waitForTransitionReady();
+
+        int oldPageScrollOffset = getTopControlsHeightDp() + 1;
+
+        // Scroll the incoming page too just so the strips should line up.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.scrollTo(0, " + oldPageScrollOffset + ")");
+
+        waitForFramePresented();
+        waitForFramePresented();
+        Bitmap newState = takeScreenshot();
+        mRenderTestRule.compareForResult(newState, "browser-controls-overlay-child");
+
+        finishAnimations();
+    }
+
+    /**
+     * Test child snapshots are correctly displayed when browser controls push the page.
+     *
+     * <p>Ensures child snapshots are correctly positioned on the new page when the browser controls
+     * animation pushes page content. Tests for both in-flow (green box) and fixed (purple box)
+     * children.
+     *
+     * <p>The output should show a green box exactly centered in a blue box. There should be two
+     * peach bars visible: "TOP" and "CONTROLS". The purple bar at the top should line up exactly
+     * with the black line on top of the "TOP" peach bar.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
+    public void testBrowserControlsChildSnapshotControlsPush() throws Throwable {
+        String url = "/chrome/test/data/android/view_transition_browser_controls_child.html";
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        hideBrowserControls();
+
+        // Ensure the page is at offset 0. When scrolled to the top the controls animation will push
+        // the page down, rather than overlaying it. Ensure we wait a frame before navigating so
+        // that the compositor receives the new scroll offset before controls start to show.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                getWebContents(), "window.scrollTo(0, 0)");
+        waitForFramePresented();
+        setLocationAndWaitForLoad(getCurrentUrl() + "?next");
+
+        waitForFramePresented();
+        waitForTransitionReady();
+
+        waitForFramePresented();
+        waitForFramePresented();
+        Bitmap newState = takeScreenshot();
+        mRenderTestRule.compareForResult(newState, "browser-controls-push-child");
 
         finishAnimations();
     }

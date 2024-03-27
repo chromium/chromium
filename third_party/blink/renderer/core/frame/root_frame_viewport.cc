@@ -714,6 +714,11 @@ bool RootFrameViewport::SetTargetSnapAreaElementIds(
   return LayoutViewport().SetTargetSnapAreaElementIds(snap_target_ids);
 }
 
+void RootFrameViewport::DropCompositorScrollDeltaNextCommit() {
+  LayoutViewport().DropCompositorScrollDeltaNextCommit();
+  GetVisualViewport().DropCompositorScrollDeltaNextCommit();
+}
+
 bool RootFrameViewport::SnapContainerDataNeedsUpdate() const {
   return LayoutViewport().SnapContainerDataNeedsUpdate();
 }
