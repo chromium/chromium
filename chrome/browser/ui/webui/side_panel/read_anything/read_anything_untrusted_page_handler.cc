@@ -542,7 +542,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
         is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
     if (contents) {
       visible_url = contents->GetVisibleURL();
-      content::RenderFrameHost* render_frame_host;
+      content::RenderFrameHost* render_frame_host = nullptr;
       if (is_pdf) {
         contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
           if (rfh->GetProcess()->IsPdf()) {
