@@ -355,8 +355,7 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
                                         offset);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       // TODO(crbug.com/1491184): Implement UX for this danger type.
-      NOTREACHED();
-      break;
+      return u"";
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       // TODO(b/327392327): Implement UX for this danger type.
       NOTREACHED();
