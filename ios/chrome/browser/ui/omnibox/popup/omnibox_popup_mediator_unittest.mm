@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"

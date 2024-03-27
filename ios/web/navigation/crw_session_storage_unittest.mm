@@ -8,7 +8,6 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"

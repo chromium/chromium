@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"

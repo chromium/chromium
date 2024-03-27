@@ -6,7 +6,6 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/system/sys_info.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"

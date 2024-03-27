@@ -18,7 +18,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator+Testing.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"

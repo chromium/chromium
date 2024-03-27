@@ -8,7 +8,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

@@ -10,7 +10,6 @@
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/browser/core_bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"

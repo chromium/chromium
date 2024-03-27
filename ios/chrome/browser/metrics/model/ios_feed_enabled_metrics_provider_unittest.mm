@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/metrics/model/ios_feed_enabled_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/prefs/pref_registry_simple.h"

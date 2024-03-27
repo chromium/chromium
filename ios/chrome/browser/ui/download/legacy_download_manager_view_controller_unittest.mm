@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"

@@ -12,7 +12,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"

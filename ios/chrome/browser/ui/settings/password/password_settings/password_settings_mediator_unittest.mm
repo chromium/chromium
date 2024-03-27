@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"

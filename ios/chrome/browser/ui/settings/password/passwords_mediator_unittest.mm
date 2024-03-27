@@ -11,7 +11,6 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"

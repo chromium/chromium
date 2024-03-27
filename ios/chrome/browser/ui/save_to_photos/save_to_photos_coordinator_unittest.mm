@@ -7,7 +7,6 @@
 #import <StoreKit/StoreKit.h>
 
 #import "base/apple/foundation_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"

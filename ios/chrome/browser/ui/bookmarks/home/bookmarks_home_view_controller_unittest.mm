@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"

@@ -11,7 +11,6 @@
 #import "base/functional/callback_forward.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"

@@ -15,7 +15,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"

@@ -7,7 +7,6 @@
 #import <string>
 
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"

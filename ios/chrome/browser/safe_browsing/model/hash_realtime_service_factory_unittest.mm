@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"

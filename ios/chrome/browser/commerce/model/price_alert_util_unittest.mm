@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"

@@ -11,7 +11,6 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/favicon/core/large_icon_service.h"

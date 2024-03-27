@@ -5,7 +5,6 @@
 #import "ios/chrome/app/post_restore_app_agent.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"

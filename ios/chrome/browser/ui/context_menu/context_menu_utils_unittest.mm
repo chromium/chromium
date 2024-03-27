@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/web/common/features.h"

@@ -18,7 +18,6 @@
 #import "base/test/gmock_move_support.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/test_autofill_client.h"

@@ -10,7 +10,6 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/version.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"

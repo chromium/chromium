@@ -7,7 +7,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
