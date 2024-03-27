@@ -23,6 +23,24 @@
 
 namespace ash {
 
+ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
+    const std::optional<std::string> ssid,
+    const std::optional<std::string> passphrase,
+    const std::optional<int> frequency)
+    : ssid(ssid), passphrase(passphrase), frequency(frequency) {}
+
+ShillManagerClient::CreateP2PGroupParameter::~CreateP2PGroupParameter() =
+    default;
+
+ShillManagerClient::ConnectP2PGroupParameter::ConnectP2PGroupParameter(
+    const std::string ssid,
+    const std::string passphrase,
+    const std::optional<int> frequency)
+    : ssid(ssid), passphrase(passphrase), frequency(frequency) {}
+
+ShillManagerClient::ConnectP2PGroupParameter::~ConnectP2PGroupParameter() =
+    default;
+
 namespace {
 
 ShillManagerClient* g_instance = nullptr;
@@ -230,24 +248,53 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void CreateP2PGroup(
-      const base::Value::Dict& properties,
+      const CreateP2PGroupParameter& create_group_argument,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kCreateP2PGroupFunction);
     dbus::MessageWriter writer(&method_call);
+
+    base::Value::Dict properties;
+    if (create_group_argument.ssid.has_value()) {
+      properties.Set(shill::kP2PGroupInfoSSIDProperty,
+                     create_group_argument.ssid.value());
+    }
+
+    if (create_group_argument.passphrase.has_value()) {
+      properties.Set(shill::kP2PGroupInfoPassphraseProperty,
+                     create_group_argument.passphrase.value());
+    }
+
+    if (create_group_argument.frequency.has_value()) {
+      properties.Set(shill::kP2PGroupInfoFrequencyProperty,
+                     create_group_argument.frequency.value());
+    }
+
     ShillClientHelper::AppendServiceProperties(&writer, properties);
     helper_->CallDictValueMethodWithErrorCallback(
         &method_call, std::move(callback), std::move(error_callback));
   }
 
   void ConnectToP2PGroup(
-      const base::Value::Dict& properties,
+      const ConnectP2PGroupParameter& connect_group_argument,
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kConnectToP2PGroupFunction);
     dbus::MessageWriter writer(&method_call);
+
+    base::Value::Dict properties;
+    properties.Set(shill::kP2PGroupInfoSSIDProperty,
+                   connect_group_argument.ssid);
+    properties.Set(shill::kP2PGroupInfoPassphraseProperty,
+                   connect_group_argument.passphrase);
+
+    if (connect_group_argument.frequency.has_value()) {
+      properties.Set(shill::kP2PGroupInfoFrequencyProperty,
+                     connect_group_argument.frequency.value());
+    }
+
     ShillClientHelper::AppendServiceProperties(&writer, properties);
     helper_->CallDictValueMethodWithErrorCallback(
         &method_call, std::move(callback), std::move(error_callback));

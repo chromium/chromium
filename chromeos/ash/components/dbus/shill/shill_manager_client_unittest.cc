@@ -410,6 +410,7 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
 
   const char kSSID[] = "test_ssid";
   const char kPassphrase[] = "test_password";
+  const int kFrequency = 3;
 
   // Create response.
   base::Value::Dict result_dictionary;
@@ -422,8 +423,9 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
 
   // Create input dictionary
   base::Value::Dict input_dictionary;
-  input_dictionary.Set("ssid", kSSID);
-  input_dictionary.Set("passphrase", kPassphrase);
+  input_dictionary.Set(shill::kP2PGroupInfoSSIDProperty, kSSID);
+  input_dictionary.Set(shill::kP2PGroupInfoPassphraseProperty, kPassphrase);
+  input_dictionary.Set(shill::kP2PGroupInfoFrequencyProperty, kFrequency);
 
   // Set expectation.
   const bool string_valued = false;
@@ -435,7 +437,8 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
   base::test::TestFuture<base::Value::Dict> create_p2p_group_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->CreateP2PGroup(
-      input_dictionary,
+      ShillManagerClient::CreateP2PGroupParameter(kSSID, kPassphrase,
+                                                  kFrequency),
       create_p2p_group_result.GetCallback<base::Value::Dict>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(create_p2p_group_result.Get(), result_dictionary);
@@ -447,6 +450,7 @@ TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
 
   const char kSSID[] = "test_ssid";
   const char kPassphrase[] = "test_passphrase";
+  const int kFrequency = 3;
 
   // Create response.
   base::Value::Dict result_dictionary;
@@ -459,8 +463,9 @@ TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
 
   // Create input dictionary
   base::Value::Dict input_dictionary;
-  input_dictionary.Set("ssid", kSSID);
-  input_dictionary.Set("passphrase", kPassphrase);
+  input_dictionary.Set(shill::kP2PGroupInfoSSIDProperty, kSSID);
+  input_dictionary.Set(shill::kP2PGroupInfoPassphraseProperty, kPassphrase);
+  input_dictionary.Set(shill::kP2PGroupInfoFrequencyProperty, kFrequency);
 
   // Set expectation.
   const bool string_valued = false;
@@ -472,7 +477,8 @@ TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
   base::test::TestFuture<base::Value::Dict> connect_to_p2p_group_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->ConnectToP2PGroup(
-      input_dictionary,
+      ShillManagerClient::ConnectP2PGroupParameter(kSSID, kPassphrase,
+                                                   kFrequency),
       connect_to_p2p_group_result.GetCallback<base::Value::Dict>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(connect_to_p2p_group_result.Get(), result_dictionary);

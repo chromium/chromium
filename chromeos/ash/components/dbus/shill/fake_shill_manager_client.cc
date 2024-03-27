@@ -560,7 +560,7 @@ void FakeShillManagerClient::SetLOHSEnabled(bool enabled,
 }
 
 void FakeShillManagerClient::CreateP2PGroup(
-    const base::Value::Dict& properties,
+    const CreateP2PGroupParameter& create_group_argument,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -570,7 +570,7 @@ void FakeShillManagerClient::CreateP2PGroup(
 }
 
 void FakeShillManagerClient::ConnectToP2PGroup(
-    const base::Value::Dict& properties,
+    const ConnectP2PGroupParameter& connect_group_argument,
     base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
