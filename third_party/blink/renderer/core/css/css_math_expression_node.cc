@@ -1119,7 +1119,7 @@ CalculationResultCategory DetermineKeywordCategory(CSSValueID keyword,
                                                    CSSMathOperator op) {
   switch (op) {
     case CSSMathOperator::kMediaProgress:
-      return kCalcNumber;
+      return kCalcLength;
     case CSSMathOperator::kCalcSize:
       return kCalcLengthFunction;
     default:
