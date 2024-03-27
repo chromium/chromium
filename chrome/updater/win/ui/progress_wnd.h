@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,10 @@
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "url/gurl.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace updater::ui {
 
@@ -157,7 +162,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
                            const std::u16string& app_name) override;
   void OnDownloading(const std::string& app_id,
                      const std::u16string& app_name,
-                     int time_remaining_ms,
+                     const std::optional<base::TimeDelta> time_remaining,
                      int pos) override;
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
@@ -166,7 +171,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
                           const std::u16string& app_name) override;
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
-                    int time_remaining_ms,
+                    const std::optional<base::TimeDelta> time_remaining,
                     int pos) override;
   void OnPause() override;
   void OnComplete(const ObserverCompletionInfo& observer_info) override;

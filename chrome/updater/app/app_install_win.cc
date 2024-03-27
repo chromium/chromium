@@ -90,7 +90,7 @@ class InstallProgressSilentObserver : public AppInstallProgress {
                            const std::u16string& app_name) override;
   void OnDownloading(const std::string& app_id,
                      const std::u16string& app_name,
-                     int time_remaining_ms,
+                     const std::optional<base::TimeDelta> time_remaining,
                      int pos) override;
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
@@ -99,7 +99,7 @@ class InstallProgressSilentObserver : public AppInstallProgress {
                           const std::u16string& app_name) override;
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
-                    int time_remaining_ms,
+                    const std::optional<base::TimeDelta> time_remaining,
                     int pos) override;
   void OnPause() override;
   void OnComplete(const ObserverCompletionInfo& observer_info) override;
@@ -137,7 +137,7 @@ void InstallProgressSilentObserver::OnWaitingToDownload(
 void InstallProgressSilentObserver::OnDownloading(
     const std::string& app_id,
     const std::u16string& app_name,
-    int time_remaining_ms,
+    const std::optional<base::TimeDelta> time_remaining,
     int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -155,10 +155,11 @@ void InstallProgressSilentObserver::OnWaitingToInstall(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void InstallProgressSilentObserver::OnInstalling(const std::string& app_id,
-                                                 const std::u16string& app_name,
-                                                 int time_remaining_ms,
-                                                 int pos) {
+void InstallProgressSilentObserver::OnInstalling(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    const std::optional<base::TimeDelta> time_remaining,
+    int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -241,13 +242,13 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnDownloading(const std::string& app_id,
                      const std::u16string& app_name,
-                     int time_remaining_ms,
+                     const std::optional<base::TimeDelta> time_remaining,
                      int pos) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
     PostClosure(base::BindOnce(&AppInstallProgress::OnDownloading,
                                base::Unretained(observer_), app_id, app_name,
-                               time_remaining_ms, pos));
+                               time_remaining, pos));
   }
 
   void OnWaitingRetryDownload(const std::string& app_id,
@@ -266,13 +267,13 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnInstalling(const std::string& app_id,
                     const std::u16string& app_name,
-                    int time_remaining_ms,
+                    const std::optional<base::TimeDelta> time_remaining,
                     int pos) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
     PostClosure(base::BindOnce(&AppInstallProgress::OnInstalling,
                                base::Unretained(observer_), app_id, app_name,
-                               time_remaining_ms, pos));
+                               time_remaining, pos));
   }
 
   void OnPause() override { NOTREACHED(); }
@@ -736,12 +737,9 @@ void AppInstallControllerImpl::StateChange(
       if (pos >= 0) {
         download_progress_sampler_.AddSample(update_state.downloaded_bytes);
       }
-      const std::optional<base::TimeDelta> remaining_download_time =
-          download_progress_sampler_.GetRemainingTime(update_state.total_bytes);
       install_progress_observer_ipc_->OnDownloading(
           app_id_, app_name_,
-          remaining_download_time ? remaining_download_time->InMilliseconds()
-                                  : -1,
+          download_progress_sampler_.GetRemainingTime(update_state.total_bytes),
           pos >= 0 ? pos : 0);
       break;
     }
@@ -752,12 +750,8 @@ void AppInstallControllerImpl::StateChange(
       if (pos >= 0) {
         install_progress_sampler_.AddSample(pos);
       }
-      const std::optional<base::TimeDelta> remaining_install_time =
-          install_progress_sampler_.GetRemainingTime(100);
       install_progress_observer_ipc_->OnInstalling(
-          app_id_, app_name_,
-          remaining_install_time ? remaining_install_time->InMilliseconds()
-                                 : -1,
+          app_id_, app_name_, install_progress_sampler_.GetRemainingTime(100),
           pos >= 0 ? pos : 0);
       break;
     }

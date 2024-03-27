@@ -343,10 +343,11 @@ void ProgressWnd::OnWaitingToDownload(const std::string& app_id,
 }
 
 // May be called repeatedly during download.
-void ProgressWnd::OnDownloading(const std::string& app_id,
-                                const std::u16string& app_name,
-                                int time_remaining_ms,
-                                int pos) {
+void ProgressWnd::OnDownloading(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    const std::optional<base::TimeDelta> time_remaining,
+    int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;
@@ -358,28 +359,23 @@ void ProgressWnd::OnDownloading(const std::string& app_id,
 
   std::wstring s;
 
-  // TODO(crbug.com/1016921): use base::TimeDelta.
-  int time_remaining_sec = CeilingDivide(time_remaining_ms, kMsPerSec);
   if (is_canceled_) {
     s = GetLocalizedString(IDS_CANCELING_BASE);
-  } else if (time_remaining_ms < 0) {
+  } else if (!time_remaining) {
     s = GetLocalizedString(IDS_DOWNLOADING_BASE);
-  } else if (time_remaining_ms == 0) {
+  } else if (!time_remaining->InSeconds()) {
     s = GetLocalizedString(IDS_DOWNLOADING_COMPLETED_BASE);
-  } else if (time_remaining_sec < kSecPerMin) {
+  } else if (!time_remaining->InMinutes()) {
     // Less than one minute remaining.
     s = GetLocalizedStringF(IDS_DOWNLOADING_SHORT_BASE,
-                            base::NumberToWString(time_remaining_sec));
-  } else if (time_remaining_sec < kSecondsPerHour) {
+                            base::NumberToWString(time_remaining->InSeconds()));
+  } else if (!time_remaining->InHours()) {
     // Less than one hour remaining.
-    int time_remaining_minute = CeilingDivide(time_remaining_sec, kSecPerMin);
     s = GetLocalizedStringF(IDS_DOWNLOADING_LONG_BASE,
-                            base::NumberToWString(time_remaining_minute));
+                            base::NumberToWString(time_remaining->InMinutes()));
   } else {
-    int time_remaining_hour =
-        CeilingDivide(time_remaining_sec, kSecondsPerHour);
     s = GetLocalizedStringF(IDS_DOWNLOADING_VERY_LONG_BASE,
-                            base::NumberToWString(time_remaining_hour));
+                            base::NumberToWString(time_remaining->InHours()));
   }
 
   // Reduces flicker by only updating the control if the text has changed.
@@ -435,10 +431,11 @@ void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
 }
 
 // May be called repeatedly during install.
-void ProgressWnd::OnInstalling(const std::string& app_id,
-                               const std::u16string& app_name,
-                               int time_remaining_ms,
-                               int pos) {
+void ProgressWnd::OnInstalling(
+    const std::string& app_id,
+    const std::u16string& app_name,
+    const std::optional<base::TimeDelta> time_remaining,
+    int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;
