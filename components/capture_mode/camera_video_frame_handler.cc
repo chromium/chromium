@@ -472,21 +472,18 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     auto buffer_texture_target = shared_images_[0]->GetTextureTarget(
         GetBufferUsage(), GetBufferFormat());
 
-    gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
     for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
       DCHECK(shared_images_[plane]);
-      mailbox_holder_array[plane] =
-          gpu::MailboxHolder(shared_images_[plane]->mailbox(),
-                             mailbox_holder_sync_token_, buffer_texture_target);
     }
-    mailbox_holder_sync_token_.Clear();
 
-    auto frame = media::VideoFrame::WrapNativeTextures(
-        frame_info->pixel_format, mailbox_holder_array,
+    auto frame = media::VideoFrame::WrapSharedImages(
+        frame_info->pixel_format, shared_images_, mailbox_holder_sync_token_,
+        buffer_texture_target,
         base::BindOnce(&GpuMemoryBufferHandleHolder::OnMailboxReleased,
                        weak_ptr_factory_.GetWeakPtr()),
         frame_info->coded_size, frame_info->visible_rect,
         frame_info->visible_rect.size(), frame_info->timestamp);
+    mailbox_holder_sync_token_.Clear();
 
     if (!frame) {
       LOG(ERROR) << "Failed to create a video frame.";
@@ -537,8 +534,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
   // Contains the shared images of the video frame planes created from the GPU
   // memory buffer.
-  std::vector<scoped_refptr<gpu::ClientSharedImage>> shared_images_{
-      media::VideoFrame::kMaxPlanes};
+  scoped_refptr<gpu::ClientSharedImage>
+      shared_images_[media::VideoFrame::kMaxPlanes];
 
   // The sync token used when creating a `MailboxHolder`. This will be a
   // verified sync token the first time we wrap a video frame around a mailbox.
