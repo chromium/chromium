@@ -18,8 +18,8 @@ class PrefRegistrySimple;
 
 struct RecentSessionData {
   RecentSessionData();
-  RecentSessionData(RecentSessionData&&) noexcept;
-  RecentSessionData& operator=(RecentSessionData&&) noexcept;
+  RecentSessionData(const RecentSessionData&);
+  RecentSessionData& operator=(const RecentSessionData&);
   ~RecentSessionData();
 
   std::vector<base::Time> recent_session_start_times;

@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_USER_EDUCATION_RECENT_SESSION_TRACKER_H_
 #define CHROME_BROWSER_USER_EDUCATION_RECENT_SESSION_TRACKER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
@@ -23,6 +26,10 @@ class RecentSessionTracker {
   static constexpr int kMaxRecentSessionRecords = 12;
   static constexpr base::TimeDelta kMaxRecentSessionRetention = base::Days(60);
 
+  // Callback that provides updated recent session data to observers.
+  using RecentSessionsUpdatedCallback =
+      base::RepeatingCallback<void(const RecentSessionData&)>;
+
   RecentSessionTracker(
       user_education::FeaturePromoSessionManager& session_manager,
       user_education::FeaturePromoStorageService& feature_promo_storage,
@@ -30,6 +37,17 @@ class RecentSessionTracker {
   RecentSessionTracker(const RecentSessionTracker&) = delete;
   void operator=(const RecentSessionTracker&) = delete;
   ~RecentSessionTracker();
+
+  // Add a callback that observes when recent sessions have been updated.
+  // Will be called immediately if there has already been an update since the
+  // current application started.
+  base::CallbackListSubscription AddRecentSessionsUpdatedCallback(
+      RecentSessionsUpdatedCallback callback);
+
+  const std::optional<RecentSessionData>& recent_session_data_for_testing()
+      const {
+    return recent_session_data_;
+  }
 
  private:
   // Called when a new User Education session starts.
@@ -39,6 +57,11 @@ class RecentSessionTracker {
   const raw_ref<user_education::FeaturePromoStorageService>
       feature_promo_storage_;
   const raw_ref<RecentSessionDataStorageService> recent_session_storage_;
+  base::RepeatingCallbackList<RecentSessionsUpdatedCallback::RunType>
+      recent_sessions_updated_callback_;
+
+  // Cache this data so that observers have access to it.
+  std::optional<RecentSessionData> recent_session_data_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_RECENT_SESSION_TRACKER_H_

@@ -28,14 +28,26 @@ RecentSessionTracker::RecentSessionTracker(
 
 RecentSessionTracker::~RecentSessionTracker() = default;
 
+base::CallbackListSubscription
+RecentSessionTracker::AddRecentSessionsUpdatedCallback(
+    RecentSessionsUpdatedCallback callback) {
+  if (recent_session_data_) {
+    callback.Run(*recent_session_data_);
+  }
+  return recent_sessions_updated_callback_.Add(std::move(callback));
+}
+
 void RecentSessionTracker::OnSessionStart() {
-  const RecentSessionData old_data =
-      recent_session_storage_->ReadRecentSessionData();
+  if (!recent_session_data_) {
+    recent_session_data_ = recent_session_storage_->ReadRecentSessionData();
+  }
+  CHECK(recent_session_data_);
   const user_education::FeaturePromoSessionData session =
       feature_promo_storage_->ReadSessionData();
   RecentSessionData new_data;
   new_data.recent_session_start_times.emplace_back(session.start_time);
-  for (const auto& start_time : old_data.recent_session_start_times) {
+  for (const auto& start_time :
+       recent_session_data_->recent_session_start_times) {
     if (new_data.recent_session_start_times.size() >=
             kMaxRecentSessionRecords ||
         session.start_time - start_time >= kMaxRecentSessionRetention) {
@@ -48,4 +60,6 @@ void RecentSessionTracker::OnSessionStart() {
     }
   }
   recent_session_storage_->SaveRecentSessionData(new_data);
+  recent_session_data_ = new_data;
+  recent_sessions_updated_callback_.Notify(new_data);
 }

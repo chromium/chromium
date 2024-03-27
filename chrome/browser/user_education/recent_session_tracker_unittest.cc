@@ -4,12 +4,13 @@
 
 #include "chrome/browser/user_education/recent_session_tracker.h"
 
-#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
@@ -110,6 +111,11 @@ class RecentSessionTrackerTest : public testing::Test {
     tracker_ = std::make_unique<RecentSessionTracker>(
         session_manager_.AsSessionManager(), storage_service_,
         storage_service_);
+    update_subscription_ = tracker_->AddRecentSessionsUpdatedCallback(
+        base::BindLambdaForTesting([this](const RecentSessionData& data) {
+          ++update_count_;
+          last_update_data_ = data;
+        }));
   }
 
   // Starts a new session at `session_time`.
@@ -118,10 +124,23 @@ class RecentSessionTrackerTest : public testing::Test {
     session_manager_.SimulateNewSession();
   }
 
-  void EnsureRecentSessions(const std::vector<base::Time>& expected) const {
+  void EnsureRecentSessions(const std::vector<base::Time>& expected_data,
+                            int expected_update_count) const {
     const auto recent_sessions = storage_service_.ReadRecentSessionData();
     EXPECT_THAT(recent_sessions.recent_session_start_times,
-                testing::ContainerEq(expected));
+                testing::ContainerEq(expected_data));
+    EXPECT_EQ(expected_update_count, update_count_);
+    if (last_update_data_) {
+      EXPECT_THAT(last_update_data_->recent_session_start_times,
+                  testing::ContainerEq(expected_data));
+    }
+    EXPECT_EQ(expected_update_count > 0,
+              tracker_->recent_session_data_for_testing().has_value());
+    if (tracker_->recent_session_data_for_testing().has_value()) {
+      EXPECT_THAT(tracker_->recent_session_data_for_testing()
+                      ->recent_session_start_times,
+                  testing::ContainerEq(expected_data));
+    }
   }
 
  private:
@@ -129,6 +148,9 @@ class RecentSessionTrackerTest : public testing::Test {
   TestBrowserStorageService storage_service_;
   FakeSessionManager session_manager_{storage_service_};
   std::unique_ptr<RecentSessionTracker> tracker_;
+  int update_count_ = 0;
+  std::optional<RecentSessionData> last_update_data_;
+  base::CallbackListSubscription update_subscription_;
 };
 
 TEST_F(RecentSessionTrackerTest, NoNewSession) {
@@ -138,7 +160,7 @@ TEST_F(RecentSessionTrackerTest, NoNewSession) {
       Days(100),
   };
   Init(old_sessions, std::nullopt);
-  EnsureRecentSessions(old_sessions);
+  EnsureRecentSessions(old_sessions, 0);
 }
 
 TEST_F(RecentSessionTrackerTest, NewSessionBeforeInit) {
@@ -149,7 +171,7 @@ TEST_F(RecentSessionTrackerTest, NewSessionBeforeInit) {
   };
   Init(sessions, Days(103));
   sessions.insert(sessions.begin(), Days(103));
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 1);
 }
 
 TEST_F(RecentSessionTrackerTest, NewSessionAfterInit) {
@@ -161,7 +183,7 @@ TEST_F(RecentSessionTrackerTest, NewSessionAfterInit) {
   Init(sessions, std::nullopt);
   StartNewSession(Days(103));
   sessions.insert(sessions.begin(), Days(103));
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 1);
 }
 
 TEST_F(RecentSessionTrackerTest, OldSessionsRollOff) {
@@ -182,6 +204,7 @@ TEST_F(RecentSessionTrackerTest, OldSessionsRollOff) {
       Days(103),
       Days(102),
   };
+  EnsureRecentSessions(sessions, 1);
 
   // Move forward enough to cause the next entry to roll off.
   const base::Time time2 = time1 + base::Seconds(2);
@@ -191,7 +214,7 @@ TEST_F(RecentSessionTrackerTest, OldSessionsRollOff) {
       time1,
       Days(103),
   };
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 2);
 
   // Move forward enough to cause all entries but the current one to roll off.
   const base::Time time3 = time2 +
@@ -199,7 +222,7 @@ TEST_F(RecentSessionTrackerTest, OldSessionsRollOff) {
                            base::Seconds(1);
   StartNewSession(time3);
   sessions = {time3};
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 3);
 }
 
 TEST_F(RecentSessionTrackerTest, TooManySessionsRollOff) {
@@ -214,14 +237,14 @@ TEST_F(RecentSessionTrackerTest, TooManySessionsRollOff) {
   Init(sessions, time1);
   sessions.pop_back();
   sessions.insert(sessions.begin(), time1);
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 1);
 
   // Add a new session; the last session should roll off.
   const base::Time time2 = time1 + base::Days(1);
   StartNewSession(time2);
   sessions.pop_back();
   sessions.insert(sessions.begin(), time2);
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 2);
 }
 
 TEST_F(RecentSessionTrackerTest, ClockSetBackElidesValues) {
@@ -237,5 +260,5 @@ TEST_F(RecentSessionTrackerTest, ClockSetBackElidesValues) {
       Days(101),
       Days(100),
   };
-  EnsureRecentSessions(sessions);
+  EnsureRecentSessions(sessions, 1);
 }

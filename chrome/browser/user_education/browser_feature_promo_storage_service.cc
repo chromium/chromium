@@ -77,8 +77,8 @@ constexpr char kRecentSessionStartTimesPath[] =
 }  // namespace
 
 RecentSessionData::RecentSessionData() = default;
-RecentSessionData::RecentSessionData(RecentSessionData&&) noexcept = default;
-RecentSessionData& RecentSessionData::operator=(RecentSessionData&&) noexcept =
+RecentSessionData::RecentSessionData(const RecentSessionData&) = default;
+RecentSessionData& RecentSessionData::operator=(const RecentSessionData&) =
     default;
 RecentSessionData::~RecentSessionData() = default;
 
