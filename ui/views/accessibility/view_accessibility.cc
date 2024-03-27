@@ -870,8 +870,10 @@ void ViewAccessibility::PruneSubtree() {
     child->GetViewAccessibility().pruned_ = true;
     child->GetViewAccessibility().PruneSubtree();
   }
-  // TODO(javiercon): Add logic in AXVirtualView to prune its children, and
-  // handle that here.
+
+  for (auto& child : virtual_children()) {
+    child->PruneVirtualSubtree();
+  }
 }
 
 void ViewAccessibility::UnpruneSubtree() {
@@ -886,7 +888,9 @@ void ViewAccessibility::UnpruneSubtree() {
     child->GetViewAccessibility().pruned_ = false;
     child->GetViewAccessibility().UnpruneSubtree();
   }
-  // TODO(javiercon): Add logic in AXVirtualView to prune its children, and
-  // handle that here.
+
+  for (auto& child : virtual_children()) {
+    child->UnpruneVirtualSubtree();
+  }
 }
 }  // namespace views

@@ -182,6 +182,18 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   // via NotifyAccessibilityEvent().
   virtual bool HandleAccessibleAction(const ui::AXActionData& action_data);
 
+  // Prune/Unprune all descendant virtual views from the tree. As of right now,
+  // these should only be called by their ViewAccessibility counterparts. This
+  // is for a scenario such as the following: ViewAccessibility A has a child
+  // AXVirtualView B, which has a child AXVirtualView C:
+  // A
+  //  B
+  //   C
+  // A->SetIsLeaf(true) is called. B and C then should be pruned from the tree
+  // and marked as ignored.
+  void PruneVirtualSubtree();
+  void UnpruneVirtualSubtree();
+
  protected:
   // Forwards a request from assistive technology to perform an action on this
   // virtual view to the owner view's accessible action handler.
@@ -231,6 +243,10 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   ui::AXUniqueId unique_id_;
   ui::AXNodeData custom_data_;
   base::RepeatingCallback<void(ui::AXNodeData*)> populate_data_callback_;
+
+  // If set to true, this virtual view will be hidden from accessibility by
+  // 'pruning' it from the tree, by marking it as ignored in `GetData()`.
+  bool pruned_ = false;
 
   friend class ViewAccessibility;
 };

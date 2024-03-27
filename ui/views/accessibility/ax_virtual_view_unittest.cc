@@ -189,6 +189,15 @@ TEST_F(AXVirtualViewTest, VirtualLabelIsChildOfButton) {
             GetButtonAccessibility()->ChildAtIndex(0));
 }
 
+TEST_F(AXVirtualViewTest, VirtualViewsPruned) {
+  auto v_label = std::make_unique<AXVirtualView>();
+  virtual_label_->AddChildView(std::move(v_label));
+  button_->GetViewAccessibility().SetIsLeaf(true);
+  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_TRUE(virtual_label_->children()[0].get()->GetData().HasState(
+      ax::mojom::State::kIgnored));
+}
+
 TEST_F(AXVirtualViewTest, RemoveFromParentView) {
   ASSERT_EQ(1u, GetButtonAccessibility()->GetChildCount());
   std::unique_ptr<AXVirtualView> removed_label =
