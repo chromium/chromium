@@ -13,9 +13,9 @@ import android.view.ContextThemeWrapper;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -57,11 +57,11 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
 
     @CalledByNative
     void show(
-            String title,
-            String content,
-            String positiveButtonLabel,
-            String negativeButtonLabel,
-            @Nullable String learnMoreText) {
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String content,
+            @JniType("std::u16string") String positiveButtonLabel,
+            @JniType("std::u16string") String negativeButtonLabel,
+            @JniType("std::u16string") String learnMoreText) {
         SpannableStringBuilder fullString = new SpannableStringBuilder();
 
         TextView message =
@@ -69,7 +69,7 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
                         new ContextThemeWrapper(
                                 mContext, R.style.NotificationBlockedDialogContent));
         fullString.append(content);
-        if (learnMoreText != null) {
+        if (!learnMoreText.isEmpty()) {
             fullString.append(" ");
             int start = fullString.length();
             fullString.append(learnMoreText);

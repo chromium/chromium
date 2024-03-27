@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -1002,7 +1003,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         boolean isForceSigninEnabled(long nativeSigninManagerAndroid);
 
-        String extractDomainName(String email);
+        @JniType("std::string")
+        String extractDomainName(@JniType("std::string") String email);
 
         void fetchAndApplyCloudPolicy(
                 long nativeSigninManagerAndroid, CoreAccountInfo account, Runnable callback);
@@ -1014,6 +1016,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 CoreAccountInfo account,
                 Callback<Boolean> callback);
 
+        @Nullable
         String getManagementDomain(long nativeSigninManagerAndroid);
 
         void wipeProfileData(long nativeSigninManagerAndroid, Runnable callback);

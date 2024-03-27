@@ -335,12 +335,9 @@ void SigninManagerAndroid::WipeData(Profile* profile,
   new ProfileDataRemover(profile, all_data, std::move(callback));
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
-                                        const JavaParamRef<jstring>& j_email) {
-  std::string email = base::android::ConvertJavaStringToUTF8(env, j_email);
-  std::string domain = gaia::ExtractDomainName(email);
-  return base::android::ConvertUTF8ToJavaString(env, domain);
+std::string JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
+                                                    std::string& email) {
+  return gaia::ExtractDomainName(email);
 }
 
 void SigninManagerAndroid::SetUserAcceptedAccountManagement(

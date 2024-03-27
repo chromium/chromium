@@ -41,7 +41,7 @@ void ReauthenticateChildAccount(
 
   JNIEnv* env = AttachCurrentThread();
   Java_ChildAccountService_reauthenticateChildAccount(
-      env, window_android->GetJavaObject(), ConvertUTF8ToJavaString(env, email),
+      env, window_android->GetJavaObject(), email,
       reinterpret_cast<jlong>(callback_copy.release()));
 }
 

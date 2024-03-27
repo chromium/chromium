@@ -38,22 +38,10 @@ void NotificationBlockedDialogController::ShowDialog(
 
   prompt_model_ = GetQuietNotificationPermissionPromptModel(quiet_ui_reason);
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto title =
-      base::android::ConvertUTF16ToJavaString(env, prompt_model_.title);
-  auto description =
-      base::android::ConvertUTF16ToJavaString(env, prompt_model_.description);
-  auto primaryButtonLabel = base::android::ConvertUTF16ToJavaString(
-      env, prompt_model_.primary_button_label);
-  auto secondaryButtonLabel = base::android::ConvertUTF16ToJavaString(
-      env, prompt_model_.secondary_button_label);
-  base::android::ScopedJavaLocalRef<jstring> learnMoreText = nullptr;
-  if (!prompt_model_.learn_more_text.empty()) {
-    learnMoreText = base::android::ConvertUTF16ToJavaString(
-        env, prompt_model_.learn_more_text);
-  }
-  Java_NotificationBlockedDialog_show(env, GetOrCreateJavaObject(), title,
-                                      description, primaryButtonLabel,
-                                      secondaryButtonLabel, learnMoreText);
+  Java_NotificationBlockedDialog_show(
+      env, GetOrCreateJavaObject(), prompt_model_.title,
+      prompt_model_.description, prompt_model_.primary_button_label,
+      prompt_model_.secondary_button_label, prompt_model_.learn_more_text);
 }
 
 void NotificationBlockedDialogController::OnPrimaryButtonClicked(JNIEnv* env) {
