@@ -492,11 +492,15 @@ def PullDeviceArtifacts(options):
     return
 
   if platform == 'android':
+    logging.info('Getting devices...')
     devices = adb_wrapper.AdbWrapper.Devices()
+    logging.info('Found devices: %s', ', '.join(str(d) for d in devices))
     # Each docker host in chrome-swarming has one device attached, so we'll use
     # the first AdbWrapper instance as the assumed attached device in question
     utils = device_utils.DeviceUtils(devices[0])
+    logging.info('Pulling files from %s to %s', device_path, local_path)
     utils.PullFile(device_path, local_path)
+    logging.info('Finished pulling files.')
   elif platform == 'chromeos':
     logging.warning('Searching for devices')
     # Each docker host in chrome-swarming should only have one local device.
