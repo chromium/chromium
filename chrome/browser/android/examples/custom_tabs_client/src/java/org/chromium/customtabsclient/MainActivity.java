@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_SIDE_SHEET_ROUNDED_CORNER = "RoundedCorner";
     private static final String SHARED_PREF_CONTENT_SCROLL = "ContentScrollMayResizeTab";
     private static final String SHARED_PREF_SEARCH_IN_CCT = "SearchInCCT";
+    private static final String SHARED_PREF_SHARE_IDENTITY = "ShareIdentity";
     private static final String SHARED_PREF_CONNECT_BUTTON = "ConnectButton";
     private static final String SHARED_PREF_DISCONNECT_BUTTON = "DisconnectButton";
     private static final String SHARED_PREF_WARMUP_BUTTON = "WarmupButton";
@@ -162,6 +163,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
     private CheckBox mSearchInCCTCheckbox;
+    private CheckBox mShareIdentityCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -666,6 +668,9 @@ public class MainActivity extends AppCompatActivity
         mSearchInCCTCheckbox = findViewById(R.id.search_in_cct_checkbox);
         mSearchInCCTCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SEARCH_IN_CCT, UNCHECKED) == CHECKED);
+        mShareIdentityCheckbox = findViewById(R.id.share_identity_checkbox);
+        mShareIdentityCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_SHARE_IDENTITY, UNCHECKED) == CHECKED);
     }
 
     private void initializeCctSpinner() {
@@ -951,6 +956,8 @@ public class MainActivity extends AppCompatActivity
         } else if (mDecorationType.getCheckedButtonId() == R.id.decoration_type_none_button) {
             decorationType = ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
         }
+
+        if (mShareIdentityCheckbox.isChecked()) builder.setShareIdentityEnabled(true);
 
         CustomTabsIntent customTabsIntent;
 

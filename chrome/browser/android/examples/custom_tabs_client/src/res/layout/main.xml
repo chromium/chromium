@@ -621,5 +621,12 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/search_in_cct_text" />
+
+        <CheckBox
+            android:id="@+id/share_identity_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/share_identity_text" />
     </LinearLayout>
 </ScrollView>
