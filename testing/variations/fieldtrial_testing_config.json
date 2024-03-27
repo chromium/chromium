@@ -288,6 +288,21 @@
             ]
         }
     ],
+    "AndroidAnimateSuggestionsListAppearance": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AnimateSuggestionsListAppearance"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidAnimatedImageDragShadow": [
         {
             "platforms": [
