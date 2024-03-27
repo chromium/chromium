@@ -12,10 +12,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace growth {
 namespace {
@@ -75,8 +81,11 @@ inline constexpr char kActiveAppWindowAnchorType[] =
 inline constexpr char kShelfAppButtonId[] = "shelfAppButtonId";
 
 // Image Model.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr char kBuiltInIcon[] = "builtInIcon";
 inline constexpr int kIconSize = 60;
+inline constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(kIconSize, kIconSize);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 
@@ -85,7 +94,8 @@ const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
   if (!campaigns_per_slot) {
     return nullptr;
   }
-  return campaigns_per_slot->FindList(base::NumberToString(int(slot)));
+  return campaigns_per_slot->FindList(
+      base::NumberToString(static_cast<int>(slot)));
 }
 
 const Targetings* GetTargetings(const Campaign* campaign) {
@@ -371,6 +381,7 @@ Image::Image(const base::Value::Dict* image_dict) : image_dict_(image_dict) {}
 Image::~Image() = default;
 
 const std::optional<ui::ImageModel> Image::GetImage() const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!image_dict_) {
     return std::nullopt;
   }
@@ -386,14 +397,25 @@ const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
   }
 
   auto icon = static_cast<BuiltInIcon>(built_in_icon_value.value());
-  if (icon != BuiltInIcon::kRedeem) {
-    // TODO(b/329666969)): Record unrecognized built in icon.
-    LOG(ERROR) << "Unrecognized built in icon: " << int(icon);
-    return std::nullopt;
+  if (icon == BuiltInIcon::kRedeem) {
+    return ui::ImageModel::FromVectorIcon(
+        chromeos::kRedeemIcon, cros_tokens::kCrosSysOnSurface, kIconSize);
   }
 
-  return ui::ImageModel::FromVectorIcon(
-      chromeos::kRedeemIcon, cros_tokens::kCrosSysOnSurface, kIconSize);
+  if (icon == BuiltInIcon::kContainerApp) {
+    gfx::ImageSkia* image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG);
+    gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        *image, skia::ImageOperations::RESIZE_BEST, kBubbleIconSizeDip);
+    resized_image.EnsureRepsForSupportedScales();
+    return ui::ImageModel::FromImageSkia(resized_image);
+  }
+
+  // TODO(b/329666969)): Record unrecognized built in icon.
+  LOG(ERROR) << "Unrecognized built in icon: " << static_cast<int>(icon);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return std::nullopt;
 }
 
 }  // namespace growth

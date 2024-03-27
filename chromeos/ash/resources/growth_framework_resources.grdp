@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Growth Framework. -->
+  <include name="IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG" file="../components/growth/resources/container_app.png" type="BINDATA" />
+</grit-part>

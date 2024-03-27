@@ -1,6 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
@@ -22,12 +23,15 @@ component("growth") {
   deps = [
     "//ash/constants",
     "//base",
+    "//build:branding_buildflags",
     "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/resources",
     "//chromeos/ui/vector_icons",
     "//components/prefs",
     "//components/version_info",
     "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/gfx",
   ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
@@ -23,6 +24,7 @@ grit("resources") {
   defines = [
     "enable_cros_libassistant=$enable_cros_libassistant",
     "enable_cros_scalable_iph=$enable_cros_scalable_iph",
+    "is_chrome_branded=$is_chrome_branded",
   ]
 
   grit_flags = [

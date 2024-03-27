@@ -36,7 +36,7 @@ enum class Slot {
 
 // These values are deserialized from Growth Campaign, so entries should not
 // be renumbered and numeric values should never be reused.
-enum class BuiltInIcon { kRedeem };
+enum class BuiltInIcon { kRedeem, kContainerApp };
 
 // Supported window anchor element.
 // These values are deserialized from Growth Campaign, so entries should not
