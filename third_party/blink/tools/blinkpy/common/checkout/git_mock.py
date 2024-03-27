@@ -34,9 +34,6 @@ class MockGit:
         self._executive = executive or MockExecutive()
         self._executable_name = 'git'
         self._local_commits = []
-        self._current_branch = 'mock-branch-name'
-        self.tracking_branch = 'origin/main'
-        self._branch_positions = {}
 
     def run(self,
             command_args,
@@ -57,34 +54,17 @@ class MockGit:
         self.add_list([destination_path], return_exit_code)
 
     def add_list(self, destination_paths, return_exit_code=False):
-        file_paths = []
         for path in destination_paths:
-            if self._filesystem.isfile(path):
-                file_paths.append(path)
-            else:
-                file_paths.extend(self._filesystem.files_under(path))
-        for path in file_paths:
             self._staging[path] = self._filesystem.read_binary_file(path)
         self.added_paths.update(set(destination_paths))
         if return_exit_code:
             return 0
 
     def has_working_directory_changes(self, pathspec=None):
-        if not self._local_commits:
-            return False
-        assert not pathspec, "fake doesn't support pathspec currently"
-        return self._local_commits[-1].tree != self._filesystem.files
+        return False
 
     def current_branch(self):
-        return self._current_branch
-
-    def new_branch(self, name: str, stack: bool = True):
-        assert stack, 'fake can only support stacking currently'
-        assert name not in {self._current_branch, *self._branch_positions}
-        last = len(self._local_commits) - 1
-        self._branch_positions[self._current_branch] = last
-        self.tracking_branch = self._current_branch
-        self._current_branch = name
+        return 'mock-branch-name'
 
     def exists(self, path):
         return True
@@ -196,8 +176,6 @@ class MockGit:
         return changed_files
 
     def _get_commit_position(self, ref: str) -> int:
-        if ref == '@{u}':
-            return self._branch_positions[self.tracking_branch]
         match = re.fullmatch(
             r'(?P<base>HEAD|[\da-fA-F]{40})(~(?P<offset>\d+))?', ref)
         if not match:

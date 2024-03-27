@@ -2,11 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import dataclasses
 import json
-import textwrap
 import unittest
-from unittest import mock
 
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
@@ -18,9 +15,7 @@ from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import MockCall
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
-from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
-from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
@@ -587,92 +582,6 @@ class TestImporterTest(LoggingTestCase):
         importer.project_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
         self.assertFalse(importer._has_wpt_changes())
-
-    def test_file_and_record_bugs_update_bugs(self):
-        host = self.mock_host()
-        importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(host)
-
-        git, fs = importer.project_git, host.filesystem
-        fs.write_text_file(MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA',
-                           '')
-        git.new_branch('update_wpt')
-        exp_path = MOCK_WEB_TESTS + 'TestExpectations'
-        fs.write_text_file(
-            exp_path,
-            textwrap.dedent("""\
-                # results: [ Failure Pass Timeout ]
-                # tags: [ Linux Mac ]
-                crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
-                """))
-        git.add_list([exp_path])
-        git.commit_locally_with_message(f'Import wpt@{"e" * 40}')
-        fs.write_text_file(
-            exp_path,
-            textwrap.dedent("""\
-                # results: [ Failure Pass Timeout ]
-                # tags: [ Linux Mac ]
-                external/wpt/foo/new.html [ Failure ]
-                crbug.com/626703 [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
-                crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
-                # Manually added expectation with existing bugs
-                crbug.com/626703 crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
-                """))
-        git.add_list([exp_path])
-        git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
-
-        local_wpt = MockLocalWPT()
-        gerrit_cl = mock.Mock()
-        gerrit_cl.messages = []
-        gerrit_api = mock.Mock()
-        gerrit_api.query_cls.return_value = [gerrit_cl]
-        buganizer_client = mock.Mock()
-        buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
-            **{
-                **dataclasses.asdict(issue),
-                'issue_id': 111,
-            })
-        with mock.patch(
-                'blinkpy.w3c.import_notifier.'
-                'DirectoryOwnersExtractor.read_dir_metadata',
-                return_value=WPTDirMetadata(should_notify=True)):
-            importer.file_and_record_bugs(local_wpt, gerrit_api,
-                                          buganizer_client)
-
-        gerrit_cl.post_comment.assert_called_once_with(
-            'Filed bugs for failures introduced by this CL: '
-            'https://crbug.com/111')
-        buganizer_client.NewIssue.assert_called_once()
-        self.assertEqual(
-            git.show_blob(RELATIVE_WEB_TESTS + 'TestExpectations',
-                          'HEAD').decode(),
-            textwrap.dedent("""\
-                # results: [ Failure Pass Timeout ]
-                # tags: [ Linux Mac ]
-                crbug.com/111 external/wpt/foo/new.html [ Failure ]
-                crbug.com/111 [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
-                crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
-                # Manually added expectation with existing bugs
-                crbug.com/626703 crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
-                """))
-        expected_message = textwrap.dedent("""\
-            [wpt-import] Update `TestExpectations` with bugs for new failures
-
-            Bug: 111
-            """)
-        self.assertEqual([[
-            'git',
-            'cl',
-            'upload',
-            '--bypass-hooks',
-            '-f',
-            f'--message={expected_message}',
-            '--send-mail',
-            '--enable-auto-submit',
-            '--reviewers=rubber-stamper@appspot.gserviceaccount.com',
-        ]], importer.git_cl.calls)
-        self.assertEqual(git.tracking_branch, 'update_wpt')
-        self.assertNotEqual(git.current_branch(), 'update_wpt')
 
     def test_find_insert_index_ignore_pattern_empty_list(self):
         host = self.mock_host()
