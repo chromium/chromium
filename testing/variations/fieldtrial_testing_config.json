@@ -603,6 +603,21 @@
             ]
         }
     ],
+    "AndroidTabDeclutter": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidTabDeclutter"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidTabGroupStableIds": [
         {
             "platforms": [

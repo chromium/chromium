@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kAndroidHatsRefactor);
 BASE_DECLARE_FEATURE(kAndroidHub);
 BASE_DECLARE_FEATURE(kAndroidImprovedBookmarks);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
+BASE_DECLARE_FEATURE(kAndroidTabDeclutter);
 BASE_DECLARE_FEATURE(kAndroidTabGroupStableIds);
 BASE_DECLARE_FEATURE(kAndroidVisibleUrlTruncationV2);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);

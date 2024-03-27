@@ -190,6 +190,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "android-tab-declutter",
+    "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "android-tab-group-stable-ids",
     "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
     "expiry_milestone": 130

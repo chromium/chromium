@@ -17410,6 +17410,7 @@ from previous Chrome versions.
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
   <int value="-1576943648" label="JourneysPersistCachesToPrefs:enabled"/>
   <int value="-1576789123" label="IPH_ExtensionsRequestAccessButton:disabled"/>
+  <int value="-1576489697" label="AndroidTabDeclutter:enabled"/>
   <int value="-1576408607" label="ChromeTipsInMainMenu:enabled"/>
   <int value="-1576014168" label="DesktopPWAsSubApps:enabled"/>
   <int value="-1575868447" label="RemoveNtpFakebox:enabled"/>
@@ -22768,6 +22769,7 @@ from previous Chrome versions.
   <int value="821192723" label="show-fps-counter"/>
   <int value="823505300" label="LensOnQuickActionSearchWidget:disabled"/>
   <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
+  <int value="824620391" label="AndroidTabDeclutter:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
   <int value="825301017" label="EnterpriseProfileBadging:enabled"/>

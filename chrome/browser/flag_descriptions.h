@@ -2265,6 +2265,9 @@ extern const char kAndroidHubDescription[];
 extern const char kAndroidOpenPdfInlineName[];
 extern const char kAndroidOpenPdfInlineDescription[];
 
+extern const char kAndroidTabDeclutterName[];
+extern const char kAndroidTabDeclutterDescription[];
+
 extern const char kAndroidTabGroupStableIdsName[];
 extern const char kAndroidTabGroupStableIdsDescription[];
 

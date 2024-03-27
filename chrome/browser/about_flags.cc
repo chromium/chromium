@@ -11081,6 +11081,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"android-tab-declutter", flag_descriptions::kAndroidTabDeclutterName,
+     flag_descriptions::kAndroidTabDeclutterDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabDeclutter)},
+
     {"android-tab-group-stable-ids",
      flag_descriptions::kAndroidTabGroupStableIdsName,
      flag_descriptions::kAndroidTabGroupStableIdsDescription, kOsAndroid,

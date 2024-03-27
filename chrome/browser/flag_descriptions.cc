@@ -3842,6 +3842,10 @@ const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
 const char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";
 
+const char kAndroidTabDeclutterName[] = "Android Tab Declutter";
+const char kAndroidTabDeclutterDescription[] =
+    "Enables auto-archival and deletion of inactive tabs.";
+
 const char kAndroidTabGroupStableIdsName[] = "Android Tab Group Stable IDs";
 const char kAndroidTabGroupStableIdsDescription[] =
     "Replaces the tab group ID system on Android with stable IDs. A logical "

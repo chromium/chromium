@@ -158,6 +158,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
+    public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_GROUP_STABLE_IDS = "AndroidTabGroupStableIds";
     public static final String ANDROID_VISIBLE_URL_TRUNCATION_V2 = "AndroidVisibleUrlTruncationV2";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
@@ -775,6 +776,8 @@ public abstract class ChromeFeatureList {
 
     public static final MutableFlagWithSafeDefault sAnimateSuggestionsListAppearance =
             newMutableFlagWithSafeDefault(ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
+    public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, true);
     public static final MutableFlagWithSafeDefault sIncognitoNtpRevamp =
