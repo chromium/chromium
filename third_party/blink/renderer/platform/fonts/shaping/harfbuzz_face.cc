@@ -84,8 +84,10 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
       reinterpret_cast<HarfBuzzFontData*>(font_data);
 
   CHECK(hb_font_data);
-  if (hb_font_data->range_set_ && !hb_font_data->range_set_->Contains(unicode))
+  if (hb_font_data->range_set_ &&
+      !hb_font_data->range_set_->Contains(unicode)) {
     return false;
+  }
 
   // If the system fonts do not have a glyph coverage for line separator
   // (0x2028) or paragraph separator (0x2029), missing glyph would be displayed
@@ -168,8 +170,9 @@ static hb_bool_t HarfBuzzGetGlyphVerticalOrigin(hb_font_t* hb_font,
   HarfBuzzFontData* hb_font_data =
       reinterpret_cast<HarfBuzzFontData*>(font_data);
   OpenTypeVerticalData* vertical_data = hb_font_data->VerticalData();
-  if (!vertical_data)
+  if (!vertical_data) {
     return false;
+  }
 
   float result[] = {0, 0};
   Glyph the_glyph = glyph;
@@ -216,8 +219,9 @@ static inline bool TableHasSpace(hb_face_t* face,
   for (unsigned i = 0; i < count; i++) {
     hb_ot_layout_lookup_collect_glyphs(face, tag, i, glyphs, glyphs, glyphs,
                                        nullptr);
-    if (hb_set_has(glyphs, space))
+    if (hb_set_has(glyphs, space)) {
       return true;
+    }
   }
   return false;
 }
@@ -326,10 +330,12 @@ class HarfBuzzSkiaFontFuncs final {
     DCHECK_EQ(num_tags, returned_tags);
 
     for (auto& tag : tags) {
-      if (tag == SkSetFourByteTag('t', 'r', 'a', 'k'))
+      if (tag == SkSetFourByteTag('t', 'r', 'a', 'k')) {
         has_trak = true;
-      if (tag == SkSetFourByteTag('s', 'b', 'i', 'x'))
+      }
+      if (tag == SkSetFourByteTag('s', 'b', 'i', 'x')) {
         has_sbix = true;
+      }
     }
 
     return has_trak && !has_sbix ? hb_font_funcs_harfbuzz_advances_
@@ -409,8 +415,9 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
 
   char* buffer = reinterpret_cast<char*>(WTF::Partitions::FastMalloc(
       table_size, WTF_HEAP_PROFILER_TYPE_NAME(HarfBuzzFontData)));
-  if (!buffer)
+  if (!buffer) {
     return nullptr;
+  }
   size_t actual_size = typeface->getTableData(tag, 0, table_size, buffer);
   if (table_size != actual_size) {
     WTF::Partitions::FastFree(buffer);
