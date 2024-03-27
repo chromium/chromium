@@ -1179,7 +1179,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
   RunSegmenter segmenter(text_content.Characters16(), text_content.length(),
                          FontOrientation::kHorizontal);
 
-  RunSegmenter::RunSegmenterRange range = RunSegmenter::NullRange();
+  RunSegmenter::RunSegmenterRange range;
   bool consumed = segmenter.Consume(&range);
   DCHECK(consumed);
   if (range.end == text_content.length()) {

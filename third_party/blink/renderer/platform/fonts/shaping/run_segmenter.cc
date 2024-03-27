@@ -19,7 +19,6 @@ RunSegmenter::RunSegmenter(const UChar* buffer,
                            unsigned buffer_size,
                            FontOrientation run_orientation)
     : buffer_size_(buffer_size),
-      candidate_range_(NullRange()),
       script_run_iterator_(
           std::make_unique<ScriptRunIterator>(buffer, buffer_size)),
       orientation_iterator_(
@@ -29,12 +28,9 @@ RunSegmenter::RunSegmenter(const UChar* buffer,
                                                       run_orientation)
               : nullptr),
       symbols_iterator_(std::make_unique<SymbolsIterator>(buffer, buffer_size)),
-      last_split_(0),
-      script_run_iterator_position_(0),
       orientation_iterator_position_(
           run_orientation == FontOrientation::kVerticalMixed ? 0
                                                              : buffer_size_),
-      symbols_iterator_position_(0),
       at_end_(!buffer_size_) {}
 
 template <class Iterator, typename SegmentationCategory>

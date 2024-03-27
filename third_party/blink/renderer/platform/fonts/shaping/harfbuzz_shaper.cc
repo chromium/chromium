@@ -929,7 +929,7 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
     DCHECK(!text_.Is8Bit());
     RunSegmenter run_segmenter(text_.Characters16(), text_.length(),
                                font->GetFontDescription().Orientation());
-    RunSegmenter::RunSegmenterRange segment_range = RunSegmenter::NullRange();
+    RunSegmenter::RunSegmenterRange segment_range;
     while (run_segmenter.Consume(&segment_range)) {
       // Only shape segments overlapping with the range indicated by start and
       // end. Not only those strictly within.

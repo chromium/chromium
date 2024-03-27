@@ -26,11 +26,12 @@ class PLATFORM_EXPORT RunSegmenter {
  public:
   // Indices into the UTF-16 buffer that is passed in
   struct PLATFORM_EXPORT RunSegmenterRange {
-    unsigned start;
-    unsigned end;
-    UScriptCode script;
-    OrientationIterator::RenderOrientation render_orientation;
-    FontFallbackPriority font_fallback_priority;
+    unsigned start = 0;
+    unsigned end = 0;
+    UScriptCode script = USCRIPT_INVALID_CODE;
+    OrientationIterator::RenderOrientation render_orientation =
+        OrientationIterator::kOrientationKeep;
+    FontFallbackPriority font_fallback_priority = FontFallbackPriority::kText;
   };
 
   // Initialize a RunSegmenter.
@@ -39,11 +40,6 @@ class PLATFORM_EXPORT RunSegmenter {
   RunSegmenter& operator=(const RunSegmenter&) = delete;
 
   bool Consume(RunSegmenterRange*);
-
-  static RunSegmenterRange NullRange() {
-    return {0, 0, USCRIPT_INVALID_CODE, OrientationIterator::kOrientationKeep,
-            FontFallbackPriority::kText};
-  }
 
  private:
   template <class Iterator, typename SegmentationCategory>
@@ -57,10 +53,10 @@ class PLATFORM_EXPORT RunSegmenter {
   std::unique_ptr<ScriptRunIterator> script_run_iterator_;
   std::unique_ptr<OrientationIterator> orientation_iterator_;
   std::unique_ptr<SymbolsIterator> symbols_iterator_;
-  unsigned last_split_;
-  unsigned script_run_iterator_position_;
-  unsigned orientation_iterator_position_;
-  unsigned symbols_iterator_position_;
+  unsigned last_split_ = 0;
+  unsigned script_run_iterator_position_ = 0;
+  unsigned orientation_iterator_position_ = 0;
+  unsigned symbols_iterator_position_ = 0;
   bool at_end_;
 };
 
