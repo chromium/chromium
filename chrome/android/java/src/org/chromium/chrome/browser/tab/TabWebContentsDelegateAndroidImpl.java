@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
@@ -445,6 +446,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);
 
-        void showFramebustBlockInfoBar(WebContents webContents, String url);
+        void showFramebustBlockInfoBar(
+                WebContents webContents, @JniType("std::u16string") String url);
     }
 }

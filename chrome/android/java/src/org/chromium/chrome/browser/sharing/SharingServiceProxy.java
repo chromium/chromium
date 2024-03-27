@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.sharing;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -83,8 +84,8 @@ public class SharingServiceProxy {
     @CalledByNative
     private static void createDeviceInfoAndAppendToList(
             ArrayList<DeviceInfo> deviceInfo,
-            String guid,
-            String clientName,
+            @JniType("std::string") String guid,
+            @JniType("std::string") String clientName,
             @FormFactor int formFactor,
             long lastUpdatedTimestampMillis) {
         DeviceInfo device = new DeviceInfo();
@@ -132,8 +133,8 @@ public class SharingServiceProxy {
 
         void sendSharedClipboardMessage(
                 long nativeSharingServiceProxyAndroid,
-                String guid,
-                String text,
+                @JniType("std::string") String guid,
+                @JniType("std::string") String text,
                 Callback<Integer> callback);
 
         void getDeviceCandidates(

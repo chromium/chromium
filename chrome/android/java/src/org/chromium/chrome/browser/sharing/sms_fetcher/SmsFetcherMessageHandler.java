@@ -10,7 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -119,22 +122,22 @@ public class SmsFetcherMessageHandler {
     }
 
     /**
-     * Ask users to interact with the notification to allow Chrome to submit the code to the
-     * remote device.
+     * Ask users to interact with the notification to allow Chrome to submit the code to the remote
+     * device.
      *
      * @param oneTimeCode The one time code from SMS
      * @param topOrigin The top frame origin from the SMS
      * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
-     *         contain an iframe origin.
+     *     contain an iframe origin.
      * @param clientName The client name where the remote request comes from
      * @param smsFetcherMessageHandlerAndroid The native handler
      */
     @CalledByNative
     private static void showNotification(
-            String oneTimeCode,
+            @JniType("std::string") String oneTimeCode,
             String topOrigin,
-            String embeddedOrigin,
-            String clientName,
+            @Nullable String embeddedOrigin,
+            @JniType("std::string") String clientName,
             long smsFetcherMessageHandlerAndroid) {
         sTopOrigin = topOrigin;
         sEmbeddedOrigin = embeddedOrigin;
@@ -157,7 +160,6 @@ public class SmsFetcherMessageHandler {
                         new Intent(context, NotificationReceiver.class)
                                 .setAction(NOTIFICATION_ACTION_CANCEL),
                         PendingIntent.FLAG_UPDATE_CURRENT);
-        Resources resources = context.getResources();
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,

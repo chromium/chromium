@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -137,7 +138,7 @@ public abstract class TabModelJniBridge implements TabModel {
             Tab parent,
             GURL url,
             @Nullable Origin initiatorOrigin,
-            String extraHeaders,
+            @JniType("std::string") String extraHeaders,
             ResourceRequestBody postData,
             int disposition,
             boolean persistParentage,

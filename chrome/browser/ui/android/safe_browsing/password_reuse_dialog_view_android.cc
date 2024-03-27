@@ -32,19 +32,10 @@ void PasswordReuseDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
 
   std::u16string warning_detail_text = controller_->GetWarningDetailText();
 
-  auto secondaryButtonText =
-      controller_->GetSecondaryButtonText() != std::u16string()
-          ? base::android::ConvertUTF16ToJavaString(
-                env, controller_->GetSecondaryButtonText())
-          : nullptr;
-
   Java_SafeBrowsingPasswordReuseDialogBridge_showDialog(
-      env, java_object_,
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetTitle()),
-      base::android::ConvertUTF16ToJavaString(env, warning_detail_text),
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetPrimaryButtonText()),
-      secondaryButtonText);
+      env, java_object_, controller_->GetTitle(), warning_detail_text,
+      controller_->GetPrimaryButtonText(),
+      controller_->GetSecondaryButtonText());
 }
 
 void PasswordReuseDialogViewAndroid::CheckPasswords(

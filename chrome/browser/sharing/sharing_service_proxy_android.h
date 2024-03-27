@@ -23,8 +23,8 @@ class SharingServiceProxyAndroid {
 
   void SendSharedClipboardMessage(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_guid,
-      const base::android::JavaParamRef<jstring>& j_text,
+      std::string& guid,
+      std::string& text,
       const base::android::JavaParamRef<jobject>& j_runnable);
 
   void GetDeviceCandidates(

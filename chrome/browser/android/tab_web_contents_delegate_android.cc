@@ -578,8 +578,8 @@ void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
 void JNI_TabWebContentsDelegateAndroidImpl_ShowFramebustBlockInfoBar(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_web_contents,
-    const JavaParamRef<jstring>& java_url) {
-  GURL url(base::android::ConvertJavaStringToUTF16(env, java_url));
+    std::u16string& url_string) {
+  GURL url(url_string);
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   ShowFramebustBlockMessageInternal(web_contents, url);

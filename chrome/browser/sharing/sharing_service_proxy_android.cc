@@ -43,14 +43,13 @@ SharingServiceProxyAndroid::~SharingServiceProxyAndroid() {
 
 void SharingServiceProxyAndroid::SendSharedClipboardMessage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_guid,
-    const base::android::JavaParamRef<jstring>& j_text,
+    std::string& guid,
+    std::string& text,
     const base::android::JavaParamRef<jobject>& j_runnable) {
   auto callback =
       base::BindOnce(base::android::RunIntCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(j_runnable));
 
-  std::string guid = base::android::ConvertJavaStringToUTF8(env, j_guid);
   DCHECK(!guid.empty());
 
   std::optional<SharingTargetDeviceInfo> device =
@@ -62,7 +61,6 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
     return;
   }
 
-  std::string text = base::android::ConvertJavaStringToUTF8(env, j_text);
   chrome_browser_sharing::SharingMessage sharing_message;
   sharing_message.mutable_shared_clipboard_message()->set_text(std::move(text));
 
@@ -87,9 +85,7 @@ void SharingServiceProxyAndroid::GetDeviceCandidates(
           j_required_feature));
   for (const SharingTargetDeviceInfo& device_info : device_candidates) {
     Java_SharingServiceProxy_createDeviceInfoAndAppendToList(
-        env, j_device_info,
-        base::android::ConvertUTF8ToJavaString(env, device_info.guid()),
-        base::android::ConvertUTF8ToJavaString(env, device_info.client_name()),
+        env, j_device_info, device_info.guid(), device_info.client_name(),
         static_cast<int>(device_info.form_factor()),
         device_info.last_updated_timestamp().InMillisecondsSinceUnixEpoch());
   }

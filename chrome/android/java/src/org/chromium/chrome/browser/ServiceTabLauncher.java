@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -56,14 +57,14 @@ public class ServiceTabLauncher {
     /**
      * Launches the browser activity and launches a tab for |url|.
      *
-     * @param requestId      Id of the request for launching this tab.
-     * @param incognito      Whether the tab should be launched in incognito mode.
-     * @param url            The URL which should be launched in a tab.
-     * @param disposition    The disposition requested by the navigation source.
-     * @param referrerUrl    URL of the referrer which is opening the page.
+     * @param requestId Id of the request for launching this tab.
+     * @param incognito Whether the tab should be launched in incognito mode.
+     * @param url The URL which should be launched in a tab.
+     * @param disposition The disposition requested by the navigation source.
+     * @param referrerUrl URL of the referrer which is opening the page.
      * @param referrerPolicy The referrer policy to consider when applying the referrer.
-     * @param extraHeaders   Extra headers to apply when requesting the tab's URL.
-     * @param postData       Post-data to include in the tab URL's request body.
+     * @param extraHeaders Extra headers to apply when requesting the tab's URL.
+     * @param postData Post-data to include in the tab URL's request body.
      */
     @CalledByNative
     public static void launchTab(
@@ -71,9 +72,9 @@ public class ServiceTabLauncher {
             boolean incognito,
             GURL url,
             int disposition,
-            String referrerUrl,
+            @JniType("std::string") String referrerUrl,
             int referrerPolicy,
-            String extraHeaders,
+            @JniType("std::string") String extraHeaders,
             ResourceRequestBody postData) {
         // Open popup window in custom tab.
         // Note that this is used by PaymentRequestEvent.openWindow().

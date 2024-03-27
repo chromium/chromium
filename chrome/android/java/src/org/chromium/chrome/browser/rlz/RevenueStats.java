@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.rlz;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -60,7 +61,8 @@ public class RevenueStats {
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        void setSearchClient(String client);
-        void setRlzParameterValue(String rlz);
+        void setSearchClient(@JniType("std::string") String client);
+
+        void setRlzParameterValue(@JniType("std::u16string") String rlz);
     }
 }

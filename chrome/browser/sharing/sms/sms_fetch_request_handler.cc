@@ -124,9 +124,7 @@ void SmsFetchRequestHandler::AskUserPermission(
   // TODO(crbug.com/1138454): We should improve the infrastructure to be able to
   // handle failures when there are multiple pending origins simultaneously.
   Java_SmsFetcherMessageHandler_showNotification(
-      env, base::android::ConvertUTF8ToJavaString(env, one_time_code),
-      top_origin, embedded_origin,
-      base::android::ConvertUTF8ToJavaString(env, client_name),
+      env, one_time_code, top_origin, embedded_origin, client_name,
       reinterpret_cast<intptr_t>(this));
 }
 
