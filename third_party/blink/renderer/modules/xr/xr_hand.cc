@@ -17,9 +17,9 @@ namespace blink {
 class XRHandIterationSource final
     : public PairSyncIterable<XRHand>::IterationSource {
  public:
-  explicit XRHandIterationSource(HeapVector<Member<XRJointSpace>>& joints,
+  explicit XRHandIterationSource(const HeapVector<Member<XRJointSpace>>& joints,
                                  XRHand* xr_hand)
-      : index_(0), joints_(joints), xr_hand_(xr_hand) {}
+      : joints_(&joints), xr_hand_(xr_hand) {}
 
   bool FetchNextItem(ScriptState*,
                      V8XRHandJoint& key,
@@ -35,13 +35,14 @@ class XRHandIterationSource final
   }
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(joints_);
     visitor->Trace(xr_hand_);
     PairSyncIterable<XRHand>::IterationSource::Trace(visitor);
   }
 
  private:
-  wtf_size_t index_;
-  const raw_ref<const HeapVector<Member<XRJointSpace>>> joints_;
+  wtf_size_t index_ = 0;
+  const Member<const HeapVector<Member<XRJointSpace>>> joints_;
   Member<XRHand> xr_hand_;  // Owner object of `joints_`
 };
 
