@@ -35,6 +35,7 @@ impl Handler for HandlerExpectReady {
     }
 }
 
+#[allow(dead_code)]
 struct HandlerExpectTimeout {}
 
 impl Handler for HandlerExpectTimeout {
