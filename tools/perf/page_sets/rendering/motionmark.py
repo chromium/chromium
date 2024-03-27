@@ -287,55 +287,56 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
                                             test_interval)
 
 
-#Numbers for complexity based on MotionMark score for chrome build without PGO
+# Numbers for complexity come from recent high scores on perf bots with a PGO
+# build.
 #TODO(vmiura): Update names from fixed_2_seconds to match the new durations.
 class MotionMarkFixed2SecondsMultiply(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_multiply'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Multiply', 1396, 5)
+                                                        'Multiply', 5150, 5)
 
 
 class MotionMarkFixed2SecondsCanvasArcs(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_canvas_arcs'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Canvas Arcs', 6194, 5)
+                                                        'Canvas Arcs', 17400, 5)
 
 
 class MotionMarkFixed2SecondsLeaves(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_leaves'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Leaves',
-                                                        1377, 5)
+                                                        4300, 5)
 
 
 class MotionMarkFixed2SecondsPaths(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_paths'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Paths',
-                                                        29172, 5)
+                                                        64700, 5)
 
 
 class MotionMarkFixed2SecondsCanvasLines(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_canvas_lines'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Canvas Lines', 16520,
+                                                        'Canvas Lines', 54200,
                                                         5)
 
 
 class MotionMarkFixed2SecondsImages(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_images'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Images',
-                                                        200, 5)
+                                                        440, 5)
 
 
 class MotionMarkFixed2SecondsDesign(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_design'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Design',
-                                                        213, 5)
+                                                        705, 5)
 
 
 class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_suits'
   URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Suits',
-                                                        1299, 5)
+                                                        2800, 5)
 
 
 @benchmark.Info(emails=['chrome-skia-graphite@google.com'],
