@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_frame_context[beforeRequestSent-cross_origin]
+  AssertionError
+[FAIL] test_frame_context[responseStarted-cross_origin]
+  AssertionError
+Harness: the test ran to completion.

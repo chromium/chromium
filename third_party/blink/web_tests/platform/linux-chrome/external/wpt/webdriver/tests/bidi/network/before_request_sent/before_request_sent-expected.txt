@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_url_with_fragment
+  AssertionError
+Harness: the test ran to completion.

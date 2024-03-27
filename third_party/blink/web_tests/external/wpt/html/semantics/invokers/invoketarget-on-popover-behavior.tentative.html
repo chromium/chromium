@@ -16,6 +16,21 @@
 <button id="invokerbutton" invoketarget="invokee"></button>
 
 <script>
+  // auto
+
+  promise_test(async function (t) {
+    assert_false(invokee.matches(":popover-open"));
+    invokee.addEventListener("invoke", (e) => { invokerbutton.setAttribute('invokeaction', 'hidepopover'); }, {
+      once: true,
+    });
+    await clickOn(invokerbutton);
+    t.add_cleanup(() => {
+      invokee.hidePopover();
+      invokerbutton.removeAttribute("invokeaction");
+    });
+    assert_true(invokee.matches(":popover-open"));
+  }, "changing invokeaction attribute inside invokeevent doesn't impact the invocation");
+
   function resetState() {
     invokerbutton.removeAttribute("invokeaction");
     containedinvoker.removeAttribute("invokeaction");

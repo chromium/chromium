@@ -2611,6 +2611,11 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/IndexedDB/ready-state-destroyed-execution-context.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-004.html [ Failure ]
+crbug.com/626703 external/wpt/editing/crashtests/designMode-caret-change.html [ Timeout ]
+crbug.com/626703 external/wpt/shadow-dom/selection-direction.tentative.html [ Timeout ]
+crbug.com/626703 virtual/third-party-storage-partitioning/external/wpt/IndexedDB/ready-state-destroyed-execution-context.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Failure Timeout ]
 crbug.com/626703 [ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
