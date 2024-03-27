@@ -429,11 +429,10 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     return;
   }
 
-  // Note: No `error_callback` is required since any errors are handled
-  // explicitly via TakeError() below.
   syncer::SyncMetadataStoreChangeList metadata_change_list(
       password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
-      /*error_callback=*/base::DoNothing());
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 
   for (const PasswordStoreChange& change : local_changes) {
     DCHECK(change.form().primary_key.has_value());
@@ -457,15 +456,13 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
       }
     }
   }
-
-  if (std::optional<syncer::ModelError> error =
-          metadata_change_list.TakeError()) {
-    change_processor()->ReportError(*error);
-  }
 }
 
 std::unique_ptr<syncer::MetadataChangeList>
 PasswordSyncBridge::CreateMetadataChangeList() {
+  // Note: This creates an InMemoryMetadataChangeList (rather than
+  // SyncMetadataStoreChangeList) to ensure that metadata changes are always
+  // persisted as part of a transaction.
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
@@ -690,17 +687,15 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
 
     // Persist the metadata changes.
     // TODO(mamir): add some test coverage for the metadata persistence.
-    // Note: No `error_callback` is required since any errors are handled
-    // explicitly via TakeError() below.
     syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
         password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
-        /*error_callback=*/base::DoNothing());
+        base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                            change_processor()->GetWeakPtr()));
     // |metadata_change_list| must have been created via
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
         ->TransferChangesTo(&sync_metadata_store_change_list);
-    std::optional<syncer::ModelError> error =
-        sync_metadata_store_change_list.TakeError();
+    std::optional<syncer::ModelError> error = change_processor()->GetError();
     if (error) {
       metrics_util::LogPasswordSyncState(
           metrics_util::PasswordSyncState::
@@ -877,17 +872,15 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
 
     // Persist the metadata changes.
     // TODO(mamir): add some test coverage for the metadata persistence.
-    // Note: No `error_callback` is required since any errors are handled
-    // explicitly via TakeError() below.
     syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
         password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
-        /*error_callback=*/base::DoNothing());
+        base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                            change_processor()->GetWeakPtr()));
     // |metadata_change_list| must have been created via
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
         ->TransferChangesTo(&sync_metadata_store_change_list);
-    std::optional<syncer::ModelError> error =
-        sync_metadata_store_change_list.TakeError();
+    std::optional<syncer::ModelError> error = change_processor()->GetError();
     if (error) {
       metrics_util::LogApplySyncChangesState(
           metrics_util::ApplySyncChangesState::kApplyMetadataChangesFailed);

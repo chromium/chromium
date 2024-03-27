@@ -427,6 +427,11 @@ class PasswordSyncBridgeTest : public testing::Test {
 
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
+    ON_CALL(mock_processor_, ReportError)
+        .WillByDefault([this](const syncer::ModelError& error) {
+          ON_CALL(mock_processor_, GetError())
+              .WillByDefault(testing::Return(error));
+        });
   }
 
   void RecreateBridge(syncer::WipeModelUponSyncDisabledBehavior

@@ -19,6 +19,11 @@ MockModelTypeChangeProcessor::MockModelTypeChangeProcessor() = default;
 
 MockModelTypeChangeProcessor::~MockModelTypeChangeProcessor() = default;
 
+base::WeakPtr<ModelTypeChangeProcessor>
+MockModelTypeChangeProcessor::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 std::unique_ptr<ModelTypeChangeProcessor>
 MockModelTypeChangeProcessor::CreateForwardingProcessor() {
   return base::WrapUnique<ModelTypeChangeProcessor>(
