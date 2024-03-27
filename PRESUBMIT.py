@@ -5885,14 +5885,19 @@ def CheckForIncludeGuards(input_api, output_api):
 
     def is_chromium_header_file(f):
         # We only check header files under the control of the Chromium
-        # project. That is, those outside third_party apart from
-        # third_party/blink.
-        # We also exclude *_message_generator.h headers as they use
-        # include guards in a special, non-typical way.
+        # project. This excludes:
+        # - third_party/*, except blink.
+        # - base/allocator/partition_allocator/: PartitionAlloc is a standalone
+        #   library used outside of Chrome. Includes are referenced from its
+        #   own base directory. It has its own `CheckForIncludeGuards`
+        #   PRESUBMIT.py check.
+        # - *_message_generator.h: They use include guards in a special,
+        #   non-typical way.
         file_with_path = input_api.os_path.normpath(f.LocalPath())
         return (file_with_path.endswith('.h')
                 and not file_with_path.endswith('_message_generator.h')
                 and not file_with_path.endswith('com_imported_mstscax.h')
+                and not file_with_path.startswith('base/allocator/partition_allocator')
                 and (not file_with_path.startswith('third_party')
                      or file_with_path.startswith(
                          input_api.os_path.join('third_party', 'blink'))))
