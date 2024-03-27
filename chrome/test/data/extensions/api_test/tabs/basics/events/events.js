@@ -7,6 +7,8 @@ var otherTabId;
 var firstWindowId;
 var secondWindowId;
 
+const manifest = chrome.runtime.getManifest();
+
 const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
@@ -77,6 +79,11 @@ chrome.test.runTests([
 
   function tabsOnSelectionChanged() {
     // Note: tabs.onSelectionChanged is deprecated.
+    if (manifest.manifest_version > 2) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.test.listenOnce(chrome.tabs.onSelectionChanged,
       function(tabid, info) {
         assertEq(testTabId, tabid);
@@ -89,6 +96,11 @@ chrome.test.runTests([
 
   function tabsOnActiveChanged() {
     // Note: tabs.onActiveChanged is deprecated.
+    if (manifest.manifest_version > 2) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.test.listenOnce(chrome.tabs.onActiveChanged,
       function(tabid, info) {
         assertEq(otherTabId, tabid);
