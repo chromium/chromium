@@ -4,6 +4,7 @@
     --personalization-app-grid-item-spacing: 20px;
     /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
     --personalization-app-second-tone-opacity: 0.3;
+    --personalization-app-grid-item-outline-offset: 2px;
     --personalization-app-grid-item-outline-width: 2px;
 
     box-sizing: border-box;
@@ -18,7 +19,8 @@
   }
 
   :host([data-is-promoted-tile]) {
-    padding: var(--personalization-app-grid-item-outline-width) calc(var(--personalization-app-grid-item-spacing) / 2);
+    padding: calc(var(--personalization-app-grid-item-outline-width) + var(--personalization-app-grid-item-outline-offset))
+        calc(var(--personalization-app-grid-item-spacing) / 2);
   }
 
   @media(min-width: 720px) {
@@ -69,6 +71,7 @@
 
   :host(:focus-visible) .item {
     outline: var(--personalization-app-grid-item-outline-width) solid var(--cros-focus-ring-color);
+    outline-offset: var(--personalization-app-grid-item-outline-offset);
   }
 
   :host([placeholder]) .item {
