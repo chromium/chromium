@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
@@ -74,13 +75,13 @@ blink_mojom::RecurrentNetworkDirection BlinkRecurrentNetworkDirectionToMojo(
   }
 }
 
-blink_mojom::Lstm::WeightLayout BlinkLstmWeightLayoutToMojo(
+blink_mojom::LstmWeightLayout BlinkLstmWeightLayoutToMojo(
     blink::V8MLLstmWeightLayout::Enum layout) {
   switch (layout) {
     case blink::V8MLLstmWeightLayout::Enum::kIofg:
-      return blink_mojom::Lstm::WeightLayout::kIofg;
+      return blink_mojom::LstmWeightLayout::kIofg;
     case blink::V8MLLstmWeightLayout::Enum::kIfgo:
-      return blink_mojom::Lstm::WeightLayout::kIfgo;
+      return blink_mojom::LstmWeightLayout::kIfgo;
   }
 }
 
@@ -800,6 +801,73 @@ OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewLstm(std::move(lstm_mojo));
 }
 
+base::expected<OperationPtr, String> CreateLstmCellOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* lstm_cell) {
+  uint64_t input_operand_id =
+      GetOperatorInputId(lstm_cell, operand_to_id_map, 0);
+  uint64_t weight_operand_id =
+      GetOperatorInputId(lstm_cell, operand_to_id_map, 1);
+  uint64_t recurrent_weight_operand_id =
+      GetOperatorInputId(lstm_cell, operand_to_id_map, 2);
+  uint64_t hidden_state_operand_id =
+      GetOperatorInputId(lstm_cell, operand_to_id_map, 3);
+  uint64_t cell_state_operand_id =
+      GetOperatorInputId(lstm_cell, operand_to_id_map, 4);
+
+  const auto* options =
+      static_cast<const MLLstmCellOptions*>(lstm_cell->Options());
+  CHECK(options);
+
+  std::optional<uint64_t> bias_operand_id;
+  if (options->hasBias()) {
+    bias_operand_id = operand_to_id_map.at(options->bias());
+  }
+  std::optional<uint64_t> recurrent_bias_operand_id;
+  if (options->hasRecurrentBias()) {
+    recurrent_bias_operand_id = operand_to_id_map.at(options->recurrentBias());
+  }
+  std::optional<uint64_t> peephole_weight_operand_id;
+  if (options->hasPeepholeWeight()) {
+    peephole_weight_operand_id =
+        operand_to_id_map.at(options->peepholeWeight());
+  }
+
+  const HeapVector<Member<MLActivation>>& ml_activations =
+      options->activations();
+  Vector<ActivationPtr> activations;
+  activations.reserve(activations.size());
+  for (const auto& activation : ml_activations) {
+    base::expected<ActivationPtr, String> validated_activation =
+        CreateActivation(operand_to_id_map, activation);
+    if (!validated_activation.has_value()) {
+      return base::unexpected(validated_activation.error());
+    }
+    activations.push_back(std::move(validated_activation.value()));
+  }
+
+  Vector<uint64_t> output_operand_ids;
+  CHECK_EQ(lstm_cell->Outputs().size(), 2u);
+  output_operand_ids.reserve(lstm_cell->Outputs().size());
+  output_operand_ids.push_back(
+      GetOperatorOutputId(lstm_cell, operand_to_id_map, 0));
+  output_operand_ids.push_back(
+      GetOperatorOutputId(lstm_cell, operand_to_id_map, 1));
+
+  const auto* lstm_cell_operator =
+      static_cast<const MLLstmCellOperator*>(lstm_cell);
+
+  auto lstm_cell_mojo = blink_mojom::LstmCell::New(
+      input_operand_id, weight_operand_id, recurrent_weight_operand_id,
+      hidden_state_operand_id, cell_state_operand_id,
+      std::move(output_operand_ids), lstm_cell_operator->hidden_size(),
+      bias_operand_id, recurrent_bias_operand_id, peephole_weight_operand_id,
+      mojo::BlinkLstmWeightLayoutToMojo(options->layout().AsEnum()),
+      std::move(activations));
+
+  return blink_mojom::Operation::NewLstmCell(std::move(lstm_cell_mojo));
+}
+
 OperationPtr CreateMatmulOperation(const OperandToIdMap& operand_to_id_map,
                                    const MLOperator* matmul) {
   auto matmul_mojo = blink_mojom::Matmul::New();
@@ -1177,6 +1245,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
           CreateLinear(operand_to_id_map, op, false));
     case blink_mojom::Operation::Tag::kLstm:
       return CreateLstmOperation(operand_to_id_map, op);
+    case blink_mojom::Operation::Tag::kLstmCell:
+      return CreateLstmCellOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kMatmul:
       return CreateMatmulOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kPad:

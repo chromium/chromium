@@ -348,6 +348,31 @@ webnn::LstmAttributes ConvertToLstmAttributes(
   return attributes;
 }
 
+webnn::LstmCellAttributes ConvertToLstmCellAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::LstmCell& lstm_cell) {
+  webnn::LstmCellAttributes attributes;
+  attributes.activation_count = lstm_cell.activations.size();
+
+  if (lstm_cell.bias_operand_id.has_value()) {
+    const auto* bias =
+        GetMojoOperand(id_to_operand_map, lstm_cell.bias_operand_id.value());
+    attributes.bias = ConvertToComponentOperand(bias);
+  }
+  if (lstm_cell.recurrent_bias_operand_id.has_value()) {
+    const auto* recurrent_bias = GetMojoOperand(
+        id_to_operand_map, lstm_cell.recurrent_bias_operand_id.value());
+    attributes.recurrent_bias = ConvertToComponentOperand(recurrent_bias);
+  }
+  if (lstm_cell.peephole_weight_operand_id.has_value()) {
+    const auto* peephole_weight = GetMojoOperand(
+        id_to_operand_map, lstm_cell.peephole_weight_operand_id.value());
+    attributes.peephole_weight = ConvertToComponentOperand(peephole_weight);
+  }
+
+  return attributes;
+}
+
 webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
@@ -1271,6 +1296,94 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
+                      const mojom::LstmCell& lstm_cell,
+                      base::flat_set<uint32_t>& processed_operands) {
+  if (!processed_operands.contains(lstm_cell.input_operand_id) ||
+      !processed_operands.contains(lstm_cell.weight_operand_id) ||
+      !processed_operands.contains(lstm_cell.recurrent_weight_operand_id) ||
+      !processed_operands.contains(lstm_cell.hidden_state_operand_id) ||
+      !processed_operands.contains(lstm_cell.cell_state_operand_id)) {
+    return false;
+  }
+
+  const mojom::Operand* input =
+      GetMojoOperand(id_to_operand_map, lstm_cell.input_operand_id);
+  const mojom::Operand* weight =
+      GetMojoOperand(id_to_operand_map, lstm_cell.weight_operand_id);
+  const mojom::Operand* recurrent_weight =
+      GetMojoOperand(id_to_operand_map, lstm_cell.recurrent_weight_operand_id);
+  const mojom::Operand* hidden_state =
+      GetMojoOperand(id_to_operand_map, lstm_cell.hidden_state_operand_id);
+  const mojom::Operand* cell_state =
+      GetMojoOperand(id_to_operand_map, lstm_cell.cell_state_operand_id);
+  if (!input || !weight || !recurrent_weight || !hidden_state || !cell_state) {
+    return false;
+  }
+
+  const std::optional<uint32_t> bias_operand_id = lstm_cell.bias_operand_id;
+  if (bias_operand_id.has_value() &&
+      (!id_to_operand_map.contains(bias_operand_id.value()) ||
+       !processed_operands.contains(bias_operand_id.value()))) {
+    return false;
+  }
+  const std::optional<uint32_t> recurrent_bias_operand_id =
+      lstm_cell.recurrent_bias_operand_id;
+  if (recurrent_bias_operand_id.has_value() &&
+      (!id_to_operand_map.contains(recurrent_bias_operand_id.value()) ||
+       !processed_operands.contains(recurrent_bias_operand_id.value()))) {
+    return false;
+  }
+  const std::optional<uint32_t> peephole_weight_operand_id =
+      lstm_cell.peephole_weight_operand_id;
+  if (peephole_weight_operand_id.has_value() &&
+      (!id_to_operand_map.contains(peephole_weight_operand_id.value()) ||
+       !processed_operands.contains(peephole_weight_operand_id.value()))) {
+    return false;
+  }
+
+  for (uint64_t output_operand_id : lstm_cell.output_operand_ids) {
+    if (output_operand_id == lstm_cell.input_operand_id ||
+        output_operand_id == lstm_cell.weight_operand_id ||
+        output_operand_id == lstm_cell.recurrent_weight_operand_id ||
+        output_operand_id == lstm_cell.hidden_state_operand_id ||
+        output_operand_id == lstm_cell.cell_state_operand_id) {
+      return false;
+    }
+    processed_operands.insert(output_operand_id);
+  }
+
+  const base::expected<std::vector<webnn::Operand>, std::string>
+      validated_outputs = ValidateLstmCellAndInferOutput(
+          ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+          ConvertToComponentOperand(recurrent_weight),
+          ConvertToComponentOperand(hidden_state),
+          ConvertToComponentOperand(cell_state), lstm_cell.hidden_size,
+          ConvertToLstmCellAttributes(id_to_operand_map, lstm_cell));
+  if (!validated_outputs.has_value()) {
+    return false;
+  }
+  if (lstm_cell.output_operand_ids.size() != validated_outputs->size()) {
+    return false;
+  }
+  for (size_t i = 0; i < validated_outputs->size(); ++i) {
+    const mojom::Operand* output =
+        GetMojoOperand(id_to_operand_map, lstm_cell.output_operand_ids[i]);
+    if (!output) {
+      return false;
+    }
+    if (validated_outputs->at(i) != ConvertToComponentOperand(output)) {
+      return false;
+    }
+  }
+
+  if (!base::ranges::all_of(lstm_cell.activations, ValidateActivation)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateInstanceNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalizationPtr& instance_normalization,
@@ -1843,6 +1956,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kLstm:
       return ValidateLstm(id_to_operand_map, operation->get_lstm(),
                           processed_operands);
+    case mojom::Operation::Tag::kLstmCell:
+      return ValidateLstmCell(id_to_operand_map, *operation->get_lstm_cell(),
+                              processed_operands);
     case mojom::Operation::Tag::kMatmul:
       return ValidateMatmul(id_to_operand_map, operation->get_matmul(),
                             processed_operands);

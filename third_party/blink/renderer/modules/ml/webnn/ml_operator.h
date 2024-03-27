@@ -134,6 +134,23 @@ class MODULES_EXPORT MLLstmOperator : public MLOperator {
   uint32_t hidden_size_;
 };
 
+class MODULES_EXPORT MLLstmCellOperator : public MLOperator {
+ public:
+  MLLstmCellOperator(MLGraphBuilder* builder,
+                     uint32_t hidden_size,
+                     const bindings::DictionaryBase* options);
+
+  MLLstmCellOperator(const MLLstmCellOperator&) = delete;
+  MLLstmCellOperator& operator=(const MLLstmCellOperator&) = delete;
+
+  ~MLLstmCellOperator() override;
+
+  uint32_t hidden_size() const;
+
+ private:
+  const uint32_t hidden_size_;
+};
+
 class MODULES_EXPORT MLGruOperator : public MLOperator {
  public:
   MLGruOperator(MLGraphBuilder* builder,

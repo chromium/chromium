@@ -343,7 +343,7 @@ class GraphInfoBuilder final {
   //   std::optional<uint64_t> initial_cell_state_operand_id;
   //   bool return_sequence;
   //   mojom::RecurrentNetworkDirection direction;
-  //   mojom::Lstm::WeightLayout layout;
+  //   mojom::LstmWeightLayout layout;
   //   std::vector<Activation> activations;
   // };
   template <typename LstmAttributes>
@@ -379,6 +379,41 @@ class GraphInfoBuilder final {
 
     graph_info_->operations.push_back(
         mojom::Operation::NewLstm(std::move(lstm)));
+  }
+
+  // A `LstmCellAttributes` type should have the following members:
+  // struct LstmCellAttributes {
+  //   std::optional<uint64_t> bias_operand_id;
+  //   std::optional<uint64_t> recurrent_bias_operand_id;
+  //   std::optional<uint64_t> peephole_weight_operand_id;
+  //   mojom::LstmWeightLayout layout;
+  //   std::vector<Activation> activations;
+  // };
+  template <typename LstmCellAttributes>
+  void BuildLstmCell(uint64_t input_operand_id,
+                     uint64_t weight_operand_id,
+                     uint64_t recurrent_weight_operand_id,
+                     uint64_t hidden_state_operand_id,
+                     uint64_t cell_state_operand_id,
+                     std::vector<uint64_t> output_operand_ids,
+                     uint32_t hidden_size,
+                     const LstmCellAttributes& attributes) {
+    std::vector<mojom::ActivationPtr> activations;
+    activations.reserve(attributes.activations.size());
+    for (const auto& activation : attributes.activations) {
+      activations.push_back(CreateActivation(activation));
+    }
+
+    auto lstm_cell = mojom::LstmCell::New(
+        input_operand_id, weight_operand_id, recurrent_weight_operand_id,
+        hidden_state_operand_id, cell_state_operand_id,
+        std::move(output_operand_ids), hidden_size, attributes.bias_operand_id,
+        attributes.recurrent_bias_operand_id,
+        attributes.peephole_weight_operand_id, attributes.layout,
+        std::move(activations));
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewLstmCell(std::move(lstm_cell)));
   }
 
   // A `InstanceNormalizationAttributes` type should have the following members:

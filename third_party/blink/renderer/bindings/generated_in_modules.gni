@@ -776,6 +776,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.cc",

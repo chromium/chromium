@@ -5733,6 +5733,7 @@ interface MLGraphBuilder
     method log
     method logicalNot
     method lstm
+    method lstmCell
     method matmul
     method max
     method maxPool2d

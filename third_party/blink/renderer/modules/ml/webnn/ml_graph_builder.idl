@@ -116,6 +116,14 @@ dictionary MLLstmOptions {
   sequence<MLActivation> activations;
 };
 
+dictionary MLLstmCellOptions {
+  MLOperand bias;
+  MLOperand recurrentBias;
+  MLOperand peepholeWeight;
+  MLLstmWeightLayout layout = "iofg";
+  sequence<MLActivation> activations;
+};
+
 enum MLPaddingMode {
   "constant",
   "edge",
@@ -279,6 +287,10 @@ dictionary MLTriangularOptions {
   [RaisesException] sequence<MLOperand> lstm(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
                                              [EnforceRange] unsigned long steps, [EnforceRange] unsigned long hiddenSize,
                                              optional MLLstmOptions options = {});
+
+  [RaisesException] sequence<MLOperand> lstmCell(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
+                                                 MLOperand hiddenState, MLOperand cellState, [EnforceRange] unsigned long hiddenSize,
+                                                 optional MLLstmCellOptions options = {});
 
   [RaisesException] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
                 sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});

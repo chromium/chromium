@@ -5359,7 +5359,7 @@ struct LstmTester {
     bool return_sequence = false;
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
-    mojom::Lstm::WeightLayout layout = mojom::Lstm::WeightLayout::kIofg;
+    mojom::LstmWeightLayout layout = mojom::LstmWeightLayout::kIofg;
     std::vector<Activation> activations{
         Activation{.kind = mojom::Activation::Tag::kSigmoid},
         Activation{.kind = mojom::Activation::Tag::kTanh},
@@ -5700,6 +5700,80 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
     EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
               std::vector<float>({0, 0, 2, 2}));
   }
+}
+
+struct LstmCellAttributes {
+  std::optional<uint64_t> bias_operand_id;
+  std::optional<uint64_t> recurrent_bias_operand_id;
+  std::optional<uint64_t> peephole_weight_operand_id;
+  mojom::LstmWeightLayout layout = mojom::LstmWeightLayout::kIofg;
+  std::vector<Activation> activations;
+};
+
+// TODO(crbug.com/331250158): Remove this test after the WPT conformance tests
+// are completed.
+// Test building and computing a graph with single operator lstmCell.
+TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstmCell) {
+  uint32_t batch_size = 2;
+  uint32_t input_size = 2;
+  uint32_t hidden_size = 2;
+  std::vector<float> input_data = {1, 2, 3, 4};
+  std::vector<float> weight_data(16, 1);
+  std::vector<float> recurrent_weight_data(16, 1);
+  std::vector<float> initial_hidden_state_data(4, 1);
+  std::vector<float> initial_cell_state_data(4, 1);
+
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {batch_size, input_size}, mojom::Operand::DataType::kFloat32);
+  uint64_t weight_operand_id =
+      builder.BuildInput("weight", {4 * hidden_size, input_size},
+                         mojom::Operand::DataType::kFloat32);
+  uint64_t recurrent_weight_operand_id =
+      builder.BuildInput("recurrentWeight", {4 * hidden_size, hidden_size},
+                         mojom::Operand::DataType::kFloat32);
+  uint64_t hidden_state_operand_id =
+      builder.BuildInput("hiddenState", {batch_size, hidden_size},
+                         mojom::Operand::DataType::kFloat32);
+  uint64_t cell_state_operand_id =
+      builder.BuildInput("cellState", {batch_size, hidden_size},
+                         mojom::Operand::DataType::kFloat32);
+
+  LstmCellAttributes attributes;
+  attributes.activations = {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}};
+
+  uint64_t output_a_operand_id = builder.BuildOutput(
+      "output0", {batch_size, hidden_size}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_b_operand_id = builder.BuildOutput(
+      "output1", {batch_size, hidden_size}, mojom::Operand::DataType::kFloat32);
+  std::vector<uint64_t> output_operand_ids{output_a_operand_id,
+                                           output_b_operand_id};
+  builder.BuildLstmCell(input_operand_id, weight_operand_id,
+                        recurrent_weight_operand_id, hidden_state_operand_id,
+                        cell_state_operand_id, std::move(output_operand_ids),
+                        hidden_size, std::move(attributes));
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  named_inputs.insert({"input", VectorToBigBuffer(input_data)});
+  named_inputs.insert({"weight", VectorToBigBuffer(weight_data)});
+  named_inputs.insert(
+      {"recurrentWeight", VectorToBigBuffer(recurrent_weight_data)});
+  named_inputs.insert(
+      {"hiddenState", VectorToBigBuffer(initial_hidden_state_data)});
+  named_inputs.insert(
+      {"cellState", VectorToBigBuffer(initial_cell_state_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+
+  ASSERT_EQ(named_outputs.size(), 2u);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output0"])),
+            std::vector<float>({150, 150, 810, 810}));
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
+            std::vector<float>({30, 30, 90, 90}));
 }
 
 template <typename T>

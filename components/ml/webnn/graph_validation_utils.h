@@ -354,6 +354,26 @@ struct LstmAttributes {
   RecurrentNetworkDirection direction;
 };
 
+struct LstmCellAttributes {
+  LstmCellAttributes();
+  ~LstmCellAttributes();
+
+  LstmCellAttributes(LstmCellAttributes&& other);
+  LstmCellAttributes& operator=(LstmCellAttributes&& other);
+
+  LstmCellAttributes(const LstmCellAttributes&) = delete;
+  LstmCellAttributes& operator=(const LstmCellAttributes&) = delete;
+
+  // The bias operand.
+  std::optional<Operand> bias;
+  // The recurrent bias operand.
+  std::optional<Operand> recurrent_bias;
+  // The peephole weight operand.
+  std::optional<Operand> peephole_weight;
+  // The number of activations.
+  size_t activation_count;
+};
+
 struct SliceAttributes {
   SliceAttributes();
   ~SliceAttributes();
@@ -502,6 +522,17 @@ base::expected<std::vector<Operand>, std::string> ValidateLstmAndInferOutput(
     const uint32_t steps,
     const uint32_t hidden_size,
     const LstmAttributes& attributes);
+
+// Validate and infer output information of lstmCell operator defined
+// in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-lstmcell.
+base::expected<std::vector<Operand>, std::string>
+ValidateLstmCellAndInferOutput(const Operand& input,
+                               const Operand& weight,
+                               const Operand& recurrent_weight,
+                               const Operand& hidden_state,
+                               const Operand& cell_state,
+                               const uint32_t hidden_size,
+                               const LstmCellAttributes& attributes);
 
 // Validate concat operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat

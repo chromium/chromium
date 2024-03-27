@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
@@ -469,6 +470,27 @@ webnn::LstmAttributes ConvertToLstmAttributes(
   attributes.return_sequence = options->returnSequence();
   attributes.direction =
       BlinkRecurrentNetworkDirectionToComponent(options->direction().AsEnum());
+
+  return attributes;
+}
+
+webnn::LstmCellAttributes ConvertToLstmCellAttributes(
+    const blink::MLLstmCellOptions* options) {
+  CHECK(options);
+  webnn::LstmCellAttributes attributes;
+
+  if (options->hasBias()) {
+    attributes.bias = ConvertToComponentOperand(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    attributes.recurrent_bias =
+        ConvertToComponentOperand(options->recurrentBias());
+  }
+  if (options->hasPeepholeWeight()) {
+    attributes.peephole_weight =
+        ConvertToComponentOperand(options->peepholeWeight());
+  }
+  attributes.activation_count = options->activations().size();
 
   return attributes;
 }
@@ -1540,6 +1562,77 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
   }
 
   lstm->Connect(std::move(inputs), outputs);
+  return outputs;
+}
+
+HeapVector<Member<const MLOperand>> MLGraphBuilder::lstmCell(
+    const MLOperand* input,
+    const MLOperand* weight,
+    const MLOperand* recurrent_weight,
+    const MLOperand* hidden_state,
+    const MLOperand* cell_state,
+    const uint32_t hidden_size,
+    MLLstmCellOptions* options,
+    ExceptionState& exception_state) {
+  HeapVector<Member<const MLOperand>> inputs = {input, weight, recurrent_weight,
+                                                hidden_state, cell_state};
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    inputs.push_back(options->recurrentBias());
+  }
+  if (options->hasPeepholeWeight()) {
+    inputs.push_back(options->peepholeWeight());
+  }
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
+                                 HeapVector<Member<const MLOperand>>());
+
+  if (options->hasActivations()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
+                                   HeapVector<Member<const MLOperand>>());
+  }
+
+  // If the activations are not specified, create a default activation sequence
+  // [sigmoid, tanh, tanh] as defined in the spec.
+  if (!options->hasActivations()) {
+    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
+        this, webnn::mojom::blink::Activation::Tag::kSigmoid);
+    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
+        this, webnn::mojom::blink::Activation::Tag::kTanh);
+    options->setActivations(
+        {activation_sigmoid, activation_tanh, activation_tanh});
+  }
+
+  auto validated_outputs = webnn::ValidateLstmCellAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+      ConvertToComponentOperand(recurrent_weight),
+      ConvertToComponentOperand(hidden_state),
+      ConvertToComponentOperand(cell_state), hidden_size,
+      ConvertToLstmCellAttributes(options));
+  if (!validated_outputs.has_value()) {
+    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
+    return {};
+  }
+
+  auto* lstm_cell =
+      MakeGarbageCollected<MLLstmCellOperator>(this, hidden_size, options);
+
+  HeapVector<Member<const MLOperand>> outputs;
+  CHECK_EQ(validated_outputs->size(), 2u);
+  outputs.reserve(2);
+  for (const webnn::Operand& validated_output : validated_outputs.value()) {
+    auto output = MLOperand::ValidateAndCreateOutput(
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
+        Vector<uint32_t>(validated_output.dimensions), lstm_cell);
+    if (!output.has_value()) {
+      exception_state.ThrowTypeError(output.error());
+      return {};
+    }
+    outputs.push_back(output.value());
+  }
+
+  lstm_cell->Connect(std::move(inputs), outputs);
   return outputs;
 }
 

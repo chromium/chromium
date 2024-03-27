@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected_macros.h"
 
 namespace webnn {
 
@@ -1552,6 +1553,110 @@ base::expected<std::vector<Operand>, std::string> ValidateLstmAndInferOutput(
     outputs.emplace_back(input.data_type, std::vector{steps, direction_count,
                                                       batch_size, hidden_size});
   }
+
+  return outputs;
+}
+
+LstmCellAttributes::LstmCellAttributes() = default;
+LstmCellAttributes::~LstmCellAttributes() = default;
+
+LstmCellAttributes::LstmCellAttributes(LstmCellAttributes&& other) = default;
+LstmCellAttributes& LstmCellAttributes::operator=(LstmCellAttributes&& other) =
+    default;
+
+base::expected<std::vector<Operand>, std::string>
+ValidateLstmCellAndInferOutput(const Operand& input,
+                               const Operand& weight,
+                               const Operand& recurrent_weight,
+                               const Operand& hidden_state,
+                               const Operand& cell_state,
+                               const uint32_t hidden_size,
+                               const LstmCellAttributes& attributes) {
+  if (hidden_size <= 0) {
+    return base::unexpected("The hidden size must be greater than 0.");
+  }
+
+  uint32_t four_times_hidden_size;
+  auto checked_four_times_hidden_size = base::MakeCheckedNum(hidden_size) * 4;
+  if (!checked_four_times_hidden_size.AssignIfValid(&four_times_hidden_size)) {
+    return base::unexpected("The hidden size is too large.");
+  }
+
+  const std::vector<uint32_t>& input_dimensions = input.dimensions;
+  if (input_dimensions.size() != 2) {
+    return base::unexpected("The input should be a 2-D tensor.");
+  }
+
+  // TODO(crbug.com/331055053): The current spec doesn't specify the operand
+  // data type constraints of lstm.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The data type of input must be one of the floating point types.");
+  }
+
+  const uint32_t batch_size = input_dimensions[0];
+  const uint32_t input_size = input_dimensions[1];
+
+  // Validate the weight operand.
+  std::array<uint32_t, 2> expected_weight_shape = {four_times_hidden_size,
+                                                   input_size};
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+      weight, "weight", expected_weight_shape, input.data_type));
+
+  // Validate the hidden state operand.
+  std::array<uint32_t, 2> expected_hidden_state_shape = {batch_size,
+                                                         hidden_size};
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(hidden_state, "hidden state",
+                                                  expected_hidden_state_shape,
+                                                  input.data_type));
+
+  // Validate the cell state operand.
+  std::array<uint32_t, 2> expected_cell_state_shape = {batch_size, hidden_size};
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+      cell_state, "cell state", expected_cell_state_shape, input.data_type));
+
+  // Validate the recurrent weight operand.
+  std::array<uint32_t, 2> expected_recurrent_weight_shape = {
+      four_times_hidden_size, hidden_size};
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+      recurrent_weight, "recurrent weight", expected_recurrent_weight_shape,
+      input.data_type));
+
+  // Validate the bias operand.
+  if (attributes.bias) {
+    std::array<uint32_t, 1> expected_bias_shape = {four_times_hidden_size};
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        attributes.bias.value(), "bias", expected_bias_shape, input.data_type));
+  }
+
+  // Validate the recurrent bias operand.
+  if (attributes.recurrent_bias) {
+    std::array<uint32_t, 1> expected_recurrent_bias_shape = {
+        four_times_hidden_size};
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        attributes.recurrent_bias.value(), "recurrent bias",
+        expected_recurrent_bias_shape, input.data_type));
+  }
+
+  // Validate the peephole weight operand.
+  if (attributes.peephole_weight) {
+    // Here `3 * hidden_size` will not overflow because `4 * hidden_size` has
+    // already been checked.
+    std::array<uint32_t, 1> expected_peephole_weight_shape = {3 * hidden_size};
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        attributes.peephole_weight.value(), "peephole weight",
+        expected_peephole_weight_shape, input.data_type));
+  }
+
+  if (attributes.activation_count != 3) {
+    return base::unexpected(
+        "The activations should be a sequence of length 3.");
+  }
+
+  std::vector<Operand> outputs;
+  outputs.reserve(2);
+  outputs.emplace_back(input.data_type, std::vector{batch_size, hidden_size});
+  outputs.emplace_back(input.data_type, std::vector{batch_size, hidden_size});
 
   return outputs;
 }

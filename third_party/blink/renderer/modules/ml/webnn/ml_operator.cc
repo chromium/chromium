@@ -120,6 +120,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kLstm:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "lstm";
+    case webnn::mojom::blink::Operation::Tag::kLstmCell:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "lstmCell";
     case webnn::mojom::blink::Operation::Tag::kElu:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "elu";
@@ -303,6 +306,21 @@ uint32_t MLLstmOperator::steps() const {
 }
 
 uint32_t MLLstmOperator::hidden_size() const {
+  return hidden_size_;
+}
+
+MLLstmCellOperator::MLLstmCellOperator(MLGraphBuilder* builder,
+                                       uint32_t hidden_size,
+                                       const bindings::DictionaryBase* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kLstmCell,
+                 /*sub_kind=*/absl::monostate{},
+                 options),
+      hidden_size_(hidden_size) {}
+
+MLLstmCellOperator::~MLLstmCellOperator() = default;
+
+uint32_t MLLstmCellOperator::hidden_size() const {
   return hidden_size_;
 }
 

@@ -670,15 +670,15 @@ struct Linear {
   float beta = 0;
 };
 
+// The ordering of the weight for the input (i), output (o), forget (f) and
+// cell (g) gates.
+enum LstmWeightLayout {
+  kIofg,
+  kIfgo,
+};
+
 // Represents an operation of Long Short-Term Memory (LSTM) recurrent network.
 struct Lstm {
-  // The ordering of the weight for the input (i), output (o), forget (f) and
-  // cell (g) gates.
-  enum WeightLayout {
-    kIofg,
-    kIfgo,
-  };
-
   // The id of the input operand.
   uint64 input_operand_id;
   // The id of the weight operand.
@@ -706,11 +706,42 @@ struct Lstm {
 
   // Indicates whether to return the entire sequence of outputs from each time
   // step.
-  bool return_sequence = false;
+  bool return_sequence;
   // The processing direction of the input sequence.
   RecurrentNetworkDirection direction;
   // The ordering of both weight and bias vectors.
-  WeightLayout layout;
+  LstmWeightLayout layout;
+  // The activation functions for the input, output and forget gates.
+  array<Activation, 3> activations;
+};
+
+// Represents a single step of Long Short-Term Memory (LSTM) recurrent network.
+struct LstmCell {
+  // The id of the input operand.
+  uint64 input_operand_id;
+  // The id of the weight operand.
+  uint64 weight_operand_id;
+  // The id of the recurrent weight operand.
+  uint64 recurrent_weight_operand_id;
+  // The id of the hidden state operand.
+  uint64 hidden_state_operand_id;
+  // The id of the cell state operand.
+  uint64 cell_state_operand_id;
+  // The ids of the output operands must be distinct from other operand ids.
+  array<uint64, 2> output_operand_ids;
+
+  // The number of features in the hidden state.
+  uint32 hidden_size;
+
+  // The id of the bias operand.
+  uint64? bias_operand_id;
+  // The id of the recurrent bias operand.
+  uint64? recurrent_bias_operand_id;
+  // The id of the peephole weight operand.
+  uint64? peephole_weight_operand_id;
+
+  // The ordering of both weight and bias vectors.
+  LstmWeightLayout layout;
   // The activation functions for the input, output and forget gates.
   array<Activation, 3> activations;
 };
@@ -947,6 +978,7 @@ union Operation {
   LeakyRelu leaky_relu;
   Linear linear;
   Lstm lstm;
+  LstmCell lstm_cell;
   Matmul matmul;
   Pad pad;
   Pool2d pool2d;

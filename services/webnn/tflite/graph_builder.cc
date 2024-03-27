@@ -389,6 +389,8 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("linear is not implemented");
     case mojom::Operation::Tag::kLstm:
       return base::unexpected("lstm is not implemented");
+    case mojom::Operation::Tag::kLstmCell:
+      return base::unexpected("lstmCell is not implemented");
     case mojom::Operation::Tag::kMatmul:
       return base::unexpected("matmul is not implemented");
     case mojom::Operation::Tag::kPrelu:

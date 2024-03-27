@@ -2358,40 +2358,65 @@ const NodeOutput* AppendIdentityToConstantOperand(GraphBuilder& graph_builder,
   return AppendIdentityNode(graph_builder, input);
 }
 
+// `LstmType` must be `mojom::Lstm` or `mojom::LstmCell`.
+template <typename LstmType>
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
-    const mojom::LstmPtr& lstm,
+    const LstmType& lstm,
     mojom::GraphInfoPtr& graph_info,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
+  static_assert(std::is_same<LstmType, mojom::Lstm>::value ||
+                std::is_same<LstmType, mojom::LstmCell>::value);
+
   // TODO(crbug.com/329702350): Support the ifgo layout.
-  if (lstm->layout == mojom::Lstm::WeightLayout::kIfgo) {
+  if (lstm.layout == mojom::LstmWeightLayout::kIfgo) {
     return CreateUnexpectedError(
         mojom::Error::Code::kNotSupportedError,
         "The lstm weight layout (ifgo) is not supported.");
   }
 
+  mojom::Operation::Tag op_tag;
+  std::optional<uint64_t> initial_hidden_state_operand_id;
+  std::optional<uint64_t> initial_cell_state_operand_id;
+  bool return_sequence;
+  mojom::RecurrentNetworkDirection direction;
+  if constexpr (std::is_same<LstmType, mojom::Lstm>::value) {
+    op_tag = mojom::Operation::Tag::kLstm;
+    initial_hidden_state_operand_id = lstm.initial_hidden_state_operand_id;
+    initial_cell_state_operand_id = lstm.initial_cell_state_operand_id;
+    return_sequence = lstm.return_sequence;
+    direction = lstm.direction;
+  } else /* `LstmType` is `mojom::LstmCell` */ {
+    op_tag = mojom::Operation::Tag::kLstmCell;
+    initial_hidden_state_operand_id = lstm.hidden_state_operand_id;
+    initial_cell_state_operand_id = lstm.cell_state_operand_id;
+    return_sequence = false;
+    direction = mojom::RecurrentNetworkDirection::kForward;
+  }
+
   const NodeOutput* input =
-      GetNodeOutputForOperand(id_to_node_output_map, lstm->input_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, lstm.input_operand_id);
   // Append an identity node if the input is a constant operand since
   // InputTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML flag.
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lstm_operator_desc
-  const std::string append_identity_error =
-      "Failed to create identity operator to implement lstm operation.";
+  const std::string append_identity_error = base::StringPrintf(
+      "Failed to create identity operator to implement %s operation.",
+      OpTagToString(op_tag).c_str());
   if ((input = AppendIdentityToConstantOperand(graph_builder, input)) ==
       nullptr) {
     return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
                                  append_identity_error);
   }
   TensorDesc input_tensor_desc = input->GetTensorDesc();
-  // The input tensor shape is `[steps, batch_size, input_size]`, while DirectML
-  // expects the shape to be `[1, steps, batch_size, input_size]`.
+  // The input tensor is 2-D for lstmCell and 3-D for lstm, while DirectML
+  // expects a 4-D tensor.
   input_tensor_desc.EnsureMinimumRank(/*rank=*/4,
                                       TensorDesc::Alignment::kTrailing);
 
   const NodeOutput* weight =
-      GetNodeOutputForOperand(id_to_node_output_map, lstm->weight_operand_id);
+      GetNodeOutputForOperand(id_to_node_output_map, lstm.weight_operand_id);
   // Append an identity node if the weight is a constant operand since
   // WeightTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML flag.
   if ((weight = AppendIdentityToConstantOperand(graph_builder, weight)) ==
@@ -2400,14 +2425,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
                                  append_identity_error);
   }
   TensorDesc weight_tensor_desc = weight->GetTensorDesc();
-  // The weight tensor shape is `[direction_count, 4 * hidden_size,
-  // input_size]`, while DirectML expects the shape to be `[1, direction_count,
-  // 4 * hidden_size, input_size]`.
+  // The weight tensor is 2-D for lstmCell and 3-D for lstm, while DirectML
+  // expects a 4-D tensor.
   weight_tensor_desc.EnsureMinimumRank(/*rank=*/4,
                                        TensorDesc::Alignment::kTrailing);
 
   const NodeOutput* recurrent_weight = GetNodeOutputForOperand(
-      id_to_node_output_map, lstm->recurrent_weight_operand_id);
+      id_to_node_output_map, lstm.recurrent_weight_operand_id);
   // Append an identity node if the recurrent weight is a constant operand since
   // RecurrenceTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML flag.
   if ((recurrent_weight = AppendIdentityToConstantOperand(
@@ -2416,15 +2440,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
                                  append_identity_error);
   }
   TensorDesc recurrent_weight_tensor_desc = recurrent_weight->GetTensorDesc();
-  // The recurrent weight tensor shape is `[direction_count, 4 * hidden_size,
-  // hidden_size]`, while DirectML expects the shape to be `[1, direction_count,
-  // 4 * hidden_size, hidden_size]`.
+  // The recurrent weight tensor is 2-D for lstmCell and 3-D for lstm, while
+  // DirectML expects a 4-D tensor.
   recurrent_weight_tensor_desc.EnsureMinimumRank(
       /*rank=*/4, TensorDesc::Alignment::kTrailing);
 
   IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
 
-  const std::vector<uint64_t>& output_ids = lstm->output_operand_ids;
+  const std::vector<uint64_t>& output_ids = lstm.output_operand_ids;
   const size_t output_count = output_ids.size();
   CHECK_GE(output_count, 2u);
 
@@ -2436,24 +2459,22 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   TensorDesc output_hidden_state_tensor_desc(
       GetTensorDataType(output_data_type),
       output_hidden_state_operand->dimensions);
-  // The output hidden state tensor shape is `[direction_count, batch_size,
-  // input_size]`, while DirectML expects the shape to be `[1, direction_count,
-  // batch_size, input_size]`.
+  // The output hidden state tensor is 2-D for lstmCell and 3-D for lstm, while
+  // DirectML expects a 4-D tensor.
   output_hidden_state_tensor_desc.EnsureMinimumRank(
       /*rank=*/4, TensorDesc::Alignment::kTrailing);
 
   const uint64_t output_cell_state_id = output_ids[1];
   TensorDesc output_cell_state_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_cell_state_id);
-  // The output cell state tensor shape is `[direction_count, batch_size,
-  // input_size]`, while DirectML expects the shape to be `[1, direction_count,
-  // batch_size, input_size]`.
+  // The output cell state tensor is 2-D for lstmCell and 3-D for lstm, while
+  // DirectML expects a 4-D tensor.
   output_cell_state_tensor_desc.EnsureMinimumRank(
       /*rank=*/4, TensorDesc::Alignment::kTrailing);
 
   std::optional<uint64_t> output_sequence_id;
   std::optional<TensorDesc> output_sequence_tensor_desc;
-  if (lstm->return_sequence) {
+  if (return_sequence) {
     CHECK_EQ(output_count, 3u);
     output_sequence_id = output_ids[2];
     output_sequence_tensor_desc =
@@ -2463,9 +2484,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   std::vector<const NodeOutput*> inputs{input, weight, recurrent_weight};
 
   const NodeOutput* bias = GetOptionalNodeOutputForOperand(
-      id_to_node_output_map, lstm->bias_operand_id);
+      id_to_node_output_map, lstm.bias_operand_id);
   const NodeOutput* recurrent_bias = GetOptionalNodeOutputForOperand(
-      id_to_node_output_map, lstm->recurrent_bias_operand_id);
+      id_to_node_output_map, lstm.recurrent_bias_operand_id);
 
   // DML_LSTM_OPERATOR_DESC only takes a concatenation of {bias, recurrent_bias}
   // or none, so create a constant bias operand if one of the biases is not
@@ -2501,16 +2522,16 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   std::optional<TensorDesc> concatenated_bias_tensor_desc;
   if (bias && recurrent_bias) {
     const uint32_t direction_count =
-        lstm->direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+        direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
     auto checked_four_times_hidden_size =
-        base::MakeCheckedNum(lstm->hidden_size) * 4;
+        base::MakeCheckedNum(lstm.hidden_size) * 4;
     // Four times hidden size should have already been validated.
     CHECK(checked_four_times_hidden_size.IsValid());
     const std::vector<uint32_t> bias_dimensions = {
         1, 1, direction_count, checked_four_times_hidden_size.ValueOrDie()};
 
-    // The bias tensor shape is either [1] or [direction_count, 4 *
-    // hidden_size], which can be broadcasted to [1, 1, direction_count, 4 *
+    // The bias tensor shape is [1] or `[4 * hidden_size]` or [direction_count,
+    // 4 * hidden_size], which can be broadcasted to [1, 1, direction_count, 4 *
     // hidden_size] as DirectML requires.
     TensorDesc bias_tensor_desc = bias->GetTensorDesc();
     bias_tensor_desc.BroadcastTo(bias_dimensions);
@@ -2526,7 +2547,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     if (!checked_eight_times_hidden_size.IsValid()) {
       return CreateUnexpectedError(
           mojom::Error::Code::kUnknownError,
-          "The hidden size is too large for lstm operator.");
+          base::StringPrintf("The hidden size is too large for %s operator.",
+                             OpTagToString(op_tag).c_str()));
     }
     // The concatenated bias dimensions is [1, 1, direction_count, 8 *
     // hidden_size].
@@ -2548,7 +2570,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     if (!concat_node) {
       return CreateUnexpectedError(
           mojom::Error::Code::kUnknownError,
-          "Failed to create concat operator to implement lstm operation.");
+          base::StringPrintf("Failed to create concat operator to "
+                             "implement %s operation.",
+                             OpTagToString(op_tag).c_str()));
     }
     const NodeOutput* concatenated_bias = graph_builder.CreateNodeOutput(
         concat_node, concatenated_bias_tensor_desc.value(), 0);
@@ -2559,9 +2583,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   }
 
   std::optional<TensorDesc> initial_hidden_state_tensor_desc;
-  if (lstm->initial_hidden_state_operand_id.has_value()) {
+  if (initial_hidden_state_operand_id.has_value()) {
     const NodeOutput* initial_hidden_state = GetNodeOutputForOperand(
-        id_to_node_output_map, lstm->initial_hidden_state_operand_id.value());
+        id_to_node_output_map, initial_hidden_state_operand_id.value());
     // Append an identity node if the initial hidden state is a constant operand
     // since HiddenInitTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
     // flag.
@@ -2573,9 +2597,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
     inputs.push_back(initial_hidden_state);
     initial_hidden_state_tensor_desc = initial_hidden_state->GetTensorDesc();
-    // The initial hidden state tensor shape is `[direction_count, batch_size,
-    // hidden_size]`, while DirectML expects the shape to be `[1,
-    // direction_count, batch_size, hidden_size]`.
+    // The initial hidden state tensor is 2-D for lstmCell and 3-D for lstm,
+    // while DirectML expects a 4-D tensor.
     initial_hidden_state_tensor_desc->EnsureMinimumRank(
         /*rank=*/4, TensorDesc::Alignment::kTrailing);
   } else {
@@ -2584,9 +2607,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   }
 
   std::optional<TensorDesc> initial_cell_state_tensor_desc;
-  if (lstm->initial_cell_state_operand_id.has_value()) {
+  if (initial_cell_state_operand_id.has_value()) {
     const NodeOutput* initial_cell_state = GetNodeOutputForOperand(
-        id_to_node_output_map, lstm->initial_cell_state_operand_id.value());
+        id_to_node_output_map, initial_cell_state_operand_id.value());
     // Append an identity node if the initial cell state is a constant operand
     // since CellMemInitTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
     // flag.
@@ -2598,9 +2621,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
     inputs.push_back(initial_cell_state);
     initial_cell_state_tensor_desc = initial_cell_state->GetTensorDesc();
-    // The initial cell state tensor shape is `[direction_count, batch_size,
-    // hidden_size]`, while DirectML expects the shape to be `[1,
-    // direction_count, batch_size, hidden_size]`.
+    // The initial cell state tensor is 2-D for lstmCell and 3-D for lstm, while
+    // DirectML expects a 4-D tensor.
     initial_cell_state_tensor_desc->EnsureMinimumRank(
         /*rank=*/4, TensorDesc::Alignment::kTrailing);
   } else {
@@ -2612,9 +2634,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   inputs.push_back(nullptr);
 
   std::optional<TensorDesc> peephole_weight_tensor_desc;
-  if (lstm->peephole_weight_operand_id.has_value()) {
+  if (lstm.peephole_weight_operand_id.has_value()) {
     const NodeOutput* peephole_weight = GetNodeOutputForOperand(
-        id_to_node_output_map, lstm->peephole_weight_operand_id.value());
+        id_to_node_output_map, lstm.peephole_weight_operand_id.value());
     // Append an identity node if the peephole weight is a constant operand
     // since PeepholeTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
     // flag.
@@ -2626,14 +2648,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
     inputs.push_back(peephole_weight);
     peephole_weight_tensor_desc = peephole_weight->GetTensorDesc();
-    // The peephole weight tensor shape is `[direction_count, 3 * hidden_size]`,
-    // while DirectML expects the shape to be `[1, 1, direction_count, 3 *
-    // hidden_size]`.
+    // The peephole weight tensor is 1-D for lstmCell and 2-D for lstm, while
+    // DirectML expects a 4-D tensor.
     peephole_weight_tensor_desc->EnsureMinimumRank(
         /*rank=*/4, TensorDesc::Alignment::kTrailing);
   }
 
-  const std::vector<mojom::ActivationPtr>& activations = lstm->activations;
+  const std::vector<mojom::ActivationPtr>& activations = lstm.activations;
   std::vector<ActivationOperatorDesc> activation_operator_descs;
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
@@ -2646,7 +2667,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   }
   // When the recurrent network is bidirectional, dual activations must be
   // provided for the forward and backward directions.
-  if (lstm->direction == mojom::RecurrentNetworkDirection::kBoth) {
+  if (direction == mojom::RecurrentNetworkDirection::kBoth) {
     activation_operator_descs.reserve(activations.size() * 2);
     base::ranges::copy(activation_operator_descs,
                        std::back_inserter(activation_operator_descs));
@@ -2680,7 +2701,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
           &output_cell_state_tensor_desc.GetDMLTensorDesc(),
       .ActivationDescCount = static_cast<uint32_t>(activation_dml_descs.size()),
       .ActivationDescs = activation_dml_descs.data(),
-      .Direction = MojoRecurrentNetworkDirectionToDml(lstm->direction),
+      .Direction = MojoRecurrentNetworkDirectionToDml(direction),
       // The cell clip threshold for the input of activations is not used.
       .ClipThreshold = 0,
       // The clip threshold is not used.
@@ -2691,11 +2712,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   const OperatorNode* lstm_node =
       graph_builder.CreateOperatorNode(DML_OPERATOR_LSTM, &lstm_desc, inputs);
   if (!lstm_node) {
-    return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
-                                 "Failed to create lstm operator.");
+    return CreateUnexpectedError(
+        mojom::Error::Code::kUnknownError,
+        base::StringPrintf("Failed to create %s operator.",
+                           OpTagToString(op_tag).c_str()));
   }
 
-  if (lstm->return_sequence) {
+  if (return_sequence) {
     const NodeOutput* output_sequence = graph_builder.CreateNodeOutput(
         lstm_node, output_sequence_tensor_desc.value(), 0);
     CHECK(id_to_node_output_map
@@ -3680,8 +3703,15 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       case Operation::Tag::kLstm: {
-        create_operator_result = CreateOperatorNodeForLstm(
-            operation->get_lstm(), graph_info, graph_builder,
+        create_operator_result = CreateOperatorNodeForLstm<mojom::Lstm>(
+            *operation->get_lstm(), graph_info, graph_builder,
+            id_to_node_output_map, constant_id_to_input_index_map,
+            next_operand_id);
+        break;
+      }
+      case Operation::Tag::kLstmCell: {
+        create_operator_result = CreateOperatorNodeForLstm<mojom::LstmCell>(
+            *operation->get_lstm_cell(), graph_info, graph_builder,
             id_to_node_output_map, constant_id_to_input_index_map,
             next_operand_id);
         break;
