@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_MODEL_SYNC_METADATA_STORE_CHANGE_LIST_H_
 #define COMPONENTS_SYNC_MODEL_SYNC_METADATA_STORE_CHANGE_LIST_H_
 
-#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -44,12 +43,6 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
 
-  // Allows querying and manually handling any error, instead of relying on the
-  // error callback passed to the constructor.
-  // TODO(crbug.com/1356990): Consider removing this method. Callers can use
-  // ModelTypeChangeProcessor::GetError() instead.
-  std::optional<ModelError> TakeError();
-
   const SyncMetadataStore* GetMetadataStoreForTesting() const;
 
  private:
@@ -61,8 +54,10 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   // The sync model type for this metadata.
   ModelType type_;
 
-  // The first error encountered by this object, if any.
-  std::optional<ModelError> error_;
+  // Whether this object encountered any error previously. Used to prevent any
+  // further changes, and to ensure that only the first error gets passed on
+  // (since any subsequent ones likely aren't meaningful).
+  bool error_encountered_ = false;
 
   const ErrorCallback error_callback_;
 };

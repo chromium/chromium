@@ -26,7 +26,7 @@ SyncMetadataStoreChangeList::~SyncMetadataStoreChangeList() = default;
 
 void SyncMetadataStoreChangeList::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
-  if (error_) {
+  if (error_encountered_) {
     return;
   }
 
@@ -36,7 +36,7 @@ void SyncMetadataStoreChangeList::UpdateModelTypeState(
 }
 
 void SyncMetadataStoreChangeList::ClearModelTypeState() {
-  if (error_) {
+  if (error_encountered_) {
     return;
   }
 
@@ -48,7 +48,7 @@ void SyncMetadataStoreChangeList::ClearModelTypeState() {
 void SyncMetadataStoreChangeList::UpdateMetadata(
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
-  if (error_) {
+  if (error_encountered_) {
     return;
   }
 
@@ -59,7 +59,7 @@ void SyncMetadataStoreChangeList::UpdateMetadata(
 
 void SyncMetadataStoreChangeList::ClearMetadata(
     const std::string& storage_key) {
-  if (error_) {
+  if (error_encountered_) {
     return;
   }
 
@@ -68,21 +68,15 @@ void SyncMetadataStoreChangeList::ClearMetadata(
   }
 }
 
-std::optional<ModelError> SyncMetadataStoreChangeList::TakeError() {
-  std::optional<ModelError> temp = error_;
-  error_.reset();
-  return temp;
-}
-
 const SyncMetadataStore*
 SyncMetadataStoreChangeList::GetMetadataStoreForTesting() const {
   return store_;
 }
 
 void SyncMetadataStoreChangeList::SetError(ModelError error) {
-  if (!error_) {
-    error_ = std::move(error);
-    error_callback_.Run(*error_);
+  if (!error_encountered_) {
+    error_encountered_ = true;
+    error_callback_.Run(error);
   }
 }
 
