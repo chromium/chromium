@@ -11,11 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.components.browser_ui.site_settings.BrowsingDataInfo;
-import org.chromium.url.Origin;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.chromium.components.browsing_data.content.BrowsingDataModel;
 
 /**
  * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and ClearBrowsingDataFragment
@@ -270,19 +266,20 @@ public final class BrowsingDataBridge {
                 .setLastClearBrowsingDataTab(BrowsingDataBridge.this, mProfile, tabIndex);
     }
 
-    @CalledByNative
-    private static Object createBrowsingDataInfoMap() {
-        return new HashMap<Origin, BrowsingDataInfo>();
+    /**
+     * Builds the `BrowsingDataModel` from disk and returns the object async.
+     *
+     * @param callback Callback runs with the BrowsingDataModel object when the model is built.
+     */
+    public static void buildBrowsingDataModelFromDisk(
+            Profile profile, Callback<BrowsingDataModel> callback) {
+        BrowsingDataBridgeJni.get().buildBrowsingDataModelFromDisk(profile, callback);
     }
 
     @CalledByNative
-    private static void insertBrowsingDataInfoIntoMap(
-            Map<Origin, BrowsingDataInfo> map, Origin origin, int cookieCount, long storageSize) {
-        map.put(origin, new BrowsingDataInfo(origin, cookieCount, storageSize));
-    }
-
-    public void fetchBrowsingDataInfo(Callback<Map<Origin, BrowsingDataInfo>> callback) {
-        BrowsingDataBridgeJni.get().fetchBrowsingDataInfo(mProfile, callback);
+    private static void onBrowsingDataModelBuilt(
+            Callback<BrowsingDataModel> callback, long nativeBrowsingDataModel) {
+        callback.onResult(new BrowsingDataModel(nativeBrowsingDataModel));
     }
 
     @NativeMethods
@@ -332,7 +329,6 @@ public final class BrowsingDataBridge {
 
         void setLastClearBrowsingDataTab(BrowsingDataBridge caller, Profile profile, int lastTab);
 
-        void fetchBrowsingDataInfo(
-                Profile profile, Callback<Map<Origin, BrowsingDataInfo>> callback);
+        void buildBrowsingDataModelFromDisk(Profile profile, Callback<BrowsingDataModel> callback);
     }
 }

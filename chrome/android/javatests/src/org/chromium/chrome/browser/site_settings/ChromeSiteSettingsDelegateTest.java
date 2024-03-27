@@ -30,7 +30,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.components.browser_ui.site_settings.BrowsingDataInfo;
+import org.chromium.components.browsing_data.content.BrowsingDataInfo;
+import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -104,46 +105,95 @@ public class ChromeSiteSettingsDelegateTest {
         assertThat(favicon.getIntrinsicHeight()).isGreaterThan(0);
     }
 
-    // Tests that fetchBrowsingDataInfo returns the correct sample test data in the hashmap.
+    // Tests that getBrowsingDataInfo returns the correct sample test data in the hashmap.
     @Test
     @SmallTest
-    public void testFetchBrowsingDataInfoCookie() throws TimeoutException {
-
+    public void testGetBrowsingDataInfoCookie() throws TimeoutException {
         String url =
                 mTestServer.getURLWithHostName(
                         "browsing-data.com", "/content/test/data/browsing_data/site_data.html");
         Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(), "setCookie()");
+        BrowsingDataModel[] browsingDataModel = {null};
 
         CallbackHelper helper = new CallbackHelper();
+
+        // Run browsing data methods require running on UI thread.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSiteSettingsDelegate =
                             new ChromeSiteSettingsDelegate(
                                     sActivityTestRule.getActivity(),
                                     ProfileManager.getLastUsedRegularProfile());
-
-                    // Run browsing data fetcher is required to run on UI thread.
-                    mSiteSettingsDelegate.fetchBrowsingDataInfo(
-                            result -> {
-                                assertEquals(1, result.size());
-
-                                // Ensure that the entry matches the set cookie.
-                                var origin = Origin.create(new GURL("http://browsing-data.com"));
-                                var entry =
-                                        (Map.Entry<Origin, BrowsingDataInfo>)
-                                                result.entrySet().iterator().next();
-                                assertEquals(origin, entry.getKey());
-
-                                var info = entry.getValue();
-                                assertEquals(origin, info.getOrigin());
-                                assertEquals(1, info.getCookieCount());
-                                assertEquals(0, info.getStorageSize());
-
+                    mSiteSettingsDelegate.getBrowsingDataModel(
+                            model -> {
+                                browsingDataModel[0] = model;
                                 helper.notifyCalled();
                             });
                 });
-        helper.waitForFirst();
+
+        helper.waitForNext();
+
+        Map<Origin, BrowsingDataInfo> result = browsingDataModel[0].getBrowsingDataInfo();
+        assertEquals(1, result.size());
+
+        // Ensure that the entry matches the set cookie.
+        var origin = Origin.create(new GURL("http://browsing-data.com"));
+        var entry = (Map.Entry<Origin, BrowsingDataInfo>) result.entrySet().iterator().next();
+        assertEquals(origin, entry.getKey());
+
+        var info = entry.getValue();
+        assertEquals(origin, info.getOrigin());
+        assertEquals(1, info.getCookieCount());
+        assertEquals(0, info.getStorageSize());
+    }
+
+    // Tests that removeBrowsingData removes data correctly for a given host.
+    @Test
+    @SmallTest
+    public void testRemoveBrowsingData() throws TimeoutException {
+        String url =
+                mTestServer.getURLWithHostName(
+                        "browsing-data.com", "/content/test/data/browsing_data/site_data.html");
+        Tab tab = sActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
+
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(), "setCookie()");
+        BrowsingDataModel[] browsingDataModel = {null};
+
+        CallbackHelper helper = new CallbackHelper();
+        // Run browsing data methods require running on UI thread.
+        // Build the browsing data model.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSiteSettingsDelegate =
+                            new ChromeSiteSettingsDelegate(
+                                    sActivityTestRule.getActivity(),
+                                    ProfileManager.getLastUsedRegularProfile());
+                    mSiteSettingsDelegate.getBrowsingDataModel(
+                            model -> {
+                                browsingDataModel[0] = model;
+                                helper.notifyCalled();
+                            });
+                });
+
+        helper.waitForNext();
+
+        // Validate the model is populated with one entry.
+        Map<Origin, BrowsingDataInfo> result = browsingDataModel[0].getBrowsingDataInfo();
+        assertEquals(1, result.size());
+
+        // Remove browsing-data.com host data.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    browsingDataModel[0].removeBrowsingData(
+                            /* host= */ "browsing-data.com", helper::notifyCalled);
+                });
+
+        helper.waitForNext();
+
+        // Validate model is empty after removal.
+        result = browsingDataModel[0].getBrowsingDataInfo();
+        assertEquals(0, result.size());
     }
 }

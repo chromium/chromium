@@ -42,9 +42,9 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.BrowsingDataInfo;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -57,7 +57,6 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.GURL;
 
-import java.util.Map;
 import java.util.Set;
 
 /** A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic. */
@@ -67,6 +66,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     private final Context mContext;
     private final Profile mProfile;
+    private BrowsingDataModel mBrowsingDataModel;
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private PrivacySandboxSnackbarController mPrivacySandboxController;
     private LargeIconBridge mLargeIconBridge;
@@ -81,6 +81,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         if (mLargeIconBridge != null) {
             mLargeIconBridge.destroy();
             mLargeIconBridge = null;
+        }
+
+        if (mBrowsingDataModel != null) {
+            mBrowsingDataModel.destroy();
+            mBrowsingDataModel = null;
         }
     }
 
@@ -345,8 +350,16 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public void fetchBrowsingDataInfo(
-            Callback<Map<org.chromium.url.Origin, BrowsingDataInfo>> callback) {
-        BrowsingDataBridge.getForProfile(mProfile).fetchBrowsingDataInfo(callback);
+    public void getBrowsingDataModel(Callback<BrowsingDataModel> callback) {
+        if (mBrowsingDataModel == null) {
+            BrowsingDataBridge.buildBrowsingDataModelFromDisk(
+                    mProfile,
+                    model -> {
+                        mBrowsingDataModel = model;
+                        callback.onResult(mBrowsingDataModel);
+                    });
+        } else {
+            callback.onResult(mBrowsingDataModel);
+        }
     }
 }

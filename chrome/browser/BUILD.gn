@@ -3554,6 +3554,8 @@ static_library("browser") {
       "//components/browser_ui/site_settings/android",
       "//components/browser_ui/sms/android",
       "//components/browser_ui/util/android",
+      "//components/browsing_data/content/android",
+      "//components/browsing_data/content/android:jni_headers",
       "//components/cbor",
       "//components/cdm/browser",
       "//components/commerce/core:commerce_subscription_db_content_proto",

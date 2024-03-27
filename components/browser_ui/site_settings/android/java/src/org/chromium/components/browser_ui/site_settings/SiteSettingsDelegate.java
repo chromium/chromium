@@ -11,12 +11,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -170,6 +170,10 @@ public interface SiteSettingsDelegate {
      */
     boolean shouldShowSettingsOffboardingNotice();
 
-    /** Builds browsing data model from BrowserContext and returns entries in callback */
-    void fetchBrowsingDataInfo(Callback<Map<org.chromium.url.Origin, BrowsingDataInfo>> callback);
+    /**
+     * Builds a browsing data model for BrowserContext if not already built and runs the callback.
+     *
+     * @param callback Callback runs with the BrowsingDataModel object when the model is built.
+     */
+    void getBrowsingDataModel(Callback<BrowsingDataModel> callback);
 }

@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/browsing_data/content/android/browsing_data_model_android.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
@@ -40,7 +41,6 @@
 #include "content/public/browser/browsing_data_remover.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -73,26 +73,13 @@ browsing_data::ClearBrowsingDataTab ToTabEnum(jint clear_browsing_data_tab) {
       clear_browsing_data_tab);
 }
 
-void OnBrowsingDataModelBuilt(const ScopedJavaGlobalRef<jobject>& java_callback,
+void OnBrowsingDataModelBuilt(JNIEnv* env,
+                              const ScopedJavaGlobalRef<jobject>& java_callback,
                               std::unique_ptr<BrowsingDataModel> model) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> map =
-      Java_BrowsingDataBridge_createBrowsingDataInfoMap(env);
-  std::map<url::Origin, std::pair<uint64_t, uint64_t>> origin_to_data_map;
-
-  for (const auto& [owner, key, details] : *model) {
-    const auto origin = BrowsingDataModel::GetOriginForDataKey(key.get());
-    origin_to_data_map[origin].first += details->cookie_count;
-    origin_to_data_map[origin].second += details->storage_size;
-  }
-
-  for (const auto& [origin, data] : origin_to_data_map) {
-    Java_BrowsingDataBridge_insertBrowsingDataInfoIntoMap(
-        env, map, origin.ToJavaObject(), /*cookieCount=*/data.first,
-        /*storageSize=*/data.second);
-  }
-
-  base::android::RunObjectCallbackAndroid(java_callback, map);
+  Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
+      env, java_callback,
+      reinterpret_cast<intptr_t>(
+          new BrowsingDataModelAndroid(std::move(model))));
 }
 
 }  // namespace
@@ -357,13 +344,13 @@ static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(
       browsing_data::prefs::kLastClearBrowsingDataTab, tab_index);
 }
 
-static void JNI_BrowsingDataBridge_FetchBrowsingDataInfo(
+static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
     JNIEnv* env,
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jobject>& java_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   BrowsingDataModel::BuildFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
-      base::BindOnce(&OnBrowsingDataModelBuilt,
+      base::BindOnce(&OnBrowsingDataModelBuilt, env,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
 }

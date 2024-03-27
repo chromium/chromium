@@ -30,6 +30,7 @@ include_rules = [
   "+components/browser_ui/sms/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
+  "+components/browsing_data/content/android/java/src/org/chromium/components/browsing_data/content",
   "+components/crash/android",
   "+components/embedder_support/android",
   "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",

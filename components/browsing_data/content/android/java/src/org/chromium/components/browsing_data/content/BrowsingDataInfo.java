@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.site_settings;
+package org.chromium.components.browsing_data.content;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
-import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.Origin;
 
 import java.io.Serializable;
@@ -27,11 +25,6 @@ public class BrowsingDataInfo implements Serializable {
 
     public Origin getOrigin() {
         return mOrigin;
-    }
-
-    public void clear(
-            BrowserContextHandle browserContextHandle, StorageInfoClearedCallback callback) {
-        // TODO(b/254415177): Implement data deletion through BDM.
     }
 
     public long getStorageSize() {
