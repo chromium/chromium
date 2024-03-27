@@ -8,6 +8,7 @@ import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {speak} from '../spoken_msg.js';
+import * as state from '../state.js';
 import {ErrorLevel, ErrorType, Facing, VideoConfig} from '../type.js';
 import {sleep} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
@@ -88,11 +89,12 @@ export class StreamManager {
   private readonly videoConfigFilter: (config: VideoConfig) => boolean;
 
   private constructor() {
-    this.videoConfigFilter = (() => {
-      const board = loadTimeData.getBoard();
-      return board === 'grunt' ? ({height}: VideoConfig) => height < 720 :
-                                 () => true;
-    })();
+    if (loadTimeData.getBoard() === 'grunt' &&
+        !state.get(state.State.DISABLE_VIDEO_RESOLUTION_FILTER_FOR_TESTING)) {
+      this.videoConfigFilter = ({height}: VideoConfig) => height < 720;
+    } else {
+      this.videoConfigFilter = () => true;
+    }
 
     navigator.mediaDevices.addEventListener(
         'devicechange', () => this.deviceUpdate());

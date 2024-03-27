@@ -531,6 +531,13 @@ export class CCATest {
   }
 
   /**
+   * Disables resolution filter for video streams.
+   */
+  static disableVideoResolutionFilter(): void {
+    state.set(state.State.DISABLE_VIDEO_RESOLUTION_FILTER_FOR_TESTING, true);
+  }
+
+  /**
    * Sets input value of the component. Throws an error if the component is not
    * HTMLInputElement with type "range", or the value is not within [min, max]
    * range.

@@ -14,6 +14,10 @@ import {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
 
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
+  // Disables resolution filter for video steams for tests that relies on all
+  // resolutions being available.
+  DISABLE_VIDEO_RESOLUTION_FILTER_FOR_TESTING =
+      'disable-video-resolution-filter-for-testing',
   DOC_MODE_REVIEWING = 'doc-mode-reviewing',
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
   ENABLE_PTZ = 'enable-ptz',
