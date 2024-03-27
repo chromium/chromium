@@ -84,6 +84,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Locale;
 
 /**
  * This is a utility class for managing features related to returning to Chrome after haven't used
@@ -728,11 +729,15 @@ public final class ReturnToChromeUtil {
                             boolean isTabExpected =
                                     TextUtils.equals(lastActiveTabUrl, tab.getUrl().getSpec());
                             assert isTabExpected
-                                    : "The URL of first Tab restored doesn't match the URL of the"
-                                            + " last active Tab read from the Tab state metadata"
-                                            + " file! Existing Tab count = %d"
-                                            + tabModelSelector.getModel(false).getCount()
-                                            + ".";
+                                    : String.format(
+                                            Locale.ENGLISH,
+                                            "The URL of first Tab restored doesn't match the URL of"
+                                                + " the last active Tab read from the Tab state"
+                                                + " metadata file! Existing Tab count = %d. Last"
+                                                + " active tab = %s. First tab = %s.",
+                                            tabModelSelector.getModel(false).getCount(),
+                                            lastActiveTabUrl,
+                                            tab.getUrl().getSpec());
                             if (!isTabExpected) {
                                 return;
                             }
