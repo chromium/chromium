@@ -41,8 +41,9 @@ enum class SnippetButtonState {
 // YES if the search engine has been selected by the user.
 @property(nonatomic, assign) BOOL checked;
 // Identifier for button.
-@property(nonatomic, weak) NSString* searchEngineKeyword;
-// View to layout when animating the chevron.
+@property(nonatomic, copy) NSString* searchEngineKeyword;
+// View to layout when animating the chevron. This should be a weak pointer
+// to avoid a circular retain cycle, since it should be a super view of `self`.
 @property(nonatomic, weak) UIView* animatedLayoutView;
 // YES to hide an horizontal separator at the button of the button.
 // Default value is NO.
