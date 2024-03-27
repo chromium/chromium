@@ -21,7 +21,7 @@
   --personalization-app-breadcrumb-height: 56px;
   --personalization-app-subpage-container-min-height: calc(100vh - var(--personalization-app-breadcrumb-height));
   --personalization-app-grid-item-background-color: var(--google-grey-100);
-  --personalization-app-grid-item-border-radius: 12px;
+  --personalization-app-grid-item-border-radius: 16px;
   --personalization-app-grid-item-height: 120px;
   --personalization-app-grid-item-spacing: 20px;
 
@@ -107,11 +107,11 @@
 
 .placeholder {
   background-color: var(--personalization-app-grid-item-background-color);
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .preview-image-container {
-  border-radius: 12px;
+  border-radius: 16px;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
@@ -125,7 +125,7 @@
 .photo-images-border,
 .wallpaper-grid-item-border {
   border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
+  border-radius: 16px;
   bottom: 0;
   box-sizing: border-box;
   left: 0;
