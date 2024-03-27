@@ -70,6 +70,17 @@ constexpr auto kAppTypeNameMap =
          apps::AppTypeName::kStandaloneBrowserExtension},
     });
 
+constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
+constexpr char kInstallReasonSystemHistogram[] = "System";
+constexpr char kInstallReasonPolicyHistogram[] = "Policy";
+constexpr char kInstallReasonOemHistogram[] = "Oem";
+constexpr char kInstallReasonPreloadHistogram[] = "Preload";
+constexpr char kInstallReasonSyncHistogram[] = "Sync";
+constexpr char kInstallReasonUserHistogram[] = "User";
+constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
+constexpr char kInstallReasonKioskHistogram[] = "Kiosk";
+constexpr char kInstallReasonCommandLineHistogram[] = "CommandLine";
+
 // Determines what app type a Chrome App should be logged as based on its launch
 // container and app id. In particular, Chrome apps in tabs are logged as part
 // of Chrome browser.
@@ -390,6 +401,31 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
 AppTypeName GetAppTypeNameFromString(const std::string& app_type_name) {
   auto it = kAppTypeNameMap.find(app_type_name);
   return it != kAppTypeNameMap.end() ? it->second : apps::AppTypeName::kUnknown;
+}
+
+std::string GetInstallReason(InstallReason install_reason) {
+  switch (install_reason) {
+    case apps::InstallReason::kUnknown:
+      return kInstallReasonUnknownHistogram;
+    case apps::InstallReason::kSystem:
+      return kInstallReasonSystemHistogram;
+    case apps::InstallReason::kPolicy:
+      return kInstallReasonPolicyHistogram;
+    case apps::InstallReason::kOem:
+      return kInstallReasonOemHistogram;
+    case apps::InstallReason::kDefault:
+      return kInstallReasonPreloadHistogram;
+    case apps::InstallReason::kSync:
+      return kInstallReasonSyncHistogram;
+    case apps::InstallReason::kUser:
+      return kInstallReasonUserHistogram;
+    case apps::InstallReason::kSubApp:
+      return kInstallReasonSubAppHistogram;
+    case apps::InstallReason::kKiosk:
+      return kInstallReasonKioskHistogram;
+    case apps::InstallReason::kCommandLine:
+      return kInstallReasonCommandLineHistogram;
+  }
 }
 
 bool ShouldRecordUkm(Profile* profile) {

@@ -172,6 +172,9 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name);
 // Returns AppTypeName for the given `app_type_name` string.
 AppTypeName GetAppTypeNameFromString(const std::string& app_type_name);
 
+// Returns InstallReason string to use in UMA names.
+std::string GetInstallReason(InstallReason install_reason);
+
 // Returns true if we are allowed to record UKM for `profile`. Otherwise,
 // returns false.
 bool ShouldRecordUkm(Profile* profile);

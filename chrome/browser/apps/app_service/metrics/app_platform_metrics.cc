@@ -55,17 +55,6 @@ constexpr char kAppsActivatedCountHistogramPrefix[] = "Apps.ActivatedCount.";
 constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 constexpr char kAppsUsageTimeHistogramPrefixV2[] = "Apps.UsageTimeV2.";
 
-constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
-constexpr char kInstallReasonSystemHistogram[] = "System";
-constexpr char kInstallReasonPolicyHistogram[] = "Policy";
-constexpr char kInstallReasonOemHistogram[] = "Oem";
-constexpr char kInstallReasonPreloadHistogram[] = "Preload";
-constexpr char kInstallReasonSyncHistogram[] = "Sync";
-constexpr char kInstallReasonUserHistogram[] = "User";
-constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
-constexpr char kInstallReasonKioskHistogram[] = "Kiosk";
-constexpr char kInstallReasonCommandLineHistogram[] = "CommandLine";
-
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
 
 constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
@@ -86,31 +75,6 @@ constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
     apps::AppTypeName::kStandaloneBrowserWebApp,
     apps::AppTypeName::kBruschetta,
 });
-
-std::string GetInstallReason(apps::InstallReason install_reason) {
-  switch (install_reason) {
-    case apps::InstallReason::kUnknown:
-      return kInstallReasonUnknownHistogram;
-    case apps::InstallReason::kSystem:
-      return kInstallReasonSystemHistogram;
-    case apps::InstallReason::kPolicy:
-      return kInstallReasonPolicyHistogram;
-    case apps::InstallReason::kOem:
-      return kInstallReasonOemHistogram;
-    case apps::InstallReason::kDefault:
-      return kInstallReasonPreloadHistogram;
-    case apps::InstallReason::kSync:
-      return kInstallReasonSyncHistogram;
-    case apps::InstallReason::kUser:
-      return kInstallReasonUserHistogram;
-    case apps::InstallReason::kSubApp:
-      return kInstallReasonSubAppHistogram;
-    case apps::InstallReason::kKiosk:
-      return kInstallReasonKioskHistogram;
-    case apps::InstallReason::kCommandLine:
-      return kInstallReasonCommandLineHistogram;
-  }
-}
 
 // Returns AppTypeNameV2 used for app running metrics.
 apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,

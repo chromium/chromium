@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
@@ -18,6 +19,8 @@
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/sync/base/model_type.h"
@@ -84,8 +87,23 @@ void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
   auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
   bool app_installed = AddAppInstall(app_str_to_record);
 
-  // Do not record if app-sync is disabled or the app is already installed.
-  if (!ShouldRecordUkmForAppId(app_id) || !app_installed) {
+  // Do not record any metrics if the app is already installed.
+  if (!app_installed) {
+    return;
+  }
+
+  // Record UMAs for user or sync apps.
+  if (app_install_reason == InstallReason::kUser ||
+      app_install_reason == InstallReason::kSync) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Apps.AppDiscovery.",
+                      GetInstallReason(app_install_reason), ".Install"}),
+        GetAppTypeName(profile_, app_type, app_id,
+                       apps::LaunchContainer::kLaunchContainerNone));
+  }
+
+  // Do not record cros-events if app-sync is disabled.
+  if (!ShouldRecordUkmForAppId(app_id)) {
     return;
   }
 
@@ -122,9 +140,17 @@ void AppDiscoveryMetrics::OnAppUninstalled(
   auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
   bool app_uninstalled = RemoveAppInstall(app_str_to_record);
 
-  // Do not record if app-sync is disabled or if app was not uninstalled from
-  // prefs.
-  if (!ShouldRecordUkmForAppId(app_id) || !app_uninstalled) {
+  // Do not record any metrics if the app was not uninstalled.
+  if (!app_uninstalled) {
+    return;
+  }
+
+  AppTypeName app_type_name = GetAppTypeName(
+      profile_, app_type, app_id, apps::LaunchContainer::kLaunchContainerNone);
+  base::UmaHistogramEnumeration("Apps.AppDiscovery.Uninstall", app_type_name);
+
+  // Do not record cros-events if app-sync is disabled.
+  if (!ShouldRecordUkmForAppId(app_id)) {
     return;
   }
 

@@ -260,6 +260,24 @@ chromium-metrics-reviews@google.com.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
+<histogram name="Apps.AppDiscovery.Uninstall" enum="AppType"
+    expires_after="2025-03-26">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>Records when an app is uninstalled, grouped by app type.</summary>
+</histogram>
+
+<histogram name="Apps.AppDiscovery.{InstallReason}.Install" enum="AppType"
+    expires_after="2025-03-26">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when an app is installed for InstallReason {InstallReason}, grouped
+    by app type.
+  </summary>
+  <token key="InstallReason" variants="InstallReason"/>
+</histogram>
+
 <histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
     expires_after="2024-02-11">
   <owner>dmurph@chromium.org</owner>
