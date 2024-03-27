@@ -902,11 +902,27 @@ public class TabGroupModelFilterUnitTest {
 
         verify(mTabModel).moveTab(mTab3.getId(), POSITION2);
         verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab3, POSITION3);
+        verify(mTabGroupModelFilterObserver, never()).didChangeGroupRootId(anyInt(), anyInt());
         assertThat(mTab3.getRootId(), equalTo(TAB3_ID));
         assertThat(mTab2.getRootId(), equalTo(TAB2_ID));
         assertNull(mTab3.getTabGroupId());
         assertThat(mTab2.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
         assertArrayEquals(mTabs.toArray(), expectedTabModelAfterUngroup.toArray());
+    }
+
+    @Test
+    public void moveTabOutOfGroupInDirection_NewRootId() {
+        assertEquals(TAB2_ID, mTab2.getRootId());
+        assertEquals(TAB2_ID, mTab3.getRootId());
+
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, false);
+
+        verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab2, POSITION2);
+        verify(mTabGroupModelFilterObserver).didChangeGroupRootId(TAB2_ID, TAB3_ID);
+        assertThat(mTab3.getRootId(), equalTo(TAB3_ID));
+        assertThat(mTab2.getRootId(), equalTo(TAB2_ID));
+        assertNull(mTab2.getTabGroupId());
+        assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
     }
 
     @Test

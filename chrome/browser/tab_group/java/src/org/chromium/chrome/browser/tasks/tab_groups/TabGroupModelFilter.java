@@ -417,8 +417,8 @@ public class TabGroupModelFilter extends TabModelFilter {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.willMoveTabOutOfGroup(sourceTab, sourceTab.getRootId());
             }
-            // When moving the last tab out of a tab group of size 1 we should decremement the
-            // number of tab groups.
+            // When moving the last tab out of a tab group of size 1 we should decrement the number
+            // of tab groups.
             if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
                     && sourceTab.getTabGroupId() != null) {
                 mActualGroupCount--;
@@ -442,8 +442,9 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
         assert targetIndex != TabModel.INVALID_TAB_INDEX;
 
-        int newRootId = sourceTab.getRootId();
-        boolean sourceTabIdWasRootId = sourceTab.getId() == newRootId;
+        boolean sourceTabIdWasRootId = sourceTab.getId() == sourceTab.getRootId();
+        int oldRootId = sourceTab.getRootId();
+        int newRootId = oldRootId;
         if (sourceTabIdWasRootId) {
             // If moving tab's id is the root id of the group, find a new root id.
             if (sourceIndex != 0 && tabModel.getTabAt(sourceIndex - 1).getRootId() == newRootId) {
@@ -463,21 +464,34 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (sourceTabIdWasRootId) {
             for (int tabId : sourceTabGroup.getTabIdList()) {
                 Tab tab = TabModelUtils.getTabById(tabModel, tabId);
+                // One of these iterations will update the rootId of the moved tab. This seems
+                // surprising/unnecessary, but is actually critical for #isMoveTabOutOfGroup to work
+                // correctly.
                 tab.setRootId(newRootId);
             }
             resetFilterState();
         }
         sourceTab.setRootId(sourceTab.getId());
+
+        if (sourceTabIdWasRootId) {
+            // Must be done here instead of lower down, as the GTS currently does not listen to
+            // metadata changes that will trigger from this, and will otherwise poll group data too
+            // early.
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.didChangeGroupRootId(oldRootId, newRootId);
+            }
+        }
+
         // If moving tab is already in the target index in tab model, no move in tab model.
         if (sourceIndex == targetIndex) {
             resetFilterState();
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.didMoveTabOutOfGroup(sourceTab, prevFilterIndex);
             }
-            return;
+        } else {
+            // Plus one as offset because we are moving backwards in tab model.
+            tabModel.moveTab(sourceTab.getId(), trailing ? targetIndex + 1 : targetIndex);
         }
-        // Plus one as offset because we are moving backwards in tab model.
-        tabModel.moveTab(sourceTab.getId(), trailing ? targetIndex + 1 : targetIndex);
     }
 
     /**

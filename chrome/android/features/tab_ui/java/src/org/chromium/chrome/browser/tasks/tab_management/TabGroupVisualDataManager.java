@@ -111,25 +111,14 @@ public class TabGroupVisualDataManager {
                             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                                 TabGroupColorUtils.deleteTabGroupColor(rootId);
                             }
-
-                            return;
                         }
-                        // If the root tab in group is moved out, re-assign the visual data to the
-                        // new root tab in group.
-                        if (rootId != newRootId) {
-                            if (title != null) {
-                                TabGroupTitleUtils.deleteTabGroupTitle(rootId);
-                                filter.setTabGroupTitle(newRootId, title);
-                            }
+                    }
 
-                            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                                int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
-                                assert colorId != INVALID_COLOR_ID;
-
-                                TabGroupColorUtils.deleteTabGroupColor(rootId);
-                                filter.setTabGroupColor(newRootId, colorId);
-                            }
-                        }
+                    @Override
+                    public void didChangeGroupRootId(int oldRootId, int newRootId) {
+                        TabGroupModelFilter filter =
+                                filterFromTab(mTabModelSelector.getTabById(newRootId));
+                        moveTabGroupMetadata(filter, oldRootId, newRootId);
                     }
                 };
 
@@ -144,6 +133,24 @@ public class TabGroupVisualDataManager {
     private TabGroupModelFilter filterFromTab(Tab tab) {
         return (TabGroupModelFilter)
                 mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
+    }
+
+    /** Overwrites the tab group metadata at the new id with the data from the old id. */
+    public static void moveTabGroupMetadata(
+            TabGroupModelFilter filter, int oldRootId, int newRootId) {
+        String title = TabGroupTitleUtils.getTabGroupTitle(oldRootId);
+        if (title != null) {
+            filter.setTabGroupTitle(newRootId, title);
+            TabGroupTitleUtils.deleteTabGroupTitle(oldRootId);
+        }
+
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            int colorId = TabGroupColorUtils.getTabGroupColor(oldRootId);
+            if (colorId != INVALID_COLOR_ID) {
+                filter.setTabGroupColor(newRootId, colorId);
+                TabGroupColorUtils.deleteTabGroupColor(oldRootId);
+            }
+        }
     }
 
     /** Destroy any members that need clean up. */

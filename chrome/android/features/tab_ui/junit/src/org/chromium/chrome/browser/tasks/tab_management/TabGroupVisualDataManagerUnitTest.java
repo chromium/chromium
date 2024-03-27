@@ -112,6 +112,10 @@ public class TabGroupVisualDataManagerUnitTest {
         mTab4 = TabUiUnitTestUtils.prepareTab(TAB4_ID, TAB4_TITLE);
 
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        doReturn(mTab1).when(mTabModelSelector).getTabById(TAB1_ID);
+        doReturn(mTab2).when(mTabModelSelector).getTabById(TAB2_ID);
+        doReturn(mTab3).when(mTabModelSelector).getTabById(TAB3_ID);
+        doReturn(mTab4).when(mTabModelSelector).getTabById(TAB4_ID);
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
         doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
@@ -420,7 +424,7 @@ public class TabGroupVisualDataManagerUnitTest {
     }
 
     @Test
-    public void tabMoveOutOfGroup_HandOverStoredTitle() {
+    public void testDidChangeGroupRootId() {
         // Mock that TITLE1 and COLOR1_ID are associated with the group of TAB1_ID.
         when(mSharedPreferencesTitle.getString(String.valueOf(TAB1_ID), null))
                 .thenReturn(CUSTOMIZED_TITLE1);
@@ -432,9 +436,7 @@ public class TabGroupVisualDataManagerUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
 
-        // Mock that we are going to ungroup tab1, and the group is still a group after ungroup with
-        // root id become TAB2_ID.
-        mTabGroupModelFilterObserverCaptor.getValue().willMoveTabOutOfGroup(mTab1, TAB2_ID);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeGroupRootId(TAB1_ID, TAB2_ID);
 
         // The stored title should be assigned to the new root id.
         verify(mEditorTitle).remove(eq(String.valueOf(TAB1_ID)));

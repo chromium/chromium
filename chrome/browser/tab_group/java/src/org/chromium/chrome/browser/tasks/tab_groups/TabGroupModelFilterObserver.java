@@ -116,4 +116,15 @@ public interface TabGroupModelFilterObserver {
      * @param newColor The new color.
      */
     default void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {}
+
+    /**
+     * When a tab group's root id needs to change because the tab whose id was previously being used
+     * as the root ids is no longer part of the group. This could be a tab deletion that has not yet
+     * been committed. Undo operations will not reverse this operation, as it does not have any user
+     * facing effects.
+     *
+     * @param oldRootId The previous root id.
+     * @param newRootId The new root id.
+     */
+    default void didChangeGroupRootId(int oldRootId, int newRootId) {}
 }
