@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
@@ -69,7 +70,17 @@ constexpr char kNewBadgeUsedCountPath[] = "used_count";
 // The time the promoted feature was first enabled.
 constexpr char kNewBadgeFeatureEnabledTimePath[] = "feature_enabled_time";
 
+// Base path to recent session start times.
+constexpr char kRecentSessionStartTimesPath[] =
+    "in_product_help.recent_session_start_times";
+
 }  // namespace
+
+RecentSessionData::RecentSessionData() = default;
+RecentSessionData::RecentSessionData(RecentSessionData&&) noexcept = default;
+RecentSessionData& RecentSessionData::operator=(RecentSessionData&&) noexcept =
+    default;
+RecentSessionData::~RecentSessionData() = default;
 
 BrowserFeaturePromoStorageService::BrowserFeaturePromoStorageService(
     Profile* profile)
@@ -90,6 +101,7 @@ void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
   registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time(),
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
+  registry->RegisterListPref(kRecentSessionStartTimesPath);
 }
 
 void BrowserFeaturePromoStorageService::Reset(
@@ -297,4 +309,32 @@ void BrowserFeaturePromoStorageService::SaveNewBadgeData(
   pref_data.SetByDottedPath(
       path_prefix + kNewBadgeFeatureEnabledTimePath,
       base::TimeToValue(new_badge_data.feature_enabled_time));
+}
+
+RecentSessionData BrowserFeaturePromoStorageService::ReadRecentSessionData()
+    const {
+  const auto& pref_data =
+      profile_->GetPrefs()->GetList(kRecentSessionStartTimesPath);
+  RecentSessionData data;
+  std::optional<base::Time> prev;
+  for (const auto& entry : pref_data) {
+    // Ensure that the data is valid and correctly ordered. This guards against
+    // corruption in the stored data causing logic errors in the program.
+    const auto time = base::ValueToTime(entry);
+    if (time && (!prev || *time < *prev)) {
+      data.recent_session_start_times.emplace_back(*time);
+      prev = time;
+    }
+  }
+  return data;
+}
+
+void BrowserFeaturePromoStorageService::SaveRecentSessionData(
+    const RecentSessionData& recent_session_data) {
+  ScopedListPrefUpdate update(profile_->GetPrefs(),
+                              kRecentSessionStartTimesPath);
+  auto& pref_data = update.Get();
+  for (const auto& time : recent_session_data.recent_session_start_times) {
+    pref_data.Append(base::TimeToValue(time));
+  }
 }

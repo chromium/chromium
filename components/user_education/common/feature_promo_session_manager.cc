@@ -62,6 +62,8 @@ void FeaturePromoSessionManager::OnNewSession(
     const base::Time old_start_time,
     const base::Time old_active_time,
     const base::Time new_active_time) {
+  new_session_since_startup_ = true;
+
   base::RecordAction(
       base::UserMetricsAction("UserEducation.Session.ActivePeriodStart"));
 
@@ -72,6 +74,9 @@ void FeaturePromoSessionManager::OnNewSession(
   // The now-elapsed Idle Period is difference between now and the
   // previous most_recent_active_time.
   RecordIdlePeriodDuration(new_active_time - old_active_time);
+
+  // Notify any listeners of the new session.
+  new_session_callbacks_.Notify();
 }
 
 void FeaturePromoSessionManager::OnLastActiveTimeUpdating(base::Time) {}
@@ -135,14 +140,17 @@ void FeaturePromoSessionManager::UpdateLastActiveTime(
   const auto old_start_time = session_data.start_time;
   const auto old_active_time = session_data.most_recent_active_time;
   session_data.most_recent_active_time = new_active_time;
-  if (idle_policy_->IsNewSession(old_start_time, old_active_time,
-                                 new_active_time)) {
+  const bool is_new_session = idle_policy_->IsNewSession(
+      old_start_time, old_active_time, new_active_time);
+  if (is_new_session) {
     session_data.start_time = new_active_time;
-    OnNewSession(old_start_time, old_active_time, new_active_time);
-    new_session_since_startup_ = true;
-    new_session_callbacks_.Notify();
   }
+  // Save the session data before calling OnNewSession, since some listeners
+  // will be relying on the data being current.
   storage_service_->SaveSessionData(session_data);
+  if (is_new_session) {
+    OnNewSession(old_start_time, old_active_time, new_active_time);
+  }
 }
 
 }  // namespace user_education

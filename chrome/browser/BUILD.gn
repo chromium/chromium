@@ -1961,6 +1961,8 @@ static_library("browser") {
       "user_education/browser_feature_promo_storage_service.h",
       "user_education/browser_tutorial_service.cc",
       "user_education/browser_tutorial_service.h",
+      "user_education/recent_session_tracker.cc",
+      "user_education/recent_session_tracker.h",
       "user_education/user_education_configuration_provider.cc",
       "user_education/user_education_configuration_provider.h",
       "user_education/user_education_service.cc",

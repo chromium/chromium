@@ -119,6 +119,16 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     service_.ResetNewBadge(to_reset_data_for);
   }
 
+  void SaveRecentSessionData(const RecentSessionData& data) {
+    service_.SaveRecentSessionData(data);
+  }
+
+  void CompareRecentSessionData(const RecentSessionData& expected) {
+    const auto actual = service_.ReadRecentSessionData();
+    EXPECT_THAT(actual.recent_session_start_times,
+                testing::ContainerEq(expected.recent_session_start_times));
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -245,4 +255,38 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SaveMultipleNewBadgeData) {
   SaveNewBadgeData(data2, kTestIPHFeature2);
   CompareNewBadgeData(data, kTestIPHFeature);
   CompareNewBadgeData(data2, kTestIPHFeature2);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SaveAndRestoreRecentSessionData) {
+  CompareRecentSessionData(RecentSessionData());
+  RecentSessionData data;
+  data.recent_session_start_times = {
+      base::Time::FromSecondsSinceUnixEpoch(100000),
+      base::Time::FromSecondsSinceUnixEpoch(10000),
+      base::Time::FromSecondsSinceUnixEpoch(1000),
+      base::Time::FromSecondsSinceUnixEpoch(100),
+  };
+  SaveRecentSessionData(data);
+  CompareRecentSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest,
+       SaveAndRestoreRecentSessionData_ElidesOutOfOrderEntries) {
+  CompareRecentSessionData(RecentSessionData());
+  RecentSessionData data;
+  data.recent_session_start_times = {
+      base::Time::FromSecondsSinceUnixEpoch(10000),
+      base::Time::FromSecondsSinceUnixEpoch(100000),
+      base::Time::FromSecondsSinceUnixEpoch(1000),
+      base::Time::FromSecondsSinceUnixEpoch(100),
+  };
+  SaveRecentSessionData(data);
+
+  // Expected entries will elide the out-of-order entry.
+  data.recent_session_start_times = {
+      base::Time::FromSecondsSinceUnixEpoch(10000),
+      base::Time::FromSecondsSinceUnixEpoch(1000),
+      base::Time::FromSecondsSinceUnixEpoch(100),
+  };
+  CompareRecentSessionData(data);
 }

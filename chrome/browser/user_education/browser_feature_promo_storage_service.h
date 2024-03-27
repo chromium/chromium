@@ -6,27 +6,44 @@
 #define CHROME_BROWSER_USER_EDUCATION_BROWSER_FEATURE_PROMO_STORAGE_SERVICE_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 
 class Profile;
 class PrefRegistrySimple;
 
+struct RecentSessionData {
+  RecentSessionData();
+  RecentSessionData(RecentSessionData&&) noexcept;
+  RecentSessionData& operator=(RecentSessionData&&) noexcept;
+  ~RecentSessionData();
+
+  std::vector<base::Time> recent_session_start_times;
+};
+
+// Interface that provides recent session data.
+class RecentSessionDataStorageService {
+ public:
+  // Read recent session data from the store.
+  virtual RecentSessionData ReadRecentSessionData() const = 0;
+
+  // Write recent session data to the store.
+  virtual void SaveRecentSessionData(
+      const RecentSessionData& recent_session_data) = 0;
+};
+
 class BrowserFeaturePromoStorageService
-    : public user_education::FeaturePromoStorageService {
+    : public user_education::FeaturePromoStorageService,
+      public RecentSessionDataStorageService {
  public:
   explicit BrowserFeaturePromoStorageService(Profile* profile);
   ~BrowserFeaturePromoStorageService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
- private:
-  // TODO(crbug.com/1121399): refactor prefs code so friending tests
-  // isn't necessary.
-  friend class FeaturePromoStorageInteractiveTest;
-  friend class BrowserFeaturePromoStorageServiceTest;
 
   // FeaturePromoStorageService:
   void Reset(const base::Feature& iph_feature) override;
@@ -50,6 +67,12 @@ class BrowserFeaturePromoStorageService
       const user_education::NewBadgeData& new_badge_data) override;
   void ResetNewBadge(const base::Feature& new_badge_feature) override;
 
+  // RecentSessionDataStorageService:
+  RecentSessionData ReadRecentSessionData() const override;
+  void SaveRecentSessionData(
+      const RecentSessionData& recent_session_data) override;
+
+ private:
   const raw_ptr<Profile> profile_;
 };
 
