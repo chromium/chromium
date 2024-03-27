@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -68,7 +69,7 @@ std::string HashUsername(const std::string& username) {
 }
 
 const std::string& GetRequiredStringFromDict(const base::Value& dict,
-                                             base::StringPiece key) {
+                                             std::string_view key) {
   const std::string* str = dict.GetDict().FindString(key);
   DCHECK(str);
   return *str;

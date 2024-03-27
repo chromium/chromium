@@ -8,10 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -104,7 +104,7 @@ class UpdaterState {
     base::Time GetUpdaterLastChecked(bool is_machine) const override;
     int GetUpdatePolicy() const override;
 
-    base::Time FindTimeKey(base::StringPiece key) const;
+    base::Time FindTimeKey(std::string_view key) const;
     const base::Value::Dict parsed_json_;
   };
 
