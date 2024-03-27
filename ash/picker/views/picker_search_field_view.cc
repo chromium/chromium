@@ -14,7 +14,6 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -27,25 +26,11 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 namespace {
 
 constexpr auto kSearchFieldBorderInsets = gfx::Insets::VH(0, 16);
 constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
-
-// TODO: b/331285414 - Finalize the search field placeholder text.
-std::u16string GetSearchFieldPlaceholderText() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT);
-#else
-  return l10n_util::GetStringUTF16(
-      IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
 
 }  // namespace
 
@@ -69,7 +54,8 @@ PickerSearchFieldView::PickerSearchFieldView(
               .SetBackgroundColor(SK_ColorTRANSPARENT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosBody2))
-              .SetPlaceholderText(GetSearchFieldPlaceholderText())
+              .SetPlaceholderText(l10n_util::GetStringUTF16(
+                  IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT))
               // TODO(b/309706053): Replace this once the strings are finalized.
               .SetAccessibleName(u"placeholder"))
       .BuildChildren();
