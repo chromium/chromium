@@ -147,7 +147,7 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 }
 
 void OptionButtonBase::UpdateTextColor() {
-  SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
+  SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
   SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
 }
 
