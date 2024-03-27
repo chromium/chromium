@@ -1441,9 +1441,8 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString(
-      "osPrivacySettingsUrl",
-      BuildOSSettingsUrl(
-          chromeos::settings::mojom::kPrivacyAndSecuritySectionPath));
+      "osSettingsPrivacyHubSubpageUrl",
+      BuildOSSettingsUrl(chromeos::settings::mojom::kPrivacyHubSubpagePath));
 
   html_source->AddBoolean(
       "osDeprecateSyncMetricsToggle",

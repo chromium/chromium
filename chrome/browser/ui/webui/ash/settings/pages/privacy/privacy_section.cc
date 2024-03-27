@@ -255,7 +255,7 @@ const std::vector<SearchConcept>& GetSmartPrivacySearchConcepts() {
 const std::vector<SearchConcept>& GetPrivacyGoogleChromeSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PRIVACY_CRASH_REPORTS,
-       mojom::kPrivacyAndSecuritySectionPath,
+       mojom::kPrivacyHubSubpagePath,
        mojom::SearchResultIcon::kShield,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -734,8 +734,6 @@ bool PrivacySection::LogMetric(mojom::Setting setting,
 void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kVerifiedAccess);
   generator->RegisterTopLevelSetting(mojom::Setting::kRevenEnableHwDataUsage);
-  generator->RegisterTopLevelSetting(
-      mojom::Setting::kUsageStatsAndCrashReports);
 
   // Security and sign-in.
   generator->RegisterTopLevelSubpage(
@@ -802,7 +800,8 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kPrivacyHub,
       {{mojom::Setting::kCameraOnOff, mojom::Setting::kMicrophoneOnOff,
         mojom::Setting::kGeolocationOnOff,
-        mojom::Setting::kSpeakOnMuteDetectionOnOff}},
+        mojom::Setting::kSpeakOnMuteDetectionOnOff,
+        mojom::Setting::kUsageStatsAndCrashReports}},
       generator);
 
   // Privacy hub microphone.

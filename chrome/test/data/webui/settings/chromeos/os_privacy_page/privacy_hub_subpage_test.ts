@@ -1070,26 +1070,22 @@ async function testsuiteForMetricsConsentToggle() {
                 ' subpage.');
       });
 
-  test('Deep link to send usage stats', async () => {
+  test('Deep link to metrics consent toggle', async () => {
     await setUpPage(DEVICE_METRICS_CONSENT_PREF_NAME, /*isConfigurable=*/ true);
 
+    const setting = settingMojom.Setting.kUsageStatsAndCrashReports;
     const params = new URLSearchParams();
-    params.append('settingId', '1103');
+    params.append('settingId', setting.toString());
     Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
-
     flush();
 
-    const deepLinkElement =
-        settingsPage.shadowRoot!.querySelector(
-                                    '#metricsConsentToggle')!.shadowRoot!
-            .querySelector('#settingsToggle')!.shadowRoot!.querySelector(
-                'cr-toggle');
-    assert(deepLinkElement);
+    const deepLinkElement = settingsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#metricsConsentToggle');
+    assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
-
     assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Send usage stats toggle should be focused for settingId=1103.');
+        deepLinkElement, settingsPage.shadowRoot!.activeElement,
+        `Metrics consent toggle should be focused for settingId=${setting}.`);
   });
 
   test('Toggle disabled if metrics consent is not configurable', async () => {
