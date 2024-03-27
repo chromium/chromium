@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -46,6 +50,22 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/views/widget/native_widget_aura.h"
 #endif  // USE_AURA
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#endif
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
@@ -398,5 +418,176 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
   EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "OK"),
             nullptr);
 }
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+
+namespace {
+
+class FakeRealTimeUrlLookupService
+    : public safe_browsing::testing::FakeRealTimeUrlLookupService {
+ public:
+  FakeRealTimeUrlLookupService() = default;
+
+  // RealTimeUrlLookupServiceBase:
+  void StartLookup(
+      const GURL& url,
+      safe_browsing::RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID session_id) override {
+    auto response = std::make_unique<safe_browsing::RTLookupResponse>();
+    safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
+        response->add_threat_info();
+    safe_browsing::MatchedUrlNavigationRule* matched_url_navigation_rule =
+        new_threat_info->mutable_matched_url_navigation_rule();
+
+    // Only add a watermark for watermark.com URLs.
+    if (url.host() == "watermark.com") {
+      safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
+      wm.set_watermark_message("custom_messge");
+      wm.mutable_timestamp()->set_seconds(base::Time::Now().ToTimeT());
+      *matched_url_navigation_rule->mutable_watermark_message() = wm;
+    }
+
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(response_callback),
+                       /*is_rt_lookup_successful=*/true,
+                       /*is_cached_response=*/true, std::move(response)));
+  }
+};
+
+class BrowserViewDataProtectionTest : public InProcessBrowserTest {
+ public:
+  BrowserViewDataProtectionTest() = default;
+  BrowserViewDataProtectionTest(const BrowserViewDataProtectionTest&) = delete;
+  BrowserViewDataProtectionTest& operator=(
+      const BrowserViewDataProtectionTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Set a DM token since the enterprise real-time URL service expects one.
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+
+    auto create_service_callback =
+        base::BindRepeating([](content::BrowserContext* context) {
+          Profile* profile = Profile::FromBrowserContext(context);
+
+          // Enable real-time URL checks.
+          profile->GetPrefs()->SetInteger(
+              prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+              safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+          profile->GetPrefs()->SetInteger(
+              prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+              policy::POLICY_SCOPE_MACHINE);
+
+          auto testing_factory =
+              base::BindRepeating([](content::BrowserContext* context)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<FakeRealTimeUrlLookupService>();
+              });
+          safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
+              GetInstance()
+                  ->SetTestingFactory(context, testing_factory);
+        });
+
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(create_service_callback);
+  }
+
+  content::WebContents* NavigateAsync(const GURL& url) {
+    NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
+    Navigate(&params);
+    return params.navigated_or_inserted_contents;
+  }
+
+  void NavigateToAndWait(const GURL& url) {
+    content::WaitForLoadStop(NavigateAsync(url));
+  }
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kEnableWatermarkView};
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, Apply_NoWatermark) {
+  NavigateToAndWait(GURL("https://nowatermark.com"));
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                   ->get_watermark_view_for_testing()
+                   ->has_text_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
+                       Apply_Nav_NoWatermark_Watermark) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // Initial page loaded into the browser view is a chrome:// URL that has no
+  // watermark.
+  EXPECT_FALSE(
+      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
+
+  base::test::TestFuture<void> future;
+  browser_view
+      ->set_on_delay_apply_data_protection_settings_if_empty_called_for_testing(
+          future.GetCallback());
+  // Navigate to a page that should show a watermark.  The watermark should
+  // show even while the page loads.
+  auto* web_contents = NavigateAsync(GURL("https://watermark.com"));
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(
+      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
+
+  // Once the page loads, the watermark should remain.
+  content::WaitForLoadStop(web_contents);
+  EXPECT_TRUE(
+      browser_view->get_watermark_view_for_testing()->has_text_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
+                       Apply_Nav_Watermark_NoWatermark) {
+  // Start on a page that should show a watermark.
+  NavigateToAndWait(GURL("https://watermark.com"));
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->get_watermark_view_for_testing()
+                  ->has_text_for_testing());
+
+  // Navigate to a page that should not show a watermark.  The watermark should
+  // still show while the page loads.
+  auto* web_contents = NavigateAsync(GURL("https://nowatermark.com"));
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->get_watermark_view_for_testing()
+                  ->has_text_for_testing());
+
+  // Once the page loads, the watermark should be cleared.
+  content::WaitForLoadStop(web_contents);
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                   ->get_watermark_view_for_testing()
+                   ->has_text_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
+                       Apply_SwitchTab_ToWatermark) {
+  NavigateToAndWait(GURL("https://watermark.com"));
+
+  // Create a second tab with a page that should not be watermarked.
+  // AddTabAtIndex() waits for the load to finish and activates the tab.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL("chrome://version"), ui::PAGE_TRANSITION_LINK));
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
+                   ->get_watermark_view_for_testing()
+                   ->has_text_for_testing());
+
+  // Switch active tabs back to watermarked page.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
+                  ->get_watermark_view_for_testing()
+                  ->has_text_for_testing());
+}
+
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #endif  // !BUILDFLAG(IS_MAC)
