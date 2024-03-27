@@ -9,9 +9,12 @@
 
 
 :host {
-  --cr-loading-gradient-color-start: transparent;
-  --cr-loading-gradient-color-middle: rgb(211, 227, 253);
-  --cr-loading-gradient-color-end: rgb(231, 248, 237);
+  --cr-loading-gradient-color-start: var(--color-loading-gradient-start,
+      transparent);
+  --cr-loading-gradient-color-middle: var(--color-loading-gradient-middle,
+      var(--cr-fallback-color-primary-container));
+  --cr-loading-gradient-color-end: var(--color-loading-gradient-end,
+      rgb(231, 248, 237));
 
   display: flex;
   width: 100%;
@@ -21,22 +24,6 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --cr-loading-gradient-color-middle: rgb(8, 66, 160);
-    --cr-loading-gradient-color-end: rgb(15, 82, 35);
-  }
-}
-
-:host-context([chrome-refresh-2023]):host {
-  --cr-loading-gradient-color-start: var(--color-loading-gradient-start,
-      transparent);
-  --cr-loading-gradient-color-middle: var(--color-loading-gradient-middle,
-      var(--cr-fallback-color-primary-container));
-  --cr-loading-gradient-color-end: var(--color-loading-gradient-end,
-      rgb(231, 248, 237));
-}
-
-@media (prefers-color-scheme: dark) {
-  :host-context([chrome-refresh-2023]):host {
     --cr-loading-gradient-color-end: var(--color-loading-gradient-end,
         rgb(15, 82, 35));
   }
