@@ -4,12 +4,15 @@
 
 package org.chromium.wolvic;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -19,67 +22,40 @@ public class PermissionManagerBridge {
     // permission request. This permission must be always granted.
     public static final String NO_ANDROID_PERMISSION = "org.chromium.wolvic.NO_ANDROID_PERMISSION";
 
-    public enum ContentPermissionType {
-        GEOLOCATION(0),
-        DESKTOP_NOTIFICATION(1),
-        PERSISTENT_STORAGE(2),
-        XR(3),
-        AUTOPLAY_INAUDIBLE(4),
-        AUTOPLAY_AUDIBLE(5),
-        MEDIA_KEY_SYSTEM_ACCESS(6),
-        TRACKING(7),
-        STORAGE_ACCESS(8),
+    @IntDef({ContentPermissionType.GEOLOCATION, ContentPermissionType.DESKTOP_NOTIFICATION,
+            ContentPermissionType.PERSISTENT_STORAGE, ContentPermissionType.XR,
+            ContentPermissionType.AUTOPLAY_INAUDIBLE, ContentPermissionType.AUTOPLAY_AUDIBLE,
+            ContentPermissionType.MEDIA_KEY_SYSTEM_ACCESS, ContentPermissionType.TRACKING,
+            ContentPermissionType.STORAGE_ACCESS, ContentPermissionType.NOT_SUPPORTED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ContentPermissionType {
+        int GEOLOCATION = 0;
+        int DESKTOP_NOTIFICATION = 1;
+        int PERSISTENT_STORAGE = 2;
+        int XR = 3;
+        int AUTOPLAY_INAUDIBLE = 4;
+        int AUTOPLAY_AUDIBLE = 5;
+        int MEDIA_KEY_SYSTEM_ACCESS = 6;
+        int TRACKING = 7;
+        int STORAGE_ACCESS = 8;
 
-        // Any chromium permissions that are not yet supported by Wolvic are
-        // mapped into this value and automatically denied.
-        NOT_SUPPORTED(9);
-
-        public static final ContentPermissionType[] types = ContentPermissionType.values();
-
-        private final int value;
-
-        private ContentPermissionType(int value) {
-            this.value = value;
-        }
-
-        private static ContentPermissionType fromValue(int value) {
-            return types[value];
-        }
-
-        private int getValue() {
-            return value;
-        }
-
+        int NOT_SUPPORTED = 9;
     }
 
-    public enum PermissionStatus {
-        PROMPT(0),
-        DENY(1),
-        ALLOW(2);
-
-        public static final PermissionStatus[] statuses = PermissionStatus.values();
-
-        private final int value;
-
-        private PermissionStatus(int value) {
-            this.value = value;
-        }
-
-        private static PermissionStatus fromValue(int value) {
-            return statuses[value];
-        }
-
-        private int getValue() {
-            return value;
-        }
+    @IntDef({PermissionStatus.PROMPT, PermissionStatus.DENY, PermissionStatus.ALLOW})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PermissionStatus {
+        int PROMPT = 0;
+        int DENY = 1;
+        int ALLOW = 2;
     }
 
     public interface PermissionCallback {
-        void onPermissionResult(PermissionStatus[] results);
+        void onPermissionResult(@PermissionStatus int[] results);
     }
 
     public interface Delegate {
-        void onContentPermissionRequest(ContentPermissionType[] permissionTypes, String url,
+        void onContentPermissionRequest(@ContentPermissionType int[] permissionTypes, String url,
                                         boolean isOffTheRecord, PermissionCallback callback);
         void onAndroidPermissionRequest(String[] androidPermissionTypes,
                                         PermissionCallback callback);
@@ -100,7 +76,7 @@ public class PermissionManagerBridge {
     }
 
     @CalledByNative
-    public static void onContentPermissionRequest(int[] permissionTypes,
+    public static void onContentPermissionRequest(@ContentPermissionType int[] permissionTypes,
                                                   String url,
                                                   boolean isOffTheRecord,
                                                   long inProgressRequestPtr) {
@@ -109,20 +85,16 @@ public class PermissionManagerBridge {
             return;
         }
         bridge.mDelegate.onContentPermissionRequest(
-                Arrays.stream(permissionTypes)
-                        .mapToObj(ContentPermissionType::fromValue)
-                        .toArray(ContentPermissionType[]::new),
+                permissionTypes,
                 url,
                 isOffTheRecord,
                 new PermissionCallback() {
                     @Override
-                    public void onPermissionResult(PermissionStatus[] results) {
+                    public void onPermissionResult(@PermissionStatus int[] results) {
                         PermissionManagerBridgeJni.get().onContentPermissionResult(
                                 isOffTheRecord,
                                 inProgressRequestPtr,
-                                Arrays.stream(results)
-                                        .mapToInt(PermissionStatus::getValue)
-                                        .toArray());
+                                results);
                     }
         });
     }
@@ -139,13 +111,11 @@ public class PermissionManagerBridge {
                 permissionTypes,
                 new PermissionCallback() {
                     @Override
-                    public void onPermissionResult(PermissionStatus[] results) {
+                    public void onPermissionResult(@PermissionStatus int[] results) {
                         PermissionManagerBridgeJni.get().onAndroidPermissionResult(
                                 isOffTheRecord,
                                 inProgressRequestPtr,
-                                Arrays.stream(results)
-                                        .mapToInt(PermissionStatus::getValue)
-                                        .toArray());
+                                results);
                     }
         });
     }
@@ -155,9 +125,9 @@ public class PermissionManagerBridge {
     public interface Natives {
         void onContentPermissionResult(boolean isOffTheRecord,
                                        long inProgressRequestPtr,
-                                       int[] results);
+                                       @PermissionStatus int[] results);
         void onAndroidPermissionResult(boolean isOffTheRecord,
                                        long inProgressRequestPtr,
-                                       int[] results);
+                                       @PermissionStatus int[] results);
     }
 }
