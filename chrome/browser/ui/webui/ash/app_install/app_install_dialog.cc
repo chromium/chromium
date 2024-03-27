@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
@@ -100,8 +101,9 @@ void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
   // TODO(b/329515116): Adjust height for long URLs that wrap multiple
   // lines.
   if (dialog_args_->description.length()) {
-    // TODO(b/329515116): Ensure the font matches what is used in the dialog.
-    const gfx::FontList font_list;
+    const gfx::FontList font_list =
+        TypographyProvider::Get()->ResolveTypographyToken(
+            TypographyToken::kCrosAnnotation1);
     float description_width = gfx::GetStringWidth(
         base::UTF8ToUTF16(dialog_args_->description), font_list);
     int num_lines = std::ceil(description_width / kDescriptionContainerWidth);
