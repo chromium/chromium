@@ -1114,7 +1114,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError.ConnectionResultCode"
     enum="PasswordStoreAndroidBackendConnectionResultCode"
-    expires_after="2024-05-05">
+    expires_after="2024-09-15">
   <owner>ioanap@chromium.org</owner>
   <owner>izuzic@google.com</owner>
   <summary>
