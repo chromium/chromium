@@ -75,8 +75,10 @@ id<GREYMatcher> TabPickupSettingsSwitchItem(bool is_toggled_on, bool enabled) {
 
 @implementation TabPickupSettingsTestCase
 
-- (void)setUp {
-  [super setUp];
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(kTabPickupThreshold);
+  return config;
 }
 
 // Ensures that the tab pickup settings are correctly working when synced.
