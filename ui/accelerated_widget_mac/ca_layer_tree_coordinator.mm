@@ -78,7 +78,7 @@ void CALayerTreeCoordinator::SetCALayerErrorCode(
 
 CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
   if (!unpresented_ca_renderer_layer_tree_) {
-    CHECK_LT(presented_frames_.size(), presented_ca_layer_trees_max_length_);
+    CHECK_LE(presented_frames_.size(), presented_ca_layer_trees_max_length_);
 
     unpresented_ca_renderer_layer_tree_ = std::make_unique<CARendererLayerTree>(
         allow_av_sample_buffer_display_layer_, false);

@@ -167,8 +167,7 @@ RootCompositorFrameSinkImpl::Create(
                 restart_id, base::SingleThreadTaskRunner::GetCurrentDefault());
       }
 #elif BUILDFLAG(IS_MAC)
-      if (base::FeatureList::IsEnabled(
-              features::kCVDisplayLinkBeginFrameSource)) {
+      if (features::IsCVDisplayLinkBeginFrameSourceEnabled()) {
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceMac>(
                 restart_id, params->renderer_settings.display_id,

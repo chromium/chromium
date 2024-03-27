@@ -43,13 +43,6 @@ BASE_FEATURE(kAVFoundationOverlays,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
-// Whether the presentation should be delayed until the next CVDisplayLink
-// callback when kCVDisplayLinkBeginFrameSource is enabled. This flag has no
-// effect if kCVDisplayLinkBeginFrameSource is disabled.
-BASE_FEATURE(kVSyncAlignedPresent,
-             "VSyncAlignedPresent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use CVDisplayLink timing for PresentationFeedback timestamps.
 BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
              "NewPresentationFeedbackTimeStamps",
@@ -92,10 +85,9 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     gfx::FrameData data) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::Present");
 
-  // Commit the first pending frame if we are going to add one more pending
-  // frame in Present.
+  // Commit the first pending frame before adding one more in Present() if there
+  // are more than supported .
   if (ca_layer_tree_coordinator_->NumPendingSwaps() >= cap_max_pending_swaps_) {
-    DLOG(ERROR) << "num_pending_swaps >= cap_max_pending_swaps_";
     CommitPresentedFrameToCA();
   }
 
@@ -132,7 +124,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   }
 
   bool delay_presenetation_until_next_vsync =
-      base::FeatureList::IsEnabled(kVSyncAlignedPresent);
+      features::IsVSyncAlignedPresentEnabled();
 
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
@@ -235,17 +227,19 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
 
 void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
     int max_pending_swaps) {
-  cap_max_pending_swaps_ = max_pending_swaps;
+#if BUILDFLAG(IS_MAC)
+  cap_max_pending_swaps_ =
+      std::min(max_pending_swaps, features::NumPendingFrameSupported());
   // MaxCALayerTrees is equal to the number of max_pending_swaps + one
   // that has been displayed.
-  ca_layer_tree_coordinator_->SetMaxCALayerTrees(max_pending_swaps + 1);
+  ca_layer_tree_coordinator_->SetMaxCALayerTrees(cap_max_pending_swaps_ + 1);
+#endif
 }
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!(base::FeatureList::IsEnabled(
-            features::kCVDisplayLinkBeginFrameSource) ||
-        base::FeatureList::IsEnabled(kVSyncAlignedPresent) ||
+  if (!(features::IsCVDisplayLinkBeginFrameSourceEnabled() ||
+        features::IsVSyncAlignedPresentEnabled() ||
         base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps))) {
     return;
   }

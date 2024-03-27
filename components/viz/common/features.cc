@@ -181,9 +181,27 @@ BASE_FEATURE(kCanSkipRenderPassOverlay,
 #endif
 
 #if BUILDFLAG(IS_MAC)
+// Use the system CVDisplayLink callbacks for the BeginFrame source, so
+// BeginFrame is aligned with HW VSync.
 BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
              "CVDisplayLinkBeginFrameSource",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether the presentation should be delayed until the next CVDisplayLink
+// callback when kCVDisplayLinkBeginFrameSource is enabled. This flag has no
+// effect if kCVDisplayLinkBeginFrameSource is disabled.
+BASE_FEATURE(kVSyncAlignedPresent,
+             "VSyncAlignedPresent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The paramters for the number of supported pending Frames.
+// 0: Disable both VSyncAlignedPresent and CVDisplayLinkBeginFrameSource
+// 1: Support one pending frame. This is the old default.
+// 2: Support two pending frames. New. This is the number of max pending
+//    swap in the scheduler.
+// Others: Error! It will be overwritten to 2 pending frames.
+const base::FeatureParam<int> kNumPendingFrames{&kVSyncAlignedPresent,
+                                                "PendingFrames", 2};
 #endif
 
 // Allow SkiaRenderer to skip drawing render passes that contain a single
@@ -502,4 +520,34 @@ std::optional<double> SnapshotEvictedRootSurfaceScale() {
   return kSnapshotEvictedRootSurfaceScale.Get();
 }
 
+#if BUILDFLAG(IS_MAC)
+bool IsCVDisplayLinkBeginFrameSourceEnabled() {
+  bool display_link =
+      base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource);
+  bool force_disabled =
+      base::FeatureList::IsEnabled(features::kVSyncAlignedPresent) &&
+      features::kNumPendingFrames.Get() == 0;
+
+  return display_link && !force_disabled;
+}
+
+bool IsVSyncAlignedPresentEnabled() {
+  return base::FeatureList::IsEnabled(features::kVSyncAlignedPresent) &&
+         features::kNumPendingFrames.Get() != 0;
+}
+
+int NumPendingFrameSupported() {
+  // Return the old default if this feature is not enabled.
+  if (!base::FeatureList::IsEnabled(kVSyncAlignedPresent)) {
+    return 1;
+  } else if (features::kNumPendingFrames.Get() == 0) {
+    return 1;
+  }
+
+  // Unless 1 pending frame is specified, overwrite all other params to the new
+  // default, 2 pending frames.
+  int num = kNumPendingFrames.Get() == 1 ? 1 : 2;
+  return num;
+}
+#endif
 }  // namespace features
