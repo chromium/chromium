@@ -921,6 +921,11 @@ void View::InvalidateLayout() {
     return;
   }
 
+  // There is no need to `InvalidateLayout()` when `Widget::IsClosed()`.
+  if (Widget* widget = GetWidget(); widget && widget->IsClosed()) {
+    return;
+  }
+
   base::AutoReset<bool> invalidating(&invalidating_, true);
   // We should never need to invalidate during a layout call; this tracks
   // how many times that is happening.
@@ -1230,6 +1235,11 @@ void View::SchedulePaint() {
 }
 
 void View::SchedulePaintInRect(const gfx::Rect& rect) {
+  // There is no need to `SchedulePaintInRect()` when `Widget::IsClosed()`.
+  if (Widget* widget = GetWidget(); widget && widget->IsClosed()) {
+    return;
+  }
+
   needs_paint_ = true;
   SchedulePaintInRectImpl(rect);
 }
