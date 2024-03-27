@@ -165,9 +165,6 @@ class MODULES_EXPORT RTCDataChannel final
 
   void Dispose();
 
-  void ScheduleDispatchEvent(Event*);
-  void ScheduledEventTimerFired(TimerBase*);
-
   const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
   bool ValidateSendLength(size_t length, ExceptionState& exception_state);
   void SendRawData(const char* data, size_t length);
@@ -183,8 +180,6 @@ class MODULES_EXPORT RTCDataChannel final
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
   BinaryType binary_type_ = kBinaryTypeArrayBuffer;
 
-  HeapTaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
-  HeapVector<Member<Event>> scheduled_events_;
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Message);

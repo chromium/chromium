@@ -284,9 +284,6 @@ RTCDataChannel::RTCDataChannel(
     RTCPeerConnectionHandler* peer_connection_handler)
     : ActiveScriptWrappable<RTCDataChannel>({}),
       ExecutionContextLifecycleObserver(context),
-      scheduled_event_timer_(context->GetTaskRunner(TaskType::kNetworking),
-                             this,
-                             &RTCDataChannel::ScheduledEventTimerFired),
       observer_(base::MakeRefCounted<Observer>(
           context->GetTaskRunner(TaskType::kNetworking),
           this,
@@ -560,8 +557,6 @@ bool RTCDataChannel::HasPendingActivity() const {
 }
 
 void RTCDataChannel::Trace(Visitor* visitor) const {
-  visitor->Trace(scheduled_events_);
-  visitor->Trace(scheduled_event_timer_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -633,7 +628,7 @@ void RTCDataChannel::OnBufferedAmountChange(unsigned sent_data_size) {
 
   if (previous_amount > buffered_amount_low_threshold_ &&
       buffered_amount_ <= buffered_amount_low_threshold_) {
-    ScheduleDispatchEvent(Event::Create(event_type_names::kBufferedamountlow));
+    DispatchEvent(*Event::Create(event_type_names::kBufferedamountlow));
   }
 }
 
@@ -649,7 +644,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
       DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(
           buffer.data.cdata(),
           base::checked_cast<unsigned>(buffer.data.size()));
-      ScheduleDispatchEvent(MessageEvent::Create(dom_buffer));
+      DispatchEvent(*MessageEvent::Create(dom_buffer));
       return;
     }
     NOTREACHED();
@@ -662,7 +657,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
       LOG(ERROR) << "Failed convert received data to UTF16";
       return;
     }
-    ScheduleDispatchEvent(MessageEvent::Create(text));
+    DispatchEvent(*MessageEvent::Create(text));
   }
 }
 
@@ -672,24 +667,6 @@ void RTCDataChannel::Dispose() {
 
   // Clear the weak persistent reference to this on-heap object.
   observer_->Unregister();
-}
-
-void RTCDataChannel::ScheduleDispatchEvent(Event* event) {
-  scheduled_events_.push_back(event);
-
-  if (!scheduled_event_timer_.IsActive())
-    scheduled_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
-}
-
-void RTCDataChannel::ScheduledEventTimerFired(TimerBase*) {
-  HeapVector<Member<Event>> events;
-  events.swap(scheduled_events_);
-
-  HeapVector<Member<Event>>::iterator it = events.begin();
-  for (; it != events.end(); ++it)
-    DispatchEvent(*it->Release());
-
-  events.clear();
 }
 
 const rtc::scoped_refptr<webrtc::DataChannelInterface>&
