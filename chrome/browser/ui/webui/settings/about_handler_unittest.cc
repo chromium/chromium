@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::HasSubstr;
 using ::testing::NotNull;
 using ::testing::Return;
 
@@ -157,7 +158,6 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithoutExtendedUpdatesDate) {
   SetEolDateUtc("30 Oct 2023");
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-
   EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
   EXPECT_FALSE(*response.FindBool("isExtendedOptInRequired"));
 }
@@ -174,9 +174,10 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDatePassed) {
   });
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-
   EXPECT_TRUE(*response.FindBool("isExtendedDatePassed"));
   EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_THAT(*response.FindString("aboutPageEndOfLifeMessage"),
+              HasSubstr("June 2019"));
 }
 
 TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDateNotPassed) {
@@ -191,9 +192,33 @@ TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesDateNotPassed) {
   });
 
   const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
-
   EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
   EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_THAT(*response.FindString("aboutPageEndOfLifeMessage"),
+              HasSubstr("June 2021"));
+}
+
+TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithExtendedUpdatesOptedIn) {
+  SetCurrentTimeToUtc("15 March 2020");
+  base::Time eol_date, extended_date;
+  ASSERT_TRUE(base::Time::FromUTCString("30 Oct 2023", &eol_date));
+  ASSERT_TRUE(base::Time::FromUTCString("4 June 2021", &extended_date));
+  fake_update_engine_client_->set_eol_info({
+      .eol_date = eol_date,
+      .extended_date = extended_date,
+      .extended_opt_in_required = true,
+  });
+
+  ash::MockExtendedUpdatesController mock_controller;
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+
+  EXPECT_CALL(mock_controller, IsOptedIn()).WillOnce(Return(true));
+
+  const auto& response = CallWebUIMessage("getEndOfLifeInfo").GetDict();
+  EXPECT_FALSE(*response.FindBool("isExtendedDatePassed"));
+  EXPECT_TRUE(*response.FindBool("isExtendedOptInRequired"));
+  EXPECT_THAT(*response.FindString("aboutPageEndOfLifeMessage"),
+              HasSubstr("October 2023"));
 }
 
 TEST_F(AboutHandlerTest, HandleIsExtendedUpdatesOptInEligible) {
@@ -204,10 +229,10 @@ TEST_F(AboutHandlerTest, HandleIsExtendedUpdatesOptInEligible) {
   };
 
   ash::MockExtendedUpdatesController mock_controller;
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+
   EXPECT_CALL(mock_controller, IsOptInEligible(NotNull(), params))
       .WillOnce(Return(true));
-
-  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
 
   bool eligible = CallWebUIMessage("isExtendedUpdatesOptInEligible",
                                    base::Value::List()

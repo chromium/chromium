@@ -185,6 +185,8 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void OnGetEndOfLifeInfo(std::string callback_id,
                           ash::UpdateEngineClient::EolInfo eol_info);
 
+  std::u16string GetEndOfLifeMessage(base::Time eol_date) const;
+
   // Opens the end of life incentive URL.
   void HandleOpenEndOfLifeIncentive(const base::Value::List& args);
 

@@ -22,6 +22,8 @@ class MockExtendedUpdatesController : public ExtendedUpdatesController {
               IsOptInEligible,
               (content::BrowserContext*, const Params&),
               (override));
+
+  MOCK_METHOD(bool, IsOptedIn, (), (override));
 };
 
 }  // namespace ash

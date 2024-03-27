@@ -57,7 +57,7 @@ class ExtendedUpdatesController {
   bool IsOptInEligible(content::BrowserContext* context);
 
   // Whether the device is opted in for receiving extended updates.
-  bool IsOptedIn();
+  virtual bool IsOptedIn();
 
   // Opts the device into receiving extended updates.
   // Returns true if the operation succeeded.
