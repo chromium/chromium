@@ -10873,6 +10873,27 @@ class OakTest : public OverviewTestBase {
         ->layer();
   }
 
+  // Test that:
+  // Upon Entering Overview:
+  // -Wallpaper view layer should be clipped across all displays;
+  // - Wallpaper underlay layer should be visible across all displays.
+  // Upon Exiting Overview:
+  // - Wallpaper view layer should be restored across all displays;
+  // - Wallpaper underlay layer should not be visible across all displays.
+  void VerifyLayersBoundsOnAllDisplays(bool in_overview) {
+    for (auto root : Shell::GetAllRootWindows()) {
+      auto* wallpaper_widget_controller =
+          RootWindowController::ForWindow(root)->wallpaper_widget_controller();
+      auto* wallpaper_view_layer =
+          wallpaper_widget_controller->wallpaper_view()->layer();
+      auto* wallpaper_underlay_layer =
+          wallpaper_widget_controller->wallpaper_underlay_layer();
+      EXPECT_EQ(root->bounds(), wallpaper_underlay_layer->bounds());
+      EXPECT_EQ(in_overview, wallpaper_underlay_layer->IsVisible());
+      EXPECT_EQ(in_overview, !wallpaper_view_layer->clip_rect().IsEmpty());
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -10957,39 +10978,50 @@ TEST_F(OakTest, DisplayChange) {
   EXPECT_EQ(display_bounds3, wallpaper_view_layer->bounds());
 }
 
-// Test that:
-// Upon Entering Overview:
-// -Wallpaper view layer should be clipped across all displays;
-// - Wallpaper underlay layer should be visible across all displays.
-// Upon Exiting Overview:
-// - Wallpaper view layer should be restored across all displays;
-// - Wallpaper underlay layer should not be visible across all displays.
+// Verifies that wallpaper clipping and underlay layer visibility update
+// properly on multiple displays during overview transitions.
 TEST_F(OakTest, MultiDisplayTest) {
   UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  EXPECT_EQ(3U, display_manager->GetNumDisplays());
-
-  auto verify_layers_bounds_on_all_displays = [&](bool in_overview) {
-    for (auto root : Shell::GetAllRootWindows()) {
-      auto* wallpaper_widget_controller =
-          RootWindowController::ForWindow(root)->wallpaper_widget_controller();
-      auto* wallpaper_view_layer =
-          wallpaper_widget_controller->wallpaper_view()->layer();
-      auto* wallpaper_underlay_layer =
-          wallpaper_widget_controller->wallpaper_underlay_layer();
-      EXPECT_EQ(root->bounds(), wallpaper_underlay_layer->bounds());
-      EXPECT_EQ(in_overview, wallpaper_underlay_layer->IsVisible());
-      EXPECT_EQ(in_overview, !wallpaper_view_layer->clip_rect().IsEmpty());
-    }
-  };
+  ASSERT_EQ(3U, display_manager->GetNumDisplays());
 
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
-  verify_layers_bounds_on_all_displays(/*in_overview=*/true);
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/true);
 
   ToggleOverview();
   ASSERT_FALSE(IsInOverviewSession());
-  verify_layers_bounds_on_all_displays(/*in_overview=*/false);
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/false);
+}
+
+// Tests that wallpaper clip rect updates properly on all displays on overview
+// grid effective bounds change (e.g., virtual desktop bar state changes).
+TEST_F(OakTest, WallpaperClipRefreshWithMultiDisplay) {
+  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  ASSERT_EQ(3U, display_manager->GetNumDisplays());
+
+  ToggleOverview();
+
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  auto* desks_bar_view = overview_grid->desks_bar_view();
+
+  // The virtual desks bar is at zero state initially.
+  EXPECT_EQ(DeskBarViewBase::State::kZero, desks_bar_view->state());
+  SCOPED_TRACE("Desks bar at zero state");
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/true);
+
+  // Upon expanding the virtual desks bar to state 'kExpanded' by creating a new
+  // desk, the wallpaper clip rect bounds will be refreshed.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  EXPECT_EQ(DeskBarViewBase::State::kExpanded, desks_bar_view->state());
+  SCOPED_TRACE("Desks bar at expanded state");
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/true);
+
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+  SCOPED_TRACE("Overview exit");
+  VerifyLayersBoundsOnAllDisplays(/*in_overview=*/false);
 }
 
 // Tests that the wallpaper is clipped in partial overview mode and adjusts

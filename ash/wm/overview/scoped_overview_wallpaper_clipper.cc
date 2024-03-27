@@ -99,12 +99,19 @@ ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
 }
 
 void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds() {
+  aura::Window* root_window = overview_grid_->root_window();
   WallpaperWidgetController* wallpaper_widget_controller =
-      RootWindowController::ForWindow(overview_grid_->root_window())
+      RootWindowController::ForWindow(root_window)
           ->wallpaper_widget_controller();
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
-  wallpaper_view_layer->SetClipRect(overview_grid_->GetGridEffectiveBounds());
+
+  // `GetGridEffectiveBounds()` returns the bounds in screen coordinates.
+  // Convert these to the parent's coordinates, as layer bounds are always
+  // relative to their parent.
+  gfx::Rect target_clip_rect = overview_grid_->GetGridEffectiveBounds();
+  wm::ConvertRectFromScreen(root_window, &target_clip_rect);
+  wallpaper_view_layer->SetClipRect(target_clip_rect);
 }
 
 }  // namespace ash
