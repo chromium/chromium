@@ -90,11 +90,6 @@ std::ostream& operator<<(std::ostream& out,
 
 }  // namespace
 
-OpenedCloudFile::OpenedCloudFile(const base::FilePath& file_path)
-    : file_path(file_path) {}
-
-OpenedCloudFile::~OpenedCloudFile() = default;
-
 CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system)
     : CloudFileSystem(std::move(file_system), nullptr) {}

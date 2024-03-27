@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -33,15 +34,6 @@ class GURL;
 class OperationRequestManager;
 
 namespace ash::file_system_provider {
-
-// Contains information about an opened file.
-struct OpenedCloudFile {
-  explicit OpenedCloudFile(const base::FilePath& file_path);
-  ~OpenedCloudFile();
-
-  base::FilePath file_path;
-  bool serve_from_cache = true;
-};
 
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
 // currently this is hidden behind the `FileSystemProviderCloudFileSystem`
