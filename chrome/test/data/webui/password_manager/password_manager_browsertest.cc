@@ -20,7 +20,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, AddPasswordDialog) {
   RunTest("password_manager/add_password_dialog_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, App) {
+// TODO(crbug.com/331450809): This test is flaky.
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, DISABLED_App) {
   RunTest("password_manager/password_manager_app_test.js", "mocha.run()");
 }
 
