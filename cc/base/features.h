@@ -138,9 +138,6 @@ constexpr static int kDefaultInterestAreaSizeInPixels = 3000;
 constexpr static int kDefaultInterestAreaSizeInPixelsWhenEnabled = 500;
 CC_BASE_EXPORT extern const base::FeatureParam<int> kInterestAreaSizeInPixels;
 
-// Whether images marked "no-cache" are cached. When disabled, they are.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kImageCacheNoCache);
-
 // When enabled, old prepaint tiles in the "eventually" region get reclaimed
 // after some time.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimOldPrepaintTiles);

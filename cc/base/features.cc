@@ -154,10 +154,6 @@ BASE_FEATURE(kSmallerInterestArea,
 const base::FeatureParam<int> kInterestAreaSizeInPixels{
     &kSmallerInterestArea, "size_in_pixels", kDefaultInterestAreaSizeInPixels};
 
-BASE_FEATURE(kImageCacheNoCache,
-             "ImageCacheNoCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReclaimOldPrepaintTiles,
              "ReclaimOldPrepaintTiles",
              base::FEATURE_DISABLED_BY_DEFAULT);

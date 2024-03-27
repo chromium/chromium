@@ -2173,9 +2173,7 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
                              image_data->decode.image(0, AuxImage::kDefault));
   bool is_empty = !has_any_refs && !image_data->HasUploadedData() &&
                   !has_cpu_data && !image_data->is_orphaned;
-  if (is_empty ||
-      (draw_image.paint_image().no_cache() &&
-       base::FeatureList::IsEnabled(features::kImageCacheNoCache))) {
+  if (is_empty || draw_image.paint_image().no_cache()) {
     auto found_persistent = persistent_cache_.Peek(draw_image.frame_key());
     if (found_persistent != persistent_cache_.end())
       RemoveFromPersistentCache(found_persistent);
