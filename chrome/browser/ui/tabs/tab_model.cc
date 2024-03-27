@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -19,10 +19,7 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
   // may later change if the Tab is detached.
   CHECK(owning_model);
 
-  // Features that are only enabled for normal browser windows.
-  if (owning_model->delegate()->IsNormalWindow()) {
-    lens_overlay_controller_ = std::make_unique<LensOverlayController>(this);
-  }
+  tab_features_ = TabFeatures::CreateTabFeatures(this);
 }
 
 TabModel::~TabModel() = default;
