@@ -34,6 +34,15 @@ namespace {
 #define CHECK_U_ERROR(error, name) \
   CHECK(U_SUCCESS(error)) << name << ": (" << error << ")" << u_errorName(error)
 
+// Check ICU functions that need the data resources are working.
+// https://unicode-org.github.io/icu/userguide/icu/design.html#icu4c-initialization-and-termination
+void CheckIcuDataResources() {
+  UErrorCode error = U_ZERO_ERROR;
+  UVersionInfo version;
+  ulocdata_getCLDRVersion(version, &error);
+  CHECK_U_ERROR(error, "ulocdata_getCLDRVersion");
+}
+
 //
 // Load the ICU data file and set it to the ICU.
 //
@@ -45,7 +54,12 @@ void InitializeIcu(const char* exec_path) {
   path = path.parent_path() / "icudt" U_ICUDATA_TYPE_LETTER ".dat";
 
   std::ifstream data_ifstream(path, std::ios_base::binary);
-  CHECK(data_ifstream.is_open());
+  if (!data_ifstream.is_open()) {
+    // When the build config is `!use_icu_data_file`, the ICU data is built into
+    // the binary.
+    CheckIcuDataResources();
+    return;
+  }
   static std::vector<uint8_t> icu_data;
   CHECK(icu_data.empty());
   std::copy(std::istreambuf_iterator<char>(data_ifstream),
@@ -54,11 +68,7 @@ void InitializeIcu(const char* exec_path) {
   udata_setCommonData(icu_data.data(), &error);
   CHECK_U_ERROR(error, "udata_setCommonData");
 
-  // Check ICU functions that need the data resources are working.
-  // https://unicode-org.github.io/icu/userguide/icu/design.html#icu4c-initialization-and-termination
-  UVersionInfo version;
-  ulocdata_getCLDRVersion(version, &error);
-  CHECK_U_ERROR(error, "ulocdata_getCLDRVersion");
+  CheckIcuDataResources();
 }
 
 class CharacterPropertyValues {
