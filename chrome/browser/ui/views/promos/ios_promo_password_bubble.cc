@@ -45,8 +45,8 @@ constexpr int kQrCodeImageSize = 100;
 
 // URL used for the QR code within the promo
 const char kQRCodeURL[] =
-    "https://itunes.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=saved-passwords-ios-promo-direct-qr&mt=8";
+    "https://apps.apple.com/app/apple-store/"
+    "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8";
 }  // namespace constants
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IOSPromoPasswordBubble, kQRCodeView);
