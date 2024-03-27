@@ -23983,6 +23983,7 @@ from previous Chrome versions.
   <int value="1379571437" label="ExoPointerLock:disabled"/>
   <int value="1379944457" label="EnableMessagesWebPush:disabled"/>
   <int value="1380367827" label="AllowDisableTouchpadHapticFeedback:enabled"/>
+  <int value="1381559497" label="ComposeUiRefinement:disabled"/>
   <int value="1381746642" label="enable-automatic-password-saving"/>
   <int value="1381817717" label="EduCoexistence:enabled"/>
   <int value="1382107019" label="LevelDBPerformRewrite:disabled"/>
@@ -25638,6 +25639,7 @@ from previous Chrome versions.
   <int value="2117485960" label="SupportPepperVideoDecoderDevAPI:disabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
+  <int value="2119575519" label="ComposeUiRefinement:enabled"/>
   <int value="2119964154" label="enable-download-resumption"/>
   <int value="2120363312" label="QuickDim:enabled"/>
   <int value="2120659210" label="BackForwardCache:enabled"/>

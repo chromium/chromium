@@ -10739,6 +10739,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComposeTextSelectionDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kComposeTextSelection)},
+
+    {"compose-ui-refinement", flag_descriptions::kComposeUiRefinementName,
+     flag_descriptions::kComposeUiRefinementDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kComposeUiRefinement)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

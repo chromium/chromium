@@ -53,6 +53,9 @@ BASE_DECLARE_FEATURE(kComposeTextSelection);
 // Enables client-side timeout of a Compose request.
 BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
 
+// Enables enhanced compose dialog UI.
+BASE_DECLARE_FEATURE(kComposeUiRefinement);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_
