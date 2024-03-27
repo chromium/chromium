@@ -140,6 +140,11 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
+  if (paint_layer_.InvisibleForPositionVisibility()) {
+    DCHECK(RuntimeEnabledFeatures::CSSPositionVisibilityEnabled());
+    return kFullyPainted;
+  }
+
   // A paint layer should always have LocalBorderBoxProperties when it's ready
   // for paint.
   if (!object.FirstFragment().HasLocalBorderBoxProperties()) {

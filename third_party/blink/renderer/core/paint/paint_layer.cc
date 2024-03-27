@@ -1202,6 +1202,11 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
+  if (InvisibleForPositionVisibility()) {
+    DCHECK(RuntimeEnabledFeatures::CSSPositionVisibilityEnabled());
+    return nullptr;
+  }
+
   // TODO(vmpstr): We need to add a simple document flag which says whether
   // there is an ongoing transition, since this may be too heavy of a check for
   // each hit test.
@@ -2397,6 +2402,30 @@ void PaintLayer::SetPreviousPaintResult(PaintResult result) {
     return;
   previous_paint_result_ = static_cast<unsigned>(result);
   DCHECK(previous_paint_result_ == static_cast<unsigned>(result));
+}
+
+void PaintLayer::SetInvisibleForPositionVisibility(
+    PositionVisibility visibility,
+    bool invisible) {
+  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    return;
+  }
+  CHECK_NE(visibility, PositionVisibility::kAlways);
+  bool already_invisible = InvisibleForPositionVisibility();
+  if (invisible) {
+    invisible_for_position_visibility_ |= static_cast<int>(visibility);
+    // This will fail if subtree_invisible_for_position_visibility_ doesn't
+    // have enough bits.
+    CHECK(InvisibleForPositionVisibility());
+  } else {
+    invisible_for_position_visibility_ &= ~static_cast<int>(visibility);
+  }
+  if (InvisibleForPositionVisibility() != already_invisible) {
+    SetNeedsRepaint();
+  }
+  // TODO(wangxianzhu): propagate the flag (may be during
+  // CompositingInputsUpdate) non-stack-managed descendants if this PaintLayer
+  // is not a stacking context.
 }
 
 void PaintLayer::Trace(Visitor* visitor) const {

@@ -6816,7 +6816,6 @@ crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-loa
 
 crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-anchors-visible.tentative.html [ Failure ]
-crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-no-overflow.tentative.html [ Failure ]
 
 # Test infra bug
 crbug.com/326459000 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/pageswap-push-from-click.html [ Timeout ]

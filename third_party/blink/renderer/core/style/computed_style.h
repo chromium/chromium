@@ -2377,6 +2377,11 @@ class ComputedStyle final : public ComputedStyleBase {
   // autofilled.
   bool ApplyControlFixedSize(const Node* node) const;
 
+  bool HasPositionVisibility(PositionVisibility visibility) const {
+    return (static_cast<int>(GetPositionVisibility()) &
+            static_cast<int>(visibility)) == static_cast<int>(visibility);
+  }
+
  private:
   bool IsInlineSizeContainer() const {
     return ContainerType() & kContainerTypeInlineSize;

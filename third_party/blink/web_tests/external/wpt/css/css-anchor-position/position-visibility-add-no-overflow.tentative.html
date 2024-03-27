@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html class=reftest-wait>
 <meta charset="utf-8">
 <title>CSS Anchor Positioning Test: position-visibility: no-overflow</title>
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7758">
@@ -20,7 +21,6 @@
 
   .target {
     position: absolute;
-    position-visibility: no-overflow;
     inset-area: block-end;
     width: 100px;
     height: 100px;
@@ -33,5 +33,15 @@
 <div id="scroll-container">
   <!-- #target1 should not be visible because it overflows the containing block. -->
   <div class="anchor" style="anchor-name: --a1;">anchor1</div>
-  <div id="target1" class="target" style="position-anchor: --a1;">target1</div>
+  <div id="target" class="target" style="position-anchor: --a1;">target1</div>
 </div>
+
+<script>
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    target.style.positionVisibility = 'no-overflow';
+    document.documentElement.classList.remove('reftest-wait');
+  });
+});
+</script>
+</html>

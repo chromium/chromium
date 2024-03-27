@@ -521,6 +521,16 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   PhysicalRect LocalBoundingBoxIncludingSelfPaintingDescendants() const;
 
+  // If `invisible` is true, the whole subtree will be omitted in painting and
+  // hit-testing. The invisible status of each PositionVisibility value is
+  // tracked separately.
+  void SetInvisibleForPositionVisibility(PositionVisibility visibility,
+                                         bool invisible);
+  // Returns true if any bit of the flag is set.
+  bool InvisibleForPositionVisibility() const {
+    return invisible_for_position_visibility_;
+  }
+
  private:
   void Update3DTransformedDescendantStatus();
 
@@ -726,6 +736,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned needs_reorder_overlay_overflow_controls_ : 1;
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
+
+  unsigned invisible_for_position_visibility_ : 3 = 0;
 
 #if DCHECK_IS_ON()
   mutable unsigned layer_list_mutation_allowed_ : 1;

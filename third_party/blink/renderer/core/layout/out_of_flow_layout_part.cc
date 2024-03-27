@@ -207,7 +207,6 @@ class OOFCandidateStyleIterator {
 
   void MoveToStyleWithoutOptions() {
     CHECK(element_);
-    CHECK(position_try_options_);
     style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
   }
 
@@ -1730,8 +1729,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
   OOFCandidateStyleIterator iter(*node_info.node.GetLayoutBox(),
                                  anchor_evaluator);
-  // If `position-try-options` exists, let |TryCalculateOffset| check if the
-  // result fits the available space.
   bool has_try_options = iter.HasPositionTryOptions();
   std::optional<OffsetInfo> offset_info;
 
@@ -1746,43 +1743,62 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // We use 6 here because the first attempt is without anything from the
   // position options list applied.
   unsigned attempts_left = 6;
+  bool has_no_overflow_visibility =
+      RuntimeEnabledFeatures::CSSPositionVisibilityEnabled() &&
+      node_info.node.Style().HasPositionVisibility(
+          PositionVisibility::kNoOverflow);
+  // If `position-try-options` or `position-visibility: no-overflow` exists,
+  // let |TryCalculateOffset| check if the result fits the available space.
+  bool try_fit_available_space = has_try_options || has_no_overflow_visibility;
   do {
     NonOverflowingScrollRange non_overflowing_range;
     // Do @position-try placement decisions on the *base style* to avoid
     // interference from animations and transitions.
     const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
+    // However, without @position-try, the style is the current style.
+    CHECK(has_try_options || &style == &iter.GetStyle());
     offset_info =
         TryCalculateOffset(node_info, style, anchor_evaluator, anchor_queries,
-                           has_try_options, &non_overflowing_range);
+                           try_fit_available_space, &non_overflowing_range);
 
     // Also check if it fits the containing block after applying scroll offset.
-    if (offset_info && has_try_options) {
+    if (offset_info && try_fit_available_space) {
       non_overflowing_ranges.push_back(non_overflowing_range);
       if (!non_overflowing_range.Contains(anchor_offset,
                                           additional_bounds_offset)) {
         offset_info = std::nullopt;
       }
     }
-  } while (!offset_info && --attempts_left != 0 && iter.MoveToNextStyle());
+  } while (!offset_info && --attempts_left != 0 && has_try_options &&
+           iter.MoveToNextStyle());
 
+  bool invisible_if_no_overflow = false;
   if (!offset_info) {
-    // None of the options worked out. Fall back to style without any options
-    // applied.
+    // None of the options worked out.
+    // Fall back to style without any options applied.
     iter.MoveToStyleWithoutOptions();
+    // And hide the subtree for "position-visibility: no-overflow".
+    invisible_if_no_overflow = true;
   }
+
+  node_info.node.GetLayoutBox()->Layer()->SetInvisibleForPositionVisibility(
+      PositionVisibility::kNoOverflow,
+      has_no_overflow_visibility && invisible_if_no_overflow);
 
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-      has_try_options) {
+      try_fit_available_space) {
     // Once the position-try-options placement has been decided, calculate the
     // offset again, using the non-base style.
+    const ComputedStyle& style = iter.ActivateStyleForChosenOption();
+    CHECK(offset_info || &style == &iter.GetStyle());
     NonOverflowingScrollRange non_overflowing_range_unused;
     offset_info = TryCalculateOffset(
-        node_info, iter.ActivateStyleForChosenOption(), anchor_evaluator,
-        anchor_queries, /* try_fit_available_space */ false,
-        &non_overflowing_range_unused);
+        node_info, style, anchor_evaluator, anchor_queries,
+        /* try_fit_available_space */ false, &non_overflowing_range_unused);
   }
+  CHECK(offset_info);
 
-  if (iter.HasPositionTryOptions()) {
+  if (try_fit_available_space) {
     offset_info->uses_fallback_style = true;
     offset_info->non_overflowing_ranges = std::move(non_overflowing_ranges);
   } else {
