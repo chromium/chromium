@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/contextual_panel/model",
+  "+ios/chrome/browser/commerce/model"
+]
