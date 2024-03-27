@@ -503,13 +503,15 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
     // TODO(https://crbug.com/331043758): Dump to investigate crash in the
     // EraseIf predicates below.
     DUMP_WILL_BE_CHECK(!metrics_partitions_.empty());
-    DUMP_WILL_BE_CHECK(
-        metrics_partitions_.back() ==
-        std::make_pair(metrics_.size(), metrics_removed_anchors_.size()))
-        << "(" << metrics_partitions_.back().first << ", "
-        << metrics_partitions_.back().second << ") != (" << metrics_.size()
-        << ", " << metrics_removed_anchors_.size() << "), partitions "
-        << metrics_partitions_.size();
+    if (!metrics_partitions_.empty()) {
+      DUMP_WILL_BE_CHECK(
+          metrics_partitions_.back() ==
+          std::make_pair(metrics_.size(), metrics_removed_anchors_.size()))
+          << "(" << metrics_partitions_.back().first << ", "
+          << metrics_partitions_.back().second << ") != (" << metrics_.size()
+          << ", " << metrics_removed_anchors_.size() << "), partitions "
+          << metrics_partitions_.size();
+    }
 
     // Multiple lifecycle updates, during which we buffer metrics updates, may
     // have happened before we send the buffered metrics updates here. Between
