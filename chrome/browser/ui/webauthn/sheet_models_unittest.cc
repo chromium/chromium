@@ -24,7 +24,9 @@ class AuthenticatorSheetBaseTest : public testing::Test {};
 
 class MockDialogModel : public AuthenticatorRequestDialogController {
  public:
-  MockDialogModel() : AuthenticatorRequestDialogController(nullptr) {}
+  MockDialogModel()
+      : AuthenticatorRequestDialogController(
+            static_cast<content::RenderFrameHost*>(nullptr)) {}
 
   MOCK_METHOD(base::span<const Mechanism>, mechanisms, (), (const));
   MOCK_METHOD(std::optional<std::u16string>,

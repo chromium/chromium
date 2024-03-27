@@ -1427,7 +1427,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnCancelRequest());
-  model.Cancel();
+  model.CancelAuthenticatorRequest();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
@@ -1532,7 +1532,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
           break;
 
         case Step::kBlePowerOnAutomatic:
-          model.OnBluetoothPoweredStateChanged(/*powered=*/true);
+          model.BluetoothAdapterPowerChanged(/*powered=*/true);
           break;
 
         case Step::kOffTheRecordInterstitial:
@@ -1586,7 +1586,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
 
     EXPECT_CALL(mock_observer, OnStepTransition());
     EXPECT_CALL(mock_observer, OnCancelRequest());
-    model.Cancel();
+    model.CancelAuthenticatorRequest();
     EXPECT_EQ(Step::kClosed, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -1650,7 +1650,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     EXPECT_FALSE(model.ble_adapter_is_powered());
 
     EXPECT_CALL(mock_observer, OnBluetoothPoweredStateChanged());
-    model.OnBluetoothPoweredStateChanged(true /* powered */);
+    model.BluetoothAdapterPowerChanged(true /* powered */);
 
     EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
@@ -1694,7 +1694,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     EXPECT_TRUE(power_receiver.was_called());
     EXPECT_FALSE(model.ble_adapter_is_powered());
 
-    model.OnBluetoothPoweredStateChanged(true /* powered */);
+    model.BluetoothAdapterPowerChanged(true /* powered */);
 
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
@@ -1801,7 +1801,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
   EXPECT_CALL(mock_observer, OnStartOver());
   EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
   model.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
-  model.Cancel();
+  model.CancelAuthenticatorRequest();
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   model.RemoveObserver(&mock_observer);
@@ -2399,7 +2399,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
         account_preselected_callback.Callback());
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
-    ASSERT_EQ(model.ephemeral_state_.priority_mechanism_index_.has_value(),
+    ASSERT_EQ(model.model()->priority_mechanism_index.has_value(),
               test.type_of_priority_mechanism.has_value());
     if (!test.type_of_priority_mechanism.has_value()) {
       continue;
@@ -2407,8 +2407,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
 
     EXPECT_EQ(
         *test.type_of_priority_mechanism,
-        model.mechanisms_[*model.ephemeral_state_.priority_mechanism_index_]
-            .type);
+        model.mechanisms()[*model.model()->priority_mechanism_index].type);
   }
 }
 

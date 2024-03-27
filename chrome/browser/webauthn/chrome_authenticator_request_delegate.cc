@@ -1186,7 +1186,7 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
 
 void ChromeAuthenticatorRequestDelegate::BluetoothAdapterPowerChanged(
     bool is_powered_on) {
-  dialog_model_->OnBluetoothPoweredStateChanged(is_powered_on);
+  dialog_model_->BluetoothAdapterPowerChanged(is_powered_on);
 }
 
 bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {

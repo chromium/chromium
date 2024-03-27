@@ -132,7 +132,7 @@ void AuthenticatorSheetModelBase::OnAccept() {
 
 void AuthenticatorSheetModelBase::OnCancel() {
   if (dialog_model()) {
-    dialog_model()->Cancel();
+    dialog_model()->CancelAuthenticatorRequest();
   }
 }
 
@@ -191,7 +191,7 @@ bool AuthenticatorMechanismSelectorSheetModel::IsManageDevicesButtonVisible()
 
 void AuthenticatorMechanismSelectorSheetModel::OnManageDevices() {
   if (dialog_model()) {
-    dialog_model()->ManageDevices();
+    dialog_model()->model()->OnManageDevicesClicked();
   }
 }
 
@@ -448,7 +448,7 @@ std::u16string AuthenticatorBlePowerOnManualSheetModel::GetAcceptButtonLabel()
 }
 
 void AuthenticatorBlePowerOnManualSheetModel::OnBluetoothPoweredStateChanged() {
-  dialog_model()->OnSheetModelDidChange();
+  dialog_model()->model()->OnSheetModelChanged();
 }
 
 void AuthenticatorBlePowerOnManualSheetModel::OnAccept() {
@@ -498,7 +498,7 @@ AuthenticatorBlePowerOnAutomaticSheetModel::GetAcceptButtonLabel() const {
 
 void AuthenticatorBlePowerOnAutomaticSheetModel::OnAccept() {
   busy_powering_on_ble_ = true;
-  dialog_model()->OnSheetModelDidChange();
+  dialog_model()->model()->OnSheetModelChanged();
   dialog_model()->PowerOnBleAdapter();
 }
 
@@ -765,7 +765,7 @@ void AuthenticatorClientPinEntrySheetModel::OnAccept() {
   if ((mode_ == Mode::kPinChange || mode_ == Mode::kPinSetup) &&
       pin_code_ != pin_confirmation_) {
     error_ = l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_ERROR_MISMATCH);
-    dialog_model()->OnSheetModelDidChange();
+    dialog_model()->model()->OnSheetModelChanged();
     return;
   }
 
@@ -1522,7 +1522,7 @@ bool AuthenticatorMultiSourcePickerSheetModel::IsManageDevicesButtonVisible()
 
 void AuthenticatorMultiSourcePickerSheetModel::OnManageDevices() {
   if (dialog_model()) {
-    dialog_model()->ManageDevices();
+    dialog_model()->model()->OnManageDevicesClicked();
   }
 }
 
@@ -1611,7 +1611,7 @@ void AuthenticatorGPMPinSheetModel::SetPin(std::u16string pin) {
     dialog_model()->OnGPMPinEntered(pin_);
   } else if (mode_ == Mode::kPinCreate &&
              full_pin_typed_before != full_pin_typed) {
-    dialog_model()->OnButtonsStateChange();
+    dialog_model()->model()->OnButtonsStateChanged();
   }
 }
 
@@ -1679,7 +1679,7 @@ void AuthenticatorGPMPinSheetModel::OnGPMPinOptionChosen(
     return;
   }
 
-  dialog_model()->OnGPMPinOptionChosen(is_arbitrary);
+  dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
 }
 
 // AuthenticatorGPMArbitraryPinSheetModel ------------------------------------
@@ -1703,7 +1703,7 @@ void AuthenticatorGPMArbitraryPinSheetModel::SetPin(std::u16string pin) {
   bool accept_button_enabled = IsAcceptButtonEnabled();
   pin_ = std::move(pin);
   if (accept_button_enabled != IsAcceptButtonEnabled()) {
-    dialog_model()->OnButtonsStateChange();
+    dialog_model()->model()->OnButtonsStateChanged();
   }
 }
 
@@ -1771,7 +1771,7 @@ void AuthenticatorGPMArbitraryPinSheetModel::OnGPMPinOptionChosen(
     return;
   }
 
-  dialog_model()->OnGPMPinOptionChosen(is_arbitrary);
+  dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
 }
 
 AuthenticatorTrustThisComputerSheetModel::

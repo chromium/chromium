@@ -122,7 +122,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     dialog_model_ = std::make_unique<AuthenticatorRequestDialogController>(
-        /*web_contents=*/nullptr);
+        static_cast<content::RenderFrameHost*>(nullptr));
     dialog_model_->set_relying_party_id("example.com");
 
     if (name == "default") {
