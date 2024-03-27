@@ -1264,7 +1264,7 @@ BASE_FEATURE(kBuiltInHlsPlayer,
 );
 
 BASE_FEATURE(kBuiltInHlsMP4,
-             "kBuiltInHlsMP4",
+             "BuiltInHlsMP4",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
