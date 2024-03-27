@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -54,7 +53,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -97,10 +95,7 @@ import java.lang.ref.WeakReference;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
 public class SearchActivity extends AsyncInitializationActivity
-        implements SnackbarManageable,
-                BackKeyBehaviorDelegate,
-                UrlFocusChangeListener,
-                OmniboxSuggestionsDropdownScrollListener {
+        implements SnackbarManageable, BackKeyBehaviorDelegate, UrlFocusChangeListener {
     // Shared with other org.chromium.chrome.browser.searchwidget classes.
     protected static final String TAG = "searchwidget";
 
@@ -332,7 +327,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         null,
                         ChromePureJavaExceptionReporter::reportJavaException,
                         backPressManager,
-                        /* OmniboxSuggestionsDropdownScrollListener= */ this,
+                        /* OmniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ null,
                         mLocationBarUiOverrides,
                         null);
@@ -787,27 +782,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBarCoordinator;
-    }
-
-    /** Apply the color to locationbar's and toolbar's background. */
-    private void applyColor(@ColorInt int color) {
-        // TODO(crbug.com/330060045) : clean up all the code to update the locationbar's and
-        // toolbar's background when scrolling.
-        return;
-    }
-
-    @Override
-    public void onSuggestionDropdownScroll() {
-        applyColor(
-                ChromeColors.getSurfaceColor(
-                        SearchActivity.this, R.dimen.toolbar_text_box_elevation));
-    }
-
-    @Override
-    public void onSuggestionDropdownOverscrolledToTop() {
-        applyColor(
-                ChromeColors.getSurfaceColor(
-                        SearchActivity.this, R.dimen.omnibox_suggestion_dropdown_bg_elevation));
     }
 
     /* package */ void setActivityUsableForTesting(boolean isUsable) {

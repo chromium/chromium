@@ -97,7 +97,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
-            @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
+            @Nullable OmniboxSuggestionsDropdownScrollListener scrollListener,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             boolean forcePhoneStyleOmnibox,
             @NonNull WindowAndroid windowAndroid) {
@@ -134,7 +134,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         windowAndroid);
         mMediator.initDefaultProcessors();
 
-        mScrollListenerList.addObserver(scrollListener);
+        if (scrollListener != null) {
+            mScrollListenerList.addObserver(scrollListener);
+        }
         mScrollListenerList.addObserver(mMediator);
         listModel.set(SuggestionListProperties.GESTURE_OBSERVER, mMediator);
         listModel.set(
