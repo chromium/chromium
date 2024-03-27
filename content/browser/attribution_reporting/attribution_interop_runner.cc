@@ -17,12 +17,13 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -89,6 +90,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::RandomizedResponse;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::network::mojom::AttributionReportingEligibility;
 
@@ -233,7 +235,16 @@ AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
 
 class FakeCookieChecker : public AttributionCookieChecker {
  public:
-  FakeCookieChecker() = default;
+  explicit FakeCookieChecker(
+      const std::vector<AttributionSimulationEvent>& events) {
+    std::vector<base::Time> times;
+    for (const auto& event : events) {
+      if (event.debug_permission) {
+        times.push_back(event.time);
+      }
+    }
+    debug_cookie_set_.replace(std::move(times));
+  }
 
   ~FakeCookieChecker() override = default;
 
@@ -243,24 +254,32 @@ class FakeCookieChecker : public AttributionCookieChecker {
   FakeCookieChecker& operator=(const FakeCookieChecker&) = delete;
   FakeCookieChecker& operator=(FakeCookieChecker&&) = delete;
 
-  void set_debug_cookie_set(bool set) { debug_cookie_set_ = set; }
-
  private:
   // AttributionCookieChecker:
   void IsDebugCookieSet(const url::Origin& origin,
                         base::OnceCallback<void(bool)> callback) override {
-    std::move(callback).Run(debug_cookie_set_);
+    std::move(callback).Run(debug_cookie_set_.contains(base::Time::Now()));
   }
 
-  bool debug_cookie_set_ = false;
+  base::flat_set<base::Time> debug_cookie_set_;
 };
 
 class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
  public:
-  explicit ControllableStorageDelegate(const AttributionConfig& config)
+  ControllableStorageDelegate(const AttributionConfig& config,
+                              std::vector<AttributionSimulationEvent>& events)
       : AttributionStorageDelegateImpl(AttributionNoiseMode::kNone,
                                        AttributionDelayMode::kDefault,
-                                       config) {}
+                                       config) {
+    std::vector<std::pair<base::Time, RandomizedResponse>> responses;
+    for (auto& event : events) {
+      if (event.randomized_response.has_value()) {
+        responses.emplace_back(
+            event.time, std::exchange(event.randomized_response, std::nullopt));
+      }
+    }
+    randomized_responses_.replace(std::move(responses));
+  }
 
   ~ControllableStorageDelegate() override = default;
 
@@ -271,14 +290,6 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
   ControllableStorageDelegate(ControllableStorageDelegate&&) = delete;
   ControllableStorageDelegate& operator=(ControllableStorageDelegate&&) =
       delete;
-
-  // TODO(apaseltiner): Allow null aggregatable reports to be configured in the
-  // same way.
-  void set_randomized_response(
-      attribution_reporting::RandomizedResponse&& response) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    randomized_response_ = std::move(response);
-  }
 
  private:
   // AttributionStorageDelegateImpl:
@@ -294,9 +305,14 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
         AttributionStorageDelegateImpl::GetRandomizedResponse(
             source_type, trigger_specs, max_event_level_reports, epsilon));
 
+    auto it = randomized_responses_.find(base::Time::Now());
+    if (it == randomized_responses_.end()) {
+      return response;
+    }
+
     // Avoid crashing in `AttributionStorageSql::StoreSource()` by returning an
     // arbitrary error here, which will manifest as unexpected test output.
-    if (!attribution_reporting::IsValid(randomized_response_, trigger_specs,
+    if (!attribution_reporting::IsValid(it->second, trigger_specs,
                                         max_event_level_reports)) {
       LOG(ERROR) << "invalid randomized response with trigger_specs="
                  << trigger_specs
@@ -307,27 +323,21 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
 
     return attribution_reporting::RandomizedResponseData(
         response.rate(), response.channel_capacity(),
-        std::exchange(randomized_response_, std::nullopt));
+        std::exchange(it->second, std::nullopt));
   }
 
-  attribution_reporting::RandomizedResponse randomized_response_
+  // TODO(apaseltiner): Allow null aggregatable reports to be configured in the
+  // same way.
+  base::flat_map<base::Time, RandomizedResponse> randomized_responses_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // Registers sources and triggers in the `AttributionManagerImpl`.
 class AttributionEventHandler {
  public:
-  AttributionEventHandler(
-      std::unique_ptr<AttributionManagerImpl> manager,
-      FakeCookieChecker* fake_cookie_checker,
-      ControllableStorageDelegate* storage_delegate,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
-      : manager_(std::move(manager)),
-        fake_cookie_checker_(
-            raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)),
-        storage_delegate_(
-            raw_ref<ControllableStorageDelegate>::from_ptr(storage_delegate)),
-        storage_task_runner_(std::move(storage_task_runner)) {
+  explicit AttributionEventHandler(
+      std::unique_ptr<AttributionManagerImpl> manager)
+      : manager_(std::move(manager)) {
     DCHECK(manager_);
   }
 
@@ -337,8 +347,6 @@ class AttributionEventHandler {
     if (!eligibility.has_value()) {
       return;
     }
-
-    fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
 
     const BackgroundRegistrationsId id(unique_id_counter_++);
 
@@ -363,12 +371,6 @@ class AttributionEventHandler {
       attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
           attribution_src_token.value());
     }
-
-    storage_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ControllableStorageDelegate::set_randomized_response,
-                       base::Unretained(storage_delegate_),
-                       std::move(event.randomized_response)));
 
     attribution_data_host_manager->NotifyBackgroundRegistrationStarted(
         id,
@@ -414,9 +416,6 @@ class AttributionEventHandler {
 
  private:
   const std::unique_ptr<AttributionManagerImpl> manager_;
-  const raw_ref<FakeCookieChecker> fake_cookie_checker_;
-  const raw_ref<ControllableStorageDelegate> storage_delegate_;
-  const scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
 
   int64_t unique_id_counter_ = 0;
 };
@@ -474,8 +473,7 @@ RunAttributionInteropSimulation(base::Value::Dict input,
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
-  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>();
-  auto* raw_fake_cookie_checker = fake_cookie_checker.get();
+  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>(events);
 
   AttributionInteropOutput output;
 
@@ -495,22 +493,19 @@ RunAttributionInteropSimulation(base::Value::Dict input,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::ThreadPolicy::MUST_USE_FOREGROUND});
 
-  auto storage_delegate = std::make_unique<ControllableStorageDelegate>(config);
-  auto* raw_storage_delegate = storage_delegate.get();
-
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
       /*max_pending_events=*/std::numeric_limits<size_t>::max(),
-      /*special_storage_policy=*/nullptr, std::move(storage_delegate),
+      /*special_storage_policy=*/nullptr,
+      std::make_unique<ControllableStorageDelegate>(config, events),
       std::move(fake_cookie_checker),
       std::make_unique<AttributionReportNetworkSender>(
           test_url_loader_factory.GetSafeWeakWrapper()),
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
       storage_task_runner);
 
-  AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker,
-                                  raw_storage_delegate, storage_task_runner);
+  AttributionEventHandler handler(std::move(manager));
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
