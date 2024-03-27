@@ -1604,9 +1604,11 @@ bool VADisplayStateSingleton::Initialize() {
       VendorStringToImplementationType(va_vendor_string);
 
   const base::Version runtime_version(
-      {static_cast<unsigned int>(major_version),
-       static_cast<unsigned int>(minor_version)});
+      {base::checked_cast<uint32_t>(major_version),
+       base::checked_cast<uint32_t>(minor_version)});
+  CHECK(runtime_version.IsValid());
   const base::Version build_time_version({VA_MAJOR_VERSION, VA_MINOR_VERSION});
+  CHECK(build_time_version.IsValid());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (IsGen11Gpu()) {
     // Jasperlake devices run with pinned libva driver (VA-API version 1.15)
@@ -1617,6 +1619,7 @@ bool VADisplayStateSingleton::Initialize() {
     // TODO(b/303841978): go back to using the actual minor version number
     // when libva is upreved in Jasperlake devices.
     const base::Version jsl_build_version({VA_MAJOR_VERSION, 15});
+    CHECK(jsl_build_version.IsValid());
     if (!IsLibVACompatible(runtime_version, jsl_build_version)) {
       return false;
     }
