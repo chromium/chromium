@@ -19,7 +19,7 @@ namespace blink {
 PaymentInstruments* PaymentManager::instruments() {
   if (!instruments_) {
     instruments_ = MakeGarbageCollected<PaymentInstruments>(
-        manager_, registration_->GetExecutionContext());
+        *this, registration_->GetExecutionContext());
   }
   return instruments_.Get();
 }

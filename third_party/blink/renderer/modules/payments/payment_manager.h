@@ -42,6 +42,11 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
       const Vector<V8PaymentDelegation>& delegations,
       ExceptionState&);
 
+  const HeapMojoRemote<payments::mojom::blink::PaymentManager>& manager()
+      const {
+    return manager_;
+  }
+
  private:
   void OnServiceConnectionError();
 

@@ -21,15 +21,14 @@ namespace blink {
 
 class ExceptionState;
 class PaymentInstrument;
+class PaymentManager;
 class ScriptState;
 
 class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit PaymentInstruments(
-      const HeapMojoRemote<payments::mojom::blink::PaymentManager>&,
-      ExecutionContext*);
+  explicit PaymentInstruments(const PaymentManager&, ExecutionContext*);
 
   PaymentInstruments(const PaymentInstruments&) = delete;
   PaymentInstruments& operator=(const PaymentInstruments&) = delete;
@@ -75,8 +74,7 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   void onClearPaymentInstruments(ScriptPromiseResolver<IDLUndefined>*,
                                  payments::mojom::blink::PaymentHandlerStatus);
 
-  const raw_ref<const HeapMojoRemote<payments::mojom::blink::PaymentManager>>
-      manager_;
+  Member<const PaymentManager> payment_manager_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
