@@ -63,7 +63,7 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
     std::unique_ptr<AsyncWaitableEvent> waitable_event =
         std::make_unique<AsyncWaitableEvent>();
     base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
         base::BindOnce(&RunWorkerTask, callback, user_data,
                        waitable_event->GetWaitableEventImpl()));
     return waitable_event;
