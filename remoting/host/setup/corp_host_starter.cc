@@ -46,10 +46,10 @@ class CorpHostStarter : public HostStarterBase {
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_error_reported) override;
 
+  // CorpServiceClient callback.
   void OnProvisionCorpMachineResponse(
       const ProtobufHttpStatus& status,
       std::unique_ptr<internal::ProvisionCorpMachineResponse> response);
-  void HandleHttpStatusError(const ProtobufHttpStatus& status);
 
  private:
   std::unique_ptr<CorpServiceClient> corp_service_client_;
@@ -106,38 +106,6 @@ void CorpHostStarter::RemoveOldHostFromDirectory(
   // This workflow removes the existing host as part of the provisioning service
   // call so we don't need to make an additional service request here.
   std::move(on_host_removed).Run();
-}
-
-void CorpHostStarter::HandleHttpStatusError(const ProtobufHttpStatus& status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ProtobufHttpStatus::Code error_code = status.error_code();
-  std::string error_message = status.error_message();
-  LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
-             << ", message: " << error_message;
-
-  if (!status.response_body().empty()) {
-    size_t pos = status.response_body().rfind("Caused by: ");
-    if (pos != std::string::npos) {
-      error_message = status.response_body().substr(pos);
-      LOG(ERROR) << "\n  Extended error information: \n" << error_message;
-      VLOG(1) << "\n  Full error information: \n" << status.response_body();
-    } else {
-      error_message = status.response_body();
-      LOG(ERROR) << "\n  Failed to find extended error information, showing "
-                 << "full output:\n"
-                 << error_message;
-    }
-  }
-
-  auto result = NETWORK_ERROR;
-  if (error_code == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
-    result = PERMISSION_DENIED;
-  } else if (error_code == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
-    result = OAUTH_ERROR;
-  }
-
-  HandleError(error_message, result);
 }
 
 void CorpHostStarter::ReportError(const std::string& message,

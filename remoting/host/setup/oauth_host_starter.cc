@@ -17,9 +17,12 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "google_apis/google_api_keys.h"
+#include "remoting/base/directory_service_client.h"
+#include "remoting/base/passthrough_oauth_token_getter.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
-#include "remoting/host/setup/service_client.h"
+#include "remoting/proto/remoting/v1/directory_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
@@ -27,102 +30,96 @@ namespace remoting {
 namespace {
 
 // A helper class that registers and starts a host using OAuth.
-class OAuthHostStarterImpl : public HostStarterBase,
-                             public ServiceClient::Delegate {
+class OAuthHostStarter : public HostStarterBase {
  public:
-  explicit OAuthHostStarterImpl(
+  explicit OAuthHostStarter(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  OAuthHostStarterImpl(const OAuthHostStarterImpl&) = delete;
-  OAuthHostStarterImpl& operator=(const OAuthHostStarterImpl&) = delete;
+  OAuthHostStarter(const OAuthHostStarter&) = delete;
+  OAuthHostStarter& operator=(const OAuthHostStarter&) = delete;
 
-  ~OAuthHostStarterImpl() override;
+  ~OAuthHostStarter() override;
 
   // HostStarterBase implementation.
   void RegisterNewHost(const std::string& access_token,
                        const std::string& public_key) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
 
-  // ServiceClient::Delegate
-  void OnHostRegistered(const std::string& host_id,
-                        const std::string& authorization_code) override;
-  void OnHostUnregistered() override;
-  void OnOAuthError() override;
-  void OnNetworkError(int response_code) override;
+  // DirectoryServiceClient callbacks.
+  void OnDeleteHostResponse(
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<apis::v1::DeleteHostResponse> response);
+  void OnRegisterHostResponse(
+      const ProtobufHttpStatus& status,
+      std::unique_ptr<apis::v1::RegisterHostResponse> response);
 
  private:
-  std::string access_token_;
   base::OnceClosure on_host_removed_;
-  std::unique_ptr<ServiceClient> service_client_;
+  PassthroughOAuthTokenGetter token_getter_;
+  DirectoryServiceClient directory_service_client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<OAuthHostStarterImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OAuthHostStarter> weak_ptr_factory_{this};
 };
 
-OAuthHostStarterImpl::OAuthHostStarterImpl(
+OAuthHostStarter::OAuthHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : HostStarterBase(url_loader_factory),
-      service_client_(std::make_unique<ServiceClient>(url_loader_factory)) {}
+      directory_service_client_(&token_getter_, url_loader_factory) {}
 
-OAuthHostStarterImpl::~OAuthHostStarterImpl() = default;
+OAuthHostStarter::~OAuthHostStarter() = default;
 
-void OAuthHostStarterImpl::RegisterNewHost(const std::string& access_token,
-                                           const std::string& public_key) {
+void OAuthHostStarter::RegisterNewHost(const std::string& access_token,
+                                       const std::string& public_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!access_token.empty());
   DCHECK(!public_key.empty());
 
-  access_token_ = access_token;
-  service_client_->RegisterHost(
+  token_getter_.set_access_token(access_token);
+
+  directory_service_client_.RegisterHost(
       params().id, params().name, public_key,
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST),
-      access_token_, this);
+      base::BindOnce(&OAuthHostStarter::OnRegisterHostResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OAuthHostStarterImpl::OnHostRegistered(
-    const std::string& host_id,
-    const std::string& authorization_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnNewHostRegistered(base::ToLowerASCII(host_id),
-                      /*owner_account_email=*/std::string(),
-                      /*service_account_email=*/std::string(),
-                      authorization_code);
-}
-
-void OAuthHostStarterImpl::RemoveOldHostFromDirectory(
+void OAuthHostStarter::RemoveOldHostFromDirectory(
     base::OnceClosure on_host_removed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_host_removed_ = std::move(on_host_removed);
-  service_client_->UnregisterHost(*existing_host_id(), access_token_, this);
+  directory_service_client_.DeleteHost(
+      *existing_host_id(),
+      base::BindOnce(&OAuthHostStarter::OnDeleteHostResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OAuthHostStarterImpl::OnOAuthError() {
+void OAuthHostStarter::OnRegisterHostResponse(
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::RegisterHostResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (on_host_removed_) {
-    LOG(ERROR) << "OAuth error occurred when unregistering host.";
-    std::move(on_host_removed_).Run();
+  if (!status.ok()) {
+    HandleHttpStatusError(status);
     return;
   }
 
-  HandleError("OAuth error occurred when registering the host.", OAUTH_ERROR);
+  OnNewHostRegistered(base::ToLowerASCII(response->host_info().host_id()),
+                      /*owner_account_email=*/std::string(),
+                      /*service_account_email=*/std::string(),
+                      response->auth_code());
 }
 
-void OAuthHostStarterImpl::OnNetworkError(int response_code) {
+void OAuthHostStarter::OnDeleteHostResponse(
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::DeleteHostResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (on_host_removed_) {
-    LOG(ERROR) << "Network error occurred when unregistering host.";
-    std::move(on_host_removed_).Run();
-    return;
+
+  if (!status.ok()) {
+    LOG(ERROR) << "Error occurred when unregistering the existing host.";
   }
 
-  HandleError("Network error occurred when registering the host.",
-              NETWORK_ERROR);
-}
-
-void OAuthHostStarterImpl::OnHostUnregistered() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(on_host_removed_).Run();
 }
 
@@ -130,7 +127,7 @@ void OAuthHostStarterImpl::OnHostUnregistered() {
 
 std::unique_ptr<HostStarter> CreateOAuthHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<OAuthHostStarterImpl>(url_loader_factory);
+  return std::make_unique<OAuthHostStarter>(url_loader_factory);
 }
 
 }  // namespace remoting

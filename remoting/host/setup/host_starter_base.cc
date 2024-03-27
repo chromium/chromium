@@ -255,6 +255,38 @@ void HostStarterBase::HandleError(const std::string& error_message,
   ReportError(error_message, base::BindOnce(std::move(on_done_), error_result));
 }
 
+void HostStarterBase::HandleHttpStatusError(const ProtobufHttpStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ProtobufHttpStatus::Code error_code = status.error_code();
+  std::string error_message = status.error_message();
+  LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
+             << ", message: " << error_message;
+
+  if (!status.response_body().empty()) {
+    size_t pos = status.response_body().rfind("Caused by: ");
+    if (pos != std::string::npos) {
+      error_message = status.response_body().substr(pos);
+      LOG(ERROR) << "\n  Extended error information: \n" << error_message;
+      VLOG(1) << "\n  Full error information: \n" << status.response_body();
+    } else {
+      error_message = status.response_body();
+      LOG(ERROR) << "\n  Failed to find extended error information, showing "
+                 << "full output:\n"
+                 << error_message;
+    }
+  }
+
+  auto result = NETWORK_ERROR;
+  if (error_code == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
+    result = PERMISSION_DENIED;
+  } else if (error_code == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
+    result = OAUTH_ERROR;
+  }
+
+  HandleError(error_message, result);
+}
+
 void HostStarterBase::ReportError(const std::string& message,
                                   base::OnceClosure on_error_reported) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

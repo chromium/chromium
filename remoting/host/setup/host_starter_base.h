@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_oauth_helper.h"
@@ -83,6 +84,8 @@ class HostStarterBase : public HostStarter {
 
   // |HandleError| will cause |on_done_| to be executed.
   void HandleError(const std::string& error_message, Result error_result);
+  // Converts |status| into a HostStarter error and logs error information.
+  void HandleHttpStatusError(const ProtobufHttpStatus& status);
   // Overiddable to allow for reporting errors to a service backend.
   // |on_error_reported| will be run whether the error is reported successfully
   // or not.
