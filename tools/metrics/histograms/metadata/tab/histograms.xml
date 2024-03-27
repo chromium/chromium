@@ -1989,8 +1989,9 @@ chromium-metrics-reviews@google.com.
     <variant name="DedicatedRenderer"
         summary="Uses a renderer that already hosts other top chrome WebUIs"/>
     <variant name="NoRenderer" summary="No renderer can be used"/>
-    <variant name="PreloadedRenderer" summary="Uses a preloaded WebContents."/>
-    <variant name="RedirectedRenderer"
+    <variant name="PreloadedWebContents"
+        summary="Uses a preloaded WebContents."/>
+    <variant name="RedirectedWebContents"
         summary="Uses a redirected preloaded WebContents that was on a
                  different WebUI."/>
     <variant name="ReshowingWebContents"
