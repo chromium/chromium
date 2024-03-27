@@ -1105,6 +1105,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 (v, l, t, r, b, ol, ot, or, ob) -> setButtonsVisibility();
         private boolean mCurrentlyShowingBranding;
         private boolean mBrandingStarted;
+        private boolean mOmniboxEnabled;
         private Drawable mOmniboxBackground;
         private CallbackController mCallbackController = new CallbackController();
         // Cached the state before branding start so we can reset to the state when its done.
@@ -1618,7 +1619,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             } else {
                 UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
                 originStart = 0;
-                if (urlBarData.displayText != null) {
+                if (mOmniboxEnabled) {
+                    displayText = urlBarData.displayText;
+                    originEnd = 0;
+                } else if (urlBarData.displayText != null) {
                     displayText =
                             urlBarData.displayText.subSequence(
                                     urlBarData.originStartIndex, urlBarData.originEndIndex);
@@ -1802,6 +1806,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         void setOmniboxEnabled() {
+            mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
                             getContext(),
