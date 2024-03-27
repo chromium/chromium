@@ -164,6 +164,11 @@
 
 namespace {
 
+bool ShouldUseLayoutNG(const blink::LayoutObject& layout_object) {
+  return layout_object.IsInline() &&
+         layout_object.IsInLayoutNGInlineFormattingContext();
+}
+
 // It is not easily possible to find out if an element is the target of an
 // in-page link.
 // As a workaround, we consider the following to be potential targets:
@@ -7271,6 +7276,288 @@ AXObject* AXNodeObject::AccessibilityImageMapHitTest(
   }
 
   return nullptr;
+}
+
+AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+    AXObject* start_object,
+    bool first) const {
+  if (!start_object) {
+    return nullptr;
+  }
+
+  // Return the deepest last child that is included.
+  // Uses LayoutTreeBuildTraversaler to get children, in order to avoid getting
+  // children unconnected to the line, e.g. via aria-owns. Doing this first also
+  // avoids the issue that |start_object| may not be included in the tree.
+  AXObject* result = start_object;
+  Node* current_node = start_object->GetNode();
+  while (current_node) {
+    // If we find a node that is inline-block, we want to return it rather than
+    // getting the deepest child for that. This is because these are now always
+    // being included in the tree and the Next/PreviousOnLine could be set on
+    // the inline-block element. We exclude list markers since those technically
+    // fulfill the inline-block condition.
+    AXObject* ax_object = start_object->AXObjectCache().Get(current_node);
+    if (ax_object && ax_object->AccessibilityIsIncludedInTree() &&
+        !current_node->IsMarkerPseudoElement()) {
+      if (ax_object->GetLayoutObject() &&
+          ax_object->GetLayoutObject()->IsInline() &&
+          ax_object->GetLayoutObject()->IsAtomicInlineLevel()) {
+        return ax_object;
+      }
+    }
+
+    current_node = first ? LayoutTreeBuilderTraversal::FirstChild(*current_node)
+                         : LayoutTreeBuilderTraversal::LastChild(*current_node);
+    if (!current_node) {
+      break;
+    }
+
+    AXObject* tentative_child = start_object->AXObjectCache().Get(current_node);
+
+    if (tentative_child && tentative_child->AccessibilityIsIncludedInTree()) {
+      result = tentative_child;
+    }
+  }
+
+  // Have reached the end of LayoutTreeBuilderTraversal. From here on, traverse
+  // AXObjects to get deepest descendant of pseudo element or static text,
+  // such as an AXInlineTextBox.
+
+  // Relevant static text or pseudo element is always included.
+  if (!result->AccessibilityIsIncludedInTree()) {
+    return nullptr;
+  }
+
+  // Already a leaf: return current result.
+  if (!result->ChildCountIncludingIgnored()) {
+    return result;
+  }
+
+  // Get deepest AXObject descendant.
+  return first ? result->DeepestFirstChildIncludingIgnored()
+               : result->DeepestLastChildIncludingIgnored();
+}
+
+AXObject* AXNodeObject::NextOnLine() const {
+  // If this is the last object on the line, nullptr is returned. Otherwise, all
+  // AXLayoutObjects, regardless of role and tree depth, are connected to the
+  // next inline text box on the same line. If there is no inline text box, they
+  // are connected to the next leaf AXObject.
+  DCHECK(!IsDetached());
+
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+    return nullptr;
+  }
+
+  if (layout_object->IsBoxListMarkerIncludingNG()) {
+    // A list marker should be followed by a list item on the same line.
+    // Note that pseudo content is always included in the tree, so
+    // NextSiblingIncludingIgnored() will succeed.
+    if (AccessibilityIsIncludedInTree()) {
+      return GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+          NextSiblingIncludingIgnored(), true);
+    }
+    return nullptr;
+  }
+
+  if (!ShouldUseLayoutNG(*layout_object)) {
+    return nullptr;
+  }
+
+  if (!layout_object->IsInLayoutNGInlineFormattingContext()) {
+    return nullptr;
+  }
+
+  InlineCursor cursor;
+  while (true) {
+    // Try to get cursor for layout_object.
+    cursor.MoveToIncludingCulledInline(*layout_object);
+    if (cursor) {
+      break;
+    }
+
+    // No cursor found: will try getting the cursor from the last layout child.
+    // This can happen on an inline element.
+    LayoutObject* layout_child = layout_object->SlowLastChild();
+    if (!layout_child) {
+      break;
+    }
+
+    layout_object = layout_child;
+  }
+
+  // Found cursor: use it to find next inline leaf.
+  if (cursor) {
+    cursor.MoveToNextInlineLeafOnLine();
+    while (cursor) {
+      LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
+      DCHECK(runner_layout_object);
+      AXObject* result = AXObjectCache().Get(runner_layout_object);
+
+      // We want to continue searching for the next inline leaf if the
+      // current one is inert or aria-hidden.
+      // We don't necessarily want to keep searching in the case of any ignored
+      // node, because we anticipate that there might be scenarios where a
+      // descendant of the ignored node is not ignored and would be returned by
+      // the call to `GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree`
+      bool should_keep_looking =
+          result ? result->IsInert() || result->IsAriaHidden() : false;
+
+      result =
+          GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, true);
+      if (result && !should_keep_looking) {
+        return result;
+      }
+
+      if (!should_keep_looking) {
+        break;
+      }
+      cursor.MoveToNextInlineLeafOnLine();
+    }
+  }
+
+  // We need to ensure that we are at the end of our parent layout object
+  // before attempting to connect to the next AXObject that is on the same
+  // line as its first line.
+  if (layout_object->NextSibling()) {
+    return nullptr;  // Not at end of parent layout object.
+  }
+  // Fallback: Use AX parent's next on line.
+  AXObject* ax_parent = ParentObject();
+  DCHECK(ax_parent);
+  AXObject* ax_result = ax_parent->NextOnLine();
+  if (!ax_result) {
+    return nullptr;
+  }
+
+  if (!AXObjectCache().IsAriaOwned(this) && ax_result->ParentObject() == this) {
+    // NextOnLine() must not point to a child of the current object.
+    // Because inline objects try to return a result from their
+    // parents, using a descendant can cause a previous position to be
+    // reused, which appears as a loop in the nextOnLine data, and
+    // can cause an infinite loop in consumers of the nextOnLine data.
+    return nullptr;
+  }
+
+  return ax_result;
+}
+
+AXObject* AXNodeObject::PreviousOnLine() const {
+  // If this is the first object on the line, nullptr is returned. Otherwise,
+  // all AXLayoutObjects, regardless of role and tree depth, are connected to
+  // the previous inline text box on the same line. If there is no inline text
+  // box, they are connected to the previous leaf AXObject.
+  DCHECK(!IsDetached());
+
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return nullptr;
+  }
+
+  if (!ShouldUseLayoutNG(*layout_object)) {
+    return nullptr;
+  }
+
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+    return nullptr;
+  }
+
+  AXObject* previous_sibling = AccessibilityIsIncludedInTree()
+                                   ? PreviousSiblingIncludingIgnored()
+                                   : nullptr;
+  if (previous_sibling && previous_sibling->GetLayoutObject() &&
+      previous_sibling->GetLayoutObject()->IsLayoutOutsideListMarker()) {
+    // A list item should be preceded by a list marker on the same line.
+    return GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+        previous_sibling, false);
+  }
+
+  if (layout_object->IsBoxListMarkerIncludingNG() ||
+      !layout_object->IsInLayoutNGInlineFormattingContext()) {
+    return nullptr;
+  }
+
+  InlineCursor cursor;
+  while (true) {
+    // Try to get cursor for layout_object.
+    cursor.MoveToIncludingCulledInline(*layout_object);
+    if (cursor) {
+      break;
+    }
+
+    // No cursor found: will try get cursor from first layout child.
+    // This can happen on an inline element.
+    LayoutObject* layout_child = layout_object->SlowFirstChild();
+    if (!layout_child) {
+      break;
+    }
+
+    layout_object = layout_child;
+  }
+
+  // Found cursor: use it to find previous inline leaf.
+  if (cursor) {
+    cursor.MoveToPreviousInlineLeafOnLine();
+    while (cursor) {
+      LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
+      DCHECK(runner_layout_object);
+      AXObject* result = AXObjectCache().Get(runner_layout_object);
+
+      // We want to continue searching for the next inline leaf if the
+      // current one is inert or aria-hidden.
+      // We don't necessarily want to keep searching in the case of any ignored
+      // node, because we anticipate that there might be scenarios where a
+      // descendant of the ignored node is not ignored and would be returned by
+      // the call to `GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree`
+      bool should_keep_looking =
+          result ? result->IsInert() || result->IsAriaHidden() : false;
+
+      result =
+          GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(result, false);
+      if (result && !should_keep_looking) {
+        return result;
+      }
+
+      // We want to continue searching for the previous inline leaf if the
+      // current one is inert.
+      if (!should_keep_looking) {
+        break;
+      }
+      cursor.MoveToPreviousInlineLeafOnLine();
+    }
+  }
+
+  // We need to ensure that we are at the start of our parent layout object
+  // before attempting to connect to the previous AXObject that is on the same
+  // line as its first line.
+  if (layout_object->PreviousSibling()) {
+    return nullptr;  // Not at start of parent layout object.
+  }
+
+  // Fallback: Use AX parent's previous on line.
+  AXObject* ax_parent = ParentObject();
+  DCHECK(ax_parent);
+  AXObject* ax_result = ax_parent->PreviousOnLine();
+  if (!ax_result) {
+    return nullptr;
+  }
+
+  if (!AXObjectCache().IsAriaOwned(this) && ax_result->ParentObject() == this) {
+    // PreviousOnLine() must not point to a child of the current object.
+    // Because inline objects without try to return a result from their
+    // parents, using a descendant can cause a previous position to be
+    // reused, which appears as a loop in the previousOnLine data, and
+    // can cause an infinite loop in consumers of the previousOnLine data.
+    return nullptr;
+  }
+
+  return ax_result;
 }
 
 void AXNodeObject::Trace(Visitor* visitor) const {

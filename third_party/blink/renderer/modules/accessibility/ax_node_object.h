@@ -395,6 +395,18 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Hit testing.
   AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
                                          const gfx::Point&) const;
+
+  // Inline text boxes.
+  //
+  // Get either the first inline block descendant or deepest descendant that
+  // is included in the tree. |start_object| does not have to be included in the
+  // tree. If |first| is true, returns the deepest first descendant. Otherwise,
+  // returns the deepest last descendant.
+  AXObject* GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
+      AXObject* start_object,
+      bool first) const;
+  AXObject* NextOnLine() const override;
+  AXObject* PreviousOnLine() const override;
 #if defined(REDUCE_AX_INLINE_TEXTBOXES)
   bool always_load_inline_text_boxes_ = false;
 #endif

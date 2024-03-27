@@ -62,18 +62,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   void Detach() override;
   bool IsAXLayoutObject() const final;
 
-  // Inline text boxes.
-  //
-  // Get either the first inline block descendant or deepest descendant that
-  // is included in the tree. |start_object| does not have to be included in the
-  // tree. If |first| is true, returns the deepest first descendant. Otherwise,
-  // returns the deepest last descendant.
-  AXObject* GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
-      AXObject* start_object,
-      bool first) const;
-  AXObject* NextOnLine() const override;
-  AXObject* PreviousOnLine() const override;
-
   // AX name calc.
   String TextAlternative(bool recursive,
                          const AXObject* aria_label_or_description_root,
