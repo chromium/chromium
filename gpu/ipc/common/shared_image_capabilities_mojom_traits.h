@@ -59,6 +59,13 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
       const gpu::SharedImageCapabilities& input) {
     return input.texture_target_exception_list;
   }
+
+#if BUILDFLAG(IS_MAC)
+  static bool macos_specific_texture_target(
+      const gpu::SharedImageCapabilities& input) {
+    return input.macos_specific_texture_target;
+  }
+#endif
 };
 
 }  // namespace mojo

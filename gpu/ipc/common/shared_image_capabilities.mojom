@@ -19,4 +19,7 @@ struct SharedImageCapabilities {
   bool shared_image_swap_chain;
 
   array<gfx.mojom.BufferUsageAndFormat> texture_target_exception_list;
+
+  [EnableIf=is_mac]
+  uint32 macos_specific_texture_target;
 };

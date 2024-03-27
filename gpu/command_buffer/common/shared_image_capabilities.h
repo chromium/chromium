@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "build/build_config.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -28,6 +29,9 @@ struct GPU_EXPORT SharedImageCapabilities {
   bool shared_image_swap_chain = false;
 
   std::vector<gfx::BufferUsageAndFormat> texture_target_exception_list;
+#if BUILDFLAG(IS_MAC)
+  uint32_t macos_specific_texture_target;
+#endif
 };
 
 }  // namespace gpu

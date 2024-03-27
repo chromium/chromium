@@ -34,6 +34,10 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     out->texture_target_exception_list.push_back(usage_format);
   }
 
+#if BUILDFLAG(IS_MAC)
+  out->macos_specific_texture_target = data.macos_specific_texture_target();
+#endif
+
   return true;
 }
 
