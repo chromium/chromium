@@ -90,8 +90,10 @@ constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 820.;
 - (void)start {
   [super start];
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  _viewController =
-      [[SearchEngineChoiceViewController alloc] initWithFirstRunMode:_firstRun];
+  ui::DeviceFormFactor deviceFormFactor = ui::GetDeviceFormFactor();
+  _viewController = [[SearchEngineChoiceViewController alloc]
+      initWithFirstRunMode:_firstRun
+           wideMarginWidth:(deviceFormFactor != ui::DEVICE_FORM_FACTOR_PHONE)];
   _viewController.actionDelegate = self;
   _mediator = [[SearchEngineChoiceMediator alloc]
       initWithTemplateURLService:ios::TemplateURLServiceFactory::
@@ -108,7 +110,7 @@ constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 820.;
         search_engines::SearchEngineChoiceScreenEvents::
             kFreChoiceScreenWasDisplayed);
   } else {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    if (deviceFormFactor == ui::DEVICE_FORM_FACTOR_PHONE) {
       AppState* appState = self.browser->GetSceneState().appState;
       _scopedIphonePortraitOnly =
           std::make_unique<ScopedIphonePortraitOnly>(appState);

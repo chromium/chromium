@@ -42,8 +42,9 @@ constexpr CGFloat kTitleSubtitleMargin = 8.;
 constexpr CGFloat kSubtitleSearchEngineStackMargin = 20.;
 // Margin above and below the button.
 constexpr CGFloat kButtonMargin = 16.;
-// Stack view margin for compact vertical size.
-constexpr CGFloat kStackViewMargin = 24.;
+// Width margin (wide or narrow, depending on the desired layout).
+constexpr CGFloat kWidthMarginWide = 54.;
+constexpr CGFloat kWidthMarginNarrow = 24.;
 
 // URL for the "Learn more" link.
 const char* const kLearnMoreURL = "internal://choice-screen-learn-more";
@@ -77,6 +78,8 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   UIScrollView* _scrollView;
   // Whether the choice screen is being displayed for the FRE.
   BOOL _isForFRE;
+  // The horizontal margin.
+  CGFloat _marginWidth;
   // Whether the scroll view reached the bottom at least once.
   BOOL _didReachBottom;
   // Contains the list of search engine buttons.
@@ -89,10 +92,12 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 
 @synthesize searchEngines = _searchEngines;
 
-- (instancetype)initWithFirstRunMode:(BOOL)isForFRE {
+- (instancetype)initWithFirstRunMode:(BOOL)isForFRE
+                     wideMarginWidth:(BOOL)wideMarginWidth {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _isForFRE = isForFRE;
+    _marginWidth = wideMarginWidth ? kWidthMarginWide : kWidthMarginNarrow;
   }
   return self;
 }
@@ -261,13 +266,13 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
                        constant:kSubtitleSearchEngineStackMargin],
     [_searchEngineStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:scrollContentView.bottomAnchor
-                                 constant:-kStackViewMargin],
+                                 constant:-_marginWidth],
     [_searchEngineStackView.leadingAnchor
         constraintEqualToAnchor:scrollContentView.leadingAnchor
-                       constant:kStackViewMargin],
+                       constant:_marginWidth],
     [_searchEngineStackView.trailingAnchor
         constraintEqualToAnchor:scrollContentView.trailingAnchor
-                       constant:-kStackViewMargin],
+                       constant:-_marginWidth],
     [_searchEngineStackView.centerXAnchor
         constraintEqualToAnchor:scrollContentView.centerXAnchor],
 
