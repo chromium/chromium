@@ -129,14 +129,19 @@ export class NetworkRequest {
   }
 
   get url(): string {
-    return (
+    const fragment =
+      this.#request.info?.request.urlFragment ??
+      this.#request.paused?.request.urlFragment ??
+      '';
+    const url =
       this.#response.info?.url ??
       this.#response.paused?.request.url ??
       this.#request.auth?.request.url ??
       this.#request.info?.request.url ??
       this.#request.paused?.request.url ??
-      NetworkRequest.unknownParameter
-    );
+      NetworkRequest.unknownParameter;
+
+    return `${url}${fragment}`;
   }
 
   get method(): string {

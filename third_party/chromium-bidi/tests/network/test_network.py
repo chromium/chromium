@@ -70,6 +70,52 @@ async def test_network_before_request_sent_event_emitted(
 
 
 @pytest.mark.asyncio
+async def test_network_before_request_sent_event_emitted_with_url_fragment(
+        websocket, context_id, base_url):
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
+
+    url_fragment = "#test"
+    url = f"{base_url}{url_fragment}"
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+
+    assert resp == {
+        'type': 'event',
+        "method": "network.beforeRequestSent",
+        "params": {
+            "isBlocked": False,
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": url,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": ANY_NUMBER,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "initiator": {
+                "type": "other"
+            },
+            "timestamp": ANY_TIMESTAMP
+        }
+    }
+
+
+@pytest.mark.asyncio
 async def test_network_global_subscription_enabled_in_new_context(
         websocket, create_context, base_url):
     await subscribe(websocket, ["network.beforeRequestSent"])
