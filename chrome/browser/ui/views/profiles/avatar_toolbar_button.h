@@ -56,6 +56,7 @@ class AvatarToolbarButton : public ToolbarButton {
   ~AvatarToolbarButton() override;
 
   void UpdateText();
+  void UpdateIconWithoutObservers();
 
   // Expands the pill to show the intercept text.
   // Returns a callback to be used when the shown text should be hidden.
