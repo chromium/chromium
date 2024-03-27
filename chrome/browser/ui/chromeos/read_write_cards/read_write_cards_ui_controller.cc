@@ -144,10 +144,23 @@ void ReadWriteCardsUiController::UpdateWidgetBounds() {
   int x = context_menu_bounds_.x();
   int y =
       context_menu_bounds_.y() - widget_height - kQuickAnswersAndMahiSpacing;
-  if (y < display::Screen::GetScreen()
-              ->GetDisplayMatching(context_menu_bounds_)
-              .work_area()
-              .y()) {
+
+  // Include the extra reserved height in our decision to place the widget
+  // above or below the context menu, since we should reserve space at the top
+  // to avoid running out of space when a view re-layout. We will use the
+  // view's `GetMaximumSize()` to calculate this reserved height.
+  int extra_reserved_height = 0;
+  if (quick_answers_view_ && !quick_answers_view_->GetMaximumSize().IsZero()) {
+    CHECK_GE(quick_answers_view_->GetMaximumSize().height(),
+             quick_answers_view_->size().height());
+    extra_reserved_height = quick_answers_view_->GetMaximumSize().height() -
+                            quick_answers_view_->size().height();
+  }
+
+  if (y - extra_reserved_height < display::Screen::GetScreen()
+                                      ->GetDisplayMatching(context_menu_bounds_)
+                                      .work_area()
+                                      .y()) {
     y = context_menu_bounds_.bottom() + kQuickAnswersAndMahiSpacing;
   }
 
@@ -160,6 +173,14 @@ void ReadWriteCardsUiController::UpdateWidgetBounds() {
 #endif
 
   widget_->SetBounds(bounds);
+}
+
+void ReadWriteCardsUiController::MaybeUpdateWidgetBounds() {
+  if (!widget_) {
+    return;
+  }
+
+  UpdateWidgetBounds();
 }
 
 void ReadWriteCardsUiController::SetContextMenuBounds(

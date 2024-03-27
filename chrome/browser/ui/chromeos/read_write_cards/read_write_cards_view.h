@@ -11,6 +11,8 @@
 
 namespace chromeos {
 
+class ReadWriteCardsUiController;
+
 // View that is placed within the widget controlled by
 // `ReadWriteCardsUiController`, which will be placed above or below the context
 // menu.
@@ -18,7 +20,8 @@ class ReadWriteCardsView : public views::View {
   METADATA_HEADER(ReadWriteCardsView, views::View)
 
  public:
-  ReadWriteCardsView();
+  explicit ReadWriteCardsView(
+      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
 
   ReadWriteCardsView(const ReadWriteCardsView&) = delete;
   ReadWriteCardsView& operator=(const ReadWriteCardsView&) = delete;
@@ -31,12 +34,18 @@ class ReadWriteCardsView : public views::View {
   // Updates bounds according to the new bounds of context menu.
   virtual void UpdateBounds() = 0;
 
+  // views::View:
+  void PreferredSizeChanged() override;
+  void ChildPreferredSizeChanged(views::View* child) override;
+
   const gfx::Rect& context_menu_bounds() const { return context_menu_bounds_; }
 
  private:
   // The bounds of the context menu, used by the view to define bounds and
   // layout.
   gfx::Rect context_menu_bounds_;
+
+  chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller_;
 };
 
 }  // namespace chromeos

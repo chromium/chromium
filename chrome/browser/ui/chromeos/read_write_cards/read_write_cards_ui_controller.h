@@ -54,6 +54,7 @@ class ReadWriteCardsUiController : public views::ViewObserver {
 
   // Updates widget bounds.
   void UpdateWidgetBounds();
+  void MaybeUpdateWidgetBounds();
 
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
 

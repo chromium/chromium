@@ -38,7 +38,6 @@ source_set("quick_answers") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/chromeos/read_write_cards",
-    "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_view",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views/editor_menu",
     "//chrome/browser/ui/views/editor_menu:utils",

@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
@@ -28,6 +30,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -63,9 +66,6 @@ using quick_answers::ResultType;
 using views::Button;
 using views::Label;
 using views::View;
-
-// Spacing between this view and the anchor view.
-constexpr int kMarginDip = 10;
 
 constexpr auto kMainViewInsets = gfx::Insets::VH(4, 0);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(8, 0, 8, 16);
@@ -265,7 +265,8 @@ QuickAnswersView::QuickAnswersView(
     const std::string& title,
     bool is_internal,
     base::WeakPtr<QuickAnswersUiController> controller)
-    : anchor_view_bounds_(anchor_view_bounds),
+    : chromeos::ReadWriteCardsView(controller->GetReadWriteCardsUiController()),
+      anchor_view_bounds_(anchor_view_bounds),
       controller_(std::move(controller)),
       title_(title),
       is_internal_(is_internal),
@@ -283,43 +284,6 @@ QuickAnswersView::QuickAnswersView(
 }
 
 QuickAnswersView::~QuickAnswersView() = default;
-
-views::UniqueWidgetPtr QuickAnswersView::CreateWidget(
-    const gfx::Rect& anchor_view_bounds,
-    const std::string& title,
-    bool is_internal,
-    base::WeakPtr<QuickAnswersUiController> controller) {
-  views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.shadow_elevation = 2;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-
-  // Parent the widget to the owner of the menu.
-  auto* active_menu_controller = views::MenuController::GetActiveInstance();
-  DCHECK(active_menu_controller && active_menu_controller->owner());
-
-  // This widget has to be a child of menu owner's widget to make keyboard focus
-  // work.
-  params.parent = active_menu_controller->owner()->GetNativeView();
-  params.child = true;
-  params.name = kWidgetName;
-
-  views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
-  QuickAnswersView* quick_answers_view =
-      widget->SetContentsView(std::make_unique<QuickAnswersView>(
-          anchor_view_bounds, title, is_internal, controller));
-  quick_answers_view->UpdateBounds();
-
-  // Allow tooltips to be shown despite menu-controller owning capture.
-  widget->SetNativeWindowProperty(
-      views::TooltipManager::kGroupingPropertyKey,
-      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
-
-  return widget;
-}
 
 void QuickAnswersView::RequestFocus() {
   // When the Quick Answers view is focused, we actually want `main_view_`
@@ -388,26 +352,33 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
+gfx::Size QuickAnswersView::GetMaximumSize() const {
+  // The maximum height will be used in calculating the position of the widget
+  // in `ReadWriteCardsUiController`. We need to reserve space at
+  // the top since the view might expand for two-line answers.
+  // Note that the width will not be used in the calculation.
+  return gfx::Size(0, MaximumViewHeight());
+}
+
+void QuickAnswersView::UpdateBounds() {
+  // Multi-line labels need to be resized to be compatible with bounds width.
+  if (first_answer_label_) {
+    first_answer_label_->SizeToFit(GetLabelWidth(/*is_title=*/false));
+  }
+}
+
 void QuickAnswersView::SendQuickAnswersQuery() {
   if (controller_) {
     controller_->OnQuickAnswersViewPressed();
   }
 }
 
-void QuickAnswersView::UpdateAnchorViewBounds(
-    const gfx::Rect& anchor_view_bounds) {
-  anchor_view_bounds_ = anchor_view_bounds;
-  UpdateBounds();
-}
-
 void QuickAnswersView::UpdateView(const gfx::Rect& anchor_view_bounds,
                                   const QuickAnswer& quick_answer) {
   has_second_row_answer_ = !quick_answer.second_answer_row.empty();
-  anchor_view_bounds_ = anchor_view_bounds;
   retry_label_ = nullptr;
 
   UpdateQuickAnswerResult(quick_answer);
-  UpdateBounds();
 }
 
 void QuickAnswersView::ShowRetryView() {
@@ -650,36 +621,6 @@ int QuickAnswersView::GetLabelWidth(bool is_title) {
 void QuickAnswersView::ResetContentView() {
   content_view_->RemoveAllChildViews();
   first_answer_label_ = nullptr;
-}
-
-void QuickAnswersView::UpdateBounds() {
-  // Multi-line labels need to be resized to be compatible with bounds width.
-  if (first_answer_label_) {
-    first_answer_label_->SizeToFit(GetLabelWidth(/*is_title=*/false));
-  }
-
-  int height = GetHeightForWidth(GetBoundsWidth());
-  int y = anchor_view_bounds_.y() - kMarginDip - height;
-
-  // Reserve space at the top since the view might expand for two-line answers.
-  int y_min = anchor_view_bounds_.y() - kMarginDip - MaximumViewHeight();
-  if (y_min < display::Screen::GetScreen()
-                  ->GetDisplayMatching(anchor_view_bounds_)
-                  .work_area()
-                  .y()) {
-    // The Quick Answers view will be off screen if showing above the anchor.
-    // Show below the anchor instead.
-    y = anchor_view_bounds_.bottom() + kMarginDip;
-  }
-
-  gfx::Rect bounds = {{anchor_view_bounds_.x(), y}, {GetBoundsWidth(), height}};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the top-level window and the
-  // position will be calculated on server side.
-  wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
-#endif
-  GetWidget()->SetBounds(bounds);
 }
 
 void QuickAnswersView::UpdateQuickAnswerResult(

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
+#include <memory>
+
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "ui/views/controls/menu/menu_controller.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
 
@@ -29,50 +32,50 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     ChromeQuickAnswersTestBase::SetUp();
 
     anchor_bounds_ = kDefaultAnchorBoundsInScreen;
+    GetUiController()->GetReadWriteCardsUiController().SetContextMenuBounds(
+        anchor_bounds_);
   }
 
-  void TearDown() override {
-    quick_answers_widget_.reset();
-
-    ChromeQuickAnswersTestBase::TearDown();
-  }
+  void TearDown() override { ChromeQuickAnswersTestBase::TearDown(); }
 
   // Currently instantiated QuickAnswersView instance.
-  quick_answers::QuickAnswersView* view() {
-    return static_cast<quick_answers::QuickAnswersView*>(
-        quick_answers_widget_->GetContentsView());
+  views::View* GetQuickAnswersView() {
+    return GetUiController()->quick_answers_view();
   }
 
   // Needed to poll the current bounds of the mock anchor.
   const gfx::Rect& GetAnchorBounds() { return anchor_bounds_; }
 
-  // Create a QuickAnswersView instance with custom anchor-bounds and
-  // title-text.
-  void CreateQuickAnswersView(const gfx::Rect anchor_bounds,
-                              const char* title) {
-    // Reset existing view widget if any.
-    quick_answers_widget_.reset();
+  QuickAnswersUiController* GetUiController() {
+    return static_cast<QuickAnswersControllerImpl*>(
+               QuickAnswersController::Get())
+        ->quick_answers_ui_controller();
+  }
 
+  // Create a QuickAnswersView instance with custom anchor-bounds.
+  void CreateQuickAnswersView(const gfx::Rect anchor_bounds) {
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
 
     anchor_bounds_ = anchor_bounds;
+    GetUiController()->GetReadWriteCardsUiController().SetContextMenuBounds(
+        anchor_bounds_);
 
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
-    quick_answers_widget_ = quick_answers::QuickAnswersView::CreateWidget(
-        anchor_bounds_, title, /*is_internal=*/false, /*controller=*/nullptr);
-    quick_answers_widget_->ShowInactive();
+    GetUiController()->CreateQuickAnswersView(GetProfile(), anchor_bounds_,
+                                              "title", "query",
+                                              /*is_internal=*/false);
   }
 
  private:
-  views::UniqueWidgetPtr quick_answers_widget_;
+  chromeos::ReadWriteCardsUiController controller_;
   gfx::Rect anchor_bounds_;
 };
 
 TEST_F(QuickAnswersViewsTest, DefaultLayoutAroundAnchor) {
   gfx::Rect anchor_bounds = GetAnchorBounds();
-  CreateQuickAnswersView(anchor_bounds, "default_title");
-  gfx::Rect view_bounds = view()->GetBoundsInScreen();
+  CreateQuickAnswersView(anchor_bounds);
+  gfx::Rect view_bounds = GetQuickAnswersView()->GetBoundsInScreen();
 
   // Vertically aligned with anchor.
   EXPECT_EQ(view_bounds.x(), anchor_bounds.x());
@@ -88,22 +91,22 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
   // space above it to show the QuickAnswersView.
   anchor_bounds.set_y(kSmallTop);
 
-  CreateQuickAnswersView(anchor_bounds, "title");
-  gfx::Rect view_bounds = view()->GetBoundsInScreen();
+  CreateQuickAnswersView(anchor_bounds);
+  gfx::Rect view_bounds = GetQuickAnswersView()->GetBoundsInScreen();
 
   // Anchor is positioned above the view.
   EXPECT_EQ(anchor_bounds.bottom() + kMarginDip, view_bounds.y());
 }
 
 TEST_F(QuickAnswersViewsTest, FocusProperties) {
-  CreateQuickAnswersView(GetAnchorBounds(), "title");
+  CreateQuickAnswersView(GetAnchorBounds());
   CHECK(views::MenuController::GetActiveInstance() &&
         views::MenuController::GetActiveInstance()->owner());
 
   // Gains focus only upon request, if an owned menu was active when the view
   // was created.
   CHECK(views::MenuController::GetActiveInstance() != nullptr);
-  EXPECT_FALSE(view()->HasFocus());
-  view()->RequestFocus();
-  EXPECT_TRUE(view()->HasFocus());
+  EXPECT_FALSE(GetQuickAnswersView()->HasFocus());
+  GetQuickAnswersView()->RequestFocus();
+  EXPECT_TRUE(GetQuickAnswersView()->HasFocus());
 }

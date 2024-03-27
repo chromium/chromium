@@ -95,17 +95,18 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
   DCHECK(!IsShowingUserConsentView());
   SetActiveQuery(profile, query);
 
-  // Owned by view hierarchy.
-  quick_answers_widget_ = quick_answers::QuickAnswersView::CreateWidget(
-      bounds, title, is_internal, weak_factory_.GetWeakPtr());
-  quick_answers_widget_->ShowInactive();
+  auto* view = GetReadWriteCardsUiController().SetQuickAnswersView(
+      std::make_unique<quick_answers::QuickAnswersView>(
+          bounds, title, is_internal,
+          /*controller=*/weak_factory_.GetWeakPtr()));
+  quick_answers_view_.SetView(view);
 }
 
 void QuickAnswersUiController::CreateRichAnswersView() {
   CHECK(controller_->quick_answer());
 
   views::UniqueWidgetPtr widget = quick_answers::RichAnswersView::CreateWidget(
-      quick_answers_view()->GetAnchorViewBounds(), weak_factory_.GetWeakPtr(),
+      controller_->anchor_bounds(), weak_factory_.GetWeakPtr(),
       *controller_->quick_answer(), *controller_->structured_result());
 
   if (!widget) {
@@ -144,8 +145,9 @@ void QuickAnswersUiController::OnGoogleSearchLabelPressed() {
 }
 
 bool QuickAnswersUiController::CloseQuickAnswersView() {
-  if (IsShowingQuickAnswersView()) {
-    quick_answers_widget_->Close();
+  if (controller_->GetQuickAnswersVisibility() ==
+      QuickAnswersVisibility::kQuickAnswersVisible) {
+    GetReadWriteCardsUiController().RemoveQuickAnswersView();
     return true;
   }
   return false;
@@ -187,12 +189,6 @@ void QuickAnswersUiController::ShowRetry() {
   quick_answers_view()->ShowRetryView();
 }
 
-void QuickAnswersUiController::UpdateQuickAnswersBounds(
-    const gfx::Rect& anchor_bounds) {
-  if (IsShowingQuickAnswersView())
-    quick_answers_view()->UpdateAnchorViewBounds(anchor_bounds);
-}
-
 void QuickAnswersUiController::CreateUserConsentView(
     const gfx::Rect& anchor_bounds,
     const std::u16string& intent_type,
@@ -200,9 +196,7 @@ void QuickAnswersUiController::CreateUserConsentView(
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
-  auto& read_write_cards_ui_controller =
-      controller_->read_write_cards_ui_controller();
-  auto* view = read_write_cards_ui_controller.SetQuickAnswersView(
+  auto* view = GetReadWriteCardsUiController().SetQuickAnswersView(
       std::make_unique<quick_answers::UserConsentView>(
           anchor_bounds, intent_type, intent_text, weak_factory_.GetWeakPtr()));
   user_consent_view_.SetView(view);
@@ -211,7 +205,7 @@ void QuickAnswersUiController::CreateUserConsentView(
 void QuickAnswersUiController::CloseUserConsentView() {
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kUserConsentVisible);
-  controller_->read_write_cards_ui_controller().RemoveQuickAnswersView();
+  GetReadWriteCardsUiController().RemoveQuickAnswersView();
 }
 
 void QuickAnswersUiController::OnSettingsButtonPressed() {
@@ -271,11 +265,21 @@ bool QuickAnswersUiController::IsShowingUserConsentView() const {
 }
 
 bool QuickAnswersUiController::IsShowingQuickAnswersView() const {
-  return quick_answers_widget_ && !quick_answers_widget_->IsClosed() &&
-         quick_answers_widget_->GetContentsView();
+  if (quick_answers_view_) {
+    CHECK_EQ(controller_->GetQuickAnswersVisibility(),
+             QuickAnswersVisibility::kQuickAnswersVisible);
+    return true;
+  }
+
+  return false;
 }
 
 bool QuickAnswersUiController::IsShowingRichAnswersView() const {
   return rich_answers_widget_ && !rich_answers_widget_->IsClosed() &&
          rich_answers_widget_->GetContentsView();
+}
+
+chromeos::ReadWriteCardsUiController&
+QuickAnswersUiController::GetReadWriteCardsUiController() const {
+  return controller_->read_write_cards_ui_controller();
 }

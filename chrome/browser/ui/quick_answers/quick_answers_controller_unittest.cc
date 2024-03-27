@@ -212,7 +212,8 @@ TEST_F(QuickAnswersControllerTest,
   AcceptConsent();
   ShowView();
 
-  controller()->OnAnchorBoundsChanged(BoundsWithXPosition(123));
+  controller()->read_write_cards_ui_controller().SetContextMenuBounds(
+      BoundsWithXPosition(123));
 
   // We only check the 'x' position as that is guaranteed to be identical
   // between the view and the menu.

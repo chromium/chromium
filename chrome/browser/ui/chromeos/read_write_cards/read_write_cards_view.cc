@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view.h"
 
 namespace chromeos {
 
-ReadWriteCardsView::ReadWriteCardsView() = default;
+ReadWriteCardsView::ReadWriteCardsView(
+    chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
+    : read_write_cards_ui_controller_(read_write_cards_ui_controller) {}
 
 ReadWriteCardsView::~ReadWriteCardsView() = default;
 
@@ -21,6 +25,15 @@ void ReadWriteCardsView::SetContextMenuBounds(
 
   context_menu_bounds_ = context_menu_bounds;
   UpdateBounds();
+}
+
+void ReadWriteCardsView::PreferredSizeChanged() {
+  views::View::PreferredSizeChanged();
+  read_write_cards_ui_controller_.MaybeUpdateWidgetBounds();
+}
+
+void ReadWriteCardsView::ChildPreferredSizeChanged(views::View* child) {
+  read_write_cards_ui_controller_.MaybeUpdateWidgetBounds();
 }
 
 BEGIN_METADATA(ReadWriteCardsView)

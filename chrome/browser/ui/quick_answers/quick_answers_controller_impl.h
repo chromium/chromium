@@ -91,6 +91,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   base::WeakPtr<QuickAnswersControllerImpl> GetWeakPtr();
 
+  const gfx::Rect& anchor_bounds() { return anchor_bounds_; }
+
  private:
   friend class QuickAnswersUiControllerTest;
 

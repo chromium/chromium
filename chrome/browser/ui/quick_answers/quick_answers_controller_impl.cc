@@ -144,7 +144,6 @@ void QuickAnswersControllerImpl::OnTextAvailable(
 void QuickAnswersControllerImpl::OnAnchorBoundsChanged(
     const gfx::Rect& anchor_bounds) {
   anchor_bounds_ = anchor_bounds;
-  quick_answers_ui_controller_->UpdateQuickAnswersBounds(anchor_bounds);
 }
 
 void QuickAnswersControllerImpl::OnDismiss(bool is_other_command_executed) {

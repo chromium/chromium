@@ -9,9 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -38,12 +40,10 @@ struct PhoneticsInfo;
 class QuickAnswersPreTargetHandler;
 
 // A bubble style view to show QuickAnswer.
-class QuickAnswersView : public views::View {
-  METADATA_HEADER(QuickAnswersView, views::View)
+class QuickAnswersView : public chromeos::ReadWriteCardsView {
+  METADATA_HEADER(QuickAnswersView, chromeos::ReadWriteCardsView)
 
  public:
-  static constexpr char kWidgetName[] = "QuickAnswersViewWidget";
-
   QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                    const std::string& title,
                    bool is_internal,
@@ -54,19 +54,15 @@ class QuickAnswersView : public views::View {
 
   ~QuickAnswersView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds,
-      const std::string& title,
-      bool is_internal,
-      base::WeakPtr<QuickAnswersUiController> controller);
-
-  // views::View:
+  // chromeos::ReadWriteCardsView:
   void RequestFocus() override;
   bool HasFocus() const override;
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size GetMaximumSize() const override;
+  void UpdateBounds() override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
@@ -99,7 +95,6 @@ class QuickAnswersView : public views::View {
   int GetBoundsWidth();
   int GetLabelWidth(bool is_title);
   void ResetContentView();
-  void UpdateBounds();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.

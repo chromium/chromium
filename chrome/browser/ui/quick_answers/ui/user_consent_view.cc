@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -124,7 +125,8 @@ UserConsentView::UserConsentView(
     const std::u16string& intent_type,
     const std::u16string& intent_text,
     base::WeakPtr<QuickAnswersUiController> controller)
-    : event_handler_(this),
+    : chromeos::ReadWriteCardsView(controller->GetReadWriteCardsUiController()),
+      event_handler_(this),
       controller_(std::move(controller)),
       focus_search_(this,
                     base::BindRepeating(&UserConsentView::GetFocusableViews,

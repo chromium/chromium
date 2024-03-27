@@ -302,7 +302,8 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
   // Trigger the Quick Answers widget and wait until it appears.
   views::Widget* ShowQuickAnswersWidget() {
     views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
-        views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
+        views::test::AnyWidgetTestPasskey(),
+        chromeos::ReadWriteCardsUiController::kWidgetName);
 
     ShowMenuParams params;
     params.selected_text = kTestQuery;
@@ -320,6 +321,12 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
     return static_cast<QuickAnswersControllerImpl*>(controller())
         ->quick_answers_ui_controller()
         ->user_consent_view();
+  }
+
+  QuickAnswersView* GetQuickAnswersView() {
+    return static_cast<QuickAnswersControllerImpl*>(controller())
+        ->quick_answers_ui_controller()
+        ->quick_answers_view();
   }
 };
 
@@ -560,13 +567,10 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
 
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the definition result type.
-  quick_answers::QuickAnswersView* quick_answers_view =
-      static_cast<quick_answers::QuickAnswersView*>(
-          quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerDictionaryIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
+  EXPECT_TRUE(GetQuickAnswersView()->GetIconImageModelForTesting() ==
               expected_image_model);
 
   views::Widget* rich_answers_view_widget =
@@ -595,13 +599,10 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
 
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the translation result type.
-  quick_answers::QuickAnswersView* quick_answers_view =
-      static_cast<quick_answers::QuickAnswersView*>(
-          quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerTranslationIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
+  EXPECT_TRUE(GetQuickAnswersView()->GetIconImageModelForTesting() ==
               expected_image_model);
 
   views::Widget* rich_answers_view_widget =
@@ -630,13 +631,10 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
 
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the unit conversion result type.
-  quick_answers::QuickAnswersView* quick_answers_view =
-      static_cast<quick_answers::QuickAnswersView*>(
-          quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerCalculatorIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(quick_answers_view->GetIconImageModelForTesting() ==
+  EXPECT_TRUE(GetQuickAnswersView()->GetIconImageModelForTesting() ==
               expected_image_model);
 
   views::Widget* rich_answers_view_widget =
