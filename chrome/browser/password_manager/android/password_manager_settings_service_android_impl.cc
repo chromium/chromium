@@ -9,7 +9,6 @@
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -155,6 +154,18 @@ void RecordMigrationResult(bool result) {
       "PasswordManager.PasswordSettingsMigrationSucceeded", result);
 }
 
+void MarkSettingsMigrationAsSuccessfulIfNothingToMigrate(PrefService* prefs) {
+  if (GetRegularPrefFromSetting(prefs, PasswordManagerSetting::kAutoSignIn)
+          ->IsDefaultValue() &&
+      GetRegularPrefFromSetting(prefs,
+                                PasswordManagerSetting::kOfferToSavePasswords)
+          ->IsDefaultValue()) {
+    RecordMigrationResult(true);
+    prefs->SetBoolean(password_manager::prefs::kSettingsMigratedToUPMLocal,
+                      true);
+  }
+}
+
 }  // namespace
 
 PasswordManagerSettingsServiceAndroidImpl::
@@ -210,6 +221,14 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
   }
 
   if (regular_pref->IsManaged() || regular_pref->IsManagedByCustodian()) {
+    return regular_pref->GetValue()->GetBool();
+  }
+
+  // Until the settings migration finished successfully, Chrome's setting value
+  // will be returned.
+  if (!is_password_sync_enabled_ &&
+      !pref_service_->GetBoolean(
+          password_manager::prefs::kSettingsMigratedToUPMLocal)) {
     return regular_pref->GetValue()->GetBool();
   }
 
@@ -277,6 +296,7 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
                               OnUnenrollmentPreferenceChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
+  MarkSettingsMigrationAsSuccessfulIfNothingToMigrate(pref_service_);
   start_migration_callback_ =
       base::BarrierCallback<PasswordManagerSettingGmsAccessResult>(
           2,
