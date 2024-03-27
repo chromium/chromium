@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.16](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.15...chromium-bidi-v0.5.16) (2024-03-27)
+
+
+### Features
+
+* support body in `network.continueRequest` ([#2075](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2075)) ([d0c4955](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d0c4955f2d5564c5f8da8db0bdf2fff5b515906d))
+
+
+### Bug Fixes
+
+* add fragment to url ([#2079](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2079)) ([d416b6c](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d416b6c86011147121f5adea7e447bcd14d8b662))
+* do not expect init or commit to arrive ([#2080](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2080)) ([d37d406](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d37d4065b8f7b6778a6a1ab40f82f0a3cb0c5907))
+* don't block data url events when interception is enabled ([#2081](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2081)) ([1350b3b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/1350b3b316b519836efe727ce20ee0e57422b1bd))
+* emit `network.beforeRequestSent` event for data urls ([#2073](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2073)) ([5162b0a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/5162b0ab1e214e8e53763765cd1c43673cdb7997))
+
 ## [0.5.15](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.14...chromium-bidi-v0.5.15) (2024-03-25)
 
 
