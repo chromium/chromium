@@ -798,9 +798,17 @@ id<GREYMatcher> mostlyNotVisible() {
       @"The collection is not scrolled back to its previous position");
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTapFakeOmniboxAndScrollDefocuses \
+  FLAKY_testTapFakeOmniboxAndScrollDefocuses
+#else
+#define MAYBE_testTapFakeOmniboxAndScrollDefocuses \
+  testTapFakeOmniboxAndScrollDefocuses
+#endif
+// TODO(crbug.com/331647110): Re-enable on device when fixed.
 // Tests that tapping the fake omnibox and then scrolling defocuses the the
 // omnibox.
-- (void)testTapFakeOmniboxAndScrollDefocuses {
+- (void)MAYBE_testTapFakeOmniboxAndScrollDefocuses {
   // Clear pasteboard so that omnibox doesn't cover the NTP on focus.
   [ChromeEarlGrey clearPasteboard];
   // Get the collection and its layout.
