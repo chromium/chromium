@@ -8,11 +8,13 @@
 
 /* Undo unwanted styles from select rules */
 select > button,
-select > datalist {
+select > datalist,
+select::select-fallback-datalist {
   white-space: normal;
 }
 
-select > datalist {
+select > datalist,
+select::select-fallback-datalist {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
@@ -39,19 +41,19 @@ select > datalist {
 /* TODO(crbug.com/40279608): Use automatic fallbacks */
 
 /* Fallbacks without vertical scrolling */
-@position-try -internal-select-datalist-reverse-block {
+@position-try -internal-select-fallback-datalist-reverse-block {
   inset: auto;
   /* Reverse block axis */
   inset-block-end: anchor(self-start);
   inset-inline-start: anchor(self-start);
 }
-@position-try -internal-select-datalist-reverse-inline {
+@position-try -internal-select-fallback-datalist-reverse-inline {
   inset: auto;
   /* Reverse inline axis */
   inset-block-start: anchor(self-end);
   inset-inline-end: anchor(self-end);
 }
-@position-try -internal-select-datalist-reverse-both {
+@position-try -internal-select-fallback-datalist-reverse-both {
   inset: auto;
   /* Reverse both axes */
   inset-block-end: anchor(self-start);
@@ -59,27 +61,27 @@ select > datalist {
 }
 
 /* Fallbacks with vertical scrolling */
-@position-try -internal-select-datalist-default-fill {
+@position-try -internal-select-fallback-datalist-default-fill {
   inset: auto;
   inset-block-start: anchor(self-end);
   inset-inline-start: anchor(self-start);
   block-size: -webkit-fill-available;
 }
-@position-try -internal-select-datalist-reverse-block-fill {
+@position-try -internal-select-fallback-datalist-reverse-block-fill {
   inset: auto;
   /* Reverse block axis */
   inset-block-end: anchor(self-start);
   inset-inline-start: anchor(self-start);
   block-size: -webkit-fill-available;
 }
-@position-try -internal-select-datalist-reverse-inline-fill {
+@position-try -internal-select-fallback-datalist-reverse-inline-fill {
   inset: auto;
   /* Reverse inline axis */
   inset-block-start: anchor(self-end);
   inset-inline-end: anchor(self-end);
   block-size: -webkit-fill-available;
 }
-@position-try -internal-select-datalist-reverse-both-fill {
+@position-try -internal-select-fallback-datalist-reverse-both-fill {
   inset: auto;
   /* Reverse both axes */
   inset-block-end: anchor(self-start);
@@ -89,19 +91,23 @@ select > datalist {
 
 /* This is a copy of the [popover] styles. It may be combined after
  * removing the StylableSelect flag. */
-select > datalist {
+select > datalist,
+select::select-fallback-datalist {
   position: fixed;
   width: fit-content;
   height: fit-content;
   color: CanvasText;
 }
-select > datalist:popover-open {
+select > datalist:popover-open,
+select::select-fallback-datalist:popover-open {
   overlay: auto !important;
   /* This display:block is not part of the [popover] styles and needs to stay
    * here even if we deduplicate it from other [popover] styles. */
   display: block;
 }
-select > datalist:-internal-popover-in-top-layer::backdrop {
+/* TODO make sure that this selector works despite nested pseudo-elements */
+select > datalist:-internal-popover-in-top-layer::backdrop,
+select::select-fallback-datalist:-internal-popover-in-top-layer::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
   inset: 0;

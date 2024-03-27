@@ -368,7 +368,7 @@ HTMLFormControlElement::popoverTargetElement() {
   if (!target_element && RuntimeEnabledFeatures::StylableSelectEnabled()) {
     if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
       if (auto* select = button->OwnerSelect()) {
-        if (auto* datalist = select->FirstChildDatalist()) {
+        if (HTMLDataListElement* datalist = select->DisplayedDatalist()) {
           target_element = datalist;
         }
       }

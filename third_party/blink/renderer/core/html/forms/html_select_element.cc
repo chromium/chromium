@@ -1563,6 +1563,10 @@ HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
   return select_type_->SlottedButton();
 }
 
+HTMLDataListElement* HTMLSelectElement::DisplayedDatalist() const {
+  return select_type_->DisplayedDatalist();
+}
+
 HTMLDataListElement* HTMLSelectElement::FirstChildDatalist() const {
   return first_child_datalist_;
 }

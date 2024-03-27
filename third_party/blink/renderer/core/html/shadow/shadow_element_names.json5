@@ -93,6 +93,10 @@
       name: "select-datalist",
       Symbol: "kSelectDatalist",
     },
+    {
+      name: "select-fallback-datalist",
+      Symbol: "kSelectFallbackDatalist",
+    },
 
     //
     // Pseudo names for UA shadow elements.

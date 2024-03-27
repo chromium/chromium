@@ -75,6 +75,10 @@ Input before setting suggested values:
 |         type="popover"
 |     <slot>
 |       id="select-datalist"
+|       <datalist>
+|         pseudo="select-fallback-datalist"
+|         shadow:pseudoId="select-fallback-datalist"
+|         <slot>
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -174,6 +178,10 @@ Input after setting suggestedValue:
 |         "TX"
 |     <slot>
 |       id="select-datalist"
+|       <datalist>
+|         pseudo="select-fallback-datalist"
+|         shadow:pseudoId="select-fallback-datalist"
+|         <slot>
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -270,6 +278,10 @@ After resetting suggestedValue value:
 |         type="popover"
 |     <slot>
 |       id="select-datalist"
+|       <datalist>
+|         pseudo="select-fallback-datalist"
+|         shadow:pseudoId="select-fallback-datalist"
+|         <slot>
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

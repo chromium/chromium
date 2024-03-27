@@ -404,6 +404,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRightPage:
     case kPseudoRoot:
     case kPseudoScope:
+    case kPseudoSelectDatalist:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
     case kPseudoSlotted:
@@ -552,6 +553,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"right", CSSSelector::kPseudoRightPage},
     {"root", CSSSelector::kPseudoRoot},
     {"scope", CSSSelector::kPseudoScope},
+    {"select-fallback-datalist", CSSSelector::kPseudoSelectDatalist},
     {"selection", CSSSelector::kPseudoSelection},
     {"single-button", CSSSelector::kPseudoSingleButton},
     {"spelling-error", CSSSelector::kPseudoSpellingError},
@@ -666,6 +668,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if (match->type == CSSSelector::kPseudoSelectDatalist &&
+      !RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
@@ -753,6 +760,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollbarThumb:
     case kPseudoScrollbarTrack:
     case kPseudoScrollbarTrackPiece:
+    case kPseudoSelectDatalist:
     case kPseudoSelection:
     case kPseudoWebKitCustomElement:
     case kPseudoSlotted:
@@ -1419,7 +1427,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
-          GetPseudoType() == kPseudoBackdrop);
+          GetPseudoType() == kPseudoBackdrop ||
+          GetPseudoType() == kPseudoSelectDatalist);
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
@@ -1439,6 +1448,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoFileSelectorButton:
     case kPseudoFirstLine:
     case kPseudoFirstLetter:
+    case kPseudoSelectDatalist:
     case kPseudoSelection:
     case kPseudoTargetText:
     case kPseudoHighlight:

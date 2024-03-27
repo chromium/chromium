@@ -448,14 +448,18 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "<div aria-hidden=\"true\"></div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"><button type=\"popover\"></button></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-datalist\">"
+      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "</slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"><button type=\"popover\"></button></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-datalist\">"
+      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "</slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -470,14 +474,18 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "<div aria-hidden=\"true\"></div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"><button type=\"popover\"></button></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-datalist\">"
+      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "</slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\"><button type=\"popover\"></button></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<slot id=\"select-datalist\">"
+      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "</slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));

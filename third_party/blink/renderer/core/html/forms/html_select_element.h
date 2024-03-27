@@ -215,6 +215,13 @@ class CORE_EXPORT HTMLSelectElement final
   // value of the appearance property is not checked.
   HTMLButtonElement* SlottedButton() const;
 
+  // DisplayedDatalist returns whatever <datalist> is included in the flat tree
+  // based on the result of slot assignment. If a child <datalist> is present,
+  // then the return value will be the same as FirstChildDatalist. Otherwise,
+  // the fallback <datalist> in the UA shadowroot will be returned.
+  // This <datalist> is the one which will get rendered as a popover.
+  HTMLDataListElement* DisplayedDatalist() const;
+
   // FirstChildDatalist returns the first child <datalist> of this <select>,
   // which will get slotted into the UA shadowroot. It is kept up to date with a
   // mutation observer, which calls RecalcFirstChildDatalist. This doesn't just

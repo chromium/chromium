@@ -17,10 +17,14 @@ select {
 
 <form></form>
 
-<!-- TODO(http://crbug.com/1511354): Remove <datalist> from id=defaultbutton,
-     it should also work the same. -->
 <div id=notform>
-  <select id=defaultbutton>
+  <select id=defaultbutton-defaultdatalist>
+    <option class=one>one</option>
+    <option class=two>two</option>
+    <option class=three>three</option>
+  </select>
+
+  <select id=defaultbutton-customdatalist>
     <datalist>
       <option class=one>one</option>
       <option class=two>two</option>
@@ -28,7 +32,14 @@ select {
     </datalist>
   </select>
 
-  <select id=custombutton>
+  <select id=custombutton-defaultdatalist>
+    <button type=popover>custom button</button>
+    <option class=one>one</option>
+    <option class=two>two</option>
+    <option class=three>three</option>
+  </select>
+
+  <select id=custombutton-customdatalist>
     <button type=popover>custom button</button>
     <datalist>
       <option class=one>one</option>
@@ -49,7 +60,10 @@ const Space = ' ';
 const form = document.querySelector('form');
 const notform = document.getElementById('notform');
 
-for (const id of ['defaultbutton', 'custombutton']) {
+for (const id of ['defaultbutton-defaultdatalist',
+                  'defaultbutton-customdatalist',
+                  'custombutton-defaultdatalist',
+                  'custombutton-customdatalist']) {
   const select = document.getElementById(id);
 
   async function closeListbox() {

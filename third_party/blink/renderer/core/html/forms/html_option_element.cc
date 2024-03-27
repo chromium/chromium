@@ -134,6 +134,13 @@ bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
   }
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
+    if (select->IsAppearanceBikeshed()) {
+      // In the case that this option is a direct child of an
+      // appearance:bikeshed select,
+      // is_descendant_of_select_list_or_select_datalist_ will be false but we
+      // still want the option to be focusable.
+      return !IsDisabledFormControl();
+    }
     return false;
   }
   return HTMLElement::SupportsFocus(update_behavior);
@@ -640,7 +647,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
          mouse_event->button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
       SetSelected(true);
-      select->FirstChildDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+      select->DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
       event.SetDefaultHandled();
       return;
     }
@@ -682,7 +689,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       }
     } else if ((key == " " || key == "Enter") && select) {
       SetSelected(true);
-      select->FirstChildDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+      select->DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
       event.SetDefaultHandled();
       return;
     } else if (key == "Tab") {
@@ -695,7 +702,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         // case, and also handle shift+tab. Handling shift+tab will require us
         // to do something about the modifiers check earlier in this function.
         // https://github.com/openui/open-ui/issues/1016
-        select->FirstChildDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+        select->DisplayedDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
         event.SetDefaultHandled();
         return;
       }
