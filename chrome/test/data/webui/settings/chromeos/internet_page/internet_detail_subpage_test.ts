@@ -329,15 +329,15 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(!!networkStateText);
       assertTrue(networkStateText.hasAttribute('warning'));
       assertEquals(
-          internetDetailPage.i18n('networkListItemConnectedLimited'),
+          internetDetailPage.i18n('networkListItemSignIn'),
           networkStateText.textContent!.trim());
       const signinButton = getButton('signinButton');
       assertTrue(!!signinButton);
-      assertTrue(signinButton.hidden);
-      assertTrue(signinButton.disabled);
+      assertFalse(signinButton.hidden);
+      assertFalse(signinButton.disabled);
     });
 
-    test('WiFi in a portal-suspected portalState', async () => {
+    test('WiFi in a no internet portalState', async () => {
       init();
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
       const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');

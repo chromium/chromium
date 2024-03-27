@@ -706,9 +706,6 @@ Polymer({
       if (this.isPortalState_(this.networkState.portalState)) {
         return this.i18n('networkListItemSignIn');
       }
-      if (this.networkState.portalState === PortalState.kPortalSuspected) {
-        return this.i18n('networkListItemConnectedLimited');
-      }
       if (this.networkState.portalState === PortalState.kNoInternet) {
         return this.i18n('networkListItemConnectedNoConnectivity');
       }
@@ -1189,13 +1186,13 @@ Polymer({
   },
 
   /**
-   * Return true if portalState is either kPortal or kProxyAuthRequired.
    * @param {!PortalState} portalState
    * @return {boolean}
    * @private
    */
   isPortalState_(portalState) {
     return portalState === PortalState.kPortal ||
+        portalState === PortalState.kPortalSuspected ||
         portalState === PortalState.kProxyAuthRequired;
   },
 

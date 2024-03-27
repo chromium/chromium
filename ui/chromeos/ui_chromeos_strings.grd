@@ -1422,9 +1422,6 @@
       <message name="IDS_STATUSBAR_NETWORK_DEVICE_SIGNIN" desc="Settings > Network, text in network page when in captive portal state or proxy auth state.">
         Sign in to network
       </message>
-      <message name="IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_LIMITED" desc="The network device is connected but in a portal-suspected portal state. A portal is suspected but no redirect was found, therefore, there may be limited connectivity.">
-        Connected, limited connectivity
-      </message>
       <message name="IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_NO_CONNECTIVITY" desc="The network device is connected but in a no-connectivity portal state, therefore, there is no connection to the internet.">
         Connected, no internet
       </message>

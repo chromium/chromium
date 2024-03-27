@@ -411,6 +411,30 @@ suite('<network-summary-item>', () => {
         });
 
     test(
+        'kPortalSuspected shows signin text and opens portal signin on click',
+        async () => {
+          initWithPortalState(PortalState.kPortalSuspected);
+          assertTrue(netSummaryItem.shadowRoot!.querySelector('#networkState')!
+                         .classList.contains('warning-message'));
+          assertFalse(netSummaryItem.shadowRoot!.querySelector('#networkState')!
+                          .classList.contains('network-state'));
+          assertEquals(
+              netSummaryItem.i18n('networkListItemSignIn'),
+              netSummaryItem['getNetworkStateText_']());
+          assertEquals(testName, netSummaryItem['getTitleText_']());
+
+          // Verify clicking network summary item will open portal signin
+          const networkSummaryItemRow =
+              netSummaryItem.shadowRoot!.querySelector<HTMLElement>(
+                  '#networkSummaryItemRow');
+          assert(networkSummaryItemRow);
+          networkSummaryItemRow.click();
+          const guid = await browserProxy.whenCalled('showPortalSignin');
+          assertEquals(1, browserProxy.getCallCount('showPortalSignin'));
+          assertEquals(testGuid, guid);
+        });
+
+    test(
         'kProxyAuthRequired shows signin text and opens portal signin on click',
         async () => {
           initWithPortalState(PortalState.kProxyAuthRequired);

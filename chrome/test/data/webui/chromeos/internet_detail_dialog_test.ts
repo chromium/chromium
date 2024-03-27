@@ -248,6 +248,30 @@ suite('internet-detail-dialog', () => {
       });
     });
 
+    test('WiFi in a portal suspected portalState', function() {
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kPortalSuspected;
+
+      mojoApi.setManagedPropertiesForTest(wifiNetwork);
+      init();
+      return flushAsync().then(() => {
+        const networkStateText = getElement('#networkState');
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assert(networkStateText.textContent);
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailDialog.i18n('networkListItemSignIn'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertFalse(signinButton.hasAttribute('hidden'));
+        assertFalse(signinButton.disabled);
+      });
+    });
+
     test('WiFi in a proxy-auth portalState', function() {
       mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
       const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');

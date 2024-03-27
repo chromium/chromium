@@ -373,9 +373,6 @@ export class InternetDetailDialogElement extends
       if (this.isPortalState_(managedProperties.portalState)) {
         return this.i18n('networkListItemSignIn');
       }
-      if (managedProperties.portalState === PortalState.kPortalSuspected) {
-        return this.i18n('networkListItemConnectedLimited');
-      }
       if (managedProperties.portalState === PortalState.kNoInternet) {
         return this.i18n('networkListItemConnectedNoConnectivity');
       }
@@ -723,11 +720,9 @@ export class InternetDetailDialogElement extends
     return OncMojo.deviceIsInhibited(this.deviceState_);
   }
 
-  /**
-   * Return true if portalState is either kPortal or kProxyAuthRequired.
-   */
   private isPortalState_(portalState: PortalState): boolean {
     return portalState === PortalState.kPortal ||
+        portalState === PortalState.kPortalSuspected ||
         portalState === PortalState.kProxyAuthRequired;
   }
 

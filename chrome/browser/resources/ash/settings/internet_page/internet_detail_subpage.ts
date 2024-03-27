@@ -1148,9 +1148,6 @@ export class SettingsInternetDetailPageElement extends
       if (this.isPortalState_(managedProperties.portalState)) {
         return this.i18n('networkListItemSignIn');
       }
-      if (managedProperties.portalState === PortalState.kPortalSuspected) {
-        return this.i18n('networkListItemConnectedLimited');
-      }
       if (managedProperties.portalState === PortalState.kNoInternet) {
         return this.i18n('networkListItemConnectedNoConnectivity');
       }
@@ -2417,6 +2414,7 @@ export class SettingsInternetDetailPageElement extends
 
   private isPortalState_(portalState: PortalState): boolean {
     return portalState === PortalState.kPortal ||
+        portalState === PortalState.kPortalSuspected ||
         portalState === PortalState.kProxyAuthRequired;
   }
 }

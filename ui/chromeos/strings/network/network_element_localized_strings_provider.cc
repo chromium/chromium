@@ -43,8 +43,6 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"OncTypeWiFi", IDS_NETWORK_TYPE_WIFI},
     {"ipAddressNotAvailable", IDS_NETWORK_IP_ADDRESS_NA},
     {"networkListItemConnected", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED},
-    {"networkListItemConnectedLimited",
-     IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_LIMITED},
     {"networkListItemConnectedNoConnectivity",
      IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_NO_CONNECTIVITY},
     {"networkListItemConnecting", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTING},

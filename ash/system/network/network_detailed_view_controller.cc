@@ -69,6 +69,7 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
 
 bool IsNetworkBehindPortalOrProxy(PortalState portalState) {
   return portalState == PortalState::kPortal ||
+         portalState == PortalState::kPortalSuspected ||
          portalState == PortalState::kProxyAuthRequired;
 }
 

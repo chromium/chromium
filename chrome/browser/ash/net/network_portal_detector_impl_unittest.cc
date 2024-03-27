@@ -401,9 +401,10 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
       CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200,
                        NetworkState::PortalState::kPortal, kStubWireless1));
 
-  // Setting the state to portal-suspected should trigger chrome detection.
+  // Setting the state to kStateNoConnectivity with a proxy should trigger
+  // chrome detection.
   set_attempt_delay(base::TimeDelta());
-  SetNetworkState(kStubWireless1, shill::kStatePortalSuspected);
+  SetNetworkState(kStubWireless1, shill::kStateNoConnectivity);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
   // To run CaptivePortalDetector::DetectCaptivePortal().
@@ -413,9 +414,9 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkStateChanged) {
   // captive portal state.
   CompleteURLFetch(net::OK, 204, nullptr);
   EXPECT_EQ(State::STATE_IDLE, state());
-  EXPECT_TRUE(CheckPortalState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
-      NetworkState::PortalState::kPortalSuspected, kStubWireless1));
+  EXPECT_TRUE(
+      CheckPortalState(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204,
+                       NetworkState::PortalState::kNoInternet, kStubWireless1));
 
   // Setting the state back to online should trigger chrome detection since a
   // proxy is configured.
@@ -679,8 +680,9 @@ TEST_F(NetworkPortalDetectorImplTest, NoResponseButBehindPortal) {
   ASSERT_EQ(State::STATE_IDLE, state());
   set_attempt_delay(base::TimeDelta());
 
-  // Set a portal-suspected state to trigger Chrome portal detection.
-  SetNetworkState(kStubWireless1, shill::kStatePortalSuspected);
+  // Connect with a proxy to trigger Chrome portal detection.
+  SetConnectedWithProxy(kStubWireless1);
+  SetNetworkState(kStubWireless1, shill::kStateNoConnectivity);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
   CompleteURLFetch(net::ERR_CONNECTION_CLOSED, 0, nullptr);

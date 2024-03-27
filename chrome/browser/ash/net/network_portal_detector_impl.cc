@@ -204,9 +204,7 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
       }
       return;
     case NetworkState::PortalState::kPortalSuspected:
-      // Shill result was inconclusive.
-      ScheduleAttempt();
-      return;
+      [[fallthrough]];
     case NetworkState::PortalState::kPortal:
       default_portal_status_ = CAPTIVE_PORTAL_STATUS_PORTAL;
       return;
