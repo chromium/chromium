@@ -44,10 +44,12 @@ class TestRulesetService : public subresource_filter::RulesetService {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::FilePath& base_dir,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-      : subresource_filter::RulesetService(local_state,
-                                           task_runner,
-                                           base_dir,
-                                           blocking_task_runner) {}
+      : subresource_filter::RulesetService(
+            subresource_filter::kSafeBrowsingRulesetConfig,
+            local_state,
+            task_runner,
+            base_dir,
+            blocking_task_runner) {}
 
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;
@@ -115,7 +117,8 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
     subresource_filter::IndexedRulesetVersion::RegisterPrefs(
-        pref_service_.registry(), subresource_filter::kSafeBrowsingFilterTag);
+        pref_service_.registry(),
+        subresource_filter::kSafeBrowsingRulesetConfig.filter_tag);
 
     auto test_ruleset_service = std::make_unique<TestRulesetService>(
         &pref_service_, base::SingleThreadTaskRunner::GetCurrentDefault(),

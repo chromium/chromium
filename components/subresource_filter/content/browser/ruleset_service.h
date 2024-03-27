@@ -44,7 +44,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
-#include "components/subresource_filter/content/browser/ruleset_publisher.h"
+#include "components/subresource_filter/core/browser/ruleset_config.h"
+#include "components/subresource_filter/core/browser/ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 
@@ -109,12 +110,12 @@ class IndexedRulesetLocator {
 // RulesetPublisher, provided in the constructor, that abstracts away
 // distribution of the ruleset to renderers.
 //
-// Files corresponding to each version of the indexed ruleset are stored in a
-// separate subdirectory inside |indexed_ruleset_base_dir| named after the
-// version. The version information of the most recent successfully stored
-// ruleset is written into |local_state|. The invariant is maintained that the
-// version pointed to by preferences, if valid, will exist on disk at any point
-// in time.
+// The service is parametrized for different rulesets via |config|. Files
+// corresponding to each version of the indexed ruleset are stored in a separate
+// subdirectory inside |indexed_ruleset_base_dir| named after the version. The
+// version information of the most recent successfully stored ruleset is written
+// into |local_state|. The invariant is maintained that the version pointed to
+// by preferences, if valid, will exist on disk at any point in time.
 //
 // Obsolete files deletion and rulesets indexing are posted to
 // |background_task_runner|.
@@ -144,6 +145,7 @@ class RulesetService {
   // Creates a new instance of a ruleset with common configuration for
   // production usage in embedders.
   static std::unique_ptr<RulesetService> Create(
+      const RulesetConfig& config,
       PrefService* local_state,
       const base::FilePath& user_data_dir);
 
@@ -154,6 +156,7 @@ class RulesetService {
   // NOTE: This constructor supports specifying various params explicitly for
   // tests. Production code should favor RulesetService::Create().
   RulesetService(
+      const RulesetConfig& config,
       PrefService* local_state,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const base::FilePath& indexed_ruleset_base_dir,
@@ -212,6 +215,7 @@ class RulesetService {
   // indexed ruleset version, or an invalid version on error. To be called on
   // the |background_task_runner|.
   static IndexedRulesetVersion IndexAndWriteRuleset(
+      const RulesetConfig& config,
       const base::FilePath& indexed_ruleset_base_dir,
       const UnindexedRulesetInfo& unindexed_ruleset_info);
 
@@ -258,6 +262,8 @@ class RulesetService {
 
   void OpenAndPublishRuleset(const IndexedRulesetVersion& version);
   void OnRulesetSet(RulesetFilePtr file);
+
+  const RulesetConfig config_;
 
   const raw_ptr<PrefService> local_state_;
 

@@ -1522,7 +1522,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   SSLConfigServiceManager::RegisterPrefs(registry);
   subresource_filter::IndexedRulesetVersion::RegisterPrefs(
-      registry, subresource_filter::kSafeBrowsingFilterTag);
+      registry, subresource_filter::kSafeBrowsingRulesetConfig.filter_tag);
   SystemNetworkContextManager::RegisterPrefs(registry);
   tpcd::experiment::RegisterLocalStatePrefs(registry);
   tracing::RegisterPrefs(registry);

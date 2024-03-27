@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_RULESET_CONFIG_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_RULESET_CONFIG_H_
+
+#include <string_view>
+
+#include "base/files/file_path.h"
+
+namespace subresource_filter {
+
+// Metadata used to configure where to write ruleset files and metrics for a
+// particular instance of the RulesetService, which depends on which filter it
+// is being used for.
+struct RulesetConfig {
+  const std::string_view filter_tag;
+  const base::FilePath::StringPieceType top_level_directory;
+};
+
+}  // namespace subresource_filter
+
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_RULESET_CONFIG_H_

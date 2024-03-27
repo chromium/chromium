@@ -188,10 +188,10 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   // the version of the last indexed ruleset is stored in the local state.
   TestingPrefServiceSimple prefs;
   IndexedRulesetVersion::RegisterPrefs(prefs.registry(),
-                                       kSafeBrowsingFilterTag);
+                                       kSafeBrowsingRulesetConfig.filter_tag);
   IndexedRulesetVersion current_version(
       "1.2.3.4", IndexedRulesetVersion::CurrentFormatVersion(),
-      kSafeBrowsingFilterTag);
+      kSafeBrowsingRulesetConfig.filter_tag);
   current_version.SaveToPrefs(&prefs);
 
   // Create ruleset data on a disk.
@@ -219,9 +219,9 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   // |RulesetService| constructor should read the last indexed ruleset version
   // and post ruleset setup on |blocking_task_runner|.
   ASSERT_EQ(0u, blocking_task_runner->NumPendingTasks());
-  auto service =
-      std::make_unique<RulesetService>(&prefs, background_task_runner, base_dir,
-                                       nullptr, std::move(content_service));
+  auto service = std::make_unique<RulesetService>(
+      kSafeBrowsingRulesetConfig, &prefs, background_task_runner, base_dir,
+      nullptr, std::move(content_service));
 
   // The key test assertion is that ruleset data is published via exactly one
   // post task on |blocking_task_runner|. It is important to run pending tasks

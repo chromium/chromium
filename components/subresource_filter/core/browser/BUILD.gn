@@ -6,6 +6,8 @@ static_library("browser") {
   sources = [
     "copying_file_stream.cc",
     "copying_file_stream.h",
+    "ruleset_config.h",
+    "ruleset_publisher.h",
     "ruleset_version.cc",
     "ruleset_version.h",
     "subresource_filter_constants.cc",

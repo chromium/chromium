@@ -5,6 +5,7 @@
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
@@ -24,15 +25,15 @@ const char kRulesetContentVersionSuffix[] = ".ruleset_version.content";
 const char kRulesetFormatVersionSuffix[] = ".ruleset_version.format";
 const char kRulesetChecksumSuffix[] = ".ruleset_version.checksum";
 
-std::string ContentVersionPrefName(const std::string& filter_tag) {
+std::string ContentVersionPrefName(std::string_view filter_tag) {
   return base::StrCat({filter_tag, kRulesetContentVersionSuffix});
 }
 
-std::string FormatVersionPrefName(const std::string& filter_tag) {
+std::string FormatVersionPrefName(std::string_view filter_tag) {
   return base::StrCat({filter_tag, kRulesetFormatVersionSuffix});
 }
 
-std::string ChecksumPrefName(const std::string& filter_tag) {
+std::string ChecksumPrefName(std::string_view filter_tag) {
   return base::StrCat({filter_tag, kRulesetChecksumSuffix});
 }
 
@@ -45,21 +46,23 @@ UnindexedRulesetInfo::UnindexedRulesetInfo(const UnindexedRulesetInfo&) =
 UnindexedRulesetInfo& UnindexedRulesetInfo::operator=(
     const UnindexedRulesetInfo&) = default;
 
-IndexedRulesetVersion::IndexedRulesetVersion(const std::string& filter_tag)
-    : filter_tag(filter_tag) {}
-IndexedRulesetVersion::IndexedRulesetVersion(const std::string& content_version,
+IndexedRulesetVersion::IndexedRulesetVersion(std::string_view filter_tag)
+    : filter_tag(std::string(filter_tag)) {}
+// TODO(crbug.com/40280666): Convert |content_version| and |filter_tag| to
+// std::string_view.
+IndexedRulesetVersion::IndexedRulesetVersion(std::string_view content_version,
                                              int format_version,
-                                             const std::string& filter_tag)
-    : content_version(content_version),
+                                             std::string_view filter_tag)
+    : content_version(std::string(content_version)),
       format_version(format_version),
-      filter_tag(filter_tag) {}
+      filter_tag(std::string(filter_tag)) {}
 IndexedRulesetVersion::~IndexedRulesetVersion() = default;
 IndexedRulesetVersion& IndexedRulesetVersion::operator=(
     const IndexedRulesetVersion&) = default;
 
 // static
 void IndexedRulesetVersion::RegisterPrefs(PrefRegistrySimple* registry,
-                                          const std::string& filter_tag) {
+                                          std::string_view filter_tag) {
   registry->RegisterStringPref(ContentVersionPrefName(filter_tag),
                                std::string());
   registry->RegisterIntegerPref(FormatVersionPrefName(filter_tag), 0);

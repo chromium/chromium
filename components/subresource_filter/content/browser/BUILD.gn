@@ -28,7 +28,6 @@ static_library("browser") {
     "page_load_statistics.h",
     "profile_interaction_manager.cc",
     "profile_interaction_manager.h",
-    "ruleset_publisher.h",
     "ruleset_publisher_impl.cc",
     "ruleset_publisher_impl.h",
     "ruleset_service.cc",

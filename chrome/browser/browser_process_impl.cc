@@ -115,6 +115,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/sessions/core/session_id_generator.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/ukm/ukm_service.h"
 #include "components/update_client/update_query_params.h"
@@ -1437,7 +1438,9 @@ void BrowserProcessImpl::CreateSubresourceFilterRulesetService() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   subresource_filter_ruleset_service_ =
-      subresource_filter::RulesetService::Create(local_state(), user_data_dir);
+      subresource_filter::RulesetService::Create(
+          subresource_filter::kSafeBrowsingRulesetConfig, local_state(),
+          user_data_dir);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

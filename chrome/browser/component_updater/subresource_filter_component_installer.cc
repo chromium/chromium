@@ -104,7 +104,8 @@ bool SubresourceFilterComponentInstallerPolicy::VerifyInstallation(
 
 base::FilePath
 SubresourceFilterComponentInstallerPolicy::GetRelativeInstallDir() const {
-  return base::FilePath(subresource_filter::kTopLevelDirectoryName)
+  return base::FilePath(
+             subresource_filter::kSafeBrowsingRulesetConfig.top_level_directory)
       .Append(subresource_filter::kUnindexedRulesetBaseDirectoryName);
 }
 

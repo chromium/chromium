@@ -24,10 +24,11 @@
 #include "base/trace_event/traced_value.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/subresource_filter/content/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher_impl.h"
 #include "components/subresource_filter/content/browser/unindexed_ruleset_stream_generator.h"
 #include "components/subresource_filter/core/browser/copying_file_stream.h"
+#include "components/subresource_filter/core/browser/ruleset_config.h"
+#include "components/subresource_filter/core/browser/ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -165,8 +166,11 @@ decltype(&base::ReplaceFile) RulesetService::g_replace_file_func =
 
 // static
 std::unique_ptr<RulesetService> RulesetService::Create(
+    const RulesetConfig& config,
     PrefService* local_state,
     const base::FilePath& user_data_dir) {
+  // TODO(crbug.com/40280666): Add additional feature flag checks here for
+  // different filters.
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
     return nullptr;
   }
@@ -184,21 +188,23 @@ std::unique_ptr<RulesetService> RulesetService::Create(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   base::FilePath indexed_ruleset_base_dir =
-      user_data_dir.Append(kTopLevelDirectoryName)
+      user_data_dir.Append(config.top_level_directory)
           .Append(kIndexedRulesetBaseDirectoryName);
 
-  return std::make_unique<RulesetService>(local_state, background_task_runner,
-                                          indexed_ruleset_base_dir,
-                                          blocking_task_runner);
+  return std::make_unique<RulesetService>(
+      config, local_state, background_task_runner, indexed_ruleset_base_dir,
+      blocking_task_runner);
 }
 
 RulesetService::RulesetService(
+    const RulesetConfig& config,
     PrefService* local_state,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& indexed_ruleset_base_dir,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     std::unique_ptr<RulesetPublisher> publisher)
-    : local_state_(local_state),
+    : config_(config),
+      local_state_(local_state),
       background_task_runner_(std::move(background_task_runner)),
       is_initialized_(false),
       indexed_ruleset_base_dir_(indexed_ruleset_base_dir) {
@@ -207,7 +213,7 @@ RulesetService::RulesetService(
   publisher_ = publisher ? std::move(publisher)
                          : std::make_unique<RulesetPublisherImpl>(
                                this, blocking_task_runner);
-  IndexedRulesetVersion most_recently_indexed_version(kSafeBrowsingFilterTag);
+  IndexedRulesetVersion most_recently_indexed_version(config.filter_tag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "RulesetService::RulesetService", "prefs_version",
@@ -216,7 +222,7 @@ RulesetService::RulesetService(
       most_recently_indexed_version.IsCurrentFormatVersion()) {
     OpenAndPublishRuleset(most_recently_indexed_version);
   } else {
-    IndexedRulesetVersion(kSafeBrowsingFilterTag).SaveToPrefs(local_state_);
+    IndexedRulesetVersion(config.filter_tag).SaveToPrefs(local_state_);
   }
 
   DCHECK(publisher_->BestEffortTaskRunner()->BelongsToCurrentThread());
@@ -236,7 +242,7 @@ void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
   // not only be futile, but would fail on Windows due to "File System
   // Tunneling" as long as the previously stored copy of the rules is still
   // in use.
-  IndexedRulesetVersion most_recently_indexed_version(kSafeBrowsingFilterTag);
+  IndexedRulesetVersion most_recently_indexed_version(config_.filter_tag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   if (most_recently_indexed_version.IsCurrentFormatVersion() &&
       most_recently_indexed_version.content_version ==
@@ -257,13 +263,14 @@ void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
 }
 
 IndexedRulesetVersion RulesetService::GetMostRecentlyIndexedVersion() const {
-  IndexedRulesetVersion version(kSafeBrowsingFilterTag);
+  IndexedRulesetVersion version(config_.filter_tag);
   version.ReadFromPrefs(local_state_);
   return version;
 }
 
 // static
 IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
+    const RulesetConfig& config,
     const base::FilePath& indexed_ruleset_base_dir,
     const UnindexedRulesetInfo& unindexed_ruleset_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -275,12 +282,12 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!unindexed_ruleset_stream_generator.ruleset_stream()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_OPENING_UNINDEXED_RULESET);
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
   }
 
   IndexedRulesetVersion indexed_version(
       unindexed_ruleset_info.content_version,
-      IndexedRulesetVersion::CurrentFormatVersion(), kSafeBrowsingFilterTag);
+      IndexedRulesetVersion::CurrentFormatVersion(), config.filter_tag);
   base::FilePath indexed_ruleset_version_dir =
       IndexedRulesetLocator::GetSubdirectoryPathForVersion(
           indexed_ruleset_base_dir, indexed_version);
@@ -288,20 +295,20 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!base::CreateDirectory(indexed_ruleset_version_dir)) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_CREATING_VERSION_DIR);
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
   }
 
   SentinelFile sentinel_file(indexed_ruleset_version_dir);
   if (sentinel_file.IsPresent()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::ABORTED_BECAUSE_SENTINEL_FILE_PRESENT);
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
   }
 
   if (!sentinel_file.Create()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_CREATING_SENTINEL_FILE);
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
   }
 
   // --- Begin of guarded section.
@@ -313,7 +320,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!(*g_index_ruleset_func)(&unindexed_ruleset_stream_generator, &indexer)) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_PARSING_UNINDEXED_RULESET);
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
   }
 
   // --- End of guarded section.
@@ -321,7 +328,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!sentinel_file.Remove()) {
     RecordIndexAndWriteRulesetResult(
         IndexAndWriteRulesetResult::FAILED_DELETING_SENTINEL_FILE);
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
   }
 
   IndexAndWriteRulesetResult result =
@@ -329,7 +336,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
                    unindexed_ruleset_info.license_path, indexer.data());
   RecordIndexAndWriteRulesetResult(result);
   if (result != IndexAndWriteRulesetResult::SUCCESS)
-    return IndexedRulesetVersion(kSafeBrowsingFilterTag);
+    return IndexedRulesetVersion(config.filter_tag);
 
   DCHECK(indexed_version.IsValid());
   return indexed_version;
@@ -339,6 +346,8 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
 bool RulesetService::IndexRuleset(
     UnindexedRulesetStreamGenerator* unindexed_ruleset_stream_generator,
     RulesetIndexer* indexer) {
+  // TODO(crbug.com/40280666): Change the way metrics are recorded to support
+  // different names depending on the filter the RulesetService is used for.
   SCOPED_UMA_HISTOGRAM_TIMER("SubresourceFilter.IndexRuleset.WallDuration");
   SCOPED_UMA_HISTOGRAM_THREAD_TIMER(
       "SubresourceFilter.IndexRuleset.CPUDuration");
@@ -418,7 +427,7 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
 void RulesetService::FinishInitialization() {
   is_initialized_ = true;
 
-  IndexedRulesetVersion most_recently_indexed_version(kSafeBrowsingFilterTag);
+  IndexedRulesetVersion most_recently_indexed_version(config_.filter_tag);
   most_recently_indexed_version.ReadFromPrefs(local_state_);
   background_task_runner_->PostTask(
       FROM_HERE,
@@ -439,7 +448,7 @@ void RulesetService::IndexAndStoreRuleset(
   DCHECK(!unindexed_ruleset_info.content_version.empty());
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&RulesetService::IndexAndWriteRuleset,
+      base::BindOnce(&RulesetService::IndexAndWriteRuleset, config_,
                      indexed_ruleset_base_dir_, unindexed_ruleset_info),
       base::BindOnce(&RulesetService::OnWrittenRuleset,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -474,7 +483,7 @@ void RulesetService::OnRulesetSet(RulesetFilePtr file) {
   // errors. Still, restore the invariant that a valid version in preferences
   // always points to an existing version of disk by invalidating the prefs.
   if (!file->IsValid()) {
-    IndexedRulesetVersion(kSafeBrowsingFilterTag).SaveToPrefs(local_state_);
+    IndexedRulesetVersion(config_.filter_tag).SaveToPrefs(local_state_);
     return;
   }
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -66,17 +67,15 @@ struct UnindexedRulesetInfo {
 // and a filter tag string to identify the type of filter the ruleset is used
 // for as well as the names of prefs that store the current version.
 struct IndexedRulesetVersion {
-  explicit IndexedRulesetVersion(const std::string& filter_tag);
-  IndexedRulesetVersion(
-      const std::string& content_version,
-      int format_version,
-      const std::string& filter_tag);
+  explicit IndexedRulesetVersion(std::string_view filter_tag);
+  IndexedRulesetVersion(std::string_view content_version,
+                        int format_version,
+                        std::string_view filter_tag);
   ~IndexedRulesetVersion();
   IndexedRulesetVersion& operator=(const IndexedRulesetVersion&);
 
-  static void RegisterPrefs(
-      PrefRegistrySimple* registry,
-      const std::string& filter_tag);
+  static void RegisterPrefs(PrefRegistrySimple* registry,
+                            std::string_view filter_tag);
   // TODO(crbug.com/40280666): Change this function to consult multiple current
   // format versions once the rest of the ruleset pipeline has been refactored
   // to be generic.
