@@ -195,27 +195,26 @@ AppBannerManagerAndroid::CreateAddToHomescreenParams(
     const InstallBannerConfig& config,
     const base::android::ScopedJavaGlobalRef<jobject>& native_java_app_data,
     WebappInstallSource install_source) {
-  auto a2hs_params = std::make_unique<AddToHomescreenParams>();
-  a2hs_params->install_source = install_source;
   if (native_java_app_data.is_null()) {
     CHECK(config.mode == AppBannerMode::kWebApp);
     const WebAppBannerData& web_app_data = config.web_app_data;
-    a2hs_params->app_type = AddToHomescreenParams::AppType::WEBAPK;
-    a2hs_params->shortcut_info = ShortcutInfo::CreateShortcutInfo(
-        config.validated_url, web_app_data.manifest_url,
-        web_app_data.manifest(), web_app_data.web_page_metadata(),
-        web_app_data.primary_icon_url, web_app_data.has_maskable_primary_icon);
-    a2hs_params->primary_icon = web_app_data.primary_icon;
+    return std::make_unique<AddToHomescreenParams>(
+        AddToHomescreenParams::AppType::WEBAPK,
+        ShortcutInfo::CreateShortcutInfo(
+            config.validated_url, web_app_data.manifest_url,
+            web_app_data.manifest(), web_app_data.web_page_metadata(),
+            web_app_data.primary_icon_url,
+            web_app_data.has_maskable_primary_icon),
+        web_app_data.primary_icon, InstallableStatusCode::NO_ERROR_DETECTED,
+        install_source);
   } else {
     CHECK(config.mode == AppBannerMode::kNativeApp);
     CHECK(config.native_app_data);
     const NativeAppBannerData& native_app_data = *config.native_app_data;
-    a2hs_params->app_type = AddToHomescreenParams::AppType::NATIVE;
-    a2hs_params->native_app_data = native_java_app_data;
-    a2hs_params->native_app_package_name = native_app_data.app_package;
-    a2hs_params->primary_icon = native_app_data.primary_icon;
+    return std::make_unique<AddToHomescreenParams>(
+        native_app_data.app_package, native_java_app_data,
+        native_app_data.primary_icon, install_source);
   }
-  return a2hs_params;
 }
 
 std::string AppBannerManagerAndroid::GetAppIdentifier() {

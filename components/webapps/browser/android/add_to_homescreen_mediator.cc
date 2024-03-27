@@ -110,9 +110,7 @@ void AddToHomescreenMediator::AddToHomescreen(
   }
   AppType selected_app_type = static_cast<AppType>(j_app_type);
   if (params_->app_type != selected_app_type) {
-    CHECK(selected_app_type == AppType::SHORTCUT &&
-          (params_->app_type == AppType::WEBAPK ||
-           params_->app_type == AppType::WEBAPK_DIY));
+    CHECK(selected_app_type == AppType::SHORTCUT && params_->IsWebApk());
     params_->app_type = selected_app_type;
   }
 
@@ -129,8 +127,7 @@ void AddToHomescreenMediator::AddToHomescreen(
     params_->shortcut_info->display = blink::mojom::DisplayMode::kBrowser;
   }
 
-  if (params_->app_type == AppType::WEBAPK ||
-      params_->app_type == AppType::WEBAPK_DIY) {
+  if (params_->IsWebApk()) {
     AppBannerManagerAndroid* app_banner_manager =
         AppBannerManagerAndroid::FromWebContents(GetWebContents());
     app_banner_manager->TrackInstallPath(/* bottom_sheet= */ false,
@@ -204,32 +201,28 @@ void AddToHomescreenMediator::OnDataAvailable(
     const SkBitmap& display_icon,
     AppType app_type,
     const InstallableStatusCode status_code) {
-  params_ = std::make_unique<AddToHomescreenParams>();
-  params_->app_type = app_type;
-  params_->shortcut_info = std::make_unique<ShortcutInfo>(info);
-  params_->primary_icon = data_fetcher_->primary_icon();
-  params_->install_source = InstallableMetrics::GetInstallSource(
-      data_fetcher_->web_contents(), InstallTrigger::MENU);
-  params_->installable_status = status_code;
+  params_ = std::make_unique<AddToHomescreenParams>(
+      app_type, std::make_unique<ShortcutInfo>(info), display_icon, status_code,
+      InstallableMetrics::GetInstallSource(data_fetcher_->web_contents(),
+                                           InstallTrigger::MENU));
 
   SetIcon(display_icon);
 
-  bool is_webapk = params_->app_type == AppType::WEBAPK ||
-                   params_->app_type == AppType::WEBAPK_DIY;
   if (!universal_install_) {
     // Log what was shown in the App menu and what action was taken here.
     auto entry = AppTypeToMenuEntry::kAppTypeFinalEntry;
 
     switch (app_menu_type_) {
       case AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
-        entry = is_webapk
+        entry = params_->IsWebApk()
                     ? AppTypeToMenuEntry::kAddToHomeScreenShownForWebApp
                     : AppTypeToMenuEntry::kAddToHomeScreenShownForShortcut;
         break;
       }
       case AppBannerSettingsHelper::APP_MENU_OPTION_INSTALL: {
-        entry = is_webapk ? AppTypeToMenuEntry::kInstallShownForWebApp
-                          : AppTypeToMenuEntry::kInstallShownForShortcut;
+        entry = params_->IsWebApk()
+                    ? AppTypeToMenuEntry::kInstallShownForWebApp
+                    : AppTypeToMenuEntry::kInstallShownForShortcut;
         break;
       }
       default:
@@ -241,7 +234,7 @@ void AddToHomescreenMediator::OnDataAvailable(
         AppTypeToMenuEntry::kAppTypeFinalEntry);
   }
 
-  if (is_webapk) {
+  if (params_->IsWebApk()) {
     webapps::WebappsClient::Get()->OnWebApkInstallInitiatedFromAppMenu(
         data_fetcher_->web_contents());
   }
