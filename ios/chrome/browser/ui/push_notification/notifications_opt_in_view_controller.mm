@@ -33,6 +33,10 @@ CGFloat const kTableViewSeparatorInset = 16.0;
 CGFloat const kSpaceAboveTitle = 20.0;
 // Accessibility identifier.
 NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
+// Constant for the subtitleLabel's width anchor.
+CGFloat const kSubtitleWidthConstant = 23.0;
+// Title's horizontal margin.
+CGFloat const kTitleHorizontalMargin = 25.0;
 }  // namespace
 
 @interface NotificationsOptInViewController () <UITableViewDelegate>
@@ -55,6 +59,7 @@ NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
   self.titleText = l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_TITLE);
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE);
+  self.titleHorizontalMargin = kTitleHorizontalMargin;
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON);
   self.secondaryActionString =
@@ -82,6 +87,13 @@ NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
   [self updatePrimaryButtonState];
   [super viewDidLoad];
 
+  // Add subtitle constraint after it is added to hierarchy.
+  [NSLayoutConstraint activateConstraints:@[
+    [self.subtitleLabel.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor
+                       constant:-kSubtitleWidthConstant],
+  ]];
+
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 }
 
@@ -98,7 +110,8 @@ NSString* const kNotificationsOptInScreenAxId = @"NotificationsOptInScreenAxId";
 
 - (UILabel*)createSubtitleLabel {
   UILabel* subtitleLabel = [[UILabel alloc] init];
-  subtitleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  subtitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
   subtitleLabel.numberOfLines = 0;
   subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitleLabel.text = self.subtitleText;
