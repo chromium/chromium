@@ -2029,7 +2029,8 @@ void Shell::OnSessionStateChanged(session_manager::SessionState state) {
     firmware_update_notification_controller_ =
         std::make_unique<FirmwareUpdateNotificationController>(
             message_center::MessageCenter::Get());
-    firmware_update_manager_->RequestAllUpdates();
+    firmware_update_manager_->RequestAllUpdates(
+        FirmwareUpdateManager::Source::kStartup);
   }
 
   // Disable drag-and-drop during OOBE and GAIA login screens by only enabling

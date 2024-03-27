@@ -123,7 +123,8 @@ void AshUsbDetector::RequestUpdates() {
     ++num_request_for_fetch_updates_for_testing_;
   } else {
     if (FirmwareUpdateManager::IsInitialized()) {
-      FirmwareUpdateManager::Get()->RequestAllUpdates();
+      FirmwareUpdateManager::Get()->RequestAllUpdates(
+          FirmwareUpdateManager::Source::kUSBChange);
     }
   }
 

@@ -590,7 +590,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void RequestAllUpdates() { firmware_update_manager_->RequestAllUpdates(); }
+  void RequestAllUpdates() {
+    firmware_update_manager_->RequestAllUpdates(
+        FirmwareUpdateManager::Source::kInstallComplete);
+  }
 
   void AdvanceClock(base::TimeDelta time) {
     task_environment_.AdvanceClock(time);

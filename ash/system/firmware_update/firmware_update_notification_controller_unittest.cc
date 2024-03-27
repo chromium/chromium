@@ -141,7 +141,8 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
   }
 
   void SimulateFetchingUpdates() {
-    FirmwareUpdateManager::Get()->RequestAllUpdates();
+    FirmwareUpdateManager::Get()->RequestAllUpdates(
+        FirmwareUpdateManager::Source::kStartup);
   }
 
   raw_ptr<FwupdClient, DanglingUntriaged> dbus_client_ = nullptr;

@@ -108,6 +108,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
       public firmware_update::mojom::UpdateProvider,
       public firmware_update::mojom::InstallController {
  public:
+  enum class Source {
+    kUI = 0,
+    kStartup = 1,
+    kUSBChange = 2,
+    kInstallComplete = 3,
+    kMaxValue = kInstallComplete,
+  };
+
   FirmwareUpdateManager();
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
@@ -172,7 +180,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   void OnPropertiesChangedResponse(FwupdProperties* properties) override;
 
   // Query all updates for all devices.
-  void RequestAllUpdates();
+  void RequestAllUpdates(Source source);
 
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>

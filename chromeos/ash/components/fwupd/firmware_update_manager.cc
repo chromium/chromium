@@ -371,7 +371,7 @@ void FirmwareUpdateManager::ObservePeripheralUpdates(
                      << update_list_observers_.size();
   update_list_observers_.Add(std::move(observer));
   if (!HasPendingUpdates()) {
-    RequestAllUpdates();
+    RequestAllUpdates(FirmwareUpdateManager::Source::kUI);
   }
 }
 
@@ -404,7 +404,7 @@ void FirmwareUpdateManager::FetchInProgressUpdate(
 }
 
 // Query all updates for all devices.
-void FirmwareUpdateManager::RequestAllUpdates() {
+void FirmwareUpdateManager::RequestAllUpdates(Source source) {
   if (!FwupdClient::Get()) {
     return;
   }
@@ -417,6 +417,12 @@ void FirmwareUpdateManager::RequestAllUpdates() {
 
   if (is_fetching_updates_) {
     return;
+  }
+  // If connection is metered, only refresh remote if firmware update UI has
+  // been opened by the user.
+  if (/*!is_metered || (is_metered &&*/ source == Source::kUI) {
+    FIRMWARE_LOG(USER) << "Requesting Updates: From UI";
+    // TODO(rishabhagr): Add logic for refresh metadata
   }
   FIRMWARE_LOG(USER) << "RequestAllUpdates()";
   is_fetching_updates_ = true;
@@ -751,7 +757,7 @@ void FirmwareUpdateManager::InstallComplete(InstallResult result) {
   }
 
   // Request all updates to refresh the update list after an install.
-  RequestAllUpdates();
+  RequestAllUpdates(FirmwareUpdateManager::Source::kInstallComplete);
 }
 
 void FirmwareUpdateManager::BindInterface(
