@@ -144,6 +144,20 @@ export enum TrustedVaultBannerState {
   OPTED_IN = 2,
 }
 
+// Always keep in sync with `ChromeSigninUserChoice` (C++).
+export enum ChromeSigninUserChoice {
+  NO_CHOICE = 0,
+  ALWAYS_ASK = 1,
+  SIGNIN = 2,
+  DO_NOT_SIGNIN = 3,
+}
+
+export interface ChromeSigninUserChoiceInfo {
+  shouldShowSettings: boolean;
+  choice: ChromeSigninUserChoice;
+  signedInEmail: string;
+}
+
 /**
  * Key to be used with localStorage.
  */
@@ -266,6 +280,18 @@ export interface SyncBrowserProxy {
    * Forces a trusted-vault-banner-state-changed event to be fired.
    */
   sendTrustedVaultBannerStateChanged(): void;
+
+  /**
+   * Sets the ChromeSigninUserChoice from the signed in email after a user
+   * choice on the UI.
+   */
+  setChromeSigninUserChoice(
+      choice: ChromeSigninUserChoice, signedInEmail: string): void;
+
+  /**
+   * Gets the information related to the Chrome Signin user choice settings.
+   */
+  getChromeSigninUserChoiceInfo(): Promise<ChromeSigninUserChoiceInfo>;
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
@@ -357,6 +383,15 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   sendTrustedVaultBannerStateChanged() {
     chrome.send('SyncTrustedVaultBannerStateDispatch');
+  }
+
+  setChromeSigninUserChoice(
+      choice: ChromeSigninUserChoice, signedInEmail: string): void {
+    chrome.send('SetChromeSigninUserChoice', [choice, signedInEmail]);
+  }
+
+  getChromeSigninUserChoiceInfo(): Promise<ChromeSigninUserChoiceInfo> {
+    return sendWithPromise('GetChromeSigninUserChoiceInfo');
   }
 
   static getInstance(): SyncBrowserProxy {

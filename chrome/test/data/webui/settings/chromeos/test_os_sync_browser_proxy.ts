@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
+import {ChromeSigninUserChoice, ChromeSigninUserChoiceInfo, PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSyncBrowserProxy extends TestBrowserProxy implements
@@ -35,6 +35,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'startSyncingWithEmail',
       'turnOnSync',
       'turnOffSync',
+      'SetChromeSigninUserChoiceInfo',
+      'GetChromeSigninUserChoice',
     ]);
   }
 
@@ -118,6 +120,19 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   sendSyncPrefsChanged(): void {
     this.methodCalled('sendSyncPrefsChanged');
+  }
+
+  setChromeSigninUserChoice(): void {
+    this.methodCalled('SetChromeSigninUserChoice');
+  }
+
+  getChromeSigninUserChoiceInfo(): Promise<ChromeSigninUserChoiceInfo> {
+    this.methodCalled('SetChromeSigninUserChoiceInfo');
+    return Promise.resolve({
+      shouldShowSettings: false,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: '',
+    });
   }
 
   attemptUserExit(): void {}

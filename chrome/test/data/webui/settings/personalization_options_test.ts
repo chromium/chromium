@@ -13,6 +13,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {ChromeSigninUserChoice} from 'chrome://settings/settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 
 // </if>
 
@@ -116,6 +118,78 @@ suite('AllBuilds', function() {
   });
 
   // <if expr="not is_chromeos">
+  test('chromeSigninUserChoiceAvailableInitialization', async function() {
+    assertFalse(isVisible(testElement.$.chromeSigninUserChoiceRadioGroup));
+
+    const infoResponse = {
+      shouldShowSettings: true,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: 'test@gmail.com',
+    };
+    syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(infoResponse);
+
+    buildTestElement();  // Rebuild the element simulating a fresh start.
+    await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceRadioGroup));
+    const descriptionText =
+        testElement.shadowRoot!.querySelector(
+                                   '#chromeSigninChoiceDescription')!.innerHTML;
+    assertTrue(descriptionText.includes(infoResponse.signedInEmail));
+  });
+
+  test('chromeSigninUserChoiceAvailabilityUpdate', async function() {
+    const infoResponse = {
+      shouldShowSettings: true,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: 'test@gmail.com',
+    };
+    syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(infoResponse);
+
+    buildTestElement();  // Rebuild the element simulating a fresh start.
+    await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceRadioGroup));
+
+    // New response to return should not show.
+    const infoResponse_hide = {
+      shouldShowSettings: false,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: '',
+    };
+
+    webUIListenerCallback(
+        'chrome-signin-user-choice-info-change', infoResponse_hide);
+    assertFalse(isVisible(testElement.$.chromeSigninUserChoiceRadioGroup));
+
+    // Original response to return should show again.
+    webUIListenerCallback(
+        'chrome-signin-user-choice-info-change', infoResponse);
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceRadioGroup));
+  });
+
+  test('chromeSigninUserChoiceUpdatedExternally', async function() {
+    const infoResponse = {
+      shouldShowSettings: true,
+      choice: ChromeSigninUserChoice.NO_CHOICE,
+      signedInEmail: 'test@gmail.com',
+    };
+    syncBrowserProxy.setGetUserChromeSigninUserChoiceInfoResponse(infoResponse);
+
+    buildTestElement();  // Rebuild the element simulating a fresh start.
+    await syncBrowserProxy.whenCalled('getChromeSigninUserChoiceInfo');
+    assertTrue(isVisible(testElement.$.chromeSigninUserChoiceRadioGroup));
+
+    // `ChromeSigninUserChoice.NO_CHOICE` leads to no value set.
+    assertEquals(
+        testElement.$.chromeSigninUserChoiceRadioGroup.selected, undefined);
+
+    infoResponse.choice = ChromeSigninUserChoice.SIGNIN;
+    webUIListenerCallback(
+        'chrome-signin-user-choice-info-change', infoResponse);
+    assertEquals(
+        Number(testElement.$.chromeSigninUserChoiceRadioGroup.selected),
+        ChromeSigninUserChoice.SIGNIN);
+  });
+
   test('signinAllowedToggle', function() {
     const toggle = testElement.$.signinAllowedToggle;
     assertTrue(isVisible(toggle));

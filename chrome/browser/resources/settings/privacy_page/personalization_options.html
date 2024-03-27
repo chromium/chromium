@@ -4,16 +4,55 @@
         padding-inline-start: 0;
       }
 
-      :host(.list-frame) settings-toggle-button:first-of-type {
-        border-top: none;
-      }
-
       :host(.list-frame) cr-link-row {
         padding-inline-end: 8px;
         padding-inline-start: 0;
       }
+
+      #chromeSigninUserChoiceRadioGroup {
+        margin-block-start: 10px;
+        margin-block-end: 10px;
+      }
+
+      /* Removes the border of the first hr element.*/
+      .hr:not(.hr:not([hidden]) ~ *) {
+        border-top: 0;
+      }
+
     </style>
+
 <if expr="not is_chromeos">
+    <cr-radio-group id="chromeSigninUserChoiceRadioGroup"
+        class="hr radio-group-content"
+        hidden="[[!chromeSigninUserChoiceInfo_.shouldShowSettings]]"
+        aria-label="$i18n{chromeSigninChoiceTitle}"
+        on-selected-changed="onChromeSigninChoiceChanged_"
+        nested-selectable>
+      <div>
+        $i18n{chromeSigninChoiceTitle}
+      </div>
+      <div id="chromeSigninChoiceDescription" class="secondary">
+        [[i18n('chromeSigninChoiceDescription',
+            chromeSigninUserChoiceInfo_.signedInEmail)]]
+      </div>
+      <div class="list-frame">
+        <cr-radio-button
+            class="list-item"
+            name="[[chromeSigninUserChoiceEnum_.SIGNIN]]"
+            label="$i18n{chromeSigninChoiceSignin}">
+        </cr-radio-button>
+        <cr-radio-button
+            class="list-item"
+            name="[[chromeSigninUserChoiceEnum_.DO_NOT_SIGNIN]]"
+            label="$i18n{chromeSigninChoiceDoNotSignin}">
+        </cr-radio-button>
+        <cr-radio-button
+            class="list-item"
+            name="[[chromeSigninUserChoiceEnum_.ALWAYS_ASK]]"
+            label="$i18n{chromeSigninChoiceAlwaysAsk}">
+        </cr-radio-button>
+      </div>
+    </cr-radio-group>
     <!-- Signout is not supported yet on lacros, https://crbug.com/1217645 -->
     <settings-toggle-button id="signinAllowedToggle"
         class="hr"

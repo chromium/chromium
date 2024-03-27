@@ -4,7 +4,8 @@
 
 // clang-format off
 import type {StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
-import {PageStatus, StatusAction} from 'chrome://settings/settings.js';
+import type {ChromeSigninUserChoiceInfo} from 'chrome://settings/settings.js';
+import {PageStatus, StatusAction, ChromeSigninUserChoice} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -23,6 +24,11 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   encryptionPassphraseSuccess: boolean = false;
   decryptionPassphraseSuccess: boolean = false;
   storedAccounts: StoredAccount[] = [];
+  chromeSigninUserChoiceInfo: ChromeSigninUserChoiceInfo = {
+    shouldShowSettings: false,
+    choice: ChromeSigninUserChoice.NO_CHOICE,
+    signedInEmail: '',
+  };
 
   constructor() {
     // clang-format off
@@ -50,6 +56,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'turnOnSync',
       'turnOffSync',
       // </if>
+      'setChromeSigninUserChoice',
+      'getChromeSigninUserChoiceInfo',
     ]);
     // clang-format on
   }
@@ -159,4 +167,19 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('turnOffSync');
   }
   // </if>
+
+  setChromeSigninUserChoice(): void {
+    this.methodCalled('setChromeSigninUserChoice');
+  }
+
+  // Prepares the return value for `getChromeSigninUserChoiceInfo()`.
+  setGetUserChromeSigninUserChoiceInfoResponse(
+      info: ChromeSigninUserChoiceInfo): void {
+    this.chromeSigninUserChoiceInfo = info;
+  }
+
+  getChromeSigninUserChoiceInfo(): Promise<ChromeSigninUserChoiceInfo> {
+    this.methodCalled('getChromeSigninUserChoiceInfo');
+    return Promise.resolve(this.chromeSigninUserChoiceInfo);
+  }
 }

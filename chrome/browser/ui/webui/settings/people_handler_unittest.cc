@@ -25,6 +25,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -45,10 +46,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_user_settings_impl.h"
@@ -63,6 +67,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using signin::ConsentLevel;
@@ -76,8 +81,15 @@ using ::testing::Values;
 
 namespace {
 
-const char kTestUser[] = "chrome_p13n_test@gmail.com";
-const char kTestCallbackId[] = "test-callback-id";
+constexpr char kTestUser[] = "chrome_p13n_test@gmail.com";
+constexpr char kTestCallbackId[] = "test-callback-id";
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Event fired when calling
+// `PeopleHandler::UpdateChromeSigninUserChoiceInfo()`.
+constexpr char kChromeSigninUserChoiceInfoChangeEventName[] =
+    "chrome-signin-user-choice-info-change";
+#endif
 
 // Returns a UserSelectableTypeSet with all types set.
 syncer::UserSelectableTypeSet GetAllTypes() {
@@ -1367,6 +1379,273 @@ TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   EXPECT_EQ("user@gmail.com", *accounts[0].GetDict().FindString("email"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class PeopleHandlerWithExplicitBrowserSigninTest : public PeopleHandlerTest {
+ public:
+  // Checks values returned as a response of WebUI called.
+  void ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      bool should_show_settings,
+      ChromeSigninUserChoice expected_choice,
+      const std::string& expected_signed_in_email) {
+    auto& data = *web_ui_.call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(kTestCallbackId, data.arg1()->GetString());
+    ASSERT_TRUE(data.arg2()->is_bool());
+    EXPECT_TRUE(data.arg2()->GetBool())
+        << "Callback should be resolved with a boolean indicating the success, "
+           "never rejected.";
+    ASSERT_TRUE(data.arg3()->is_dict());
+
+    const base::Value::Dict& dict = data.arg3()->GetDict();
+    ExpectChromeSigninUserChoiceInfoDict(
+        dict, should_show_settings, expected_choice, expected_signed_in_email);
+  }
+
+  // Checks values returned from firing the change event.
+  // Reads the last event. Expecting at least one event.
+  void ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(
+      bool should_show_settings,
+      ChromeSigninUserChoice expected_choice,
+      const std::string& expected_signed_in_email) {
+    auto values_list = GetAllFiredValuesForEventName(
+        kChromeSigninUserChoiceInfoChangeEventName);
+    ASSERT_GT(values_list.size(), 0U);
+    size_t last_index = values_list.size() - 1;
+    ASSERT_TRUE(values_list[last_index]);
+    ASSERT_TRUE(values_list[last_index]->is_dict());
+
+    const base::Value::Dict& values_dict = values_list[last_index]->GetDict();
+    ExpectChromeSigninUserChoiceInfoDict(values_dict, should_show_settings,
+                                         expected_choice,
+                                         expected_signed_in_email);
+  }
+
+  // Tests the Dict content returned for the WebUI for
+  // ChromeSigninUserChoiceInfo.
+  static void ExpectChromeSigninUserChoiceInfoDict(
+      const base::Value::Dict& values_dict,
+      bool expected_should_show_settings,
+      ChromeSigninUserChoice expected_choice,
+      const std::string& expected_signed_in_email) {
+    std::optional<bool> should_show_settings =
+        values_dict.FindBool("shouldShowSettings");
+    ASSERT_TRUE(should_show_settings.has_value());
+    EXPECT_EQ(should_show_settings.value(), expected_should_show_settings);
+
+    std::optional<int> choice_int = values_dict.FindInt("choice");
+    ASSERT_TRUE(choice_int.has_value());
+    EXPECT_EQ(static_cast<ChromeSigninUserChoice>(choice_int.value()),
+              expected_choice);
+
+    const std::string* signed_in_email =
+        values_dict.FindString("signedInEmail");
+    ASSERT_TRUE(signed_in_email);
+    EXPECT_EQ(*signed_in_email, expected_signed_in_email);
+  }
+
+  bool HasChromeSigninUserChoiceInfoChangeEvent() {
+    return !GetAllFiredValuesForEventName(
+                kChromeSigninUserChoiceInfoChangeEventName)
+                .empty();
+  }
+
+  void SetExplicitSignin(bool value) {
+    profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, value);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, ChromeSigninUserChoice) {
+  CreatePeopleHandler();
+
+  base::Value::List args_get;
+  args_get.Append(kTestCallbackId);
+  handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      false, ChromeSigninUserChoice::kNoChoice, "");
+
+  std::string email("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(email,
+                                                   ConsentLevel::kSignin);
+
+  handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      true, ChromeSigninUserChoice::kNoChoice, email);
+
+  ChromeSigninUserChoice user_choice = ChromeSigninUserChoice::kSignin;
+  base::Value::List args_set;
+  args_set.Append(static_cast<int>(user_choice));
+  args_set.Append(email);
+  handler_->HandleSetChromeSigninUserChoice(args_set);
+
+  handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(true, user_choice, email);
+}
+
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+       ChromeSigninUserAvailableOnExplicitChromeSigninSignout) {
+  const std::string email("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(email,
+                                                   ConsentLevel::kSignin);
+  SetExplicitSignin(true);
+
+  CreatePeopleHandler();
+
+  base::Value::List args_get;
+  args_get.Append(kTestCallbackId);
+  handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      true, ChromeSigninUserChoice::kNoChoice, email);
+
+  // Sign out.
+  identity_test_env()->ClearPrimaryAccount();
+
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+
+  handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      false, ChromeSigninUserChoice::kNoChoice, "");
+}
+
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+       ChromeSigninUserAvailableOnDiceSignin) {
+  const std::string email("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(email,
+                                                   ConsentLevel::kSignin);
+  // Simulates Dice signin.
+  SetExplicitSignin(false);
+
+  CreatePeopleHandler();
+
+  base::Value::List args_get;
+  args_get.Append(kTestCallbackId);
+  handler_->HandleGetChromeSigninUserChoiceInfo(args_get);
+  ExpectChromeSigninUserChoiceInfoFromWebUiResponse(
+      false, ChromeSigninUserChoice::kNoChoice, email);
+}
+
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+       ChromeSigninUserInfoUpdateOnPrefValueChange) {
+  const std::string email("user@gmail.com");
+  identity_test_env()->MakePrimaryAccountAvailable(email,
+                                                   ConsentLevel::kSignin);
+  SetExplicitSignin(true);
+
+  CreatePeopleHandler();
+
+  ASSERT_FALSE(HasChromeSigninUserChoiceInfoChangeEvent());
+
+  auto new_choice_value = ChromeSigninUserChoice::kSignin;
+  DiceWebSigninInterceptor::SetChromeSigninUserChoice(*profile()->GetPrefs(),
+                                                      email, new_choice_value);
+
+  ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(true, new_choice_value,
+                                                      email);
+}
+
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+       ChromeSigninUserInfoUpdateOnSignin) {
+  CreatePeopleHandler();
+
+  ASSERT_FALSE(HasChromeSigninUserChoiceInfoChangeEvent());
+
+  const std::string email("user@gmail.com");
+  // Explicit browser signin.
+  identity_test_env()->MakePrimaryAccountAvailable(email,
+                                                   ConsentLevel::kSignin);
+
+  // By default no choice yet.
+  ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(
+      true, ChromeSigninUserChoice::kNoChoice, email);
+}
+
+TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
+       ChromeSigninUserInfoUpdateOnSync) {
+  CreatePeopleHandler();
+
+  ASSERT_FALSE(HasChromeSigninUserChoiceInfoChangeEvent());
+
+  const std::string email("user@gmail.com");
+  // Sync is a form of explicit browser signin.
+  identity_test_env()->MakePrimaryAccountAvailable(email, ConsentLevel::kSync);
+
+  // By default no choice yet.
+  ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(
+      true, ChromeSigninUserChoice::kNoChoice, email);
+}
+
+// This test does not use `PeopleHandlerWithExplicitBrowserSigninTest` test
+// suite and needs it's own test setup because in order to get the proper web
+// signin, we need to set a cookie while signing in, which requires setting up a
+// `TestURLLoaderFactory` with the `ChromeSigninClient`.
+TEST(PeopleHandlerWebOnlySigninTest, ChromeSigninUserAvailableOnWebSignin) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
+  // -- Test Setup start
+
+  // Needed to enable setting a proper account signed in on the web.
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  content::BrowserTaskEnvironment task_environment;
+
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+  TestingProfile::TestingFactories factories =
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories();
+  factories.push_back(
+      {ChromeSigninClientFactory::GetInstance(),
+       base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                           &url_loader_factory)});
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(factories);
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  // This test env should be used throughout the test.
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  PeopleHandler handler(profile.get());
+
+  // -- Test Setup end.
+
+  // Test before web signin -- only need to check the `shouldShowSettings` param
+  {
+    base::Value::Dict chrome_signin_user_choice_info_dict =
+        handler.GetChromeSigninUserChoiceInfo();
+    std::optional<bool> should_show_settings =
+        chrome_signin_user_choice_info_dict.FindBool("shouldShowSettings");
+    ASSERT_TRUE(should_show_settings.has_value());
+    EXPECT_FALSE(should_show_settings.value());
+  }
+
+  const std::string email("user@gmail.com");
+  // Signs in to the web only.
+  identity_test_env->MakeAccountAvailable(email, {.set_cookie = true});
+  ASSERT_FALSE(identity_test_env->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // Test after web signin and check all the fields.
+  {
+    base::Value::Dict chrome_signin_user_choice_info_dict =
+        handler.GetChromeSigninUserChoiceInfo();
+    PeopleHandlerWithExplicitBrowserSigninTest::
+        ExpectChromeSigninUserChoiceInfoDict(
+            chrome_signin_user_choice_info_dict,
+            /*expected_should_show_settings=*/true,
+            ChromeSigninUserChoice::kNoChoice, email);
+  }
+}
+#endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {

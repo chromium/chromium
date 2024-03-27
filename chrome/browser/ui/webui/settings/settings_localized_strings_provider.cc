@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -1393,6 +1394,16 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO},
       {"pageContentThingsToConsiderBulletThree",
        IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_THREE},
+      {"chromeSigninChoiceTitle",
+       IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE},
+      {"chromeSigninChoiceDescription",
+       IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_DESC},
+      {"chromeSigninChoiceSignin",
+       IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_SIGNIN},
+      {"chromeSigninChoiceDoNotSignin",
+       IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_DO_NOT_SIGNIN},
+      {"chromeSigninChoiceAlwaysAsk",
+       IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_ALWAYS_ASK},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

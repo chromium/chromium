@@ -26,6 +26,8 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -53,6 +55,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -321,6 +324,16 @@ void PeopleHandler::RegisterMessages() {
       "SyncStartKeyRetrieval",
       base::BindRepeating(&PeopleHandler::HandleStartKeyRetrieval,
                           base::Unretained(this)));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  web_ui()->RegisterMessageCallback(
+      "GetChromeSigninUserChoiceInfo",
+      base::BindRepeating(&PeopleHandler::HandleGetChromeSigninUserChoiceInfo,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "SetChromeSigninUserChoice",
+      base::BindRepeating(&PeopleHandler::HandleSetChromeSigninUserChoice,
+                          base::Unretained(this)));
+#endif
 }
 
 void PeopleHandler::OnJavascriptAllowed() {
@@ -331,6 +344,12 @@ void PeopleHandler::OnJavascriptAllowed() {
       prefs::kSigninAllowed,
       base::BindRepeating(&PeopleHandler::UpdateSyncStatus,
                           base::Unretained(this)));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  profile_pref_registrar_->Add(
+      prefs::kChromeSigninInterceptionUserChoice,
+      base::BindRepeating(&PeopleHandler::UpdateChromeSigninUserChoiceInfo,
+                          base::Unretained(this)));
+#endif
 
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
@@ -448,6 +467,21 @@ void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
 
 void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
   FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
+}
+
+void PeopleHandler::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  UpdateChromeSigninUserChoiceInfo();
+#endif
+}
+
+void PeopleHandler::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  UpdateChromeSigninUserChoiceInfo();
+#endif
 }
 
 base::Value::List PeopleHandler::GetStoredAccountsList() {
@@ -895,16 +929,27 @@ void PeopleHandler::OnPrimaryAccountChanged(
       if (service && !sync_blocker_)
         sync_blocker_ = service->GetSetupInProgressHandle();
       UpdateSyncStatus();
-      return;
+      break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       sync_blocker_.reset();
       configuring_sync_ = false;
       UpdateSyncStatus();
-      return;
+      break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
-      return;
+      break;
   }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      UpdateChromeSigninUserChoiceInfo();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
+#endif
 }
 
 void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
@@ -1141,5 +1186,69 @@ bool PeopleHandler::IsProfileAuthNeededOrHasErrors() {
              signin::ConsentLevel::kSync) ||
          SigninErrorControllerFactory::GetForProfile(profile_)->HasError();
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+base::Value::Dict PeopleHandler::GetChromeSigninUserChoiceInfo() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  // Gets the Chrome signed in account or the first signed in account in the
+  // cooke jar, refresh token should be available too.
+  std::string signed_in_email =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager).email;
+
+  bool should_show_settings =
+      !signin::IsImplicitBrowserSigninOrExplicitDisabled(
+          identity_manager, profile_->GetPrefs()) &&
+      !signed_in_email.empty();
+
+  ChromeSigninUserChoice choice =
+      should_show_settings
+          ? DiceWebSigninInterceptor::GetChromeSigninUserChoice(
+                *profile_->GetPrefs(), signed_in_email)
+          : ChromeSigninUserChoice::kNoChoice;
+
+  base::Value::Dict chrome_signin_user_choice_info;
+  chrome_signin_user_choice_info.Set("shouldShowSettings",
+                                     should_show_settings);
+  chrome_signin_user_choice_info.Set("choice", static_cast<int>(choice));
+  chrome_signin_user_choice_info.Set("signedInEmail", signed_in_email);
+
+  return chrome_signin_user_choice_info;
+}
+
+void PeopleHandler::HandleGetChromeSigninUserChoiceInfo(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  ResolveJavascriptCallback(args[0], GetChromeSigninUserChoiceInfo());
+}
+
+void PeopleHandler::HandleSetChromeSigninUserChoice(
+    const base::Value::List& args) {
+  CHECK(!signin::IsImplicitBrowserSigninOrExplicitDisabled(
+      IdentityManagerFactory::GetForProfile(profile_), profile_->GetPrefs()));
+  CHECK_EQ(2U, args.size());
+
+  CHECK(args[0].is_int());
+  ChromeSigninUserChoice user_choice =
+      static_cast<ChromeSigninUserChoice>(args[0].GetInt());
+
+  CHECK(args[1].is_string());
+  std::string signed_in_email = args[1].GetString();
+  CHECK(!signed_in_email.empty());
+
+  DiceWebSigninInterceptor::SetChromeSigninUserChoice(
+      *profile_->GetPrefs(), signed_in_email, user_choice);
+}
+
+void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    FireWebUIListener("chrome-signin-user-choice-info-change",
+                      GetChromeSigninUserChoiceInfo());
+  }
+}
+#endif
 
 }  // namespace settings

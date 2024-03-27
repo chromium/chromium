@@ -18,6 +18,7 @@ import '../relaunch_confirmation_dialog.js';
 import '../settings_shared.css.js';
 // <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 // </if>
 
@@ -27,12 +28,13 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {StatusAction} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {ChromeSigninUserChoiceInfo, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninUserChoice, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -52,6 +54,7 @@ export interface SettingsPersonalizationOptionsElement {
     metricsReportingControl: SettingsToggleButtonElement,
     metricsReportingLink: CrLinkRowElement,
     urlCollectionToggle: SettingsToggleButtonElement,
+    chromeSigninUserChoiceRadioGroup: CrRadioGroupElement,
   };
 }
 
@@ -116,6 +119,17 @@ export class SettingsPersonalizationOptionsElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('signinAvailable'),
       },
+
+      chromeSigninUserChoiceInfo_: {
+        type: Object,
+        value: null,
+      },
+
+      /** Expose ChromeSigninUserChoice enum to HTML bindings. */
+      chromeSigninUserChoiceEnum_: {
+        type: Object,
+        value: ChromeSigninUserChoice,
+      },
       // </if>
 
       enablePageContentSetting_: {
@@ -141,12 +155,17 @@ export class SettingsPersonalizationOptionsElement extends
 
   // <if expr="not is_chromeos">
   private signinAvailable_: boolean;
+
+  private chromeSigninUserChoiceInfo_: ChromeSigninUserChoiceInfo;
   // </if>
 
   private enablePageContentSetting_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
+
+  private syncBrowserProxy_: SyncBrowserProxy =
+      SyncBrowserProxyImpl.getInstance();
 
   private onFocusConfigChange_() {
     if (!this.enablePageContentSetting_) {
@@ -186,6 +205,14 @@ export class SettingsPersonalizationOptionsElement extends
         this.setMetricsReportingPref_(metricsReporting);
     this.addWebUiListener('metrics-reporting-change', setMetricsReportingPref);
     this.browserProxy_.getMetricsReporting().then(setMetricsReportingPref);
+    // </if>
+
+    // <if expr="not is_chromeos">
+    this.syncBrowserProxy_.getChromeSigninUserChoiceInfo().then(
+        this.setChromeSigninUserChoiceInfo_.bind(this));
+    this.addWebUiListener(
+        'chrome-signin-user-choice-info-change',
+        this.setChromeSigninUserChoiceInfo_.bind(this));
     // </if>
 
     this.registerHelpBubble(
@@ -358,6 +385,22 @@ export class SettingsPersonalizationOptionsElement extends
         this.i18n('pageContentLinkRowSublabelOn') :
         this.i18n('pageContentLinkRowSublabelOff');
   }
+
+  // <if expr="not is_chromeos">
+  private setChromeSigninUserChoiceInfo_(info: ChromeSigninUserChoiceInfo) {
+    this.chromeSigninUserChoiceInfo_ = info;
+    if (info.choice !== ChromeSigninUserChoice.NO_CHOICE) {
+      this.$.chromeSigninUserChoiceRadioGroup.selected = info.choice.toString();
+    }
+  }
+
+  private onChromeSigninChoiceChanged_() {
+    const selected = Number(this.$.chromeSigninUserChoiceRadioGroup.selected);
+    assert(selected !== ChromeSigninUserChoice.NO_CHOICE);
+    this.syncBrowserProxy_.setChromeSigninUserChoice(
+        selected, this.chromeSigninUserChoiceInfo_.signedInEmail);
+  }
+  // </if>
 }
 
 declare global {
