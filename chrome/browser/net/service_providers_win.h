@@ -8,14 +8,13 @@
 #include <string>
 #include <vector>
 
-
 struct WinsockNamespaceProvider {
   std::wstring name;
   int version;
   bool active;
   int type;
 };
-typedef std::vector<WinsockNamespaceProvider> WinsockNamespaceProviderList;
+using WinsockNamespaceProviderList = std::vector<WinsockNamespaceProvider>;
 
 struct WinsockLayeredServiceProvider {
   WinsockLayeredServiceProvider();
@@ -29,8 +28,8 @@ struct WinsockLayeredServiceProvider {
   int socket_type;
   int socket_protocol;
 };
-typedef std::vector<WinsockLayeredServiceProvider>
-    WinsockLayeredServiceProviderList;
+using WinsockLayeredServiceProviderList =
+    std::vector<WinsockLayeredServiceProvider>;
 
 // Returns all the Winsock namespace providers.
 void GetWinsockNamespaceProviders(WinsockNamespaceProviderList* namespace_list);

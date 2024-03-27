@@ -5,21 +5,21 @@
 #include "chrome/browser/net/service_providers_win.h"
 
 #include <winsock2.h>
+
 #include <Ws2spi.h>
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "base/values.h"
 
-WinsockLayeredServiceProvider::WinsockLayeredServiceProvider() {
-}
+WinsockLayeredServiceProvider::WinsockLayeredServiceProvider() = default;
 
 WinsockLayeredServiceProvider::WinsockLayeredServiceProvider(
     const WinsockLayeredServiceProvider& other) = default;
 
-WinsockLayeredServiceProvider::~WinsockLayeredServiceProvider() {
-}
+WinsockLayeredServiceProvider::~WinsockLayeredServiceProvider() = default;
 
 void GetWinsockNamespaceProviders(
     WinsockNamespaceProviderList* namespace_list) {
@@ -27,15 +27,15 @@ void GetWinsockNamespaceProviders(
   // Find out how just how much memory is needed.  If we get the expected error,
   // the memory needed is written to size.
   DWORD size = 0;
-  if (WSAEnumNameSpaceProviders(&size, NULL) != SOCKET_ERROR ||
+  if (WSAEnumNameSpaceProviders(&size, nullptr) != SOCKET_ERROR ||
       GetLastError() != WSAEFAULT) {
     NOTREACHED();
     return;
   }
 
-  std::unique_ptr<char[]> namespace_provider_bytes(new char[size]);
+  auto namespace_provider_bytes = base::HeapArray<uint8_t>::WithSize(size);
   WSANAMESPACE_INFO* namespace_providers =
-      reinterpret_cast<WSANAMESPACE_INFO*>(namespace_provider_bytes.get());
+      reinterpret_cast<WSANAMESPACE_INFO*>(namespace_provider_bytes.data());
 
   int num_namespace_providers = WSAEnumNameSpaceProviders(&size,
                                                           namespace_providers);
@@ -62,18 +62,18 @@ void GetWinsockLayeredServiceProviders(
   // the memory needed is written to size.
   DWORD size = 0;
   int error;
-  if (SOCKET_ERROR != WSCEnumProtocols(NULL, NULL, &size, &error) ||
+  if (SOCKET_ERROR != WSCEnumProtocols(nullptr, nullptr, &size, &error) ||
       error != WSAENOBUFS) {
     NOTREACHED();
     return;
   }
 
-  std::unique_ptr<char[]> service_provider_bytes(new char[size]);
+  auto service_provider_bytes = base::HeapArray<uint8_t>::WithSize(size);
   WSAPROTOCOL_INFOW* service_providers =
-      reinterpret_cast<WSAPROTOCOL_INFOW*>(service_provider_bytes.get());
+      reinterpret_cast<WSAPROTOCOL_INFOW*>(service_provider_bytes.data());
 
-  int num_service_providers = WSCEnumProtocols(NULL, service_providers, &size,
-                                               &error);
+  int num_service_providers =
+      WSCEnumProtocols(nullptr, service_providers, &size, &error);
   if (num_service_providers == SOCKET_ERROR) {
     NOTREACHED();
     return;
@@ -103,4 +103,3 @@ void GetWinsockLayeredServiceProviders(
 
   return;
 }
-
