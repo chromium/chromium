@@ -206,7 +206,7 @@ export enum KeyCode {
   OEM_CLEAR = 254,
 }
 
-export const KEY_NAMES: Partial<Record<KeyCode, string>> = {
+const KEY_NAMES: Partial<Record<KeyCode, string>> = {
   [KeyCode.POWER_BUTTON]: 'Power button',
   [KeyCode.BACK]: 'Backspace',
   [KeyCode.TAB]: 'Tab',

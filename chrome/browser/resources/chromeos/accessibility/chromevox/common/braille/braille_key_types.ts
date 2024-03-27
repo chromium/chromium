@@ -110,9 +110,6 @@ export namespace BrailleKeyEvent {
     return SPECIAL_CODES[keyCode] || keyCode.charCodeAt(0);
   }
 
-
-
-
 /*
  * Note: Some of the below mappings contain raw braille dot
  * patterns. These are written out in binary form to make clear
@@ -130,84 +127,82 @@ export namespace BrailleKeyEvent {
  * 0b1100001
  */
 
-/**
- * Maps a braille pattern to a standard key code.
- */
-export const brailleDotsToStandardKeyCode: Record<number,string> = {
-  0b1: 'A',
-  0b11: 'B',
-  0b1001: 'C',
-  0b11001: 'D',
-  0b10001: 'E',
-  0b1011: 'F',
-  0b11011: 'G',
-  0b10011: 'H',
-  0b1010: 'I',
-  0b11010: 'J',
-  0b101: 'K',
-  0b111: 'L',
-  0b1101: 'M',
-  0b11101: 'N',
-  0b10101: 'O',
-  0b1111: 'P',
-  0b11111: 'Q',
-  0b10111: 'R',
-  0b1110: 'S',
-  0b11110: 'T',
-  0b100101: 'U',
-  0b100111: 'V',
-  0b111010: 'W',
-  0b101101: 'X',
-  0b111101: 'Y',
-  0b110101: 'Z',
-  0b110100: '0',
-  0b10: '1',
-  0b110: '2',
-  0b10010: '3',
-  0b110010: '4',
-  0b100010: '5',
-  0b10110: '6',
-  0b110110: '7',
-  0b100110: '8',
-  0b10100: '9',
-};
+  /** Maps a braille pattern to a standard key code. */
+  export const brailleDotsToStandardKeyCode: Record<number, string> = {
+    0b1: 'A',
+    0b11: 'B',
+    0b1001: 'C',
+    0b11001: 'D',
+    0b10001: 'E',
+    0b1011: 'F',
+    0b11011: 'G',
+    0b10011: 'H',
+    0b1010: 'I',
+    0b11010: 'J',
+    0b101: 'K',
+    0b111: 'L',
+    0b1101: 'M',
+    0b11101: 'N',
+    0b10101: 'O',
+    0b1111: 'P',
+    0b11111: 'Q',
+    0b10111: 'R',
+    0b1110: 'S',
+    0b11110: 'T',
+    0b100101: 'U',
+    0b100111: 'V',
+    0b111010: 'W',
+    0b101101: 'X',
+    0b111101: 'Y',
+    0b110101: 'Z',
+    0b110100: '0',
+    0b10: '1',
+    0b110: '2',
+    0b10010: '3',
+    0b110010: '4',
+    0b100010: '5',
+    0b10110: '6',
+    0b110110: '7',
+    0b100110: '8',
+    0b10100: '9',
+  };
 
-/** Maps a braille chord pattern to a standard key code. */
-export const brailleChordsToStandardKeyCode: Record<number,string> = {
-  0b1000000: DomKeyCode.BACKSPACE,
-  0b10100: DomKeyCode.TAB,
-  0b110101: DomKeyCode.ESCAPE,
-  0b101000: DomKeyCode.ENTER,
-};
+  /** Maps a braille chord pattern to a standard key code. */
+  export const brailleChordsToStandardKeyCode: Record<number, string> = {
+    0b1000000: DomKeyCode.BACKSPACE,
+    0b10100: DomKeyCode.TAB,
+    0b110101: DomKeyCode.ESCAPE,
+    0b101000: DomKeyCode.ENTER,
+  };
 
-/** Maps a braille dot chord pattern to standard key modifiers. */
-export const brailleDotsToModifiers: Record<number, Modifiers> = {
-  0b010010: {ctrlKey: true},
-  0b100100: {altKey: true},
-  0b1000100: {shiftKey: true},
-  0b1010010: {ctrlKey: true, shiftKey: true},
-  0b1100100: {altKey: true, shiftKey: true},
-};
+  /** Maps a braille dot chord pattern to standard key modifiers. */
+  export const brailleDotsToModifiers: Record<number, Modifiers> = {
+    0b010010: {ctrlKey: true},
+    0b100100: {altKey: true},
+    0b1000100: {shiftKey: true},
+    0b1010010: {ctrlKey: true, shiftKey: true},
+    0b1100100: {altKey: true, shiftKey: true},
+  };
 
-/** Map from DOM level 4 key codes to legacy numeric key codes. */
-export const legacyKeyCodeMap: Record<string, number> = {
-  [DomKeyCode.BACKSPACE]: KeyCode.BACK,
-  [DomKeyCode.TAB]: KeyCode.TAB,
-  [DomKeyCode.ENTER]: KeyCode.RETURN,
-  [DomKeyCode.ESCAPE]: KeyCode.ESCAPE,
-  [DomKeyCode.HOME]: KeyCode.HOME,
-  [DomKeyCode.ARROW_LEFT]: KeyCode.LEFT,
-  [DomKeyCode.ARROW_UP]: KeyCode.UP,
-  [DomKeyCode.ARROW_RIGHT]: KeyCode.RIGHT,
-  [DomKeyCode.ARROW_DOWN]: KeyCode.DOWN,
-  [DomKeyCode.PAGE_UP]: KeyCode.PRIOR,
-  [DomKeyCode.PAGE_DOWN]: KeyCode.NEXT,
-  [DomKeyCode.END]: KeyCode.END,
-  [DomKeyCode.INSERT]: KeyCode.INSERT,
-  [DomKeyCode.DELETE]: KeyCode.DELETE,
-  [DomKeyCode.AUDIO_VOLUME_DOWN]: KeyCode.VOLUME_DOWN,
-  [DomKeyCode.AUDIO_VOLUME_UP]: KeyCode.VOLUME_UP,
-};
+  /** Map from DOM level 4 key codes to legacy numeric key codes. */
+  export const legacyKeyCodeMap: Record<string, number> = {
+    [DomKeyCode.BACKSPACE]: KeyCode.BACK,
+    [DomKeyCode.TAB]: KeyCode.TAB,
+    [DomKeyCode.ENTER]: KeyCode.RETURN,
+    [DomKeyCode.ESCAPE]: KeyCode.ESCAPE,
+    [DomKeyCode.HOME]: KeyCode.HOME,
+    [DomKeyCode.ARROW_LEFT]: KeyCode.LEFT,
+    [DomKeyCode.ARROW_UP]: KeyCode.UP,
+    [DomKeyCode.ARROW_RIGHT]: KeyCode.RIGHT,
+    [DomKeyCode.ARROW_DOWN]: KeyCode.DOWN,
+    [DomKeyCode.PAGE_UP]: KeyCode.PRIOR,
+    [DomKeyCode.PAGE_DOWN]: KeyCode.NEXT,
+    [DomKeyCode.END]: KeyCode.END,
+    [DomKeyCode.INSERT]: KeyCode.INSERT,
+    [DomKeyCode.DELETE]: KeyCode.DELETE,
+    [DomKeyCode.AUDIO_VOLUME_DOWN]: KeyCode.VOLUME_DOWN,
+    [DomKeyCode.AUDIO_VOLUME_UP]: KeyCode.VOLUME_UP,
+  };
 }
 
 // Add 0-9.
