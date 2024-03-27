@@ -161,7 +161,7 @@ void AV1EncodeArbitraryCallSequenceSucceeds(int speed,
                                             aom_bit_depth_t bit_depth,
                                             aom_img_fmt_t fmt,
                                             const CallSequence& call_sequence) {
-  ASSERT_FALSE(fmt & AOM_IMG_FMT_HIGHBITDEPTH);
+  ASSERT_EQ(fmt & AOM_IMG_FMT_HIGHBITDEPTH, 0);
   const bool high_bit_depth = bit_depth > AOM_BITS_8;
   aom_codec_iface_t* const iface = aom_codec_av1_cx();
   aom_codec_enc_cfg_t cfg;

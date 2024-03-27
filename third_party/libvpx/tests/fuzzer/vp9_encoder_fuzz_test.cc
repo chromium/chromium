@@ -157,10 +157,11 @@ vpx_image_t* CreateGrayImage(vpx_bit_depth_t bit_depth,
 }
 
 void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
+                                            unsigned int row_mt,
                                             vpx_bit_depth_t bit_depth,
                                             vpx_img_fmt_t fmt,
                                             const CallSequence& call_sequence) {
-  ASSERT_FALSE(fmt & VPX_IMG_FMT_HIGHBITDEPTH);
+  ASSERT_EQ(fmt & VPX_IMG_FMT_HIGHBITDEPTH, 0);
   const bool high_bit_depth = bit_depth > VPX_BITS_8;
   const bool is_420 = fmt == VPX_IMG_FMT_I420;
   vpx_codec_iface_t* const iface = vpx_codec_vp9_cx();
@@ -191,6 +192,7 @@ void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
             VPX_CODEC_OK);
 
   ASSERT_EQ(vpx_codec_control(&enc, VP8E_SET_CPUUSED, speed), VPX_CODEC_OK);
+  ASSERT_EQ(vpx_codec_control(&enc, VP9E_SET_ROW_MT, row_mt), VPX_CODEC_OK);
 
   vpx_enc_deadline_t deadline = call_sequence.initialize.deadline;
   const vpx_codec_cx_pkt_t* pkt;
@@ -247,6 +249,7 @@ void VP9EncodeArbitraryCallSequenceSucceeds(int speed,
 FUZZ_TEST(VP9EncodeFuzzTest, VP9EncodeArbitraryCallSequenceSucceeds)
     .WithDomains(
         /*speed=*/InRange(-9, 9),
+        /*row_mt=*/InRange(0u, 1u),
         /*bit_depth=*/AnyBitDepth(),
         // Only generate image formats that don't have the
         // VPX_IMG_FMT_HIGHBITDEPTH bit set. If bit_depth > 8, we will set the
