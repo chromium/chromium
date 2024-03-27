@@ -4378,7 +4378,7 @@
   {
     "name": "file-system-access-persistent-permission",
     "owners": [ "dslee@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 127
   },
   {
     "name": "file-system-access-persistent-permission-updated-page-info",
@@ -6324,7 +6324,7 @@
   {
     "name": "one-time-permission",
     "owners": ["fjacky@chromium.org", "permissions-core@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 127
   },
   {
     "name": "only-access-clipboard-async",
