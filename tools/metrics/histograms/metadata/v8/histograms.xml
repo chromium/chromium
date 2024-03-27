@@ -1203,6 +1203,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.MaglevOptimizeExecute" units="microseconds"
+    expires_after="2025-03-01">
+  <owner>leszeks@chromium.org</owner>
+  <owner>v8-runtime@chromium.org</owner>
+  <summary>
+    Time spent in the execution phase of Maglev optimization. Recorded on each
+    regular optimization of a function.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="V8.MaglevOptimizeFinalize" units="microseconds"
+    expires_after="2025-03-01">
+  <owner>leszeks@chromium.org</owner>
+  <owner>v8-runtime@chromium.org</owner>
+  <summary>
+    Time spent in the finalization phase of Maglev optimization. Recorded on
+    each regular optimization of a function.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="V8.MaglevOptimizePrepare" units="microseconds"
+    expires_after="2025-03-01">
+  <owner>leszeks@chromium.org</owner>
+  <owner>v8-runtime@chromium.org</owner>
+  <summary>
+    Time spent in the preparation phase of Maglev optimization. Recorded on each
+    regular optimization of a function.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="V8.MaglevOptimizeTotalTime" units="microseconds"
+    expires_after="2025-03-01">
+  <owner>leszeks@chromium.org</owner>
+  <owner>v8-runtime@chromium.org</owner>
+  <summary>
+    Total time from starting optimizing to installing the code object. Recorded
+    on each regular optimization of a function.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="V8.MemoryExternalFragmentationCodeSpace" units="%"
     expires_after="2020-03-01">
   <owner>hpayer@chromium.org</owner>
