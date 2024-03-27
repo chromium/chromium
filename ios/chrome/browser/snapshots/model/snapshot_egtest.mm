@@ -78,8 +78,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOneColorSnapshot DISABLED_testOneColorSnapshot
+#else
+#define MAYBE_testOneColorSnapshot testOneColorSnapshot
+#endif
+// TODO(crbug.com/331643658): Re-enable on device when fixed.
 // Tests the snapshot of the page filled with one solid color.
-- (void)testOneColorSnapshot {
+- (void)MAYBE_testOneColorSnapshot {
   // Open a page filled with one solid color.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithRedColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"red"];
@@ -116,9 +122,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTwoColorsSnapshot DISABLED_testTwoColorsSnapshot
+#else
+#define MAYBE_testTwoColorsSnapshot testTwoColorsSnapshot
+#endif
+// TODO(crbug.com/331643658): Re-enable on device when fixed.
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
 // and the lower side is blue in the page.
-- (void)testTwoColorsSnapshot {
+- (void)MAYBE_testTwoColorsSnapshot {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
@@ -177,10 +189,16 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   }
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSnapshotWithScrollDown DISABLED_testSnapshotWithScrollDown
+#else
+#define MAYBE_testSnapshotWithScrollDown testSnapshotWithScrollDown
+#endif
+// TODO(crbug.com/331643658): Re-enable on device when fixed.
 // Tests the snapshot of the page filled with 2 colors. The upper side is green
 // and the lower side is blue in the page. A snapshot is taken 2 times with the
 // same position before and after scrolling down.
-- (void)testSnapshotWithScrollDown {
+- (void)MAYBE_testSnapshotWithScrollDown {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
