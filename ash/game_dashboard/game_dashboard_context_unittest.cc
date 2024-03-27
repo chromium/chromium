@@ -53,8 +53,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -1252,6 +1254,33 @@ TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {
   post_target_event_capturer_.Reset();
   event_generator->MoveMouseTo(new_mouse_location);
   ASSERT_FALSE(post_target_event_capturer_.last_mouse_event());
+}
+
+TEST_F(GameDashboardContextTest, RecordingUpdatesInkDropColor) {
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true);
+
+  auto* game_dashboard_button = test_api_->GetGameDashboardButton();
+  ASSERT_TRUE(game_dashboard_button);
+  auto* color_provider = game_dashboard_button->GetColorProvider();
+  ASSERT_TRUE(color_provider);
+  const auto* ink_drop = views::InkDrop::Get(game_dashboard_button);
+  ASSERT_TRUE(ink_drop);
+
+  // Verify the InkDrop's base color in the normal state.
+  EXPECT_EQ(ink_drop->GetBaseColor(),
+            color_provider->GetColor(cros_tokens::kCrosSysRipplePrimary));
+
+  // Start recording the game window.
+  test_api_->OpenTheMainMenu();
+  LeftClickOn(test_api_->GetMainMenuRecordGameTile());
+  base::RunLoop().RunUntilIdle();
+  ClickOnStartRecordingButtonInCaptureModeBarView();
+
+  // Verify the InkDrop's base color when recording the game window.
+  EXPECT_EQ(
+      ink_drop->GetBaseColor(),
+      color_provider->GetColor(cros_tokens::kCrosSysRippleNeutralOnProminent));
 }
 
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {

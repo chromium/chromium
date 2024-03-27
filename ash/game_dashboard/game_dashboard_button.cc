@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -27,6 +28,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -75,6 +77,9 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kContainerCornerRadius));
   layer()->SetFillsBoundsOpaquely(false);
 
+  ink_drop_container_ =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
+
   // Add the gamepad icon view.
   gamepad_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   gamepad_icon_view_->SetProperty(views::kMarginsKey, kGamepadIconMargins);
@@ -86,6 +91,15 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
   // Add the arrow icon view.
   arrow_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   arrow_icon_view_->SetProperty(views::kMarginsKey, kArrowMargins);
+
+  // Set up highlight ink drop and focus ring.
+  StyleUtil::InstallRoundedCornerHighlightPathGenerator(
+      this, gfx::RoundedCornersF(kContainerCornerRadius));
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
+  ink_drop->SetVisibleOpacity(1.0f);  // The colors already contain opacity.
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysPrimary);
 }
 
 GameDashboardButton::~GameDashboardButton() = default;
@@ -136,6 +150,21 @@ void GameDashboardButton::OnThemeChanged() {
   }
 }
 
+void GameDashboardButton::AddLayerToRegion(ui::Layer* new_layer,
+                                           views::LayerRegion region) {
+  DCHECK(ink_drop_container_);
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
+  ink_drop_container_->AddLayerToRegion(new_layer, region);
+}
+
+void GameDashboardButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  DCHECK(ink_drop_container_);
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
+  ink_drop_container_->RemoveLayerFromRegions(old_layer);
+}
+
 void GameDashboardButton::StateChanged(ButtonState old_state) {
   UpdateViews();
 }
@@ -160,6 +189,10 @@ void GameDashboardButton::UpdateViews() {
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE));
   }
+
+  views::InkDrop::Get(this)->SetBaseColorId(
+      is_recording_ ? cros_tokens::kCrosSysRippleNeutralOnProminent
+                    : cros_tokens::kCrosSysRipplePrimary);
 
   SetBorder(views::CreateRoundedRectBorder(
       kBorderThickness, kContainerCornerRadius, gfx::Insets(),
