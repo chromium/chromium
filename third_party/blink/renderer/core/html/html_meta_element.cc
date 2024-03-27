@@ -569,9 +569,12 @@ void HTMLMetaElement::ParseAttribute(
 Node::InsertionNotificationRequest HTMLMetaElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
+  return kInsertionShouldCallDidNotifySubtreeInsertions;
+}
+
+void HTMLMetaElement::DidNotifySubtreeInsertionsToDocument() {
   ProcessContent();
   ProcessHttpEquiv();
-  return kInsertionDone;
 }
 
 void HTMLMetaElement::RemovedFrom(ContainerNode& insertion_point) {
