@@ -14,15 +14,17 @@
 #include "chrome/browser/enterprise/signin/token_managed_profile_creation_delegate.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 namespace content {
 class WebContents;
 }
 
 namespace policy {
-class CloudPolicyClient;
 class CloudPolicyClientRegistrationHelper;
 }  // namespace policy
+
+class OidcAuthenticationSigninInterceptorTest;
 
 enum class OidcInterceptionStatus {
   kNoInterception = 0,
@@ -32,7 +34,7 @@ enum class OidcInterceptionStatus {
   kPolicyFetch = 4,
   kAddAccount = 5,
   kCompleted = 6,
-  // TODO(319479021): Add more error reporting and retry logics to make the
+  // TODO(b/319479021): Add more error reporting and retry logics to make the
   // interceptor class more resilient
   kError = 7,
 };
@@ -70,10 +72,21 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   virtual void MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
       ProfileManagementOicdTokens oidc_tokens,
-      std::string user_email);
+      std::string subject_id);
 
   // KeyedService:
   void Shutdown() override;
+
+  void SetCloudPolicyClientForTesting(
+      std::unique_ptr<CloudPolicyClient> client) {
+    client_for_testing_ = std::move(client);
+  }
+
+  void SetDisableBrowserCreationAfterInterceptionForTesting(bool disable) {
+    disable_browser_creation_after_interception_for_testing_ = disable;
+  }
+
+  OidcInterceptionStatus interception_status() { return interception_status_; }
 
  private:
   void CreateBrowserAfterSigninInterception(content::WebContents* web_contents);
@@ -111,9 +124,14 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   std::string client_id_;
   std::string user_display_name_;
   std::string user_email_;
+  // 'sub' idenitifer of the OIDC response, unique for each user identity from
+  // the IDP.
+  std::string subject_id_;
   bool dasher_based_ = true;
   raw_ptr<const ProfileAttributesEntry> switch_to_entry_ = nullptr;
   SkColor profile_color_;
+  // TODO(b/319479021): utilize the status variable to have better error
+  // handling and in metrics.
   OidcInterceptionStatus interception_status_ =
       OidcInterceptionStatus::kNoInterception;
 
@@ -123,7 +141,13 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   // Used to retain the interception UI bubble until profile creation completes.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
       interception_bubble_handle_;
+
+  std::unique_ptr<CloudPolicyClient> client_for_testing_ = nullptr;
+  bool disable_browser_creation_after_interception_for_testing_ = false;
+
   base::WeakPtrFactory<OidcAuthenticationSigninInterceptor> weak_factory_{this};
+
+  friend class OidcAuthenticationSigninInterceptorTest;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_OIDC_AUTHENTICATION_SIGNIN_INTERCEPTOR_H_

@@ -57,6 +57,13 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                const std::string&,
                const std::string&),
               (override));
+  MOCK_METHOD(void,
+              RegisterWithOidcResponse,
+              (const RegistrationParameters&,
+               const std::string&,
+               const std::string&,
+               const std::string&),
+              (override));
   MOCK_METHOD(void, FetchPolicy, (PolicyFetchReason), (override));
   MOCK_METHOD(void,
               UploadEnterpriseMachineCertificate,
@@ -152,8 +159,11 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   using CloudPolicyClient::invalidation_payload_;
   using CloudPolicyClient::invalidation_version_;
   using CloudPolicyClient::last_policy_timestamp_;
+  using CloudPolicyClient::oidc_user_display_name_;
+  using CloudPolicyClient::oidc_user_email_;
   using CloudPolicyClient::public_key_version_;
   using CloudPolicyClient::public_key_version_valid_;
+  using CloudPolicyClient::third_party_identity_type_;
   using CloudPolicyClient::types_to_fetch_;
 };
 

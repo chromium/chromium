@@ -131,7 +131,8 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
     LOG(ERROR) << "Decoded Oauth token payload is empty.";
     return;
   }
-
+  // TODO(b/329265314): Replace this field with 'sub' claim which is subject
+  // identifier.
   const std::string* user_email = parsed_json->FindString("upn");
   if (!user_email || (*user_email).empty()) {
     LOG(ERROR) << "User email not found in token payload.";
