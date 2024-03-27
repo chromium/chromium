@@ -47,12 +47,11 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   bool AreWindowsInSnapGroup(aura::Window* window1,
                              aura::Window* window2) const;
 
-  // Returns true if the corresponding SnapGroup for the given `window1` and
-  // `window2` gets created, added to the `snap_groups_` and updated
-  // `window_to_snap_group_map_` successfully. False otherwise.
-  // Currently, we make the assumption that the two windows need to be on the
-  // same parent container.
-  bool AddSnapGroup(aura::Window* window1, aura::Window* window2);
+  //  Attempts to add `window1` and `window2` as a `SnapGroup`. Returns the
+  //  `SnapGroup`, if the creation is successful. Returns nullptr, otherwise.
+  //  Currently, both windows must reside within the same parent container for
+  //  successful creation.
+  SnapGroup* AddSnapGroup(aura::Window* window1, aura::Window* window2);
 
   // Returns true if the corresponding `snap_group` has
   // been successfully removed from the `snap_groups_` and
@@ -67,16 +66,10 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // snap group or nullptr otherwise.
   SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window);
 
-  // Returns the snap group positioned directly below the given window. The
-  // windows within this group will be overwritten when the given `window` is
-  // snapped into place. Returns nullptr if no such snap group exists.
-  SnapGroup* GetSnapGroupToReplaceFor(aura::Window* window);
-
-  // Maybe perform in-place window replacement within the given `snap_group` by
-  // snapping another `window` into the same snap position. Returns true for
-  // successful replacement, false otherwise.
-  bool MaybeReplaceWindowInSnapGroup(aura::Window* window,
-                                     SnapGroup* snap_group);
+  // Returns true if the attempt to replace the window within the snap group
+  // positioned directly below with the given `to_be_snapped_window` is
+  // successful, returns false otherwise.
+  bool OnSnappingWindow(aura::Window* to_be_snapped_window);
 
   // Used to decide whether showing overview on window snapped is allowed in
   // clamshell.

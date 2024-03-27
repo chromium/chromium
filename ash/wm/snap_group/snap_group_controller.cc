@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -60,17 +61,17 @@ bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
          window2 == RetrieveTheOtherWindowInSnapGroup(window1);
 }
 
-bool SnapGroupController::AddSnapGroup(aura::Window* window1,
-                                       aura::Window* window2) {
+SnapGroup* SnapGroupController::AddSnapGroup(aura::Window* window1,
+                                             aura::Window* window2) {
   // We should only allow snap group to be created for windows that have the
   // same parent.
   if (window1->parent() != window2->parent()) {
-    return false;
+    return nullptr;
   }
 
   if (base::Contains(window_to_snap_group_map_, window1) ||
       base::Contains(window_to_snap_group_map_, window2)) {
-    return false;
+    return nullptr;
   }
 
   std::unique_ptr<SnapGroup> snap_group =
@@ -85,10 +86,10 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
   // window_state.cc.
   auto* snap_group_ptr = snap_group.get();
   snap_groups_.push_back(std::move(snap_group));
-  snap_group_ptr->UpdateSnappedWindowsBounds(
+  snap_group_ptr->UpdateGroupWindowsBounds(
       /*account_for_divider_width=*/true);
 
-  return true;
+  return snap_group_ptr;
 }
 
 bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
@@ -98,13 +99,8 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
   CHECK(base::Contains(window_to_snap_group_map_, window1) &&
         base::Contains(window_to_snap_group_map_, window2));
 
-  if (!Shell::Get()->IsInTabletMode()) {
-    snap_group->UpdateSnappedWindowsBounds(/*account_for_divider_width=*/false);
-  }
-
   window_to_snap_group_map_.erase(window1);
   window_to_snap_group_map_.erase(window2);
-  snap_group->StopObservingWindows();
 
   std::erase_if(snap_groups_, base::MatchesUniquePtr(snap_group));
 
@@ -127,38 +123,71 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
   return iter != window_to_snap_group_map_.end() ? iter->second : nullptr;
 }
 
-SnapGroup* SnapGroupController::GetSnapGroupToReplaceFor(aura::Window* window) {
-  return GetSnapGroupForGivenWindow(GetTheWindowSnappedOppositeOf(window));
-}
-
-bool SnapGroupController::MaybeReplaceWindowInSnapGroup(aura::Window* window,
-                                                        SnapGroup* snap_group) {
-  CHECK(snap_group);
-  CHECK_EQ(GetTopmostSnapGroup(), snap_group);
-
-  aura::Window* new_primary_window;
-  aura::Window* new_secondary_window;
-  if (WindowState::Get(window)->GetStateType() ==
-      chromeos::WindowStateType::kPrimarySnapped) {
-    new_primary_window = window;
-    new_secondary_window = snap_group->window2();
-  } else {
-    CHECK_EQ(WindowState::Get(window)->GetStateType(),
-             chromeos::WindowStateType::kSecondarySnapped);
-    new_primary_window = snap_group->window1();
-    new_secondary_window = window;
+bool SnapGroupController::OnSnappingWindow(aura::Window* to_be_snapped_window) {
+  // TODO(b/331305840): Come up with an API to retrieve the snapped window on
+  // the same side as the `to_be_snapped_window` to simplify the logic.
+  SnapGroup* group_to_replace = GetSnapGroupForGivenWindow(
+      GetOppositeVisibleSnappedWindow(to_be_snapped_window));
+  if (!group_to_replace) {
+    return false;
   }
 
-  RemoveSnapGroup(snap_group);
-  AddSnapGroup(new_primary_window, new_secondary_window);
+  WindowState* window_state = WindowState::Get(to_be_snapped_window);
+  const auto window_state_type = window_state->GetStateType();
+
+  aura::Window* curr_primary_window = group_to_replace->window1();
+  aura::Window* curr_secondary_window = group_to_replace->window2();
+  aura::Window* new_primary_window = nullptr;
+  aura::Window* new_secondary_window = nullptr;
+  aura::Window* to_be_replaced_window = nullptr;
+  if (window_state_type == chromeos::WindowStateType::kPrimarySnapped) {
+    to_be_replaced_window = curr_primary_window;
+    new_primary_window = to_be_snapped_window;
+    new_secondary_window = curr_secondary_window;
+  } else {
+    CHECK_EQ(window_state_type, chromeos::WindowStateType::kSecondarySnapped);
+
+    to_be_replaced_window = curr_secondary_window;
+    new_primary_window = curr_primary_window;
+    new_secondary_window = to_be_snapped_window;
+  }
+
+  const float snapped_window_snap_ratio =
+      WindowState::Get(to_be_replaced_window)
+          ->snap_ratio()
+          .value_or(chromeos::kDefaultSnapRatio);
+  const float snapping_window_snap_ratio =
+      window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
+  const float snap_ratio_diff =
+      std::abs(snapped_window_snap_ratio - snapping_window_snap_ratio);
+
+  // Disallow snap-to-replace if the snap ratio difference exceeds the allowed
+  // threshold.
+  if (snap_ratio_diff > kSnapToReplaceRatioDiffThreshold) {
+    return false;
+  }
+
+  // TODO(b/331470570): Consider directly replacing the `to_be_snapped_window`
+  // within the `snap_group`.
+  RemoveSnapGroup(group_to_replace);
+  SnapGroup* new_snap_group =
+      AddSnapGroup(new_primary_window, new_secondary_window);
+
+  // Apply the `primary_window_snap_ratio` to the `new_snap_group` such that the
+  // snap ratio of the `group_to_replace` is preserved.
+  const float primary_window_snap_ratio =
+      new_primary_window == to_be_snapped_window
+          ? snapped_window_snap_ratio
+          : 1 - snapped_window_snap_ratio;
+  new_snap_group->ApplyPrimarySnapRatio(primary_window_snap_ratio);
   return true;
 }
 
 bool SnapGroupController::CanEnterOverview() const {
   // `SnapGroupController` is currently available for clamshell only, tablet
   // mode check will not be handled here.
-  // TODO(michelefan): Get the `SplitViewController` for the actual root window
-  // instead of hard code it to be primary root window.
+  // TODO(michelefan): Get the `SplitViewController` for the actual root
+  // window instead of hard code it to be primary root window.
   if (display::Screen::GetScreen()->InTabletMode() ||
       !SplitViewController::Get(Shell::GetPrimaryRootWindow())
            ->InSplitViewMode()) {
@@ -208,9 +237,9 @@ void SnapGroupController::OnOverviewModeStarting() {
 
 void SnapGroupController::OnOverviewModeEnded() {
   for (const auto& snap_group : snap_groups_) {
-    // TODO(http://b/328783493):  The divider may have been created in the snap
-    // group creation session with partial overview, avoid additional call to
-    // `ShowDivider()` on overview mode ended.
+    // TODO(http://b/328783493):  The divider may have been created in the
+    // snap group creation session with partial overview, avoid additional
+    // call to `ShowDivider()` on overview mode ended.
     snap_group->ShowDivider();
   }
 }
@@ -246,8 +275,8 @@ aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
 }
 
 void SnapGroupController::RestoreSnapGroups() {
-  // TODO(b/286968669): Restore the snap ratio when snapping the windows in snap
-  // group.
+  // TODO(b/286968669): Restore the snap ratio when snapping the windows in
+  // snap group.
   // TODO(b/288335850): Currently `SplitViewController` only supports two
   // windows, the group at the end will overwrite any split view operations.
   // This will be addressed in multiple snap groups feature.

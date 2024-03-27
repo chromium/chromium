@@ -157,6 +157,26 @@ void SplitViewDivider::CloseDividerWidget() {
   }
 }
 
+int SplitViewDivider::SetDividerPosition(int requested_divider_position) {
+  // TODO(michelefan): Fix tablet mode regression: when the divider is dragged
+  // below the minimum window size, slide the window out to prevent errors.
+  if (!display::Screen::GetScreen()->InTabletMode()) {
+    const gfx::Range divider_allowed_range =
+        controller_->GetDividerPositionAllowedRange();
+
+    divider_position_ =
+        std::clamp(requested_divider_position,
+                   static_cast<int>(divider_allowed_range.start()),
+                   static_cast<int>(divider_allowed_range.end()));
+  } else {
+    divider_position_ = requested_divider_position;
+  }
+
+  UpdateDividerBounds();
+
+  return divider_position_;
+}
+
 void SplitViewDivider::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
   int potential_divider_position = divider_position_;
@@ -168,30 +188,10 @@ void SplitViewDivider::UpdateDividerPosition(
         location_in_screen.y() - previous_event_location_.y();
   }
 
-  // TODO(michelefan): Fix tablet mode regression: when the divider is dragged
-  // below the minimum window size, slide the window out to prevent errors.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
-    const gfx::Range divider_allowed_range =
-        controller_->GetDividerPositionAllowedRange();
+  // This line is used for ARC++ windows.
+  potential_divider_position = std::max(0, potential_divider_position);
 
-    if (potential_divider_position < divider_position_) {
-      divider_position_ =
-          std::max(potential_divider_position,
-                   static_cast<int>(divider_allowed_range.start()));
-    }
-
-    if (potential_divider_position > divider_position_) {
-      divider_position_ =
-          std::min(potential_divider_position,
-                   static_cast<int>(divider_allowed_range.end()));
-    }
-  } else {
-    divider_position_ = potential_divider_position;
-  }
-
-  divider_position_ = std::max(0, divider_position_);
-
-  UpdateDividerBounds();
+  SetDividerPosition(potential_divider_position);
 }
 
 void SplitViewDivider::StartResizeWithDivider(

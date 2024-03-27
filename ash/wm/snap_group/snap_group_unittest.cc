@@ -46,6 +46,7 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -1911,27 +1912,15 @@ class SnapGroupTest : public FasterSplitScreenTest {
     WindowCycleList::SetDisableInitialDelayForTesting(true);
   }
 
-  void SnapOneTestWindow(aura::Window* window, WindowStateType state_type) {
-    UpdateDisplay("800x600");
-    WindowState* window_state = WindowState::Get(window);
-    const WindowSnapWMEvent snap_type(
-        state_type == WindowStateType::kPrimarySnapped
-            ? WM_EVENT_SNAP_PRIMARY
-            : WM_EVENT_SNAP_SECONDARY,
-        /*snap_action_source=*/WindowSnapActionSource::kTest);
-    window_state->OnWMEvent(&snap_type);
-    EXPECT_EQ(state_type, window_state->GetStateType());
-  }
-
   void SnapTwoTestWindows(aura::Window* window1,
                           aura::Window* window2,
                           bool horizontal = true) {
     CHECK_NE(window1, window2);
     // Snap `window1` to trigger the overview session shown on the other side of
     // the screen.
-    SnapOneTestWindow(
-        window1,
-        /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
+    SnapOneTestWindow(window1,
+                      /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                      chromeos::kDefaultSnapRatio);
     WaitForOverviewEntered();
     VerifySplitViewOverviewSession(window1);
 
@@ -2096,7 +2085,8 @@ TEST_F(SnapGroupTest, SnapToTheOppositeSideToExit) {
   // Snap the current primary window as the secondary window, partial overview
   // will be triggered.
   SnapOneTestWindow(w1.get(),
-                    /*state_type=*/WindowStateType::kSecondarySnapped);
+                    /*state_type=*/WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio);
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
@@ -2176,7 +2166,8 @@ TEST_F(SnapGroupTest, AutoSnapNewWindow) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(),
-                    /*state_type=*/WindowStateType::kPrimarySnapped);
+                    /*state_type=*/WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
 
   // Create a new `w3`. Test it auto-snaps and forms a snap group with `w1`.
@@ -2548,7 +2539,7 @@ TEST_F(SnapGroupTest, PartialOverview) {
 
   for (const auto& snap_state :
        {WindowStateType::kPrimarySnapped, WindowStateType::kSecondarySnapped}) {
-    SnapOneTestWindow(w1.get(), snap_state);
+    SnapOneTestWindow(w1.get(), snap_state, chromeos::kDefaultSnapRatio);
     WaitForOverviewEnterAnimation();
     EXPECT_TRUE(OverviewController::Get()->overview_session());
     EXPECT_NE(GetOverviewGridBounds(), work_area_bounds());
@@ -3524,7 +3515,8 @@ TEST_F(SnapGroupTest, SkipPairingInOverviewWhenClickingEmptyArea) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
 
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped);
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
   WaitForOverviewEnterAnimation();
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -3554,7 +3546,8 @@ TEST_F(SnapGroupTest, SkipPairingInOverviewWithEscapeKey) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
 
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped);
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(GetOverviewSession()->IsWindowInOverview(w2.get()));
@@ -3578,18 +3571,21 @@ TEST_F(SnapGroupTest, SnapWithoutShowingOverview) {
   snap_group_controller->set_can_enter_overview_for_testing(
       /*can_enter_overview=*/false);
 
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
-  std::unique_ptr<aura::Window> w3(CreateTestWindow());
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped);
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
-  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped);
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio);
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   w2.reset();
 
   snap_group_controller->set_can_enter_overview_for_testing(
       /*can_enter_overview=*/true);
-  SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped);
+  SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio);
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 }
 
@@ -4179,10 +4175,64 @@ TEST_F(SnapGroupTest, SnapToReplaceBasic) {
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
-  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped);
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Test that the snap ratio difference is calculated before snap-to-replace. If
+// it's below the threshold, the snap-to-replace action will occur. If not,
+// we'll start a new faster split-screen session. The previous snap ratio will
+// be preserved after window replacement within a snap group.
+TEST_F(SnapGroupTest, SnapToReplaceWithRatioMargin) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  const float w1_snap_ratio = *WindowState::Get(w1.get())->snap_ratio();
+  EXPECT_EQ(w1_snap_ratio, chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(*WindowState::Get(w1.get())->snap_ratio(),
+            chromeos::kDefaultSnapRatio);
+
+  // Snap the new window `w3` with a 0.55 ratio. Since the difference between
+  // `w3_snap_event_snap_ratio` and `w1_snap_ratio` is less than
+  // `kSnapToReplaceRatioDiffThreshold`, replace w1 with w3. Maintain the
+  // previous snap ratio in the snap group formed by `w1` and `w2`.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  const float w3_snap_event_snap_ratio = 0.55;
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                    w3_snap_event_snap_ratio, WindowSnapActionSource::kTest);
+  EXPECT_LT(std::abs(w1_snap_ratio - w3_snap_event_snap_ratio),
+            kSnapToReplaceRatioDiffThreshold);
+
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(*WindowState::Get(w3.get())->snap_ratio(),
+            chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(*WindowState::Get(w2.get())->snap_ratio(),
+            chromeos::kDefaultSnapRatio);
+
+  // Snap the new window `w4` with a 0.35 ratio. Since the difference between
+  // `w4_snap_event_snap_ratio` and snap ratio of `w3` is greater than
+  // `kSnapToReplaceRatioDiffThreshold`, we will start a new faster split-screen
+  // session.
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  const float w4_snap_event_snap_ratio = 0.35;
+  SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
+                    w4_snap_event_snap_ratio, WindowSnapActionSource::kTest);
+  EXPECT_GT(std::abs(*WindowState::Get(w3.get())->snap_ratio() -
+                     w4_snap_event_snap_ratio),
+            kSnapToReplaceRatioDiffThreshold);
+  VerifySplitViewOverviewSession(w4.get());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w4.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w4.get(), w3.get()));
 }
 
 // -----------------------------------------------------------------------------

@@ -2186,9 +2186,9 @@ void SplitViewController::OnWindowSnapped(
   // In tablet mode, if the window was previously floated, the other side is
   // available, and there is another non-minimized window, do not enter overview
   // but instead snap that window to the opposite side.
-  if (previous_state &&
+  if (InTabletMode() && previous_state &&
       *previous_state == chromeos::WindowStateType::kFloated &&
-      InTabletMode() && state_ != State::kBothSnapped) {
+      state_ != State::kBothSnapped) {
     for (aura::Window* mru_window :
          Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(
              kActiveDesk)) {
@@ -2209,15 +2209,10 @@ void SplitViewController::OnWindowSnapped(
     }
   }
 
-  // TODO(michelefan): Move the logics closer to `MaybeCreateSnapGroup()`.
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupToReplaceFor(window)) {
-      if (snap_group_controller->MaybeReplaceWindowInSnapGroup(window,
-                                                               snap_group)) {
-        return;
-      }
-    }
+  if (auto* snap_group_controller = SnapGroupController::Get();
+      snap_group_controller &&
+      snap_group_controller->OnSnappingWindow(window)) {
+    return;
   }
 
   if (WillStartPartialOverview(window)) {

@@ -24,6 +24,7 @@ class Widget;
 namespace ash {
 
 class LayoutDividerController;
+class SnapGroupController;
 class SplitViewController;
 class SplitViewDividerView;
 
@@ -78,8 +79,11 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Closes the divider widget.
   void CloseDividerWidget();
 
-  // Updates `divider_position_` according to the current event location on the
-  // divider widget during resizing.
+  // Sets the divider position, ensuring it meets the minimum window size
+  // requirement. Returns the actual `divider_position_`.
+  int SetDividerPosition(int requested_divider_position);
+
+  // Updates divider position while resizing, keeping it within allowed range.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
   // Resizing functions used when resizing with `split_view_divider_` in the

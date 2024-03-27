@@ -76,14 +76,29 @@ class SnapGroup : public aura::WindowObserver,
  private:
   friend class SnapGroupController;
 
-  // Observes the windows that are added in the `SnapGroup`.
+  // Observes the windows that are added in the `this`.
   void StartObservingWindows();
 
-  // Stops observing the windows when the `SnapGroup` gets destructed.
+  // Stops observing the windows when the `this` gets destructed.
   void StopObservingWindows();
 
-  // Updates the bounds for the snapped windows. UPDATE COMMENTS
-  void UpdateSnappedWindowsBounds(bool account_for_divider_width);
+  // Updates the bounds of windows in `this`. 'account_for_divider_width'
+  // determines whether to adjust the snapped windows' bounds to accommodate the
+  // divider.
+  void UpdateGroupWindowsBounds(bool account_for_divider_width);
+
+  // Updates the bounds of the given snapped window.
+  // - Adjusts window bounds to accommodate the divider if
+  // 'account_for_divider_width' is true.
+  // - Prioritizes 'snap_ratio' (predetermined snap ratio for the snapped
+  // window) over the snap ratio retrieved from the window's state if set.
+  void UpdateSnappedWindowBounds(aura::Window* window,
+                                 bool account_for_divider_width,
+                                 std::optional<float> snap_ratio);
+
+  // Adjusts snapped windows and divider bounds to match the given
+  // `primary_snap_ratio`.
+  void ApplyPrimarySnapRatio(float primary_snap_ratio);
 
   // Within a snap group, the divider appears as a widget positioned between the
   // two snapped windows. It serves a dual purpose: signifying the group

@@ -2824,6 +2824,7 @@ component("ash") {
     "wm/session_state_animator_impl.h",
     "wm/snap_group/snap_group.cc",
     "wm/snap_group/snap_group.h",
+    "wm/snap_group/snap_group_constants.h",
     "wm/snap_group/snap_group_controller.cc",
     "wm/snap_group/snap_group_controller.h",
     "wm/splitview/auto_snap_controller.cc",

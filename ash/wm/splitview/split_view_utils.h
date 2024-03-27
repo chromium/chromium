@@ -264,7 +264,7 @@ ASH_EXPORT bool CanSnapActionSourceStartFasterSplitView(
 // Returns the window that is fully visible (without occlusion) and snapped to
 // the opposite side of the given `window`. Returns nullptr if no such window
 // exists.
-aura::Window* GetTheWindowSnappedOppositeOf(aura::Window* window);
+aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window);
 
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is

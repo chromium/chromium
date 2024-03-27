@@ -4,13 +4,18 @@
 
 #include "ash/wm/snap_group/snap_group.h"
 
+#include <optional>
+
+#include "ash/shell.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "ui/base/hit_test.h"
+#include "ui/gfx/range/range_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -44,6 +49,10 @@ SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
 }
 
 SnapGroup::~SnapGroup() {
+  // Restore the snapped window bounds that were adjusted to make room for
+  // divider when snap group was created.
+  UpdateGroupWindowsBounds(/*account_for_divider_width=*/false);
+
   // Close the divider before we stop observing windows, since
   // `~SplitViewDivider` will try to remove the observers again.
   HideDivider();
@@ -117,12 +126,12 @@ void SnapGroup::StartResizeWithDivider(const gfx::Point& location_in_screen) {
 
 void SnapGroup::UpdateResizeWithDivider(const gfx::Point& location_in_screen) {
   CHECK(snap_group_divider_.is_resizing_with_divider());
-  UpdateSnappedWindowsBounds(/*account_for_divider_width=*/true);
+  UpdateGroupWindowsBounds(/*account_for_divider_width=*/true);
 }
 
 bool SnapGroup::EndResizeWithDivider(const gfx::Point& location_in_screen) {
   CHECK(!snap_group_divider_.is_resizing_with_divider());
-  UpdateSnappedWindowsBounds(/*account_for_divider_width=*/true);
+  UpdateGroupWindowsBounds(/*account_for_divider_width=*/true);
   // We return true since we are done with resizing and can hand back work to
   // `SplitViewDivider`. See `SplitViewDivider::EndResizeWithDivider()`.
   return true;
@@ -187,14 +196,49 @@ void SnapGroup::StopObservingWindows() {
   window2_ = nullptr;
 }
 
-void SnapGroup::UpdateSnappedWindowsBounds(bool account_for_divider_width) {
-  for (aura::Window* window : {window1_, window2_}) {
-    const gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
-        GetPositionOfSnappedWindow(window), window,
-        window_util::GetSnapRatioForWindow(window), account_for_divider_width);
-    const SetBoundsWMEvent event(requested_bounds, /*animate=*/true);
-    WindowState::Get(window)->OnWMEvent(&event);
+void SnapGroup::UpdateGroupWindowsBounds(bool account_for_divider_width) {
+  // Return early if in tablet mode, `SplitViewController` will handle window
+  // bounds update.
+  if (Shell::Get()->IsInTabletMode()) {
+    return;
   }
+
+  for (aura::Window* window : {window1_, window2_}) {
+    UpdateSnappedWindowBounds(window, account_for_divider_width, std::nullopt);
+  }
+}
+
+void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
+                                          bool account_for_divider_width,
+                                          std::optional<float> snap_ratio) {
+  const gfx::Rect requested_bounds = GetSnappedWindowBoundsInScreen(
+      GetPositionOfSnappedWindow(window), window,
+      snap_ratio.value_or(window_util::GetSnapRatioForWindow(window)),
+      account_for_divider_width);
+  const SetBoundsWMEvent event(requested_bounds, /*animate=*/true);
+  WindowState::Get(window)->OnWMEvent(&event);
+}
+
+void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
+  const int upper_limit =
+      GetDividerPositionUpperLimit(window1_->GetRootWindow());
+  const int requested_divider_position =
+      upper_limit * primary_snap_ratio - kSplitviewDividerShortSideLength / 2.f;
+
+  // TODO(b/5613837): Remove the cyclic dependencies between snapped window
+  // bounds calculation and divider position calculation.
+  const int actual_divider_position =
+      snap_group_divider_.SetDividerPosition(requested_divider_position);
+
+  UpdateSnappedWindowBounds(window1_, /*account_for_divider_width=*/true,
+                            primary_snap_ratio);
+  UpdateSnappedWindowBounds(window2_, /*account_for_divider_width=*/true,
+                            1 - primary_snap_ratio);
+
+  // The actual divider position might differ from the
+  // `requested_divider_position` because it needs to be adjusted to accommodate
+  // the windows' minimum sizes.
+  snap_group_divider_.ShowFor(actual_divider_position);
 }
 
 }  // namespace ash

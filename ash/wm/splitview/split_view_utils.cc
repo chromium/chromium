@@ -849,7 +849,7 @@ bool CanSnapActionSourceStartFasterSplitView(
   }
 }
 
-aura::Window* GetTheWindowSnappedOppositeOf(aura::Window* window) {
+aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
   const auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   const auto opposite_snap_type = GetOppositeSnapType(window);
@@ -934,7 +934,12 @@ bool CanStartSplitViewOverviewSessionInClamshell(
                 ->split_view_overview_session();
   }
 
-  if (GetTheWindowSnappedOppositeOf(window)) {
+  // With `kSnapGroup` disabled: Skip starting 'SplitViewOverviewSession' if a
+  // fully visible window exists on the opposite side.
+  // With 'kSnapGroup' enabled: Let the 'SnapGroupController' determine whether
+  // to snap-to-replace based on the opposite window's visibility and snap ratio
+  // difference. Otherwise, always start a 'SplitViewOverviewSession'."
+  if (!SnapGroupController::Get() && GetOppositeVisibleSnappedWindow(window)) {
     return false;
   }
 
