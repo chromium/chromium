@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -195,13 +196,13 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
 
   // Get the file paths of all DLLs loaded.
   HANDLE process = GetCurrentProcess();
-  HMODULE* modules = NULL;
+  HMODULE* modules = nullptr;
   DWORD bytes_required;
   if (!EnumProcessModules(process, modules, 0, &bytes_required))
     return;
 
-  std::unique_ptr<char[]> buffer(new char[bytes_required]);
-  modules = reinterpret_cast<HMODULE*>(buffer.get());
+  auto buffer = base::HeapArray<uint8_t>::WithSize(bytes_required);
+  modules = reinterpret_cast<HMODULE*>(buffer.data());
   DWORD ignore;
   if (!EnumProcessModules(process, modules, bytes_required, &ignore))
     return;

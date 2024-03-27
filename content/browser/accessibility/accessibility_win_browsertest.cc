@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <objbase.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -12,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -604,9 +606,9 @@ AccessibilityWinBrowserTest::GetAllAccessibleChildren(IAccessible* element) {
   if (child_count <= 0)
     return std::vector<base::win::ScopedVariant>();
 
-  std::unique_ptr<VARIANT[]> children_array(new VARIANT[child_count]);
+  auto children_array = base::HeapArray<VARIANT>::WithSize(child_count);
   LONG obtained_count = 0;
-  hr = AccessibleChildren(element, 0, child_count, children_array.get(),
+  hr = AccessibleChildren(element, 0, child_count, children_array.data(),
                           &obtained_count);
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(child_count, obtained_count);
