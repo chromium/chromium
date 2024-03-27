@@ -216,6 +216,20 @@ describe('NetworkStorage', () => {
       const event = await getEvent('network.beforeRequestSent');
       expect(event).to.exist;
     });
+
+    it('should work with data url and global interception', async () => {
+      networkStorage.addIntercept({
+        urlPatterns: [{type: 'pattern'}],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      const event = await getEvent('network.beforeRequestSent');
+      expect(event).to.exist;
+    });
   });
 
   describe('network.responseStarted', () => {
@@ -301,6 +315,17 @@ describe('NetworkStorage', () => {
         isBlocked: false,
       });
     });
+
+    it('should work with data url', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      request.responseReceived();
+      const event = await getEvent('network.responseStarted');
+      expect(event).to.exist;
+    });
   });
 
   describe('network.authRequired', () => {
@@ -338,6 +363,19 @@ describe('NetworkStorage', () => {
       request.authRequired();
       events = await getEvents('network.authRequired');
       expect(events).to.have.length(2);
+    });
+  });
+
+  describe('network.responseCompleted', () => {
+    it('should work with data url', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient, {
+        url: 'data:text/html,<div>yo</div>',
+      });
+
+      request.requestWillBeSent();
+      request.responseReceived();
+      const event = await getEvent('network.responseCompleted');
+      expect(event).to.exist;
     });
   });
 });
