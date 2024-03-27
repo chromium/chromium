@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
@@ -63,7 +62,7 @@ struct FrameFirstPaint {
         text_painted(false),
         image_painted(false) {}
 
-  raw_ptr<const void, DanglingUntriaged> frame;
+  const void* frame;
   bool first_painted : 1;
   bool text_painted : 1;
   bool image_painted : 1;
