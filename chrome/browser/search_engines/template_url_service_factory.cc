@@ -37,25 +37,9 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
-namespace {
-
-BASE_FEATURE(kProfileBasedTemplateURLService,
-             "ProfileBasedTemplateURLService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
   TRACE_EVENT0("loading", "TemplateURLServiceFactory::GetForProfile");
-
-  if (base::FeatureList::IsEnabled(kProfileBasedTemplateURLService)) {
-    if (!profile->template_url_service()) {
-      profile->set_template_url_service(static_cast<TemplateURLService*>(
-          GetInstance()->GetServiceForBrowserContext(profile, true)));
-    }
-    return profile->template_url_service().value();
-  }
 
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -144,11 +128,4 @@ void TemplateURLServiceFactory::RegisterProfilePrefs(
 
 bool TemplateURLServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
-}
-
-void TemplateURLServiceFactory::BrowserContextDestroyed(
-    content::BrowserContext* browser_context) {
-  Profile::FromBrowserContext(browser_context)
-      ->set_template_url_service(nullptr);
-  BrowserContextKeyedServiceFactory::BrowserContextDestroyed(browser_context);
 }
