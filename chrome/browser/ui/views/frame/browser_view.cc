@@ -1556,8 +1556,13 @@ void BrowserView::BookmarkBarStateChanged(
     bookmark_bar_view_->SetBookmarkBarState(new_state, change_type);
   }
 
-  if (MaybeShowBookmarkBar(GetActiveWebContents()))
-    DeprecatedLayoutImmediately();
+  if (MaybeShowBookmarkBar(GetActiveWebContents())) {
+    // TODO(crbug.com/326362544): Once BrowserViewLayout extends from
+    // LayoutManagerBase we should be able to remove this call as
+    // LayoutManagerBase will handle invalidating layout when children are added
+    // and removed.
+    InvalidateLayout();
+  }
 }
 
 void BrowserView::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
