@@ -10,6 +10,13 @@ source_set("price_insights_ui") {
     "price_insights_item.mm",
   ]
 
-  deps = []
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/browser/ui/price_notifications/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
