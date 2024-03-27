@@ -37,6 +37,11 @@ SubSurface::~SubSurface() {
   }
   if (parent_)
     parent_->RemoveSurfaceObserver(this);
+
+  // Destroying a sub-surface takes effect immediately.
+  if (surface_ && parent_ && !surface_->is_augmented()) {
+    parent_->OnSubSurfaceCommit();
+  }
 }
 
 void SubSurface::SetPosition(const gfx::PointF& position) {
@@ -93,7 +98,7 @@ void SubSurface::SetCommitBehavior(bool synchronized) {
   TRACE_EVENT1("exo", "SubSurface::SetCommitBehavior", "synchronized",
                synchronized);
 
-  is_synchronized_ = synchronized;
+  is_synchronized_ = surface_->is_augmented() || synchronized;
 }
 
 std::unique_ptr<base::trace_event::TracedValue> SubSurface::AsTracedValue()

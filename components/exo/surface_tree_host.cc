@@ -176,6 +176,13 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
 
   if (root_surface) {
     root_surface_ = root_surface;
+    // If lacros happens to be below the version where augmented_surface changed
+    // to compositing-only, `root_surface_` will be augmented, and its
+    // content_size will be ignored, producing empty bounds. Hence, set
+    // set_is_augmented(false) forcibly.
+    // TODO(https://crbug.com/1280332): Remove when lacros/ash version skew
+    // window is passed.
+    root_surface_->set_is_augmented(false);
     root_surface_->SetSurfaceDelegate(this);
 
     if (client_submits_surfaces_in_pixel_coordinates_) {
@@ -496,8 +503,7 @@ void SurfaceTreeHost::UpdateHostLayerOpacity() {
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
 
   const bool fills_bounds_opaquely =
-      bounds ==
-          gfx::ToEnclosingRectIgnoringError(root_surface_->visual_rect()) &&
+      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
       root_surface_->FillsBoundsOpaquely();
 
   if (commit_target_layer == host_window_->layer()) {

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="11">
+  <interface name="surface_augmenter" version="12">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -53,6 +53,11 @@
       <description summary="creates a solid color buffer">
 	Instantiate a buffer of the given size for the purpose of a solid color
   quad of a given color.
+
+	<!-- Version 12 additions -->
+	This buffer does not require resources in the compositor, so it is immediately
+	reusable and shareable. So it is not responsible for sending wl_buffer.release
+	or zwp_linux_buffer_release_v1.*_release events.
       </description>
       <arg name="id" type="new_id" interface="wl_buffer"/>
       <arg name="color" type="array" summary="quad color represented by a SkColor4f"/>
@@ -66,6 +71,10 @@
 	extend composition of its content. If the given wl_surface already has
 	a augmentation object associated, the delegate_exists protocol error is
   raised.
+
+	<!-- Version 12 additions -->
+	If needs to be called, this must be called before a surface role object is
+	created.
       </description>
       <arg name="id" type="new_id" interface="augmented_surface"
            summary="the new augmenter interface id"/>
@@ -89,16 +98,60 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="11">
+  <interface name="augmented_surface" version="12">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
       contents.
+
+      <!-- Version 12 additions -->
+      This makes the surface an object only used to composite its parent
+      surface. This means the surface will be clipped to the parent bounds, will
+      not receive input events or display enter/leave events, etc.
+
+      Use wl_subsurface role objects to express which parent surface this will
+      perform delegate composition for.
+
+      The commits to this surface is assumed to behave synchronized with its
+      parent commits, as a synchronized wl_subsurface would.
+
+      The compositor does not perform fine-grained damage extension calculation
+      that is introduced by an augmented_surface moving, resizing, changing
+      stacking, or disappearing. A client performing such operations should
+      account for it and damage the parent non-augmented wl_surface accordingly.
+
+      Various changes like adding or removing an augmented sub-surface, changing
+      its position or stacking order, will not introduce extra damage on the
+      compositor side. The parent wl_surface should account for the extra damage
+      introduced.
+
+      This surface, using a wl_subsurface role of its parent, cannot be stacked
+      relative to non-augmented sub-surfaces of the parent, but can be stacked
+      relative to other augmented children. Nor can this surface have
+      non-augmented sub-surface children.
+
+      A mixed tree structure of using augmented_surfaces to delegate composite
+      wl_surfaces would look like this:
+
+                wl_surface@1:{ augmented_surface@1,2,3 }
+                /           \_____
+               /                   \
+        wl_surface@2:               wl_surface@3:
+          { augmented_surface@4,5 }   { augmented_surface@6 }
+
+      Every wl_surface has a list of augmented_surfaces. Assuming the
+      wl_surface stacking order, from bottom to top, is:
+      wl_surface@1, wl_surface@2, wl_surface@3
+
+      Then the final composition order, from bottom to top, is:
+      wl_surface@1, augmented_surface@1,2,3, wl_surface@2, augmented_surface@4,5,
+      wl_surface@3, augmented_surface@6
     </description>
      <request name="destroy" type="destructor">
       <description summary="remove delegated composition of the surface">
-	The associated wl_surface's augmenter is removed.
-	The change is applied on the next wl_surface.commit.
+	Client will no longer be able to control the delegated composition properties
+	of this surface. This does not change the existing delegated composition
+	behavior.
       </description>
     </request>
 
@@ -107,6 +160,8 @@
 	     summary="negative values in radius or size"/>
       <entry name="no_surface" value="1"
 	     summary="the wl_surface was destroyed"/>
+      <entry name="bad_surface" value="2"
+	     summary="incompatible surface"/>
     </enum>
 
     <request name="set_rounded_corners">
@@ -179,11 +234,12 @@
 
     <request name="set_trusted_damage" since="6">
       <description summary="sets the trusted damage state of this surface">
-        When set, this surface trusts all damage reported to this surface and
-        descendant sub-surfaces is accurate, and will not try to recompute it.
-        If not set, various changes like adding or removing a sub-surface,
-        changing its position or stacking order, can cause full damage on this
-        surface.
+        [Deprecated] When set, this surface trusts all damage reported to this
+        surface and descendant sub-surfaces is accurate, and will not try to
+        recompute it. If not set, various changes like adding or removing a
+        sub-surface, changing its position or stacking order, can cause full
+        damage on this surface.
+
         The initial state is disabled.
       </description>
       <arg name="enabled" type="int"/>
@@ -330,7 +386,8 @@
         matrix.
 
         The initial transform is identity.
-        This state is double-buffered, and is applied on the next wl_surface.commit.
+        This state is double-buffered, and is applied on the next
+        wl_surface.commit.
       </description>
       <arg name="matrix" type="array" summary="size 6 affine matrix, or size 0 for identity matrix"/>
     </request>

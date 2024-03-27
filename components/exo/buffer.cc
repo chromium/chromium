@@ -944,7 +944,9 @@ base::WeakPtr<Buffer> Buffer::AsWeakPtr() {
 
 SolidColorBuffer::SolidColorBuffer(const SkColor4f& color,
                                    const gfx::Size& size)
-    : Buffer(nullptr), color_(color), size_(size) {}
+    : Buffer(nullptr), color_(color), size_(size) {
+  SkipLegacyRelease();
+}
 
 SolidColorBuffer::~SolidColorBuffer() = default;
 

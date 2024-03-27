@@ -228,5 +228,44 @@ TEST_F(SubSurfaceTest, SetOnParent) {
   EXPECT_TRUE(surface->window()->GetProperty(aura::client::kSkipImeProcessing));
 }
 
+TEST_F(SubSurfaceTest, AugmentedSurfaceDoesNotExpandHierarchy) {
+  auto parent = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(parent.get());
+
+  auto sub_layer = std::make_unique<Surface>();
+  sub_layer->set_is_augmented(true);
+  auto sub_surface = std::make_unique<Surface>();
+  auto sub_layer_role =
+      std::make_unique<SubSurface>(sub_layer.get(), parent.get());
+  auto sub_surface_role =
+      std::make_unique<SubSurface>(sub_surface.get(), parent.get());
+
+  auto parent_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(800, 600)));
+  auto sub_surface_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
+  auto sub_layer_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
+
+  // Set position to be outside parent surface.
+  sub_layer_role->SetPosition(gfx::PointF(-10, 0));
+  sub_surface_role->SetPosition(gfx::PointF(0, -10));
+
+  parent->Attach(parent_buffer.get());
+  sub_layer->Attach(sub_layer_buffer.get());
+  sub_surface->Attach(sub_surface_buffer.get());
+
+  sub_layer->Commit();
+  sub_surface->Commit();
+  parent->Commit();
+
+  // Only sub_surface affects the surface hierarchy bounds
+  EXPECT_EQ(parent->surface_hierarchy_content_bounds(),
+            gfx::Rect(0, -10, 800, 610));
+  // sub_layer is not in parent aura window's children list.
+  EXPECT_EQ(1u, parent->window()->children().size());
+  EXPECT_EQ(sub_surface->window(), parent->window()->children()[0]);
+}
+
 }  // namespace
 }  // namespace exo

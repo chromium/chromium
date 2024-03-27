@@ -33,8 +33,11 @@ class ClientData : public test::TestClient::CustomData {
   }
 
   std::unique_ptr<wl_surface> parent_wl_surface;
+
   std::unique_ptr<wl_surface> child_wl_surface;
   std::unique_ptr<wl_subsurface> child_wl_subsurface;
+  std::unique_ptr<wl_surface> child2_wl_surface;
+  std::unique_ptr<wl_subsurface> child2_wl_subsurface;
 
   raw_ptr<augmented_surface, DanglingUntriaged> augmented_surface = nullptr;
   raw_ptr<augmented_sub_surface, DanglingUntriaged> augmented_sub_surface =
@@ -61,17 +64,6 @@ TEST_F(SurfaceAugmenterTest, AugmentedSubSurfacesDontSendLeaveEnter) {
   EXPECT_TRUE(parent_surface->HasLeaveEnterCallbackForTesting());
   // Normal surface will create accessibility nodes.
   EXPECT_FALSE(parent_surface->window()->GetProperty(
-      ui::kAXConsiderInvisibleAndIgnoreChildren));
-
-  // Augment the surface and check that it still sends enter/leave events.
-  PostToClientAndWait([&](test::TestClient* client) {
-    ClientData* data = client->GetDataAs<ClientData>();
-    data->augmented_surface = surface_augmenter_get_augmented_surface(
-        client->surface_augmenter(), data->parent_wl_surface.get());
-  });
-  EXPECT_TRUE(parent_surface->HasLeaveEnterCallbackForTesting());
-  // Augmented surface will suppress accessibility nodes.
-  EXPECT_TRUE(parent_surface->window()->GetProperty(
       ui::kAXConsiderInvisibleAndIgnoreChildren));
 
   // Create another surface.
@@ -107,14 +99,41 @@ TEST_F(SurfaceAugmenterTest, AugmentedSubSurfacesDontSendLeaveEnter) {
   EXPECT_TRUE(child_surface->HasLeaveEnterCallbackForTesting());
   EXPECT_TRUE(child_subsurface->surface()->HasLeaveEnterCallbackForTesting());
 
-  // Augment the subsurface and check that it doesn't send the events anymore.
+  // Create yet another surface. Make it augmented.
+  test::ResourceKey child2_surface_key;
   PostToClientAndWait([&](test::TestClient* client) {
-    ClientData* data = client->GetDataAs<ClientData>();
-    data->augmented_sub_surface = surface_augmenter_get_augmented_subsurface(
-        client->surface_augmenter(), data->child_wl_subsurface.get());
+    auto* data = client->GetDataAs<ClientData>();
+    data->child2_wl_surface.reset(
+        wl_compositor_create_surface(client->compositor()));
+    data->augmented_surface = surface_augmenter_get_augmented_surface(
+        client->surface_augmenter(), data->child2_wl_surface.get());
+    child2_surface_key =
+        test::client_util::GetResourceKey(data->child2_wl_surface.get());
   });
-  EXPECT_FALSE(child_surface->HasLeaveEnterCallbackForTesting());
-  EXPECT_FALSE(child_subsurface->surface()->HasLeaveEnterCallbackForTesting());
+  Surface* child2_surface = test::server_util::GetUserDataForResource<Surface>(
+      server_.get(), child2_surface_key);
+  ASSERT_TRUE(child2_surface);
+
+  // Make it a subsurface of the first one.
+  test::ResourceKey child2_subsurface_key;
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+
+    data->child2_wl_subsurface.reset(wl_subcompositor_get_subsurface(
+        client->subcompositor(), data->child2_wl_surface.get(),
+        data->parent_wl_surface.get()));
+
+    child2_subsurface_key =
+        test::client_util::GetResourceKey(data->child2_wl_subsurface.get());
+  });
+  SubSurface* child2_subsurface =
+      test::server_util::GetUserDataForResource<SubSurface>(
+          server_.get(), child2_subsurface_key);
+  ASSERT_TRUE(child2_subsurface);
+
+  // Check that it does not send the events.
+  EXPECT_FALSE(child2_surface->HasLeaveEnterCallbackForTesting());
+  EXPECT_FALSE(child2_subsurface->surface()->HasLeaveEnterCallbackForTesting());
 }
 
 class ShellClientData : public ClientData {
@@ -144,8 +163,7 @@ class ShellClientData : public ClientData {
   std::unique_ptr<zaura_toplevel> aura_toplevel_;
 };
 
-TEST_F(SurfaceAugmenterTest,
-       SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree) {
+TEST_F(SurfaceAugmenterTest, AugmentedSubSurfacesAreNotAttachedToLayerTree) {
   //----------------------------------------------------------------
   //  Create a surface (top level).
   //----------------------------------------------------------------
@@ -176,7 +194,7 @@ TEST_F(SurfaceAugmenterTest,
   ASSERT_TRUE(parent_surface);
   ASSERT_TRUE(parent_shell_surface);
   ASSERT_TRUE(parent_shell_surface->GetWidget()->IsVisible());
-  EXPECT_EQ(gfx::RectF(0, 0, 256, 256), parent_surface->visual_rect());
+  EXPECT_EQ(gfx::SizeF(256, 256), parent_surface->content_size());
 
   //----------------------------------------------------------------
   //  Create another surface (subsurface of the toplevel one).
@@ -229,22 +247,15 @@ TEST_F(SurfaceAugmenterTest,
       child_surface->window()->layer()->cc_layer_for_testing()->IsAttached());
 
   //----------------------------------------------------------------
-  //  Augment the toplevel surface.
-  //----------------------------------------------------------------
-  PostToClientAndWait([&](test::TestClient* client) {
-    auto* data = client->GetDataAs<ShellClientData>();
-    data->augmented_surface = surface_augmenter_get_augmented_surface(
-        client->surface_augmenter(), data->parent_wl_surface.get());
-  });
-
-  //----------------------------------------------------------------
-  //  Create yet another surface (subsurface of the toplevel one).
+  //  Create yet another surface. Make it augmented.
   //----------------------------------------------------------------
   test::ResourceKey child2_surface_key;
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data = client->GetDataAs<ShellClientData>();
     data->child2_wl_surface.reset(
         wl_compositor_create_surface(client->compositor()));
+    data->augmented_surface = surface_augmenter_get_augmented_surface(
+        client->surface_augmenter(), data->child2_wl_surface.get());
     child2_surface_key =
         test::client_util::GetResourceKey(data->child2_wl_surface.get());
   });

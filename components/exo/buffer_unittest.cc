@@ -7,6 +7,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include "base/barrier_closure.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -145,8 +146,8 @@ TEST_P(BufferTest, SolidColorReleaseCallback) {
   // Set the release callback.
   int release_call_count = 0;
   base::RunLoop run_loop;
-  buffer->set_release_callback(test::CreateReleaseBufferClosure(
-      &release_call_count, run_loop.QuitClosure()));
+  buffer->set_release_callback(
+      test::CreateReleaseBufferClosure(&release_call_count, /*closure=*/{}));
 
   buffer->OnAttach();
   viz::TransferableResource resource;
@@ -177,9 +178,8 @@ TEST_P(BufferTest, SolidColorReleaseCallback) {
 
   buffer->OnDetach();
 
-  run_loop.Run();
-  // Release() should have been called exactly once.
-  EXPECT_EQ(release_call_count, 1);
+  // Release() should never be called.
+  EXPECT_EQ(release_call_count, 0);
 }
 
 TEST_P(BufferTest, IsLost) {

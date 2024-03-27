@@ -37,13 +37,14 @@ class AugmentedSurface : public SurfaceObserver {
  public:
   explicit AugmentedSurface(Surface* surface) : surface_(surface) {
     surface_->AddSurfaceObserver(this);
-    surface_->SetProperty(kSurfaceHasAugmentedSurfaceKey, true);
+    surface_->set_is_augmented(true);
     // No need to create AX Tree for augmented surfaces because they're
     // equivalent to quads.
     // TODO(b/296326746): Revert this CL and set the property to the root
     // surface once arc accessibility is refactored.
     surface_->window()->SetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren,
                                     true);
+    surface_->set_leave_enter_callback(Surface::LeaveEnterCallback());
     surface_->set_legacy_buffer_release_skippable(true);
   }
   AugmentedSurface(const AugmentedSurface&) = delete;
@@ -51,7 +52,6 @@ class AugmentedSurface : public SurfaceObserver {
   ~AugmentedSurface() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
-      surface_->SetProperty(kSurfaceHasAugmentedSurfaceKey, false);
     }
   }
 
@@ -76,10 +76,6 @@ class AugmentedSurface : public SurfaceObserver {
 
   void SetBackgroundColor(std::optional<SkColor4f> background_color) {
     surface_->SetBackgroundColor(background_color);
-  }
-
-  void SetTrustedDamage(bool trusted_damage) {
-    surface_->SetTrustedDamage(trusted_damage);
   }
 
   void SetClipRect(float x, float y, float width, float height) {
@@ -159,10 +155,10 @@ void augmented_surface_set_background_color(wl_client* client,
   GetUserDataAs<AugmentedSurface>(resource)->SetBackgroundColor(sk_color);
 }
 
-void augmented_surface_set_trusted_damage(wl_client* client,
-                                          wl_resource* resource,
-                                          int enabled) {
-  GetUserDataAs<AugmentedSurface>(resource)->SetTrustedDamage(enabled);
+void augmented_surface_set_trusted_damage_DEPRECATED(wl_client* client,
+                                                     wl_resource* resource,
+                                                     int enabled) {
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 void augmented_surface_set_rounded_corners_clip_bounds(wl_client* client,
@@ -235,7 +231,7 @@ const struct augmented_surface_interface augmented_implementation = {
     augmented_surface_set_destination_size,
     augmented_surface_set_rounded_corners_bounds_DEPRECATED,
     augmented_surface_set_background_color,
-    augmented_surface_set_trusted_damage,
+    augmented_surface_set_trusted_damage_DEPRECATED,
     augmented_surface_set_rounded_corners_clip_bounds,
     augmented_surface_set_clip_rect,
     augmented_surface_set_frame_trace_id,
@@ -254,8 +250,6 @@ class AugmentedSubSurface : public SubSurfaceObserver {
       : sub_surface_(sub_surface) {
     sub_surface_->AddSubSurfaceObserver(this);
     sub_surface_->SetProperty(kSubSurfaceHasAugmentedSubSurfaceKey, true);
-    sub_surface_->surface()->set_leave_enter_callback(
-        Surface::LeaveEnterCallback());
   }
   AugmentedSubSurface(const AugmentedSubSurface&) = delete;
   AugmentedSubSurface& operator=(const AugmentedSubSurface&) = delete;
@@ -384,7 +378,7 @@ void augmenter_get_augmented_surface(wl_client* client,
                                      uint32_t id,
                                      wl_resource* surface_resource) {
   Surface* surface = GetUserDataAs<Surface>(surface_resource);
-  if (surface->GetProperty(kSurfaceHasAugmentedSurfaceKey)) {
+  if (surface->is_augmented()) {
     wl_resource_post_error(resource,
                            SURFACE_AUGMENTER_ERROR_AUGMENTED_SURFACE_EXISTS,
                            "an augmenter for that surface already exists");

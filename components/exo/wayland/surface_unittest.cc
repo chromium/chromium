@@ -100,7 +100,7 @@ TEST_P(WaylandSurfaceTest, Attach) {
     ClientData* data = client->GetDataAs<ClientData>();
     wl_surface_commit(data->surface.get());
   });
-  EXPECT_EQ(gfx::RectF(0, 0, 256, 256), surface->visual_rect());
+  EXPECT_EQ(gfx::SizeF(256, 256), surface->content_size());
 
   PostToClientAndWait([&](test::TestClient* client) {
     ClientData* data = client->GetDataAs<ClientData>();
@@ -126,7 +126,7 @@ TEST_P(WaylandSurfaceTest, Attach) {
 
     EXPECT_EQ(1, data->buffer_listener.release_buffer_call_count());
   });
-  EXPECT_TRUE(surface->visual_rect().size().IsEmpty());
+  EXPECT_TRUE(surface->content_size().IsEmpty());
 }
 
 }  // namespace

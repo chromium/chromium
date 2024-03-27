@@ -609,8 +609,7 @@ TEST_P(SurfaceTest, SetBufferScale) {
       surface->window()->bounds().size().ToString());
   gfx::SizeF buffer_size_float = gfx::SizeF(buffer_size);
   buffer_size_float.Scale(1.0f / kBufferScale);
-  EXPECT_EQ(buffer_size_float.ToString(),
-            surface->visual_rect().size().ToString());
+  EXPECT_EQ(buffer_size_float.ToString(), surface->content_size().ToString());
 
   test::WaitForLastFrameAck(shell_surface.get());
 
@@ -633,8 +632,8 @@ void SurfaceTest::SetBufferTransformHelperTransformAndTest(
   surface->Commit();
   EXPECT_EQ(gfx::Size(expected_size.width(), expected_size.height()),
             surface->window()->bounds().size());
-  EXPECT_EQ(gfx::RectF(0, 0, expected_size.width(), expected_size.height()),
-            surface->visual_rect());
+  EXPECT_EQ(gfx::SizeF(expected_size.width(), expected_size.height()),
+            surface->content_size());
 
   test::WaitForLastFrameAck(shell_surface);
 
@@ -700,7 +699,7 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
       child_surface->window()->bounds().size());
   EXPECT_EQ(
       gfx::ScaleToRoundedSize(child_buffer_size, 1.0f / kChildBufferScale),
-      gfx::ToRoundedSize(child_surface->visual_rect().size()));
+      gfx::ToRoundedSize(child_surface->content_size()));
 
   test::WaitForLastFrameAck(shell_surface.get());
 
@@ -754,7 +753,7 @@ TEST_P(SurfaceTest, SetViewport) {
   gfx::SizeF viewport(256, 256);
   surface->SetViewport(viewport);
   surface->Commit();
-  EXPECT_EQ(viewport.ToString(), surface->visual_rect().size().ToString());
+  EXPECT_EQ(viewport.ToString(), surface->content_size().ToString());
 
   // This will update the bounds of the surface and take the viewport2 into
   // account.
@@ -763,7 +762,7 @@ TEST_P(SurfaceTest, SetViewport) {
   surface->Commit();
   EXPECT_EQ(viewport2.ToString(),
             gfx::SizeF(surface->window()->bounds().size()).ToString());
-  EXPECT_EQ(viewport2.ToString(), surface->visual_rect().size().ToString());
+  EXPECT_EQ(viewport2.ToString(), surface->content_size().ToString());
 
   test::WaitForLastFrameAck(shell_surface.get());
 
@@ -774,7 +773,7 @@ TEST_P(SurfaceTest, SetViewport) {
   // This will make the surface have no content regardless of the viewport.
   surface->Attach(nullptr);
   surface->Commit();
-  EXPECT_TRUE(surface->visual_rect().size().IsEmpty());
+  EXPECT_TRUE(surface->content_size().IsEmpty());
 }
 
 TEST_P(SurfaceTest, SubpixelCoordinate) {
@@ -873,7 +872,7 @@ TEST_P(SurfaceTest, SetCrop) {
   EXPECT_EQ(crop_size.ToString(),
             surface->window()->bounds().size().ToString());
   EXPECT_EQ(gfx::SizeF(crop_size).ToString(),
-            surface->visual_rect().size().ToString());
+            surface->content_size().ToString());
 
   test::WaitForLastFrameAck(shell_surface.get());
 
@@ -884,7 +883,7 @@ TEST_P(SurfaceTest, SetCrop) {
   // This will make the surface have no content regardless of the crop.
   surface->Attach(nullptr);
   surface->Commit();
-  EXPECT_TRUE(surface->visual_rect().size().IsEmpty());
+  EXPECT_TRUE(surface->content_size().IsEmpty());
 }
 
 void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
@@ -1230,7 +1229,7 @@ TEST_P(SurfaceTest, DestroyAttachedBuffer) {
   // Make sure surface size is still valid after buffer is destroyed.
   buffer.reset();
   surface->Commit();
-  EXPECT_FALSE(surface->visual_rect().size().IsEmpty());
+  EXPECT_FALSE(surface->content_size().IsEmpty());
 }
 
 TEST_P(SurfaceTest, SetClientSurfaceId) {

@@ -80,8 +80,6 @@ BASE_FEATURE(kExoPerSurfaceOcclusion,
              "ExoPerSurfaceOcclusion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSurfaceHasAugmentedSurfaceKey, false)
-
 namespace {
 
 bool IsExoOcclusionEnabled() {
@@ -510,18 +508,23 @@ void Surface::SetBufferTransform(Transform transform) {
 }
 
 void Surface::AddSubSurface(Surface* sub_surface) {
+  if (sub_surface->is_augmented()) {
+    auto* render_layer = sub_surface;
+    DCHECK(!render_layer->window()->parent());
+    DCHECK(!ListContainsEntry(render_layers_, render_layer));
+    render_layers_.emplace_back(render_layer, gfx::PointF());
+    return;
+  }
+
   TRACE_EVENT1("exo", "Surface::AddSubSurface", "sub_surface",
                sub_surface->AsTracedValue());
 
+  DCHECK(!is_augmented());
   DCHECK(!sub_surface->window()->parent());
   sub_surface->window()->SetBounds(
       gfx::Rect(sub_surface->window()->bounds().size()));
 
-  // As an optimization, don't add augmented subsurfaces's aura::Window to the
-  // tree.
-  if (!GetProperty(kSurfaceHasAugmentedSurfaceKey)) {
-    window_->AddChild(sub_surface->window());
-  }
+  window_->AddChild(sub_surface->window());
 
   DCHECK(!ListContainsEntry(pending_sub_surfaces_, sub_surface));
   pending_sub_surfaces_.push_back(std::make_pair(sub_surface, gfx::PointF()));
@@ -529,8 +532,9 @@ void Surface::AddSubSurface(Surface* sub_surface) {
   sub_surfaces_changed_ = true;
 
   // Propagate the kSkipImeProcessing property to the new child.
-  if (window_->GetProperty(aura::client::kSkipImeProcessing))
+  if (window_->GetProperty(aura::client::kSkipImeProcessing)) {
     sub_surface->window()->SetProperty(aura::client::kSkipImeProcessing, true);
+  }
 
   // The shell might have not be added to the root yet.
   if (window_->GetRootWindow()) {
@@ -546,11 +550,23 @@ void Surface::OnNewOutputAdded() {
 }
 
 void Surface::RemoveSubSurface(Surface* sub_surface) {
+  if (sub_surface->is_augmented()) {
+    auto* render_layer = sub_surface;
+    DCHECK(ListContainsEntry(render_layers_, render_layer));
+    auto it = FindListEntry(render_layers_, render_layer);
+    render_layers_.erase(it);
+    // Force recreating resources when the render_layer is added to a tree
+    // again.
+    render_layer->SurfaceHierarchyResourcesLost();
+    return;
+  }
+
   TRACE_EVENT1("exo", "Surface::RemoveSubSurface", "sub_surface",
                sub_surface->AsTracedValue());
 
-  if (sub_surface->window()->IsVisible())
+  if (sub_surface->window()->IsVisible()) {
     sub_surface->window()->Hide();
+  }
   if (sub_surface->window()->parent() == window_.get()) {
     window_->RemoveChild(sub_surface->window());
   }
@@ -561,6 +577,18 @@ void Surface::RemoveSubSurface(Surface* sub_surface) {
 
   DCHECK(ListContainsEntry(sub_surfaces_, sub_surface));
   auto it = FindListEntry(sub_surfaces_, sub_surface);
+
+  // Removing a non augmented subsurface extends the damage to the removed
+  // subsurface.
+  if (it != sub_surfaces_.end()) {
+    auto extended_damage = gfx::RectF(it->second, it->first->content_size());
+    if (extended_damage_dp_.has_value()) {
+      extended_damage_dp_->Union(extended_damage);
+    } else {
+      extended_damage_dp_.emplace(extended_damage);
+    }
+  }
+
   sub_surfaces_.erase(it);
   // Force recreating resources when the surface is added to a tree again.
   sub_surface->SurfaceHierarchyResourcesLost();
@@ -569,75 +597,114 @@ void Surface::RemoveSubSurface(Surface* sub_surface) {
 
 void Surface::SetSubSurfacePosition(Surface* sub_surface,
                                     const gfx::PointF& position) {
+  if (sub_surface->is_augmented()) {
+    auto* render_layer = sub_surface;
+    auto it = FindListEntry(render_layers_, render_layer);
+    DCHECK(it != render_layers_.end());
+    if (it->second == position) {
+      return;
+    }
+    it->second = position;
+    return;
+  }
+
   TRACE_EVENT2("exo", "Surface::SetSubSurfacePosition", "sub_surface",
                sub_surface->AsTracedValue(), "position", position.ToString());
 
   auto it = FindListEntry(pending_sub_surfaces_, sub_surface);
   DCHECK(it != pending_sub_surfaces_.end());
-  if (it->second == position)
+  if (it->second == position) {
     return;
+  }
   it->second = position;
   sub_surfaces_changed_ = true;
 }
 
 void Surface::PlaceSubSurfaceAbove(Surface* sub_surface, Surface* reference) {
-  TRACE_EVENT2("exo", "Surface::PlaceSubSurfaceAbove", "sub_surface",
-               sub_surface->AsTracedValue(), "reference",
-               reference->AsTracedValue());
-
   if (sub_surface == reference) {
     DLOG(WARNING) << "Client tried to place sub-surface above itself";
     return;
   }
-
-  auto position_it = pending_sub_surfaces_.begin();
-  if (reference != this) {
-    position_it = FindListEntry(pending_sub_surfaces_, reference);
-    if (position_it == pending_sub_surfaces_.end()) {
-      DLOG(WARNING) << "Client tried to place sub-surface above a reference "
-                       "surface that is neither a parent nor a sibling";
-      return;
-    }
-
-    // Advance iterator to have |position_it| point to the sibling surface
-    // above |reference|.
-    ++position_it;
+  if (sub_surface->is_augmented() != reference->is_augmented() &&
+      reference != this) {
+    DLOG(WARNING) << "Client tried to stack a augmented-surface relative to a "
+                     "sub-surface";
+    return;
   }
 
-  DCHECK(ListContainsEntry(pending_sub_surfaces_, sub_surface));
-  auto it = FindListEntry(pending_sub_surfaces_, sub_surface);
-  if (it == position_it)
-    return;
-  pending_sub_surfaces_.splice(position_it, pending_sub_surfaces_, it);
-  sub_surfaces_changed_ = true;
+  if (sub_surface->is_augmented()) {
+    DoPlaceAboveOrBelow(sub_surface, reference, render_layers_,
+                        /*place_above=*/true);
+  } else {
+    TRACE_EVENT2("exo", "Surface::PlaceSubSurfaceAbove", "sub_surface",
+                 sub_surface->AsTracedValue(), "reference",
+                 reference->AsTracedValue());
+
+    if (DoPlaceAboveOrBelow(sub_surface, reference, pending_sub_surfaces_,
+                            /*place_above=*/true)) {
+      sub_surfaces_changed_ = true;
+    }
+  }
 }
 
 void Surface::PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling) {
-  TRACE_EVENT2("exo", "Surface::PlaceSubSurfaceBelow", "sub_surface",
-               sub_surface->AsTracedValue(), "sibling",
-               sibling->AsTracedValue());
-
   if (sub_surface == sibling) {
     DLOG(WARNING) << "Client tried to place sub-surface below itself";
     return;
   }
-
-  auto position_it = FindListEntry(pending_sub_surfaces_, sibling);
-  if (position_it == pending_sub_surfaces_.end()) {
-    DLOG(WARNING) << "Client tried to place sub-surface below a surface that "
-                     "is not a sibling";
+  if (sub_surface->is_augmented() != sibling->is_augmented()) {
+    DLOG(WARNING) << "Client tried to stack a augmented-surface relative to a "
+                     "sub-surface";
     return;
   }
 
-  DCHECK(ListContainsEntry(pending_sub_surfaces_, sub_surface));
-  auto it = FindListEntry(pending_sub_surfaces_, sub_surface);
+  if (sub_surface->is_augmented()) {
+    DoPlaceAboveOrBelow(sub_surface, sibling, render_layers_,
+                        /*place_above=*/false);
+  } else {
+    TRACE_EVENT2("exo", "Surface::PlaceSubSurfaceBelow", "sub_surface",
+                 sub_surface->AsTracedValue(), "sibling",
+                 sibling->AsTracedValue());
 
-  // If |sub_surface| is already immediately below |sibling|, do not do
-  // anything.
-  if (it == --position_it)
-    return;
-  pending_sub_surfaces_.splice(++position_it, pending_sub_surfaces_, it);
-  sub_surfaces_changed_ = true;
+    if (DoPlaceAboveOrBelow(sub_surface, sibling, pending_sub_surfaces_,
+                            /*place_above=*/false)) {
+      sub_surfaces_changed_ = true;
+    }
+  }
+}
+
+bool Surface::DoPlaceAboveOrBelow(Surface* child,
+                                  Surface* reference,
+                                  SubSurfaceEntryList& list,
+                                  bool place_above) {
+  auto position_it = (place_above && reference == this)
+                         ? list.begin()
+                         : FindListEntry(list, reference);
+  if (position_it == list.end()) {
+    LOG(WARNING) << "Client tried place a sub-surface "
+                 << (place_above ? "above" : "below")
+                 << " an invalid reference";
+    return false;
+  }
+
+  DCHECK(ListContainsEntry(list, child));
+  auto it = FindListEntry(list, child);
+
+  if (place_above && reference != this) {
+    ++position_it;
+  } else {
+    --position_it;
+  }
+  // If |child| is already immediately at the right position, do nothing.
+  if (it == position_it) {
+    return false;
+  }
+  if (!place_above) {
+    ++position_it;
+  }
+
+  list.splice(position_it, list, it);
+  return true;
 }
 
 void Surface::OnSubSurfaceCommit() {
@@ -693,11 +760,6 @@ void Surface::SetSurfaceTransform(const gfx::Transform& transform) {
 void Surface::SetBackgroundColor(std::optional<SkColor4f> background_color) {
   TRACE_EVENT0("exo", "Surface::SetBackgroundColor");
   pending_state_.basic_state.background_color = background_color;
-}
-
-void Surface::SetTrustedDamage(bool trusted_damage) {
-  TRACE_EVENT0("exo", "Surface::SetTrustedDamage");
-  trusted_damage_ = trusted_damage;
 }
 
 void Surface::SetViewport(const gfx::SizeF& viewport) {
@@ -865,6 +927,11 @@ bool Surface::ContainsVideo() {
     if (subsurface.first->ContainsVideo())
       return true;
   }
+  for (auto& render_layer : render_layers_) {
+    if (render_layer.first->ContainsVideo()) {
+      return true;
+    }
+  }
   return false;
 }
 
@@ -1004,10 +1071,9 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
     // TODO(penghuang): Make the damage more precise for sub surface changes.
     // https://crbug.com/779704
-    bool needs_full_damage = false;
-    if (!trusted_damage_) {
-      needs_full_damage =
-          sub_surfaces_changed_ ||
+    bool needs_full_damage = sub_surfaces_changed_;
+    if (!is_augmented()) {
+      needs_full_damage |=
           cached_state_.basic_state.opaque_region !=
               state_.basic_state.opaque_region ||
           cached_state_.basic_state.buffer_scale !=
@@ -1050,17 +1116,19 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
     state_.basic_state = cached_state_.basic_state;
     cached_state_.basic_state.only_visible_on_secure_output = false;
 
-    window_->SetEventTargetingPolicy(
-        (state_.basic_state.input_region.has_value() &&
-         state_.basic_state.input_region->IsEmpty())
-            ? aura::EventTargetingPolicy::kDescendantsOnly
-            : aura::EventTargetingPolicy::kTargetAndDescendants);
+    if (!is_augmented()) {
+      window_->SetEventTargetingPolicy(
+          (state_.basic_state.input_region.has_value() &&
+           state_.basic_state.input_region->IsEmpty())
+              ? aura::EventTargetingPolicy::kDescendantsOnly
+              : aura::EventTargetingPolicy::kTargetAndDescendants);
 
-    if (state_.basic_state.is_tracking_occlusion) {
-      // TODO(edcourtney): Currently, it doesn't seem to be possible to stop
-      // tracking the occlusion state once started, but it would be nice to stop
-      // if the tracked occlusion region becomes empty.
-      window_->TrackOcclusionState();
+      if (state_.basic_state.is_tracking_occlusion) {
+        // TODO(edcourtney): Currently, it doesn't seem to be possible to stop
+        // tracking the occlusion state once started, but it would be nice to
+        // stop if the tracked occlusion region becomes empty.
+        window_->TrackOcclusionState();
+      }
     }
 
     if (needs_output_protection) {
@@ -1139,7 +1207,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
     state_.presentation_callbacks.splice(state_.presentation_callbacks.end(),
                                          cached_state_.presentation_callbacks);
 
-    UpdateContentSizeAndVisualRect();
+    UpdateContentSize();
 
     // Synchronize window hierarchy. This will position and update the stacking
     // order of all sub-surfaces after committing all pending state of
@@ -1152,12 +1220,9 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       aura::Window* stacking_target = nullptr;
       for (const auto& sub_surface_entry : pending_sub_surfaces_) {
         Surface* sub_surface = sub_surface_entry.first;
-        // If the parent has trusted damage set, then consider it trusted for
-        // all subsurfaces.
-        sub_surface->SetTrustedDamage(trusted_damage_);
         sub_surfaces_.push_back(sub_surface_entry);
         // Move sub-surface to its new position in the stack.
-        if (stacking_target && sub_surface->window()->parent()) {
+        if (stacking_target) {
           window_->StackChildAbove(sub_surface->window(), stacking_target);
         }
 
@@ -1172,7 +1237,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       sub_surfaces_changed_ = false;
     }
 
-    gfx::Rect output_rect(gfx::ToEnclosingRectIgnoringError(visual_rect_));
+    gfx::Rect output_rect(gfx::ToCeiledSize(content_size_));
     if (needs_full_damage) {
       state_.damage = output_rect;
     } else {
@@ -1187,32 +1252,39 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
   }
 
   surface_hierarchy_content_bounds_ =
-      gfx::Rect(gfx::ToEnclosingRectIgnoringError(visual_rect_));
+      gfx::Rect(gfx::ToCeiledSize(content_size_));
 
-  if (state_.basic_state.input_region) {
-    hit_test_region_ = *state_.basic_state.input_region;
-    hit_test_region_.Intersect(surface_hierarchy_content_bounds_);
-  } else {
-    hit_test_region_ = surface_hierarchy_content_bounds_;
+  for (const auto& render_layer_entry : base::Reversed(render_layers_)) {
+    auto* render_layer = render_layer_entry.first;
+    render_layer->CommitSurfaceHierarchy(synchronized);
   }
 
-  int outset = state_.basic_state.input_outset;
-  if (outset > 0) {
-    gfx::Rect input_rect = surface_hierarchy_content_bounds_;
-    input_rect.Inset(-outset);
-    hit_test_region_ = input_rect;
-  }
+  if (!is_augmented()) {
+    if (state_.basic_state.input_region) {
+      hit_test_region_ = *state_.basic_state.input_region;
+      hit_test_region_.Intersect(surface_hierarchy_content_bounds_);
+    } else {
+      hit_test_region_ = surface_hierarchy_content_bounds_;
+    }
 
-  for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
-    auto* sub_surface = sub_surface_entry.first;
-    gfx::Vector2d offset =
-        gfx::ToRoundedPoint(sub_surface_entry.second).OffsetFromOrigin();
-    // Synchronously commit all pending state of the sub-surface and its
-    // descendants.
-    sub_surface->CommitSurfaceHierarchy(synchronized);
-    surface_hierarchy_content_bounds_.Union(
-        sub_surface->surface_hierarchy_content_bounds() + offset);
-    hit_test_region_.Union(sub_surface->hit_test_region_ + offset);
+    int outset = state_.basic_state.input_outset;
+    if (outset > 0) {
+      gfx::Rect input_rect = surface_hierarchy_content_bounds_;
+      input_rect.Inset(-outset);
+      hit_test_region_ = input_rect;
+    }
+
+    for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
+      auto* sub_surface = sub_surface_entry.first;
+      gfx::Vector2d offset =
+          gfx::ToRoundedPoint(sub_surface_entry.second).OffsetFromOrigin();
+      // Synchronously commit all pending state of the sub-surface and its
+      // descendants.
+      sub_surface->CommitSurfaceHierarchy(synchronized);
+      surface_hierarchy_content_bounds_.Union(
+          sub_surface->surface_hierarchy_content_bounds() + offset);
+      hit_test_region_.Union(sub_surface->hit_test_region_ + offset);
+    }
   }
 }
 
@@ -1224,6 +1296,12 @@ void Surface::AppendSurfaceHierarchyCallbacks(
   // Move presentation callbacks to the end of |presentation_callbacks|.
   presentation_callbacks->splice(presentation_callbacks->end(),
                                  state_.presentation_callbacks);
+
+  for (const auto& render_layer_entry : base::Reversed(render_layers_)) {
+    auto* render_layer = render_layer_entry.first;
+    render_layer->AppendSurfaceHierarchyCallbacks(frame_callbacks,
+                                                  presentation_callbacks);
+  }
 
   for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
@@ -1243,14 +1321,28 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
   // so we need composite sub-surface in reversed order.
   for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
-    // Synchronsouly commit all pending state of the sub-surface and its
-    // decendents.
+    // Synchronously commit all pending state of the sub-surface and its
+    // descendents.
     gfx::PointF to_root_px =
         parent_to_root_px +
         gfx::ScalePoint(to_parent_dp, device_scale_factor.value_or(1.f))
             .OffsetFromOrigin();
     sub_surface->AppendSurfaceHierarchyContentsToFrame(
         to_root_px, sub_surface_entry.second, needs_full_damage,
+        resource_manager, device_scale_factor, frame);
+  }
+
+  // Make sure the sub_surfaces are rendered before render_layers for this
+  // surface s.t. sub_surfaces are rendered above the render_layers.
+  for (const auto& render_layer_entry : base::Reversed(render_layers_)) {
+    auto* render_layer = render_layer_entry.first;
+    // Synchronously commit all pending state of the layer and its descendents.
+    gfx::PointF to_root_px =
+        parent_to_root_px +
+        gfx::ScalePoint(to_parent_dp, device_scale_factor.value_or(1.f))
+            .OffsetFromOrigin();
+    render_layer->AppendSurfaceHierarchyContentsToFrame(
+        to_root_px, render_layer_entry.second, needs_full_damage,
         resource_manager, device_scale_factor, frame);
   }
 
@@ -1268,19 +1360,19 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
 }
 
 bool Surface::IsSynchronized() const {
-  return delegate_ && delegate_->IsSurfaceSynchronized();
+  return (delegate_ && delegate_->IsSurfaceSynchronized()) || is_augmented();
 }
 
 bool Surface::IsInputEnabled(Surface* surface) const {
-  return !delegate_ || delegate_->IsInputEnabled(surface);
+  return !is_augmented() && (!delegate_ || delegate_->IsInputEnabled(surface));
 }
 
 bool Surface::HasHitTestRegion() const {
-  return !hit_test_region_.IsEmpty();
+  return !is_augmented() && !hit_test_region_.IsEmpty();
 }
 
 bool Surface::HitTest(const gfx::Point& point) const {
-  return hit_test_region_.Contains(point);
+  return !is_augmented() && hit_test_region_.Contains(point);
 }
 
 void Surface::GetHitTestMask(SkPath* mask) const {
@@ -1330,6 +1422,9 @@ void Surface::SetStylusOnly() {
 void Surface::SurfaceHierarchyResourcesLost() {
   // Update resource and full damage are needed for next frame.
   needs_update_resource_ = true;
+  for (const auto& render_layer : render_layers_) {
+    render_layer.first->SurfaceHierarchyResourcesLost();
+  }
   for (const auto& sub_surface : sub_surfaces_)
     sub_surface.first->SurfaceHierarchyResourcesLost();
 }
@@ -1338,7 +1433,7 @@ bool Surface::FillsBoundsOpaquely() const {
   return !current_resource_has_alpha_ ||
          state_.basic_state.blend_mode == SkBlendMode::kSrc ||
          state_.basic_state.opaque_region.Contains(
-             gfx::ToEnclosingRectIgnoringError(visual_rect_));
+             gfx::ToEnclosingRect(gfx::RectF(content_size_)));
 }
 
 void Surface::SetOcclusionTracking(bool tracking) {
@@ -1587,21 +1682,29 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
   gfx::PointF parent_to_root_dp = gfx::ScalePoint(
       parent_to_root_px, 1.f / device_scale_factor.value_or(1.f));
   gfx::PointF to_root_dp = parent_to_root_dp + to_parent_dp.OffsetFromOrigin();
-  gfx::RectF output_rect = to_root_dp.OffsetFromOrigin() + visual_rect_;
+  gfx::RectF output_rect(to_root_dp, content_size_);
   gfx::Rect quad_rect(0, 0, 1, 1);
 
   // Surface bounds are in DIPs, but |damage_rect| should be specified in
   // pixels, so we need to scale by the |device_scale_factor|.
   gfx::RectF damage_rect_px;
-  gfx::RectF damage_rect_dp =
-      needs_full_damage ? visual_rect_ : gfx::RectF(state_.damage.bounds());
-  if (!damage_rect_dp.IsEmpty()) {
+  gfx::RectF damage_rect_dp = needs_full_damage
+                                  ? gfx::RectF(content_size_)
+                                  : gfx::RectF(state_.damage.bounds());
+  if (!damage_rect_dp.IsEmpty() || extended_damage_dp_.has_value()) {
     // Outset damage by 1 DIP to as damage is in surface coordinate space and
     // client might not be aware of |device_scale_factor| and the
     // scaling/filtering it requires.
-    damage_rect_dp.Inset(-1);
-    damage_rect_dp += to_root_dp.OffsetFromOrigin();
-    damage_rect_dp.Intersect(output_rect);
+    if (!damage_rect_dp.IsEmpty()) {
+      damage_rect_dp.Inset(-1);
+      damage_rect_dp += to_root_dp.OffsetFromOrigin();
+      damage_rect_dp.Intersect(output_rect);
+    }
+    if (extended_damage_dp_.has_value()) {
+      damage_rect_dp.Union(extended_damage_dp_.value() +
+                           to_root_dp.OffsetFromOrigin());
+      extended_damage_dp_.reset();
+    }
 
     damage_rect_px = damage_rect_dp;
     if (device_scale_factor.has_value()) {
@@ -1821,7 +1924,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
   render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
 }
 
-void Surface::UpdateContentSizeAndVisualRect() {
+void Surface::UpdateContentSize() {
   gfx::SizeF content_size;
   // Enable/disable sub-surface based on if it has contents.
   if (has_contents()) {
@@ -1847,32 +1950,35 @@ void Surface::UpdateContentSizeAndVisualRect() {
     // Check that a window has a parent before showing it.
     // For example, aura::Window associated with augmented subsurfaces don't
     // have parents, because they are not part of the tree.
-    if (window_->parent()) {
+    if (!is_augmented() && window_->parent()) {
       window_->Show();
     }
-  } else {
+  } else if (!is_augmented()) {
     window_->Hide();
   }
 
-
-  // TODO(b/191414141) : Check is temporary to isolate damage issue.
-  if (content_size_ != content_size &&
-      !gfx::ToRoundedSize(content_size).GetCheckedArea().IsValid()) {
-    DCHECK(false) << " content_size is " << content_size.ToString();
-    constexpr int kMaxSizeScalar = 1 << 15;
-    // Forcibly restrict `content_size` to 32kx32k.
-    content_size.SetToMin(gfx::SizeF(kMaxSizeScalar, kMaxSizeScalar));
+  if (content_size_ != content_size) {
+    // Save this to later expand the damage area.
+    if (!is_augmented()) {
+      if (extended_damage_dp_.has_value()) {
+        extended_damage_dp_->Union(gfx::RectF(content_size_));
+      } else {
+        extended_damage_dp_.emplace(gfx::RectF(content_size_));
+      }
+    }
+    content_size_ = content_size;
+    // TODO(b/191414141) : Check is temporary to isolate damage issue.
+    if (!gfx::ToRoundedSize(content_size_).GetCheckedArea().IsValid()) {
+      DCHECK(false) << " content_size_=" << content_size_.ToString();
+      constexpr int kMaxSizeScalar = 1 << 15;
+      // Forcibly restrict |content_size_| to 32kx32k.
+      content_size_.SetToMin(gfx::SizeF(kMaxSizeScalar, kMaxSizeScalar));
+    }
+    if (!is_augmented()) {
+      window_->SetBounds(gfx::Rect(window_->bounds().origin(),
+                                   gfx::ToCeiledSize(content_size_)));
+    }
   }
-  content_size_ = content_size;
-
-  window_->SetBounds(
-      gfx::Rect(window_->bounds().origin(), gfx::ToCeiledSize(content_size)));
-
-  gfx::RectF visual_rect(content_size);
-  if (state_.clip_rect) {
-    visual_rect.Intersect(*state_.clip_rect);
-  }
-  visual_rect_ = visual_rect;
 }
 
 void Surface::SetFrameLocked(bool lock) {
@@ -2021,10 +2127,11 @@ std::string Surface::DumpDebugInfo() const {
     }
   };
 
-  return "visual_rect=" + visual_rect_.ToString() +
+  return "content-size=" + content_size_.ToString() +
          (current_resource_has_alpha_ ? std::string(" has_alpha") : "") +
          blend_mode_str(state_.basic_state.blend_mode) +
-         " opaque-region=" + state_.basic_state.opaque_region.ToString() + " " +
+         +" opaque-region=" + state_.basic_state.opaque_region.ToString() +
+         " " +
          (has_buffer
               ? ("format=" +
                  FormatToString(state_.buffer->buffer()->GetFormat()) +
