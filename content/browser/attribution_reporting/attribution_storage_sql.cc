@@ -617,8 +617,16 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       delegate_->GetRandomizedResponse(
           common_info.source_type(), reg.trigger_specs,
           reg.max_event_level_reports, reg.event_level_epsilon),
-      [&](auto) -> StoreSourceResult {
-        return make_result(StoreSourceResult::ExceedsMaxChannelCapacity());
+      [&](auto error) -> StoreSourceResult {
+        switch (error) {
+          case AttributionStorageDelegate::RandomizedResponseError::
+              kExceedsChannelCapacityLimit:
+            return make_result(StoreSourceResult::ExceedsMaxChannelCapacity());
+          case AttributionStorageDelegate::RandomizedResponseError::
+              kExceedsTriggerStateCardinalityLimit:
+            return make_result(
+                StoreSourceResult::ExceedsMaxTriggerStateCardinality());
+        }
       });
   DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),
                                         reg.trigger_specs,

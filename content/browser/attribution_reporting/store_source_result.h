@@ -57,6 +57,8 @@ class CONTENT_EXPORT StoreSourceResult {
 
   struct ExceedsMaxChannelCapacity {};
 
+  struct ExceedsMaxTriggerStateCardinality {};
+
   using Result = absl::variant<Success,
                                InternalError,
                                InsufficientSourceCapacity,
@@ -68,7 +70,8 @@ class CONTENT_EXPORT StoreSourceResult {
                                DestinationGlobalLimitReached,
                                DestinationBothLimitsReached,
                                ReportingOriginsPerSiteLimitReached,
-                               ExceedsMaxChannelCapacity>;
+                               ExceedsMaxChannelCapacity,
+                               ExceedsMaxTriggerStateCardinality>;
 
   StoreSourceResult(StorableSource, Result);
 

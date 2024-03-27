@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/lap_timer.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -80,10 +81,11 @@ TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
   const auto specs = SpecsFromWindowList(test_case.windows_per_type, collapse);
   bool valid_rates = true;
   do {
-    auto response_data = DoRandomizedResponse(specs, test_case.max_reports,
-                                              /*epsilon=*/0);
+    auto response_data = DoRandomizedResponse(
+        specs, test_case.max_reports,
+        /*epsilon=*/0, /*max_trigger_state_cardinality=*/absl::Uint128Max());
     // Do a trivial check to ensure the call is not optimized by the compiler.
-    valid_rates &= response_data.rate() >= 0;
+    valid_rates &= response_data->rate() >= 0;
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
   CHECK(valid_rates);

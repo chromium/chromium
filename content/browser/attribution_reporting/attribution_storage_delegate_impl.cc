@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/constants.h"
@@ -212,12 +213,19 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  attribution_reporting::RandomizedResponseData response =
+
+  ASSIGN_OR_RETURN(
+      auto response,
       attribution_reporting::DoRandomizedResponse(
-          trigger_specs, max_event_level_reports, epsilon);
+          trigger_specs, max_event_level_reports, epsilon,
+          config_.event_level_limit.max_trigger_state_cardinality),
+      [](auto) {
+        return RandomizedResponseError::kExceedsTriggerStateCardinalityLimit;
+      });
 
   if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {
-    return base::unexpected(ExceedsChannelCapacityLimit());
+    return base::unexpected(
+        RandomizedResponseError::kExceedsChannelCapacityLimit);
   }
 
   switch (noise_mode_) {

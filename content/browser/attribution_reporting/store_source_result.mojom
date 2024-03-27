@@ -22,4 +22,5 @@ enum StoreSourceResult {
   kReportingOriginsPerSiteLimitReached = 10,
   kExceedsMaxChannelCapacity = 11,
   // Reserved: 12
+  kExceedsMaxTriggerStateCardinality = 13,
 };

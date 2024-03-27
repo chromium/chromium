@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace attribution_reporting {
@@ -43,6 +44,11 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool IsValid(const RandomizedResponse&,
              const TriggerSpecs&,
              MaxEventLevelReports);
+
+struct ExceedsMaxTriggerStateCardinality {
+  friend bool operator==(ExceedsMaxTriggerStateCardinality,
+                         ExceedsMaxTriggerStateCardinality) = default;
+};
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
  public:
@@ -91,9 +97,11 @@ absl::uint128 GetNumStates(const TriggerSpecs& specs, MaxEventLevelReports);
 // Returns `std::nullopt` if the output should be determined truthfully.
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-RandomizedResponseData DoRandomizedResponse(const TriggerSpecs& specs,
-                                            MaxEventLevelReports,
-                                            double epsilon);
+base::expected<RandomizedResponseData, ExceedsMaxTriggerStateCardinality>
+DoRandomizedResponse(const TriggerSpecs& specs,
+                     MaxEventLevelReports,
+                     double epsilon,
+                     absl::uint128 max_trigger_state_cardinality);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -180,10 +188,12 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 // Exposed to speed up tests which perform randomized response many times in a
 // row.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-RandomizedResponseData DoRandomizedResponseWithCache(const TriggerSpecs& specs,
-                                                     int max_reports,
-                                                     double epsilon,
-                                                     StateMap& map);
+base::expected<RandomizedResponseData, ExceedsMaxTriggerStateCardinality>
+DoRandomizedResponseWithCache(const TriggerSpecs& specs,
+                              int max_reports,
+                              double epsilon,
+                              StateMap& map,
+                              absl::uint128 max_trigger_state_cardinality);
 
 }  // namespace internal
 

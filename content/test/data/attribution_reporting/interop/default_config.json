@@ -70,6 +70,10 @@
   // sources.
   "max_event_info_gain": "6.5",
 
+  // Positive integer that controls the max trigger state cardinality per
+  // source. Defaulted to `UINT128_MAX`.
+  "max_trigger_state_cardinality": "340282366920938463463374607431768211455",
+
   // Positive integer that controls how many aggregatable reports can be in the
   // storage per destination. Formatted as a base-10 string.
   "max_aggregatable_reports_per_destination": "1024",

@@ -95,8 +95,10 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
     const StoreSourceResult& result) {
   return absl::visit(
       base::Overloaded{
-          [](absl::variant<StoreSourceResult::ProhibitedByBrowserPolicy,
-                           StoreSourceResult::ExceedsMaxChannelCapacity>) {
+          [](absl::variant<
+              StoreSourceResult::ProhibitedByBrowserPolicy,
+              StoreSourceResult::ExceedsMaxChannelCapacity,
+              StoreSourceResult::ExceedsMaxTriggerStateCardinality>) {
             return std::optional<DebugDataTypeAndBody>();
           },
           [](absl::variant<

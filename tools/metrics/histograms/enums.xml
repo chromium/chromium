@@ -4012,6 +4012,7 @@ Called by update_net_error_codes.py.-->
   <int value="12"
       label="(Obsolete) Event Report Windows start time is invalid. Removed
              in 2023/10."/>
+  <int value="13" label="Excessive trigger state cardinality"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">

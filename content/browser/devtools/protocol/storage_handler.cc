@@ -1786,6 +1786,9 @@ ToSourceRegistrationResult(StoreSourceResult result) {
     case StoreSourceResult::kExceedsMaxChannelCapacity:
       return Storage::AttributionReportingSourceRegistrationResultEnum::
           ExceedsMaxChannelCapacity;
+    case StoreSourceResult::kExceedsMaxTriggerStateCardinality:
+      return Storage::AttributionReportingSourceRegistrationResultEnum::
+          ExceedsMaxTriggerStateCardinality;
   }
 }
 

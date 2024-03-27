@@ -506,6 +506,10 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.event_level_limit.max_event_info_gain = 0.2;
        }},
+      {R"json({"max_trigger_state_cardinality":"10"})json", false,
+       [](AttributionConfig& c) {
+         c.event_level_limit.max_trigger_state_cardinality = 10;
+       }},
       {R"json({"max_aggregatable_reports_per_destination":"10"})json", false,
        [](AttributionConfig& c) {
          c.aggregate_limit.max_reports_per_destination = 10;
@@ -534,6 +538,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_event_level_reports_per_destination":"10",
         "max_navigation_info_gain":"5.5",
         "max_event_info_gain":"0.5",
+        "max_trigger_state_cardinality":"10",
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_report_min_delay":"10",
         "aggregatable_report_delay_span":"20"
@@ -555,6 +560,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.event_level_limit.max_reports_per_destination = 10;
          c.event_level_limit.max_navigation_info_gain = 5.5;
          c.event_level_limit.max_event_info_gain = 0.5;
+         c.event_level_limit.max_trigger_state_cardinality = 10;
 
          c.aggregate_limit.max_reports_per_destination = 10;
          c.aggregate_limit.min_delay = base::Minutes(10);

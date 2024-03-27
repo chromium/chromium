@@ -136,7 +136,8 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::EventLevelEpsilon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {
-    return base::unexpected(ExceedsChannelCapacityLimit());
+    return base::unexpected(
+        RandomizedResponseError::kExceedsChannelCapacityLimit);
   }
   double channel_capacity = 0;  // Not used by downstream code.
   return attribution_reporting::RandomizedResponseData(

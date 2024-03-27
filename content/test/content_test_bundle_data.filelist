@@ -5634,6 +5634,7 @@ data/attribution_reporting/interop/expired_source.json
 data/attribution_reporting/interop/lookback_window_precision.json
 data/attribution_reporting/interop/max_aggregatable_reports_per_source.json
 data/attribution_reporting/interop/max_event_level_reports_per_source.json
+data/attribution_reporting/interop/max_trigger_state_cardinality.json
 data/attribution_reporting/interop/most_recent_source.json
 data/attribution_reporting/interop/multiple_destinations.json
 data/attribution_reporting/interop/parse_failures.json

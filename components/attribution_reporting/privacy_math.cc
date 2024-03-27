@@ -22,6 +22,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -259,12 +260,14 @@ absl::uint128 GetNumStates(const TriggerSpecs& specs,
   return GetNumStatesCached(specs, max_reports, map);
 }
 
-RandomizedResponseData DoRandomizedResponse(const TriggerSpecs& specs,
-                                            MaxEventLevelReports max_reports,
-                                            double epsilon) {
+base::expected<RandomizedResponseData, ExceedsMaxTriggerStateCardinality>
+DoRandomizedResponse(const TriggerSpecs& specs,
+                     MaxEventLevelReports max_reports,
+                     double epsilon,
+                     absl::uint128 max_trigger_state_cardinality) {
   internal::StateMap map;
-  return internal::DoRandomizedResponseWithCache(specs, max_reports, epsilon,
-                                                 map);
+  return internal::DoRandomizedResponseWithCache(
+      specs, max_reports, epsilon, map, max_trigger_state_cardinality);
 }
 
 bool IsValid(const RandomizedResponse& response,
@@ -520,11 +523,17 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
   return fake_reports;
 }
 
-RandomizedResponseData DoRandomizedResponseWithCache(const TriggerSpecs& specs,
-                                                     int max_reports,
-                                                     double epsilon,
-                                                     StateMap& map) {
+base::expected<RandomizedResponseData, ExceedsMaxTriggerStateCardinality>
+DoRandomizedResponseWithCache(const TriggerSpecs& specs,
+                              int max_reports,
+                              double epsilon,
+                              StateMap& map,
+                              absl::uint128 max_trigger_state_cardinality) {
   const absl::uint128 num_states = GetNumStatesCached(specs, max_reports, map);
+  if (num_states > max_trigger_state_cardinality) {
+    return base::unexpected(ExceedsMaxTriggerStateCardinality());
+  }
+
   double rate = GetRandomizedResponseRate(num_states, epsilon);
   std::optional<std::vector<FakeEventLevelReport>> fake_reports;
   if (GenerateWithRate(rate)) {

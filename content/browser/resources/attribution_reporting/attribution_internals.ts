@@ -737,6 +737,8 @@ const sourceRegistrationStatusText:
           'Rejected: channel capacity exceeds max allowed',
       [StoreSourceResult.kReportingOriginsPerSiteLimitReached]:
           'Rejected: reached reporting origins per site limit',
+      [StoreSourceResult.kExceedsMaxTriggerStateCardinality]:
+          'Rejected: trigger state cardinality exceeds limit',
     };
 
 const commonResult = {

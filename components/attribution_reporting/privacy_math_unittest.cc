@@ -14,7 +14,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -404,9 +406,12 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
   for (int i = 0; i < num_samples; i++) {
     // Use epsilon = 0 to ensure that random data is always sampled from the RR
     // mechanism.
-    RandomizedResponseData response =
-        internal::DoRandomizedResponseWithCache(specs, max_reports,
-                                                /*epsilon=*/0, map);
+    ASSERT_OK_AND_ASSIGN(
+        auto response,
+        internal::DoRandomizedResponseWithCache(
+            specs, max_reports,
+            /*epsilon=*/0, map,
+            /*max_trigger_state_cardinality=*/absl::Uint128Max()));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
         output_counts.try_emplace(*std::move(response).ResponseForTesting(), 0);
@@ -604,13 +609,25 @@ TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
   do {
     internal::StateMap map;
 
-    response =
-        internal::DoRandomizedResponseWithCache(kSpecs, /*max_reports=*/1,
-                                                /*epsilon=*/0, map)
-            .response();
+    ASSERT_OK_AND_ASSIGN(
+        auto response_data,
+        internal::DoRandomizedResponseWithCache(
+            kSpecs, /*max_reports=*/1,
+            /*epsilon=*/0, map,
+            /*max_trigger_state_cardinality=*/absl::Uint128Max()));
+    response = response_data.response();
   } while (!response.has_value() || response->empty());
 
   ASSERT_EQ(uint64_t{123u}, response->front().trigger_data);
+}
+
+TEST(PrivacyMathTest, RandomizedResponse_StateLimited) {
+  auto response = DoRandomizedResponse(
+      TriggerSpecs(), /*max_reports=*/MaxEventLevelReports(1), /*epsilon=*/0,
+      /*max_trigger_state_cardinality=*/0);
+
+  EXPECT_THAT(response,
+              base::test::ErrorIs(ExceedsMaxTriggerStateCardinality()));
 }
 
 // Regression test for http://crbug.com/1504144 in which empty specs cause an
@@ -644,9 +661,10 @@ TEST(PrivacyMathTest, UnaryChannel) {
                   /*rate=*/1,
                   /*channel_capacity=*/0,
                   /*response=*/std::vector<FakeEventLevelReport>()),
-              DoRandomizedResponse(test_case.trigger_specs,
-                                   test_case.max_event_level_reports,
-                                   /*epsilon=*/0));
+              DoRandomizedResponse(
+                  test_case.trigger_specs, test_case.max_event_level_reports,
+                  /*epsilon=*/0,
+                  /*max_trigger_state_cardinality=*/absl::Uint128Max()));
   }
 }
 

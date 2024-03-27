@@ -20,6 +20,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -36,6 +37,7 @@
 #include "net/http/http_version.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -199,6 +201,10 @@ class AttributionInteropParser {
                 config.event_level_limit.max_navigation_info_gain, required);
     ParseDouble(dict, "max_event_info_gain",
                 config.event_level_limit.max_event_info_gain, required);
+
+    ParseUInt128(dict, "max_trigger_state_cardinality",
+                 config.event_level_limit.max_trigger_state_cardinality,
+                 required);
 
     int rate_limit_time_window_in_days;
     if (ParseInt(dict, "rate_limit_time_window_in_days",
@@ -660,6 +666,15 @@ class AttributionInteropParser {
                   bool required,
                   bool allow_zero = false) {
     return ParseInteger(dict, key, result, &base::StringToInt64, required,
+                        allow_zero);
+  }
+
+  bool ParseUInt128(const base::Value::Dict& dict,
+                    base::StringPiece key,
+                    absl::uint128& result,
+                    bool required,
+                    bool allow_zero = false) {
+    return ParseInteger(dict, key, result, &base::StringToUint128, required,
                         allow_zero);
   }
 
