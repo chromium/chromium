@@ -221,12 +221,12 @@ class WebStateList {
     // Updates the range by moving it in a given direction. By default, it moves
     // by one.
     constexpr void MoveLeft(int delta = 1) {
-      CHECK_GT(delta, 0);
+      CHECK_GE(delta, 0);
       CHECK_GE(start_, delta);
       start_ -= delta;
     }
     constexpr void MoveRight(int delta = 1) {
-      CHECK_GT(delta, 0);
+      CHECK_GE(delta, 0);
       CHECK_LT(start_, INT_MAX - delta);
       start_ += delta;
     }

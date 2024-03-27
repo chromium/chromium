@@ -516,6 +516,9 @@ TEST_F(WebStateListRangeTest, Move) {
 
   range.Move(10);
   EXPECT_EQ(WebStateList::Range(10, 2), range);
+
+  range.Move(0);
+  EXPECT_EQ(WebStateList::Range(10, 2), range);
 }
 
 // Tests that moving a range left and right moves the start but not the count.
@@ -535,6 +538,12 @@ TEST_F(WebStateListRangeTest, MoveLeftRight) {
   EXPECT_EQ(WebStateList::Range(0, 2), range);
 
   range.MoveRight(3);
+  EXPECT_EQ(WebStateList::Range(3, 2), range);
+
+  range.MoveLeft(0);
+  EXPECT_EQ(WebStateList::Range(3, 2), range);
+
+  range.MoveRight(0);
   EXPECT_EQ(WebStateList::Range(3, 2), range);
 }
 
