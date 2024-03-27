@@ -396,7 +396,8 @@ class WebStateList {
   // be valid and belong to this WebStateList.
   Range GetGroupRange(const TabGroup* group) const;
 
-  // Returns the list of all groups.
+  // Returns the list of all groups. The order is not particularly the order in
+  // which they appear in this WebStateList.
   std::set<const TabGroup*> GetGroups() const;
 
   // Creates a new tab group and moves the set of WebStates at `indices` to
