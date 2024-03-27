@@ -24,9 +24,9 @@ def read_json(path):
     return json.load(stream)
 
 
-def add_argument(parser, name, help):
+def add_argument(parser, name, help, required=True):
   """Add argument --{name} to `parser` with description `help`."""
-  parser.add_argument(f'--{name}', required=True, help=help)
+  parser.add_argument(f'--{name}', required=required, help=help)
 
 
 def extract_metadata(parsed, module_name, swift_files, const_files):
@@ -76,6 +76,9 @@ def extract_metadata(parsed, module_name, swift_files, const_files):
     inputs.add(const_file)
     command.extend(('--swift-const-vals', const_file))
 
+  if parsed.xcode_version is not None:
+    command.extend(('--xcode-version', parsed.xcode_version))
+
   process = subprocess.Popen(command,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
@@ -118,6 +121,7 @@ def main(args):
   add_argument(parser, 'deployment-target', 'deployment target version')
   add_argument(parser, 'binary-file', 'path to the binary to process')
   add_argument(parser, 'module-info-path', 'path to the module info JSON file')
+  add_argument(parser, 'xcode-version', 'version of Xcode', required=False)
 
   parsed = parser.parse_args(args)
 

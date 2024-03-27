@@ -717,6 +717,17 @@ template("ios_app_bundle") {
         "--module-info-path",
         rebase_path(_module_info_path, root_build_dir),
       ]
+
+      # Starting with Xcode 15.3, appintentsmetadataprocessor requires to be
+      # passed --xcode-version as parameter (with ${xcode_build} as value),
+      # while previous versions did not recognize the parameter. So check
+      # the version before deciding whether to set the parameter or not.
+      if (xcode_version_int >= 1530) {
+        args += [
+          "--xcode-version",
+          xcode_build,
+        ]
+      }
     }
 
     bundle_data(_metadata_bundledata) {
