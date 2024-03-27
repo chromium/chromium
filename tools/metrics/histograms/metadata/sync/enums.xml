@@ -179,19 +179,19 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="ShowBookmarkBar"/>
   <int value="10" label="ShowManagedBookmarksInBookmarkBar"/>
   <int value="11" label="ClearBrowsingDataHistoryNoticeShownTimes"/>
-  <int value="12" label="DeleteBrowsingHistory"/>
-  <int value="13" label="DeleteBrowsingHistoryBasic"/>
-  <int value="14" label="DeleteCache"/>
-  <int value="15" label="DeleteCacheBasic"/>
-  <int value="16" label="DeleteCookies"/>
-  <int value="17" label="DeleteCookiesBasic"/>
-  <int value="18" label="DeleteDownloadHistory"/>
-  <int value="19" label="DeleteFormData"/>
-  <int value="20" label="DeleteHostedAppsData"/>
-  <int value="21" label="DeletePasswords"/>
-  <int value="22" label="DeleteSiteSettings"/>
-  <int value="23" label="DeleteTimePeriod"/>
-  <int value="24" label="DeleteTimePeriodBasic"/>
+  <int value="12" label="(obsolete) DeleteBrowsingHistory"/>
+  <int value="13" label="(obsolete) DeleteBrowsingHistoryBasic"/>
+  <int value="14" label="(obsolete) DeleteCache"/>
+  <int value="15" label="(obsolete) DeleteCacheBasic"/>
+  <int value="16" label="(obsolete) DeleteCookies"/>
+  <int value="17" label="(obsolete) DeleteCookiesBasic"/>
+  <int value="18" label="(obsolete) DeleteDownloadHistory"/>
+  <int value="19" label="(obsolete) DeleteFormData"/>
+  <int value="20" label="(obsolete) DeleteHostedAppsData"/>
+  <int value="21" label="(obsolete) DeletePasswords"/>
+  <int value="22" label="(obsolete) DeleteSiteSettings"/>
+  <int value="23" label="(obsolete) DeleteTimePeriod"/>
+  <int value="24" label="(obsolete) DeleteTimePeriodBasic"/>
   <int value="25" label="LastClearBrowsingDataTime"/>
   <int value="26" label="PreferencesMigratedToBasic"/>
   <int value="27" label="PriceEmailNotificationsEnabled"/>
@@ -233,12 +233,12 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="PrefDogfoodGroups"/>
   <int value="63" label="(test) SyncableMergeableDictPrefForTesting"/>
   <int value="64" label="AutofillPaymentCvcStorage"/>
-  <int value="65" label="DeleteTimePeriodV2"/>
-  <int value="66" label="DeleteTimePeriodV2Basic"/>
+  <int value="65" label="(obsolete) DeleteTimePeriodV2"/>
+  <int value="66" label="(obsolete) DeleteTimePeriodV2Basic"/>
   <int value="67" label="SyncableMergeableListPrefForTesting"/>
   <int value="68" label="SyncableHistorySensitiveListPrefForTesting"/>
   <int value="69" label="AutofillPaymentCardBenefits"/>
-  <int value="70" label="CloseTabs"/>
+  <int value="70" label="(obsolete) CloseTabs"/>
   <int value="71" label="ShowTabGroupsInBookmarkBar"/>
   <int value="100000" label="AppLanguagePromptShown"/>
   <int value="100001" label="(Obsolete) PrefExplicitLanguageAskShown"/>

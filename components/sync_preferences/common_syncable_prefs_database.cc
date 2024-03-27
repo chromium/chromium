@@ -50,19 +50,19 @@ enum {
   kShowBookmarkBar = 9,
   kShowManagedBookmarksInBookmarkBar = 10,
   kClearBrowsingDataHistoryNoticeShownTimes = 11,
-  kDeleteBrowsingHistory = 12,
-  kDeleteBrowsingHistoryBasic = 13,
-  kDeleteCache = 14,
-  kDeleteCacheBasic = 15,
-  kDeleteCookies = 16,
-  kDeleteCookiesBasic = 17,
-  kDeleteDownloadHistory = 18,
-  kDeleteFormData = 19,
-  kDeleteHostedAppsData = 20,
-  kDeletePasswords = 21,
-  kDeleteSiteSettings = 22,
-  kDeleteTimePeriod = 23,
-  kDeleteTimePeriodBasic = 24,
+  // kDeleteBrowsingHistory = 12, (no longer synced)
+  // kDeleteBrowsingHistoryBasic = 13, (no longer synced)
+  // kDeleteCache = 14, (no longer synced)
+  // kDeleteCacheBasic = 15, (no longer synced)
+  // kDeleteCookies = 16, (no longer synced)
+  // kDeleteCookiesBasic = 17, (no longer synced)
+  // kDeleteDownloadHistory = 18, (no longer synced)
+  // kDeleteFormData = 19, (no longer synced)
+  // kDeleteHostedAppsData = 20, (no longer synced)
+  // kDeletePasswords = 21, (no longer synced)
+  // kDeleteSiteSettings = 22, (no longer synced)
+  // kDeleteTimePeriod = 23, (no longer synced)
+  // kDeleteTimePeriodBasic = 24, (no longer synced)
   kLastClearBrowsingDataTime = 25,
   kPreferencesMigratedToBasic = 26,
   kPriceEmailNotificationsEnabled = 27,
@@ -103,12 +103,12 @@ enum {
   kDogfoodGroupsSyncPrefName = 62,
   kSyncableMergeableDictPrefForTesting = 63,  // For tests.
   kAutofillPaymentCvcStorage = 64,
-  kDeleteTimePeriodV2 = 65,
-  kDeleteTimePeriodV2Basic = 66,
+  // kDeleteTimePeriodV2 = 65, (no longer synced)
+  // kDeleteTimePeriodV2Basic = 66, (no longer synced)
   kSyncableMergeableListPrefForTesting = 67,         // For tests.
   kSyncableHistorySensitiveListPrefForTesting = 68,  // For tests.
   kAutofillPaymentCardBenefits = 69,
-  kCloseTabs = 70,
+  // kCloseTabs = 70, (no longer synced)
   kShowTabGroupsInBookmarkBar = 71,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
@@ -149,54 +149,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {browsing_data::prefs::kClearBrowsingDataHistoryNoticeShownTimes,
          {syncable_prefs_ids::kClearBrowsingDataHistoryNoticeShownTimes,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteBrowsingHistory,
-         {syncable_prefs_ids::kDeleteBrowsingHistory, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteBrowsingHistoryBasic,
-         {syncable_prefs_ids::kDeleteBrowsingHistoryBasic, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteCache,
-         {syncable_prefs_ids::kDeleteCache, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteCacheBasic,
-         {syncable_prefs_ids::kDeleteCacheBasic, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteCookies,
-         {syncable_prefs_ids::kDeleteCookies, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteCookiesBasic,
-         {syncable_prefs_ids::kDeleteCookiesBasic, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteDownloadHistory,
-         {syncable_prefs_ids::kDeleteDownloadHistory, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteFormData,
-         {syncable_prefs_ids::kDeleteFormData, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteHostedAppsData,
-         {syncable_prefs_ids::kDeleteHostedAppsData, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeletePasswords,
-         {syncable_prefs_ids::kDeletePasswords, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteSiteSettings,
-         {syncable_prefs_ids::kDeleteSiteSettings, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kCloseTabs,
-         {syncable_prefs_ids::kCloseTabs, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteTimePeriod,
-         {syncable_prefs_ids::kDeleteTimePeriod, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteTimePeriodBasic,
-         {syncable_prefs_ids::kDeleteTimePeriodBasic, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteTimePeriodV2,
-         {syncable_prefs_ids::kDeleteTimePeriodV2, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kDeleteTimePeriodV2Basic,
-         {syncable_prefs_ids::kDeleteTimePeriodV2Basic, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {browsing_data::prefs::kLastClearBrowsingDataTime,
          {syncable_prefs_ids::kLastClearBrowsingDataTime, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
