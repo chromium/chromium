@@ -30,6 +30,8 @@ source_set("public") {
     "feature_list.h",
     "field_trial_configuration_provider.cc",
     "field_trial_configuration_provider.h",
+    "field_trial_utils.cc",
+    "field_trial_utils.h",
     "group_configurations.cc",
     "group_configurations.h",
     "group_constants.cc",
