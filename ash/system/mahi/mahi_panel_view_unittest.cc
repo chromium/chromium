@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_textfield.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/strcat.h"
@@ -37,6 +38,7 @@ namespace {
 
 // Aliases ---------------------------------------------------------------------
 
+using chromeos::MahiResponseStatus;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -63,55 +65,88 @@ class MockNewWindowDelegate : public NiceMock<TestNewWindowDelegate> {
 
 // Helpers ---------------------------------------------------------------------
 
+// Returns a comprehensive list of potential errors from Mahi backend.
+std::vector<MahiResponseStatus> GetMahiErrors() {
+  std::vector<MahiResponseStatus> errors;
+  for (size_t status_value = 0;
+       status_value <= static_cast<size_t>(MahiResponseStatus::kMax);
+       ++status_value) {
+    MahiResponseStatus status = static_cast<MahiResponseStatus>(status_value);
+    if (status != MahiResponseStatus::kSuccess) {
+      errors.push_back(status);
+    }
+  }
+  return errors;
+}
+
+void PressEnter() {
+  ui::test::EventGenerator(Shell::GetPrimaryRootWindow())
+      .PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+}
+
+// Returns an answer asyncly with the specified `status`. Use `waiter` to wait
+// for the response.
+void ReturnDefaultAnswerAsyncly(
+    base::test::TestFuture<void>& waiter,
+    MahiResponseStatus status,
+    chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceClosure unblock_closure, MahiResponseStatus status,
+             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(u"fake answer", status);
+            std::move(unblock_closure).Run();
+          },
+          waiter.GetCallback(), status, std::move(callback)));
+}
+
 // Returns `kFakeOutlines` syncly.
 void ReturnDefaultOutlines(
     chromeos::MahiManager::MahiOutlinesCallback callback) {
   std::move(callback).Run(/*outlines=*/kFakeOutlines,
-                          chromeos::MahiResponseStatus::kSuccess);
+                          MahiResponseStatus::kSuccess);
 }
 
-// Returns `kFakeOutlines` asyncly. Use `waiter` to wait for the response.
+// Returns `kFakeOutlines` asyncly with the specified `status`. Use `waiter` to
+// wait for the response.
 void ReturnDefaultOutlinesAsyncly(
     base::test::TestFuture<void>& waiter,
+    MahiResponseStatus status,
     chromeos::MahiManager::MahiOutlinesCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::OnceClosure unblock_closure,
-                        chromeos::MahiManager::MahiOutlinesCallback callback) {
-                       std::move(callback).Run(
-                           kFakeOutlines,
-                           chromeos::MahiResponseStatus::kSuccess);
-                       std::move(unblock_closure).Run();
-                     },
-                     waiter.GetCallback(), std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceClosure unblock_closure, MahiResponseStatus status,
+             chromeos::MahiManager::MahiOutlinesCallback callback) {
+            std::move(callback).Run(kFakeOutlines, status);
+            std::move(unblock_closure).Run();
+          },
+          waiter.GetCallback(), status, std::move(callback)));
 }
 
-// Returns a fake summary asyncly. Use `waiter` to wait for the response.
+// Returns a fake summary asyncly with the specified `status`. Use `waiter` to
+// wait for the response.
 void ReturnDefaultSummaryAsyncly(
     base::test::TestFuture<void>& waiter,
+    MahiResponseStatus status,
     chromeos::MahiManager::MahiSummaryCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::OnceClosure unblock_closure,
-                        chromeos::MahiManager::MahiSummaryCallback callback) {
-                       std::move(callback).Run(
-                           u"fake summary",
-                           chromeos::MahiResponseStatus::kSuccess);
-                       std::move(unblock_closure).Run();
-                     },
-                     waiter.GetCallback(), std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceClosure unblock_closure, MahiResponseStatus status,
+             chromeos::MahiManager::MahiSummaryCallback callback) {
+            std::move(callback).Run(u"fake summary", status);
+            std::move(unblock_closure).Run();
+          },
+          waiter.GetCallback(), status, std::move(callback)));
 }
 
 // Returns a long summary.
 void ReturnLongSummary(chromeos::MahiManager::MahiSummaryCallback callback) {
   std::move(callback).Run(
       base::StrCat(std::vector<std::u16string>(100, u"Long Summary\n")),
-      chromeos::MahiResponseStatus::kSuccess);
-}
-
-void PressEnter() {
-  ui::test::EventGenerator(Shell::GetPrimaryRootWindow())
-      .PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+      MahiResponseStatus::kSuccess);
 }
 
 }  // namespace
@@ -120,13 +155,15 @@ class MahiPanelViewTest : public AshTestBase {
  public:
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
 
+  MahiUiController* ui_controller() { return &ui_controller_; }
+
   MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
   MahiPanelView* panel_view() { return panel_view_; }
 
   views::Widget* widget() { return widget_.get(); }
 
- private:
+ protected:
   // AshTestBase:
   void SetUp() override {
     auto delegate = std::make_unique<MockNewWindowDelegate>();
@@ -141,7 +178,8 @@ class MahiPanelViewTest : public AshTestBase {
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
-    panel_view_ = widget_->SetContentsView(std::make_unique<MahiPanelView>());
+    panel_view_ = widget_->SetContentsView(
+        std::make_unique<MahiPanelView>(&ui_controller_));
   }
 
   void TearDown() override {
@@ -154,8 +192,18 @@ class MahiPanelViewTest : public AshTestBase {
     new_window_delegate_ = nullptr;
   }
 
+  void RecreatePanelView() {
+    // Avoid creating a dangling pointer.
+    panel_view_ = nullptr;
+
+    panel_view_ = widget_->SetContentsView(
+        std::make_unique<MahiPanelView>(&ui_controller_));
+  }
+
+ private:
   NiceMock<MockMahiManager> mock_mahi_manager_;
   std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
+  MahiUiController ui_controller_;
   raw_ptr<MahiPanelView> panel_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MockNewWindowDelegate> new_window_delegate_;
@@ -168,7 +216,7 @@ TEST_F(MahiPanelViewTest, ContentTitle) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(Return(test_title1));
 
-  MahiPanelView mahi_view1;
+  MahiPanelView mahi_view1(ui_controller());
   const auto* const content_title_label1 = views::AsViewClass<views::Label>(
       mahi_view1.GetViewByID(mahi_constants::ViewId::kContentTitle));
   EXPECT_EQ(content_title_label1->GetText(), test_title1);
@@ -177,7 +225,7 @@ TEST_F(MahiPanelViewTest, ContentTitle) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(Return(test_title2));
 
-  MahiPanelView mahi_view2;
+  MahiPanelView mahi_view2(ui_controller());
   const auto* const content_title_label2 = views::AsViewClass<views::Label>(
       mahi_view2.GetViewByID(mahi_constants::ViewId::kContentTitle));
   EXPECT_EQ(content_title_label2->GetText(), test_title2);
@@ -188,7 +236,7 @@ TEST_F(MahiPanelViewTest, ContentIcon) {
   const auto test_icon1 = gfx::test::CreateImageSkia(/*size=*/128, SK_ColorRED);
   ON_CALL(mock_mahi_manager(), GetContentIcon)
       .WillByDefault(Return(test_icon1));
-  MahiPanelView mahi_view1;
+  MahiPanelView mahi_view1(ui_controller());
   const auto* const content_icon1 = views::AsViewClass<views::ImageView>(
       mahi_view1.GetViewByID(mahi_constants::ViewId::kContentIcon));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*content_icon1->GetImage().bitmap(),
@@ -200,7 +248,7 @@ TEST_F(MahiPanelViewTest, ContentIcon) {
       gfx::test::CreateImageSkia(/*size=*/128, SK_ColorBLUE);
   ON_CALL(mock_mahi_manager(), GetContentIcon)
       .WillByDefault(Return(test_icon2));
-  MahiPanelView mahi_view2;
+  MahiPanelView mahi_view2(ui_controller());
   const auto* const content_icon2 = views::AsViewClass<views::ImageView>(
       mahi_view2.GetViewByID(mahi_constants::ViewId::kContentIcon));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*content_icon2->GetImage().bitmap(),
@@ -215,11 +263,10 @@ TEST_F(MahiPanelViewTest, SummaryText) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([&summary_text1](
                          chromeos::MahiManager::MahiSummaryCallback callback) {
-        std::move(callback).Run(summary_text1,
-                                chromeos::MahiResponseStatus::kSuccess);
+        std::move(callback).Run(summary_text1, MahiResponseStatus::kSuccess);
       });
 
-  MahiPanelView mahi_view1;
+  MahiPanelView mahi_view1(ui_controller());
   const auto* const summary_label1 = views::AsViewClass<views::Label>(
       mahi_view1.GetViewByID(mahi_constants::ViewId::kSummaryLabel));
   EXPECT_EQ(summary_text1, summary_label1->GetText());
@@ -228,11 +275,10 @@ TEST_F(MahiPanelViewTest, SummaryText) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([&summary_text2](
                          chromeos::MahiManager::MahiSummaryCallback callback) {
-        std::move(callback).Run(summary_text2,
-                                chromeos::MahiResponseStatus::kSuccess);
+        std::move(callback).Run(summary_text2, MahiResponseStatus::kSuccess);
       });
 
-  MahiPanelView mahi_view2;
+  MahiPanelView mahi_view2(ui_controller());
   const auto* const summary_label2 = views::AsViewClass<views::Label>(
       mahi_view2.GetViewByID(mahi_constants::ViewId::kSummaryLabel));
   EXPECT_EQ(summary_text2, summary_label2->GetText());
@@ -305,10 +351,10 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithShortSummary) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
         std::move(callback).Run(/*summary=*/u"Short summary",
-                                chromeos::MahiResponseStatus::kSuccess);
+                                MahiResponseStatus::kSuccess);
       });
 
-  MahiPanelView mahi_view;
+  MahiPanelView mahi_view(ui_controller());
 
   // TODO(b/330643995): After outlines are shown by default, remove this since
   // we won't need to explicitly show the outlines section anymore.
@@ -341,7 +387,7 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithLongSummary) {
   // Configure the mock manager to return a long summary.
   ON_CALL(mock_mahi_manager(), GetSummary).WillByDefault(ReturnLongSummary);
 
-  MahiPanelView mahi_view;
+  MahiPanelView mahi_view(ui_controller());
 
   // TODO(b/330643995): After outlines are shown by default, remove this since
   // we won't need to explicitly show the outlines section anymore.
@@ -370,16 +416,15 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsStayConstant) {
   constexpr gfx::Size kPanelBounds(/*width=*/300, /*height=*/400);
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([](chromeos::MahiManager::MahiSummaryCallback callback) {
-        std::move(callback).Run(u"Short summary",
-                                chromeos::MahiResponseStatus::kSuccess);
+        std::move(callback).Run(u"Short summary", MahiResponseStatus::kSuccess);
       });
-  MahiPanelView mahi_view1;
+  MahiPanelView mahi_view1(ui_controller());
   mahi_view1.SetPreferredSize(kPanelBounds);
   mahi_view1.SizeToPreferredSize();
 
   // Create another panel with a long summary.
   ON_CALL(mock_mahi_manager(), GetSummary).WillByDefault(ReturnLongSummary);
-  MahiPanelView mahi_view2;
+  MahiPanelView mahi_view2(ui_controller());
   mahi_view2.SetPreferredSize(kPanelBounds);
   mahi_view2.SizeToPreferredSize();
 
@@ -402,7 +447,8 @@ TEST_F(MahiPanelViewTest, LoadingAnimations) {
   ON_CALL(mock_mahi_manager(), GetSummary)
       .WillByDefault([&summary_waiter](
                          chromeos::MahiManager::MahiSummaryCallback callback) {
-        ReturnDefaultSummaryAsyncly(summary_waiter, std::move(callback));
+        ReturnDefaultSummaryAsyncly(
+            summary_waiter, MahiResponseStatus::kSuccess, std::move(callback));
       });
 
   // Config the mock mahi manager to return outlines asyncly.
@@ -410,10 +456,11 @@ TEST_F(MahiPanelViewTest, LoadingAnimations) {
   ON_CALL(mock_mahi_manager(), GetOutlines)
       .WillByDefault([&outlines_waiter](
                          chromeos::MahiManager::MahiOutlinesCallback callback) {
-        ReturnDefaultOutlinesAsyncly(outlines_waiter, std::move(callback));
+        ReturnDefaultOutlinesAsyncly(
+            outlines_waiter, MahiResponseStatus::kSuccess, std::move(callback));
       });
 
-  MahiPanelView mahi_view;
+  MahiPanelView mahi_view(ui_controller());
 
   // TODO(b/330643995): After outlines are shown by default, remove this since
   // we won't need to explicitly show the outlines section anymore.
@@ -519,8 +566,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
           [&answer1](
               const std::u16string& question, bool current_panel_content,
               chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
-            std::move(callback).Run(answer1,
-                                    chromeos::MahiResponseStatus::kSuccess);
+            std::move(callback).Run(answer1, MahiResponseStatus::kSuccess);
           });
 
   // Set a valid text in the question textfield.
@@ -550,8 +596,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
           [&answer2](
               const std::u16string& question, bool current_panel_content,
               chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
-            std::move(callback).Run(answer2,
-                                    chromeos::MahiResponseStatus::kSuccess);
+            std::move(callback).Run(answer2, MahiResponseStatus::kSuccess);
           });
 
   // Set another valid text in the question textfield.
@@ -619,7 +664,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
           [](const std::u16string& question, bool current_panel_content,
              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
             std::move(callback).Run(/*answer=*/u"fake answer",
-                                    chromeos::MahiResponseStatus::kSuccess);
+                                    MahiResponseStatus::kSuccess);
           });
 
   // Sending the text should create a question and answer text bubble.
@@ -651,6 +696,123 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
                     mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
                 ->GetText(),
             question_text);
+}
+
+// Verifies the mahi panel view when loading an answer with an error by
+// iterating all possible errors.
+TEST_F(MahiPanelViewTest, FailToGetAnswer) {
+  for (MahiResponseStatus error : GetMahiErrors()) {
+    // Config the mock mahi manager to return answer with an `error` asyncly.
+    base::test::TestFuture<void> answer_waiter;
+    EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
+        .WillOnce(
+            [&answer_waiter, error](
+                const std::u16string& question, bool current_panel_content,
+                chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+              ReturnDefaultAnswerAsyncly(answer_waiter, error,
+                                         std::move(callback));
+            });
+
+    auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+    ASSERT_TRUE(question_textfield);
+    question_textfield->SetText(u"fake question");
+
+    auto* const send_button = panel_view()->GetViewByID(
+        mahi_constants::ViewId::kAskQuestionSendButton);
+    ASSERT_TRUE(send_button);
+    LeftClickOn(send_button);
+    Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+    // After a question is posted and before an answer is loaded, the Q&A view
+    // should show.
+    const auto* const question_answer_view =
+        panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+    CHECK(question_answer_view);
+    EXPECT_TRUE(question_answer_view->GetVisible());
+
+    const auto* const summary_outlines_section = panel_view()->GetViewByID(
+        mahi_constants::ViewId::kSummaryOutlinesSection);
+    CHECK(summary_outlines_section);
+    EXPECT_FALSE(summary_outlines_section->GetVisible());
+
+    // Wait until an answer is loaded with an error. Verify views' visibility.
+    ASSERT_TRUE(answer_waiter.Wait());
+    EXPECT_FALSE(question_answer_view->GetVisible());
+    EXPECT_FALSE(summary_outlines_section->GetVisible());
+
+    RecreatePanelView();
+  }
+}
+
+// Verifies the mahi panel view when loading outlines with an error by
+// iterating all possible errors.
+TEST_F(MahiPanelViewTest, FailToGetOutlines) {
+  for (MahiResponseStatus error : GetMahiErrors()) {
+    // Config the mock mahi manager to return outlines with an `error` asyncly.
+    base::test::TestFuture<void> outlines_waiter;
+    EXPECT_CALL(mock_mahi_manager(), GetOutlines)
+        .WillOnce([&outlines_waiter, error](
+                      chromeos::MahiManager::MahiOutlinesCallback callback) {
+          ReturnDefaultOutlinesAsyncly(outlines_waiter, error,
+                                       std::move(callback));
+        });
+
+    MahiPanelView mahi_view(ui_controller());
+    Mock::VerifyAndClear(&mock_mahi_manager());
+
+    // Before outlines are loaded with an error, the summary & outlines section
+    // should show.
+    const auto* const question_answer_view =
+        mahi_view.GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+    CHECK(question_answer_view);
+    EXPECT_FALSE(question_answer_view->GetVisible());
+
+    const auto* const summary_outlines_section =
+        mahi_view.GetViewByID(mahi_constants::ViewId::kSummaryOutlinesSection);
+    CHECK(summary_outlines_section);
+    EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+    // Wait until outlines are loaded with an error. Verify views' visibility.
+    ASSERT_TRUE(outlines_waiter.Wait());
+    EXPECT_FALSE(question_answer_view->GetVisible());
+    EXPECT_FALSE(summary_outlines_section->GetVisible());
+  }
+}
+
+// Verifies the mahi panel view when loading summary with an error by iterating
+// all possible errors.
+TEST_F(MahiPanelViewTest, FailToGetSummary) {
+  for (MahiResponseStatus error : GetMahiErrors()) {
+    // Config the mock mahi manager to return a summary with an `error` asyncly.
+    base::test::TestFuture<void> summary_waiter;
+    EXPECT_CALL(mock_mahi_manager(), GetSummary)
+        .WillOnce([&summary_waiter,
+                   error](chromeos::MahiManager::MahiSummaryCallback callback) {
+          ReturnDefaultSummaryAsyncly(summary_waiter, error,
+                                      std::move(callback));
+        });
+
+    MahiPanelView mahi_view(ui_controller());
+    Mock::VerifyAndClear(&mock_mahi_manager());
+
+    // Before the summary is loaded with an error, the summary & outlines
+    // section should show.
+    const auto* const question_answer_view =
+        mahi_view.GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+    CHECK(question_answer_view);
+    EXPECT_FALSE(question_answer_view->GetVisible());
+
+    const auto* const summary_outlines_section =
+        mahi_view.GetViewByID(mahi_constants::ViewId::kSummaryOutlinesSection);
+    CHECK(summary_outlines_section);
+    EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+    // Wait until the summary is loaded with an error. Verify views' visibility.
+    ASSERT_TRUE(summary_waiter.Wait());
+    EXPECT_FALSE(question_answer_view->GetVisible());
+    EXPECT_FALSE(summary_outlines_section->GetVisible());
+  }
 }
 
 }  // namespace ash

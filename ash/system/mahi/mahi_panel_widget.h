@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MAHI_MAHI_PANEL_WIDGET_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -37,6 +38,8 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
+
+  MahiUiController ui_controller_;
 
   // Owned by views hierarchy.
   raw_ptr<RefreshBannerView> refresh_view_ = nullptr;

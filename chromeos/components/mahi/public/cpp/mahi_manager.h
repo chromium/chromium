@@ -33,6 +33,7 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiResponseStatus {
   kResourceExhausted = 5,
   kContentExtractionError = 6,
   kCantFindOutputData = 7,
+  kMax = kCantFindOutputData,
 };
 
 // An interface serves as the connection between mahi system and the UI.

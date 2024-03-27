@@ -5,8 +5,11 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_QUESTION_ANSWER_VIEW_H_
 #define ASH_SYSTEM_MAHI_MAHI_QUESTION_ANSWER_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
-#include "base/memory/weak_ptr.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
+#include "base/scoped_observation.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -14,26 +17,25 @@
 namespace ash {
 
 // Mahi Q&A View.
-class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView {
+class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
+                                          public MahiUiController::Observer {
   METADATA_HEADER(MahiQuestionAnswerView, views::FlexLayoutView)
 
  public:
-  MahiQuestionAnswerView();
+  explicit MahiQuestionAnswerView(MahiUiController* ui_controller);
   MahiQuestionAnswerView(const MahiQuestionAnswerView&) = delete;
   MahiQuestionAnswerView& operator=(const MahiQuestionAnswerView&) = delete;
   ~MahiQuestionAnswerView() override;
 
-  // Creates a question text bubble populated with the provided `question_text`
-  // and forwards the question to the manager so it can be answered.
-  void CreateQuestion(const std::u16string& question_text);
-
  private:
-  // Callback provided to `MahiManager` that runs when the answer is available,
-  // and creates an answer text bubble with the supplied contents.
-  void OnAnswerLoaded(std::optional<std::u16string> answer_text,
-                      chromeos::MahiResponseStatus status);
+  // MahiUiController::Observer:
+  void OnAnswerLoaded(const std::u16string& answer) override;
+  void OnError(chromeos::MahiResponseStatus status) override;
+  void OnNavigatedToSummaryOutlinesSection() override;
+  void OnQuestionPosted(const std::u16string& question) override;
 
-  base::WeakPtrFactory<MahiQuestionAnswerView> weak_ptr_factory_{this};
+  base::ScopedObservation<MahiUiController, MahiUiController::Observer>
+      observation_{this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

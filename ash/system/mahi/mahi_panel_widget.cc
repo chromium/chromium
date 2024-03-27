@@ -61,8 +61,9 @@ MahiPanelWidget::MahiPanelWidget(InitParams params)
       contents_view->AddChildView(std::make_unique<RefreshBannerView>());
   refresh_view_observation_.Observe(refresh_view_);
 
-  auto* panel_view =
-      contents_view->AddChildView(std::make_unique<MahiPanelView>());
+  auto* panel_view = contents_view->AddChildView(
+      std::make_unique<MahiPanelView>(&ui_controller_));
+
   // Make sure the `MahiPanelView` is sized to fill up the available space.
   contents_view->SetFlexForView(panel_view, 1.0);
 }

@@ -5,12 +5,12 @@
 #include "ash/system/mahi/summary_outlines_section.h"
 
 #include <memory>
-#include <string>
 
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_animation_utils.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/resources/grit/mahi_resources.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -60,7 +60,11 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
 
 }  // namespace
 
-SummaryOutlinesSection::SummaryOutlinesSection() {
+SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
+    : ui_controller_(ui_controller) {
+  CHECK(ui_controller_);
+  observation_.Observe(ui_controller_);
+
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetInsideBorderInsets(kSectionPadding);
@@ -122,41 +126,16 @@ SummaryOutlinesSection::SummaryOutlinesSection() {
 
 SummaryOutlinesSection::~SummaryOutlinesSection() = default;
 
-void SummaryOutlinesSection::LoadSummaryAndOutlines() {
-  auto* manager = chromeos::MahiManager::Get();
-  if (!manager) {
-    CHECK_IS_TEST();
-    return;
-  }
-
-  manager->GetSummary(base::BindOnce(&SummaryOutlinesSection::OnSummaryLoaded,
-                                     weak_ptr_factory_.GetWeakPtr()));
-
-  summary_loading_animated_image_->Play(
-      mahi_animation_utils::GetLottiePlaybackConfig(
-          *summary_loading_animated_image_->animated_image()->skottie(),
-          IDR_MAHI_LOADING_SUMMARY_ANIMATION));
-
-  manager->GetOutlines(base::BindOnce(&SummaryOutlinesSection::OnOutlinesLoaded,
-                                      weak_ptr_factory_.GetWeakPtr()));
-  outlines_loading_animated_image_->Play(
-      mahi_animation_utils::GetLottiePlaybackConfig(
-          *outlines_loading_animated_image_->animated_image()->skottie(),
-          IDR_MAHI_LOADING_OUTLINES_ANIMATION));
+void SummaryOutlinesSection::OnError(chromeos::MahiResponseStatus status) {
+  SetVisible(false);
 }
 
-void SummaryOutlinesSection::OnSummaryLoaded(
-    std::u16string summary_text,
-    chromeos::MahiResponseStatus status) {
-  summary_label_->SetVisible(true);
-  summary_label_->SetText(summary_text);
-  summary_loading_animated_image_->Stop();
-  summary_loading_animated_image_->SetVisible(false);
+void SummaryOutlinesSection::OnNavigatedToSummaryOutlinesSection() {
+  SetVisible(true);
 }
 
 void SummaryOutlinesSection::OnOutlinesLoaded(
-    std::vector<chromeos::MahiOutline> outlines,
-    chromeos::MahiResponseStatus status) {
+    const std::vector<chromeos::MahiOutline>& outlines) {
   auto* outlines_container =
       GetViewByID(mahi_constants::ViewId::kOutlinesContainer);
   for (auto outline : outlines) {
@@ -176,6 +155,37 @@ void SummaryOutlinesSection::OnOutlinesLoaded(
   outlines_loading_animated_image_->Stop();
   outlines_loading_animated_image_->SetVisible(false);
   outlines_container->SetVisible(true);
+}
+
+void SummaryOutlinesSection::OnQuestionPosted(const std::u16string& question) {
+  SetVisible(false);
+}
+
+void SummaryOutlinesSection::OnSummaryLoaded(
+    const std::u16string& summary_text) {
+  summary_label_->SetVisible(true);
+  summary_label_->SetText(summary_text);
+  summary_loading_animated_image_->Stop();
+  summary_loading_animated_image_->SetVisible(false);
+}
+
+void SummaryOutlinesSection::LoadSummaryAndOutlines() {
+  if (!chromeos::MahiManager::Get()) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  // Plays loading animation before summary and outlines are loaded.
+  summary_loading_animated_image_->Play(
+      mahi_animation_utils::GetLottiePlaybackConfig(
+          *summary_loading_animated_image_->animated_image()->skottie(),
+          IDR_MAHI_LOADING_SUMMARY_ANIMATION));
+  outlines_loading_animated_image_->Play(
+      mahi_animation_utils::GetLottiePlaybackConfig(
+          *outlines_loading_animated_image_->animated_image()->skottie(),
+          IDR_MAHI_LOADING_OUTLINES_ANIMATION));
+
+  ui_controller_->UpdateSummaryAndOutlines();
 }
 
 BEGIN_METADATA(SummaryOutlinesSection)

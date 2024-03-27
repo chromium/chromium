@@ -20,7 +20,9 @@
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/summary_outlines_section.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -149,6 +151,60 @@ std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
   return button;
 }
 
+// BackButton ------------------------------------------------------------------
+
+// A button used to navigate to the summary & outlines section. Only shown when
+// in the Q&A view.
+class BackButton : public IconButton, public MahiUiController::Observer {
+  METADATA_HEADER(BackButton, IconButton)
+
+ public:
+  // NOTE: `controller` outlives `BackButton` so it is safe to use
+  // `base::Unretained()` here.
+  // TODO(b/319264190): Replace the a11y string.
+  explicit BackButton(MahiUiController* ui_controller)
+      : IconButton(
+            /*callback=*/base::BindRepeating(
+                &MahiUiController::NavigateToSummaryOutlinesSection,
+                base::Unretained(ui_controller)),
+            IconButton::Type::kSmallFloating,
+            &kEcheArrowBackIcon,
+            /*accessible_name=*/u"Back to summary",
+            /*is_togglable=*/false,
+            /*has_border=*/false) {
+    CHECK(ui_controller);
+    observation_.Observe(ui_controller);
+  }
+
+  BackButton(const BackButton&) = delete;
+  BackButton& operator=(const BackButton&) = delete;
+  ~BackButton() override = default;
+
+ private:
+  // MahiController::Observer:
+  void OnNavigatedToSummaryOutlinesSection() override {
+    // Hide `BackButton` when the summary & outlines section shows.
+    SetVisible(false);
+  }
+
+  void OnQuestionPosted(const std::u16string& question) override {
+    // Ensure `BackButton` is visible when a question posted to enable
+    // navigation back to the summary & outlines section.
+    SetVisible(true);
+  }
+
+  base::ScopedObservation<MahiUiController, MahiUiController::Observer>
+      observation_{this};
+};
+
+BEGIN_METADATA(BackButton)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(/*no export*/, BackButton, views::View)
+END_VIEW_BUILDER
+
+// ContentScrollView -----------------------------------------------------------
+
 // Container for scrollable content in the Mahi panel, including the summary and
 // outlines section or the Q&A section. Clips its own bounds to present its
 // contents within a round-cornered container with a cutout in the bottom-right.
@@ -251,7 +307,16 @@ END_METADATA
 
 }  // namespace
 
-MahiPanelView::MahiPanelView() {
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(/*no export*/, ash::BackButton)
+
+namespace ash {
+
+MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
+    : ui_controller_(ui_controller) {
+  CHECK(ui_controller_);
+
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
   SetInteriorMargin(kPanelPadding);
@@ -334,11 +399,15 @@ MahiPanelView::MahiPanelView() {
                       views::Builder<views::View>()
                           .SetUseDefaultFillLayout(true)
                           .AddChildren(
-                              views::Builder<SummaryOutlinesSection>()
+                              views::Builder<SummaryOutlinesSection>(
+                                  std::make_unique<SummaryOutlinesSection>(
+                                      ui_controller_))
                                   .SetID(mahi_constants::ViewId::
                                              kSummaryOutlinesSection)
                                   .CopyAddressTo(&summary_outlines_section_),
-                              views::Builder<MahiQuestionAnswerView>()
+                              views::Builder<MahiQuestionAnswerView>(
+                                  std::make_unique<MahiQuestionAnswerView>(
+                                      ui_controller_))
                                   .SetID(mahi_constants::ViewId::
                                              kQuestionAnswerView)
                                   .CopyAddressTo(&question_answer_view_)
@@ -418,18 +487,10 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
                            gfx::Insets::VH(0, kHeaderRowSpacing));
       }))
       .AddChildren(
-          // Back Button (Only shown when in the Q&A view)
-          views::Builder<views::Button>(
-              IconButton::Builder()
-                  .SetType(IconButton::Type::kSmallFloating)
-                  .SetVectorIcon(&kEcheArrowBackIcon)
-                  .Build())
+          // Back Button.
+          views::Builder<BackButton>(
+              std::make_unique<BackButton>(ui_controller_))
               .CopyAddressTo(&back_button_)
-              .SetCallback(
-                  base::BindRepeating(&MahiPanelView::OnBackButtonPressed,
-                                      weak_ptr_factory_.GetWeakPtr()))
-              // TODO(b/319264190): Replace string.
-              .SetAccessibleName(u"Back to summary")
               .SetID(mahi_constants::ViewId::kBackButton)
               .SetVisible(false),  // Visible when Q&A View is showing.
           // The Panel's title label
@@ -494,35 +555,14 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
 }
 
 void MahiPanelView::OnSendButtonPressed() {
-  std::u16string_view trimmed_text = base::TrimWhitespace(
-      question_textfield_->GetText(), base::TrimPositions::TRIM_ALL);
-
   // Do not process question if input is invalid.
-  if (trimmed_text.empty()) {
-    return;
+  if (std::u16string_view trimmed_text = base::TrimWhitespace(
+          question_textfield_->GetText(), base::TrimPositions::TRIM_ALL);
+      !trimmed_text.empty()) {
+    ui_controller_->SendQuestion(std::u16string(trimmed_text),
+                                 /*current_panel_content=*/true);
+    question_textfield_->SetText(std::u16string());
   }
-
-  question_answer_view_->CreateQuestion(std::u16string(trimmed_text));
-  question_textfield_->SetText(std::u16string());
-  TransitionToQuestionAnswerView();
-}
-
-void MahiPanelView::OnBackButtonPressed() {
-  TransitionToSummaryView();
-}
-
-void MahiPanelView::TransitionToQuestionAnswerView() {
-  if (!question_answer_view_->GetVisible()) {
-    summary_outlines_section_->SetVisible(false);
-    question_answer_view_->SetVisible(true);
-    back_button_->SetVisible(true);
-  }
-}
-
-void MahiPanelView::TransitionToSummaryView() {
-  summary_outlines_section_->SetVisible(true);
-  question_answer_view_->SetVisible(false);
-  back_button_->SetVisible(false);
 }
 
 BEGIN_METADATA(MahiPanelView)

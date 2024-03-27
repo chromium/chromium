@@ -5,9 +5,13 @@
 #ifndef ASH_SYSTEM_MAHI_SUMMARY_OUTLINES_SECTION_H_
 #define ASH_SYSTEM_MAHI_SUMMARY_OUTLINES_SECTION_H_
 
+#include <string>
+#include <vector>
+
 #include "ash/ash_export.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -21,35 +25,38 @@ class Label;
 namespace ash {
 
 // The view containing the summary and outlines section within the Mahi panel.
-class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView {
+class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
+                                          public MahiUiController::Observer {
   METADATA_HEADER(SummaryOutlinesSection, views::BoxLayoutView)
 
  public:
-  SummaryOutlinesSection();
+  explicit SummaryOutlinesSection(MahiUiController* ui_controller);
   SummaryOutlinesSection(const SummaryOutlinesSection&) = delete;
   SummaryOutlinesSection& operator=(const SummaryOutlinesSection&) = delete;
   ~SummaryOutlinesSection() override;
 
  private:
+  // MahiUiController::Observer:
+  void OnError(chromeos::MahiResponseStatus status) override;
+  void OnNavigatedToSummaryOutlinesSection() override;
+  void OnOutlinesLoaded(
+      const std::vector<chromeos::MahiOutline>& outlines) override;
+  void OnQuestionPosted(const std::u16string& question) override;
+  void OnSummaryLoaded(const std::u16string& summary) override;
+
   // Requests summary and outlines data from `MahiManager` for the currently
   // active content and starts playing the loading animations.
   void LoadSummaryAndOutlines();
 
-  // Callback provided to the `MahiManager` which runs when the summary is
-  // available.
-  void OnSummaryLoaded(std::u16string summary,
-                       chromeos::MahiResponseStatus status);
+  // `controller_` will outlive `this`.
+  const raw_ptr<MahiUiController> ui_controller_;
 
-  // Callback provided to the `MahiManager` which runs when all outlines are
-  // available.
-  void OnOutlinesLoaded(std::vector<chromeos::MahiOutline> outlines,
-                        chromeos::MahiResponseStatus status);
+  base::ScopedObservation<MahiUiController, MahiUiController::Observer>
+      observation_{this};
 
   raw_ptr<views::AnimatedImageView> summary_loading_animated_image_ = nullptr;
   raw_ptr<views::AnimatedImageView> outlines_loading_animated_image_ = nullptr;
   raw_ptr<views::Label> summary_label_ = nullptr;
-
-  base::WeakPtrFactory<SummaryOutlinesSection> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, SummaryOutlinesSection, views::BoxLayoutView)

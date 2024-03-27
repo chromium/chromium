@@ -14,6 +14,7 @@
 
 namespace ash {
 
+class MahiUiController;
 class MahiQuestionAnswerView;
 class SummaryOutlinesSection;
 class SystemTextfield;
@@ -25,7 +26,7 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   METADATA_HEADER(MahiPanelView, views::FlexLayoutView)
 
  public:
-  MahiPanelView();
+  explicit MahiPanelView(MahiUiController* ui_controller);
   MahiPanelView(const MahiPanelView&) = delete;
   MahiPanelView& operator=(const MahiPanelView&) = delete;
   ~MahiPanelView() override;
@@ -46,10 +47,7 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   void OnBackButtonPressed();
   void OnSendButtonPressed();
 
-  // Updates `ContentScrollView` child view visibilities to handle transitions
-  // between views.
-  void TransitionToQuestionAnswerView();
-  void TransitionToSummaryView();
+  const raw_ptr<MahiUiController> ui_controller_;
 
   // Owned by the views hierarchy.
   raw_ptr<views::View> back_button_;

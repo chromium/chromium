@@ -4,8 +4,6 @@
 
 #include "ash/system/mahi/mahi_question_answer_view.h"
 
-#include <string>
-
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -14,6 +12,8 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
+#include "base/check.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,7 +87,11 @@ std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
 
 }  // namespace
 
-MahiQuestionAnswerView::MahiQuestionAnswerView() {
+MahiQuestionAnswerView::MahiQuestionAnswerView(
+    MahiUiController* ui_controller) {
+  CHECK(ui_controller);
+  observation_.Observe(ui_controller);
+
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kInteriorMargin);
   SetIgnoreDefaultMainAxisMargins(true);
@@ -98,25 +102,24 @@ MahiQuestionAnswerView::MahiQuestionAnswerView() {
                                        views::MaximumFlexSizeRule::kUnbounded));
 }
 
-void MahiQuestionAnswerView::CreateQuestion(
-    const std::u16string& question_text) {
-  AddChildView(CreateTextBubble(question_text, /*is_question=*/true));
-
-  chromeos::MahiManager::Get()->AnswerQuestion(
-      question_text, /*current_panel_content=*/true,
-      base::BindOnce(&MahiQuestionAnswerView::OnAnswerLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void MahiQuestionAnswerView::OnAnswerLoaded(
-    std::optional<std::u16string> answer_text,
-    chromeos::MahiResponseStatus status) {
-  if (answer_text.has_value()) {
-    AddChildView(CreateTextBubble(answer_text.value(), /*is_question=*/false));
-  }
-}
-
 MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;
+
+void MahiQuestionAnswerView::OnAnswerLoaded(const std::u16string& answer) {
+  AddChildView(CreateTextBubble(answer, /*is_question=*/false));
+}
+
+void MahiQuestionAnswerView::OnError(chromeos::MahiResponseStatus status) {
+  SetVisible(false);
+}
+
+void MahiQuestionAnswerView::OnNavigatedToSummaryOutlinesSection() {
+  SetVisible(false);
+}
+
+void MahiQuestionAnswerView::OnQuestionPosted(const std::u16string& question) {
+  SetVisible(true);
+  AddChildView(CreateTextBubble(question, /*is_question=*/true));
+}
 
 BEGIN_METADATA(MahiQuestionAnswerView)
 END_METADATA
