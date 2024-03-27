@@ -33,7 +33,6 @@ DefaultSupportedQuicVersions() {
 // should only use versions at least as recent as the oldest default version.
 inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector ObsoleteQuicVersions() {
   return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q046(),
-                                       quic::ParsedQuicVersion::Q050(),
                                        quic::ParsedQuicVersion::Draft29()};
 }
 

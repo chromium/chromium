@@ -1591,9 +1591,8 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
   // Verify advertised versions.
   const quic::ParsedQuicVersionVector loaded_advertised_versions =
       alternative_service_info_vector[1].advertised_versions();
-  ASSERT_EQ(2u, loaded_advertised_versions.size());
+  ASSERT_EQ(1u, loaded_advertised_versions.size());
   EXPECT_EQ(quic::ParsedQuicVersion::Q046(), loaded_advertised_versions[0]);
-  EXPECT_EQ(quic::ParsedQuicVersion::Q050(), loaded_advertised_versions[1]);
 
   // No other fields should have been populated.
   server_info.alternative_services.reset();
@@ -1662,7 +1661,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeServiceInfoVector alternative_service_info_vector_2;
   // Quic alternative service set with two advertised QUIC versions.
   quic::ParsedQuicVersionVector advertised_versions = {
-      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Q050()};
+      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Draft29()};
   alternative_service_info_vector_2.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions));
@@ -1683,7 +1682,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":"
-      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-Q050\"],"
+      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-29\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"anonymization\":[],"
@@ -1698,7 +1697,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeServiceInfoVector alternative_service_info_vector_3;
   // A same set of QUIC versions but listed in a different order.
   quic::ParsedQuicVersionVector advertised_versions_2 = {
-      quic::ParsedQuicVersion::Q050(), quic::ParsedQuicVersion::Q046()};
+      quic::ParsedQuicVersion::Draft29(), quic::ParsedQuicVersion::Q046()};
   alternative_service_info_vector_3.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions_2));
@@ -1719,7 +1718,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":"
-      "[{\"advertised_alpns\":[\"h3-Q050\",\"h3-Q046\"],"
+      "[{\"advertised_alpns\":[\"h3-29\",\"h3-Q046\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"anonymization\":[],"

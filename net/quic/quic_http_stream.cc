@@ -54,9 +54,6 @@ HttpConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       return HttpConnectionInfo::kQUIC_UNKNOWN_VERSION;
     case quic::QUIC_VERSION_46:
       return HttpConnectionInfo::kQUIC_46;
-    case quic::QUIC_VERSION_50:
-      return quic_version.UsesTls() ? HttpConnectionInfo::kQUIC_T050
-                                    : HttpConnectionInfo::kQUIC_Q050;
     case quic::QUIC_VERSION_IETF_DRAFT_29:
       DCHECK(quic_version.UsesTls());
       return HttpConnectionInfo::kQUIC_DRAFT_29;

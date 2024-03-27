@@ -3500,7 +3500,6 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
 
   quic::ParsedQuicVersionVector versions = {
       quic::ParsedQuicVersion::Draft29(),
-      quic::ParsedQuicVersion::Q050(),
   };
   AlternativeServiceInfoVector alternatives =
       http_server_properties_.GetAlternativeServiceInfos(
