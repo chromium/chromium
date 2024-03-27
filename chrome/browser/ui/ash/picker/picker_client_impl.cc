@@ -35,6 +35,10 @@
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/fileapi/recent_file.h"
+#include "chrome/browser/ash/fileapi/recent_model.h"
+#include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
@@ -44,6 +48,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -57,6 +63,17 @@ namespace {
 constexpr int kMaxGifsToSearch = 4;
 constexpr base::span<std::string_view> kImageExtensions = {
     (std::string_view[]){".jpg", ".jpeg", ".png", ".gif", ".webp"}};
+constexpr base::TimeDelta kMaxFileRecencyDelta = base::Days(30);
+
+storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
+  content::StoragePartition* storage = profile->GetDefaultStoragePartition();
+  return storage->GetFileSystemContext();
+}
+
+ash::PickerSearchResult CreateSearchResultForRecentFile(
+    const ash::RecentFile& file) {
+  return ash::PickerSearchResult::LocalFile(u"file", file.url().path());
+}
 
 int GetAutocompleteProviderTypes(ash::PickerCategory category) {
   switch (category) {
@@ -299,6 +316,32 @@ void PickerClientImpl::ShowEditor() {
   }
 
   editor_mediator->HandleTrigger();
+}
+
+void PickerClientImpl::GetRecentFileResults(RecentFilesCallback callback) {
+  const scoped_refptr<storage::FileSystemContext> file_system_context =
+      GetFileSystemContextForProfile(profile_);
+  if (!file_system_context) {
+    return;
+  }
+
+  ash::RecentModel* model = ash::RecentModelFactory::GetForProfile(profile_);
+  if (!model) {
+    return;
+  }
+
+  model->GetRecentFiles(
+      file_system_context.get(), GURL(), /*query=*/"", kMaxFileRecencyDelta,
+      ash::RecentModel::FileType::kAll,
+      /*invalidate_cache=*/false,
+      base::BindOnce([](const std::vector<ash::RecentFile>& files) {
+        std::vector<ash::PickerSearchResult> results;
+        results.reserve(files.size());
+        for (const ash::RecentFile& file : files) {
+          results.push_back(CreateSearchResultForRecentFile(file));
+        }
+        return results;
+      }).Then(std::move(callback)));
 }
 
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {

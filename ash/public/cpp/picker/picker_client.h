@@ -32,6 +32,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
   using CrosSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
                                    std::vector<PickerSearchResult> results)>;
+  using RecentFilesCallback =
+      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
 
   // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
   // fetch assets.
@@ -56,6 +58,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void StopCrosQuery() = 0;
 
   virtual void ShowEditor() = 0;
+
+  virtual void GetRecentFileResults(RecentFilesCallback callback) = 0;
 
  protected:
   PickerClient();

@@ -265,6 +265,16 @@ void PickerController::GetResultsForCategory(PickerCategory category,
       break;
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
+      client_->GetRecentFileResults(base::BindOnce(
+          [](SearchResultsCallback callback,
+             std::vector<PickerSearchResult> results) {
+            std::move(callback).Run({
+                PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,
+                                           std::move(results)),
+            });
+          },
+          std::move(callback)));
+      return;
     case PickerCategory::kEditor:
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:

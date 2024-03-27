@@ -70,6 +70,7 @@ class PickerClientImpl
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
   void ShowEditor() override;
+  void GetRecentFileResults(RecentFilesCallback callback) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
