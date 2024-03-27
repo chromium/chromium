@@ -50,11 +50,19 @@ enum NavigationType {
   // Reload the page, bypassing any cache entries.
   RELOAD_BYPASSING_CACHE,
 
-  // The navigation is the result of session restore and should honor the
-  // page's cache policy while restoring form state. This is set to true if
-  // restoring a tab/session from the previous session and the previous
-  // session did not crash. If this is not set and the page was restored then
-  // the page's cache policy is ignored and we load from the cache.
+  // The navigation is the result of session restore (e.g. restoring tabs when
+  // reopening browser, undo closed tab, duplicate tab) and should honor the
+  // page's cache policy while restoring form state.  Restoring without using
+  // this type would lead to the page's cache policy being ignored and the page
+  // being loaded from the cache, potentially showing stale data for some
+  // sites.
+  // Note: In a restored session, this type is used when traversing restored
+  // history entries for the first time, rather than HISTORY_SAME_DOCUMENT or
+  // HISTORY_DIFFERENT_DOCUMENT. See
+  // NavigationBrowserTest.TraversingToRestoredEntryUsesRestoreType.
+  // TODO(https://crbug.com/40283341): This enum should be split to allow
+  // differentiating same- and cross- document traversals in a restored
+  // session, like HISTORY_{SAME|DIFFERENT}_DOCUMENT.
   RESTORE,
 
   // Like RESTORE, except that the navigation contains POST data.

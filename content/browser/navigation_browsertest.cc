@@ -97,6 +97,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -8203,6 +8204,50 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FixedStoragePartition) {
   EXPECT_EQ(GetSiteInstance(shell)->GetStoragePartitionConfig(),
             storage_partition_config);
   EXPECT_TRUE(GetSiteInstance(shell)->IsFixedStoragePartition());
+}
+
+// Exercises the restored session history traversal code path which uses
+// RESTORE navigation types, rather than HISTORY_{SAME|DIFFERENT}_DOCUMENT,
+// which code might erroneously expect. See https://crbug.com/40068335.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       TraversingToRestoredEntryUsesRestoreType) {
+  ASSERT_TRUE(
+      web_contents()->GetController().GetActiveEntry()->IsInitialEntry());
+
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+  const GURL url3(embedded_test_server()->GetURL("/title2.html#samedoc"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+  EXPECT_TRUE(NavigateToURL(shell(), url3));
+
+  // Clone the tab and load the page.
+  std::unique_ptr<WebContents> new_tab = shell()->web_contents()->Clone();
+  WebContentsImpl* new_tab_impl = static_cast<WebContentsImpl*>(new_tab.get());
+  NavigationController& new_controller = new_tab_impl->GetController();
+
+  {
+    TestNavigationObserver clone_observer(new_tab.get());
+    new_controller.LoadIfNecessary();
+    clone_observer.Wait();
+  }
+
+  // Back to url2 which is a same document navigation but uses RESTORE.
+  {
+    NavigationHandleCommitObserver observer(new_tab.get(), url2);
+    ASSERT_TRUE(HistoryGoBack(new_tab_impl));
+    EXPECT_EQ(observer.navigation_type(),
+              blink::mojom::NavigationType::RESTORE);
+  }
+
+  // Back to url1 which is a cross document navigation but uses RESTORE.
+  {
+    NavigationHandleCommitObserver observer(new_tab.get(), url1);
+    ASSERT_TRUE(HistoryGoBack(new_tab_impl));
+    EXPECT_EQ(observer.navigation_type(),
+              blink::mojom::NavigationType::RESTORE);
+  }
 }
 
 class NavigationBrowserTestDeprecateUnloadOptOut

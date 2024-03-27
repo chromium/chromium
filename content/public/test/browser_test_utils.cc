@@ -3469,11 +3469,7 @@ void TestActivationManager::StopWaitingIfNeeded() {
 NavigationHandleCommitObserver::NavigationHandleCommitObserver(
     content::WebContents* web_contents,
     const GURL& url)
-    : WebContentsObserver(web_contents),
-      url_(url),
-      has_committed_(false),
-      was_same_document_(false),
-      was_renderer_initiated_(false) {}
+    : WebContentsObserver(web_contents), url_(url) {}
 
 void NavigationHandleCommitObserver::DidFinishNavigation(
     content::NavigationHandle* handle) {
@@ -3482,6 +3478,8 @@ void NavigationHandleCommitObserver::DidFinishNavigation(
   has_committed_ = true;
   was_same_document_ = handle->IsSameDocument();
   was_renderer_initiated_ = handle->IsRendererInitiated();
+  navigation_type_ =
+      NavigationRequest::From(handle)->common_params().navigation_type;
 }
 
 WebContentsConsoleObserver::WebContentsConsoleObserver(

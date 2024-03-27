@@ -61,6 +61,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -1897,14 +1898,19 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
   bool has_committed() const { return has_committed_; }
   bool was_same_document() const { return was_same_document_; }
   bool was_renderer_initiated() const { return was_renderer_initiated_; }
+  blink::mojom::NavigationType navigation_type() const {
+    return navigation_type_;
+  }
 
  private:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   const GURL url_;
-  bool has_committed_;
-  bool was_same_document_;
-  bool was_renderer_initiated_;
+  bool has_committed_ = false;
+  bool was_same_document_ = false;
+  bool was_renderer_initiated_ = false;
+  blink::mojom::NavigationType navigation_type_ =
+      blink::mojom::NavigationType::RELOAD;
 };
 
 // A test utility that monitors console messages sent to a WebContents. This
