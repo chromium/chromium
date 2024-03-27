@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -32,7 +34,7 @@ class BookmarkFolderPickerMediator {
                     if (mBookmarkModel.doAllBookmarksExist(mBookmarkIds)) {
                         populateFoldersForParentId(
                                 mCurrentParentItem == null
-                                        ? mInitialParentId
+                                        ? mOriginalParentId
                                         : mCurrentParentItem.getId());
                     } else {
                         mFinishRunnable.run();
@@ -56,13 +58,15 @@ class BookmarkFolderPickerMediator {
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
     private final List<BookmarkId> mBookmarkIds;
-    private final BookmarkId mInitialParentId;
+    // The original parent id shared by the bookmark ids being moved. Null if the bookmark ids
+    // don't share an immediate parent.
+    private final @Nullable BookmarkId mOriginalParentId;
+    private final boolean mAllMovedBookmarksMatchParent;
     private final Runnable mFinishRunnable;
     private final BookmarkQueryHandler mQueryHandler;
     private final BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
-    private final boolean mAllMovedBookmarksMatchParent;
 
     private boolean mMovingAtLeastOneFolder;
     private boolean mMovingAtLeastOneBookmark;
@@ -96,7 +100,8 @@ class BookmarkFolderPickerMediator {
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
         boolean allMovedBookmarksMatchParent = true;
-        BookmarkId firstParent = mBookmarkModel.getBookmarkById(mBookmarkIds.get(0)).getParentId();
+        BookmarkId firstParentId =
+                mBookmarkModel.getBookmarkById(mBookmarkIds.get(0)).getParentId();
         List<BookmarkItem> bookmarkItems = new ArrayList<>();
         for (BookmarkId id : mBookmarkIds) {
             BookmarkItem item = mBookmarkModel.getBookmarkById(id);
@@ -108,15 +113,22 @@ class BookmarkFolderPickerMediator {
             }
 
             // If all of the bookmarks being moved have the same parent, then that's used for the
-            // initial parent.
-            if (!Objects.equals(firstParent, item.getParentId())) {
+            // initial parent. Don't break early here to correctly populate variables above.
+            if (!Objects.equals(firstParentId, item.getParentId())) {
                 allMovedBookmarksMatchParent = false;
             }
         }
         mAllMovedBookmarksMatchParent = allMovedBookmarksMatchParent;
-        // TODO(crbug.com/1473755): Implement lowest common ancestor here for the initial parent.
-        mInitialParentId =
-                mAllMovedBookmarksMatchParent ? firstParent : mBookmarkModel.getRootFolderId();
+        mOriginalParentId =
+                mAllMovedBookmarksMatchParent ? firstParentId : mBookmarkModel.getRootFolderId();
+
+        // If all bookmarks have the same parent, then a that bookmark is selected to populate
+        // children from. This means that the initial bookmarks shown in the folder picker will be
+        // siblings to the original parent.
+        BookmarkId bookmarkIdToShow =
+                mAllMovedBookmarksMatchParent
+                        ? mBookmarkModel.getBookmarkById(firstParentId).getParentId()
+                        : mBookmarkModel.getRootFolderId();
 
         mModel.set(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER, mFinishRunnable);
         mModel.set(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER, this::onMoveClicked);
@@ -128,7 +140,7 @@ class BookmarkFolderPickerMediator {
                             bookmarkItems.stream()
                                     .map(item -> item.getUrl())
                                     .allMatch(ReadingListUtils::isReadingListSupported);
-                    populateFoldersForParentId(mInitialParentId);
+                    populateFoldersForParentId(bookmarkIdToShow);
                 });
     }
 
@@ -223,7 +235,7 @@ class BookmarkFolderPickerMediator {
                 (mMovingAtLeastOneBookmark
                         && !BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, currentParentId));
         boolean isInitialParent =
-                mAllMovedBookmarksMatchParent && Objects.equals(currentParentId, mInitialParentId);
+                mAllMovedBookmarksMatchParent && Objects.equals(currentParentId, mOriginalParentId);
         mModel.set(
                 BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED,
                 !isInvalidFolderLocation && !isInvalidBookmarkLocation && !isInitialParent);

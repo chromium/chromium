@@ -322,6 +322,7 @@ public class BookmarkEditTest {
         // This sleep allows the espresso events to actually go through. Without them, the test is
         // very flaky.
         Thread.sleep(200);
+        onView(withText("Mobile bookmarks")).perform(click());
         onView(withText(FOLDER_A)).perform(click());
         onView(withText("Move here")).perform(click());
         waitForEditActivity();

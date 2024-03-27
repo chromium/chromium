@@ -409,11 +409,9 @@ public class BookmarkFolderPickerMediatorTest {
 
     @Test
     public void testInitialParent_skipsNonFolder() {
-        assertEquals(0, mModelList.size());
-        assertEquals(
-                mUserFolderItem.getTitle(),
-                mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
+        assertEquals(2, mModelList.size());
+        assertEquals("Mobile bookmarks", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
 
     @Test
@@ -428,10 +426,6 @@ public class BookmarkFolderPickerMediatorTest {
 
     @Test
     public void testOptionsItemSelected_BackPressed() {
-        mMediator.optionsItemSelected(android.R.id.home);
-        assertEquals(
-                mMobileFolderItem.getTitle(),
-                mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         mMediator.optionsItemSelected(android.R.id.home);
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         mMediator.optionsItemSelected(android.R.id.home);
@@ -462,8 +456,8 @@ public class BookmarkFolderPickerMediatorTest {
     @Test
     public void testMoveMultiple_sharedParent() {
         remakeMediator(mBookmarkModel, mUserBookmarkId, mUserBookmarkId1);
-        assertEquals("UserFolder", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
+        assertEquals("Mobile bookmarks", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
 
     @Test
@@ -476,7 +470,7 @@ public class BookmarkFolderPickerMediatorTest {
     @Test
     public void testMoveMultiple_readingList() {
         remakeMediator(mBookmarkModel, mReadingListItemId1, mReadingListItemId2);
-        assertEquals("Reading List", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
+        assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
 

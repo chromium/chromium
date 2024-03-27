@@ -126,6 +126,7 @@ public class BookmarkFolderPickerActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> sBookmarkModel.addObserver(mBookmarkModelObserver));
 
+        onView(withText("Mobile bookmarks")).perform(click());
         onView(withText("folder")).perform(click());
         onView(withText("Move here")).perform(click());
 
@@ -151,7 +152,6 @@ public class BookmarkFolderPickerActivityTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> sBookmarkModel.addObserver(mBookmarkModelObserver));
 
-        clickToolbarBackButton();
         onView(withId(R.id.folder_recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(withText("Reading list"))));
         onView(withText("Reading list")).perform(click());
