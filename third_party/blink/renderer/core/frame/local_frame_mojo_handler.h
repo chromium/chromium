@@ -212,6 +212,7 @@ class LocalFrameMojoHandler
       const viz::NavigationId& navigation_id,
       mojom::blink::PageSwapEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) final;
+  void NotifyViewTransitionAbortedToOldDocument() final;
   void DispatchPageSwap(mojom::blink::PageSwapEventParamsPtr) final;
 
   void AddResourceTimingEntryForFailedSubframeNavigation(

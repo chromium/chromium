@@ -158,6 +158,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const viz::NavigationId& navigation_id,
       blink::mojom::PageSwapEventParamsPtr,
       SnapshotDocumentForViewTransitionCallback callback) override;
+  void NotifyViewTransitionAbortedToOldDocument() override;
   void DispatchPageSwap(blink::mojom::PageSwapEventParamsPtr) override;
   void AddResourceTimingEntryForFailedSubframeNavigation(
       const ::blink::FrameToken& subframe_token,

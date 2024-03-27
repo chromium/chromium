@@ -206,6 +206,8 @@ void FakeLocalFrame::SnapshotDocumentForViewTransition(
     blink::mojom::PageSwapEventParamsPtr,
     SnapshotDocumentForViewTransitionCallback callback) {}
 
+void FakeLocalFrame::NotifyViewTransitionAbortedToOldDocument() {}
+
 void FakeLocalFrame::DispatchPageSwap(blink::mojom::PageSwapEventParamsPtr) {}
 
 void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(

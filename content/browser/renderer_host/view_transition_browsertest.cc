@@ -39,7 +39,8 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
 
   ViewTransitionBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kViewTransitionOnNavigation},
+        /*enabled_features=*/
+        {blink::features::kViewTransitionOnNavigation},
         /*disabled_features=*/{});
   }
 
@@ -101,6 +102,44 @@ IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
   ASSERT_FALSE(navigation_manager.was_committed());
   ASSERT_FALSE(
       GetHostFrameSinkManager()->HasUnclaimedViewTransitionResourcesForTest());
+
+  // Ensure the old renderer discards the outgoing transition.
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      "(async () => { await document.startViewTransition().ready; })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
+                       NavigationCancelledBeforeScreenshot) {
+  // Start with a page which has an opt-in for VT.
+  GURL test_url(
+      embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url));
+
+  TestNavigationManager navigation_manager(shell()->web_contents(), test_url);
+  ASSERT_TRUE(
+      ExecJs(shell()->web_contents(), "location.href = location.href;"));
+
+  // Wait for response and resume. The navigation should be blocked by the view
+  // transition condition.
+  ASSERT_TRUE(navigation_manager.WaitForResponse());
+  navigation_manager.ResumeNavigation();
+
+  auto* navigation_request =
+      NavigationRequest::From(navigation_manager.GetNavigationHandle());
+  ASSERT_TRUE(navigation_request);
+  ASSERT_TRUE(
+      navigation_request->IsCommitDeferringConditionDeferredForTesting());
+  ASSERT_FALSE(navigation_request->commit_params().view_transition_state);
+
+  // Stop the navigation while the screenshot request is in flight.
+  shell()->web_contents()->Stop();
+  ASSERT_FALSE(navigation_manager.was_committed());
+
+  // Ensure the old renderer discards the outgoing transition.
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      "(async () => { await document.startViewTransition().ready; })()"));
 }
 
 IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,

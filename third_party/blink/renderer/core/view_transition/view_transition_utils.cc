@@ -36,6 +36,16 @@ ViewTransition* ViewTransitionUtils::GetIncomingCrossDocumentTransition(
 }
 
 // static
+ViewTransition* ViewTransitionUtils::GetOutgoingCrossDocumentTransition(
+    const Document& document) {
+  if (auto* transition = GetTransition(document);
+      transition && transition->IsForNavigationSnapshot()) {
+    return transition;
+  }
+  return nullptr;
+}
+
+// static
 DOMViewTransition* ViewTransitionUtils::GetTransitionScriptDelegate(
     const Document& document) {
   ViewTransition* view_transition =

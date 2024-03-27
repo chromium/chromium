@@ -1340,6 +1340,14 @@ void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
       std::move(callback));
 }
 
+void LocalFrameMojoHandler::NotifyViewTransitionAbortedToOldDocument() {
+  if (auto* transition =
+          ViewTransitionUtils::GetOutgoingCrossDocumentTransition(
+              *frame_->GetDocument())) {
+    transition->SkipTransition();
+  }
+}
+
 void LocalFrameMojoHandler::DispatchPageSwap(
     mojom::blink::PageSwapEventParamsPtr params) {
   auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(

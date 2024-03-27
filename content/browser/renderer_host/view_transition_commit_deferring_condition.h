@@ -20,6 +20,7 @@ struct ViewTransitionState;
 
 namespace content {
 class NavigationRequest;
+class RenderFrameHostImpl;
 class ScopedViewTransitionResources;
 
 class CONTENT_EXPORT ViewTransitionCommitDeferringCondition
@@ -47,6 +48,7 @@ class CONTENT_EXPORT ViewTransitionCommitDeferringCondition
   base::TimeDelta GetSnapshotCallbackTimeout() const;
 
   std::unique_ptr<ScopedViewTransitionResources> resources_;
+  base::WeakPtr<RenderFrameHostImpl> old_rfh_;
   base::OnceClosure resume_navigation_;
   base::WeakPtrFactory<ViewTransitionCommitDeferringCondition> weak_factory_{
       this};

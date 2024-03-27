@@ -1108,6 +1108,11 @@ interface LocalFrame {
     PageSwapEventParams page_swap_event_params) => (
       blink.mojom.ViewTransitionState view_transition_state);
 
+  // Notifies the old Document that the ViewTransition associated with a
+  // navigation was aborted, for example if the navigation was cancelled before
+  // the renderer responds.
+  NotifyViewTransitionAbortedToOldDocument();
+
   // Dispatches a `pageswap` event on the previous Document before the
   // navigation is committed. This API is used for navigations which don't have
   // a ViewTransition.

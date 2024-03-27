@@ -86,7 +86,21 @@ ViewTransitionCommitDeferringCondition::ViewTransitionCommitDeferringCondition(
     : CommitDeferringCondition(navigation_request), weak_factory_(this) {}
 
 ViewTransitionCommitDeferringCondition::
-    ~ViewTransitionCommitDeferringCondition() = default;
+    ~ViewTransitionCommitDeferringCondition() {
+  // If we cached a view transition for the old Document and the navigation
+  // has been aborted, inform the old Document to discard the pending
+  // ViewTransition.
+  //
+  // Note: If we don't have `resources_`, they have been transferred to the
+  // NavigationRequest which is now responsible to discard the old transition if
+  // the navigation is cancelled.
+  if (!resources_ || !old_rfh_ || !old_rfh_->IsRenderFrameLive()) {
+    return;
+  }
+
+  old_rfh_->GetAssociatedLocalFrame()
+      ->NotifyViewTransitionAbortedToOldDocument();
+}
 
 CommitDeferringCondition::Result
 ViewTransitionCommitDeferringCondition::WillCommitNavigation(
@@ -102,6 +116,7 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
   auto navigation_id = viz::NavigationId::Create();
   resources_ = std::make_unique<ScopedViewTransitionResources>(navigation_id);
   resume_navigation_ = std::move(resume);
+  old_rfh_ = render_frame_host->GetWeakPtr();
 
   CHECK(render_frame_host->IsRenderFrameLive());
 

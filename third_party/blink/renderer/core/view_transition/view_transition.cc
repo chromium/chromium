@@ -499,7 +499,6 @@ void ViewTransition::ProcessCurrentState() {
 
           std::move(transition_state_callback_)
               .Run(std::move(view_transition_state));
-          SkipTransition(PromiseResponse::kRejectAbort);
           break;
         }
 

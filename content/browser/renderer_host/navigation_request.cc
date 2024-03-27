@@ -2198,6 +2198,10 @@ NavigationRequest::~NavigationRequest() {
           prerender_frame_tree_node_id_.value());
     }
 
+    if (!HasCommitted()) {
+      ResetViewTransitionState();
+    }
+
     if (IsServedFromBackForwardCache()) {
       auto bfcache_entry =
           GetNavigationController()->GetBackForwardCache().GetOrEvictEntry(
@@ -7413,9 +7417,6 @@ void NavigationRequest::DidCommitNavigation(
   // If the navigation committed successfully, pass ownership of ViewTransition
   // resources to the new view. This ensures that the resources are cleaned up
   // if the new renderer process terminates before taking ownership of them.
-  //
-  // TODO(khushalsagar): If the navigation was cancelled, we should inform the
-  // old Document otherwise it's rendering will stay blocked.
   if (view_transition_resources_ && state_ == DID_COMMIT) {
     GetRenderFrameHost()
         ->GetRenderWidgetHost()
@@ -10036,6 +10037,20 @@ void NavigationRequest::ResetViewTransitionState() {
   CHECK(view_transition_resources_);
   commit_params_->view_transition_state.reset();
   view_transition_resources_.reset();
+
+  // If we cached a view transition for the old Document and the transition
+  // has been aborted, inform the old Document to discard the pending
+  // ViewTransition.
+  //
+  // Note: If the transition is aborted before the renderer acks the
+  // snapshot IPC, we won't have any resources here. The
+  // ViewTransitionCommitDeferringCondition is responsible for discarding the
+  // pending transition in this case.
+  if (auto* previous_rfh =
+          RenderFrameHostImpl::FromID(GetPreviousRenderFrameHostId())) {
+    previous_rfh->GetAssociatedLocalFrame()
+        ->NotifyViewTransitionAbortedToOldDocument();
+  }
 }
 
 blink::RuntimeFeatureStateContext&
