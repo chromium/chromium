@@ -43,6 +43,14 @@ bool IsAccessibilityPruneRedundantInlineTextEnabled() {
       ::features::kAccessibilityPruneRedundantInlineText);
 }
 
+BASE_FEATURE(kImageDescriptionsAlternateRouting,
+             "ImageDescriptionsAlternateRouting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsImageDescriptionsAlternateRoutingEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kImageDescriptionsAlternateRouting);
+}
+
 BASE_FEATURE(kAugmentExistingImageLabels,
              "AugmentExistingImageLabels",
              base::FEATURE_ENABLED_BY_DEFAULT);

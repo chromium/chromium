@@ -18909,6 +18909,7 @@ from previous Chrome versions.
   <int value="-912946915" label="LauncherSearchControl:disabled"/>
   <int value="-912585719" label="AppManagementIntentSettings:disabled"/>
   <int value="-912456561" label="MidiManagerWinrt:enabled"/>
+  <int value="-911535733" label="ImageDescriptionsAlternateRouting:disabled"/>
   <int value="-910452816" label="ChromeOSParentalControlsSettings:disabled"/>
   <int value="-910007270" label="FeedbackReportQuestionnaire:enabled"/>
   <int value="-909905655" label="AllowAllSitesToInitiateMirroring:disabled"/>
@@ -24812,6 +24813,7 @@ from previous Chrome versions.
   <int value="1760946944" label="MacViewsAutofillPopup:disabled"/>
   <int value="1761015761"
       label="AutofillEnableIbanClientSideUrlFiltering:enabled"/>
+  <int value="1761566860" label="ImageDescriptionsAlternateRouting:enabled"/>
   <int value="1761576233" label="OmniboxReportAssistedQueryStats:disabled"/>
   <int value="1761920078"
       label="OverrideSimilarLanguagesForHrefTranslate:enabled"/>

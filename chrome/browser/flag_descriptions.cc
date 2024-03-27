@@ -996,6 +996,12 @@ const char kEnableAutoDisableAccessibilityDescription[] =
     "turned off or if an extension which uses accessibility APIs no longer "
     "needs them.";
 
+const char kImageDescriptionsAlternateRoutingName[] =
+    "Use alternative route for image descriptions.";
+const char kImageDescriptionsAlternateRoutingDescription[] =
+    "When adding automatic captions to images, use a different route to aquire "
+    "descriptions.";
+
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =

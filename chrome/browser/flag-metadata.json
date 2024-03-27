@@ -4854,6 +4854,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "image-descriptions-alternative-routing",
+    "owners": [ "francisjp@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

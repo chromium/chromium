@@ -56,6 +56,10 @@ AX_BASE_EXPORT bool IsAccessibilityPdfOcrForSelectToSpeakEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPruneRedundantInlineText);
 AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineTextEnabled();
 
+// Use Alternative mechanism for acquiring image descriptions.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
+AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();
+
 // Augment existing images labels in addition to unlabeled images.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAugmentExistingImageLabels);
 AX_BASE_EXPORT bool IsAugmentExistingImageLabelsEnabled();

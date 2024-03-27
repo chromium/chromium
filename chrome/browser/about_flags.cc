@@ -7302,6 +7302,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAutoDisableAccessibilityDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kAutoDisableAccessibility)},
 
+    {"image-descriptions-alternative-routing",
+     flag_descriptions::kImageDescriptionsAlternateRoutingName,
+     flag_descriptions::kImageDescriptionsAlternateRoutingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kImageDescriptionsAlternateRouting)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"app-specific-history", flag_descriptions::kAppSpecificHistoryName,
      flag_descriptions::kAppSpecificHistoryDescription, kOsAndroid,
