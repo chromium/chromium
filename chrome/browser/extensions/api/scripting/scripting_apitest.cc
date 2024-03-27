@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
@@ -130,8 +131,12 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
 
 // Test validating we don't insert content into nested WebContents.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, NestedWebContents) {
-  OpenURLInCurrentTab(
-      embedded_test_server()->GetURL("a.com", "/page_with_embedded_pdf.html"));
+  OpenURLInCurrentTab(embedded_test_server()->GetURL("a.com", "/iframe.html"));
+
+  content::RenderFrameHost* iframe_host = content::ChildFrameAt(
+      browser()->tab_strip_model()->GetActiveWebContents(), 0);
+  ASSERT_TRUE(iframe_host);
+  content::CreateAndAttachInnerContents(iframe_host);
 
   // From there, the test continues in the JS.
   ASSERT_TRUE(RunExtensionTest("scripting/nested_web_contents")) << message_;
