@@ -55,6 +55,7 @@
 #include <variant>
 
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "pdf/pdf_features.h"
 
 namespace {
@@ -699,9 +700,23 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
     : public ChromeBackForwardCacheBrowserWithEmbedTestBase,
       public ::testing::WithParamInterface<std::tuple<std::string_view, bool>> {
  public:
+  void SetUpOnMainThread() override {
+    ChromeBackForwardCacheBrowserWithEmbedTestBase::SetUpOnMainThread();
+
+    if (UseOopif()) {
+      factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
+    }
+  }
+
   const std::string_view& html_tag() const { return std::get<0>(GetParam()); }
 
   bool UseOopif() const { return std::get<1>(GetParam()); }
+
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+      content::WebContents* contents) {
+    CHECK(UseOopif());
+    return factory_->GetTestPdfViewerStreamManager(contents);
+  }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeaturesAndParams()
       const override {
@@ -724,14 +739,16 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
   }
 
   void ExpectNotRestoredReason(base::Location location) {
-    // The PDF viewer contains an inner WebContents and therefore shouldn't be
-    // stored in BFCache. This value should be kept in sync with
-    // BackForwardCacheMetrics::NotRestoredReason.
+    // Reasons to fail caching pages embedding the PDF viewer. For OOPIF PDF
+    // viewer, caching is disabled because it's contains a plugin. For GuestView
+    // PDF viewer, the PDF viewer contains an inner WebContents. These values
+    // should be kept in sync with BackForwardCacheMetrics::NotRestoredReason.
+    static constexpr uint8_t kReasonBlocklistedFeatures = 7;
     static constexpr uint8_t kReasonHaveInnerContents = 32;
 
     content::FetchHistogramsFromChildProcesses();
-    base::HistogramBase::Sample sample =
-        base::HistogramBase::Sample(kReasonHaveInnerContents);
+    base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+        UseOopif() ? kReasonBlocklistedFeatures : kReasonHaveInnerContents);
     base::Bucket expected_not_restored(sample, 1);
 
     EXPECT_THAT(histogram_tester_->GetAllSamples(
@@ -746,6 +763,11 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
                 testing::Contains(expected_not_restored))
         << location.ToString();
   }
+
+ private:
+  // `factory_` is necessary to create a `pdf::TestPdfViewerStreamManager`
+  // instance whenever a PDF loads.
+  std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory> factory_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -835,11 +857,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ChromeBackForwardCacheBrowserWithEmbedPdfTestNoTestingConfig,
     DoesNotCachePageWithEmbeddedPdf) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const auto tag = html_tag();
   const auto page_with_pdf =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_pdf.html"});
@@ -847,8 +864,13 @@ IN_PROC_BROWSER_TEST_P(
   // Navigate to A, a page with embedded PDF.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", page_with_pdf)));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      web_contents(), /*wait_for_hit_test_data=*/true, std::string(tag)));
+  if (UseOopif()) {
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
+                    ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        web_contents(), /*wait_for_hit_test_data=*/true, std::string(tag)));
+  }
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
   // Navigate to B.
@@ -882,11 +904,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ChromeBackForwardCacheBrowserWithEmbedPdfTest,
     MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const auto tag = html_tag();
 
   // Navigate to A.
@@ -905,6 +922,11 @@ IN_PROC_BROWSER_TEST_P(
     });
   )",
                                       tag, GetSrcAttributeForTag(tag))));
+  if (UseOopif()) {
+    // Wait for the PDF to fully load.
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
+                    ->WaitUntilPdfLoadedInFirstChild());
+  }
 
   // Navigate to B.
   ASSERT_TRUE(content::NavigateToURL(
@@ -956,11 +978,6 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 #endif  // (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
                        MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   const auto tag = html_tag();
   const auto page_with_html =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_html.html"});
@@ -980,6 +997,11 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
     });
   )",
                                       tag, GetSrcAttributeForTag(tag))));
+  if (UseOopif()) {
+    // Wait for the PDF to fully load.
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
+                    ->WaitUntilPdfLoadedInFirstChild());
+  }
 
   bool will_change_rfh =
       rfh_a->ShouldChangeRenderFrameHostOnSameSiteNavigation();
