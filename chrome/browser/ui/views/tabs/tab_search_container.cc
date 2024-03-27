@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -30,6 +31,14 @@ enum class TriggerOutcome {
   kMaxValue = kTimedOut,
 };
 
+constexpr base::TimeDelta kExpansionInDuration = base::Milliseconds(500);
+constexpr base::TimeDelta kExpansionOutDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kFlatEdgeInDuration = base::Milliseconds(400);
+constexpr base::TimeDelta kFlatEdgeOutDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kOpacityInDuration = base::Milliseconds(300);
+constexpr base::TimeDelta kOpacityOutDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kOpacityDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kShowDuration = base::Seconds(16);
 constexpr char kTriggerOutcomeName[] = "Tab.Organization.Trigger.Outcome";
 
 Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
@@ -178,22 +187,24 @@ void TabSearchContainer::ExecuteShowTabOrganization() {
     return;
   }
 
-  expansion_animation_.SetSlideDuration(base::Milliseconds(500));
+  expansion_animation_.SetSlideDuration(
+      GetAnimationDuration(kExpansionInDuration));
 
-  flat_edge_animation_.SetSlideDuration(base::Milliseconds(400));
+  flat_edge_animation_.SetSlideDuration(
+      GetAnimationDuration(kFlatEdgeInDuration));
   flat_edge_animation_.SetTweenType(gfx::Tween::Type::LINEAR);
 
-  opacity_animation_.SetSlideDuration(base::Milliseconds(300));
-  const base::TimeDelta delay = base::Milliseconds(100);
+  opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));
+  const base::TimeDelta delay = GetAnimationDuration(kOpacityDelay);
   opacity_animation_delay_timer_.Start(
       FROM_HERE, delay, this, &TabSearchContainer::ShowOpacityAnimation);
 
   expansion_animation_.Show();
   flat_edge_animation_.Show();
 
-  const base::TimeDelta delta = base::Seconds(16);
   hide_tab_organization_timer_.Start(
-      FROM_HERE, delta, this, &TabSearchContainer::OnOrganizeButtonTimeout);
+      FROM_HERE, kShowDuration, this,
+      &TabSearchContainer::OnOrganizeButtonTimeout);
 }
 
 void TabSearchContainer::ShowOpacityAnimation() {
@@ -201,14 +212,17 @@ void TabSearchContainer::ShowOpacityAnimation() {
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization() {
-  expansion_animation_.SetSlideDuration(base::Milliseconds(250));
+  expansion_animation_.SetSlideDuration(
+      GetAnimationDuration(kExpansionOutDuration));
   expansion_animation_.Hide();
 
-  flat_edge_animation_.SetSlideDuration(base::Milliseconds(250));
+  flat_edge_animation_.SetSlideDuration(
+      GetAnimationDuration(kFlatEdgeOutDuration));
   flat_edge_animation_.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
   flat_edge_animation_.Hide();
 
-  opacity_animation_.SetSlideDuration(base::Milliseconds(100));
+  opacity_animation_.SetSlideDuration(
+      GetAnimationDuration(kOpacityOutDuration));
   opacity_animation_.Hide();
 }
 
@@ -238,6 +252,12 @@ void TabSearchContainer::ApplyAnimationValue(const gfx::Animation* animation) {
   } else if (animation == &opacity_animation_) {
     tab_organization_button_->SetOpacity(value);
   }
+}
+
+base::TimeDelta TabSearchContainer::GetAnimationDuration(
+    base::TimeDelta duration) {
+  return gfx::Animation::ShouldRenderRichAnimation() ? duration
+                                                     : base::TimeDelta();
 }
 
 void TabSearchContainer::OnToggleActionUIState(const Browser* browser,

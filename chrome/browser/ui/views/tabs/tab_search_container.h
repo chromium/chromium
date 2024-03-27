@@ -79,6 +79,7 @@ class TabSearchContainer : public views::View,
   void ShowOpacityAnimation();
   void ExecuteHideTabOrganization();
   void ApplyAnimationValue(const gfx::Animation* animation);
+  base::TimeDelta GetAnimationDuration(base::TimeDelta duration);
 
   // View where, if the mouse is currently over its bounds, the expansion state
   // will not change. Changes will be staged until after the mouse exits the
