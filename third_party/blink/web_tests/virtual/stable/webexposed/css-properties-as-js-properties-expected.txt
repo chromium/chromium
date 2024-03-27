@@ -465,6 +465,7 @@ viewTimeline
 viewTimelineAxis
 viewTimelineInset
 viewTimelineName
+viewTransitionClass
 viewTransitionName
 visibility
 webkitAlignContent

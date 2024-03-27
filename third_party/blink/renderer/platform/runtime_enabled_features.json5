@@ -1157,7 +1157,7 @@
     {
       // https://chromestatus.com/feature/5064894363992064
       name: "CSSViewTransitionClass",
-      status: "test"
+      status: "stable"
     },
     {
       name: "CursorAnchorInfoMojoPipe",
