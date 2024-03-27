@@ -207,7 +207,7 @@ bool IsStorageKeySessionOnly(
 void RecordStoreSourceStatus(const StoreSourceResult& result) {
   static_assert(StorableSource::Result::kMaxValue ==
                     StorableSource::Result::kExceedsMaxTriggerStateCardinality,
-                "Bump version of Conversions.SourceStoredStatus8 histogram.");
+                "Update `ConversionStorageSourceStatus enum` in `enums.xml`.");
   base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
                                 result.status());
 }
@@ -216,14 +216,13 @@ void RecordCreateReportStatus(const CreateReportResult& result) {
   static_assert(
       AttributionTrigger::EventLevelResult::kMaxValue ==
           AttributionTrigger::EventLevelResult::kNoMatchingTriggerData,
-      "Bump version of Conversions.CreateReportStatus9 histogram.");
+      "Update `ConversionStorageCreateReportStatus` enum in `enums.xml`.");
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus9",
                                 result.event_level_status());
   static_assert(
       AttributionTrigger::AggregatableResult::kMaxValue ==
           AttributionTrigger::AggregatableResult::kExcessiveReports,
-      "Bump version of Conversions.AggregatableReport.CreateReportStatus4 "
-      "histogram.");
+      "Update `ConversionCreateAggregatableReportStatus` enum in `enums.xml`.");
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus4",
       result.aggregatable_status());
