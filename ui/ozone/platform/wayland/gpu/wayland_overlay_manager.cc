@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_candidates.h"
@@ -61,6 +62,19 @@ bool WaylandOverlayManager::CanHandleCandidate(
   if (!manager_gpu_->SupportsFormat(candidate.format))
     return false;
 
+  // TODO( https://crbug.com/331241180 ): Quads can come into overlay processor
+  // with 'rect's having position and size as pseudo nonsense values. Here we
+  // avoid we fail handling the candidate and avoid passing them through
+  // wayland.
+  // Wayland 'wl_fixed_t' allows for 23 bits of integer precision. Here we are
+  // very conservative and limit to 20 bits.
+  constexpr auto kMaxWaylandFixed = 1 << 20;
+  constexpr auto kMaxWaylandRect =
+      gfx::RectF(-kMaxWaylandFixed, -kMaxWaylandFixed, kMaxWaylandFixed * 2,
+                 kMaxWaylandFixed * 2);
+  if (!kMaxWaylandRect.Contains(candidate.display_rect)) {
+    return false;
+  }
   // Passing an empty surface size through wayland will actually clear the size
   // restriction and display the buffer at full size. The function
   // 'set_destination_size' in augmenter will accept empty sizes without
