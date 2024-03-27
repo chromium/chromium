@@ -671,7 +671,11 @@ public class ReadAloudController
     public boolean isReadable(Tab tab) {
         // If we don't have a valid Profile, playback won't work.
         // TODO(crbug.com/1518203): Remove when valid profile is guaranteed.
-        if (mProfile == null || !mProfile.isNativeInitialized()) {
+        if (tab == null
+                || tab.getUrl() == null
+                || tab.getWebContents() == null
+                || mProfile == null
+                || !mProfile.isNativeInitialized()) {
             return false;
         }
 

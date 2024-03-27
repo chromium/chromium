@@ -696,6 +696,19 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testIsReadable_errorCases() {
+        assertFalse(mController.isReadable(null));
+
+        when(mTab.getUrl()).thenReturn(null);
+        assertFalse(mController.isReadable(mTab));
+
+        when(mTab.getUrl()).thenReturn(sTestGURL);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        doReturn(false).when(mMockProfile).isNativeInitialized();
+        assertFalse(mController.isReadable(mTab));
+    }
+
+    @Test
     public void testReactingtoMSBBChange() {
         mController.maybeCheckReadability(sTestGURL);
 
