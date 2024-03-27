@@ -800,12 +800,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
 
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      incognito_profile);
   // Open example.com/simple.html in an incognito window. The content script
   // will inject.
   ExtensionTestMessageListener content_script_listener("content script ready");
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
   ASSERT_TRUE(content_script_listener.WaitUntilSatisfied());
+  registration_observer.WaitForWorkerActivated();
   content::WebContents* incognito_tab =
       incognito_browser->tab_strip_model()->GetActiveWebContents();
   int tab_id = ExtensionTabUtil::GetTabId(incognito_tab);
@@ -819,7 +824,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
            chrome.tabs.sendMessage(%d, 'hello', () => {});
          })();)";
 
-  Profile* incognito_profile = incognito_browser->profile();
   base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
       incognito_profile, extension->id(),
       base::StringPrintf(kOpenMessagePipe, tab_id),
@@ -931,17 +935,21 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
       listener_extension_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(listener_extension);
 
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      incognito_profile);
   // Open a new tab in incognito. This spawns the new process for the split mode
   // extensions.
   Browser* incognito_browser = OpenURLOffTheRecord(
       profile(), embedded_test_server()->GetURL("example.com", "/simple.html"));
+  registration_observer.WaitForWorkerActivated();
 
   // Send a message from one extension to the other, opening a message pipe.
   // Since the listener extension never responds, the message pipe will
   // remain open. The listener then sends the script result 'success' when it
   // receives the message.
   static constexpr char kOpenMessagePipe[] = R"(openMessagePipe('%s');)";
-  Profile* incognito_profile = incognito_browser->profile();
   base::Value script_result = BackgroundScriptExecutor::ExecuteScript(
       incognito_profile, opener_extension->id(),
       base::StringPrintf(kOpenMessagePipe, listener_extension->id().c_str()),
