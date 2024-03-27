@@ -41,8 +41,9 @@ class CacheManager {
    public:
     // Called when the initialization for a ContentCache for a
     // FileSystemProvider is complete.
-    virtual void OnContentCacheInitializeComplete(base::FilePath mount_path,
-                                                  base::File::Error result) {}
+    virtual void OnContentCacheInitializeComplete(
+        base::FilePath base64_encoded_provider_folder_name,
+        base::File::Error result) {}
   };
 
   explicit CacheManager(const base::FilePath& profile_path,
@@ -54,7 +55,7 @@ class CacheManager {
   ~CacheManager();
 
   // Setup the cache directory for the specific FSP.
-  void InitializeForProvider(const base::FilePath& provider_mount_path,
+  void InitializeForProvider(const base::FilePath& provider_folder_name,
                              FileErrorOrContentCacheCallback callback);
 
   void AddObserver(Observer* observer);
@@ -64,10 +65,10 @@ class CacheManager {
   // Responds to the FSP with the a `ContentCache` instance if directory
   // creation was successful (or `in_memory_only` is true).
   void OnInitializeForProvider(FileErrorOrContentCacheCallback callback,
-                               base::FilePath mount_path,
+                               base::FilePath cache_directory_path,
                                base::File::Error result);
 
-  const base::FilePath profile_path_;
+  const base::FilePath root_content_cache_directory_;
   bool in_memory_only_ = false;
   std::set<base::FilePath> initialized_providers_;
   base::ObserverList<Observer> observers_;

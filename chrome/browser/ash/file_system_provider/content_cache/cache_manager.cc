@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 
 #include "base/base64.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/types/expected.h"
 
@@ -25,40 +26,42 @@ base::File::Error CreateProviderDirectory(const base::FilePath& path) {
 
 CacheManager::CacheManager(const base::FilePath& profile_path,
                            bool in_memory_only)
-    : profile_path_(profile_path), in_memory_only_(in_memory_only) {}
+    : root_content_cache_directory_(
+          profile_path.Append(kFspContentCacheDirName)),
+      in_memory_only_(in_memory_only) {}
 
 CacheManager::~CacheManager() = default;
 
 void CacheManager::InitializeForProvider(
-    const base::FilePath& provider_mount_path,
+    const base::FilePath& provider_folder_name,
     FileErrorOrContentCacheCallback callback) {
-  if (provider_mount_path.empty()) {
+  if (provider_folder_name.empty()) {
     std::move(callback).Run(
         base::unexpected(base::File::FILE_ERROR_INVALID_URL));
     return;
   }
 
-  // The provider mount path takes the form
+  // The provider folder name takes the form
   // {provider-id}:{file-system-id}:{user-hash} with the {file-system-id} being
   // escaped but ultimately provided by the extension, so let's convert it to
   // base64 before creating a directory.
-  const base::FilePath base64_encoded_mount_path(
-      base::Base64Encode(provider_mount_path.value()));
+  const base::FilePath base64_encoded_provider_folder_name(
+      base::Base64Encode(provider_folder_name.value()));
+  const base::FilePath cache_directory_path(
+      root_content_cache_directory_.Append(
+          base64_encoded_provider_folder_name));
 
   if (in_memory_only_) {
-    OnInitializeForProvider(std::move(callback), base64_encoded_mount_path,
+    OnInitializeForProvider(std::move(callback), cache_directory_path,
                             base::File::FILE_OK);
     return;
   }
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CreateProviderDirectory,
-                     profile_path_.Append(kFspContentCacheDirName)
-                         .Append(base64_encoded_mount_path)),
+      FROM_HERE, base::BindOnce(&CreateProviderDirectory, cache_directory_path),
       base::BindOnce(&CacheManager::OnInitializeForProvider,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     base64_encoded_mount_path));
+                     cache_directory_path));
 }
 
 void CacheManager::AddObserver(Observer* observer) {
@@ -73,19 +76,22 @@ void CacheManager::RemoveObserver(Observer* observer) {
 
 void CacheManager::OnInitializeForProvider(
     FileErrorOrContentCacheCallback callback,
-    base::FilePath mount_path,
+    base::FilePath cache_directory_path,
     base::File::Error result) {
+  const base::FilePath base64_encoded_provider_folder_name =
+      cache_directory_path.BaseName();
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(base::unexpected(result));
   } else {
-    initialized_providers_.emplace(mount_path);
-    std::move(callback).Run(std::make_unique<ContentCache>(
-        profile_path_.Append(kFspContentCacheDirName).Append(mount_path)));
+    initialized_providers_.emplace(base64_encoded_provider_folder_name);
+    std::move(callback).Run(
+        std::make_unique<ContentCache>(cache_directory_path));
   }
 
   // Notify all observers once the ContentCache is initialisation is complete.
   for (auto& observer : observers_) {
-    observer.OnContentCacheInitializeComplete(mount_path, result);
+    observer.OnContentCacheInitializeComplete(
+        base64_encoded_provider_folder_name, result);
   }
 }
 
