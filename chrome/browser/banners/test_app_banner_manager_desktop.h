@@ -14,10 +14,6 @@ namespace content {
 class WebContents;
 }
 
-namespace segmentation_platform {
-class MockSegmentationPlatformService;
-}  // namespace segmentation_platform
-
 namespace webapps {
 
 // Provides the ability to await the results of the installability check that
@@ -54,9 +50,6 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
 
   // Block until the current app has been installed.
   void AwaitAppInstall();
-
-  segmentation_platform::MockSegmentationPlatformService*
-  GetMockSegmentationPlatformService();
 
   // AppBannerManager:
   void OnDidGetManifest(const InstallableData& result) override;
