@@ -16,6 +16,7 @@ import org.chromium.net.impl.CronetLogger;
 import org.chromium.net.impl.CronetLoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
@@ -629,20 +630,23 @@ public abstract class CronetEngine {
         }
 
         /**
-         * Returns the ImplVersion class from the impl.
+         * Returns the specified method in ImplVersion class from the impl.
          *
          * <p>NOTE: this functionality is not available if the impl was built before
          * https://crrev.com/c/5190726, in which case this function will return null.
          *
+         * @return null if class or method was not found.
          * @see org.chromium.net.impl.ImplVersion
          */
-        private static Class<?> getImplVersionClass(ICronetEngineBuilder builderDelegate) {
+        private static Method getImplVersionMethod(
+                ICronetEngineBuilder builderDelegate, String method) {
             try {
                 return builderDelegate
                         .getClass()
                         .getClassLoader()
-                        .loadClass("org.chromium.net.impl.ImplVersion");
-            } catch (ClassNotFoundException exception) {
+                        .loadClass("org.chromium.net.impl.ImplVersion")
+                        .getMethod(method);
+            } catch (ClassNotFoundException | NoSuchMethodException exception) {
                 return null;
             }
         }
@@ -651,15 +655,16 @@ public abstract class CronetEngine {
          * Returns the API level that the impl was built against.
          *
          * <p>NOTE: this functionality is not available if the impl was built before
-         * https://crrev.com/c/5190726, in which case this function will return -1.
+         * https://crrev.com/c/5190726, in which case this function will return -1. There are also
+         * some versions of the ImplVersion class that does not contain the 'getApiLevel' method.
          *
+         * @return -1 if class or method was not found.
          * @see org.chromium.net.impl.ImplVersion#getApiLevel
          */
         private static int getImplApiLevel(ICronetEngineBuilder builderDelegate) {
             try {
-                var implVersionClass = getImplVersionClass(builderDelegate);
-                if (implVersionClass == null) return -1;
-                return (Integer) implVersionClass.getMethod("getApiLevel").invoke(null);
+                Method method = getImplVersionMethod(builderDelegate, "getApiLevel");
+                return method == null ? -1 : (Integer) method.invoke(null);
             } catch (ReflectiveOperationException exception) {
                 throw new RuntimeException("Failed to retrieve Cronet impl API level", exception);
             }
@@ -671,13 +676,13 @@ public abstract class CronetEngine {
          * <p>NOTE: this functionality is not available if the impl was built before
          * https://crrev.com/c/5190726, in which case this function will return null.
          *
+         * @return null if class or method was not found.
          * @see org.chromium.net.impl.ImplVersion#getCronetVersion
          */
         private static String getImplCronetVersion(ICronetEngineBuilder builderDelegate) {
             try {
-                var implVersionClass = getImplVersionClass(builderDelegate);
-                if (implVersionClass == null) return null;
-                return (String) implVersionClass.getMethod("getCronetVersion").invoke(null);
+                Method method = getImplVersionMethod(builderDelegate, "getCronetVersion");
+                return method == null ? null : (String) method.invoke(null);
             } catch (ReflectiveOperationException exception) {
                 throw new RuntimeException("Failed to retrieve Cronet impl version", exception);
             }
