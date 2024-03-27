@@ -390,6 +390,11 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
       wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
 
+      // The following features are always supported when running on the Vulkan
+      // backend on Ozone.
+      wgpu::FeatureName::SharedTextureMemoryDmaBuf,
+      wgpu::FeatureName::SharedFenceVkSemaphoreOpaqueFD,
+
       wgpu::FeatureName::TransientAttachments,
   };
 
