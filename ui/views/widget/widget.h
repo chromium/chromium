@@ -422,6 +422,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If set, the widget was created in headless mode.
     bool headless_mode = false;
 
+    // If set, the window size will follow the content preferred size.
+    bool autosize = false;
+
 #if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // Indicates whether the desktop native widget is required for the widget.
     // This may enforce changing the type of the underlying platform window.
@@ -903,6 +906,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // not need to call this.
   void ScheduleLayout();
 
+  // Called when the contents view receives an `InvalidateLayout()`.
+  void OnRootViewLayoutInvalidated();
+
   // Sets the currently visible cursor.
   void SetCursor(const ui::Cursor& cursor);
 
@@ -1057,6 +1063,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // True if widget was created in headless mode.
   bool is_headless() const { return is_headless_; }
+
+  // True if the window size will follow the content preferred size.
+  bool is_autosized() const { return is_autosized_; }
 
   // True when window movement via mouse interaction with the frame is disabled.
   bool movement_disabled() const { return movement_disabled_; }
@@ -1413,6 +1422,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // If set, the widget was created in headless mode.
   bool is_headless_ = false;
+
+  // If set, the window size will follow the content preferred size.
+  bool is_autosized_ = false;
 
   // True if capture losses should be ignored.
   bool ignore_capture_loss_ = false;

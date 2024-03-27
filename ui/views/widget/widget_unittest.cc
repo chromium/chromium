@@ -305,6 +305,27 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromDelegate) {
   EXPECT_EQ(delegate.internal_name(), widget->GetName());
 }
 
+// Test that Widget::InitParams::autosize allows widget to
+// automatically resize when content view size changes.
+TEST_F(WidgetWithCustomParamsTest, Autosize) {
+  SetInitFunction(base::BindLambdaForTesting(
+      [](Widget::InitParams* params) { params->autosize = true; }));
+
+  std::unique_ptr<Widget> widget = CreateTestWidget();
+  auto* view = widget->SetContentsView(std::make_unique<views::View>());
+  widget->Show();
+
+  constexpr gfx::Size kInitialSize(100, 100);
+  view->SetPreferredSize(kInitialSize);
+  const gfx::Size starting_size = widget->GetWindowBoundsInScreen().size();
+
+  constexpr gfx::Size kDelta(50, 50);
+  view->SetPreferredSize(kInitialSize + kDelta);
+  const gfx::Size ending_size = widget->GetWindowBoundsInScreen().size();
+
+  EXPECT_EQ(ending_size, starting_size + kDelta);
+}
+
 namespace {
 
 class ViewWithClassName : public View {

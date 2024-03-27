@@ -211,8 +211,13 @@ Widget::Widget(InitParams params) {
 }
 
 Widget::~Widget() {
-  if (widget_delegate_)
+  // DestroyRootView() will cause InvalidateLayout() to ScheduleLayout() which
+  // is unnecessary.
+  widget_closed_ = true;
+
+  if (widget_delegate_) {
     widget_delegate_->WidgetDestroying();
+  }
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
     owned_native_widget_.reset();
     DCHECK(!native_widget_);
@@ -223,8 +228,9 @@ Widget::~Widget() {
         << "Widget probably should use WIDGET_OWNS_NATIVE_WIDGET ownership.";
   } else {
     DCHECK_EQ(ownership_, InitParams::CLIENT_OWNS_WIDGET);
-    if (native_widget_)
+    if (native_widget_) {
       native_widget_->Close();
+    }
   }
   // Destroy RootView after the native widget, so in case the WidgetDelegate is
   // a View in the RootView hierarchy it gets destroyed as a WidgetDelegate
@@ -401,6 +407,7 @@ void Widget::Init(InitParams params) {
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;
   is_headless_ = params.ShouldInitAsHeadless();
+  is_autosized_ = params.autosize;
 
   if (params.opacity == views::Widget::InitParams::WindowOpacity::kInferred &&
       params.type != views::Widget::InitParams::TYPE_WINDOW) {
@@ -1119,6 +1126,24 @@ void Widget::SchedulePaintInRect(const gfx::Rect& rect) {
   // after in ~Widget after native_widget_ is destroyed.
   if (native_widget_)
     native_widget_->SchedulePaintInRect(rect);
+}
+
+void Widget::OnRootViewLayoutInvalidated() {
+  if (IsClosed()) {
+    return;
+  }
+
+  // Check if the widget needs to be auto resized based on its content's size.
+  if (is_autosized() && IsNativeWidgetInitialized() && GetContentsView()) {
+    if (gfx::Size frame_size =
+            GetContentsView()->GetPreferredSize(SizeBounds());
+        !frame_size.IsEmpty() && frame_size != GetSize()) {
+      SetSize(frame_size);
+      return;
+    }
+  }
+
+  ScheduleLayout();
 }
 
 void Widget::ScheduleLayout() {

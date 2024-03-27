@@ -170,6 +170,7 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   bubble_params.accept_events = bubble->accept_events();
   bubble_params.remove_standard_frame = true;
   bubble_params.layer_type = bubble->GetLayerType();
+  bubble_params.autosize = bubble->is_autosized();
 
   // Use a window default shadow if the bubble doesn't provides its own.
   if (bubble->GetShadow() == BubbleBorder::NO_SHADOW)
@@ -430,9 +431,11 @@ BubbleDialogDelegate::CloseOnDeactivatePin::~CloseOnDeactivatePin() {
 
 BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
                                            BubbleBorder::Arrow arrow,
-                                           BubbleBorder::Shadow shadow)
+                                           BubbleBorder::Shadow shadow,
+                                           bool autosize)
     : arrow_(arrow),
       shadow_(shadow),
+      autosize_(autosize),
       close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
       bubble_created_time_(base::TimeTicks::Now()) {
   bubble_uma_logger().set_delegate(this);
@@ -527,8 +530,9 @@ BubbleDialogDelegateView::BubbleDialogDelegateView()
 
 BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Arrow arrow,
-                                                   BubbleBorder::Shadow shadow)
-    : BubbleDialogDelegate(anchor_view, arrow, shadow) {
+                                                   BubbleBorder::Shadow shadow,
+                                                   bool autosize)
+    : BubbleDialogDelegate(anchor_view, arrow, shadow, autosize) {
   bubble_uma_logger().set_bubble_view(this);
 }
 

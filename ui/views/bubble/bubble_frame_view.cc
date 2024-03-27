@@ -309,14 +309,23 @@ void BubbleFrameView::ResetWindowControls() {
   // to be removed from the accessibility tree.
   bool close_is_visible =
       GetWidget()->widget_delegate()->ShouldShowCloseButton();
+  bool close_visible_changed = close_->GetVisible() != close_is_visible;
+
   close_->SetVisible(close_is_visible);
   close_->GetViewAccessibility().SetIsIgnored(!close_is_visible);
 
   // If the minimize button is not visible, marking it as "ignored" will cause
   // it to be removed from the accessibility tree.
   bool minimize_is_visible = GetWidget()->widget_delegate()->CanMinimize();
+  bool minimize_visible_changed =
+      minimize_->GetVisible() != minimize_is_visible;
+
   minimize_->SetVisible(minimize_is_visible);
   minimize_->GetViewAccessibility().SetIsIgnored(!minimize_is_visible);
+
+  if (minimize_visible_changed || close_visible_changed) {
+    InvalidateLayout();
+  }
 }
 
 void BubbleFrameView::UpdateWindowIcon() {

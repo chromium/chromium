@@ -943,7 +943,7 @@ void View::InvalidateLayout() {
   } else {
     Widget* widget = GetWidget();
     if (widget) {
-      widget->ScheduleLayout();
+      widget->OnRootViewLayoutInvalidated();
     }
   }
 }

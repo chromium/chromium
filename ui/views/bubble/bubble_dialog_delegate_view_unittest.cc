@@ -60,7 +60,10 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
  public:
   explicit TestBubbleDialogDelegateView(View* anchor_view)
-      : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
+      : BubbleDialogDelegateView(anchor_view,
+                                 BubbleBorder::TOP_LEFT,
+                                 BubbleBorder::NO_SHADOW,
+                                 true) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
     AddChildView(view_.get());
   }
@@ -97,9 +100,21 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     title_view_ = std::move(title_view);
     return ret;
   }
-  void show_close_button() { should_show_close_button_ = true; }
+  void show_close_button() {
+    should_show_close_button_ = true;
+    // It is necessary to keep visibility state synced.
+    GetBubbleFrameView()->ResetWindowControls();
+  }
   void hide_buttons() {
     should_show_close_button_ = false;
+    // Autosize mode will layout() synchronously when SetButtons().
+    // The synchronized Layout() requires ResetWindowControls() use
+    // SetVisible(ShouldShowCloseButton()) to synchronize the visible state.
+    // Otherwise, `DCHECK_EQ(button_area_rect.size(),GetButtonAreaSize());` in
+    // BubbleFrameView::Layout() will fail. These two values use GetVisible()
+    // and ShouldShowCloseButton() respectively to determine the button area.
+    GetBubbleFrameView()->ResetWindowControls();
+
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   }
   void set_should_show_window_title(bool should_show_window_title) {
@@ -108,7 +123,6 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
   using BubbleDialogDelegateView::GetBubbleFrameView;
   using BubbleDialogDelegateView::SetAnchorRect;
-  using BubbleDialogDelegateView::SizeToContents;
 
  private:
   raw_ptr<View> view_ = new View;
@@ -647,8 +661,7 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   EXPECT_EQ(kTitleHeight, title_view->size().height());
 
   bubble_delegate->show_close_button();
-  bubble_frame->ResetWindowControls();
-  bubble_frame->InvalidateLayout();
+
   views::test::RunScheduledLayout(bubble_frame);
 
   Button* close_button = bubble_frame->close_button();
@@ -666,9 +679,6 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // To perform checks on the precise size, first hide the dialog buttons so the
   // calculations are simpler (e.g. platform font discrepancies can be ignored).
   bubble_delegate->hide_buttons();
-  bubble_frame->ResetWindowControls();
-  bubble_delegate->DialogModelChanged();
-  bubble_delegate->SizeToContents();
 
   // Use GetContentsBounds() to exclude the bubble border, which can change per
   // platform.
@@ -682,8 +692,6 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // about custom title views, so there should still be margins for it while the
   // WidgetDelegate says it should be shown, even if its preferred size is zero.
   title_view->SetPreferredSize(gfx::Size());
-  bubble_widget->UpdateWindowTitle();
-  bubble_delegate->SizeToContents();
   frame_size = bubble_frame->GetContentsBounds();
   EXPECT_EQ(
       content_margins.height() + kContentSize.height() + title_margins.height(),
@@ -693,7 +701,11 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // Now hide the title properly. The margins should also disappear.
   bubble_delegate->set_should_show_window_title(false);
   bubble_widget->UpdateWindowTitle();
-  bubble_delegate->SizeToContents();
+  // UpdateWindowTitle() will not trigger InvalidateLayout() when window_title
+  // not changed.
+  // TODO(crbug.com/330198011) Remove this InvalidateLayout() once this bug
+  // fixed.
+  bubble_frame->InvalidateLayout();
   frame_size = bubble_frame->GetContentsBounds();
   EXPECT_EQ(content_margins.height() + kContentSize.height(),
             frame_size.height());
@@ -718,7 +730,6 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
   const gfx::Size size_before_new_title =
       bubble_widget->GetWindowBoundsInScreen().size();
   title_view->SetText(u"12");
-  bubble_delegate->SizeToContents();
 
   // A shorter title should change nothing, since both will be within the
   // minimum dialog width.
@@ -726,7 +737,6 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
             bubble_widget->GetWindowBoundsInScreen().size());
 
   title_view->SetText(base::UTF8ToUTF16(std::string(200, '0')));
-  bubble_delegate->SizeToContents();
 
   // A (much) longer title should increase the height, but not the width.
   EXPECT_EQ(size_before_new_title.width(),

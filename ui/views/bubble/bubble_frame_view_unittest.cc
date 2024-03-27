@@ -958,8 +958,10 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
  public:
   TestBubbleDialogDelegateView()
-      : BubbleDialogDelegateView(nullptr, BubbleBorder::NONE) {
-    set_shadow(BubbleBorder::NO_SHADOW);
+      : BubbleDialogDelegateView(nullptr,
+                                 BubbleBorder::NONE,
+                                 BubbleBorder::NO_SHADOW,
+                                 true) {
     SetAnchorRect(gfx::Rect());
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
   }
@@ -976,18 +978,15 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     // the Widget needs to change size. But also SizeToContents() _only_ does a
     // layout if the size is actually changing.
     GetWidget()->UpdateWindowTitle();
-    SizeToContents();
   }
 
   void ChangeSubtitle(const std::u16string& subtitle) {
     subtitle_ = subtitle;
     GetBubbleFrameView()->UpdateSubtitle();
-    SizeToContents();
   }
 
   // BubbleDialogDelegateView:
   using BubbleDialogDelegateView::SetAnchorView;
-  using BubbleDialogDelegateView::SizeToContents;
   std::u16string GetWindowTitle() const override { return title_; }
   std::u16string GetSubtitle() const override { return subtitle_; }
   bool ShouldShowWindowTitle() const override { return !title_.empty(); }
@@ -1141,7 +1140,10 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
 
   // Now add dialog snapping.
   provider.SetSnappedDialogWidth(300);
-  delegate->SizeToContents();
+  // Only test::TestLayoutProvider has a setter(SetSnappedDialogWidth()), it
+  // can not invalidate the exact view. So it only actively InvalidateLayout()
+  // after SetSnappedDialogWidth() in the test code.
+  delegate->InvalidateLayout();
 
   // Height should go back to |min_bubble_height| since the window is wider:
   // word wrapping should no longer happen.
@@ -1218,7 +1220,6 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCasesWithHeader) {
   // to grow below the close button.
   frame->SetHeaderView(
       std::make_unique<StaticSizedView>(gfx::Size(10, close_margin)));
-  delegate->SizeToContents();
 
   // Height should go back to |min_bubble_height| + 1 since the window is wider:
   // word wrapping should no longer happen, the 1 dip extra height is caused by
@@ -1282,7 +1283,6 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
   // Turn off character breaks and confirm the height has returned to the single
   // line height.
   delegate->SetSubtitleAllowCharacterBreak(false);
-  delegate->SizeToContents();
   EXPECT_EQ(bubble->GetWindowBoundsInScreen().height(), min_bubble_height);
 }
 
@@ -1351,9 +1351,6 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   // Set the title to a non-eliding label.
   title_label->SetElideBehavior(gfx::NO_ELIDE);
   title_label->SetMultiLine(false);
-
-  // Update the bubble size now that some properties of the title have changed.
-  delegate->SizeToContents();
 
   // The title/bubble should now be bigger than in multiline tail-eliding mode.
   EXPECT_LT(empty_bubble_width, title_label->size().width());
