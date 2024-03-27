@@ -4,6 +4,10 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -174,7 +178,7 @@ OnDeviceModelServiceController::CreateSession(
     return nullptr;
   }
   if (safety_model_info_) {
-    safety_config = GetFeatureTextSafetyConfigForFeature(feature);
+    safety_config = safety_model_info_->GetConfig(feature);
     if (!safety_config && features::GetOnDeviceModelMustUseSafetyModel()) {
       logger.set_reason(
           OnDeviceModelEligibilityReason::kSafetyConfigNotAvailableForFeature);
@@ -182,12 +186,8 @@ OnDeviceModelServiceController::CreateSession(
     }
 
     if (safety_config) {
-      model_paths.ts_data =
-          *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
-              kTsDataFile));
-      model_paths.ts_sp_model =
-          *(safety_model_info_->model_info.GetAdditionalFileWithBaseName(
-              kTsSpModelFile));
+      model_paths.ts_data = safety_model_info_->GetDataPath();
+      model_paths.ts_sp_model = safety_model_info_->GetSpModelPath();
 
       if (!safety_config->allowed_languages().empty()) {
         if (language_detection_model_path_) {
@@ -285,7 +285,7 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   params->assets = std::move(assets);
   params->max_tokens = max_tokens;
   if (safety_model_info_) {
-    params->ts_dimension = safety_model_info_->num_output_categories;
+    params->ts_dimension = safety_model_info_->num_output_categories();
   }
   service_remote_->LoadModel(
       std::move(params), std::move(model),
@@ -305,16 +305,11 @@ void OnDeviceModelServiceController::SetLanguageDetectionModel(
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
-  if (model_info.has_value() && HasRequiredSafetyFiles(*model_info) &&
-      InitializeSafetyModelInfo(*model_info)) {
-    if (model_versions_) {
-      model_versions_->set_text_safety_model_version(model_info->GetVersion());
-    }
-    return;
+  safety_model_info_ = SafetyModelInfo::Load(model_info);
+  if (safety_model_info_ && model_versions_) {
+    model_versions_->set_text_safety_model_version(
+        safety_model_info_->GetVersion());
   }
-
-  // If we get here, the received model is invalid and we should reset.
-  safety_model_info_.reset();
 }
 
 void OnDeviceModelServiceController::StateChanged(
@@ -331,13 +326,18 @@ void OnDeviceModelServiceController::StateChanged(
   }
 }
 
-bool OnDeviceModelServiceController::InitializeSafetyModelInfo(
-    const ModelInfo& model_info) {
+std::unique_ptr<OnDeviceModelServiceController::SafetyModelInfo>
+OnDeviceModelServiceController::SafetyModelInfo::Load(
+    base::optional_ref<const ModelInfo> opt_model_info) {
+  if (!opt_model_info.has_value() || !HasRequiredSafetyFiles(*opt_model_info)) {
+    return nullptr;
+  }
+  const ModelInfo& model_info = *opt_model_info;
   ScopedTextSafetyModelMetadataValidityLogger logger;
 
   if (!model_info.GetModelMetadata()) {
     logger.set_validity(TextSafetyModelMetadataValidity::kNoMetadata);
-    return false;
+    return nullptr;
   }
 
   std::optional<proto::TextSafetyModelMetadata> model_metadata =
@@ -345,7 +345,7 @@ bool OnDeviceModelServiceController::InitializeSafetyModelInfo(
           *model_info.GetModelMetadata());
   if (!model_metadata) {
     logger.set_validity(TextSafetyModelMetadataValidity::kMetadataWrongType);
-    return false;
+    return nullptr;
   }
 
   logger.set_validity(TextSafetyModelMetadataValidity::kNoFeatureConfigs);
@@ -359,10 +359,9 @@ bool OnDeviceModelServiceController::InitializeSafetyModelInfo(
     feature_configs[feature_config.feature()] = feature_config;
   }
 
-  safety_model_info_ = std::make_unique<SafetyModelInfo>(
-      model_info, model_metadata->num_output_categories(),
-      std::move(feature_configs));
-  return true;
+  return base::WrapUnique(
+      new SafetyModelInfo(model_info, model_metadata->num_output_categories(),
+                          std::move(feature_configs)));
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(
@@ -412,26 +411,35 @@ proto::OnDeviceModelVersions OnDeviceModelServiceController::GetModelVersions(
       component_version);
 
   if (safety_model_info_) {
-    versions.set_text_safety_model_version(
-        safety_model_info_->model_info.GetVersion());
+    versions.set_text_safety_model_version(safety_model_info_->GetVersion());
   }
 
   return versions;
 }
 
 std::optional<proto::FeatureTextSafetyConfiguration>
-OnDeviceModelServiceController::GetFeatureTextSafetyConfigForFeature(
-    proto::ModelExecutionFeature feature) {
-  if (!safety_model_info_) {
-    return std::nullopt;
-  }
-
-  auto it = safety_model_info_->feature_configs.find(feature);
-  if (it == safety_model_info_->feature_configs.end()) {
+OnDeviceModelServiceController::SafetyModelInfo::GetConfig(
+    proto::ModelExecutionFeature feature) const {
+  auto it = feature_configs_.find(feature);
+  if (it == feature_configs_.end()) {
     return std::nullopt;
   }
 
   return it->second;
+}
+
+base::FilePath OnDeviceModelServiceController::SafetyModelInfo::GetDataPath()
+    const {
+  return *model_info_.GetAdditionalFileWithBaseName(kTsDataFile);
+}
+
+base::FilePath OnDeviceModelServiceController::SafetyModelInfo::GetSpModelPath()
+    const {
+  return *model_info_.GetAdditionalFileWithBaseName(kTsSpModelFile);
+}
+
+int64_t OnDeviceModelServiceController::SafetyModelInfo::GetVersion() const {
+  return model_info_.GetVersion();
 }
 
 OnDeviceModelServiceController::SafetyModelInfo::SafetyModelInfo(
@@ -439,9 +447,9 @@ OnDeviceModelServiceController::SafetyModelInfo::SafetyModelInfo(
     uint32_t num_output_categories,
     base::flat_map<proto::ModelExecutionFeature,
                    proto::FeatureTextSafetyConfiguration> feature_configs)
-    : model_info(model_info),
-      num_output_categories(num_output_categories),
-      feature_configs(std::move(feature_configs)) {}
+    : model_info_(model_info),
+      num_output_categories_(num_output_categories),
+      feature_configs_(std::move(feature_configs)) {}
 
 OnDeviceModelServiceController::SafetyModelInfo::~SafetyModelInfo() = default;
 

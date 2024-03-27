@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_SERVICE_CONTROLLER_H_
 
+#include <sys/types.h>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -130,21 +131,30 @@ class OnDeviceModelServiceController
 
   class SafetyModelInfo {
    public:
+    ~SafetyModelInfo();
+
+    static std::unique_ptr<SafetyModelInfo> Load(
+        base::optional_ref<const ModelInfo> model_info);
+    std::optional<proto::FeatureTextSafetyConfiguration> GetConfig(
+        proto::ModelExecutionFeature feature) const;
+    base::FilePath GetDataPath() const;
+    base::FilePath GetSpModelPath() const;
+    int64_t GetVersion() const;
+    uint32_t num_output_categories() const { return num_output_categories_; }
+
+   private:
     SafetyModelInfo(
         const ModelInfo& model_info,
         uint32_t num_output_categories,
         base::flat_map<proto::ModelExecutionFeature,
                        proto::FeatureTextSafetyConfiguration> feature_configs);
-    ~SafetyModelInfo();
 
-    const ModelInfo model_info;
-    const uint32_t num_output_categories;
+    const ModelInfo model_info_;
+    const uint32_t num_output_categories_;
     base::flat_map<proto::ModelExecutionFeature,
                    proto::FeatureTextSafetyConfiguration>
-        feature_configs;
+        feature_configs_;
   };
-
-  bool InitializeSafetyModelInfo(const ModelInfo& model_info);
 
   // Sets the base model directory and initializes the on-device model
   // controller with the parameters, to be ready to load models and execute.
@@ -176,10 +186,6 @@ class OnDeviceModelServiceController
   // Gets the model versions based on the current model paths set.
   proto::OnDeviceModelVersions GetModelVersions(
       const std::string& component_version) const;
-
-  // Returns the text safety configuration for `feature`.
-  std::optional<proto::FeatureTextSafetyConfiguration>
-  GetFeatureTextSafetyConfigForFeature(proto::ModelExecutionFeature feature);
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
