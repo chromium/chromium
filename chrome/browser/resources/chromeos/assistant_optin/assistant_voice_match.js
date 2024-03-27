@@ -192,7 +192,9 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
    */
   reloadPage() {
     this.setUIStep(VoiceMatchUIState.INTRO);
-    this.$['agree-button'].focus();
+    if (!this.equalWeightButtons_) {
+      this.$['agree-button'].focus();
+    }
     this.resetElements_();
     this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['reload-requested']);
     this.dispatchEvent(
@@ -271,7 +273,11 @@ class AssistantVoiceMatch extends AssistantVoiceMatchBase {
 
     this.browserProxy_.screenShown(VOICE_MATCH_SCREEN_ID);
     this.$['voice-match-lottie'].playing = true;
-    afterNextRender(this, () => this.$['agree-button'].focus());
+    afterNextRender(this, () => {
+      if (!this.equalWeightButtons_) {
+        this.$['agree-button'].focus();
+      }
+    });
   }
 
   /**

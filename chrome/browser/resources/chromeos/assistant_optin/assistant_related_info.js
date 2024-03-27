@@ -255,7 +255,9 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
     // to make sure the animation and the caption are in sync).
     this.webview_.focus();
     this.async(() => {
-      this.$['next-button'].focus();
+      if (!this.equalWeightButtons_) {
+        this.$['next-button'].focus();
+      }
     }, 300);
   }
 
@@ -316,7 +318,9 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
     this.dispatchEvent(
         new CustomEvent('loaded', {bubbles: true, composed: true}));
     this.loading = false;
-    this.$['next-button'].focus();
+    if (!this.equalWeightButtons_) {
+      this.$['next-button'].focus();
+    }
     if (!this.hidden && !this.screenShown_) {
       this.browserProxy_.screenShown(RELATED_INFO_SCREEN_ID);
       this.screenShown_ = true;
@@ -333,7 +337,11 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
       this.reloadPage();
       this.initialized_ = true;
     } else {
-      afterNextRender(this, () => this.$['next-button'].focus());
+      afterNextRender(this, () => {
+        if (!this.equalWeightButtons_) {
+          this.$['next-button'].focus();
+        }
+      });
       this.browserProxy_.screenShown(RELATED_INFO_SCREEN_ID);
       this.screenShown_ = true;
     }
