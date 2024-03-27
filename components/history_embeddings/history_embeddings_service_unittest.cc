@@ -35,9 +35,13 @@ class HistoryEmbeddingsTest : public testing::Test {
   std::unique_ptr<history::HistoryService> history_service_;
 };
 
-TEST_F(HistoryEmbeddingsTest, Constructs) {
-  std::make_unique<HistoryEmbeddingsService>(history_dir_.GetPath(),
-                                             history_service_.get());
+TEST_F(HistoryEmbeddingsTest, ConstructsAndInvalidatesWeakPtr) {
+  auto service = std::make_unique<HistoryEmbeddingsService>(
+      history_dir_.GetPath(), history_service_.get());
+  auto weak_ptr = service->AsWeakPtr();
+  EXPECT_TRUE(weak_ptr);
+  service.reset();
+  EXPECT_FALSE(weak_ptr);
 }
 
 }  // namespace history_embeddings

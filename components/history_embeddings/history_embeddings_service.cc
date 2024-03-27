@@ -123,6 +123,10 @@ void HistoryEmbeddingsService::Search(std::string query,
                            std::move(callback)));
 }
 
+base::WeakPtr<HistoryEmbeddingsService> HistoryEmbeddingsService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void HistoryEmbeddingsService::Shutdown() {
   storage_.Reset();
 }

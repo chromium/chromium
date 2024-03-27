@@ -60,6 +60,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // results to given `callback` when search completes.
   void Search(std::string query, size_t count, SearchResultCallback callback);
 
+  // Weak `this` provider method.
+  base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
+
   // KeyedService:
   void Shutdown() override;
 
