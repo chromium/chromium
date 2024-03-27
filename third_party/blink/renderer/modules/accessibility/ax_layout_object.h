@@ -32,14 +32,9 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
-namespace gfx {
-class Point;
-}
-
 namespace blink {
 
 class AXObjectCacheImpl;
-class HTMLAreaElement;
 
 class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
  public:
@@ -87,9 +82,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
                          AXRelatedObjectVector*,
                          NameSources*) const override;
 
-  // Hit testing.
-  AXObject* AccessibilityHitTest(const gfx::Point&) const override;
-
   // Called when autofill/autocomplete suggestion availability changes on a form
   // control.
   void HandleAutofillSuggestionAvailabilityChanged(
@@ -98,22 +90,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // For a list marker.
   void GetWordBoundaries(Vector<int>& word_starts,
                          Vector<int>& word_ends) const override;
-
-  //
-  // Layout object specific methods.
-  //
-  // These methods may eventually migrate over to AXNodeObject.
-  //
-
-  // If we can't determine a useful role from the DOM node, attempt to determine
-  // a role from the layout object.
-  ax::mojom::blink::Role RoleFromLayoutObjectOrNode() const override;
-
- private:
-  AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
-                                         const gfx::Point&) const;
-
-  bool IsPlaceholder() const;
 };
 
 template <>

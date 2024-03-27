@@ -326,9 +326,11 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Layout object specific methods.
   //
 
+  AXObject* AccessibilityHitTest(const gfx::Point&) const override;
+
   // If we can't determine a useful role from the DOM node, attempt to determine
   // a role from the layout object.
-  virtual ax::mojom::blink::Role RoleFromLayoutObjectOrNode() const;
+  ax::mojom::blink::Role RoleFromLayoutObjectOrNode() const;
 
  private:
   bool HasInternalsAttribute(Element&, const QualifiedName&) const;
@@ -390,6 +392,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   static bool IsNameFromLabelElement(HTMLElement* control);
 
+  // Hit testing.
+  AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
+                                         const gfx::Point&) const;
 #if defined(REDUCE_AX_INLINE_TEXTBOXES)
   bool always_load_inline_text_boxes_ = false;
 #endif

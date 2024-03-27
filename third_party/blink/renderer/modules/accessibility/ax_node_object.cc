@@ -110,6 +110,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
@@ -214,6 +216,41 @@ bool IsLinkable(const blink::AXObject& object) {
   // Mozilla considers linkable.
   return object.IsLink() || object.IsImage() ||
          object.GetLayoutObject()->IsText();
+}
+
+bool IsImageOrAltText(blink::LayoutObject* layout_object, blink::Node* node) {
+  DCHECK(layout_object);
+  if (layout_object->IsImage()) {
+    return true;
+  }
+  if (IsA<blink::HTMLImageElement>(node)) {
+    return true;
+  }
+  auto* html_input_element = DynamicTo<blink::HTMLInputElement>(node);
+  return html_input_element && html_input_element->HasFallbackContent();
+}
+
+bool ShouldIgnoreListItem(blink::Node* node) {
+  DCHECK(node);
+
+  // http://www.w3.org/TR/wai-aria/complete#presentation
+  // A list item is presentational if its parent is a native list but
+  // it has an explicit ARIA role set on it that's anything other than "list".
+  blink::Element* parent = blink::FlatTreeTraversal::ParentElement(*node);
+  if (!parent) {
+    return false;
+  }
+
+  if (IsA<blink::HTMLMenuElement>(*parent) ||
+      IsA<blink::HTMLUListElement>(*parent) ||
+      IsA<blink::HTMLOListElement>(*parent)) {
+    AtomicString role = blink::AccessibleNode::GetPropertyOrARIAAttribute(
+        parent, blink::AOMStringProperty::kRole);
+    if (!role.empty() && role != "list" && role != "directory") {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool IsNeutralWithinTable(blink::AXObject* obj) {
@@ -1722,15 +1759,124 @@ bool AXNodeObject::IsDataTable() const {
   return false;
 }
 
+// TODO(accessibility) Consider combining with NativeRoleIgnoringAria().
 ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
+  if (!GetLayoutObject()) {
+    return ax::mojom::blink::Role::kGenericContainer;
+  }
+
+  DCHECK(GetLayoutObject());
+
+  Node* node = GetNode();  // Can be null in the case of pseudo content.
+
+  if (IsA<HTMLLIElement>(node)) {
+    if (ShouldIgnoreListItem(node)) {
+      return ax::mojom::blink::Role::kNone;
+    }
+    return ax::mojom::blink::Role::kListItem;
+  }
+
+  if (GetLayoutObject()->IsListMarker()) {
+    Node* list_item = GetLayoutObject()->GeneratingNode();
+    if (list_item && ShouldIgnoreListItem(list_item)) {
+      return ax::mojom::blink::Role::kNone;
+    }
+    return ax::mojom::blink::Role::kListMarker;
+  }
+
+  if (GetLayoutObject()->IsListItemIncludingNG()) {
+    return ax::mojom::blink::Role::kListItem;
+  }
+  if (GetLayoutObject()->IsBR()) {
+    return ax::mojom::blink::Role::kLineBreak;
+  }
+  if (GetLayoutObject()->IsText()) {
+    return ax::mojom::blink::Role::kStaticText;
+  }
+
+  // Chrome exposes both table markup and table CSS as a tables, letting
+  // the screen reader determine what to do for CSS tables. If this line
+  // is reached, then it is not an HTML table, and therefore will only be
+  // considered a data table if ARIA markup indicates it is a table.
+  // Additionally, as pseudo elements don't have any structure it doesn't make
+  // sense to report their table-related layout roles that could be set via the
+  // display property.
+  if (node && !node->IsPseudoElement()) {
+    if (GetLayoutObject()->IsTable()) {
+      return ax::mojom::blink::Role::kLayoutTable;
+    }
+    if (GetLayoutObject()->IsTableSection()) {
+      return DetermineTableSectionRole();
+    }
+    if (GetLayoutObject()->IsTableRow()) {
+      return DetermineTableRowRole();
+    }
+    if (GetLayoutObject()->IsTableCell()) {
+      return DetermineTableCellRole();
+    }
+  }
+
+  if (IsImageOrAltText(GetLayoutObject(), node)) {
+    if (IsA<HTMLInputElement>(node)) {
+      return ButtonRoleType();
+    }
+    return ax::mojom::blink::Role::kImage;
+  }
+
+  if (IsA<HTMLCanvasElement>(node)) {
+    return ax::mojom::blink::Role::kCanvas;
+  }
+
+  if (IsA<LayoutView>(GetLayoutObject())) {
+    return ParentObject() ? ax::mojom::blink::Role::kGroup
+                          : ax::mojom::blink::Role::kRootWebArea;
+  }
+
+  if (node && node->IsSVGElement()) {
+    if (GetLayoutObject()->IsSVGImage()) {
+      return ax::mojom::blink::Role::kImage;
+    }
+    if (IsA<SVGSVGElement>(node)) {
+      // Exposing a nested <svg> as a group (rather than a generic container)
+      // increases the likelihood that an author-provided name will be presented
+      // by assistive technologies. Note that this mapping is not yet in the
+      // SVG-AAM, which currently maps all <svg> elements as graphics-document.
+      // See https://github.com/w3c/svg-aam/issues/18.
+      return GetLayoutObject()->IsSVGRoot() ? ax::mojom::blink::Role::kSvgRoot
+                                            : ax::mojom::blink::Role::kGroup;
+    }
+    if (GetLayoutObject()->IsSVGShape()) {
+      return ax::mojom::blink::Role::kGraphicsSymbol;
+    }
+    if (GetLayoutObject()->IsSVGForeignObject() || IsA<SVGGElement>(node)) {
+      return ax::mojom::blink::Role::kGroup;
+    }
+    if (IsA<SVGUseElement>(node)) {
+      return ax::mojom::blink::Role::kGraphicsObject;
+    }
+  }
+
+  if (GetLayoutObject()->IsHR()) {
+    return ax::mojom::blink::Role::kSplitter;
+  }
+
+  // Minimum role:
+  // TODO(aleventhal) Implement all of https://github.com/w3c/html-aam/pull/454.
+  if (GetElement() && !GetElement()->FastHasAttribute(html_names::kRoleAttr)) {
+    if (IsPopup() != ax::mojom::blink::IsPopup::kNone) {
+      return ax::mojom::blink::Role::kGroup;
+    }
+  }
+
+  // Anything that needs to be exposed but doesn't have a more specific role
+  // should be considered a generic container. Examples are layout blocks with
+  // no node, in-page link targets, and plain elements such as a <span> with
+  // an aria- property.
   return ax::mojom::blink::Role::kGenericContainer;
 }
 
 // Does not check ARIA role, but does check some ARIA properties, specifically
 // @aria-haspopup/aria-pressed via ButtonType().
-// TODO(accessibility) Ensure that if the native role needs to change, that the
-// object is destroyed and a new one is created. Examples are changes to
-// IsClickable(), DataList(), aria-pressed, the parent's tag, @role.
 ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (!GetNode()) {
     // Can be null in the case of pseudo content.
@@ -2075,7 +2221,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   // The HTML element.
   if (IsA<HTMLHtmlElement>(GetNode()))
-    return RoleFromLayoutObjectOrNode();
+    return ax::mojom::blink::Role::kGenericContainer;
 
   // Treat <iframe>, <frame> and <fencedframe> the same.
   if (IsFrame(GetNode()))
@@ -7023,6 +7169,104 @@ ScrollableArea* AXNodeObject::GetScrollableAreaIfScrollable() const {
     PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
     if (scrollable_area && scrollable_area->HasOverflow()) {
       return scrollable_area;
+    }
+  }
+
+  return nullptr;
+}
+
+AXObject* AXNodeObject::AccessibilityHitTest(const gfx::Point& point) const {
+  // Must be called for the document's root or a popup's root.
+  if (!IsA<Document>(GetNode())) {
+    return nullptr;
+  }
+
+  CHECK(GetLayoutObject());
+
+  // Must be called with lifecycle >= pre-paint clean
+  DCHECK_GE(GetDocument()->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
+  DCHECK(GetLayoutObject()->IsLayoutView());
+  PaintLayer* layer = To<LayoutBox>(GetLayoutObject())->Layer();
+  DCHECK(layer);
+
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
+  HitTestLocation location(point);
+  HitTestResult hit_test_result = HitTestResult(request, location);
+  layer->HitTest(location, hit_test_result, PhysicalRect(InfiniteIntRect()));
+
+  Node* node = hit_test_result.InnerNode();
+  if (!node) {
+    return nullptr;
+  }
+
+  if (auto* area = DynamicTo<HTMLAreaElement>(node)) {
+    return AccessibilityImageMapHitTest(area, point);
+  }
+
+  if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+    node = option->OwnerSelectElement();
+    if (!node) {
+      return nullptr;
+    }
+  }
+
+  // If |node| is in a user-agent shadow tree, reassign it as the host to hide
+  // details in the shadow tree. Previously this was implemented by using
+  // Retargeting (https://dom.spec.whatwg.org/#retarget), but this caused
+  // elements inside regular shadow DOMs to be ignored by screen reader. See
+  // crbug.com/1111800 and crbug.com/1048959.
+  const TreeScope& tree_scope = node->GetTreeScope();
+  if (auto* shadow_root = DynamicTo<ShadowRoot>(tree_scope.RootNode())) {
+    if (shadow_root->IsUserAgent()) {
+      node = &shadow_root->host();
+    }
+  }
+
+  LayoutObject* obj = node->GetLayoutObject();
+  AXObject* result = AXObjectCache().Get(obj);
+  if (!result) {
+    return nullptr;
+  }
+
+  // Allow the element to perform any hit-testing it might need to do to reach
+  // non-layout children.
+  result = result->ElementAccessibilityHitTest(point);
+
+  while (result && result->AccessibilityIsIgnored()) {
+    // If this element is the label of a control, a hit test should return the
+    // control. The label is ignored because it's already reflected in the name.
+    if (auto* label = DynamicTo<HTMLLabelElement>(result->GetNode())) {
+      if (HTMLElement* control = label->control()) {
+        if (AXObject* ax_control = AXObjectCache().Get(control)) {
+          return ax_control;
+        }
+      }
+    }
+
+    result = result->ParentObject();
+  }
+
+  return result;
+}
+
+AXObject* AXNodeObject::AccessibilityImageMapHitTest(
+    HTMLAreaElement* area,
+    const gfx::Point& point) const {
+  if (!area) {
+    return nullptr;
+  }
+
+  AXObject* parent = AXObjectCache().Get(area->ImageElement());
+  if (!parent) {
+    return nullptr;
+  }
+
+  PhysicalOffset physical_point(point);
+  for (const auto& child : parent->ChildrenIncludingIgnored()) {
+    if (child->GetBoundsInFrameCoordinates().Contains(physical_point)) {
+      return child.Get();
     }
   }
 
