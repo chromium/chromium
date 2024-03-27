@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
+
+group("resources") {
+  public_deps = [
+    ":accent_color",
+    ":app_icon",
+    ":color",
+    ":launchscreen",
+    ":main",
+  ]
+}
+
+bundle_data_ib_file("launchscreen") {
+  source = "LaunchScreen.storyboard"
+}
+
+bundle_data_ib_file("main") {
+  source = "Main.storyboard"
+}
+
+colorset("accent_color") {
+  sources = [ "AccentColor.colorset/Contents.json" ]
+}
+
+appiconset("app_icon") {
+  sources = [ "AppIcon.appiconset/Contents.json" ]
+}
+
+colorset("color") {
+  sources = [ "Color.colorset/Contents.json" ]
+}
