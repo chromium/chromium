@@ -307,41 +307,4 @@ void WebThemeEngineDefault::cacheScrollBarMetrics(
 }
 #endif
 
-ForcedColors WebThemeEngineDefault::GetForcedColors() const {
-  return ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode()
-             ? ForcedColors::kActive
-             : ForcedColors::kNone;
-}
-
-// TODO(crbug.com/40779801): Remove this when we use the forced colors web
-// setting in Blink.
-void WebThemeEngineDefault::OverrideForcedColorsTheme() {
-  ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(false, true);
-}
-
-void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
-  ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
-      forced_colors == ForcedColors::kActive);
-}
-
-// TODO(crbug.com/40779801): Remove this when we use the forced colors web
-// setting in Blink.
-void WebThemeEngineDefault::ResetToSystemColors(
-    SystemColorInfoState system_color_info_state) {
-  ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
-      system_color_info_state.is_dark_mode,
-      system_color_info_state.forced_colors);
-}
-
-WebThemeEngine::SystemColorInfoState
-WebThemeEngineDefault::GetSystemColorInfo() {
-  WebThemeEngine::SystemColorInfoState state;
-  state.is_dark_mode =
-      ui::NativeTheme::GetInstanceForWeb()->ShouldUseDarkColors();
-  state.forced_colors =
-      ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode();
-
-  return state;
-}
-
 }  // namespace blink

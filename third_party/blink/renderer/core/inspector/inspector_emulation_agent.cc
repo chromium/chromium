@@ -297,8 +297,8 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
 
     if (forced_colors_value == "active") {
       if (!forced_colors_override_) {
-        initial_system_color_info_state_ =
-            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
+        initial_system_forced_colors_state_ =
+            GetWebViewImpl()->GetPage()->GetSettings().GetInForcedColors();
       }
       forced_colors_override_ = true;
       bool is_dark_mode = false;
@@ -311,21 +311,20 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
       } else {
         is_dark_mode = prefers_color_scheme_value == "dark";
       }
-      WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme();
       GetWebViewImpl()->GetPage()->EmulateForcedColors(is_dark_mode);
+      GetWebViewImpl()->GetPage()->GetSettings().SetInForcedColors(true);
     } else if (forced_colors_value == "none") {
       if (!forced_colors_override_) {
-        initial_system_color_info_state_ =
-            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
+        initial_system_forced_colors_state_ =
+            GetWebViewImpl()->GetPage()->GetSettings().GetInForcedColors();
       }
       forced_colors_override_ = true;
-      WebThemeEngineHelper::GetNativeThemeEngine()->SetForcedColors(
-          ForcedColors::kNone);
       GetWebViewImpl()->GetPage()->DisableEmulatedForcedColors();
+      GetWebViewImpl()->GetPage()->GetSettings().SetInForcedColors(false);
     } else if (forced_colors_override_) {
-      WebThemeEngineHelper::GetNativeThemeEngine()->ResetToSystemColors(
-          initial_system_color_info_state_);
       GetWebViewImpl()->GetPage()->DisableEmulatedForcedColors();
+      GetWebViewImpl()->GetPage()->GetSettings().SetInForcedColors(
+          initial_system_forced_colors_state_);
     }
 
     for (const WTF::String& feature : emulated_media_features_.Keys()) {

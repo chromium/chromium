@@ -137,7 +137,7 @@ class CORE_EXPORT InspectorEmulationAgent final
 
   std::unique_ptr<TimeZoneController::TimeZoneOverride> timezone_override_;
 
-  blink::WebThemeEngine::SystemColorInfoState initial_system_color_info_state_;
+  bool initial_system_forced_colors_state_;
 
   // Unlike other media features `forced-colors` state must be tracked outside
   // the document.

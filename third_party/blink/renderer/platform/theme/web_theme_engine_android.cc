@@ -182,14 +182,4 @@ void WebThemeEngineAndroid::Paint(
       NativeColorScheme(color_scheme), in_forced_colors, accent_color);
 }
 
-ForcedColors WebThemeEngineAndroid::GetForcedColors() const {
-  return ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode()
-             ? ForcedColors::kActive
-             : ForcedColors::kNone;
-}
-
-void WebThemeEngineAndroid::SetForcedColors(const ForcedColors forced_colors) {
-  ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
-      forced_colors == ForcedColors::kActive);
-}
 }  // namespace blink

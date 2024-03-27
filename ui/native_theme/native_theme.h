@@ -567,13 +567,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
     return should_use_system_accent_color_;
   }
 
-  // TODO(crbug.com/40779801): Remove this when we use the forced colors web
-  // setting in Blink.
-  // Updates the state of dark mode, forced colors mode, and the map of system
-  // colors. Returns true if NativeTheme was updated as a result, or false if
-  // the state of NativeTheme was untouched.
-  bool UpdateSystemColorInfo(bool is_dark_mode, bool forced_colors);
-
   // On certain platforms, currently only Mac, there is a unique visual for
   // pressed states.
   virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;

@@ -209,12 +209,6 @@ class WebThemeEngine {
     std::optional<SkColor> track_color;
   };
 
-  // Represents ui::NativeTheme System Info
-  struct SystemColorInfoState {
-    bool is_dark_mode = false;
-    bool forced_colors = false;
-  };
-
 #if BUILDFLAG(IS_MAC)
   enum ScrollbarOrientation {
     // Vertical scrollbar on the right side of content.
@@ -297,16 +291,6 @@ class WebThemeEngine {
       const std::optional<SkColor>& accent_color = std::nullopt) {}
 
   virtual std::optional<SkColor> GetAccentColor() const { return std::nullopt; }
-
-  virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
-  virtual void OverrideForcedColorsTheme() {}
-  virtual void SetForcedColors(const blink::ForcedColors forced_colors) {}
-  virtual void ResetToSystemColors(
-      SystemColorInfoState system_color_info_state) {}
-  virtual SystemColorInfoState GetSystemColorInfo() {
-    SystemColorInfoState state;
-    return state;
-  }
 };
 
 }  // namespace blink

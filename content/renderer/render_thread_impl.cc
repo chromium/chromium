@@ -1529,20 +1529,13 @@ void RenderThreadImpl::UpdateSystemColorInfo(
     mojom::UpdateSystemColorInfoParamsPtr params) {
   auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
 
-  bool did_system_color_info_change = native_theme->UpdateSystemColorInfo(
-      params->is_dark_mode, params->forced_colors);
-
-  did_system_color_info_change |=
+  bool did_accent_color_change =
       native_theme->user_color() != params->accent_color;
   native_theme->set_user_color(params->accent_color);
 
-  if (did_system_color_info_change) {
-    // Notify blink of system color info changes. These give blink the
-    // opportunity to update internal state to reflect the NativeTheme's color
-    // scheme. These will also prompt blink to invalidate and recalculate styles
-    // for elements that rely on system colors, such as those leveraging the
-    // forced colors media feature. These can affect CSS styles and thus require
-    // action beyond simply invalidating paint on local frames.
+  if (did_accent_color_change) {
+    // Notify blink of accent color changes. These can affect CSS styles and
+    // thus require action beyond simply invalidating paint on local frames.
     blink::SystemColorsChanged();
     blink::ColorSchemeChanged();
   }

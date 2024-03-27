@@ -316,19 +316,6 @@ void NativeTheme::set_system_colors(
   system_colors_ = colors;
 }
 
-bool NativeTheme::UpdateSystemColorInfo(bool is_dark_mode, bool forced_colors) {
-  bool did_system_color_info_change = false;
-  if (is_dark_mode != ShouldUseDarkColors()) {
-    did_system_color_info_change = true;
-    set_use_dark_colors(is_dark_mode);
-  }
-  if (forced_colors != InForcedColorsMode()) {
-    did_system_color_info_change = true;
-    set_forced_colors(forced_colors);
-  }
-  return did_system_color_info_change;
-}
-
 NativeTheme::ColorSchemeNativeThemeObserver::ColorSchemeNativeThemeObserver(
     NativeTheme* theme_to_update)
     : theme_to_update_(theme_to_update) {}

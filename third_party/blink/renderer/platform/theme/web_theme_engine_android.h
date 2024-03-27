@@ -25,8 +25,6 @@ class WebThemeEngineAndroid : public blink::WebThemeEngine {
              bool in_forced_colors,
              const ui::ColorProvider* color_provider,
              const std::optional<SkColor>& accent_color) override;
-  blink::ForcedColors GetForcedColors() const override;
-  void SetForcedColors(const blink::ForcedColors forced_colors) override;
 };
 
 }  // namespace blink
