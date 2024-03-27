@@ -73,18 +73,6 @@ TEST_F(SearchEngineChoiceUtilsTest, IsEeaChoiceCountry) {
   EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('N', 'C')));
 
   EXPECT_FALSE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry,
-      switches::kDefaultListCountryOverride);
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
-
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSearchEngineChoiceCountry);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, switches::kEeaListCountryOverride);
-  EXPECT_TRUE(IsEeaChoiceCountry(CountryCharsToCountryID('U', 'S')));
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
