@@ -101,8 +101,13 @@ bool ProtocolParserXML::ParseAction(IXMLDOMNode* node, Results* results) {
                         &results->list.back().manifest.arguments);
     return true;
   } else if (event == "postinstall") {
-    // TODO(crbug.com/326270247): Handle `postinstall` action when `Result`
-    // class implements it.
+    // The "postinstall" event is handled by `AppInstall`. The common
+    // `postinstall` scenario where the installer provides a launch command is
+    // handled by `AppInstall` by running the launch command and exiting in the
+    // interactive install case.
+    // Other `postinstall` actions such as "reboot", "restart browser", and
+    // "post install url" are obsolete, since no one currently uses these
+    // actions.
     return true;
   } else {
     ParseError("Unsupported `event` type in <action>: %s", event.c_str());
