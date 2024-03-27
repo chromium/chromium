@@ -438,6 +438,11 @@ config("coverage_flags") {
                   rebase_path(sanitizer_coverage_allowlist, root_build_dir) ]
     }
   }
+  if (use_centipede) {
+    # Centipede intercepts calls such as memcmp and memcpy in order to improve
+    # its testcase generation.
+    cflags += [ "-fno-builtin" ]
+  }
 }
 
 config("hwasan_flags") {
