@@ -1874,13 +1874,13 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="UserType">
     <variant name="" summary="all users"/>
-    <variant name=".NonSyncingWithMigration"
-        summary="users who are not syncing passwords and need a migration for
-                 local passwords or password manager settings"/>
-    <variant name=".NonSyncingWithoutMigration"
+    <variant name=".NonSyncingNoMigration"
         summary="users who are not syncing passwords and have no local
                  passwords nor custom password manager settings to be
                  migrated"/>
+    <variant name=".NonSyncingWithMigration"
+        summary="users who are not syncing passwords and need a migration for
+                 local passwords or password manager settings"/>
     <variant name=".Syncing" summary="users who are syncing passwords"/>
   </token>
 </histogram>
