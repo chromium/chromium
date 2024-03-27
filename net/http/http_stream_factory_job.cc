@@ -139,10 +139,8 @@ HttpStreamFactory::Job::Job(
       destination_(std::move(destination)),
       origin_url_(origin_url),
       is_websocket_(is_websocket),
-      try_websocket_over_http2_(
-          is_websocket_ && origin_url_.SchemeIs(url::kWssScheme) &&
-          // TODO(https://crbug.com/1277306): Remove the proxy check.
-          proxy_info_.is_direct()),
+      try_websocket_over_http2_(is_websocket_ &&
+                                origin_url_.SchemeIs(url::kWssScheme)),
       // Only support IP-based pooling for non-proxied streams.
       enable_ip_based_pooling_(enable_ip_based_pooling &&
                                proxy_info.is_direct()),
