@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
@@ -129,6 +130,7 @@ ExternalSource GetExternalSourceFromExternalImage(
   ExternalTextureSource external_texture_source;
   CanvasImageSource* canvas_image_source = nullptr;
   CanvasRenderingContextHost* canvas = nullptr;
+  VideoFrame* video_frame = nullptr;
 
   switch (external_image->GetContentType()) {
     case V8GPUImageCopyExternalImageSource::ContentType::kHTMLVideoElement:
@@ -137,23 +139,38 @@ ExternalSource GetExternalSourceFromExternalImage(
       if (external_texture_source.valid) {
         external_source.external_texture_source = external_texture_source;
         CHECK(external_texture_source.media_video_frame);
-        external_source.width = static_cast<uint32_t>(
-            external_texture_source.media_video_frame->natural_size().width());
-        external_source.height = static_cast<uint32_t>(
-            external_texture_source.media_video_frame->natural_size().height());
+
+        // Use display size to handle rotated video frame.
+        auto media_video_frame = external_texture_source.media_video_frame;
+
+        const auto transform =
+            media_video_frame->metadata().transformation.value_or(
+                media::kNoTransformation);
+        if (transform == media::kNoTransformation ||
+            transform.rotation == media::VIDEO_ROTATION_0 ||
+            transform.rotation == media::VIDEO_ROTATION_180) {
+          external_source.width =
+              static_cast<uint32_t>(media_video_frame->natural_size().width());
+          external_source.height =
+              static_cast<uint32_t>(media_video_frame->natural_size().height());
+        } else {
+          external_source.width =
+              static_cast<uint32_t>(media_video_frame->natural_size().height());
+          external_source.height =
+              static_cast<uint32_t>(media_video_frame->natural_size().width());
+        }
         external_source.valid = true;
       }
       return external_source;
     case V8GPUImageCopyExternalImageSource::ContentType::kVideoFrame:
-      external_texture_source = GetExternalTextureSourceFromVideoFrame(
-          external_image->GetAsVideoFrame(), exception_state);
+      video_frame = external_image->GetAsVideoFrame();
+      external_texture_source =
+          GetExternalTextureSourceFromVideoFrame(video_frame, exception_state);
       if (external_texture_source.valid) {
         external_source.external_texture_source = external_texture_source;
         CHECK(external_texture_source.media_video_frame);
-        external_source.width = static_cast<uint32_t>(
-            external_texture_source.media_video_frame->coded_size().width());
-        external_source.height = static_cast<uint32_t>(
-            external_texture_source.media_video_frame->coded_size().height());
+        external_source.width = video_frame->displayWidth();
+        external_source.height = video_frame->displayHeight();
         external_source.valid = true;
       }
       return external_source;
@@ -688,9 +705,11 @@ void GPUQueue::copyExternalImageToTexture(
   }
 
   if (source.external_texture_source.valid) {
-    WGPUExtent2D video_frame_natural_size = {source.width, source.height};
+    // Use display size which is based on natural size but considering
+    // transformation metadata.
+    WGPUExtent2D video_frame_display_size = {source.width, source.height};
     CopyFromVideoElement(
-        source.external_texture_source, video_frame_natural_size,
+        source.external_texture_source, video_frame_display_size,
         origin_in_external_image, dawn_copy_size, dawn_destination,
         destination->premultipliedAlpha(), color_space, copyImage->flipY());
     return;
