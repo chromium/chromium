@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include <array>
+#include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_sender_service_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/password_sharing_invitation_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -19,15 +24,20 @@
 #include "components/sync/base/features.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
+#include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
+
+namespace {
 
 using password_manager::PasswordForm;
 using password_manager::PasswordRecipient;
 using password_manager::PasswordSenderService;
 using password_manager::PublicKey;
-
-namespace {
+using testing::UnorderedElementsAre;
 
 constexpr char kRecipientUserId[] = "recipient_user_id";
 constexpr char kPasswordValue[] = "password";
@@ -93,15 +103,24 @@ class SingleClientOutgoingPasswordSharingInvitationTest : public SyncTest {
     return PasswordSenderServiceFactory::GetForProfile(GetProfile(0));
   }
 
-  PublicKey GenerateRecipientPublicKey() {
+  sync_pb::CrossUserSharingPublicKey PublicKeyFromKeyPair(
+      const syncer::CrossUserSharingPublicPrivateKeyPair& key_pair) {
+    std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> public_key =
+        key_pair.GetRawPublicKey();
     sync_pb::CrossUserSharingPublicKey proto_public_key;
     proto_public_key.set_version(kRecipientPublicKeyVersion);
-    std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> public_key =
-        syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
-            .GetRawPublicKey();
     proto_public_key.set_x25519_public_key(public_key.data(),
                                            public_key.size());
-    return PublicKey::FromProto(proto_public_key);
+    return proto_public_key;
+  }
+
+  sync_pb::CrossUserSharingPublicKey GetPublicKeyFromServer() const {
+    sync_pb::NigoriSpecifics nigori_specifics;
+    bool success =
+        fake_server::GetServerNigori(GetFakeServer(), &nigori_specifics);
+    DCHECK(success);
+    DCHECK(nigori_specifics.has_cross_user_sharing_public_key());
+    return nigori_specifics.cross_user_sharing_public_key();
   }
 
  private:
@@ -109,16 +128,13 @@ class SingleClientOutgoingPasswordSharingInvitationTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
-                       SanityCheck) {
-  ASSERT_TRUE(SetupSync());
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
                        ShouldCommitSentPassword) {
   ASSERT_TRUE(SetupSync());
 
-  PasswordRecipient recipient = {.user_id = kRecipientUserId,
-                                 .public_key = GenerateRecipientPublicKey()};
+  PasswordRecipient recipient = {
+      .user_id = kRecipientUserId,
+      .public_key = PublicKey::FromProto(PublicKeyFromKeyPair(
+          syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()))};
   GetPasswordSenderService()->SendPasswords({MakePasswordForm()}, recipient);
 
   ASSERT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
@@ -134,6 +150,68 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   EXPECT_FALSE(specifics.has_client_only_unencrypted_data());
   EXPECT_FALSE(specifics.encrypted_password_sharing_invitation_data().empty());
   EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
+                       ShouldCommitSentPasswordGroup) {
+  ASSERT_TRUE(SetupSync());
+
+  syncer::CrossUserSharingPublicPrivateKeyPair recipient_key_pair =
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  PasswordRecipient recipient = {.user_id = kRecipientUserId,
+                                 .public_key = PublicKey::FromProto(
+                                     PublicKeyFromKeyPair(recipient_key_pair))};
+  PasswordForm form1 = MakePasswordForm();
+  PasswordForm form2 = form1;
+  form2.username_element = base::UTF8ToUTF16(std::string("username_element_2"));
+  GetPasswordSenderService()->SendPasswords({form1, form2}, recipient);
+
+  ASSERT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
+  std::vector<sync_pb::SyncEntity> entities =
+      GetFakeServer()->GetSyncEntitiesByModelType(
+          syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
+  ASSERT_EQ(1u, entities.size());
+
+  const sync_pb::OutgoingPasswordSharingInvitationSpecifics& specifics =
+      entities.front().specifics().outgoing_password_sharing_invitation();
+  EXPECT_EQ(specifics.recipient_user_id(), kRecipientUserId);
+  EXPECT_FALSE(specifics.guid().empty());
+  EXPECT_TRUE(base::Uuid::ParseLowercase(specifics.guid()).is_valid());
+  EXPECT_FALSE(specifics.has_client_only_unencrypted_data());
+  EXPECT_FALSE(specifics.encrypted_password_sharing_invitation_data().empty());
+  EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
+
+  // Verify the invitation data fields.
+  sync_pb::PasswordSharingInvitationData decrypted_invitation_data =
+      password_sharing_helper::DecryptInvitationData(
+          specifics.encrypted_password_sharing_invitation_data(),
+          GetPublicKeyFromServer(), recipient_key_pair);
+  const sync_pb::PasswordSharingInvitationData::PasswordGroupData&
+      password_group_data = decrypted_invitation_data.password_group_data();
+  EXPECT_EQ(password_group_data.element_data_size(), 2);
+  EXPECT_EQ(password_group_data.password_value(), kPasswordValue);
+  EXPECT_EQ(password_group_data.username_value(), kUsernameValue);
+
+  // Both passwords have only one different field, so check the common fields
+  // first.
+  for (int i = 0; i < password_group_data.element_data_size(); ++i) {
+    const sync_pb::PasswordSharingInvitationData::PasswordGroupElementData&
+        element_data = password_group_data.element_data(i);
+    EXPECT_EQ(element_data.scheme(),
+              static_cast<int>(PasswordForm::Scheme::kHtml));
+    EXPECT_EQ(element_data.signon_realm(), kSignonRealm);
+    EXPECT_EQ(element_data.origin(), kOrigin);
+    EXPECT_EQ(element_data.password_element(), kPasswordElement);
+    EXPECT_EQ(element_data.display_name(), kPasswordDisplayName);
+    EXPECT_EQ(element_data.avatar_url(), kPasswordAvatarUrl);
+  }
+
+  // Check different fields.
+  std::vector<std::string> username_elements = {
+      password_group_data.element_data(0).username_element(),
+      password_group_data.element_data(1).username_element()};
+  EXPECT_THAT(username_elements,
+              UnorderedElementsAre(kUsernameElement, "username_element_2"));
 }
 
 // The unconsented primary account isn't supported on ChromeOS.
@@ -153,8 +231,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   password_manager::features_util::OptInToAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
 
-  PasswordRecipient recipient = {.user_id = kRecipientUserId,
-                                 .public_key = GenerateRecipientPublicKey()};
+  PasswordRecipient recipient = {
+      .user_id = kRecipientUserId,
+      .public_key = PublicKey::FromProto(PublicKeyFromKeyPair(
+          syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()))};
   GetPasswordSenderService()->SendPasswords({MakePasswordForm()}, recipient);
 
   EXPECT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());

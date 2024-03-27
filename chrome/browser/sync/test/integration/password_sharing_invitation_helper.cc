@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/uuid.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -26,7 +27,7 @@ constexpr char kSenderEmail[] = "sender@gmail.com";
 constexpr char kSenderDisplayName[] = "Sender Name";
 constexpr char kSenderProfileImageUrl[] = "http://sender.url/image";
 
-constexpr int kSenderKeyVersion = 0;
+constexpr int kDefaultKeyVersion = 0;
 
 sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
     const syncer::CrossUserSharingPublicKey& public_key) {
@@ -34,8 +35,25 @@ sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
   auto raw_public_key = public_key.GetRawPublicKey();
   proto.set_x25519_public_key(
       std::string(raw_public_key.begin(), raw_public_key.end()));
-  proto.set_version(kSenderKeyVersion);
+  proto.set_version(kDefaultKeyVersion);
   return proto;
+}
+
+std::unique_ptr<syncer::CryptographerImpl> InitializeCryptographer(
+    const syncer::CrossUserSharingPublicPrivateKeyPair& key_pair) {
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::CreateEmpty();
+
+  // Clone `key_pair` since the cryptographer requires it to be moved.
+  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair> key_pair_copy =
+      syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
+          key_pair.GetRawPrivateKey());
+  CHECK(key_pair_copy);
+  cryptographer->SetKeyPair(std::move(key_pair_copy.value()),
+                            kDefaultKeyVersion);
+  cryptographer->SelectDefaultCrossUserSharingKey(kDefaultKeyVersion);
+
+  return cryptographer;
 }
 
 // Encrypts the invitation data to simulate the sending client.
@@ -44,17 +62,7 @@ std::vector<uint8_t> EncryptInvitationData(
     const sync_pb::CrossUserSharingPublicKey& recipient_public_key,
     const syncer::CrossUserSharingPublicPrivateKeyPair& sender_key_pair) {
   std::unique_ptr<syncer::CryptographerImpl> sender_cryptographer =
-      syncer::CryptographerImpl::CreateEmpty();
-
-  // Clone `sender_key_pair` since the cryptographer requires it to be moved.
-  std::optional<syncer::CrossUserSharingPublicPrivateKeyPair>
-      sender_key_pair_copy =
-          syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-              sender_key_pair.GetRawPrivateKey());
-  CHECK(sender_key_pair_copy);
-  sender_cryptographer->SetKeyPair(std::move(sender_key_pair_copy.value()),
-                                   kSenderKeyVersion);
-  sender_cryptographer->SelectDefaultCrossUserSharingKey(kSenderKeyVersion);
+      InitializeCryptographer(sender_key_pair);
 
   std::string serialized_data;
   bool success = unencrypted_password_data.SerializeToString(&serialized_data);
@@ -70,6 +78,26 @@ std::vector<uint8_t> EncryptInvitationData(
   return result.value();
 }
 }  // namespace
+
+sync_pb::PasswordSharingInvitationData DecryptInvitationData(
+    const std::string& encrypted_data,
+    const sync_pb::CrossUserSharingPublicKey& sender_public_key,
+    const syncer::CrossUserSharingPublicPrivateKeyPair& recipient_key_pair) {
+  std::unique_ptr<syncer::CryptographerImpl> recipient_cryptographer =
+      InitializeCryptographer(recipient_key_pair);
+
+  std::optional<std::vector<uint8_t>> decrypted_data =
+      recipient_cryptographer->AuthDecryptForCrossUserSharing(
+          base::as_byte_span(encrypted_data),
+          base::as_byte_span(sender_public_key.x25519_public_key()),
+          kDefaultKeyVersion);
+  CHECK(decrypted_data);
+
+  sync_pb::PasswordSharingInvitationData invitation_data;
+  CHECK(invitation_data.ParseFromArray(decrypted_data->data(),
+                                       decrypted_data->size()));
+  return invitation_data;
+}
 
 sync_pb::IncomingPasswordSharingInvitationSpecifics
 CreateEncryptedIncomingInvitationSpecifics(
