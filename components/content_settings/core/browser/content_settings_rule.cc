@@ -10,9 +10,6 @@
 
 namespace content_settings {
 
-RefCountedAutoLock::RefCountedAutoLock(base::Lock& lock) : auto_lock_(lock) {}
-RefCountedAutoLock::~RefCountedAutoLock() = default;
-
 Rule::Rule(ContentSettingsPattern primary_pattern,
            ContentSettingsPattern secondary_pattern,
            base::Value value,
