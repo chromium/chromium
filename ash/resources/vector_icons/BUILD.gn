@@ -327,6 +327,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "phone_hub_silence_phone.icon",
     "picker_bookmark.icon",
     "picker_browsing_history.icon",
+    "picker_calendar_today.icon",
     "picker_emoji.icon",
     "picker_emoticon.icon",
     "picker_gif.icon",
