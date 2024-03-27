@@ -286,6 +286,11 @@ LacrosInstallerPolicy::GetInstallerAttributes() const {
   return attributes;
 }
 
+// Lacros is supposed to be updated even if component updates are turned off.
+bool LacrosInstallerPolicy::SupportsGroupPolicyEnabledComponentUpdates() const {
+  return false;
+}
+
 // static
 void LacrosInstallerPolicy::SetAshVersionForTest(const char* version) {
   g_ash_version_for_test = version;

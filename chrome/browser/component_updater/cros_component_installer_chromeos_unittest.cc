@@ -485,6 +485,17 @@ TEST_F(CrOSComponentInstallerTest, LacrosMinVersion) {
   LacrosInstallerPolicy::SetAshVersionForTest(nullptr);
 }
 
+TEST_F(CrOSComponentInstallerTest, LacrosUpdatesIgnoreCompoenentUpdaterPolicy) {
+  auto update_service = std::make_unique<MockComponentUpdateService>();
+  auto installer = base::MakeRefCounted<CrOSComponentInstaller>(
+      nullptr, update_service.get());
+  ComponentConfig config{"lacros-fishfood",
+                         ComponentConfig::PolicyType::kLacros, "", ""};
+  LacrosInstallerPolicy policy(config, installer.get());
+
+  ASSERT_FALSE(policy.SupportsGroupPolicyEnabledComponentUpdates());
+}
+
 TEST_F(CrOSComponentInstallerTest, RegisterComponent) {
   auto cus = std::make_unique<MockComponentUpdateService>();
   ComponentConfig config{

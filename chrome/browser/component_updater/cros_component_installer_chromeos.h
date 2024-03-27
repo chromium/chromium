@@ -136,6 +136,7 @@ class LacrosInstallerPolicy : public CrOSComponentInstallerPolicy {
                       const base::FilePath& path,
                       base::Value::Dict manifest) override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
+  bool SupportsGroupPolicyEnabledComponentUpdates() const override;
 
   static void SetAshVersionForTest(const char* version);
 };
