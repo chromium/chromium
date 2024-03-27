@@ -217,7 +217,7 @@ LayoutText* FirstLetterTextLayoutObjectLegacy(const Element& element) {
           first_letter_text_layout_object->NextSibling();
     } else if (first_letter_text_layout_object->IsAtomicInlineLevel() ||
                first_letter_text_layout_object->IsButton() ||
-               IsMenuList(first_letter_text_layout_object)) {
+               first_letter_text_layout_object->IsMenuList()) {
       return nullptr;
     } else if (first_letter_text_layout_object->IsFlexibleBox() ||
                first_letter_text_layout_object->IsLayoutGrid() ||
@@ -484,7 +484,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
           return nullptr;
         }
       } else if (inline_child->IsAtomicInlineLevel() ||
-                 inline_child->IsButton() || IsMenuList(inline_child)) {
+                 inline_child->IsButton() || inline_child->IsMenuList()) {
         return nullptr;
       }
       inline_child = inline_child->NextInPreOrder(stay_inside);

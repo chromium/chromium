@@ -1973,6 +1973,10 @@ bool HTMLInputElement::IsSteppable() const {
   return input_type_->IsSteppable();
 }
 
+bool HTMLInputElement::IsButton() const {
+  return input_type_->IsButton();
+}
+
 bool HTMLInputElement::IsTextButton() const {
   return input_type_->IsTextButton();
 }

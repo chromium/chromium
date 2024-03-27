@@ -919,6 +919,10 @@ bool InputType::ShouldRespectListAttribute() {
   return false;
 }
 
+bool InputType::IsButton() const {
+  return false;
+}
+
 bool InputType::IsTextButton() const {
   return false;
 }

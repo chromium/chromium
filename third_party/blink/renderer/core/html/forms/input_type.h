@@ -125,6 +125,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   // scattered code with special cases for various types.
 
   virtual bool IsInteractiveContent() const;
+  virtual bool IsButton() const;
   virtual bool IsTextButton() const;
   virtual bool IsTextField() const;
   virtual bool IsAutoDirectionalityFormAssociated() const;

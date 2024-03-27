@@ -2397,17 +2397,15 @@ PhysicalRect LayoutBox::OverflowClipRect(
                       kExcludeScrollbarGutter);
   }
 
-  auto* input = DynamicTo<HTMLInputElement>(GetNode());
-  if (UNLIKELY(input)) {
-    // As for LayoutButton, ControlClip is to for not BUTTONs but INPUT
-    // buttons for IE/Firefox compatibility.
-    if (IsTextField() || IsButton()) {
+  if (UNLIKELY(IsA<HTMLInputElement>(GetNode()))) {
+    // We only apply a clip to <input> buttons, and not regular <button>s.
+    if (IsTextField() || IsInputButton()) {
       DCHECK(HasControlClip());
       PhysicalRect control_clip = PhysicalPaddingBoxRect();
       control_clip.Move(location);
       clip_rect.Intersect(control_clip);
     }
-  } else if (UNLIKELY(IsMenuList(this))) {
+  } else if (UNLIKELY(IsMenuList())) {
     DCHECK(HasControlClip());
     PhysicalRect control_clip = PhysicalContentBoxRect();
     control_clip.Move(location);
@@ -2421,8 +2419,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  return UNLIKELY(IsTextField() || IsMenuList(this) ||
-                  (IsButton() && IsA<HTMLInputElement>(GetNode())));
+  return UNLIKELY(IsTextField() || IsMenuList() || IsInputButton());
 }
 
 void LayoutBox::ExcludeScrollbars(

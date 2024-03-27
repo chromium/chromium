@@ -18,15 +18,8 @@ static bool CanHaveGeneratedChildren(const LayoutObject& layout_object) {
   // FIXME: LayoutMedia::layout makes assumptions about what children are
   // allowed so we can't support generated content.
   if (layout_object.IsMedia() || layout_object.IsTextControl() ||
-      IsMenuList(&layout_object)) {
+      layout_object.IsMenuList() || layout_object.IsInputButton()) {
     return false;
-  }
-
-  // Input elements can't have generated children, but button elements can.
-  // We'll write the code assuming any other button types that might emerge in
-  // the future can also have children.
-  if (layout_object.IsButton()) {
-    return !IsA<HTMLInputElement>(*layout_object.GetNode());
   }
 
   return layout_object.CanHaveChildren();
