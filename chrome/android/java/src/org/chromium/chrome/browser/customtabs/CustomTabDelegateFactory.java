@@ -37,9 +37,11 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserC
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -238,6 +240,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final FullscreenManager mFullscreenManager;
     private final TabCreatorManager mTabCreatorManager;
+    private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
@@ -277,6 +280,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param shareDelegateSupplier Supplies the share delegate.
      * @param activityType The type of the current activity.
      * @param bottomSheetController Controls the bottom sheet.
+     * @param browserControlsManager Manages the browser controls.
      */
     private CustomTabDelegateFactory(
             Activity activity,
@@ -300,7 +304,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
-            Lazy<BottomSheetController> bottomSheetController) {
+            Lazy<BottomSheetController> bottomSheetController,
+            BrowserControlsManager browserControlsManager) {
         mActivity = activity;
         mShouldHideBrowserControls = shouldHideBrowserControls;
         mIsOpenedByChrome = isOpenedByChrome;
@@ -323,6 +328,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mShareDelegateSupplier = shareDelegateSupplier;
         mActivityType = activityType;
         mBottomSheetController = bottomSheetController;
+        mBrowserControlsManager = browserControlsManager;
     }
 
     @Inject
@@ -344,7 +350,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
-            Lazy<BottomSheetController> bottomSheetController) {
+            Lazy<BottomSheetController> bottomSheetController,
+            BrowserControlsManager browserControlsManager) {
         this(
                 activity,
                 intentDataProvider.shouldEnableUrlBarHiding(),
@@ -367,7 +374,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 snackbarManager,
                 shareDelegateSupplier,
                 activityType,
-                bottomSheetController);
+                bottomSheetController,
+                browserControlsManager);
     }
 
     /**
@@ -397,6 +405,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 null,
                 ActivityType.CUSTOM_TAB,
+                null,
                 null);
     }
 
@@ -490,9 +499,15 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
             mActivity.finish();
         }
-        // Custom tab does not create native pages except for pdf native pages.
-        // TODO(shuyng): Create pdf native page when isPdf is true.
-        return null;
+
+        return NativePageFactory.createNativePageForCustomTab(
+                url,
+                candidatePage,
+                tab,
+                pdfInfo,
+                mBrowserControlsManager,
+                mTabModelSelectorSupplier.get(),
+                mActivity);
     }
 
     /**

@@ -74,6 +74,7 @@ public class NativePageFactory {
     private NewTabPageUma mNewTabPageUma;
 
     private NativePageBuilder mNativePageBuilder;
+    private static NativePage sTestPage;
 
     public NativePageFactory(
             @NonNull Activity activity,
@@ -279,12 +280,8 @@ public class NativePageFactory {
         }
 
         protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
-            return new PdfPage(
-                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    tab.getProfile(),
-                    mActivity,
-                    url,
-                    pdfInfo);
+            return NativePageFactory.buildPdfPage(
+                    url, tab, pdfInfo, mBrowserControlsManager, mTabModelSelector, mActivity);
         }
     }
 
@@ -348,6 +345,62 @@ public class NativePageFactory {
         mNativePageBuilder = builder;
     }
 
+    /**
+     * Returns a NativePage for displaying the given URL if the URL represents a pdf file. Otherwise
+     * returns null. If candidatePage is non-null and corresponds to the URL, it will be returned.
+     * Otherwise, a new NativePage will be constructed.
+     *
+     * @param url The URL to be handled.
+     * @param candidatePage A NativePage to be reused if it matches the url, or null.
+     * @param tab The Tab that will show the page.
+     * @param pdfInfo Information of the pdf, or null if not pdf.
+     * @param browserControlsManager Manages the browser controls.
+     * @param tabModelSelector The current {@link TabModelSelector}.
+     * @param activity The current activity which owns the tab.
+     * @return A NativePage showing the specified url or null.
+     */
+    public static NativePage createNativePageForCustomTab(
+            String url,
+            NativePage candidatePage,
+            Tab tab,
+            PdfInfo pdfInfo,
+            BrowserControlsManager browserControlsManager,
+            TabModelSelector tabModelSelector,
+            Activity activity) {
+        // Only pdf native page is supported on custom tab.
+        if (url == null || pdfInfo == null) {
+            return null;
+        }
+        NativePage page;
+        if (candidatePage != null && candidatePage.getUrl().equals(url)) {
+            page = candidatePage;
+        } else {
+            page =
+                    buildPdfPage(
+                            url, tab, pdfInfo, browserControlsManager, tabModelSelector, activity);
+        }
+        page.updateForUrl(url);
+        return page;
+    }
+
+    private static NativePage buildPdfPage(
+            String url,
+            Tab tab,
+            PdfInfo pdfInfo,
+            BrowserControlsManager browserControlsManager,
+            TabModelSelector tabModelSelector,
+            Activity activity) {
+        if (sTestPage instanceof PdfPage) {
+            return sTestPage;
+        }
+        return new PdfPage(
+                new TabShim(tab, browserControlsManager, tabModelSelector),
+                tab.getProfile(),
+                activity,
+                url,
+                pdfInfo);
+    }
+
     /** Simple implementation of NativePageHost backed by a {@link Tab} */
     private static class TabShim implements NativePageHost {
         private final Tab mTab;
@@ -401,5 +454,9 @@ public class NativePageFactory {
     /** Destroy and unhook objects at destruction. */
     public void destroy() {
         if (mNewTabPageUma != null) mNewTabPageUma.destroy();
+    }
+
+    public static void setPdfPageForTesting(PdfPage pdfPage) {
+        sTestPage = pdfPage;
     }
 }

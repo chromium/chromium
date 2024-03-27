@@ -4,20 +4,30 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import static org.mockito.Mockito.doReturn;
+
 import static org.chromium.chrome.browser.ui.native_page.NativePageTest.INVALID_URLS;
 import static org.chromium.chrome.browser.ui.native_page.NativePageTest.VALID_URLS;
 import static org.chromium.chrome.browser.ui.native_page.NativePageTest.isValidInIncognito;
 
+import android.app.Activity;
 import android.view.View;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.pdf.PdfInfo;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageTest.UrlCombo;
@@ -27,7 +37,16 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NativePageFactoryTest {
+    @Mock private PdfPage mPdfPage;
+    @Mock private NativePage mCandidatePage;
+    @Mock private Tab mTab;
+    @Mock private BrowserControlsManager mBrowserControlsManager;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Activity mActivity;
     private NativePageFactory mNativePageFactory;
+    private AutoCloseable mCloseableMocks;
+    private PdfInfo mPdfInfo;
+    private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
 
     private static class MockNativePage implements NativePage {
         public final @NativePageType int type;
@@ -118,11 +137,20 @@ public class NativePageFactoryTest {
 
     @Before
     public void setUp() {
+        mCloseableMocks = MockitoAnnotations.openMocks(this);
         mNativePageFactory =
                 new NativePageFactory(
                         null, null, null, null, null, null, null, null, null, null, null, null,
                         null, null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
+        NativePageFactory.setPdfPageForTesting(mPdfPage);
+        mPdfInfo = new PdfInfo();
+        doReturn(PDF_LINK).when(mCandidatePage).getUrl();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mCloseableMocks.close();
     }
 
     /**
@@ -195,5 +223,42 @@ public class NativePageFactoryTest {
                                 invalidUrl, null, null, isIncognito, null));
             }
         }
+    }
+
+    @Test
+    public void testCreateNativePageForCustomTab() {
+        NativePage page =
+                NativePageFactory.createNativePageForCustomTab(
+                        PDF_LINK,
+                        mCandidatePage,
+                        mTab,
+                        /* pdfInfo= */ null,
+                        mBrowserControlsManager,
+                        mTabModelSelector,
+                        mActivity);
+        Assert.assertNull("Only pdf native page is supported on custom tab.", page);
+
+        page =
+                NativePageFactory.createNativePageForCustomTab(
+                        PDF_LINK,
+                        mCandidatePage,
+                        mTab,
+                        mPdfInfo,
+                        mBrowserControlsManager,
+                        mTabModelSelector,
+                        mActivity);
+        Assert.assertEquals(
+                "Candidate page should be reused when the url matches.", mCandidatePage, page);
+
+        page =
+                NativePageFactory.createNativePageForCustomTab(
+                        PDF_LINK,
+                        /* candidatePage= */ null,
+                        mTab,
+                        mPdfInfo,
+                        mBrowserControlsManager,
+                        mTabModelSelector,
+                        mActivity);
+        Assert.assertEquals("A new pdf page should be created.", mPdfPage, page);
     }
 }
