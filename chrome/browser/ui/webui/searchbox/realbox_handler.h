@@ -8,11 +8,9 @@
 #include <atomic>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -43,8 +41,7 @@ class OmniboxWebUIPopupChangeObserver : public base::CheckedObserver {
 };
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
-class RealboxHandler : public SearchboxHandler,
-                       public AutocompleteController::Observer {
+class RealboxHandler : public SearchboxHandler {
  public:
   enum class FocusState {
     // kNormal means the row is focused, and Enter key navigates to the match.
@@ -128,19 +125,6 @@ class RealboxHandler : public SearchboxHandler,
   AutocompleteController* autocomplete_controller() const;
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<MetricsReporter> metrics_reporter_;
-  raw_ptr<OmniboxController> controller_;
-  std::unique_ptr<OmniboxController> owned_controller_;
-  base::ScopedObservation<AutocompleteController,
-                          AutocompleteController::Observer>
-      autocomplete_controller_observation_{this};
-
-  // Since mojo::Remote is not thread-safe, use an atomic to signal readiness.
-  std::atomic<bool> page_set_;
-  mojo::Remote<searchbox::mojom::Page> page_;
-  mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   base::ObserverList<OmniboxWebUIPopupChangeObserver> observers_;
 
   // Size of the WebUI popup element, as reported by ResizeObserver.

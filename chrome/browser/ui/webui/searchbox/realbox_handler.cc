@@ -888,11 +888,10 @@ RealboxHandler::RealboxHandler(
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
     OmniboxController* omnibox_controller)
-    : profile_(profile),
-      web_contents_(web_contents),
-      metrics_reporter_(metrics_reporter),
-      page_set_(false),
-      page_handler_(this, std::move(pending_page_handler)) {
+    : SearchboxHandler(std::move(pending_page_handler),
+                       profile,
+                       web_contents,
+                       metrics_reporter) {
   // Keep a reference to the OmniboxController instance owned by the OmniboxView
   // when the handler is being used in the context of the omnibox popup.
   // Otherwise, create own instance of OmniboxController. Either way, observe
@@ -909,10 +908,7 @@ RealboxHandler::RealboxHandler(
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 
-RealboxHandler::~RealboxHandler() {
-  // Avoids dangling pointer warning when `controller_` is not owned.
-  controller_ = nullptr;
-}
+RealboxHandler::~RealboxHandler() = default;
 
 bool RealboxHandler::IsRemoteBound() const {
   return page_set_;

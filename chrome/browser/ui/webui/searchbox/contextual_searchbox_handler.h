@@ -12,7 +12,12 @@
 // contextual searchbox.
 class ContextualSearchboxHandler : public SearchboxHandler {
  public:
-  ContextualSearchboxHandler();
+  ContextualSearchboxHandler(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      Profile* profile,
+      content::WebContents* web_contents,
+      MetricsReporter* metrics_reporter,
+      OmniboxController* omnibox_controller);
 
   ~ContextualSearchboxHandler() override;
 };
