@@ -8,9 +8,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
+#include "v8-exception.h"
 
 namespace blink {
 
@@ -31,6 +33,28 @@ std::string TestParamInfoToString(
   }
 }
 
+std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
+                                                 ScriptValue value) {
+  v8::Local<v8::Object> object;
+  if (!value.V8Value()
+           ->ToObject(scope->GetScriptState()->GetContext())
+           .ToLocal(&object)) {
+    return {"undefined", "undefined"};
+  }
+  const auto& Get = [&scope, object](const String& key) -> String {
+    v8::Local<v8::Value> prop_value;
+    if (!object
+             ->Get(scope->GetScriptState()->GetContext(),
+                   V8AtomicString(scope->GetScriptState()->GetIsolate(), key))
+             .ToLocal(&prop_value)) {
+      return "undefined";
+    }
+    return ToCoreStringWithUndefinedOrNullCheck(
+        scope->GetScriptState()->GetIsolate(), prop_value);
+  };
+  return {Get("name"), Get("message")};
+}
+
 MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
@@ -41,12 +65,10 @@ MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
                      scope.GetExceptionState()));
   tester.WaitUntilSettled();
   if (tester.IsFulfilled()) {
-    return BuildResult{.graph = ToMLGraph(&scope, tester.Value()),
-                       .exception = nullptr};
+    return BuildResult{.graph = ToMLGraph(&scope, tester.Value())};
   } else {
-    return BuildResult{.graph = nullptr,
-                       .exception = V8DOMException::ToWrappable(
-                           scope.GetIsolate(), tester.Value().V8Value())};
+    auto [name, message] = GetErrorNameAndMessage(&scope, tester.Value());
+    return BuildResult{.error_name = name, .error_message = message};
   }
 }
 
@@ -55,10 +77,11 @@ MLComputeResult* ToMLComputeResult(V8TestingScope* scope, ScriptValue value) {
       scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
 }
 
-DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
-                                            MLGraph* graph,
-                                            MLNamedArrayBufferViews& inputs,
-                                            MLNamedArrayBufferViews& outputs) {
+std::pair<String, String> MLGraphTestBase::ComputeGraph(
+    V8TestingScope& scope,
+    MLGraph* graph,
+    MLNamedArrayBufferViews& inputs,
+    MLNamedArrayBufferViews& outputs) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
       scope.GetScriptState());
   ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
@@ -72,10 +95,9 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
     auto* results = ToMLComputeResult(&scope, tester.Value());
     inputs = results->inputs();
     outputs = results->outputs();
-    return nullptr;
+    return {};
   } else {
-    return V8DOMException::ToWrappable(scope.GetIsolate(),
-                                       tester.Value().V8Value());
+    return GetErrorNameAndMessage(&scope, tester.Value());
   }
 }
 

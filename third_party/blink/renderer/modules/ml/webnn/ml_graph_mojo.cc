@@ -148,7 +148,7 @@ void MLGraphMojo::BuildImpl(ScopedMLTrace scoped_trace,
   auto graph_info = BuildWebNNGraphInfo(outputs);
   if (!graph_info.has_value()) {
     resolver->RejectWithDOMException(
-        DOMExceptionCode::kDataError,
+        DOMExceptionCode::kNotSupportedError,
         "Failed to build graph: " + graph_info.error());
     return;
   }

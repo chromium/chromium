@@ -105,14 +105,12 @@ void MLGraph::Compute(ScopedMLTrace scoped_trace,
   String error_message;
   if (!ValidateNamedArrayBufferViews(inputs, input_resources_info_,
                                      error_message)) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
-                                     "Invalid inputs: " + error_message);
+    resolver->RejectWithTypeError("Invalid inputs: " + error_message);
     return;
   }
   if (!ValidateNamedArrayBufferViews(outputs, output_resources_info_,
                                      error_message)) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
-                                     "Invalid outputs: " + error_message);
+    resolver->RejectWithTypeError("Invalid outputs: " + error_message);
     return;
   }
 
@@ -126,8 +124,7 @@ void MLGraph::Build(ScopedMLTrace scoped_trace,
                     ScriptPromiseResolver<MLGraph>* resolver) {
   String error_message;
   if (!ValidateAndInitializeResourcesInfo(named_outputs, error_message)) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
-                                     error_message);
+    resolver->RejectWithTypeError(error_message);
     return;
   }
   BuildImpl(std::move(scoped_trace), named_outputs, resolver);

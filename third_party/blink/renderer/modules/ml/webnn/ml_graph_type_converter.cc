@@ -312,9 +312,8 @@ blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
   NOTREACHED_NORETURN();
 }
 
-base::expected<ActivationPtr, String> CreateActivation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLActivation* ml_activation) {
+ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
+                               const MLActivation* ml_activation) {
   switch (ml_activation->Kind()) {
     case blink_mojom::Activation::Tag::kClamp:
       return blink_mojom::Activation::NewClamp(
@@ -347,10 +346,9 @@ base::expected<ActivationPtr, String> CreateActivation(
   }
 }
 
-base::expected<OperationPtr, String> CreateArgMinMaxOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* arg_min_max,
-    blink_mojom::ArgMinMax::Kind kind) {
+OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
+                                      const MLOperator* arg_min_max,
+                                      blink_mojom::ArgMinMax::Kind kind) {
   auto arg_min_max_mojo = blink_mojom::ArgMinMax::New();
   arg_min_max_mojo->kind = kind;
   arg_min_max_mojo->input_operand_id =
@@ -371,7 +369,7 @@ base::expected<OperationPtr, String> CreateArgMinMaxOperation(
   return blink_mojom::Operation::NewArgMinMax(std::move(arg_min_max_mojo));
 }
 
-base::expected<OperationPtr, String> CreateBatchNormalizationOperation(
+OperationPtr CreateBatchNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* batch_normalization) {
   auto batch_normalization_mojo =
@@ -399,13 +397,8 @@ base::expected<OperationPtr, String> CreateBatchNormalizationOperation(
   batch_normalization_mojo->axis = options->axis();
   batch_normalization_mojo->epsilon = options->epsilon();
   if (options->hasActivation()) {
-    auto activation =
+    batch_normalization_mojo->activation =
         CreateActivation(operand_to_id_map, options->activation());
-    if (activation.has_value()) {
-      batch_normalization_mojo->activation = std::move(activation.value());
-    } else {
-      return base::unexpected(activation.error());
-    }
   }
   return webnn::mojom::blink::Operation::NewBatchNormalization(
       std::move(batch_normalization_mojo));
@@ -551,13 +544,8 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
 
   // Convert `MLActivition` to `mojo::Operator` if it's configured.
   if (options->hasActivation()) {
-    auto activation =
+    conv2d_mojo->activation =
         CreateActivation(operand_to_id_map, options->activation());
-    if (activation.has_value()) {
-      conv2d_mojo->activation = std::move(activation.value());
-    } else {
-      return base::unexpected(activation.error());
-    }
   }
   return blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo));
 }
@@ -633,9 +621,8 @@ OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
   return webnn::mojom::blink::Operation::NewGemm(std::move(gemm_mojo));
 }
 
-base::expected<OperationPtr, String> CreateGruOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* gru) {
+OperationPtr CreateGruOperation(const OperandToIdMap& operand_to_id_map,
+                                const MLOperator* gru) {
   auto gru_mojo = blink_mojom::Gru::New();
   gru_mojo->input_operand_id = GetOperatorInputId(gru, operand_to_id_map, 0);
   gru_mojo->weight_operand_id = GetOperatorInputId(gru, operand_to_id_map, 1);
@@ -670,11 +657,8 @@ base::expected<OperationPtr, String> CreateGruOperation(
   const auto& activations = options->activations();
   gru_mojo->activations.reserve(activations.size());
   for (const auto& activation : activations) {
-    auto validated_activation = CreateActivation(operand_to_id_map, activation);
-    if (!validated_activation.has_value()) {
-      return base::unexpected(validated_activation.error());
-    }
-    gru_mojo->activations.push_back(std::move(validated_activation.value()));
+    gru_mojo->activations.push_back(
+        CreateActivation(operand_to_id_map, activation));
   }
 
   const wtf_size_t output_count = gru->Outputs().size();
@@ -697,7 +681,7 @@ OperationPtr CreateHardSwishOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewHardSwish(std::move(hard_swish_mojo));
 }
 
-base::expected<OperationPtr, String> CreateLayerNormalizationOperation(
+OperationPtr CreateLayerNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* layer_normalization) {
   auto layer_normalization_mojo =
@@ -730,7 +714,7 @@ base::expected<OperationPtr, String> CreateLayerNormalizationOperation(
       std::move(layer_normalization_mojo));
 }
 
-base::expected<OperationPtr, String> CreateInstanceNormalizationOperation(
+OperationPtr CreateInstanceNormalizationOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* instance_normalization) {
   auto instance_normalization_mojo =
@@ -759,9 +743,8 @@ base::expected<OperationPtr, String> CreateInstanceNormalizationOperation(
       std::move(instance_normalization_mojo));
 }
 
-base::expected<OperationPtr, String> CreateLstmOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* lstm) {
+OperationPtr CreateLstmOperation(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* lstm) {
   auto lstm_mojo = blink_mojom::Lstm::New();
   lstm_mojo->input_operand_id = GetOperatorInputId(lstm, operand_to_id_map, 0);
   lstm_mojo->weight_operand_id = GetOperatorInputId(lstm, operand_to_id_map, 1);
@@ -803,11 +786,8 @@ base::expected<OperationPtr, String> CreateLstmOperation(
   const auto& activations = options->activations();
   lstm_mojo->activations.reserve(activations.size());
   for (const auto& activation : activations) {
-    auto validated_activation = CreateActivation(operand_to_id_map, activation);
-    if (!validated_activation.has_value()) {
-      return base::unexpected(validated_activation.error());
-    }
-    lstm_mojo->activations.push_back(std::move(validated_activation.value()));
+    lstm_mojo->activations.push_back(
+        CreateActivation(operand_to_id_map, activation));
   }
 
   const wtf_size_t output_count = lstm->Outputs().size();

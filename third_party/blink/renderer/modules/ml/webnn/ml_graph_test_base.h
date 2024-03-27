@@ -31,16 +31,21 @@ enum class BackendType { kFake, kXnnpack, kWebNNService };
 std::string TestParamInfoToString(
     const ::testing::TestParamInfo<BackendType>& backend_type);
 
+std::pair<String, String> GetErrorNameAndMessage(V8TestingScope* scope,
+                                                 ScriptValue value);
+
 class MLGraphTestBase : public ::testing::Test,
                         public ::testing::WithParamInterface<BackendType> {
  public:
-  // BuildResult is returned by Build() method. Only one member of BuildResult
-  // is valid. If the graph building is successful, graph points to the MLGraph
-  // and exception is a nullptr. Otherwise, exception points to the DOMException
-  // and graph is a nullptr.
+  // BuildResult is returned by Build() method. If the graph building is
+  // successful, `graph` points to the MLGraph and `error_name` and
+  // `error_message` are null. Otherwise, `graph` is a nullptr and
+  // `error_name` and `error_message` are populated from the JS error or
+  // DOMException.
   struct BuildResult {
     Persistent<MLGraph> graph;
-    Persistent<DOMException> exception;
+    String error_name;
+    String error_message;
   };
 
   // Helper method for testing BuildImpl() with the same named operands and
@@ -50,13 +55,14 @@ class MLGraphTestBase : public ::testing::Test,
                          const MLNamedOperands& named_operands);
 
   // Helper method for testing Compute() with the same input/output buffers and
-  // expected results. If the graph computes successfully, it returns nullptr
-  // and the results are produced into the output buffers. Otherwise, it returns
-  // the pointer to the DOMException thrown by the graph computing.
-  DOMException* ComputeGraph(V8TestingScope& scope,
-                             MLGraph* graph,
-                             MLNamedArrayBufferViews& inputs,
-                             MLNamedArrayBufferViews& outputs);
+  // expected results. If the graph computes successfully, both Strings returned
+  // are null and the results are produced into the output buffers. Otherwise,
+  // it returns the name and message from the error thrown by the graph
+  // computation.
+  std::pair<String, String> ComputeGraph(V8TestingScope& scope,
+                                         MLGraph* graph,
+                                         MLNamedArrayBufferViews& inputs,
+                                         MLNamedArrayBufferViews& outputs);
 
   // Helper method for testing both context and ML graph builder creation.
   // If the context cannot be created for the graph, returns nullptr.

@@ -5252,23 +5252,20 @@ TEST_P(FakeMLGraphTest, BuildTest) {
   {
     // Test throwing exception if the named outputs is empty.
     MLNamedOperands named_outputs;
-    auto [graph, exception] = BuildGraph(scope, builder, named_outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
-              "At least one output needs to be provided.");
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message, "At least one output needs to be provided.");
   }
   {
     // Test throwing exception if the named output is an input operand.
     auto* input = BuildInput(builder, "input", {3, 4, 5},
                              V8MLOperandDataType::Enum::kFloat32,
                              scope.GetExceptionState());
-    auto [graph, exception] = BuildGraph(scope, builder, {{"output", input}});
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"output", input}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "The operand with name \"output\" is not an output operand.");
   }
   {
@@ -5276,12 +5273,10 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     auto* constant =
         BuildConstant(builder, {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
-    auto [graph, exception] =
+    auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"output", constant}});
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "The operand with name \"output\" is not an output operand.");
   }
   {
@@ -5293,12 +5288,10 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     auto* constant =
         BuildConstant(builder, {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                       scope.GetExceptionState());
-    auto [graph, exception] =
+    auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"output1", input}, {"output2", constant}});
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "The operand with name \"output1\" is not an output operand.");
   }
   {
@@ -5312,11 +5305,10 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     auto* c = builder->add(a, b, scope.GetExceptionState());
     ASSERT_THAT(c, testing::NotNull());
 
-    auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(), "The input name \"a\" is duplicated.");
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"c", c}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message, "The input name \"a\" is duplicated.");
   }
   {
     // Test building a graph with an elementwise add operator that uses the same
@@ -5332,7 +5324,8 @@ TEST_P(FakeMLGraphTest, BuildTest) {
                    scope.GetExceptionState());
     auto* output = builder->add(a, a, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
-    auto [graph, exception] = BuildGraph(scope, builder, {{"b", output}});
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"b", output}});
     ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
@@ -5357,7 +5350,8 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     ASSERT_THAT(b, testing::NotNull());
     auto* c = builder->sigmoid(a, scope.GetExceptionState());
     ASSERT_THAT(c, testing::NotNull());
-    auto [graph, exception] = BuildGraph(scope, builder, {{"b", b}, {"c", c}});
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"b", b}, {"c", c}});
     ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
@@ -5381,7 +5375,8 @@ TEST_P(FakeMLGraphTest, BuildTest) {
                    scope.GetExceptionState());
     auto* c = BuildGemm(scope, builder, a, b);
 
-    auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"c", c}});
     ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
@@ -5411,7 +5406,8 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     auto* output = builder->relu(add, scope.GetExceptionState());
     ASSERT_THAT(output, testing::NotNull());
 
-    auto [graph, exception] = BuildGraph(scope, builder, {{"output", output}});
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"output", output}});
     ASSERT_THAT(graph, testing::NotNull());
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
@@ -5439,11 +5435,10 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     // Detach the ArrayBufferView of constant b for testing.
     buffer_view->DetachForTesting();
 
-    auto [graph, exception] = BuildGraph(scope, builder, {{"c", c}});
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, {{"c", c}});
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "The array buffer view of the constant operand is detached.");
   }
 }
@@ -5542,19 +5537,18 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
       BuildInput(builder, "b", {4, 3}, V8MLOperandDataType::Enum::kFloat32,
                  scope.GetExceptionState());
   auto* c = BuildGemm(scope, builder, a, b);
-  auto [graph, build_exception] = BuildGraph(scope, builder, {{"c", c}});
+  auto [graph, error_name, error_message] =
+      BuildGraph(scope, builder, {{"c", c}});
   ASSERT_THAT(graph, testing::NotNull());
-  ASSERT_THAT(build_exception, testing::IsNull());
   {
     // Test throwing exception if the inputs is empty.
     MLNamedArrayBufferViews inputs;
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid inputs: The number (0) of the array buffer views "
               "doesn't match the expectation (2).");
   }
@@ -5564,11 +5558,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid inputs: The number (1) of the array buffer views "
               "doesn't match the expectation (2).");
   }
@@ -5578,11 +5571,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid outputs: The number (0) of the array buffer views "
               "doesn't match the expectation (1).");
   }
@@ -5594,11 +5586,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
     outputs.emplace_back("d", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid outputs: The number (2) of the array buffer views "
               "doesn't match the expectation (1).");
   }
@@ -5610,11 +5601,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
                         CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid inputs: The name \"invalid-input-name\" isn't part of "
               "the graph.");
   }
@@ -5626,11 +5616,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("invalid-output-name",
                          CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid outputs: The name \"invalid-output-name\" isn't part of "
               "the graph.");
   }
@@ -5645,12 +5634,11 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(
-        exception->message(),
+        error_message,
         "Invalid inputs: The type (Int32) of the array buffer view with "
         "name \"a\" doesn't match the expected operand data type (float32).");
   }
@@ -5665,11 +5653,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid inputs: The byte length (40) of the array buffer view "
               "with name \"a\" doesn't match the expected byte length (48).");
   }
@@ -5684,12 +5671,11 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
         ArrayBufferViewHelper{.number_of_elements = 9,
                               .data_type = V8MLOperandDataType::Enum::kInt32}
             .ToArrayBufferView());
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
     EXPECT_EQ(
-        exception->message(),
+        error_message,
         "Invalid outputs: The type (Int32) of the array buffer view with "
         "name \"c\" doesn't match the expected operand data type (float32).");
   }
@@ -5704,11 +5690,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
         ArrayBufferViewHelper{.number_of_elements = 8,
                               .data_type = V8MLOperandDataType::Enum::kFloat32}
             .ToArrayBufferView());
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(exception, testing::NotNull());
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "TypeError");
+    EXPECT_EQ(error_message,
               "Invalid outputs: The byte length (32) of the array buffer view "
               "with name \"c\" doesn't match the expected byte length (36).");
   }

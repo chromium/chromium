@@ -382,7 +382,7 @@ struct ClampTester {
     }
     auto* output_operand = builder->clamp(input_operand, ml_clamp_options,
                                           scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -709,7 +709,7 @@ struct BatchNormalizationTester {
     auto* output_operand = builder->batchNormalization(
         input_operand, mean_operand, variance_operand,
         batch_normalization_options, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -1256,7 +1256,7 @@ struct Conv2dTester {
     auto* output_operand =
         builder->conv2d(input_operand, filter_operand, ml_conv2d_options,
                         scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -1723,7 +1723,7 @@ struct ElementWiseBinaryTester {
                                    rhs.data_type, scope.GetExceptionState());
     auto* output_operand =
         BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -1989,7 +1989,7 @@ struct EluTester {
     }
     auto* output_operand =
         builder->elu(input_operand, ml_elu_options, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -2112,7 +2112,7 @@ struct ExpandTester {
                    scope.GetExceptionState());
     auto* output_operand =
         builder->expand(input_operand, new_shape, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -2232,7 +2232,7 @@ struct GemmTester {
     }
     auto* output_operand = builder->gemm(a_operand, b_operand, ml_gemm_options,
                                          scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -2420,7 +2420,7 @@ struct HardSigmoidTester {
     }
     auto* output_operand = builder->hardSigmoid(
         input_operand, hard_sigmoid_options, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -2549,7 +2549,7 @@ struct InstanceNormalizationTester {
     auto* output_operand = builder->instanceNormalization(
         input_operand, instance_normalization_options,
         scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -2727,7 +2727,7 @@ struct LayerNormalizationTester {
 
     auto* output_operand = builder->layerNormalization(
         input_operand, layer_normalization_options, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -2915,7 +2915,7 @@ struct LeakyReluTester {
     }
     auto* output_operand = builder->leakyRelu(
         input_operand, ml_leaky_relu_options, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -3055,7 +3055,7 @@ struct LinearTester {
     }
     auto* output_operand = builder->linear(input_operand, ml_linear_options,
                                            scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_NE(graph, nullptr);
 
@@ -3186,7 +3186,7 @@ struct MatmulTester {
                                  scope.GetExceptionState());
     auto* output_operand =
         builder->matmul(a_operand, b_operand, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -3299,7 +3299,7 @@ struct PadTester {
     auto* output_operand =
         BuildPad(scope, builder, input_operand, beginning_padding,
                  ending_padding, ml_pad_options);
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -3478,7 +3478,7 @@ struct Pool2dTester {
     }
     auto* output_operand =
         BuildPool2d(scope, builder, kind, input_operand, ml_pool2d_options);
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -3667,7 +3667,7 @@ struct PreluTester {
                    scope.GetExceptionState());
     auto* output_operand =
         builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -3799,7 +3799,7 @@ struct Resample2dTester {
     }
     auto* output_operand =
         BuildResample2d(scope, builder, input_operand, ml_resample2d_options);
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -3955,7 +3955,7 @@ struct ReshapeTester {
                    scope.GetExceptionState());
     auto* output_operand =
         builder->reshape(input_operand, new_shape, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4045,7 +4045,7 @@ struct SliceTester {
     auto* output_operand =
         builder->slice(input_operand, options.starts, options.sizes,
                        scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4122,7 +4122,7 @@ struct SoftmaxTester {
                    scope.GetExceptionState());
     auto* output_operand =
         builder->softmax(input_operand, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4190,7 +4190,7 @@ struct SoftplusTester {
     }
     auto* output_operand = builder->softplus(input_operand, softplus_options,
                                              scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4286,7 +4286,7 @@ struct TransposeTester {
     }
     auto* output_operand =
         builder->transpose(input_operand, options, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4398,7 +4398,7 @@ struct ReduceTester {
     }
     auto* output_operand =
         BuildReduce(scope, builder, kind, input_operand, options);
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4524,7 +4524,7 @@ struct ConstantTester {
                       constant.values, scope.GetExceptionState());
     auto* output_operand =
         builder->relu(constant_operand, scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4674,7 +4674,7 @@ struct SplitTester {
       output_named_operand.push_back(
           std::make_pair(String::Format("output%u", i), output_operands.at(i)));
     }
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, output_named_operand);
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -4749,7 +4749,7 @@ struct CastTester {
     auto* output_operand =
         builder->cast(input_operand, V8MLOperandDataType(output_data_type),
                       scope.GetExceptionState());
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -5045,7 +5045,7 @@ struct ArgMinMaxTester {
     }
     auto* output_operand =
         BuildArgMinMax(scope, builder, kind, input_operand, options);
-    auto [graph, build_exception] =
+    auto [graph, error_name, error_message] =
         helper.BuildGraph(scope, builder, {{"output", output_operand}});
     ASSERT_THAT(graph, testing::NotNull());
 
@@ -5215,7 +5215,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   auto* output_operand = BuildElementWiseBinary(
       scope, builder, webnn::mojom::blink::ElementWiseBinary::Kind::kAdd,
       lhs_operand, rhs_operand);
-  auto [graph, build_exception] =
+  auto [graph, error_name, error_message] =
       BuildGraph(scope, builder, {{"output", output_operand}});
   ASSERT_THAT(graph, testing::NotNull());
 
@@ -5229,16 +5229,18 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     // Compute successfully.
     SetComputeResult(ComputeResult{
         .output = {{"output", Vector<uint8_t>(number_of_elements, 2)}}});
-    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_THAT(compute_exception, testing::IsNull());
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_TRUE(error_name.IsNull());
     auto results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 2));
 
     // Compute again successfully.
     SetComputeResult(ComputeResult{
         .output = {{"output", Vector<uint8_t>(number_of_elements, 7)}}});
-    compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_THAT(compute_exception, testing::IsNull());
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_TRUE(error_name.IsNull());
     results = GetArrayBufferViewValues<uint8_t>(outputs[0].second);
     EXPECT_EQ(results, Vector<uint8_t>(number_of_elements, 7));
 
@@ -5254,10 +5256,10 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   {
     // Unknown error.
     SetComputeResult(ComputeResult{});
-    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(compute_exception, testing::NotNull());
-    EXPECT_EQ(compute_exception->name(), "OperationError");
-    EXPECT_EQ(compute_exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "OperationError");
+    EXPECT_EQ(error_message,
               "There is an unknown output tensor in the computation "
               "result: output");
   }
@@ -5270,10 +5272,10 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     SetComputeResult(
         ComputeResult{.output = {{"a_different_out_name",
                                   Vector<uint8_t>(number_of_elements)}}});
-    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(compute_exception, testing::NotNull());
-    EXPECT_EQ(compute_exception->name(), "OperationError");
-    EXPECT_EQ(compute_exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "OperationError");
+    EXPECT_EQ(error_message,
               "There is an unknown output tensor in the computation "
               "result: output");
   }
@@ -5285,10 +5287,10 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     // The size of output in computation result isn't expected.
     SetComputeResult(
         ComputeResult{.output = {{"output", Vector<uint8_t>(20)}}});
-    auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
-    ASSERT_THAT(compute_exception, testing::NotNull());
-    EXPECT_EQ(compute_exception->name(), "UnknownError");
-    EXPECT_EQ(compute_exception->message(),
+    std::tie(error_name, error_message) =
+        ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(error_name, "UnknownError");
+    EXPECT_EQ(error_message,
               "The output tensor size does not match graph's expectation: "
               "output");
   }
