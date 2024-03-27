@@ -103,7 +103,7 @@ void AutomationClientImpl::Disable() {
   AutomationManagerAura::GetInstance()->Disable();
 }
 
-void AutomationClientImpl::EnableTree(const ui::AXTreeID& tree_id) {
+void AutomationClientImpl::EnableChildTree(const ui::AXTreeID& tree_id) {
   // TODO(crbug.com/1355633): Refactor logic from extensions namespace to a
   // common location.
   extensions::AutomationInternalEnableTreeFunction::EnableTree(

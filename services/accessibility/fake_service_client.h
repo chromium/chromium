@@ -61,7 +61,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   // ax::mojom::AutomationClient:
   void Enable(EnableCallback callback) override;
   void Disable();
-  void EnableTree(const ui::AXTreeID& tree_id);
+  void EnableChildTree(const ui::AXTreeID& tree_id) override;
   void PerformAction(const ui::AXActionData& data) override;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)

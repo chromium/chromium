@@ -14,8 +14,10 @@
 #include "services/accessibility/features/bindings_isolate_holder.h"
 #include "services/accessibility/features/v8_utils.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/mojom/ax_event.mojom.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 #include "v8-function.h"
@@ -167,7 +169,20 @@ std::string AutomationInternalBindings::GetTreeChangeTypeString(
 std::string AutomationInternalBindings::GetEventTypeString(
     const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type)
     const {
-  // TODO(crbug.com/1357889): Implement based on Automation API.
+  // TODO(b:327258691): Share const strings between c++ and js for event names.
+  const ui::AXEventGenerator::Event& generated_event = std::get<1>(event_type);
+
+  // Resolve the proper event based on generated or non-generated event sources.
+  if (generated_event != ui::AXEventGenerator::Event::NONE &&
+      !ui::ShouldIgnoreGeneratedEventForAutomation(generated_event)) {
+    return ui::ToString(generated_event);
+  }
+
+  const ax::mojom::Event& event = std::get<0>(event_type);
+  if (event != ax::mojom::Event::kNone &&
+      !ui::ShouldIgnoreAXEventForAutomation(event)) {
+    return ui::ToString(event);
+  }
   return "";
 }
 

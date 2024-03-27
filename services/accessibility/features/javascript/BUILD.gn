@@ -8,6 +8,7 @@ copy("js_api_copied_files") {
     "automation.js",
     "automation_internal.js",
     "chrome_event.js",
+    "event.js",
     "speech_recognition.js",
     "tts.js",
   ]
@@ -20,6 +21,7 @@ group("js_api_files") {
     "$target_gen_dir/automation.js",
     "$target_gen_dir/chrome_event.js",
     "$target_gen_dir/automation_internal.js",
+    "$target_gen_dir/event.js",
     "$target_gen_dir/speech_recognition.js",
     "$target_gen_dir/tts.js",
   ]

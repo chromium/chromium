@@ -36,7 +36,7 @@ void FakeServiceClient::Enable(EnableCallback callback) {
 
 void FakeServiceClient::Disable() {}
 
-void FakeServiceClient::EnableTree(const ui::AXTreeID& tree_id) {}
+void FakeServiceClient::EnableChildTree(const ui::AXTreeID& tree_id) {}
 
 void FakeServiceClient::PerformAction(const ui::AXActionData& data) {
   if (perform_action_called_callback_) {

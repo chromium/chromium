@@ -2018,7 +2018,7 @@ class AutomationRootNode extends AutomationNode {
           eventParams.eventFromAction, eventParams.mouseX, eventParams.mouseY,
           eventParams.intents);
     } else {
-      logging.WARNING(
+      console.warn(
           'Got ' + eventParams.eventType + ' event on unknown node: ' +
           eventParams.targetID + '; this: ' + this.id);
     }
@@ -2157,6 +2157,38 @@ class AutomationUtil {
      * @type {number}
      */
     this.nextTreeChangeObserverId = 1;
+
+    this.idToCallback = {};
+  }
+
+  stringAXTreeIDToMojo(stringTreeID) {
+    let token = natives.StringAXTreeIDToUnguessableToken(stringTreeID);
+    let mojoTreeID = {
+      token: {
+        high: BigInt(token.high),
+        low: BigInt(token.low),
+      }
+    };
+    return mojoTreeID;
+  }
+
+  storeTreeCallback(id, callback) {
+    if (!callback) {
+      throw new Error('callback can not be null');
+    }
+
+    const targetTree = AutomationRootNode.get(id);
+    if (!targetTree) {
+      // If we haven't cached the tree, hold the callback until the tree is
+      // populated by the initial onAccessibilityEvent call.
+      if (id in this.idToCallback) {
+        this.idToCallback[id].push(callback);
+      } else {
+        this.idToCallback[id] = [callback];
+      }
+    } else {
+      callback(targetTree);
+    }
   }
 
   getDefaultAXActionData() {
@@ -2225,6 +2257,19 @@ class AtpAutomation {
     this.desktopId_ = null;
   }
 
+  get automationClientRemote() {
+    return this.automationClientRemote_;
+  }
+
+  get desktopId() {
+    return this.desktopId_;
+  }
+
+
+  get desktopTree() {
+    return this.desktopTree_;
+  }
+
   getDesktop(callback) {
     if (this.desktopId_) {
       this.desktopTree_ = AutomationRootNode.get(this.desktopId_);
@@ -2262,6 +2307,7 @@ class AtpAutomation {
         } else {
           console.error('Unexpected result from AutomationClient::Enable');
           this.desktopId_ = null;
+          this.desktopTree_ = null;
           AutomationRootNode.destroy(treeId);
           nativeAutomationInternal.SetDesktopID('');
           callback();
@@ -2322,14 +2368,8 @@ class AtpAutomation {
     // Note: the AXActionData must have all its fields defined to be sent over
     // mojo, so the next call is mandatory.
     let actionData = automationUtil.getDefaultAXActionData();
-    let token = natives.StringAXTreeIDToUnguessableToken(anchorNode.treeID);
-    let treeID = {
-      token: {
-        high: BigInt(token.high),
-        low: BigInt(token.low),
-      }
-    };
-    actionData.targetTreeId = treeID;
+    actionData.targetTreeId =
+        automationUtil.stringAXTreeIDToMojo(anchorNode.treeID);
     actionData.targetNodeId = anchorNode.id;
     actionData.action = ax.mojom.Action.kSetSelection;
     actionData.anchorNodeId = anchorNode.id;
@@ -2340,6 +2380,34 @@ class AtpAutomation {
     this.automationClientRemote_.performAction(actionData);
   }
 };
+
+
+automationInternal.onChildTreeID.addListener(function(childTreeId) {
+  const targetTree = AutomationRootNode.get(childTreeId);
+
+  // If the tree is already loaded, or if we previously requested it be loaded
+  // (i.e. have a callback for it), don't try to do so again.
+  if (targetTree || automationUtil.idToCallback[childTreeId]) {
+    return;
+  }
+
+  // A WebView in the desktop tree has a different AX tree as its child.
+  // When we encounter a WebView with a child AX tree id that we don't
+  // currently have cached, explicitly request that AX tree from the
+  // browser process and set up a callback when it loads to attach that
+  // tree as a child of this node and fire appropriate events.
+  automationUtil.storeTreeCallback(childTreeId, function(root) {
+    root.dispatchEvent('loadComplete', 'page');
+    if (root.parent) {
+      root.parent.dispatchEvent('childrenChanged');
+    }
+  }, true);
+
+  chrome.automation.automationClientRemote.enableChildTree(
+      automationUtil.stringAXTreeIDToMojo(childTreeId));
+});
+
+
 
 automationInternal.onTreeChange.addListener(function(
     observerID, treeID, nodeID, changeType) {
@@ -2365,6 +2433,44 @@ automationInternal.onTreeChange.addListener(function(
         'Error in tree change observer for ' + changeType, e);
   }
 });
+
+/**
+ * Dispatch accessibility events fired on individual nodes to its
+ * corresponding AutomationNode.
+ */
+automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
+  const id = eventParams.treeID;
+  const targetTree = AutomationRootNode.getOrCreate(id);
+  if (eventParams.eventType == 'mediaStartedPlaying' ||
+      eventParams.eventType == 'mediaStoppedPlaying') {
+    // These events are global to the tree.
+    eventParams.targetID = targetTree.id;
+  }
+
+  targetTree.onAccessibilityEvent(eventParams);
+
+  // If we're not waiting on a callback, we can early out here.
+  if (!(id in automationUtil.idToCallback)) {
+    return;
+  }
+
+  // We usually get a 'placeholder' tree first, which doesn't have any url
+  // attribute or child nodes. If we've got that, wait for the full tree before
+  // calling the callback.
+  if (id != chrome.automation.desktopId && !targetTree.url &&
+      targetTree.children.length == 0) {
+    return;
+  }
+
+  // If the tree wasn't available, the callback will have been cached in
+  // idToCallback, so call and delete it now that we have the complete tree.
+  for (let i = 0; i < automationUtil.idToCallback[id].length; i++) {
+    const callback = automationUtil.idToCallback[id][i];
+    callback(targetTree);
+  }
+  delete automationUtil.idToCallback[id];
+});
+
 
 
 chrome.automation = new AtpAutomation();

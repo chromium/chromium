@@ -1243,6 +1243,7 @@ class AutomationJSApiTest : public AtpJSApiTest {
         "ui/accessibility/mojom/ax_tree_id.mojom-lite.js",
         "ui/accessibility/mojom/ax_action_data.mojom-lite.js",
         "services/accessibility/public/mojom/automation_client.mojom-lite.js",
+        "services/accessibility/features/javascript/event.js",
         "services/accessibility/features/javascript/chrome_event.js",
         "services/accessibility/features/javascript/automation_internal.js",
         "services/accessibility/features/javascript/automation.js",
@@ -1452,6 +1453,79 @@ TEST_F(AutomationJSApiTest, SetDocumentSelection) {
   )JS");
   WaitForJSTestComplete();
   ASSERT_TRUE(perform_action_called);
+}
+
+// Ensures that when a child tree is created, a event is fired on the parent
+// tree to indicate that it is finished loading and is
+// connected.
+TEST_F(AutomationJSApiTest, OnChildTreeEvents) {
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.getDesktop(desktop => {
+      // This event will trigger once the child tree is loaded.
+      desktop.addEventListener('childrenChanged', function() {
+        const mainTree = chrome.automation.desktopTree;
+        if (!mainTree) {
+          remote.testComplete(/*success=*/false);
+        }
+        const childTree = mainTree.childTree;
+        if (!childTree) {
+          remote.testComplete(/*success=*/false);
+        }
+        if (childTree.parent !== mainTree) {
+          remote.testComplete(/*success=*/false);
+        }
+        remote.testComplete(/*success=*/true);
+      });
+    });
+      )JS");
+
+  std::vector<ui::AXTreeUpdate> updates;
+  const ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  {
+    updates.emplace_back();
+    auto& tree_update = updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+    tree_data.tree_id = client_->desktop_tree_id();
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kDesktop;
+    node_data1.AddChildTreeId(child_tree_id);
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+  updates.clear();
+
+  {
+    // Child tree data:
+    updates.emplace_back();
+    auto& tree_update2 = updates.back();
+    tree_update2.has_tree_data = true;
+    tree_update2.root_id = 1;
+    auto& tree_data2 = tree_update2.tree_data;
+    tree_data2.tree_id = child_tree_id;
+    tree_update2.nodes.emplace_back();
+    auto& node_data2 = tree_update2.nodes.back();
+    node_data2.id = 1;
+    node_data2.role = ax::mojom::Role::kWebView;
+    node_data2.child_ids.push_back(2);
+    tree_update2.nodes.emplace_back();
+    auto& node_data3 = tree_update2.nodes.back();
+    node_data3.id = 2;
+    node_data3.role = ax::mojom::Role::kButton;
+
+    std::vector<ui::AXEvent> events;
+    client_->SendAccessibilityEvents(tree_data2.tree_id, updates, gfx::Point(),
+                                     events);
+  }
+
+  WaitForJSTestComplete();
 }
 
 }  // namespace ax

@@ -31,8 +31,9 @@ interface AutomationClient {
   // Enables accessibility for a particular subtree of the client. This will
   // result in the client repeatedly calling DispatchAccessibilityEvents()
   // on the Automation interface.
-  // TODO(b/262638176): Implement AutomationClient::EnableTree.
-  // EnableTree(ax.mojom.AXTreeID tree_id);
+  // Note that in the old automation API this was called only EnableTree.
+  // Renamed here to be clearer which type of tree this is enabling.
+  EnableChildTree(ax.mojom.AXTreeID tree_id);
 
   // Forwards the action described by AXActionData to all clients. Actions
   // are resolved by each client based on tree id, action type and other
