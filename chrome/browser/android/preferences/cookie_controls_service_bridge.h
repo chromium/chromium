@@ -23,7 +23,8 @@ class CookieControlsServiceBridge : public CookieControlsService::Observer {
 
   ~CookieControlsServiceBridge() override;
 
-  // Called by the Java counterpart when it is getting garbage collected.
+  // Destroys the CookieControlsServiceBridge object. This needs to be called on
+  // the java side when the object is not in use anymore.
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   void HandleCookieControlsToggleChanged(JNIEnv* env, jboolean checked);

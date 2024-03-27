@@ -38,7 +38,8 @@ class CookieControlsBridge : public CookieControlsObserver {
       const base::android::JavaParamRef<jobject>&
           joriginal_browser_context_handle);
 
-  // Called by the Java counterpart when it is getting garbage collected.
+  // Destroys the CookieControlsBridge object. This needs to be called on the
+  // java side when the object is not in use anymore.
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   void SetThirdPartyCookieBlockingEnabledForSite(JNIEnv* env,

@@ -31,7 +31,8 @@ class BrowsingDataCounterBridge {
 
   ~BrowsingDataCounterBridge();
 
-  // Called by the Java counterpart when it is getting garbage collected.
+  // Destroys the BrowsingDataCounterBridge object. This needs to be called on
+  // the java side when the object is not in use anymore.
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
  private:

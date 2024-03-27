@@ -31,6 +31,8 @@ class BrowsingDataModelAndroid {
       const jstring host,
       const base::android::JavaParamRef<jobject>& java_callback);
 
+  // Destroys the BrowsingDataModelAndroid object. This needs to be called on
+  // the java side when the object is not in use anymore.
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
  private:
