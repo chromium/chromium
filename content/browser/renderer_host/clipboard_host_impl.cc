@@ -602,7 +602,7 @@ void ClipboardHostImpl::WriteText(const std::u16string& text) {
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
       data,
-      base::BindOnce(&ClipboardHostImpl::OnCopyTextAllowedResult,
+      base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -622,7 +622,17 @@ void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
 }
 
 void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {
-  clipboard_writer_->WriteSvg(markup);
+  ClipboardPasteData data;
+  data.svg = markup;
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      CreateClipboardEndpoint(),
+      {
+          .size = markup.size() * sizeof(std::u16string::value_type),
+          .format_type = ui::ClipboardFormatType::SvgType(),
+      },
+      data,
+      base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ClipboardHostImpl::WriteSmartPasteMarker() {
@@ -631,10 +641,23 @@ void ClipboardHostImpl::WriteSmartPasteMarker() {
 
 void ClipboardHostImpl::WriteCustomData(
     const base::flat_map<std::u16string, std::u16string>& data) {
-  base::Pickle pickle;
-  ui::WriteCustomDataToPickle(data, &pickle);
-  clipboard_writer_->WritePickledData(
-      pickle, ui::ClipboardFormatType::WebCustomDataType());
+  ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.custom_data = data;
+
+  size_t total_size = 0;
+  for (const auto& entry : clipboard_paste_data.custom_data) {
+    total_size += entry.second.size();
+  }
+
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      CreateClipboardEndpoint(),
+      {
+          .size = total_size,
+          .format_type = ui::ClipboardFormatType::WebCustomDataType(),
+      },
+      clipboard_paste_data,
+      base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ClipboardHostImpl::WriteBookmark(const std::string& url,
@@ -800,30 +823,54 @@ void ClipboardHostImpl::FinishPasteIfAllowed(
   request.Complete(std::move(clipboard_paste_data));
 }
 
-void ClipboardHostImpl::OnCopyTextAllowedResult(
-    const ClipboardPasteData& data,
-    std::optional<std::u16string> replacement_data) {
-  if (replacement_data) {
-    clipboard_writer_->WriteText(std::move(*replacement_data));
-  } else {
-    clipboard_writer_->SetDataSourceURL(
-        render_frame_host().GetMainFrame()->GetLastCommittedURL(),
-        render_frame_host().GetLastCommittedURL());
-    clipboard_writer_->WriteText(data.text);
-  }
-}
-
 void ClipboardHostImpl::OnCopyHtmlAllowedResult(
     const GURL& source_url,
     const ClipboardPasteData& data,
     std::optional<std::u16string> replacement_data) {
+  clipboard_writer_->SetDataSourceURL(
+      render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+      render_frame_host().GetLastCommittedURL());
+
   if (replacement_data) {
+    // `replacement_data` having a value implies the copy was not allowed and
+    // that a warning message should instead be put into the clipboard.
     clipboard_writer_->WriteText(std::move(*replacement_data));
+    return;
+  }
+
+  clipboard_writer_->WriteHTML(data.html, source_url.spec());
+}
+
+void ClipboardHostImpl::OnCopyAllowedResult(
+    const ClipboardPasteData& data,
+    std::optional<std::u16string> replacement_data) {
+  clipboard_writer_->SetDataSourceURL(
+      render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+      render_frame_host().GetLastCommittedURL());
+
+  if (replacement_data) {
+    // `replacement_data` having a value implies the copy was not allowed and
+    // that a warning message should instead be put into the clipboard.
+    clipboard_writer_->WriteText(std::move(*replacement_data));
+    return;
+  }
+
+  // Only one of these fields should be non-empty depending on which "Write"
+  // method was called by the renderer.
+  if (!data.text.empty()) {
+    // This branch should be reached only after `WriteText()` is called.
+    clipboard_writer_->WriteText(data.text);
+  } else if (!data.svg.empty()) {
+    // This branch should be reached only after `WriteSvg()` is called.
+    clipboard_writer_->WriteSvg(data.svg);
+  } else if (!data.custom_data.empty()) {
+    // This branch should be reached only after `WriteCustomData()` is called.
+    base::Pickle pickle;
+    ui::WriteCustomDataToPickle(data.custom_data, &pickle);
+    clipboard_writer_->WritePickledData(
+        pickle, ui::ClipboardFormatType::WebCustomDataType());
   } else {
-    clipboard_writer_->SetDataSourceURL(
-        render_frame_host().GetMainFrame()->GetLastCommittedURL(),
-        render_frame_host().GetLastCommittedURL());
-    clipboard_writer_->WriteHTML(data.html, source_url.spec());
+    NOTREACHED();
   }
 }
 
