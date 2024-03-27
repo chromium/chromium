@@ -127,10 +127,7 @@
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
@@ -547,29 +544,6 @@ IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, Colors) {
   }
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// TODO(http://b/331208955): Remove after migration.
-class ContainerAppBrowserTest : public WebAppBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kJelly};
-};
-
-// TODO(http://b/331208955): Remove after migration.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ContainerAppUsesSystemThemeColor) {
-  const auto app_id = test::InstallWebApp(
-      profile(), GetConfigForContainer().app_info_factory.Run(),
-      /*overwrite_existing_manifest_fields=*/false,
-      webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-
-  const auto* app_browser = LaunchWebAppBrowser(app_id);
-  const auto* app_controller = app_browser->app_controller();
-
-  EXPECT_EQ(app_controller->GetThemeColor(), ash::GetSystemThemeColor());
-  EXPECT_EQ(app_controller->GetBackgroundColor(),
-            ash::GetSystemBackgroundColor());
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This tests that we don't crash when launching a PWA window with an
