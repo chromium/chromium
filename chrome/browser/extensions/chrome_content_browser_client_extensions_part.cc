@@ -63,6 +63,7 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
@@ -97,6 +98,12 @@ namespace extensions {
 BASE_FEATURE(kStopUsingRenderProcessHostPrivilege,
              "StopUsingRenderProcessHostPrivilege",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This feature tracks the work to enable Direct Sockets in Chrome Apps by
+// default. See crbug.com/329445684 for details.
+BASE_FEATURE(kDirectSocketsInChromeApps,
+             "DirectSocketsInChromeApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -926,6 +933,22 @@ void ChromeContentBrowserClientExtensionsPart::
       if (extensions.contains(extension)) {
         command_line->AppendSwitch(::switches::kInitIsolateAsForeground);
         break;
+      }
+    }
+    if (base::FeatureList::IsEnabled(kDirectSocketsInChromeApps) &&
+        extensions.size() == 1) {
+      // Chrome Apps never share their processes with other apps or extensions.
+      // With this precondition, it's sufficient to check that there's exactly
+      // one extension running in the current process, and that this extension
+      // is indeed a Chrome App with "sockets" permission to enable the Direct
+      // Sockets API.
+      auto* extension = ExtensionRegistry::Get(process.GetBrowserContext())
+                            ->enabled_extensions()
+                            .GetByID(*extensions.begin());
+      if (extension && extension->is_platform_app() &&
+          SocketsManifestData::Get(extension)) {
+        command_line->AppendSwitchASCII(::switches::kEnableBlinkFeatures,
+                                        "DirectSockets");
       }
     }
   }

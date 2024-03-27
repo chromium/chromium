@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -42,6 +43,8 @@ class Profile;
 namespace extensions {
 
 BASE_DECLARE_FEATURE(kStopUsingRenderProcessHostPrivilege);
+
+BASE_DECLARE_FEATURE(kDirectSocketsInChromeApps);
 
 // Implements the extensions portion of ChromeContentBrowserClient.
 class ChromeContentBrowserClientExtensionsPart
