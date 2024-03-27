@@ -4708,15 +4708,17 @@ chromium-metrics-reviews@google.com.
   <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
-<histogram name="Autofill.StoredProfileCount.{Category}" units="Profiles"
+<histogram name="Autofill.StoredProfileCount.{Suffix}" units="Profiles"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The number of Autofill addresses a user has stored of the given category,
-    measured at launch time.
+    The number of Autofill addresses a user has stored of the given category or
+    in total, measured at launch time.
   </summary>
-  <token key="Category" variants="AutofillProfileCategory"/>
+  <token key="Suffix" variants="AutofillProfileCategory">
+    <variant name="Total"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.StoredProfileCountAtAutofillableFormSubmission"

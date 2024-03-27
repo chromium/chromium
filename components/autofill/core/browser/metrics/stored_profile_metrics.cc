@@ -63,6 +63,8 @@ void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles) {
   count_and_log(AutofillProfileSourceCategory::kLocalOrSyncable);
   count_and_log(AutofillProfileSourceCategory::kAccountChrome);
   count_and_log(AutofillProfileSourceCategory::kAccountNonChrome);
+  base::UmaHistogramCounts1M("Autofill.StoredProfileCount.Total",
+                             profiles.size());
 }
 
 void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
