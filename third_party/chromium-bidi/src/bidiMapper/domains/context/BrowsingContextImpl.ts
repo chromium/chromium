@@ -401,6 +401,13 @@ export class BrowsingContextImpl {
           return;
         }
 
+        // If mapper attached to the page late, it might miss init and
+        // commit events. In that case, save the first loaderId for this
+        // frameId.
+        if (!this.#loaderId) {
+          this.#loaderId = params.loaderId;
+        }
+
         // Ignore event from not current navigation.
         if (params.loaderId !== this.#loaderId) {
           return;
