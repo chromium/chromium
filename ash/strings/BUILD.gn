@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
@@ -47,6 +48,11 @@ template("repack_one_locale_ash") {
       "//ui/strings:ax_strings",
       "//ui/strings:ui_strings",
     ]
+
+    if (is_chrome_branded) {
+      sources += [ "$root_gen_dir/chromeos/ash/resources/internal/strings/ash_internal_strings_${locale}.pak" ]
+      deps += [ "//chromeos/ash/resources/internal/strings" ]
+    }
   }
 }
 

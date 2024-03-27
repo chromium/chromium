@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
@@ -3315,6 +3316,10 @@ component("ash") {
   } else {
     sources +=
         [ "ambient/resources/ambient_animation_static_resources_stub.cc" ]
+  }
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
   }
 }
 
