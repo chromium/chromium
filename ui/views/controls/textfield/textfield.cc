@@ -268,7 +268,7 @@ Textfield::Textfield()
   // the cursor, inside the text field. These should always be ignored by
   // accessibility since a plain text field should always be a leaf node in the
   // accessibility trees of all the platforms we support.
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 }
 
 Textfield::~Textfield() {

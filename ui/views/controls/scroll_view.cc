@@ -312,9 +312,9 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   // "Ignored" removes the scrollbar from the accessibility tree.
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
   horiz_sb_->GetViewAccessibility().SetIsIgnored(true);
-  horiz_sb_->GetViewAccessibility().OverrideIsLeaf(true);
+  horiz_sb_->GetViewAccessibility().SetIsLeaf(true);
   vert_sb_->GetViewAccessibility().SetIsIgnored(true);
-  vert_sb_->GetViewAccessibility().OverrideIsLeaf(true);
+  vert_sb_->GetViewAccessibility().SetIsLeaf(true);
 
   // Just make sure the more_content indicators aren't visible for now. They'll
   // be added as child controls and appropriately made visible depending on
@@ -465,7 +465,7 @@ void ScrollView::SetHorizontalScrollBarMode(
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
   bool is_disabled = horizontal_scroll_bar_mode == ScrollBarMode::kDisabled;
   horiz_sb_->GetViewAccessibility().SetIsIgnored(is_disabled);
-  horiz_sb_->GetViewAccessibility().OverrideIsLeaf(is_disabled);
+  horiz_sb_->GetViewAccessibility().SetIsLeaf(is_disabled);
 }
 
 void ScrollView::SetVerticalScrollBarMode(
@@ -486,7 +486,7 @@ void ScrollView::SetVerticalScrollBarMode(
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
   bool is_disabled = vertical_scroll_bar_mode == ScrollBarMode::kDisabled;
   vert_sb_->GetViewAccessibility().SetIsIgnored(is_disabled);
-  vert_sb_->GetViewAccessibility().OverrideIsLeaf(is_disabled);
+  vert_sb_->GetViewAccessibility().SetIsLeaf(is_disabled);
 }
 
 void ScrollView::SetTreatAllScrollEventsAsHorizontal(

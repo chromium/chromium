@@ -57,7 +57,7 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
                  is_togglable,
                  /*has_border=*/true) {
   SetFlipCanvasOnPaintForRTLUI(false);
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 }
 
 FeaturePodIconButton::~FeaturePodIconButton() = default;
@@ -71,7 +71,7 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
       sub_label_(new views::Label),
       detailed_view_arrow_(new views::ImageView) {
   SetBorder(views::CreateEmptyBorder(kUnifiedFeaturePodHoverPadding));
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 
   label_->SetLineHeight(kUnifiedFeaturePodLabelLineHeight);
   label_->SetMultiLine(true);

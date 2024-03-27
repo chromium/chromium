@@ -161,7 +161,7 @@ class CaptureModeMenuItem
     capture_mode_util::ConfigLabelView(label_view_);
     capture_mode_util::CreateAndInitBoxLayoutForView(this);
     SetInkDropForButton(this);
-    GetViewAccessibility().OverrideIsLeaf(true);
+    GetViewAccessibility().SetIsLeaf(true);
     SetAccessibleName(label_view_->GetText());
     SetEnabled(enabled);
   }
@@ -222,7 +222,7 @@ class CaptureModeOption
     auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
     SetInkDropForButton(this);
-    GetViewAccessibility().OverrideIsLeaf(true);
+    GetViewAccessibility().SetIsLeaf(true);
     SetAccessibleName(GetOptionLabel());
 
     SetEnabled(enabled);

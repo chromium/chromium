@@ -242,7 +242,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
 
   // Use leaf list item role so that name is spoken by screen reader, but
   // redundant child label text is not also spoken.
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 }
 
 int KeyboardShortcutItemView::GetHeightForWidth(int w) const {

@@ -50,8 +50,9 @@ void AXViewObjWrapper::GetChildren(
   if (view_accessibility.GetChildTreeID() != ui::AXTreeIDUnknown())
     return;
 
-  if (view_accessibility.IsLeaf())
+  if (view_accessibility.IsLeaf()) {
     return;
+  }
 
   // TODO(dtseng): Need to handle |Widget| child of |View|.
   for (View* child : view_->children()) {

@@ -136,7 +136,7 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
     // reader to skip invisible sheet views by making it an ignored leaf node in
     // the accessibility tree.
     GetViewAccessibility().SetIsIgnored(!visible);
-    GetViewAccessibility().OverrideIsLeaf(!visible);
+    GetViewAccessibility().SetIsLeaf(!visible);
   }
 
   raw_ptr<views::View> first_focusable_ = nullptr;

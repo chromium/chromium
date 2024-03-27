@@ -81,7 +81,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
   SetLayoutManager(std::move(layout));
 
   GetViewAccessibility().SetName(label_text, ax::mojom::NameFrom::kAttribute);
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 }
 
 void SwitchAccessMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

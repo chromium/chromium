@@ -485,10 +485,10 @@ void BookmarkBarView::SetBookmarkBarState(
   // Ensure screen readers can't traverse bookmark bar children while
   // hidden.
   if (state == BookmarkBar::SHOW) {
-    GetViewAccessibility().OverrideIsLeaf(false);
+    GetViewAccessibility().SetIsLeaf(false);
     NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
   } else {
-    GetViewAccessibility().OverrideIsLeaf(true);
+    GetViewAccessibility().SetIsLeaf(true);
     NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
   }
 #endif

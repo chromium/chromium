@@ -125,7 +125,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
       : MdTextButton(std::move(callback), text),
         delegate_(delegate),
         is_default_button_(is_default_button) {
-    GetViewAccessibility().OverrideIsLeaf(true);
+    GetViewAccessibility().SetIsLeaf(true);
 
     if (features::IsChromeRefresh2023()) {
       views::FocusRing::Get(this)->SetColorId(

@@ -772,8 +772,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // all four children, not only the second child. It should not hide the parent
   // view. In this context, "hide" means that these views will be ignored (be
   // invisible) by platform accessibility APIs.
-  parent_view->OverrideIsLeaf(true);
-  child_view_2->OverrideIsLeaf(true);
+  parent_view->SetIsLeaf(true);
+  child_view_2->SetIsLeaf(true);
 
   EXPECT_EQ(3u, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
@@ -810,7 +810,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // Try unhiding the parent view's descendants. Nothing should be hidden any
   // more. The second child has no descendants so marking it as a leaf should
   // have no effect.
-  parent_view->OverrideIsLeaf(false);
+  parent_view->SetIsLeaf(false);
 
   EXPECT_EQ(3u, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());

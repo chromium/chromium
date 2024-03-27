@@ -446,6 +446,16 @@ void ViewAccessibility::SetIsLeaf(bool value) {
   is_leaf_ = value;
 }
 
+bool ViewAccessibility::IsLeaf() const {
+  // TODO(javiercon): The overridden check is temporary until all of ash/ has
+  // been migrated to use the new setters.
+  return is_leaf_ || overridden_is_leaf_;
+}
+
+bool ViewAccessibility::IsChildOfLeaf() const {
+  return pruned_;
+}
+
 bool ViewAccessibility::GetIsPruned() const {
   return pruned_;
 }
@@ -721,27 +731,6 @@ void ViewAccessibility::OverrideNativeWindowTitle(const std::u16string& title) {
 
 void ViewAccessibility::OverrideIsLeaf(bool value) {
   overridden_is_leaf_ = value;
-}
-
-bool ViewAccessibility::IsLeaf() const {
-  return overridden_is_leaf_;
-}
-
-bool ViewAccessibility::IsChildOfLeaf() const {
-  // Note to future developers: This method is called from
-  // "GetAccessibleNodeData". We should avoid calling any methods in any of our
-  // subclasses that might try and retrieve our AXNodeData, because this will
-  // cause an infinite loop.
-  // TODO(crbug.com/1100047): Make this method non-virtual and delete it from
-  // all subclasses.
-  if (const View* parent_view = view_->parent()) {
-    const ViewAccessibility& view_accessibility =
-        parent_view->GetViewAccessibility();
-    if (view_accessibility.ViewAccessibility::IsLeaf())
-      return true;
-    return view_accessibility.ViewAccessibility::IsChildOfLeaf();
-  }
-  return false;
 }
 
 void ViewAccessibility::SetNextFocus(Widget* widget) {

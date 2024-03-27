@@ -667,7 +667,7 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
     toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);
     // Ignore the toggle for accessibility.
     auto& view_accessibility = toggle->GetViewAccessibility();
-    view_accessibility.OverrideIsLeaf(true);
+    view_accessibility.SetIsLeaf(true);
     view_accessibility.SetIsIgnored(true);
     item->AddRightView(toggle.release());
   }

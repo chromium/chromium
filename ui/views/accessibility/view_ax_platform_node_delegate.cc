@@ -348,8 +348,9 @@ size_t ViewAXPlatformNodeDelegate::GetChildCount() const {
   // because our class has an expanded definition of what a leaf node is, which
   // includes all nodes with zero unignored children. Calling our own override
   // would create a circular definition of what a "leaf node" is.
-  if (ViewAccessibility::IsLeaf())
+  if (ViewAccessibility::IsLeaf()) {
     return 0;
+  }
 
   // If present, virtual view children override any real children.
   if (!virtual_children().empty()) {
@@ -403,8 +404,9 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
     size_t index) const {
   DCHECK_LT(index, GetChildCount())
       << "|index| should be less than the unignored child count.";
-  if (IsLeaf())
+  if (IsLeaf()) {
     return nullptr;
+  }
 
   if (!virtual_children().empty()) {
     // A virtual views subtree hides all the real view children.
@@ -711,8 +713,9 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
   if (!view() || !view()->GetWidget())
     return nullptr;
 
-  if (IsLeaf())
+  if (IsLeaf()) {
     return GetNativeViewAccessible();
+  }
 
   gfx::Point point = ScreenToDIPPoint(
       gfx::Point(screen_physical_pixel_x, screen_physical_pixel_y));

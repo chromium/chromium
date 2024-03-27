@@ -435,7 +435,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   browser_view->top_container()->SetVisible(false);
   browser_view->top_container()->SetEnabled(false);
   browser_view->top_container()->GetViewAccessibility().SetIsIgnored(true);
-  browser_view->top_container()->GetViewAccessibility().OverrideIsLeaf(true);
+  browser_view->top_container()->GetViewAccessibility().SetIsLeaf(true);
 
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);

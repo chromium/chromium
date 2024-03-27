@@ -241,7 +241,7 @@ void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
   // The same text visible in the message box is used as an accessible name for
   // the prompt. To prevent it from being announced twice, we hide the message
   // to ATs.
-  scroll_view_->GetViewAccessibility().OverrideIsLeaf(true);
+  scroll_view_->GetViewAccessibility().SetIsLeaf(true);
   ResetLayoutManager();
 }
 
@@ -298,7 +298,7 @@ void MessageBoxView::ResetLayoutManager() {
   // Ignored views are not in the accessibility tree, but their children
   // still can be exposed. Leaf views have no accessible children.
   checkbox_->GetViewAccessibility().SetIsIgnored(!checkbox_is_visible);
-  checkbox_->GetViewAccessibility().OverrideIsLeaf(!checkbox_is_visible);
+  checkbox_->GetViewAccessibility().SetIsLeaf(!checkbox_is_visible);
 
   if (link_->GetVisible())
     trailing_content_type = views::DialogContentType::kText;

@@ -400,10 +400,10 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
   alert_view->GetViewAccessibility().SetName(u"Name",
                                              ax::mojom::NameFrom::kAttribute);
   alert_view->GetViewAccessibility().SetDescription("Description");
-  alert_view->GetViewAccessibility().OverrideIsLeaf(true);
+  alert_view->GetViewAccessibility().SetIsLeaf(true);
   contents_view->AddChildView(alert_view);
 
-  // Descendant should be ignored because the parent uses OverrideIsLeaf().
+  // Descendant should be ignored because the parent uses SetIsLeaf().
   View* ignored_descendant = new View;
   alert_view->AddChildView(ignored_descendant);
 

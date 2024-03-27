@@ -134,6 +134,12 @@ class VIEWS_EXPORT ViewAccessibility {
   // If no value has been set, the "leafiness" of this view will be based on
   // the type of children (if any).
   void SetIsLeaf(bool value);
+  virtual bool IsLeaf() const;
+
+  // Returns true if an ancestor of this node (not including itself) is a
+  // leaf node, meaning that this node is not actually exposed to any
+  // platform's accessibility layer.
+  virtual bool IsChildOfLeaf() const;
 
   // Returns true if we heuristically pruned (ignored) this view from the
   // accessibility tree.
@@ -261,12 +267,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // Deprecated. Use ViewAccessibility::SetIsLeaf instead.
   // See https://crbug.com/324485311.
   void OverrideIsLeaf(bool value);
-  virtual bool IsLeaf() const;
-
-  // Returns true if an ancestor of this node (not including itself) is a
-  // leaf node, meaning that this node is not actually exposed to any
-  // platform's accessibility layer.
-  virtual bool IsChildOfLeaf() const;
 
   // Override the next or previous focused widget. Some assistive technologies,
   // such as screen readers, may utilize this information to transition focus

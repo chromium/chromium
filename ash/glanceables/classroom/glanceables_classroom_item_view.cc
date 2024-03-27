@@ -233,7 +233,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   }
 
   SetAccessibleRole(ax::mojom::Role::kListItem);
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
   SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
   SetAccessibleDescription(base::JoinString(a11y_description_parts, u", "));
 
