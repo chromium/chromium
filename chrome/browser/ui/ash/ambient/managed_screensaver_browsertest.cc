@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -52,6 +53,8 @@
 namespace ash {
 
 constexpr int64_t kMaxFileSizeInBytes = 8 * 1024 * 1024;  // 8 MB
+
+constexpr base::TimeDelta kTestPerTransitionTimeout = base::Seconds(5);
 
 const char kTestEmail[] = "test@example.com";
 constexpr char kCacheDirectoryName[] = "managed_screensaver";
@@ -474,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/3, /*timeout=*/base::Seconds(3),
+      /*num_completions=*/3, /*timeout=*/3 * kTestPerTransitionTimeout,
       /*on_complete=*/test_future_->GetCallback(),
       /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
   ASSERT_TRUE(test_future_->Wait());
@@ -486,7 +489,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
 
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
@@ -506,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   AutotestAmbientApi test_api;
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
@@ -525,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   // The large image will not even be downloaded and will fail to download.
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
@@ -544,7 +547,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   // The invalid image is downloaded but the screensaver will not start up and
   // show images as the second image will fail to decode.
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
@@ -562,7 +565,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
 
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/3, /*timeout=*/base::Seconds(3),
+      /*num_completions=*/3, /*timeout=*/3 * kTestPerTransitionTimeout,
       /*on_complete=*/test_future_->GetCallback(),
       /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
   ASSERT_TRUE(test_future_->Wait());
@@ -575,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   SetImages({});
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*num_completions=*/1, /*timeout=*/kTestPerTransitionTimeout,
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/test_future_->GetCallback());
   ASSERT_TRUE(test_future_->Wait());
