@@ -24,6 +24,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
@@ -104,13 +105,14 @@ public class DownloadUtils {
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
+     *
      * @param activity The current activity is available.
      * @param tab The current tab if it exists.
      * @param otrProfileID The {@link OTRProfileID} to determine whether download home should be
-     * opened in incognito mode. Only used when no valid current or recent tab presents.
+     *     opened in incognito mode. Only used when no valid current or recent tab presents.
      * @param source The source where the user action is coming from.
      * @param showPrefetchedContent Whether the manager should start with prefetched content section
-     * expanded.
+     *     expanded.
      * @return Whether the UI was shown.
      */
     @CalledByNative
@@ -336,7 +338,8 @@ public class DownloadUtils {
     }
 
     @CalledByNative
-    private static String getUriStringForPath(String filePath) {
+    private static @JniType("std::string") String getUriStringForPath(
+            @JniType("std::string") String filePath) {
         if (ContentUriUtils.isContentUri(filePath)) return filePath;
         Uri uri = getUriForItem(filePath);
         return uri != null ? uri.toString() : new String();
@@ -476,12 +479,12 @@ public class DownloadUtils {
      */
     @CalledByNative
     public static void openDownload(
-            String filePath,
-            String mimeType,
-            String downloadGuid,
+            @JniType("std::string") String filePath,
+            @JniType("std::string") String mimeType,
+            @JniType("std::string") String downloadGuid,
             OTRProfileID otrProfileID,
-            String originalUrl,
-            String referer,
+            @JniType("std::string") String originalUrl,
+            @JniType("std::string") String referer,
             @DownloadOpenSource int source) {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
@@ -556,7 +559,8 @@ public class DownloadUtils {
      * @param failState Why the download failed.
      * @return The resume mode for the current fail state.
      */
-    public static @ResumeMode int getResumeMode(String url, @FailState int failState) {
+    public static @ResumeMode int getResumeMode(
+            String url, @FailState @JniType("offline_items_collection::FailState") int failState) {
         return DownloadUtilsJni.get().getResumeMode(url, failState);
     }
 
@@ -713,6 +717,8 @@ public class DownloadUtils {
 
     @NativeMethods
     interface Natives {
-        int getResumeMode(String url, @FailState int failState);
+        int getResumeMode(
+                @JniType("std::string") String url,
+                @FailState @JniType("offline_items_collection::FailState") int failState);
     }
 }

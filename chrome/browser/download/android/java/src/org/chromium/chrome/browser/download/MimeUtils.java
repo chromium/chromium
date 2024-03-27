@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
@@ -59,9 +60,9 @@ public class MimeUtils {
                             "application/x-wifi-config"));
 
     /**
-     * If the given MIME type is null, or one of the "generic" types (text/plain
-     * or application/octet-stream) map it to a type that Android can deal with.
-     * If the given type is not generic, return it unchanged.
+     * If the given MIME type is null, or one of the "generic" types (text/plain or
+     * application/octet-stream) map it to a type that Android can deal with. If the given type is
+     * not generic, return it unchanged.
      *
      * @param mimeType MIME type provided by the server.
      * @param url URL of the data being loaded.
@@ -69,7 +70,10 @@ public class MimeUtils {
      * @return The MIME type that should be used for this data.
      */
     @CalledByNative
-    public static String remapGenericMimeType(String mimeType, String url, String filename) {
+    public static @JniType("std::string") String remapGenericMimeType(
+            @JniType("std::string") String mimeType,
+            @JniType("std::string") String url,
+            @JniType("std::string") String filename) {
         if (TextUtils.isEmpty(mimeType)) mimeType = UNKNOWN_MIME_TYPE;
         if (GENERIC_MIME_TYPES.contains(mimeType)) {
             String extension = getFileExtension(url, filename);
@@ -137,19 +141,18 @@ public class MimeUtils {
      * @return true if the downloaded is OMA download description, or false otherwise.
      */
     @CalledByNative
-    public static boolean isOMADownloadDescription(String mimeType) {
+    public static boolean isOMADownloadDescription(@JniType("std::string") String mimeType) {
         return OMA_DOWNLOAD_DESCRIPTOR_MIME.equalsIgnoreCase(mimeType);
     }
 
     /**
-     * Determines if the download should be immediately opened after
-     * downloading.
+     * Determines if the download should be immediately opened after downloading.
      *
      * @param mimeType The mime type of the download.
      * @return true if the downloaded content should be opened, or false otherwise.
      */
     @CalledByNative
-    public static boolean canAutoOpenMimeType(String mimeType) {
+    public static boolean canAutoOpenMimeType(@JniType("std::string") String mimeType) {
         return MIME_TYPES_TO_OPEN.contains(mimeType);
     }
 }

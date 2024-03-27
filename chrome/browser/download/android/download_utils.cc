@@ -9,7 +9,6 @@
 #include "base/android/jni_string.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/android/chrome_jni_headers/DownloadUtils_jni.h"
 #include "chrome/browser/download/android/jni_headers/MimeUtils_jni.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -21,10 +20,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
+// Must come after other headers because it uses
+// offline_items_collection::FailState.
+#include "chrome/android/chrome_jni_headers/DownloadUtils_jni.h"
+
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -37,11 +36,10 @@ const char kAutoResumptionSizeLimitParamName[] = "AutoResumptionSizeLimit";
 
 static jint JNI_DownloadUtils_GetResumeMode(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jurl,
-    jint failState) {
-  std::string url = ConvertJavaStringToUTF8(env, jurl);
-  auto reason = OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
-      static_cast<offline_items_collection::FailState>(failState));
+    std::string& url,
+    offline_items_collection::FailState failState) {
+  auto reason =
+      OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(failState);
   return static_cast<jint>(download::GetDownloadResumeMode(
       GURL(std::move(url)), reason, false /* restart_required */,
       true /* user_action_required */));
@@ -51,9 +49,9 @@ static jint JNI_DownloadUtils_GetResumeMode(
 base::FilePath DownloadUtils::GetUriStringForPath(
     const base::FilePath& file_path) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto uri_jstring = Java_DownloadUtils_getUriStringForPath(
-      env, ConvertUTF8ToJavaString(env, file_path.AsUTF8Unsafe()));
-  return base::FilePath(ConvertJavaStringToUTF8(env, uri_jstring));
+  auto uri_string =
+      Java_DownloadUtils_getUriStringForPath(env, file_path.AsUTF8Unsafe());
+  return base::FilePath(uri_string);
 }
 
 // static
@@ -83,12 +81,9 @@ void DownloadUtils::OpenDownload(download::DownloadItem* item,
   }
 
   Java_DownloadUtils_openDownload(
-      env, ConvertUTF8ToJavaString(env, item->GetTargetFilePath().value()),
-      ConvertUTF8ToJavaString(env, item->GetMimeType()),
-      ConvertUTF8ToJavaString(env, item->GetGuid()), otr_profile_id,
-      ConvertUTF8ToJavaString(env, original_url),
-      ConvertUTF8ToJavaString(env, item->GetReferrerUrl().spec()),
-      static_cast<jint>(open_source));
+      env, item->GetTargetFilePath().value(), item->GetMimeType(),
+      item->GetGuid(), otr_profile_id, original_url,
+      item->GetReferrerUrl().spec(), static_cast<jint>(open_source));
 }
 
 // static
@@ -96,26 +91,21 @@ std::string DownloadUtils::RemapGenericMimeType(const std::string& mime_type,
                                                 const GURL& url,
                                                 const std::string& file_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_remapped_mime_type = Java_MimeUtils_remapGenericMimeType(
-      env, ConvertUTF8ToJavaString(env, mime_type),
-      ConvertUTF8ToJavaString(env, url.spec()),
-      ConvertUTF8ToJavaString(env, file_name));
-  return ConvertJavaStringToUTF8(env, j_remapped_mime_type);
+  return Java_MimeUtils_remapGenericMimeType(env, mime_type, url.spec(),
+                                             file_name);
 }
 
 // static
 bool DownloadUtils::ShouldAutoOpenDownload(download::DownloadItem* item) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_MimeUtils_canAutoOpenMimeType(
-             env, ConvertUTF8ToJavaString(env, item->GetMimeType())) &&
+  return Java_MimeUtils_canAutoOpenMimeType(env, item->GetMimeType()) &&
          IsDownloadUserInitiated(item);
 }
 
 // static
 bool DownloadUtils::IsOmaDownloadDescription(const std::string& mime_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_MimeUtils_isOMADownloadDescription(
-      env, ConvertUTF8ToJavaString(env, mime_type));
+  return Java_MimeUtils_isOMADownloadDescription(env, mime_type);
 }
 
 // static

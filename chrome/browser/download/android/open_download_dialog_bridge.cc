@@ -45,13 +45,11 @@ void OpenDownloadDialogBridge::Show(Profile* profile,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OpenDownloadDialogBridge_showDialog(
       env, java_object_, ProfileAndroid::FromProfile(profile)->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, download_guid));
+      download_guid);
 }
 
-void OpenDownloadDialogBridge::OnConfirmed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_guid,
-    jboolean accepted) {
-  delegate_->OnConfirmed(base::android::ConvertJavaStringToUTF8(env, j_guid),
-                         accepted);
+void OpenDownloadDialogBridge::OnConfirmed(JNIEnv* env,
+                                           std::string& guid,
+                                           jboolean accepted) {
+  delegate_->OnConfirmed(guid, accepted);
 }

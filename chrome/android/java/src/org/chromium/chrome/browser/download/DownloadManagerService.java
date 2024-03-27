@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
@@ -1051,7 +1052,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     public void onProfileDestroyed(Profile profile) {}
 
     @CalledByNative
-    void onResumptionFailed(String downloadGuid) {
+    void onResumptionFailed(@JniType("std::string") String downloadGuid) {
         mDownloadNotifier.notifyDownloadFailed(
                 new DownloadInfo.Builder()
                         .setDownloadGuid(downloadGuid)
@@ -1399,7 +1400,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     // Deprecated after new download backend.
     @CalledByNative
-    private void onDownloadItemRemoved(String guid, OTRProfileID otrProfileID) {
+    private void onDownloadItemRemoved(
+            @JniType("std::string") String guid, OTRProfileID otrProfileID) {
         for (DownloadObserver adapter : mDownloadObservers) {
             adapter.onDownloadItemRemoved(guid);
         }
@@ -1659,7 +1661,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     @NativeMethods
     interface Natives {
-        boolean isSupportedMimeType(String mimeType);
+        boolean isSupportedMimeType(@JniType("std::string") String mimeType);
 
         int getAutoResumptionLimit();
 
@@ -1668,39 +1670,39 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         void openDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey,
                 int source);
 
         void resumeDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void cancelDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void pauseDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void removeDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void renameDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
-                String targetName,
+                @JniType("std::string") String downloadGuid,
+                @JniType("std::string") String targetName,
                 Callback</*RenameResult*/ Integer> callback,
                 ProfileKey profileKey);
 
@@ -1717,7 +1719,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         void updateLastAccessTime(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void onProfileAdded(
@@ -1726,8 +1728,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         void createInterruptedDownloadForTest(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String url,
-                String guid,
-                String targetPath);
+                @JniType("std::string") String url,
+                @JniType("std::string") String guid,
+                @JniType("std::string") String targetPath);
     }
 }

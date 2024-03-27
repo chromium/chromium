@@ -75,10 +75,7 @@ void DuplicateDownloadDialogBridge::Show(
       new DuplicateDownloadDialogCallback(std::move(callback)));
   validator_.AddJavaCallback(callback_id);
   Java_DuplicateDownloadDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              base::UTF8ToUTF16(file_path)),
-      base::android::ConvertUTF16ToJavaString(env, base::UTF8ToUTF16(page_url)),
+      env, java_object_, window_android->GetJavaObject(), file_path, page_url,
       total_bytes, duplicate_request_exists, j_otr_profile_id, callback_id);
 }
 
