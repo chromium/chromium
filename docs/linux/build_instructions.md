@@ -22,22 +22,8 @@ Are you a Google employee? See
 
 Most development is done on Ubuntu (Chromium's build infrastructure currently
 runs 22.04, Jammy Jellyfish). There are some instructions for other distros
-below, but they are mostly unsupported.
+below, but they are mostly unsupported, but installation instructions can be found in [Docker](#docker).
 
-### Docker requirements
-
-While it is not a common setup, Chromium compilation should work from within a
-Docker container. If you choose to compile from within a container for whatever
-reason, you will need to make sure that the following tools are available:
-
-* `curl`
-* `git`
-* `lsb_release`
-* `python3`
-* `sudo`
-
-There may be additional Docker-specific issues during compilation. See
-[this bug](https://crbug.com/1377520) for additional details on this.
 
 ## Install `depot_tools`
 
@@ -653,4 +639,111 @@ And then for the Java fonts:
 sudo mkdir -p /usr/share/fonts/truetype/ttf-lucida
 sudo find /usr/lib*/jvm/java-1.6.*-sun-*/jre/lib -iname '*.ttf' -print \
      -exec ln -s {} /usr/share/fonts/truetype/ttf-lucida \;
+```
+
+### Docker
+
+#### Prerequisites
+
+While it is not a common setup, Chromium compilation should work from within a
+Docker container. If you choose to compile from within a container for whatever
+reason, you will need to make sure that the following tools are available:
+
+* `curl`
+* `git`
+* `lsb_release`
+* `python3`
+* `sudo`
+* `file`
+
+There may be additional Docker-specific issues during compilation. See
+[this bug](https://crbug.com/1377520) for additional details on this.
+
+Note: Clone [depot_tools first](#install-depot_tools).
+
+#### Build Steps
+
+1. Put the following Dockerfile in `/path/to/chromium/`.
+
+```docker
+# Use an official Ubuntu base image with Docker already installed
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Mantatory tools (curl git python3) and optional tools (vim sudo)
+RUN apt-get update && \
+    apt-get install -y curl git lsb-release python3 git file vim sudo && \
+    rm -rf /var/lib/apt/lists/*
+
+# Export depot_tools path
+ENV PATH="/depot_tools:${PATH}"
+
+# Configure git for safe.directory
+RUN git config --global --add safe.directory /depot_tools
+
+# Set the working directory to the existing Chromium source directory
+WORKDIR /chromium/src # Default directory, can be just /chromium
+
+# Expose any necessary ports (if needed)
+# EXPOSE 8080
+
+RUN useradd -u 1000 chrom-d
+USER chrom-d # Default user, can be root (not advised) or removed
+
+# Start Chromium Builder "chrom-d"(modify this command as needed)
+# CMD ["autoninja -C out/Default chrome"]
+CMD ["bash"]
+```
+
+2. Build Container
+
+```shell
+# chrom-b is just a name; You can change it but you must reflect the renaming
+# in all commands below
+$ docker build -t chrom-b .
+```
+
+3. Run container as root to install dependencies
+
+```shell
+$ docker run --rm \ # close instance upon exit
+  -it \ # Run docker interactively
+	--name chrom-b \ # with name "chrom-b"
+	-u root \ # with user root
+	-v /path/on/machine/to/chromium:/chromium \ # With chromium folder mounted
+	-v /path/on/machine/to/depot_tools:/depot_tools \ # With depot_tools mounted
+	chrom-b # Run container with image name "chrom-b"
+```
+
+1. Install dependencies:
+
+```shell
+# ./build/install-build-deps.sh # `#` here means run as root which is done in previous step.
+```
+
+5. Save container image with tag-id name `dpv1.0`. Run this on the machine, not in container
+```shell
+$ docker ps # Get docker running instances, copy the id you get
+$ docker commit <ID from above step> chrom-b:dpv1.0
+# Optional, just saves space by deleting unnecessary images
+$ docker image rmi chrom-b:latest && docker image prune \
+  && docker container prune && docker builder prune
+```
+
+6. [Run hooks](#run-the-hooks): (Optional step, can be done in container as root, normal user or on machine. Here it is done on machine)
+7. Exit container.
+
+#### Run container
+
+```shell
+$ docker run --rm \ # close instance upon exit
+  -it \ # Run docker interactively
+	--name chrom-b \ # with name "chrom-b"
+  -u $(id -u):$(id -g) \ # Run container as a non-root user with same UID & GID
+	-u root \ # with user root
+	-v /path/on/machine/to/chromium:/chromium \ # With chromium folder mounted
+	-v /path/on/machine/to/depot_tools:/depot_tools \ # With depot_tools mounted
+	chrom-b:dpv1.0 # Run container with image name "chrom-b" and tag dpv1.0
 ```
