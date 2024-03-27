@@ -145,7 +145,8 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   void OnOpenFileCompleted(const base::FilePath& file_path,
                            OpenFileCallback callback,
                            int file_handle,
-                           base::File::Error result);
+                           base::File::Error result,
+                           std::unique_ptr<CloudFileInfo> cloud_file_info);
   // Called when closing a file is completed with either a success or an error.
   void OnCloseFileCompleted(int file_handle,
                             storage::AsyncFileUtil::StatusCallback callback,

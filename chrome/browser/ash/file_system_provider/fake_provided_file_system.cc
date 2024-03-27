@@ -229,9 +229,9 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
   const Entries::const_iterator entry_it = entries_.find(entry_path);
 
   if (entry_it == entries_.end()) {
-    return PostAbortableTask(base::BindOnce(std::move(callback),
-                                            /*file_handle=*/0,
-                                            base::File::FILE_ERROR_NOT_FOUND));
+    return PostAbortableTask(base::BindOnce(
+        std::move(callback), /*file_handle=*/0,
+        base::File::FILE_ERROR_NOT_FOUND, /*cloud_file_info=*/nullptr));
   }
 
   FakeEntry& entry = *entry_it->second;
@@ -242,8 +242,9 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
 
   const int file_handle = ++last_file_handle_;
   opened_files_[file_handle] = OpenedFile(entry_path, mode);
-  return PostAbortableTask(
-      base::BindOnce(std::move(callback), file_handle, base::File::FILE_OK));
+  return PostAbortableTask(base::BindOnce(std::move(callback), file_handle,
+                                          base::File::FILE_OK,
+                                          /*cloud_file_info=*/nullptr));
 }
 
 AbortCallback FakeProvidedFileSystem::CloseFile(

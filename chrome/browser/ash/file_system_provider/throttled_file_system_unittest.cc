@@ -36,7 +36,10 @@ void LogStatus(StatusLog* log, base::File::Error result) {
 }
 
 // Writes a |result| to the |log| vector for opening a file.
-void LogOpen(OpenLog* log, int handle, base::File::Error result) {
+void LogOpen(OpenLog* log,
+             int handle,
+             base::File::Error result,
+             std::unique_ptr<CloudFileInfo> cloud_file_info) {
   log->emplace_back(handle, result);
 }
 

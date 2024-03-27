@@ -139,7 +139,8 @@ class FileStreamReader::OperationRunner
   void OnOpenFileCompletedOnUIThread(
       storage::AsyncFileUtil::StatusCallback callback,
       int file_handle,
-      base::File::Error result) {
+      base::File::Error result,
+      std::unique_ptr<CloudFileInfo> cloud_file_info) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     abort_callback_.Reset();
 

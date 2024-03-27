@@ -88,6 +88,13 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+std::ostream& operator<<(std::ostream& out, CloudFileInfo* cloud_file_info) {
+  if (!cloud_file_info) {
+    return out << "none";
+  }
+  return out << "{version_tag = '" << cloud_file_info->version_tag << "'}";
+}
+
 }  // namespace
 
 CloudFileSystem::CloudFileSystem(
@@ -405,14 +412,20 @@ void CloudFileSystem::OnTimer() {
                 }));
 }
 
-void CloudFileSystem::OnOpenFileCompleted(const base::FilePath& file_path,
-                                          OpenFileCallback callback,
-                                          int file_handle,
-                                          base::File::Error result) {
+void CloudFileSystem::OnOpenFileCompleted(
+    const base::FilePath& file_path,
+    OpenFileCallback callback,
+    int file_handle,
+    base::File::Error result,
+    std::unique_ptr<CloudFileInfo> cloud_file_info) {
+  VLOG(1) << "OnOpenFileCompleted {fsid = " << GetFileSystemId()
+          << ", file_handle = '" << file_handle << "', result = '" << result
+          << "', cloud_file_info = " << cloud_file_info.get() << "}";
+
   if (result == base::File::FILE_OK) {
     opened_files_.try_emplace(file_handle, OpenedCloudFile(file_path));
   }
-  std::move(callback).Run(file_handle, result);
+  std::move(callback).Run(file_handle, result, std::move(cloud_file_info));
 }
 
 void CloudFileSystem::OnCloseFileCompleted(

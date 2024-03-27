@@ -360,7 +360,8 @@ AbortCallback ProvidedFileSystem::OpenFile(const base::FilePath& file_path,
                          std::move(split_callback.first))));
   if (!request_id) {
     std::move(split_callback.second)
-        .Run(/*file_handle=*/0, base::File::FILE_ERROR_SECURITY);
+        .Run(/*file_handle=*/0, base::File::FILE_ERROR_SECURITY,
+             /*cloud_file_info=*/nullptr);
     return AbortCallback();
   }
 
@@ -921,18 +922,21 @@ void ProvidedFileSystem::OnNotifyInQueueCompleted(
   watcher_queue_.Complete(args->token);
 }
 
-void ProvidedFileSystem::OnOpenFileCompleted(const base::FilePath& file_path,
-                                             OpenFileMode mode,
-                                             OpenFileCallback callback,
-                                             int file_handle,
-                                             base::File::Error result) {
+void ProvidedFileSystem::OnOpenFileCompleted(
+    const base::FilePath& file_path,
+    OpenFileMode mode,
+    OpenFileCallback callback,
+    int file_handle,
+    base::File::Error result,
+    std::unique_ptr<CloudFileInfo> cloud_file_info) {
   if (result != base::File::FILE_OK) {
-    std::move(callback).Run(file_handle, result);
+    std::move(callback).Run(file_handle, result, std::move(cloud_file_info));
     return;
   }
 
   opened_files_[file_handle] = OpenedFile(file_path, mode);
-  std::move(callback).Run(file_handle, base::File::FILE_OK);
+  std::move(callback).Run(file_handle, base::File::FILE_OK,
+                          std::move(cloud_file_info));
 }
 
 void ProvidedFileSystem::OnCloseFileCompleted(

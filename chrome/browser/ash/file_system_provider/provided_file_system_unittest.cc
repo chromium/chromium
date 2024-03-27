@@ -231,7 +231,8 @@ void LogNotification(NotificationLog* notification_log,
 // Writes a |file_handle| and |result| to the |open_file_log| vector.
 void LogOpenFile(OpenFileLog* open_file_log,
                  int file_handle,
-                 base::File::Error result) {
+                 base::File::Error result,
+                 std::unique_ptr<CloudFileInfo> cloud_file_info) {
   open_file_log->emplace_back(file_handle, result);
 }
 

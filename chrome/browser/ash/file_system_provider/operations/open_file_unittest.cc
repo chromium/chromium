@@ -35,8 +35,12 @@ class CallbackLogger {
  public:
   class Event {
    public:
-    Event(int file_handle, base::File::Error result)
-        : file_handle_(file_handle), result_(result) {}
+    Event(int file_handle,
+          base::File::Error result,
+          std::unique_ptr<CloudFileInfo> cloud_file_info)
+        : file_handle_(file_handle),
+          result_(result),
+          cloud_file_info_(std::move(cloud_file_info)) {}
 
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
@@ -45,10 +49,12 @@ class CallbackLogger {
 
     int file_handle() { return file_handle_; }
     base::File::Error result() { return result_; }
+    CloudFileInfo* cloud_file_info() { return cloud_file_info_.get(); }
 
    private:
     int file_handle_;
     base::File::Error result_;
+    std::unique_ptr<CloudFileInfo> cloud_file_info_;
   };
 
   CallbackLogger() = default;
@@ -58,8 +64,11 @@ class CallbackLogger {
 
   virtual ~CallbackLogger() = default;
 
-  void OnOpenFile(int file_handle, base::File::Error result) {
-    events_.push_back(std::make_unique<Event>(file_handle, result));
+  void OnOpenFile(int file_handle,
+                  base::File::Error result,
+                  std::unique_ptr<CloudFileInfo> cloud_file_info) {
+    events_.push_back(std::make_unique<Event>(file_handle, result,
+                                              std::move(cloud_file_info)));
   }
 
   std::vector<std::unique_ptr<Event>>& events() { return events_; }
