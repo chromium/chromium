@@ -112,23 +112,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   void HandleAutofillSuggestionAvailabilityChanged(
       WebAXAutofillSuggestionAvailability suggestion_availability) override;
 
-  // For a table.
-  unsigned ColumnCount() const override;
-  unsigned RowCount() const override;
-  void ColumnHeaders(AXObjectVector&) const override;
-  void RowHeaders(AXObjectVector&) const override;
-  AXObject* CellForColumnAndRow(unsigned column, unsigned row) const override;
-
-  // For a table cell.
-  unsigned ColumnIndex() const override;
-  unsigned RowIndex() const override;  // Also for a table row.
-  unsigned ColumnSpan() const override;
-  unsigned RowSpan() const override;
-  ax::mojom::blink::SortDirection GetSortDirection() const override;
-
-  // For a table row or column.
-  AXObject* HeaderObject() const override;
-
   // For a list marker.
   void GetWordBoundaries(Vector<int>& word_starts,
                          Vector<int>& word_ends) const override;
@@ -146,7 +129,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
  private:
   AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
                                          const gfx::Point&) const;
-  bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
 
   bool IsPlaceholder() const;
 };

@@ -76,10 +76,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
       IgnoredReasons* = nullptr) const;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-  ax::mojom::blink::Role DetermineTableSectionRole() const;
-  ax::mojom::blink::Role DetermineTableCellRole() const;
-  ax::mojom::blink::Role DetermineTableRowRole() const;
-  bool IsDataTable() const override;
   ax::mojom::blink::Role DetermineAccessibilityRole() override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   void AlterSliderOrSpinButtonValue(bool increase);
@@ -88,6 +84,27 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String AutoComplete() const override;
   void AccessibilityChildrenFromAOMProperty(AOMRelationListProperty,
                                             AXObject::AXObjectVector&) const;
+
+  // For table objects.
+  bool IsDataTable() const override;
+  unsigned ColumnCount() const override;
+  unsigned RowCount() const override;
+  void ColumnHeaders(AXObjectVector&) const override;
+  void RowHeaders(AXObjectVector&) const override;
+  AXObject* CellForColumnAndRow(unsigned column, unsigned row) const override;
+  // For table cells.
+  unsigned ColumnIndex() const override;
+  unsigned RowIndex() const override;  // Also for a table row.
+  unsigned ColumnSpan() const override;
+  unsigned RowSpan() const override;
+  // For a table row or column.
+  AXObject* HeaderObject() const override;
+  // For a table row or column header.
+  ax::mojom::blink::SortDirection GetSortDirection() const override;
+  // Role determination within a table.
+  ax::mojom::blink::Role DetermineTableSectionRole() const;
+  ax::mojom::blink::Role DetermineTableCellRole() const;
+  ax::mojom::blink::Role DetermineTableRowRole() const;
 
   Element* MenuItemElementForMenu() const;
   HTMLElement* CorrespondingControlForLabelElement() const;
@@ -354,6 +371,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddPopupChildren();
   bool HasValidHTMLTableStructureAndLayout() const;
   void AddTableChildren();
+  bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();
   void AddOwnedChildren();

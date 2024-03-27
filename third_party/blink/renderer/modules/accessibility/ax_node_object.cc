@@ -119,6 +119,10 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
@@ -230,6 +234,25 @@ blink::AXObject* GetDOMTableAXAncestor(blink::Node* node,
     if (ax_object && !IsNeutralWithinTable(ax_object))
       return ax_object;
   }
+}
+
+// Return the first LayoutTableSection if maybe_table is a non-anonymous
+// table. If non-null, set table_out to the containing table.
+blink::LayoutTableSection* FirstTableSection(
+    blink::LayoutObject* maybe_table,
+    blink::LayoutTable** table_out = nullptr) {
+  if (auto* table = DynamicTo<blink::LayoutTable>(maybe_table)) {
+    if (table->GetNode()) {
+      if (table_out) {
+        *table_out = table;
+      }
+      return table->FirstSection();
+    }
+  }
+  if (table_out) {
+    *table_out = nullptr;
+  }
+  return nullptr;
 }
 
 enum class AXAction {
@@ -1222,6 +1245,226 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {
     return ax::mojom::blink::Role::kColumnHeader;
 
   return DecideRoleFromSiblings(GetElement());
+}
+
+unsigned AXNodeObject::ColumnCount() const {
+  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown) {
+    return AXObject::ColumnCount();
+  }
+
+  if (const auto* table = DynamicTo<LayoutTable>(GetLayoutObject())) {
+    return table->EffectiveColumnCount();
+  }
+
+  return AXObject::ColumnCount();
+}
+
+unsigned AXNodeObject::RowCount() const {
+  if (AriaRoleAttribute() != ax::mojom::blink::Role::kUnknown) {
+    return AXObject::RowCount();
+  }
+
+  LayoutTable* table;
+  auto* table_section = FirstTableSection(GetLayoutObject(), &table);
+  if (!table_section) {
+    return AXObject::RowCount();
+  }
+
+  unsigned row_count = 0;
+  while (table_section) {
+    row_count += table_section->NumRows();
+    table_section = table->NextSection(table_section);
+  }
+  return row_count;
+}
+
+unsigned AXNodeObject::ColumnIndex() const {
+  auto* cell = DynamicTo<LayoutTableCell>(GetLayoutObject());
+  if (cell && cell->GetNode()) {
+    return cell->Table()->AbsoluteColumnToEffectiveColumn(
+        cell->AbsoluteColumnIndex());
+  }
+
+  return AXObject::ColumnIndex();
+}
+
+unsigned AXNodeObject::RowIndex() const {
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object || !layout_object->GetNode()) {
+    return AXObject::RowIndex();
+  }
+
+  unsigned row_index = 0;
+  const LayoutTableSection* row_section = nullptr;
+  const LayoutTable* table = nullptr;
+  if (const auto* row = DynamicTo<LayoutTableRow>(layout_object)) {
+    row_index = row->RowIndex();
+    row_section = row->Section();
+    table = row->Table();
+  } else if (const auto* cell = DynamicTo<LayoutTableCell>(layout_object)) {
+    row_index = cell->RowIndex();
+    row_section = cell->Section();
+    table = cell->Table();
+  } else {
+    return AXObject::RowIndex();
+  }
+
+  if (!table || !row_section) {
+    return AXObject::RowIndex();
+  }
+
+  // Since our table might have multiple sections, we have to offset our row
+  // appropriately.
+  const LayoutTableSection* section = table->FirstSection();
+  while (section && section != row_section) {
+    row_index += section->NumRows();
+    section = table->NextSection(section);
+  }
+
+  return row_index;
+}
+
+unsigned AXNodeObject::ColumnSpan() const {
+  auto* cell = DynamicTo<LayoutTableCell>(GetLayoutObject());
+  if (!cell) {
+    return AXObject::ColumnSpan();
+  }
+
+  LayoutTable* table = cell->Table();
+  unsigned absolute_first_col = cell->AbsoluteColumnIndex();
+  unsigned absolute_last_col = absolute_first_col + cell->ColSpan() - 1;
+  unsigned effective_first_col =
+      table->AbsoluteColumnToEffectiveColumn(absolute_first_col);
+  unsigned effective_last_col =
+      table->AbsoluteColumnToEffectiveColumn(absolute_last_col);
+  return effective_last_col - effective_first_col + 1;
+}
+
+unsigned AXNodeObject::RowSpan() const {
+  auto* cell = DynamicTo<LayoutTableCell>(GetLayoutObject());
+  return cell ? cell->ResolvedRowSpan() : AXObject::RowSpan();
+}
+
+ax::mojom::blink::SortDirection AXNodeObject::GetSortDirection() const {
+  if (RoleValue() != ax::mojom::blink::Role::kRowHeader &&
+      RoleValue() != ax::mojom::blink::Role::kColumnHeader) {
+    return ax::mojom::blink::SortDirection::kNone;
+  }
+
+  const AtomicString& aria_sort =
+      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kSort);
+  if (aria_sort.empty()) {
+    return ax::mojom::blink::SortDirection::kNone;
+  }
+  if (EqualIgnoringASCIICase(aria_sort, "none")) {
+    return ax::mojom::blink::SortDirection::kNone;
+  }
+  if (EqualIgnoringASCIICase(aria_sort, "ascending")) {
+    return ax::mojom::blink::SortDirection::kAscending;
+  }
+  if (EqualIgnoringASCIICase(aria_sort, "descending")) {
+    return ax::mojom::blink::SortDirection::kDescending;
+  }
+
+  // Technically, illegal values should be exposed as is, but this does
+  // not seem to be worth the implementation effort at this time.
+  return ax::mojom::blink::SortDirection::kOther;
+}
+
+AXObject* AXNodeObject::CellForColumnAndRow(unsigned target_column_index,
+                                            unsigned target_row_index) const {
+  LayoutTable* table;
+  auto* table_section = FirstTableSection(GetLayoutObject(), &table);
+  if (!table_section) {
+    return AXObject::CellForColumnAndRow(target_column_index, target_row_index);
+  }
+
+  unsigned row_offset = 0;
+  while (table_section) {
+    // Iterate backwards through the rows in case the desired cell has a rowspan
+    // and exists in a previous row.
+    for (LayoutTableRow* row = table_section->LastRow(); row;
+         row = row->PreviousRow()) {
+      unsigned row_index = row->RowIndex() + row_offset;
+      for (LayoutTableCell* cell = row->LastCell(); cell;
+           cell = cell->PreviousCell()) {
+        unsigned absolute_first_col = cell->AbsoluteColumnIndex();
+        unsigned absolute_last_col = absolute_first_col + cell->ColSpan() - 1;
+        unsigned effective_first_col =
+            table->AbsoluteColumnToEffectiveColumn(absolute_first_col);
+        unsigned effective_last_col =
+            table->AbsoluteColumnToEffectiveColumn(absolute_last_col);
+        unsigned row_span = cell->ResolvedRowSpan();
+        if (target_column_index >= effective_first_col &&
+            target_column_index <= effective_last_col &&
+            target_row_index >= row_index &&
+            target_row_index < row_index + row_span) {
+          return AXObjectCache().Get(cell);
+        }
+      }
+    }
+
+    row_offset += table_section->NumRows();
+    table_section = table->NextSection(table_section);
+  }
+
+  return nullptr;
+}
+
+bool AXNodeObject::FindAllTableCellsWithRole(ax::mojom::blink::Role role,
+                                             AXObjectVector& cells) const {
+  LayoutTable* table;
+  auto* table_section = FirstTableSection(GetLayoutObject(), &table);
+  if (!table_section) {
+    return false;
+  }
+
+  while (table_section) {
+    for (LayoutTableRow* row = table_section->FirstRow(); row;
+         row = row->NextRow()) {
+      for (LayoutTableCell* cell = row->FirstCell(); cell;
+           cell = cell->NextCell()) {
+        AXObject* ax_cell = AXObjectCache().Get(cell);
+        if (ax_cell && ax_cell->RoleValue() == role) {
+          cells.push_back(ax_cell);
+        }
+      }
+    }
+
+    table_section = table->NextSection(table_section);
+  }
+
+  return true;
+}
+
+void AXNodeObject::ColumnHeaders(AXObjectVector& headers) const {
+  if (!FindAllTableCellsWithRole(ax::mojom::blink::Role::kColumnHeader,
+                                 headers)) {
+    AXObject::ColumnHeaders(headers);
+  }
+}
+
+void AXNodeObject::RowHeaders(AXObjectVector& headers) const {
+  if (!FindAllTableCellsWithRole(ax::mojom::blink::Role::kRowHeader, headers)) {
+    AXObject::RowHeaders(headers);
+  }
+}
+
+AXObject* AXNodeObject::HeaderObject() const {
+  auto* row = DynamicTo<LayoutTableRow>(GetLayoutObject());
+  if (!row) {
+    return nullptr;
+  }
+
+  for (LayoutTableCell* cell = row->FirstCell(); cell;
+       cell = cell->NextCell()) {
+    AXObject* ax_cell = cell ? AXObjectCache().Get(cell) : nullptr;
+    if (ax_cell && ax_cell->RoleValue() == ax::mojom::blink::Role::kRowHeader) {
+      return ax_cell;
+    }
+  }
+
+  return nullptr;
 }
 
 // The following is a heuristic used to determine if a
@@ -2856,7 +3099,8 @@ ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
     }
   }
 
-  return AXNodeObject::GetTextDirection();
+  NOTREACHED();
+  return AXObject::GetTextDirection();
 }
 
 ax::mojom::blink::TextPosition AXNodeObject::GetTextPositionFromRole() const {
