@@ -34,23 +34,6 @@ class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  InteractiveTestApi::MultiStep OpenLensOverlay() {
-    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-    const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-
-    // In kDocumentWithNamedElement.
-    const DeepQuery kPathToBody{
-        "body",
-    };
-
-    return Steps(
-        InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
-        EnsurePresent(kActiveTab, kPathToBody),
-        MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(ui_controls::RIGHT),
-        WaitForShow(RenderViewContextMenu::kRegionSearchItem), FlushEvents(),
-        SelectMenuItem(RenderViewContextMenu::kRegionSearchItem));
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
@@ -60,7 +43,15 @@ class LensOverlayControllerCUJTest : public InteractiveBrowserTest {
 //  (2) User opens lens overlay.
 //  (3) User clicks the "close" button to close lens overlay.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  // In kDocumentWithNamedElement.
+  const DeepQuery kPathToBody{
+      "body",
+  };
 
   // In the lens overlay.
   const DeepQuery kPathToCloseButton{
@@ -70,7 +61,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
   constexpr char kClickFn[] = "(el) => { el.click(); }";
 
   RunTestSequence(
-      OpenLensOverlay(),
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+      EnsurePresent(kActiveTab, kPathToBody),
+      MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(RenderViewContextMenu::kRegionSearchItem),
+      FlushEvents(),  // Required to fully render the menu before selection.
+
+      SelectMenuItem(RenderViewContextMenu::kRegionSearchItem),
 
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
@@ -93,10 +90,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 //  (3) User drags to select a manual region on the overlay.
 //  (4) Side panel opens with results.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
 
   const DeepQuery kPathToRegionSelection{
       "lens-overlay-app",
@@ -116,8 +115,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {
   });
 
   RunTestSequence(
-      OpenLensOverlay(),
-
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+      // TODO(https://crbug.com/328501283): Use a UI entry point.
+      Do([&]() {
+        browser()
+            ->tab_strip_model()
+            ->GetActiveTab()
+            ->lens_overlay_controller()
+            ->ShowUI();
+      }),
       // The overlay controller is an independent floating widget
       // associated with a tab rather than a browser window, so by
       // convention gets its own element context.
