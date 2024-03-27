@@ -358,5 +358,8 @@ source_set("fuzztest_gtest_main") {
     ":fuzztest",
     "//testing/gtest",
   ]
+  if (use_centipede) {
+    data_deps = [ ":centipede" ]
+  }
   testonly = true
 }

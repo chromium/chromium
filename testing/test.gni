@@ -303,9 +303,13 @@ template("mixed_test") {
         contents = [ "const char* kFuzzerArgs = \"${fuzzer_args}\"; const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" ]
       }
 
+      _fuzzer_target_name = target_name
       executable(_fuzztest_generate_fuzzer) {
         testonly = true
-        data_deps = [ ":" + _fuzztest_target_name ]
+        data_deps = [
+          ":" + _fuzztest_target_name,
+          ":" + _fuzzer_target_name,
+        ]
         deps = [
           # Depend on fuzzing_engine so that our recipes know to build all
           # these wrapper script targets.
