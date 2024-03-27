@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 
 namespace ash::settings {
 
@@ -53,6 +54,7 @@ OneDrivePageHandler::OneDrivePageHandler(
     mojo::PendingRemote<one_drive::mojom::Page> page,
     Profile* profile)
     : profile_(profile),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()),
       page_(std::move(page)),
       receiver_(this, std::move(receiver)) {
   file_system_provider::Service* service =
@@ -60,6 +62,13 @@ OneDrivePageHandler::OneDrivePageHandler(
   if (service) {
     service->AddObserver(this);
   }
+
+  pref_change_registrar_->Init(profile_->GetPrefs());
+  pref_change_registrar_->Add(
+      prefs::kAllowUserToRemoveODFS,
+      base::BindRepeating(&OneDrivePageHandler::OnAllowUserToRemoveODFSChanged,
+                          base::Unretained(this)));
+  OnAllowUserToRemoveODFSChanged();
 }
 
 OneDrivePageHandler::~OneDrivePageHandler() {
@@ -157,6 +166,17 @@ void OneDrivePageHandler::OnProvidedFileSystemUnmount(
     return;
   }
   page_->OnODFSMountOrUnmount();
+}
+
+void OneDrivePageHandler::OnAllowUserToRemoveODFSChanged() {
+  std::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
+      cloud_upload::GetODFSInfo(profile_);
+  if (!file_system) {
+    return;
+  }
+  const PrefService* pref_service = profile_->GetPrefs();
+  page_->OnAllowUserToRemoveODFSChanged(
+      pref_service->GetBoolean(prefs::kAllowUserToRemoveODFS));
 }
 
 }  // namespace ash::settings

@@ -2104,6 +2104,9 @@ inline constexpr char kOfficeFileMovedToGoogleDrive[] =
 // Pref that contains the value of the LocalUserFilesAllowed policy.
 inline constexpr char kLocalUserFilesAllowed[] =
     "filebrowser.local_user_files_allowed";
+
+// Whether the user can remove OneDrive.
+inline constexpr char kAllowUserToRemoveODFS[] = "allow_user_to_remove_odfs";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

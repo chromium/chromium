@@ -27,6 +27,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   account_restrictions_default.Append(MicrosoftOneDriveNoAccountRestriction);
   registry->RegisterListPref(prefs::kMicrosoftOneDriveAccountRestrictions,
                              std::move(account_restrictions_default));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(prefs::kAllowUserToRemoveODFS, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 extensions::api::odfs_config_private::Mount GetMicrosoftOneDriveMount(

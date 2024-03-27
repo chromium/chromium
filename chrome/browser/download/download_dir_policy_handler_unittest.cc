@@ -163,6 +163,13 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToOneDrive) {
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(store_->GetValue(prefs::kAllowUserToRemoveODFS, &value));
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   EXPECT_TRUE(store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_string());
@@ -180,6 +187,11 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToOneDrive) {
 
   EXPECT_FALSE(
       recommended_store_->GetValue(prefs::kPromptForDownload, nullptr));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(
+      recommended_store_->GetValue(prefs::kAllowUserToRemoveODFS, nullptr));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));

@@ -30,7 +30,8 @@ extern const char kOneDriveNamePolicyVariableName[];
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
                      const policy::PolicyHandlerParameters& parameters);
 
-// Returns whether |string_value| points to a directory in OneDrive or not.
+// Returns whether |string_value| points to a directory in Microsoft OneDrive or
+// not.
 bool DownloadToOneDrive(const base::FilePath::StringType& string_value,
                         const policy::PolicyHandlerParameters& parameters);
 

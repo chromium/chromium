@@ -101,15 +101,15 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
 
       prefs->SetString(prefs::kFilesAppDefaultLocation,
                        download_dir_util::kLocationGoogleDrive);
-    }
-
-    if (download_dir_util::DownloadToOneDrive(string_value, parameters)) {
+    } else if (download_dir_util::DownloadToOneDrive(string_value,
+                                                     parameters)) {
       prefs->SetString(prefs::kFilesAppDefaultLocation,
                        download_dir_util::kLocationOneDrive);
+      prefs->SetBoolean(prefs::kAllowUserToRemoveODFS, false);
     }
 
 #endif
-  }
+  }  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void DownloadDirPolicyHandler::ApplyPolicySettings(

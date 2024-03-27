@@ -59,11 +59,14 @@ export class SettingsOneDriveSubpageElement extends
   private connectionState_: OneDriveConnectionState;
   private userEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
+  private allowUserToRemoveOdfs_: boolean = true;
 
   override connectedCallback(): void {
     super.connectedCallback();
     this.oneDriveProxy_.observer.onODFSMountOrUnmount.addListener(
         this.updateUserEmailAddress_.bind(this));
+    this.oneDriveProxy_.observer.onAllowUserToRemoveODFSChanged.addListener(
+        this.updateAllowUserToRemoveOdfs_.bind(this));
   }
 
   updateConnectionStateForTesting(connectionState: OneDriveConnectionState):
@@ -80,12 +83,20 @@ export class SettingsOneDriveSubpageElement extends
         OneDriveConnectionState.CONNECTED;
   }
 
+  private updateAllowUserToRemoveOdfs_(isAllowed: boolean): void {
+    this.allowUserToRemoveOdfs_ = isAllowed;
+  }
+
   private isConnected_(): boolean {
     return this.connectionState_ === OneDriveConnectionState.CONNECTED;
   }
 
   private isLoading_(): boolean {
     return this.connectionState_ === OneDriveConnectionState.LOADING;
+  }
+
+  private isRemoveAccessDisabled_(): boolean {
+    return this.isLoading_() || !this.allowUserToRemoveOdfs_;
   }
 
   private signedInAsLabel_(): TrustedHTML {
