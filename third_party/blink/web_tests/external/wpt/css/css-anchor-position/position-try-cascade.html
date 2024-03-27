@@ -102,3 +102,40 @@
     assert_equals(abs_transition.offsetTop, 30);
   }, '@position-try rule does not win over transitions');
 </script>
+
+<!-- revert / revert-layer -->
+<style>
+  #abs_revert {
+    position-try-options: --pf-revert;
+  }
+  @layer author-layer {
+    #abs_revert {
+      top: 30px;
+      left: 30px;
+    }
+  }
+  #abs_revert {
+    top: 20px;
+    left: 20px;
+    /* overflowing .cb to force --pf-revert to be applied */
+    width: 200px;
+    height: 200px;
+  }
+  @position-try --pf-revert {
+    left: revert;
+    top: revert-layer;
+    width: 30px;
+    height: 30px;
+  }
+</style>
+<div class=cb class=abs>
+  <div id=abs_revert class=abs></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(abs_revert.offsetLeft, 0, "left reverted back to user origin");
+    assert_equals(abs_revert.offsetTop, 20, "top reverted back to author");
+    assert_equals(abs_revert.offsetWidth, 30, "width from --pf-revert");
+    assert_equals(abs_revert.offsetHeight, 30, "height from --pf-revert");
+  }, '@position-try revert / revert-layer reverts to user / author origin');
+</script>

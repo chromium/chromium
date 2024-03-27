@@ -404,14 +404,6 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
     return false;
   }
 
-  if (value->IsRevertValue() || value->IsRevertLayerValue()) {
-    // Declarations in @position-try are not cascaded and cannot be
-    // reverted.
-    if (rule_type == StyleRule::kPositionTry) {
-      return false;
-    }
-  }
-
   CSSPropertyID property = ResolveCSSPropertyID(unresolved_property);
   const StylePropertyShorthand& shorthand = shorthandForProperty(property);
   if (!shorthand.length()) {

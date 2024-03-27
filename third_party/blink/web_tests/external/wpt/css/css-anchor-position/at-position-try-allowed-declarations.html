@@ -96,11 +96,11 @@ test_disallowed_declaration('align-content', 'normal');
 test_disallowed_declaration('justify-items', 'normal');
 test_disallowed_declaration('align-items', 'normal');
 
-// 'revert' and 'revert-layer' are disallowed
-test_disallowed_declaration('top', 'revert');
-test_disallowed_declaration('top', 'revert-layer');
-test_disallowed_declaration('inset', 'revert');
-test_disallowed_declaration('inset', 'revert-layer');
+// 'revert' and 'revert-layer' are allowed
+test_allowed_declaration('top', 'revert');
+test_allowed_declaration('top', 'revert-layer');
+test_allowed_declaration('inset', 'revert');
+test_allowed_declaration('inset', 'revert-layer');
 
 // !important is disallowed
 test_disallowed_declaration('top', '1px !important');
