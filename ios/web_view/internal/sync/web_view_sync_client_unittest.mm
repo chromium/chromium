@@ -18,7 +18,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/base/model_type.h"
-#import "components/sync/service/data_type_controller.h"
+#import "components/sync/service/model_type_controller.h"
 #import "components/sync/test/test_model_type_store_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_device_info/fake_device_info_sync_service.h"

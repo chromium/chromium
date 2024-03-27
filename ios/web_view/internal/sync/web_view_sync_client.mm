@@ -19,7 +19,7 @@
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/sync/base/sync_util.h"
-#import "components/sync/service/data_type_controller.h"
+#import "components/sync/service/model_type_controller.h"
 #import "components/sync/service/sync_api_component_factory.h"
 #import "components/version_info/version_info.h"
 #import "components/version_info/version_string.h"

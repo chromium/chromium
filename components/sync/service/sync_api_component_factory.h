@@ -9,7 +9,7 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/model_type_controller.h"
 
 namespace syncer {
 

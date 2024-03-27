@@ -12,8 +12,8 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/model/sync_error.h"
-#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/model_type_controller.h"
 
 namespace syncer {
 
