@@ -271,6 +271,7 @@ public class Clipboard {
      * Writes password to the clipboard, and set the Clipdata is sensitive.
      * @param password  will become the content of the clipboard's primary clip.
      */
+    @CalledByNative
     public void setPassword(final String password) {
         Log.w(TAG, "setPassword is a no-op because Clipboard service isn't available");
     }

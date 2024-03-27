@@ -122,6 +122,7 @@ class ClipboardMap {
   void Set(const ClipboardFormatType& format, base::StringPiece data);
   void CommitToAndroidClipboard();
   void Clear();
+  void MarkPasswordData();
 
   // Unlike the functions above, does not call |modified_cb_|.
   void SetLastModifiedTimeWithoutRunningCallback(base::Time time);
@@ -151,6 +152,7 @@ class ClipboardMap {
 
   ClipboardSequenceNumberToken sequence_number_;
   base::Time last_modified_time_;
+  bool mark_password_data_ = false;
 
   ClipboardAndroid::ModifiedCallback modified_cb_;
 
@@ -323,7 +325,14 @@ void ClipboardMap::Set(const ClipboardFormatType& format,
 void ClipboardMap::CommitToAndroidClipboard() {
   JNIEnv* env = AttachCurrentThread();
   base::AutoLock lock(lock_);
-  if (base::Contains(map_, ClipboardFormatType::HtmlType())) {
+  if (mark_password_data_ &&
+      base::Contains(map_, ClipboardFormatType::PlainTextType())) {
+    ScopedJavaLocalRef<jstring> str = ConvertUTF8ToJavaString(
+        env, map_[ClipboardFormatType::PlainTextType()]);
+    DCHECK(str.obj());
+    Java_Clipboard_setPassword(env, clipboard_manager_, str);
+    mark_password_data_ = false;
+  } else if (base::Contains(map_, ClipboardFormatType::HtmlType())) {
     // Android's API for storing HTML content on the clipboard requires a plain-
     // text representation to be available as well.
     if (!base::Contains(map_, ClipboardFormatType::PlainTextType()))
@@ -374,6 +383,10 @@ void ClipboardMap::Clear() {
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
+}
+
+void ClipboardMap::MarkPasswordData() {
+  mark_password_data_ = true;
 }
 
 void ClipboardMap::SetLastModifiedTimeWithoutRunningCallback(base::Time time) {
@@ -680,6 +693,10 @@ void ClipboardAndroid::WritePortableAndPlatformRepresentations(
   for (const auto& object : objects)
     DispatchPortableRepresentation(object.second);
 
+  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
+    WriteConfidentialDataForPassword();
+  }
+
   g_map.Get().CommitToAndroidClipboard();
 }
 
@@ -749,7 +766,8 @@ void ClipboardAndroid::WriteUploadCloudClipboard() {
 }
 
 void ClipboardAndroid::WriteConfidentialDataForPassword() {
-  // TODO(crbug.com/40945200): Add support for this.
+  // Set the password data that is marked as IS_SENSITIVE.
+  g_map.Get().MarkPasswordData();
 }
 
 }  // namespace ui
