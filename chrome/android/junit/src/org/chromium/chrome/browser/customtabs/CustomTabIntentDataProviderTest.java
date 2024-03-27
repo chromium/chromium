@@ -580,6 +580,17 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testGetClientPackageNameIdentitySharing() {
+        Intent intent = new Intent();
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        Assert.assertNull(dataProvider.getClientPackageNameIdentitySharing());
+
+        intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, "com.foo.bar");
+        var dataProvider2 = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        Assert.assertEquals("com.foo.bar", dataProvider2.getClientPackageNameIdentitySharing());
+    }
+
+    @Test
     public void testIsTrustedCustomTab_NoServiceConnection() {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         when(connection.getClientPackageNameForSession(any())).thenReturn(null);
