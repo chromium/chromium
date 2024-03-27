@@ -98,6 +98,11 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     const copiedSelectedOptions = this.selectedOptions;
     this.selectedOptions = new Map<SeaPenTemplateChip, SeaPenOption>();
     this.selectedOptions = copiedSelectedOptions;
+    // Stop the event propagation, otherwise, the event will be passed to parent
+    // element (sea pen template query element), onClick_ on template query
+    // element will be triggered improperly.
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   private isSelected_(
@@ -162,11 +167,16 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     }
   }
 
-  private onClickExpandButton_() {
+  private onClickExpandButton_(event: Event) {
     this.chipsExpanded_ = true;
     this.shouldShowExpandButton_ = false;
     this.shadowRoot!.querySelectorAll('.option').forEach(
         option => option.classList.remove('hidden'));
+    // Stop the event propagation, otherwise, the event will be passed to parent
+    // element (sea pen template query element), onClick_ on template query
+    // element will be triggered improperly.
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   private onSelectedChipChanged_() {

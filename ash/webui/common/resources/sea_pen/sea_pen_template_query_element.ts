@@ -138,11 +138,24 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.addEventListener('click', this.onClick_);
     this.watch<SeaPenTemplateQueryElement['thumbnails_']>(
         'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenTemplateQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
+  }
+
+  clearSelectedChipState() {
+    if (this.selectedChip_) {
+      this.selectedChip_ = null;
+      this.options_ = null;
+      this.isSelectingOptions = false;
+    }
+  }
+
+  private onClick_(): void {
+    this.clearSelectedChipState();
   }
 
   private computeSeaPenTemplate_(templateId: string|null) {
@@ -154,12 +167,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   private isChip_(token: any): token is ChipToken {
     return typeof token?.translation === 'string';
-  }
-
-  private clearSelectedChipState() {
-    this.selectedChip_ = null;
-    this.options_ = null;
-    this.isSelectingOptions = false;
   }
 
   private onClickChip_(event: Event&{model: {token: ChipToken}}) {
@@ -174,9 +181,13 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
       this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
       this.isSelectingOptions = true;
     }
+    // Stop the event propagation, otherwise, the event will be passed to parent
+    // element, this.onClick_ will be triggered improperly.
+    event.preventDefault();
+    event.stopPropagation();
   }
 
-  private onClickInspire_() {
+  private onClickInspire_(event: Event) {
     // Run getDefaultOptions (5 times at most) until we get an options that is
     // different from current; which highly likely to happen the first time.
     for (let i = 0; i < 5; i++) {
@@ -191,7 +202,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
-    this.onClickSearchButton_();
+    this.onClickSearchButton_(event);
   }
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
@@ -265,11 +276,15 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     };
   }
 
-  private onClickSearchButton_() {
+  private onClickSearchButton_(event: Event) {
     this.clearSelectedChipState();
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());
+    // Stop the event propagation, otherwise, the event will be passed to parent
+    // element, this.onClick_ will be triggered improperly.
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   private updateSearchButton_(

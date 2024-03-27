@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {SeaPenImagesElement, SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenTermsOfServiceDialogElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImagesElement, SeaPenInputQueryElement, SeaPenOptionsElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenTermsOfServiceDialogElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -224,6 +224,41 @@ suite('SeaPenRouterElementTest', function() {
         'Final query template id should match');
   });
 
+  test('clicking on sea-pen-images hide options UI', async () => {
+    routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
+    const initialTemplate = SeaPenTemplateId.kCharacters;
+    routerElement.goToRoute(
+        SeaPenPaths.RESULTS, {seaPenTemplateId: initialTemplate.toString()});
+    await waitAfterNextRender(routerElement);
+    const seaPenTemplateQueryElement =
+        routerElement.shadowRoot!.querySelector('sea-pen-template-query')!;
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
+    const chip = chips[0] as HTMLElement;
+    chip!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const seaPenOptionsElement =
+        seaPenTemplateQueryElement.shadowRoot!.querySelector(
+            SeaPenOptionsElement.is);
+    assertTrue(
+        !!seaPenOptionsElement,
+        'the options chips should show after clicking a chip');
+
+    const seaPenImages = routerElement.shadowRoot!.querySelector(
+                             'sea-pen-images') as HTMLElement;
+    assertTrue(!!seaPenImages);
+    seaPenImages.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const selectedOption =
+        seaPenOptionsElement.shadowRoot!.querySelector(
+            '#options cr-button[aria-selected]') as HTMLElement;
+    assertTrue(
+        !selectedOption,
+        'Clicking anywhere else on the router container will hide options.');
+  });
+
   test('navigates back to root if unknown path', async () => {
     routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
     routerElement.goToRoute(SeaPenPaths.RESULTS);
@@ -338,10 +373,6 @@ suite('SeaPenRouterElementTest', function() {
         const chip = chips[0] as HTMLElement;
         chip!.click();
         await waitAfterNextRender(routerElement);
-
-        assertEquals(
-            'none', window.getComputedStyle(seaPenImages).pointerEvents,
-            'sea-pen-images now has no pointer-events');
 
         // an overlay shadow displays for sea-pen-images.
         assertEquals(

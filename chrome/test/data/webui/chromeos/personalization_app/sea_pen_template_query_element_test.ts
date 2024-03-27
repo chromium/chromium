@@ -495,4 +495,34 @@ suite('SeaPenTemplateQueryElementTest', function() {
     assertTrue(
         getSearchButtons().every(isVisible), 'buttons are visible again');
   });
+
+  test('clicking anywhere else hide options UI', async () => {
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {templateId: SeaPenTemplateId.kFlower.toString()});
+    initElement(SeaPenRouterElement, {basePath: '/base'});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.chip-text');
+
+    // Select a chip.
+    chips[0]!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    let unselected =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.unselected');
+    assertTrue(
+        unselected.length > 0, 'template should have unselected elements');
+
+    // Mock a click event on the template query element and verify that the
+    // options UI is hidden.
+    seaPenTemplateQueryElement.click();
+    unselected =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.unselected');
+    assertEquals(
+        0, unselected.length, 'template should be in the default state');
+  });
 });

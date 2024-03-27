@@ -22,6 +22,7 @@ import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {SeaPenTemplateQueryElement} from './sea_pen_template_query_element.js';
 import {maybeDoPageTransition} from './transition.js';
 
 export enum SeaPenPaths {
@@ -172,6 +173,12 @@ export class SeaPenRouterElement extends WithSeaPenStore {
       return false;
     }
     return relativePath === SeaPenPaths.RESULTS;
+  }
+
+  private onBottomContainerClicked_(): void {
+    this.shadowRoot!
+        .querySelector<SeaPenTemplateQueryElement>('sea-pen-template-query')
+        ?.clearSelectedChipState();
   }
 
   private getTemplateIdFromQueryParams_(templateId: string): SeaPenTemplateId
