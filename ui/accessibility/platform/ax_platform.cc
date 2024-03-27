@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/ax_platform.h"
 
 #include "base/check_op.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode_observer.h"
 
 namespace ui {
@@ -44,5 +45,19 @@ void AXPlatform::NotifyModeAdded(AXMode mode) {
     observer.OnAXModeAdded(mode);
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+void AXPlatform::SetUiaProviderEnabled(bool is_enabled) {
+  CHECK_EQ(uia_provider_enablement_, UiaProviderEnablement::kVariations);
+  uia_provider_enablement_ = is_enabled ? UiaProviderEnablement::kEnabled
+                                        : UiaProviderEnablement::kDisabled;
+}
+
+bool AXPlatform::IsUiaProviderEnabled() const {
+  return uia_provider_enablement_ == UiaProviderEnablement::kVariations
+             ? base::FeatureList::IsEnabled(features::kUiaProvider)
+             : (uia_provider_enablement_ == UiaProviderEnablement::kEnabled);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace ui

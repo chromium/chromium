@@ -20,9 +20,9 @@
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/public/common/content_switches.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
@@ -569,7 +569,7 @@ bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(
 void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     LONG uia_event,
     BrowserAccessibility* node) {
-  if (!::features::IsUiaProviderEnabled()) {
+  if (!::ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     return;
   }
   if (!ShouldFireEventForNode(node))
@@ -609,7 +609,7 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
 void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
     LONG uia_property,
     BrowserAccessibility* node) {
-  if (!::features::IsUiaProviderEnabled()) {
+  if (!::ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     return;
   }
   if (!ShouldFireEventForNode(node))
@@ -640,7 +640,7 @@ void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
 void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
     StructureChangeType change_type,
     BrowserAccessibility* node) {
-  if (!::features::IsUiaProviderEnabled()) {
+  if (!::ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     return;
   }
   if (!ShouldFireEventForNode(node))

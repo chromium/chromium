@@ -19,9 +19,9 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
@@ -1063,7 +1063,7 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       node_data->GetString16Attribute(ax::mojom::StringAttribute::kValue);
   // If the accessible value changed since the last time we computed the text
   // offsets, we need to recompute them.
-  if (::features::IsUiaProviderEnabled() &&
+  if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
       (ax_value_used_to_compute_offsets_ != ax_value ||
        needs_ax_text_offsets_update_)) {
     GetViewAccessibility().ClearTextOffsets();

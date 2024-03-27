@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace ui {
@@ -58,6 +59,19 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // process-wide accessibility mode.
   void NotifyModeAdded(AXMode mode);
 
+#if BUILDFLAG(IS_WIN)
+  // Enables or disables use of the UI Automation Provider on Windows. If this
+  // function is not called, the provider is enabled or disabled on the basis of
+  // the "UiaProvider" base::Feature. In such cases, the `--enable-features` or
+  // `--disable-features` switches on the browser's command line may be used to
+  // enable or disable use of the provider, respectively. This function may only
+  // be called during browser process startup before any UI is presented.
+  void SetUiaProviderEnabled(bool is_enabled);
+
+  // Returns true if the UI Automation Provider for Windows is enabled.
+  bool IsUiaProviderEnabled() const;
+#endif
+
  private:
   friend class ::ui::AXPlatformNode;
   FRIEND_TEST_ALL_PREFIXES(AXPlatformTest, Observer);
@@ -72,6 +86,19 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
                      /*check_empty=*/true,
                      /*allow_reentrancy=*/false>
       observers_;
+
+#if BUILDFLAG(IS_WIN)
+  enum class UiaProviderEnablement {
+    // Enabled or disabled via Chrome Variations (base::FeatureList).
+    kVariations,
+    // Explicitly enabled at runtime.
+    kEnabled,
+    // Explicitly disabled at runtime.
+    kDisabled,
+  };
+  UiaProviderEnablement uia_provider_enablement_ =
+      UiaProviderEnablement::kVariations;
+#endif
 };
 
 }  // namespace ui

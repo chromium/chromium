@@ -1243,6 +1243,7 @@ policies:
   1242: ClassroomIntegrationEnabled
   1243: TasksIntegrationEnabled
   1244: BoundSessionCredentialsEnabled
+  1245: UiAutomationProviderEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -1728,6 +1728,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kUiAutomationProviderEnabled, false);
+#endif
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }

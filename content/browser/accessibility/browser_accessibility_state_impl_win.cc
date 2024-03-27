@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
@@ -111,7 +112,7 @@ class WindowsAccessibilityEnabler
   }
 
   void AddAXModeForUIA(ui::AXMode mode) {
-    DCHECK(::features::IsUiaProviderEnabled());
+    DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
 
     // Firing a UIA event can cause UIA to call back into our APIs, don't
     // consider this to be usage.

@@ -302,6 +302,7 @@ source_set("browser_tests") {
     "cloud/cloud_policy_browsertest.cc",
     "cloud/cloud_policy_manager_browsertest.cc",
     "cloud/device_management_service_browsertest.cc",
+    "test/accessibility_policy_browsertest.cc",
   ]
 
   deps = [
@@ -360,7 +361,6 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "test/accessibility_policy_browsertest.cc",
       "test/arc_policy_browsertest.cc",
       "test/assistant_policy_browsertest.cc",
       "test/audio_output_allowed_browsertest.cc",

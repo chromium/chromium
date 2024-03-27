@@ -2084,6 +2084,7 @@ chromium-metrics-reviews@google.com.
   <int value="1242" label="ClassroomIntegrationEnabled"/>
   <int value="1243" label="TasksIntegrationEnabled"/>
   <int value="1244" label="BoundSessionCredentialsEnabled"/>
+  <int value="1245" label="UiAutomationProviderEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

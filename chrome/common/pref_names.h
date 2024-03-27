@@ -3044,6 +3044,11 @@ inline constexpr char kDeviceWeeklyScheduledSuspend[] =
 inline constexpr char kChromeForTestingAllowed[] = "chrome_for_testing.allowed";
 #endif
 
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kUiAutomationProviderEnabled[] =
+    "accessibility.ui_automation_provider_enabled";
+#endif
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

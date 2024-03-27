@@ -16,8 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
@@ -995,7 +995,7 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // If the accessible name changed since the last time we computed the text
   // offsets, we need to recompute them.
-  if (::features::IsUiaProviderEnabled() &&
+  if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
       ax_name_used_to_compute_offsets_ != GetAccessibleName()) {
     GetViewAccessibility().ClearTextOffsets();
     ax_name_used_to_compute_offsets_.clear();
