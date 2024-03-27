@@ -404,6 +404,11 @@ struct AuctionAdConfigNonSharedParams {
   // Timeouts for individual interest group worklet Javascript execution.
   AuctionAdConfigMaybePromiseBuyerTimeouts buyer_timeouts;
 
+  // The value restricts the runtime of seller's reportResult() and buyer's
+  // reportWin() scripts. Must be non-negative. 0 is allowed, which will just
+  // terminate reportWin()/reportResult() in the beginning of their execution.
+  mojo_base.mojom.TimeDelta? reporting_timeout;
+
   // Expectations for currency provided by seller when modifying bids for
   // parent auctions or to help with mixed-currency reporting. If this is set,
   // any currency annotation from seller will be checked against it.

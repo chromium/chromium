@@ -2476,6 +2476,12 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
         base::Milliseconds(config.sellerTimeout());
   }
 
+  if (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
+      config.hasReportingTimeout()) {
+    mojo_config->auction_ad_config_non_shared_params->reporting_timeout =
+        base::Milliseconds(config.reportingTimeout());
+  }
+
   if (config.hasSellerCurrency()) {
     std::string seller_currency_str = config.sellerCurrency().Ascii();
     if (!IsValidAdCurrencyCode(seller_currency_str)) {

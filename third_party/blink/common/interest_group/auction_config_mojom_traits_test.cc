@@ -572,6 +572,25 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseBuyerTimeouts) {
   }
 }
 
+TEST(AuctionConfigMojomTraitsTest, ReportingTimeout) {
+  {
+    AuctionConfig auction_config = CreateBasicAuctionConfig();
+    auction_config.non_shared_params.reporting_timeout = base::Milliseconds(50);
+    EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+  }
+  {
+    AuctionConfig auction_config = CreateBasicAuctionConfig();
+    auction_config.non_shared_params.reporting_timeout = base::Milliseconds(0);
+    EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+  }
+  {
+    AuctionConfig auction_config = CreateBasicAuctionConfig();
+    auction_config.non_shared_params.reporting_timeout =
+        base::Milliseconds(-50);
+    EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+  }
+}
+
 TEST(AuctionConfigMojomTraitsTest, BuyerCurrencies) {
   {
     AuctionConfig::BuyerCurrencies value;

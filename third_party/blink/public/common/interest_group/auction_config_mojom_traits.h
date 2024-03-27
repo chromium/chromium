@@ -314,6 +314,11 @@ struct BLINK_COMMON_EXPORT
     return params.buyer_timeouts;
   }
 
+  static std::optional<base::TimeDelta> reporting_timeout(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.reporting_timeout;
+  }
+
   static const std::optional<blink::AdCurrency>& seller_currency(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.seller_currency;

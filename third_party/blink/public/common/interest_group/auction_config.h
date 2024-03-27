@@ -289,6 +289,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // the buyer's generateBid() functions.
     MaybePromiseBuyerTimeouts buyer_cumulative_timeouts;
 
+    // The value restricts the runtime of the seller's reportResult() script and
+    // the buyer's reportWin() script.
+    std::optional<base::TimeDelta> reporting_timeout;
+
     // Expectation of currency seller worklet in this auction will provide when
     // modified bids or converting them for reporting.
     std::optional<AdCurrency> seller_currency;
@@ -444,7 +448,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Origin for the Coordinator to be used for Private Aggregation.
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 447, R"(
+  static_assert(__LINE__ == 451, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

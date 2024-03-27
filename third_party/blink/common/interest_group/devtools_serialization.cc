@@ -361,6 +361,8 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
                     result);
   SerializeIntoDict("perBuyerCumulativeTimeouts",
                     conf.non_shared_params.buyer_cumulative_timeouts, result);
+  SerializeIntoDict("reportingTimeout",
+                    conf.non_shared_params.reporting_timeout, result);
   SerializeIntoDict("sellerCurrency", conf.non_shared_params.seller_currency,
                     result);
   SerializeIntoDict("perBuyerCurrencies",

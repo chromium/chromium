@@ -31,9 +31,9 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
    "componentAuctions": [ "https://example.org", "https://example.com" ],
    "decisionLogicURL": "https://seller.test/foo",
    "deprecatedRenderURLReplacements": {
-   "pending": false,
-   "value": [  ]
-},
+      "pending": false,
+      "value": [ ]
+   },
    "expectsAdditionalBids": false,
    "expectsDirectFromSellerSignalsHeaderAdSlot": false,
    "maxTrustedScoringSignalsURLLength": 0,
@@ -189,6 +189,7 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
       "value": "[5]"
    },
    "sellerTimeout": 6000.0,
+   "reportingTimeout": 7000.0,
    "trustedScoringSignalsURL": "https://seller.test/bar"
 }
 )";
