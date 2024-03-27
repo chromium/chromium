@@ -20610,6 +20610,24 @@
             ]
         }
     ],
+    "VSyncAlignedPresent": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2_pending_frames",
+                    "params": {
+                        "PendingFrames": "2"
+                    },
+                    "enable_features": [
+                        "VSyncAlignedPresent"
+                    ]
+                }
+            ]
+        }
+    ],
     "VSyncDecoding": [
         {
             "platforms": [
