@@ -8,6 +8,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
     "//ios/chrome/browser/providers/app_utils:chromium_app_utils",
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
+    "//ios/chrome/browser/providers/content_notification:chromium_content_notification_service",
     "//ios/chrome/browser/providers/context_menu:chromium_context_menu",
     "//ios/chrome/browser/providers/discover_feed:chromium_discover_feed",
     "//ios/chrome/browser/providers/drive:chromium_drive",

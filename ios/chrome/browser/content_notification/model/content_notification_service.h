@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_SERVICE_H_
+#define IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_SERVICE_H_
+
+#import <Foundation/Foundation.h>
+
+#import "components/keyed_service/core/keyed_service.h"
+#import "url/gurl.h"
+
+// Service responsible for interacting with the content notification service.
+class ContentNotificationService : public KeyedService {
+ public:
+  ContentNotificationService();
+  ~ContentNotificationService() override;
+
+  // Returns a destination URL from an unparsed content notification payload.
+  virtual GURL GetDestinationUrl(NSDictionary<NSString*, id>* payload) = 0;
+
+  // KeyedService implementation.
+  void Shutdown() override;
+};
+
+#endif  // IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_SERVICE_H_
