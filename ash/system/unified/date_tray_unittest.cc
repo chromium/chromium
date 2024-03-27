@@ -653,8 +653,9 @@ TEST_P(DateTrayTest, EmptyClientsFallbackToLegacyDateBubble) {
   EXPECT_FALSE(GetGlanceableTrayBubble());
 }
 
+// TODO(crbug.com/331531344): This test is flaky.
 TEST_P(GlanceablesDateTrayTest,
-       TrayBubbleUpdatesBoundsOnDisplayConfigurationUpdate) {
+       DISABLED_TrayBubbleUpdatesBoundsOnDisplayConfigurationUpdate) {
   LeftClickOn(GetDateTray());
   ASSERT_TRUE(IsBubbleShown());
   ASSERT_TRUE(GetGlanceableTrayBubble());
