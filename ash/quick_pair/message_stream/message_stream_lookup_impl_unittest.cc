@@ -365,6 +365,7 @@ TEST_F(MessageStreamLookupImplTest,
   histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 
   device_->AddUUID(kMessageStreamUuid);
+  device_->SetConnected(true);
   SetConnectToServiceError(kSocketNotListeningString);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
@@ -477,6 +478,7 @@ TEST_F(MessageStreamLookupImplTest,
 TEST_F(MessageStreamLookupImplTest,
        DevicePairedChanged_ConnectToServiceSuccess_Observer) {
   device_->AddUUID(kMessageStreamUuid);
+  device_->SetConnected(true);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   DevicePairedChanged(/*new_paired_status=*/true);
@@ -518,14 +520,26 @@ TEST_F(MessageStreamLookupImplTest, ConnectDevice_DisconnectDevice) {
 
 TEST_F(MessageStreamLookupImplTest, PairDevice_UnpairDevice) {
   device_->AddUUID(kMessageStreamUuid);
-
+  device_->SetConnected(true);
+  EXPECT_EQ(device_->IsConnected(), true);
   EXPECT_EQ(GetMessageStream(), nullptr);
+
   DevicePairedChanged(/*new_paired_status=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(GetMessageStream(), nullptr);
 
   DevicePairedChanged(/*new_paired_status=*/false);
   EXPECT_EQ(GetMessageStream(), nullptr);
+}
+
+TEST_F(MessageStreamLookupImplTest, DevicePairedChanged_NotConnected) {
+  device_->AddUUID(kMessageStreamUuid);
+  device_->SetConnected(false);
+  EXPECT_EQ(GetMessageStream(), nullptr);
+
+  DevicePairedChanged(/*new_paired_status=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(message_stream_, nullptr);
 }
 
 TEST_F(MessageStreamLookupImplTest, AddDevice_RemoveDevice) {

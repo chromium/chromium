@@ -87,9 +87,18 @@ void MessageStreamLookupImpl::DevicePairedChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool new_paired_status) {
-  // Check to see if the device supports Message Streams.
-  if (!device || !base::Contains(device->GetUUIDs(), kMessageStreamUuid))
+  // This event is triggered for all paired devices when BT is toggled on, so it
+  // is important to make sure the device is actively connected or a connection
+  // attempt will be issued for the Message Stream service UUID which prevents
+  // audio profiles from connecting.
+  if (!device->IsConnected()) {
     return;
+  }
+
+  // Check to see if the device supports Message Streams.
+  if (!device || !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
+    return;
+  }
 
   // Remove and delete the memory stream for the device, if it exists.
   if (!new_paired_status) {
