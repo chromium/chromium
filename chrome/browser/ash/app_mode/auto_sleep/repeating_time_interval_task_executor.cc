@@ -65,6 +65,8 @@ RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
   CHECK(on_interval_end_callback_);
   CHECK(system::TimezoneSettings::GetInstance());
   timezone_observer_.Observe(system::TimezoneSettings::GetInstance());
+  last_known_time_zone_id_ =
+      system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID();
 }
 
 RepeatingTimeIntervalTaskExecutor::~RepeatingTimeIntervalTaskExecutor() =
@@ -83,9 +85,13 @@ void RepeatingTimeIntervalTaskExecutor::ScheduleTimer() {
 
 void RepeatingTimeIntervalTaskExecutor::TimezoneChanged(
     const icu::TimeZone& timezone) {
-  if (!timer_scheduled_) {
+  std::u16string updated_timezone_id =
+      system::TimezoneSettings::GetInstance()->GetTimezoneID(timezone);
+  if (!timer_scheduled_ || updated_timezone_id == last_known_time_zone_id_) {
     return;
   }
+
+  last_known_time_zone_id_ = updated_timezone_id;
 
   // Notify the power manager of user activity to make sure any
   // requests to suspend the device are cancelled so that the invariant of the

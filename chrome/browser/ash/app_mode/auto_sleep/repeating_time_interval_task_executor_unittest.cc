@@ -301,7 +301,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesRestartTimer) {
 
   policy::WeeklyTimeInterval interval =
       CreateWeeklyTimeInterval(DayOfWeek::MONDAY,
-                               base::Hours(21),  // 12:00 PM
+                               base::Hours(21),  // 9:00 PM
                                DayOfWeek::TUESDAY,
                                base::Hours(8)  // 8:00 AM
       );
@@ -328,6 +328,44 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesRestartTimer) {
 }
 
 TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+       TimezoneChangeToSameTimezoneDoesNotRestartTimer) {
+  base::test::TestFuture<void> interval_end_future;
+  auto scoped_timezone_settings =
+      std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::MONDAY,
+                               base::Hours(21),  // 9:00 PM
+                               DayOfWeek::TUESDAY,
+                               base::Hours(8)  // 8:00 AM
+      );
+  int interval_start_callback_count = 0;
+  base::RepeatingCallback<void(base::TimeDelta)> interval_start_callback =
+      base::BindRepeating(
+          [](int& interval_start_callback_count, base::TimeDelta delta) {
+            interval_start_callback_count++;
+          },
+          std::ref(interval_start_callback_count));
+
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(interval, interval_start_callback,
+                             interval_end_future.GetRepeatingCallback());
+
+  FastForwardTimeTo(interval.start());
+  EXPECT_EQ(interval_start_callback_count, 0);
+  task_executor->ScheduleTimer();
+  EXPECT_EQ(interval_start_callback_count, 1);
+  scoped_timezone_settings->SetTimezoneFromID(u"GMT");
+  task_environment()->RunUntilIdle();
+
+  // Confirm that the interval doesn't start again when the callback is called
+  // for the same timezone.
+  EXPECT_EQ(interval_start_callback_count, 1);
+  FastForwardTimeTo(interval.end());
+  EXPECT_TRUE(interval_end_future.WaitAndClear());
+  EXPECT_EQ(interval_start_callback_count, 1);
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest,
        TimezoneChangesSendsNotifyUserNotification) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
@@ -338,7 +376,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
 
   policy::WeeklyTimeInterval interval =
       CreateWeeklyTimeInterval(DayOfWeek::MONDAY,
-                               base::Hours(21),  // 12:00 PM
+                               base::Hours(21),  // 9:00 PM
                                DayOfWeek::TUESDAY,
                                base::Hours(8)  // 8:00 AM
       );

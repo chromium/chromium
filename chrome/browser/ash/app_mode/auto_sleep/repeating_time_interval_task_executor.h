@@ -117,6 +117,10 @@ class RepeatingTimeIntervalTaskExecutor
   // run the `on_interval_start_callback_` when the timezone changes.
   bool has_interval_end_timer_started_ = false;
 
+  // Last known timezone used to prevent reacting to multiple `TimezoneChanged`
+  // observer calls of the same timezone.
+  std::u16string last_known_time_zone_id_;
+
   base::ScopedObservation<system::TimezoneSettings,
                           system::TimezoneSettings::Observer>
       timezone_observer_{this};
