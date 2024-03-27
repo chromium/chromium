@@ -569,7 +569,6 @@ public class FeedSurfaceCoordinatorTest {
                 false,
                 new TestSurfaceDelegate(),
                 mProfileMock,
-                false,
                 mBottomSheetController,
                 mShareDelegateSupplier,
                 mScrollableContainerDelegate,

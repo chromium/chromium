@@ -113,7 +113,6 @@ class ExploreSurfaceCoordinatorFactory {
                 profile,
                 mActivity,
                 isInNightMode,
-                /* isPlaceholderShown= */ false,
                 mBottomSheetController,
                 mScrollableContainerDelegate,
                 launchOrigin,

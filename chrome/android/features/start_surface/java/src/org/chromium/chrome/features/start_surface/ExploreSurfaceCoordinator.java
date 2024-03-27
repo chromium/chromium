@@ -58,7 +58,6 @@ public class ExploreSurfaceCoordinator {
     private final JankTracker mJankTracker;
     private final FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     private final ExploreSurfaceNavigationDelegate mExploreSurfaceNavigationDelegate;
-    private final boolean mIsPlaceholderShownInitially;
     private final Profile mProfile;
 
     private long mContentFirstAvailableTimeMs;
@@ -69,13 +68,10 @@ public class ExploreSurfaceCoordinator {
     private long mActivityCreationTimeMs;
     private long mStreamCreatedTimeMs;
 
-    // TODO(b/331250449): clean up isPlaceholderShown since it is only true with instant start
-    // enabled.
     public ExploreSurfaceCoordinator(
             Profile profile,
             Activity activity,
             boolean isInNightMode,
-            boolean isPlaceholderShown,
             BottomSheetController bottomSheetController,
             ScrollableContainerDelegate scrollableContainerDelegate,
             @NewTabPageLaunchOrigin int launchOrigin,
@@ -93,7 +89,6 @@ public class ExploreSurfaceCoordinator {
         mActivity = activity;
         mJankTracker = jankTracker;
         mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
-        mIsPlaceholderShownInitially = isPlaceholderShown;
         mProfile = profile;
 
         mFeedSurfaceCoordinator =
@@ -110,7 +105,6 @@ public class ExploreSurfaceCoordinator {
                         isInNightMode,
                         /* delegate= */ new ExploreFeedSurfaceDelegate(),
                         profile,
-                        isPlaceholderShown,
                         bottomSheetController,
                         shareDelegateSupplier,
                         scrollableContainerDelegate,

@@ -165,7 +165,6 @@ public class SingleWebFeedStreamTest {
                         mActivity,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShownInitially= */ false,
                         mWindowAndroid,
                         /* shareSupplier= */ mShareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,

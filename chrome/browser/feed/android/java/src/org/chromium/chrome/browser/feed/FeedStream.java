@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -49,8 +47,6 @@ import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
-import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
-import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
@@ -66,7 +62,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -645,7 +640,6 @@ public class FeedStream implements Stream {
     private @Nullable HybridListRenderer mRenderer;
     private FeedScrollState mScrollStateToRestore;
     private int mHeaderCount;
-    private boolean mIsPlaceholderShown;
     private long mLastFetchTimeMs;
     private ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers = new ArrayList<>();
 
@@ -661,10 +655,10 @@ public class FeedStream implements Stream {
 
     /**
      * Creates a new Feed Stream.
+     *
      * @param activity {@link Activity} that this is bound to.
      * @param snackbarManager {@link SnackbarManager} for showing snackbars.
      * @param bottomSheetController {@link BottomSheetController} for menus.
-     * @param isPlaceholderShown Whether the placeholder is shown initially.
      * @param windowAndroid The {@link WindowAndroid} this is shown on.
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
      * @param streamKind Kind of stream data this feed stream serves.
@@ -678,14 +672,13 @@ public class FeedStream implements Stream {
             Activity activity,
             SnackbarManager snackbarManager,
             BottomSheetController bottomSheetController,
-            boolean isPlaceholderShown,
             WindowAndroid windowAndroid,
             Supplier<ShareDelegate> shareDelegateSupplier,
             int streamKind,
             FeedActionDelegate actionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             FeedContentFirstLoadWatcher feedContentFirstLoadWatcher,
-            Stream.StreamsMediator streamsMediator,
+            StreamsMediator streamsMediator,
             SingleWebFeedParameters singleWebFeedParameters,
             FeedSurfaceRendererBridge.Factory feedSurfaceRendererBridgeFactory) {
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
@@ -701,7 +694,6 @@ public class FeedStream implements Stream {
         mShareHelper = new ShareHelperWrapper(windowAndroid, shareDelegateSupplier);
         mSnackManager = snackbarManager;
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
-        mIsPlaceholderShown = isPlaceholderShown;
         mWindowAndroid = windowAndroid;
         mRotationObserver = new RotationObserver();
         mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
@@ -732,15 +724,6 @@ public class FeedStream implements Stream {
         this.mLoadMoreTriggerScrollDistanceDp =
                 FeedServiceBridge.getLoadMoreTriggerScrollDistanceDp();
 
-        addOnContentChangedListener(
-                contents -> {
-                    // Feed's background is set to be transparent in {@link #bind} to show the Feed
-                    // placeholder. When first batch of articles are about to show, set recyclerView
-                    // back to non-transparent.
-                    if (isPlaceholderShown()) {
-                        hidePlaceholder();
-                    }
-                });
         mScrollReporter = new ScrollReporter();
 
         mLoadMoreTriggerLookahead = FeedServiceBridge.getLoadMoreTriggerLookahead();
@@ -826,12 +809,6 @@ public class FeedStream implements Stream {
             mWindowAndroid.getDisplay().addObserver(mRotationObserver);
         }
         mClosedReason = ClosedReason.LEAVE_FEED;
-
-        if (isPlaceholderShown()) {
-            // Set recyclerView as transparent until first batch of articles are loaded. Before
-            // that, the placeholder is shown.
-            mRecyclerView.getBackground().setAlpha(0);
-        }
 
         mBridge.surfaceOpened();
     }
@@ -927,26 +904,6 @@ public class FeedStream implements Stream {
                     }
                     mBridge.manualRefresh(callback);
                 });
-    }
-
-    @Override
-    public boolean isPlaceholderShown() {
-        return mIsPlaceholderShown;
-    }
-
-    @Override
-    public void hidePlaceholder() {
-        if (!mIsPlaceholderShown || mContentManager == null) {
-            return;
-        }
-        ObjectAnimator animator =
-                ObjectAnimator.ofPropertyValuesHolder(
-                        mRecyclerView.getBackground(), PropertyValuesHolder.ofInt("alpha", 255));
-        animator.setTarget(mRecyclerView.getBackground());
-        animator.setDuration(mRecyclerView.getItemAnimator().getAddDuration())
-                .setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
-        animator.start();
-        mIsPlaceholderShown = false;
     }
 
     void dismissBottomSheet() {
@@ -1182,10 +1139,6 @@ public class FeedStream implements Stream {
                     slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray(),
                     loggingParameters);
         } else if (slice.hasLoadingSpinnerSlice()) {
-            // If the placeholder is shown, spinner is not needed.
-            if (mIsPlaceholderShown) {
-                return null;
-            }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
                     && slice.getLoadingSpinnerSlice().getIsAtTop()) {
                 return new FeedListContentManager.NativeViewContent(

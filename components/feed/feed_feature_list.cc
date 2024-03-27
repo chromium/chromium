@@ -48,9 +48,6 @@ BASE_FEATURE(kXsurfaceMetricsReporting,
 BASE_FEATURE(kFeedLoadingPlaceholder,
              "FeedLoadingPlaceholder",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool>
-    kEnableFeedLoadingPlaceholderAnimationOnInstantStart{
-        &kFeedLoadingPlaceholder, "enable_animation_on_instant_start", false};
 BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
              "FeedImageMemoryCacheSizePercentage",
              base::FEATURE_DISABLED_BY_DEFAULT);

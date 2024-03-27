@@ -625,7 +625,6 @@ public class NewTabPage
                         isInNightMode,
                         this,
                         profile,
-                        /* isPlaceholderShownInitially= */ false,
                         mBottomSheetController,
                         shareDelegateSupplier,
                         /* externalScrollableContainerDelegate= */ null,

@@ -769,10 +769,6 @@ public class FeedSurfaceMediator
         return mCurrentStream.getLastFetchTimeMs();
     }
 
-    boolean isPlaceholderShown() {
-        return mCurrentStream == null ? false : mCurrentStream.isPlaceholderShown();
-    }
-
     Stream getCurrentStreamForTesting() {
         return mCurrentStream;
     }

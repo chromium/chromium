@@ -280,7 +280,6 @@ public class CreatorCoordinator
                         mActivity,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShownInitially= */ false,
                         mWindowAndroid,
                         /* shareSupplier= */ shareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
