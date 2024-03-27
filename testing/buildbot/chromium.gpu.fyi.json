@@ -25177,8 +25177,7 @@
       },
       {
         "args": [
-          "--ignore-runtime-requirements=*",
-          "--gtest_filter=-WebXrVrPermissionsBrowserTest.TestPermissionPersists"
+          "--ignore-runtime-requirements=*"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -26662,8 +26661,7 @@
       },
       {
         "args": [
-          "--ignore-runtime-requirements=*",
-          "--gtest_filter=-WebXrVrPermissionsBrowserTest.TestPermissionPersists"
+          "--ignore-runtime-requirements=*"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
