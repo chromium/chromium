@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -41,8 +40,6 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -378,10 +375,6 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 
   base::CallbackListSubscription dependency_manager_subscription_;
-
-  policy::ScopedManagementServiceOverrideForTesting platform_management_{
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::NONE};
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
@@ -945,10 +938,7 @@ class AvatarToolbarButtonEnterpriseBadgingParamBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
-                       WorkProfileTextBadgingUnManagedDevice) {
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::NONE);
+                       WorkProfileTextBadging) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
@@ -967,33 +957,6 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
     EXPECT_NE(avatar_button->GetText(), work_label);
     clear_closure.RunAndReset();
     EXPECT_NE(avatar_button->GetText(), work_label);
-#endif
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
-                       WorkProfileTextBadgingManagedDevice) {
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
-  std::u16string explicit_text = u"Explicit text";
-  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
-    EXPECT_EQ(avatar_button->GetText(), std::u16string());
-    auto clear_closure = avatar_button->ShowExplicitText(explicit_text);
-    EXPECT_EQ(avatar_button->GetText(), explicit_text);
-    clear_closure.RunAndReset();
-    EXPECT_EQ(avatar_button->GetText(), std::u16string());
-  } else {
-    EXPECT_EQ(avatar_button->GetText(), std::u16string());
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    auto clear_closure = avatar_button->ShowExplicitText(explicit_text);
-    EXPECT_EQ(avatar_button->GetText(), explicit_text);
-    clear_closure.RunAndReset();
-    EXPECT_EQ(avatar_button->GetText(), std::u16string());
 #endif
   }
 }
@@ -1035,21 +998,7 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnManagedDeviceNotShownByDefault) {
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
-
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnTransientModeTimesOut) {
+                       WorkBadgeOnTranientModeTimesOut) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
@@ -1128,7 +1077,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkNewBrowserShowsBadge) {
   std::u16string work_label = u"Work";
-  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
 

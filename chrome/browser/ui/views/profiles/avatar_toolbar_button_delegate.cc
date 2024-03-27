@@ -18,7 +18,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -559,10 +558,6 @@ class ManagementStateProvider : public StateProvider,
 
   // StateProvider:
   bool IsActive() const override {
-    if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
-        !IsEnterpriseToolbarLabelVisibilityManaged()) {
-      return false;
-    }
     return user_accepted_account_management_ &&
            (!IsTransient() || temporarily_showing_);
   }
@@ -613,12 +608,6 @@ class ManagementStateProvider : public StateProvider,
   bool IsTransient() const {
     return g_browser_process->local_state()->GetInteger(
                prefs::kToolbarAvatarLabelSettings) == 1;
-  }
-
-  bool IsEnterpriseToolbarLabelVisibilityManaged() const {
-    return g_browser_process->local_state()
-        ->FindPreference(prefs::kToolbarAvatarLabelSettings)
-        ->IsManaged();
   }
 
   raw_ref<Profile> profile_;
