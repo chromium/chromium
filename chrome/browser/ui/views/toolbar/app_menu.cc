@@ -299,18 +299,13 @@ class InMenuButton : public LabelButton {
   // views::LabelButton:
   void OnThemeChanged() override {
     LabelButton::OnThemeChanged();
-    const auto* const color_provider = GetColorProvider();
-    SetTextColor(
-        views::Button::STATE_DISABLED,
-        color_provider->GetColor(ui::kColorMenuItemForegroundDisabled));
-    SetTextColor(
-        views::Button::STATE_HOVERED,
-        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
-    SetTextColor(
-        views::Button::STATE_PRESSED,
-        color_provider->GetColor(ui::kColorMenuItemForegroundSelected));
-    SetTextColor(views::Button::STATE_NORMAL,
-                 color_provider->GetColor(ui::kColorMenuItemForeground));
+    SetTextColorId(views::Button::STATE_DISABLED,
+                   ui::kColorMenuItemForegroundDisabled);
+    SetTextColor(views::Button::STATE_HOVERED,
+                 ui::kColorMenuItemForegroundSelected);
+    SetTextColor(views::Button::STATE_PRESSED,
+                 ui::kColorMenuItemForegroundSelected);
+    SetTextColor(views::Button::STATE_NORMAL, ui::kColorMenuItemForeground);
   }
 };
 
