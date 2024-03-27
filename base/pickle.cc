@@ -289,13 +289,6 @@ Pickle::Pickle(UnownedData, span<const uint8_t> data)
   }
 }
 
-// OBSOLETE and being removed (https://crbug.com/330028190).
-Pickle::Pickle(span<const uint8_t> data) : Pickle(kUnownedData, data) {}
-
-// OBSOLETE and being removed (https://crbug.com/330028190).
-Pickle::Pickle(const char* data, size_t data_len)
-    : UNSAFE_BUFFERS(Pickle(kUnownedData, as_bytes(span(data, data_len)))) {}
-
 Pickle::Pickle(const Pickle& other)
     : header_(nullptr),
       header_size_(other.header_size_),

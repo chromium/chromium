@@ -173,11 +173,6 @@ class BASE_EXPORT Pickle {
   // deduced from the data length.
   static Pickle WithUnownedBuffer(span<const uint8_t> data);
 
-  // OBSOLETE and being removed (https://crbug.com/330028190). Use `WithData` or
-  // `WithUnownedBuffer` above instead.
-  explicit Pickle(span<const uint8_t> data);
-  UNSAFE_BUFFER_USAGE Pickle(const char* data, size_t data_len);
-
   // Initializes a Pickle as a copy of another Pickle. If the original Pickle's
   // data is unowned, the copy will have its own internalized copy of the data.
   Pickle(const Pickle& other);
