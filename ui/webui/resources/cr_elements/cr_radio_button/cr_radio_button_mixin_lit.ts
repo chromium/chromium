@@ -61,7 +61,6 @@ export const CrRadioButtonMixinLit =
             /**
              * Holds the tabIndex for the radio button.
              */
-            buttonTabIndex: {type: Number},
             ariaCheckedString: {type: String},
             ariaDisabledString: {type: String},
           };
@@ -73,7 +72,6 @@ export const CrRadioButtonMixinLit =
         hideLabelText: boolean = false;
         label: string = '';
         name?: string;
-        buttonTabIndex: number = -1;
         ariaCheckedString: string = 'false';
         ariaDisabledString: string = 'false';
 

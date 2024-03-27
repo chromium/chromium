@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRadioButtonMixinLit} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin_lit.js';
+import {CrRippleMixin} from '//resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrRadioButtonMixin} from '//resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
-
-import {getTemplate} from './segmented_button_option.html.js';
+import {getCss} from './segmented_button_option.css.js';
+import {getHtml} from './segmented_button_option.html.js';
 
 const SegmentedButtonElementBase =
-    PaperRippleMixin(CrRadioButtonMixin(PolymerElement));
+    CrRippleMixin(CrRadioButtonMixinLit(CrLitElement));
 
 export class SegmentedButtonOptionElement extends
     SegmentedButtonElementBase {
@@ -22,20 +21,18 @@ export class SegmentedButtonOptionElement extends
     return 'segmented-button-option';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  // Overridden from CrRadioButtonMixin
-  override getPaperRipple() {
-    return this.getRipple();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.shadowRoot!.querySelector('#button');
-    return super._createRipple();
+  // Overridden from CrRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.shadowRoot!.querySelector('#button');
+    return super.createRipple();
   }
 }
 

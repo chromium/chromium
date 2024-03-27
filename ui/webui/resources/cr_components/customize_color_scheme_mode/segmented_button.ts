@@ -4,37 +4,35 @@
 
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './segmented_button.html.js';
+import {getCss} from './segmented_button.css.js';
+import {getHtml} from './segmented_button.html.js';
 
-export class SegmentedButtonElement extends PolymerElement {
+export class SegmentedButtonElement extends CrLitElement {
   static get is() {
     return 'segmented-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      selected: {
-        type: String,
-        notify: true,
-      },
-
-      selectableElements: {
-        type: String,
-        value: 'segmented-button-option',
-      },
-
-      groupAriaLabel: String,
+      selected: {type: String},
+      selectableElements: {type: String},
+      groupAriaLabel: {type: String},
     };
   }
 
   selected: string;
-  selectableElements: string;
+  selectableElements: string = 'segmented-button-option';
+  groupAriaLabel: string = '';
 }
 
 declare global {
