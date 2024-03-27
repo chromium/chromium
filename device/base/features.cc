@@ -37,12 +37,7 @@ BASE_FEATURE(kWebBluetoothConfirmPairingSupport,
 #if defined(USE_UDEV)
 BASE_FEATURE(kUdevUsbSubsystemFilter,
              "UdevUsbSubsystemFilter",
-#if BUILDFLAG(IS_LINUX)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_LINUX)
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // defined(USE_UDEV)
 }  // namespace features
 }  // namespace device
