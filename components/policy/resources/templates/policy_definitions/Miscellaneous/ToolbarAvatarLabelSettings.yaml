@@ -9,8 +9,8 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:125-
 items:
 - caption: Always display management label
   name: display_management_label_permanent
@@ -25,6 +25,5 @@ schema:
   - 0
   - 1
   type: integer
-deprecated: false
 tags: []
 type: int-enum
