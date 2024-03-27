@@ -9,8 +9,9 @@
   }
 
   cr-button {
-    --hover-bg-color: none; /* Stick to the profile card hover color. */
+    --cr-hover-background-color: transparent;
     border: none;
+    border-radius: inherit;
     box-shadow: none;
     flex-direction: column;
     height: inherit;
@@ -18,12 +19,7 @@
     width: inherit;
   }
 
-  :host-context([chrome-refresh-2023]) cr-button {
-    --cr-hover-background-color: transparent;
-    border-radius: inherit;
-  }
-
-  :host-context([chrome-refresh-2023]) #gaiaName {
+  #gaiaName {
     left: 0;
   }
 
@@ -76,13 +72,10 @@
 
   cr-input {
     --cr-input-background-color: none;
-    --cr-input-padding-top: 0;
-    top: 0;
-  }
-
-  :host-context([chrome-refresh-2023]) cr-input {
     --cr-input-hover-background-color: transparent;
     --cr-input-border-bottom: none;
+    --cr-input-padding-top: 0;
+    top: 0;
   }
 
   #hoverUnderline {
