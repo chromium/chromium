@@ -12,8 +12,6 @@ build_webui("build") {
   grd_prefix = "feedback"
 
   static_files = [
-    "css/feedback_shared_styles.css",
-    "css/feedback_shared_vars.css",
     "feedback.html",
     "html/autofill_metadata_info.html",
     "images/2x/button_butter_bar_close_hover.png",
