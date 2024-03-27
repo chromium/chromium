@@ -183,10 +183,6 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2" desc="A description of the new Ad topics setting page. This sits under the toggle to turn on the topics API." formatter_data="android_java">
     Topics are based on your recent browsing history and are used by sites to show you personalized ads while protecting your identity
   </message>
-  <!--IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER is only for Clank-->
-  <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
-    Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting.
-  </message>
   <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_DESKTOP" desc="Desktop - Disclaimer of the new Ad topics setting. This text appears beneath the sublabel.">
     Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting. Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>managing your ad privacy<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>

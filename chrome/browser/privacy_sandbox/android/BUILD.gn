@@ -205,6 +205,7 @@ android_resources("java_resources") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/messages/android/internal:java_resources",
     "//components/strings:components_strings_grd",
+    "//components/strings:privacy_sandbox_strings_grd",
     "//third_party/android_deps:material_design_java",
   ]
 }

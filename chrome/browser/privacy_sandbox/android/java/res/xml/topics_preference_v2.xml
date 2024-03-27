@@ -15,7 +15,6 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_explanation"
-        android:summary="@string/settings_topics_page_disclaimer"
         android:layout="@layout/topics_explanation_summary" />
 
     <org.chromium.chrome.browser.privacy_sandbox.TopicsHeaderPreference

@@ -33,6 +33,7 @@ import java.util.List;
 public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
+    private static final String TOPICS_EXPLANATION_PREFERENCE = "topics_explanation";
     private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
@@ -43,6 +44,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private static final String MANAGE_TOPICS_PREFERENCE = "manage_topics";
 
     private ChromeSwitchPreference mTopicsTogglePreference;
+    private TextMessagePreference mTopicsExplanationPreference;
     private PreferenceCategoryWithClickableSummary mTopicsHeadingPreference;
     private PreferenceCategory mCurrentTopicsCategory;
     private TextMessagePreference mEmptyTopicsPreference;
@@ -79,6 +81,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         }
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
+        mTopicsExplanationPreference = findPreference(TOPICS_EXPLANATION_PREFERENCE);
         mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
@@ -118,6 +121,14 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                                             getContext(), this::onCookieSettingsLink))));
             return;
         }
+        mTopicsExplanationPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources().getString(R.string.settings_topics_page_disclaimer_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onManagingAdPrivacyClicked))));
         mTopicsPageFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_topics_page_footer_new),
