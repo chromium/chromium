@@ -487,11 +487,6 @@ class SyncServiceImpl : public SyncService,
   base::ObserverList<ProtocolEventObserver>::Unchecked
       protocol_event_observers_;
 
-  // This allows us to gracefully handle an ABORTED return code from the
-  // DataTypeManager in the event that the server informed us to cease and
-  // desist syncing immediately.
-  bool expect_sync_configuration_aborted_ = false;
-
   std::unique_ptr<BackendMigrator> migrator_;
 
   // This is the last |SyncProtocolError| we received from the server that had

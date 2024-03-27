@@ -701,9 +701,6 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
   // change. That will be persisted, and committed on restart.
   if (data_type_manager_) {
     if (data_type_manager_->state() != DataTypeManager::STOPPED) {
-      // When aborting as part of shutdown, we should expect an aborted sync
-      // configure result, else we'll dcheck when we try to read the sync error.
-      expect_sync_configuration_aborted_ = true;
       if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
         data_type_manager_->Stop(
             ShutdownReasonToSyncStopMetadataFate(shutdown_reason));
@@ -723,7 +720,6 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
 
   // Clear various state.
   crypto_.Reset();
-  expect_sync_configuration_aborted_ = false;
   last_snapshot_ = SyncCycleSnapshot();
 
   if (!IsLocalSyncEnabled()) {
@@ -1052,12 +1048,8 @@ void SyncServiceImpl::OnActionableProtocolError(
   DCHECK_NE(last_actionable_error_.action, UNKNOWN_ACTION);
   switch (error.action) {
     case UPGRADE_CLIENT:
-      // TODO(lipalani) : if setup in progress we want to display these
-      // actions in the popup. The current experience might not be optimal for
-      // the user. We just dismiss the dialog.
       if (IsSetupInProgress()) {
         StopAndClear();
-        expect_sync_configuration_aborted_ = true;
       }
       // Trigger an unrecoverable error to stop syncing.
       OnUnrecoverableErrorImpl(FROM_HERE,
@@ -1178,9 +1170,7 @@ void SyncServiceImpl::OnConfigureDone(
 
   // First handle the abort case.
   if (result.status == DataTypeManager::ABORTED) {
-    DCHECK(expect_sync_configuration_aborted_);
     DVLOG(0) << "SyncServiceImpl sync configuration aborted";
-    expect_sync_configuration_aborted_ = false;
     return;
   }
 
