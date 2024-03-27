@@ -3323,6 +3323,13 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.Original.ObjectCount"
       label="Number of allocated objects. Only counting malloc memory
              allocated in the partition_alloc original partition."/>
+  <suffix name="Malloc.SchedulerLoopQuarantine.CumulativeSizeInBytes"
+      label="Total size of quarantined allocations in Scheduler-Loop
+             Quarantine since process start, including already dequarantined
+             allocations."/>
+  <suffix name="Malloc.SchedulerLoopQuarantine.SizeInBytes"
+      label="Size of quarantined allocations in Scheduler-Loop Quarantine at
+             dump time."/>
   <suffix name="Malloc.ThreadCache"
       label="Memory used by all thread caches, recorded when PartitionAlloc
              is used as malloc()."/>
@@ -3406,6 +3413,17 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedCountPerMinute"
       label="Number of BRP quarantined allocations per minute, averaged
              during the last memory dump interval."/>
+  <suffix name="Malloc.SchedulerLoopQuarantine.Count"
+      label="Count of all quarantined allocations in Scheduler-Loop
+             Quarantine at dump time."/>
+  <suffix name="Malloc.SchedulerLoopQuarantine.CumulativeCount"
+      label="Total count of quarantined allocations in Scheduler-Loop
+             Quarantine since process start, including already dequarantined
+             allocations."/>
+  <suffix name="Malloc.SchedulerLoopQuarantine.QuarantineMissCount"
+      label="Monotonically increasing count of quarantine requests that were
+             not satisfied due to the configured size limit of Scheduler-Loop
+             Quarantine."/>
   <suffix name="Malloc.SyscallsPerMinute"
       label="Number of system calls made per minute, averaged during the last
              memory dump interval. Only collected when PartitionAlloc is

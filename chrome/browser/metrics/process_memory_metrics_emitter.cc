@@ -329,6 +329,23 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kTiny, "brp_quarantined_count_per_minute",
      EmitTo::kSizeInUmaOnly, nullptr},
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"malloc/partitions/allocator/scheduler_loop_quarantine/count",
+     "Malloc.SchedulerLoopQuarantine.Count", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator/scheduler_loop_quarantine/size_in_bytes",
+     "Malloc.SchedulerLoopQuarantine.SizeInBytes", MetricSize::kSmall,
+     MemoryAllocatorDump::kUnitsBytes, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator/scheduler_loop_quarantine/cumulative_count",
+     "Malloc.SchedulerLoopQuarantine.CumulativeCount", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator/scheduler_loop_quarantine/"
+     "cumulative_size_in_bytes",
+     "Malloc.SchedulerLoopQuarantine.CumulativeSizeInBytes", MetricSize::kSmall,
+     MemoryAllocatorDump::kUnitsBytes, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator/scheduler_loop_quarantine/"
+     "quarantine_miss_count",
+     "Malloc.SchedulerLoopQuarantine.QuarantineMissCount", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",
      MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc/partitions/allocator", "Malloc.MaxAllocatedSize",
