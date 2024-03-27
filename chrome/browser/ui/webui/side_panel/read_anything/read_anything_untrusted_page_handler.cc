@@ -533,30 +533,43 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 }
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
-  ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
-  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   bool is_pdf = !!pdf_observer_;
-  if (main_observer_ && active_) {
-    content::WebContents* contents =
-        is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
-    if (contents) {
-      content::RenderFrameHost* render_frame_host = nullptr;
-      if (is_pdf) {
-        contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-          if (rfh->GetProcess()->IsPdf()) {
-            render_frame_host = rfh;
-          }
-        });
-      } else {
-        render_frame_host = contents->GetPrimaryMainFrame();
-      }
-      if (render_frame_host) {
-        tree_id = render_frame_host->GetAXTreeID();
-        ukm_source_id = render_frame_host->GetPageUkmSourceId();
-      }
-    }
+  if (!main_observer_ || !active_) {
+    page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
+                                   is_pdf);
+    return;
   }
-  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, is_pdf);
+
+  content::WebContents* contents =
+      is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
+  if (!contents) {
+    page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
+                                   is_pdf);
+    return;
+  }
+
+  if (is_pdf) {
+    // What happens if there are multiple such `rfhs`?
+    contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
+      if (rfh->GetProcess()->IsPdf()) {
+        page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(),
+                                       rfh->GetPageUkmSourceId(),
+                                       /*is_pdf=*/true);
+      }
+    });
+    return;
+  }
+
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  if (!rfh) {
+    // THis case doesn't seem possible.
+    page_->OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), ukm::kInvalidSourceId,
+                                   /*is_pdf=*/false);
+    return;
+  }
+
+  page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
+                                 /*is_pdf=*/false);
 }
 
 void ReadAnythingUntrustedPageHandler::LogTextStyle() {
