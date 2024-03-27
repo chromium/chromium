@@ -82,7 +82,6 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/first_run/default_browser",
     "//ios/chrome/browser/ui/first_run/omnibox_position",
     "//ios/chrome/browser/ui/first_run/signin",
-    "//ios/chrome/browser/ui/first_run/tangible_sync",
     "//ios/chrome/browser/ui/first_run/tos",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_type",

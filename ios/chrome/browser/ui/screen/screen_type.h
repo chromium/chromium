@@ -9,7 +9,6 @@
 typedef NS_ENUM(NSInteger, ScreenType) {
   kSignIn,
   kHistorySync,
-  kTangibleSync,
   kDefaultBrowserPromo,
   kChoice,
   kOmniboxPosition,

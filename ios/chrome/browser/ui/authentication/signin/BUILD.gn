@@ -78,8 +78,6 @@ source_set("signin_screen_provider") {
   sources = [
     "signin_screen_provider.h",
     "signin_screen_provider.mm",
-    "signin_sync_screen_provider.h",
-    "signin_sync_screen_provider.mm",
     "uno_signin_screen_provider.h",
     "uno_signin_screen_provider.mm",
   ]

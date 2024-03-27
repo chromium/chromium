@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
@@ -132,12 +131,6 @@
                                 isOptional:YES
                                accessPoint:signin_metrics::AccessPoint::
                                                ACCESS_POINT_START_PAGE];
-    case kTangibleSync:
-      return [[TangibleSyncScreenCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
-                                  firstRun:YES
-                                  delegate:self];
     case kDefaultBrowserPromo:
       return [[DefaultBrowserScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController

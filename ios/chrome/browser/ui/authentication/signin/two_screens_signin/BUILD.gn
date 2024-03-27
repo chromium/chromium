@@ -21,7 +21,6 @@ source_set("two_screens_signin") {
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/signin",
-    "//ios/chrome/browser/ui/first_run/tangible_sync",
     "//ios/chrome/browser/ui/screen:screen_provider",
     "//ios/chrome/browser/ui/screen:screen_type",
   ]
@@ -45,7 +44,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/ui/authentication/history_sync:ui",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
-    "//ios/chrome/browser/ui/authentication/tangible_sync:signin_ui",
     "//ios/chrome/browser/ui/first_run/signin:signin_ui",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

@@ -17,12 +17,10 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_sync_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
 
@@ -38,7 +36,7 @@ using base::UserMetricsAction;
   signin_metrics::PromoAction _promoAction;
 
   // This can be either the SigninScreenCoordinator or the
-  // TangibleSyncScreenCoordinator depending on which step the user is on.
+  // HistorySyncCoordinator depending on which step the user is on.
   InterruptibleChromeCoordinator* _childCoordinator;
 
   // The navigation controller used to present the views.
@@ -153,12 +151,6 @@ using base::UserMetricsAction;
                                   delegate:self
                                accessPoint:self.accessPoint
                                promoAction:_promoAction];
-    case kTangibleSync:
-      return [[TangibleSyncScreenCoordinator alloc]
-          initWithBaseNavigationController:_navigationController
-                                   browser:self.browser
-                                  firstRun:NO
-                                  delegate:self];
     case kHistorySync:
       return [[HistorySyncCoordinator alloc]
           initWithBaseNavigationController:_navigationController

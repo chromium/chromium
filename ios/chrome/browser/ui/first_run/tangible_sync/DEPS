@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_coordinator.h",
-]
