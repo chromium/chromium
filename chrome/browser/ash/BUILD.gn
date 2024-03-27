@@ -3717,6 +3717,7 @@ source_set("ash") {
     "//chrome/browser/chromeos",
     "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/extensions",
+    "//chrome/browser/extensions:cws_item_service_proto",
     "//chrome/browser/image_decoder",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",

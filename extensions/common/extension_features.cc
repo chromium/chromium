@@ -158,4 +158,8 @@ BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
              "DeclarativeNetRequestResponseHeaderMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseItemSnippetsAPI,
+             "UseItemSnippetsAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

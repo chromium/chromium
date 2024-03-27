@@ -16,6 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -384,7 +386,7 @@ void ExternalInstallError::OnWebstoreRequestFailure(
   OnFetchComplete();
 }
 
-void ExternalInstallError::OnWebstoreResponseParseSuccess(
+void ExternalInstallError::OnWebstoreItemJSONAPIResponseParseSuccess(
     const std::string& extension_id,
     const base::Value::Dict& webstore_data) {
   std::optional<double> average_rating =
@@ -403,7 +405,18 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
 
   prompt_->SetWebstoreData(*localized_user_count,
                            show_user_count.value_or(true), *average_rating,
-                           *rating_count);
+                           *rating_count, base::NumberToString(*rating_count));
+  OnFetchComplete();
+}
+
+void ExternalInstallError::OnFetchItemSnippetParseSuccess(
+    const std::string& extension_id,
+    FetchItemSnippetResponse item_snippet) {
+  prompt_->SetWebstoreData(item_snippet.user_count_string(),
+                           !item_snippet.user_count_string().empty(),
+                           item_snippet.average_rating(),
+                           base::checked_cast<int>(item_snippet.rating_count()),
+                           item_snippet.rating_count_string());
   OnFetchComplete();
 }
 

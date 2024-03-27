@@ -109,7 +109,8 @@ class ExtensionInstallPrompt {
     void SetWebstoreData(const std::string& localized_user_count,
                          bool show_user_count,
                          double average_rating,
-                         int rating_count);
+                         int rating_count,
+                         const std::string& localized_rating_count);
 
     PromptType type() const { return type_; }
 
@@ -165,6 +166,9 @@ class ExtensionInstallPrompt {
 
     double average_rating() const { return average_rating_; }
     int rating_count() const { return rating_count_; }
+    const std::string& localized_rating_count() const {
+      return localized_rating_count_;
+    }
 
     bool has_webstore_data() const { return has_webstore_data_; }
 
@@ -207,7 +211,10 @@ class ExtensionInstallPrompt {
     std::string localized_user_count_;
     // Range is kMinExtensionRating to kMaxExtensionRating
     double average_rating_;
+    // The rating count for the extension, used for string pluralization.
     int rating_count_;
+    // The localized rating count for the extension, used as-is for display.
+    std::string localized_rating_count_;
 
     // Whether we should display the user count (we anticipate this will be
     // false if localized_user_count_ represents the number zero).

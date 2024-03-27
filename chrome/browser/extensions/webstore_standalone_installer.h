@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
+#include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
@@ -138,6 +139,9 @@ class WebstoreStandaloneInstaller
   }
   double average_rating() const { return average_rating_; }
   int rating_count() const { return rating_count_; }
+  const std::string& localized_rating_count() const {
+    return localized_rating_count_;
+  }
   void set_install_source(WebstoreInstaller::InstallSource source) {
     install_source_ = source;
   }
@@ -155,12 +159,23 @@ class WebstoreStandaloneInstaller
   friend class base::RefCountedThreadSafe<WebstoreStandaloneInstaller>;
 
   // Several delegate/client interface implementations follow. The normal flow
-  // (for successful installs) is:
+  // (for successful installs) for the item JSON API is:
   //
-  // 1. BeginInstall: starts the fetch of data from the webstore
-  // 2. OnURLFetchComplete: starts the parsing of data from the webstore
-  // 3. OnWebstoreResponseParseSuccess: starts the parsing of the manifest and
-  //    fetching of icon data.
+  // 1. BeginInstall: starts the fetch of data from the webstore.
+  // 2. WebstoreDataFetcher::OnSimpleLoaderComplete: starts the parsing of data
+  //    from the webstore.
+  // 3. OnWebstoreItemJSONAPIResponseParseSuccess: starts the parsing of the
+  //    manifest and fetching of icon data.
+  // 4. OnWebstoreParseSuccess: shows the install UI
+  // 5. InstallUIProceed: initiates the .crx download/install
+  //
+  // For the new item snippets API, the flow is:
+  // 1. BeginInstall: starts the fetch of data from the webstore.
+  // 2. WebstoreDataFetcher::OnFetchItemSnippetResponseReceived: starts the
+  //    parsing of data from the webstore into a FetchItemSnippetResponse
+  //    protobuf.
+  // 3. OnFetchItemSnippetParseSuccess: starts the parsing of the
+  //    manifest and fetching of icon data.
   // 4. OnWebstoreParseSuccess: shows the install UI
   // 5. InstallUIProceed: initiates the .crx download/install
   //
@@ -170,9 +185,13 @@ class WebstoreStandaloneInstaller
   // WebstoreDataFetcherDelegate interface implementation.
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
 
-  void OnWebstoreResponseParseSuccess(
+  void OnWebstoreItemJSONAPIResponseParseSuccess(
       const std::string& extension_id,
       const base::Value::Dict& webstore_data) override;
+
+  void OnFetchItemSnippetParseSuccess(
+      const std::string& extension_id,
+      FetchItemSnippetResponse item_snippet) override;
 
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
@@ -222,6 +241,7 @@ class WebstoreStandaloneInstaller
   bool show_user_count_{true};
   std::string localized_user_count_;
   double average_rating_{0.0};
+  std::string localized_rating_count_;
   int rating_count_{0};
   std::optional<base::Value::Dict> manifest_;
   SkBitmap icon_;

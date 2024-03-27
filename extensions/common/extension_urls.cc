@@ -79,6 +79,12 @@ GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {
               extension_id);
 }
 
+GURL GetWebstoreItemSnippetURL(const std::string& extension_id) {
+  return GURL(base::StringPrintf(
+      "https://chromewebstore.googleapis.com/v2/items/%s:fetchItemSnippet",
+      extension_id.c_str()));
+}
+
 GURL GetDefaultWebstoreUpdateUrl() {
   return GURL(kChromeWebstoreUpdateURL);
 }

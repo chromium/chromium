@@ -9,6 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -233,7 +235,7 @@ void WebstoreStandaloneInstaller::OnWebstoreRequestFailure(
                   webstore_install::kWebstoreRequestError);
 }
 
-void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
+void WebstoreStandaloneInstaller::OnWebstoreItemJSONAPIResponseParseSuccess(
     const std::string& extension_id,
     const base::Value::Dict& webstore_data) {
   OnWebStoreDataFetcherDone();
@@ -261,6 +263,7 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
 
   average_rating_ = *average_rating_setting;
   rating_count_ = *rating_count_setting;
+  localized_rating_count_ = base::NumberToString(rating_count_);
 
   // Showing user count is optional.
   std::optional<bool> show_user_count_opt =
@@ -317,6 +320,42 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
 
   auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
       this, id_, *manifest, icon_url);
+
+  // The helper will call us back via OnWebstoreParseSuccess() or
+  // OnWebstoreParseFailure().
+  helper->Start(profile_->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()
+                    .get());
+}
+
+void WebstoreStandaloneInstaller::OnFetchItemSnippetParseSuccess(
+    const std::string& extension_id,
+    FetchItemSnippetResponse item_snippet) {
+  OnWebStoreDataFetcherDone();
+  if (!CheckRequestorAlive()) {
+    CompleteInstall(webstore_install::ABORTED, std::string());
+    return;
+  }
+
+  rating_count_ = base::checked_cast<int>(item_snippet.rating_count());
+  localized_rating_count_ = item_snippet.rating_count_string();
+  average_rating_ = item_snippet.average_rating();
+  localized_user_count_ = item_snippet.user_count_string();
+  show_user_count_ = !localized_user_count_.empty();
+  localized_name_ = item_snippet.title();
+  localized_description_ = item_snippet.summary();
+
+  GURL icon_url =
+      extension_urls::GetWebstoreLaunchURL().Resolve(item_snippet.logo_uri());
+  if (!icon_url.is_valid()) {
+    CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
+                    webstore_install::kInvalidWebstoreResponseError);
+    return;
+  }
+
+  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
+      this, id_, item_snippet.manifest(), icon_url);
+
   // The helper will call us back via OnWebstoreParseSuccess() or
   // OnWebstoreParseFailure().
   helper->Start(profile_->GetDefaultStoragePartition()

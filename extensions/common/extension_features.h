@@ -200,6 +200,9 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 // matching condition.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
 
+// If enabled, use the new CWS itemSnippets API to fetch extension info.
+BASE_DECLARE_FEATURE(kUseItemSnippetsAPI);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

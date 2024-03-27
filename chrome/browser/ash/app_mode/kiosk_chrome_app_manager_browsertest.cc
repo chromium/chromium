@@ -168,6 +168,8 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
     // Log the response code for WebstoreDataFetcher instance if it is not 200.
+    // TODO(crbug.com/325314721): Use a mock FetchItemSnippetResponse instead
+    // when the old item JSON API used for fetching webstore data is removed.
     extensions::WebstoreDataFetcher::SetLogResponseCodeForTesting(true);
 
     // Don't spin up the IO thread yet since no threads are allowed while

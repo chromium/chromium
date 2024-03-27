@@ -321,6 +321,7 @@ after discussions on the right group.
       <annotation id="help_me_write_request"/>
       <annotation id="camera_background_request"/>
       <annotation id="wallpaper_request"/>
+      <annotation id="cws_fetch_item_snippet"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

@@ -109,12 +109,14 @@ void ExtensionInstallPrompt::Prompt::SetWebstoreData(
     const std::string& localized_user_count,
     bool show_user_count,
     double average_rating,
-    int rating_count) {
+    int rating_count,
+    const std::string& localized_rating_count) {
   CHECK(AllowWebstoreData(type_));
   localized_user_count_ = localized_user_count;
   show_user_count_ = show_user_count;
   average_rating_ = average_rating;
   rating_count_ = rating_count;
+  localized_rating_count_ = localized_rating_count;
   has_webstore_data_ = true;
 }
 
@@ -317,7 +319,7 @@ void ExtensionInstallPrompt::Prompt::AppendRatingStars(
 std::u16string ExtensionInstallPrompt::Prompt::GetRatingCount() const {
   CHECK(AllowWebstoreData(type_));
   return l10n_util::GetStringFUTF16(IDS_EXTENSION_RATING_COUNT,
-                                    base::NumberToString16(rating_count_));
+                                    base::UTF8ToUTF16(localized_rating_count_));
 }
 
 std::u16string ExtensionInstallPrompt::Prompt::GetUserCount() const {

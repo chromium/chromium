@@ -137,6 +137,7 @@ include_rules = [
   "+chrome/browser/extensions/context_menu_matcher.h",
   "+chrome/browser/extensions/crx_installer.h",
   "+chrome/browser/extensions/cws_info_service.h",
+  "+chrome/browser/extensions/cws_item_service.pb.h",
   "+chrome/browser/extensions/devtools_util.h",
   "+chrome/browser/extensions/error_console/error_console.h",
   "+chrome/browser/extensions/extension_apitest.h",

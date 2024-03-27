@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 #include "extensions/common/extension_id.h"
@@ -70,12 +71,19 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   const ExtensionId& extension_id() const { return extension_id_; }
   AlertType alert_type() const { return alert_type_; }
 
+  ExtensionInstallPrompt::Prompt* GetPromptForTesting() const {
+    return prompt_.get();
+  }
+
  private:
   // WebstoreDataFetcherDelegate implementation.
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
-  void OnWebstoreResponseParseSuccess(
+  void OnWebstoreItemJSONAPIResponseParseSuccess(
       const std::string& extension_id,
       const base::Value::Dict& webstore_data) override;
+  void OnFetchItemSnippetParseSuccess(
+      const std::string& extension_id,
+      FetchItemSnippetResponse item_snippet) override;
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 

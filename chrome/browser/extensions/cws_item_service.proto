@@ -60,3 +60,47 @@ message BatchGetStoreMetadatasResponse {
   // included in the response.
   repeated StoreMetadata store_metadatas = 1;
 }
+
+// Request message for FetchItemSnippet.
+message FetchItemSnippetRequest {
+  // The name of the item to retrieve.
+  // Format: items/{item_id}
+  // If no resource name is provided or the format is incorrect, the API returns
+  // error code INVALID_ARGUMENT.
+  string name = 1;
+}
+
+// Response message for FetchItemSnippet.
+// The localized title and summary are based on the language of the client
+// making the API request. If no client language is available, the language
+// falls back to the item’s primary language.
+message FetchItemSnippetResponse {
+  // Extension/item id.
+  string item_id = 1;
+
+  // Manifest string.
+  string manifest = 2;
+
+  // Localized title, which maps to the "name" field in the manifest.
+  string title = 3;
+
+  // Localized summary, which maps to the "description" field in the manifest.
+  string summary = 4;
+
+  // Logo uri.
+  string logo_uri = 5;
+
+  // Localized user count string.
+  string user_count_string = 6;
+
+  // User review rating count.
+  int64 rating_count = 7;
+
+  // Average user review rating.
+  double average_rating = 8;
+
+  // Localized user review rating count string.
+  string rating_count_string = 9;
+
+  // next tag: 10
+}

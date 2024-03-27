@@ -472,7 +472,7 @@ void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
   SetStatus(Status::kError);
 }
 
-void KioskAppData::OnWebstoreResponseParseSuccess(
+void KioskAppData::OnWebstoreItemJSONAPIResponseParseSuccess(
     const std::string& extension_id,
     const base::Value::Dict& webstore_data) {
   const std::string* id = webstore_data.FindString(kIdKey);
@@ -519,6 +519,37 @@ void KioskAppData::OnWebstoreResponseParseSuccess(
   // WebstoreDataParser deletes itself when done.
   (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
       ->Start(app_id(), manifest, icon_url, GetURLLoaderFactory());
+}
+
+void KioskAppData::OnFetchItemSnippetParseSuccess(
+    const std::string& extension_id,
+    extensions::FetchItemSnippetResponse item_snippet) {
+  if (extension_id != item_snippet.item_id()) {
+    LOG(ERROR) << "Webstore response error (itemId):"
+               << " received extension id " << item_snippet.item_id()
+               << " does not equal expected extension id " << extension_id;
+    OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
+    return;
+  }
+
+  webstore_fetcher_.reset();
+
+  GURL icon_url =
+      extension_urls::GetWebstoreLaunchURL().Resolve(item_snippet.logo_uri());
+  if (!icon_url.is_valid()) {
+    LOG(ERROR) << "Webstore response error (iconUri):"
+               << " the provided icon url " << item_snippet.logo_uri()
+               << " is not valid.";
+    OnWebstoreResponseParseFailure(extension_id, kInvalidWebstoreResponseError);
+    return;
+  }
+
+  name_ = item_snippet.title();
+
+  // WebstoreDataParser deletes itself when done.
+  (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
+      ->Start(app_id(), item_snippet.manifest(), icon_url,
+              GetURLLoaderFactory());
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(
