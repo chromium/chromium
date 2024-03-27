@@ -122,3 +122,7 @@ void TestTabStripModelDelegate::GoBack(content::WebContents* web_contents) {}
 bool TestTabStripModelDelegate::CanGoBack(content::WebContents* web_contents) {
   return false;
 }
+
+bool TestTabStripModelDelegate::IsNormalWindow() {
+  return true;
+}
