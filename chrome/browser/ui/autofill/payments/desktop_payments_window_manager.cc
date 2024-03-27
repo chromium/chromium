@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace autofill::payments {
@@ -41,7 +42,16 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   flow_type_ = FlowType::kVcn3ds;
   vcn_3ds_context_ = std::move(context);
   if (vcn_3ds_context_->user_consent_already_given) {
-    CreatePopup(vcn_3ds_context_->challenge_option.url_to_open);
+    CreatePopup(
+        vcn_3ds_context_->challenge_option.url_to_open,
+        // The first two arguments do not matter as position gets overridden by
+        // the tab modal pop-up code. The 600x400 size of the pop-up is derived
+        // from the Mastercard and Visa 3DS developer guides.
+        //
+        // Mastercard:
+        // https://developer.mastercard.com/consent-management/documentation/tutorials/consents-tutorial/handling-3ds-auth/.
+        // Visa: https://developer.visa.com/pages/visa-3d-secure.
+        gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/600, /*height=*/400));
   } else {
     // TODO(b/41490740): Implement the context.user_consent_already_given false
     // case.
@@ -72,7 +82,8 @@ void DesktopPaymentsWindowManager::OnBrowserSetLastActive(Browser* browser) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void DesktopPaymentsWindowManager::CreatePopup(const GURL& url) {
+void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
+                                               gfx::Rect popup_size) {
   // Create a pop-up window. The created pop-up will not have any relationship
   // to the underlying tab, because `params.opener` is not set. Ensuring the
   // original tab is not a related site instance to the pop-up is critical for
@@ -85,6 +96,7 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url) {
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.source_contents = &source_contents;
   params.is_tab_modal_popup = true;
+  params.window_features.bounds = std::move(popup_size);
 
   if (base::WeakPtr<content::NavigationHandle> navigation_handle =
           Navigate(&params)) {

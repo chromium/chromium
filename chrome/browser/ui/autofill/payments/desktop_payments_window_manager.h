@@ -62,10 +62,10 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
     kMaxValue = kVcn3ds,
   };
 
-  // Creates a pop-up for `flow_type_`, with an initial URL of `url`. This
-  // pop-up will go through a couple of URL navigations specific to the flow
-  // that it is created for.
-  void CreatePopup(const GURL& url);
+  // Creates a pop-up for `flow_type_`, with an initial URL of `url` and size of
+  // `popup_size`. This pop-up will go through a couple of URL navigations
+  // specific to the flow that it is created for.
+  void CreatePopup(const GURL& url, gfx::Rect popup_size);
 
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
   void OnWebContentsDestroyedForVcn3ds();
