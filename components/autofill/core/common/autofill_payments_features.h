@@ -41,6 +41,7 @@ BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheetAccountEmail);
 #endif
 
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauth);
+BASE_DECLARE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval);
 BASE_DECLARE_FEATURE(kAutofillEnableRemadeDownstreamMetrics);
 BASE_DECLARE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation);
 BASE_DECLARE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback);

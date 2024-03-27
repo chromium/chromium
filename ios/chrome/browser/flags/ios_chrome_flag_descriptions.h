@@ -68,6 +68,11 @@ extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
 extern const char kAutofillEnablePaymentsMandatoryReauthName[];
 extern const char kAutofillEnablePaymentsMandatoryReauthDescription[];
 
+// Title and description for the flag to control the latency optimization where
+// the risk data pre-fetched during retrieval.
+extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];
+extern const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[];
+
 // Title and description for the flag to control the new autofill suggestion
 // ranking formula for address profiles.
 extern const char kAutofillEnableRankingFormulaAddressProfilesName[];

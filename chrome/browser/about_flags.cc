@@ -10446,6 +10446,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnablePaymentsAndroidBottomSheet)},
 #endif
 
+    {"autofill-enable-prefetching-risk-data-for-retrieval",
+     flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
+     flag_descriptions::
+         kAutofillEnablePrefetchingRiskDataForRetrievalDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"asynchronous-scanner-discovery",
      flag_descriptions::kAsynchronousScannerDiscoveryName,
