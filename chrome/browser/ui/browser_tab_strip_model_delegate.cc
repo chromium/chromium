@@ -269,7 +269,7 @@ void BrowserTabStripModelDelegate::CacheWebContents(
   if (!cache.CanCacheWebContents(dwc->id))
     return;
 
-  std::unique_ptr<content::WebContents> wc = dwc->tab->RemoveContents();
+  std::unique_ptr<content::WebContents> wc = dwc->tab->ReplaceContents(nullptr);
   dwc->remove_reason = TabStripModelChange::RemoveReason::kCached;
   auto cached = std::make_pair(dwc->id, std::move(wc));
   cache.CacheWebContents(std::move(cached));
@@ -300,10 +300,6 @@ void BrowserTabStripModelDelegate::GoBack(content::WebContents* web_contents) {
 bool BrowserTabStripModelDelegate::CanGoBack(
     content::WebContents* web_contents) {
   return chrome::CanGoBack(web_contents);
-}
-
-bool BrowserTabStripModelDelegate::IsNormalWindow() {
-  return browser_->is_type_normal();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
