@@ -129,21 +129,16 @@ TestAppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
   return this;
 }
 
-void TestAppBannerManagerDesktop::OnInstall(
-    blink::mojom::DisplayMode display,
-    bool set_current_web_app_not_installable) {
-  AppBannerManager::OnInstall(display, set_current_web_app_not_installable);
+void TestAppBannerManagerDesktop::OnInstall(blink::mojom::DisplayMode display) {
+  AppBannerManager::OnInstall(display);
   if (on_install_)
     std::move(on_install_).Run();
 }
 
 void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
-    const webapps::ManifestId& manifest_id,
-    base::WeakPtr<AppBannerManagerDesktop> is_navigation_current,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
-  AppBannerManagerDesktop::DidFinishCreatingWebApp(
-      manifest_id, is_navigation_current, app_id, code);
+  AppBannerManagerDesktop::DidFinishCreatingWebApp(app_id, code);
   OnFinished();
 }
 

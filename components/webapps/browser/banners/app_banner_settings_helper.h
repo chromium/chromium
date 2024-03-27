@@ -20,7 +20,6 @@ class WebContents;
 class GURL;
 
 namespace webapps {
-struct InstallBannerConfig;
 
 // Utility class to record banner events for the given package or start url.
 //
@@ -100,12 +99,8 @@ class AppBannerSettingsHelper {
 
   // Record a banner event specified by |event|.
   static void RecordBannerEvent(content::WebContents* web_contents,
-                                const GURL& url,
-                                const std::string& identifier,
-                                AppBannerEvent event,
-                                base::Time time);
-  static void RecordBannerEvent(content::WebContents* web_contents,
-                                const InstallBannerConfig& config,
+                                const GURL& origin_url,
+                                const std::string& package_name_or_start_url,
                                 AppBannerEvent event,
                                 base::Time time);
 

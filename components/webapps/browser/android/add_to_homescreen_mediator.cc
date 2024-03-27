@@ -260,9 +260,7 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
         AppBannerManager::FromWebContents(web_contents);
     // Fire the appinstalled event and do install time logging.
     if (app_banner_manager) {
-      app_banner_manager->OnInstall(
-          a2hs_params.shortcut_info->display,
-          /*set_current_web_app_not_installable=*/false);
+      app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);
     }
   }
 }
