@@ -3689,7 +3689,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
     EXPECT_FALSE(browser->window()->IsMaximized());
   }
 }
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -3767,7 +3767,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 void DragInMaximizedWindowStep2(DetachToBrowserTabDragControllerTest* test,
@@ -3823,7 +3823,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // The new window should be maximized.
   EXPECT_TRUE(new_browser->window()->IsMaximized());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 void NewBrowserWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
@@ -3867,7 +3869,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragTabAndNotify(
       tab_strip, base::BindOnce(&NewBrowserWindowStateStep2, this, tab_strip));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        OffsetForDraggingInMaximizedWindow) {
   AddTabsAndResetBrowser(browser(), 1);
@@ -3880,7 +3884,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   DragWindowAndVerifyOffset(this, GetTabStripForBrowser(browser()), 0);
   ASSERT_FALSE(TabDragController::IsActive());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 // A window observer that observes the dragged window's property
@@ -3991,7 +3997,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   ASSERT_FALSE(TabDragController::IsActive());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // Returns true if the web contents that's associated with |browser| is using
@@ -4055,7 +4063,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(WebContentsIsFastResized(browser()));
   EXPECT_FALSE(WebContentsIsFastResized(browser2));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class DetachToBrowserTabDragControllerTestWithTabbedSystemApp
     : public DetachToBrowserTabDragControllerTest {
  public:
@@ -4155,7 +4165,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   EXPECT_EQ("100 0", IDString(app_browser2->tab_strip_model()));
   EXPECT_EQ("1", IDString(app_browser1->tab_strip_model()));
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
