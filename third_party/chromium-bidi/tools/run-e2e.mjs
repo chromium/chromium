@@ -153,13 +153,17 @@ const e2eArgs = ['run', 'pytest'];
 e2eArgs.push(
   '--verbose',
   '-vv',
-  '--num-shards',
-  PYTEST_TOTAL_CHUNKS,
-  '--shard-id',
-  PYTEST_THIS_CHUNK,
   // Do not throw an error if there are unused snapshots.
   '--snapshot-warn-unused'
 );
+if (PYTEST_TOTAL_CHUNKS !== 1) {
+  e2eArgs.push(
+    '--num-shards',
+    PYTEST_TOTAL_CHUNKS,
+    '--shard-id',
+    PYTEST_THIS_CHUNK
+  );
+}
 
 if (argv.fileOrFolder) {
   e2eArgs.push(argv.fileOrFolder);

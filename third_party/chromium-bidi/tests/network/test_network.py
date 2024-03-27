@@ -362,7 +362,6 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: #1080")
 async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
         websocket, context_id, create_context, base_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
@@ -451,7 +450,6 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: #1350")
 async def test_network_should_not_block_queue_shared_workers_with_data_url(
         websocket, context_id, base_url):
 
@@ -463,7 +461,7 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
         websocket, {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration": "() => {new SharedWorker('data:text/javascript,console.log(`hi`)');}",
+                "functionDeclaration": "() => {new SharedWorker('data:text/javascript,console.log(\"hi\")');}",
                 "target": {
                     "context": context_id
                 },
@@ -477,8 +475,8 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
         "method": "network.beforeRequestSent",
         "params": {
             "isBlocked": False,
-            "context": context_id,
-            "navigation": ANY_STR,
+            "context": None,
+            "navigation": None,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
@@ -491,7 +489,7 @@ async def test_network_should_not_block_queue_shared_workers_with_data_url(
                 "timings": ANY_DICT
             },
             "initiator": {
-                "type": "script"
+                "type": "other"
             },
             "timestamp": ANY_TIMESTAMP
         }

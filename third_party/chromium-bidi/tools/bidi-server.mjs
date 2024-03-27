@@ -71,13 +71,13 @@ export function parseCommandLineArgs() {
     .option('total-chunks', {
       describe: 'If provided, will split tests into this many shards.',
       type: 'number',
-      default: process.env.PYTEST_TOTAL_CHUNKS || 1,
+      default: Number(process.env.PYTEST_TOTAL_CHUNKS || 1),
     })
     .option('this-chunk', {
       describe:
         'If provided, will only run tests for this shard. Shard IDs are 0-indexed.',
       type: 'number',
-      default: process.env.PYTEST_THIS_CHUNK || 0,
+      default: Number(process.env.PYTEST_THIS_CHUNK || 0),
     })
     .parseSync();
 }
