@@ -255,6 +255,10 @@ void WaitForVisibleChromeManagementURL() {
 // Tests that the user policies are fetched and activated when signing in with
 // a managed account.
 - (void)testThatPoliciesAreFetchedOnSignIn {
+  // TODO(crbug.com/331794057): Test fails on iPad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
+  }
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
@@ -267,6 +271,10 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the user policies are cleared after sign out.
 - (void)testThatPoliciesAreClearedOnSignOut {
+  // TODO(crbug.com/331794057): Test fails on iPad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
+  }
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
@@ -283,6 +291,10 @@ void WaitForVisibleChromeManagementURL() {
 // Tests that the user policies previously fetched are loaded from the store
 // when signed in at startup.
 - (void)testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup {
+  // TODO(crbug.com/331794057): Test fails on iPad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
+  }
   // Sign in with managed account to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
