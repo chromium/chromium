@@ -885,8 +885,12 @@ void GetRawExceptionsForContentSettingsType(
 
     // Off-the-record HostContentSettingsMap contains incognito content settings
     // as well as normal content settings. Here, we use the incognito settings
-    // only.
-    if (map->IsOffTheRecord() && !setting.incognito) {
+    // only, excluding policy-source exceptions as policies cannot specify
+    // incognito-only exceptions, meaning these are necesssarily duplicates.
+    if (map->IsOffTheRecord() &&
+        (!setting.incognito ||
+         setting.source ==
+             SiteSettingSourceToString(SiteSettingSource::kPolicy))) {
       continue;
     }
 

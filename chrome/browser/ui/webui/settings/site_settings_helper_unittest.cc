@@ -249,6 +249,55 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
   }
 }
 
+TEST_F(SiteSettingsHelperTest, ExceptionListFiltersIncognitoPolicyExceptions) {
+  std::string test_url = "http://[*.]test.com";
+
+  // Add a policy exception to the regular profile
+  TestingProfile profile;
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  auto policy_provider = std::make_unique<content_settings::MockProvider>();
+  policy_provider->SetWebsiteSetting(
+      ContentSettingsPattern::FromString(test_url),
+      ContentSettingsPattern::Wildcard(), kContentTypeCookies,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  policy_provider->set_read_only(true);
+  content_settings::TestUtils::OverrideProvider(
+      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+
+  // Check that the exception does not get filtered.
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(kContentTypeCookies, &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/true, &exceptions);
+  ASSERT_EQ(1U, exceptions.size());
+
+  // Add a policy exception to the incognito profile
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(&profile);
+  auto* incognito_map =
+      HostContentSettingsMapFactory::GetForProfile(incognito_profile);
+  auto incognito_policy_provider =
+      std::make_unique<content_settings::MockProvider>();
+  incognito_policy_provider->SetWebsiteSetting(
+      ContentSettingsPattern::FromString(test_url),
+      ContentSettingsPattern::Wildcard(), kContentTypeCookies,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  incognito_policy_provider->set_read_only(true);
+  content_settings::TestUtils::OverrideProvider(
+      incognito_map, std::move(incognito_policy_provider),
+      HostContentSettingsMap::POLICY_PROVIDER);
+
+  // Check that the exception gets filtered.
+  base::Value::List incognito_exceptions;
+  site_settings::GetExceptionsForContentType(
+      kContentTypeCookies, incognito_profile,
+      /*web_ui=*/nullptr,
+      /*incognito=*/true, &incognito_exceptions);
+  ASSERT_EQ(0U, incognito_exceptions.size());
+}
+
 TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
   TestingProfile profile;
   constexpr char kOriginToBlock[] = "https://www.blocked.com:443";
