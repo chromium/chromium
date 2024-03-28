@@ -54,3 +54,13 @@ fuzzer_test("gfx_jpeg_decoder_fuzzer") {
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
+
+fuzzer_test("gfx_png_decoder_fuzzer") {
+  sources = [ "png_decoder_fuzzer.cc" ]
+  deps = [
+    ":codec",
+    "//skia",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/pngfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
