@@ -83,6 +83,7 @@ PermissionPromptPreviewBrowserTest.InvokeUi_*
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
+PrivacySandboxSettingsTopicsInteractiveTest.*
 ProfileMenuViewPixelTest.*
 ProfilePickerUIPixelTest.*
 ProfileTypeChoiceUIPixelTest.*
