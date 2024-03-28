@@ -256,16 +256,26 @@ enum class OpenComposeDialogResult {
   kAutofillFormFieldDataNotFound = 5,
   kNoWebContents = 6,
   kFailedCreatingComposeDialogView = 7,
-  kMaxValue = kFailedCreatingComposeDialogView
+  kAutofillFormDataNotFoundAfterSelectAll = 8,
+  kMaxValue = kAutofillFormDataNotFoundAfterSelectAll
 };
 
-// Enum to log if the inner text succusfuly found an offset
+// Enum to log if the inner text successfuly found an offset
 // Keep in sync with ComposeInnerTextNodeOffset in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeInnerTextNodeOffset {
   kNoOffsetFound = 0,
   kOffsetFound = 1,
   kMaxValue = kOffsetFound
+};
+
+// Enum to log if all text was selected on behalf of the user.
+// Keep in sync with ComposeSelectAllStatus in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeSelectAllStatus {
+  kNoSelectAll = 0,
+  kSelectedAll = 1,
+  kMaxValue = kSelectedAll
 };
 
 // Class that automatically reports any UKM metrics for the page-level Compose
@@ -379,6 +389,8 @@ void LogComposeSessionDuration(
 
 void LogComposeRequestFeedback(EvalLocation eval_location,
                                ComposeRequestFeedback feedback);
+
+void LogComposeSelectAllStatus(ComposeSelectAllStatus select_all_status);
 
 }  // namespace compose
 

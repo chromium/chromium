@@ -74,11 +74,11 @@ void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
   }
   driver.ExtractForm(
       form_id,
-      base::BindOnce(&ComposeManagerImpl::GetBrowserFormHandler,
+      base::BindOnce(&ComposeManagerImpl::OpenComposeWithUpdatedSelection,
                      weak_ptr_factory_.GetWeakPtr(), field_id, entry_point));
 }
 
-void ComposeManagerImpl::GetBrowserFormHandler(
+void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
     autofill::FieldGlobalId field_id,
     compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
     autofill::AutofillDriver* driver,
@@ -89,6 +89,55 @@ void ComposeManagerImpl::GetBrowserFormHandler(
     client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
     return;
   }
+
+  const autofill::FormFieldData* form_field_data =
+      form_data->FindFieldByGlobalId(field_id);
+  if (!form_field_data) {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::kAutofillFormFieldDataNotFound);
+    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(compose::features::kComposeTextSelection) &&
+      IsWordCountWithinBounds(base::UTF16ToUTF8(form_field_data->selected_text),
+                              0, 1)) {
+    // Select all words. Consecutive calls using the same message pipe
+    // should complete in the same order it's received.
+    // Therefore, we can safely assume that the text selection will complete
+    // before the subsequent extract form call without race conditions.
+    driver->ApplyFieldAction(autofill::mojom::FieldActionType::kSelectAll,
+                             autofill::mojom::ActionPersistence::kFill,
+                             field_id, u"");
+
+    // Re-extract form to update to the newly selected text.
+    driver->ExtractForm(
+        form_data->global_id(),
+        base::BindOnce(&ComposeManagerImpl::OpenComposeWithFormData,
+                       weak_ptr_factory_.GetWeakPtr(), field_id,
+                       ui_entry_point));
+    compose::LogComposeSelectAllStatus(
+        compose::ComposeSelectAllStatus::kSelectedAll);
+    return;
+  }
+  OpenComposeWithFormData(field_id, ui_entry_point, driver, form_data);
+  compose::LogComposeSelectAllStatus(
+      compose::ComposeSelectAllStatus::kNoSelectAll);
+}
+
+void ComposeManagerImpl::OpenComposeWithFormData(
+    autofill::FieldGlobalId field_id,
+    compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
+    autofill::AutofillDriver* driver,
+    const std::optional<autofill::FormData>& form_data) {
+  if (!form_data) {
+    compose::LogOpenComposeDialogResult(
+        compose::OpenComposeDialogResult::
+            kAutofillFormDataNotFoundAfterSelectAll);
+    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
+    return;
+  }
+
   const autofill::FormFieldData* form_field_data =
       form_data->FindFieldByGlobalId(field_id);
   if (!form_field_data) {
@@ -99,29 +148,9 @@ void ComposeManagerImpl::GetBrowserFormHandler(
   }
 
   autofill::AutofillManager& manager = driver->GetAutofillManager();
-  ComposeCallback compose_callback;
-
-  if (base::FeatureList::IsEnabled(compose::features::kComposeTextSelection) &&
-      IsWordCountWithinBounds(base::UTF16ToUTF8(form_field_data->selected_text),
-                              0, compose::GetComposeConfig().input_min_words)) {
-    // Select all words.
-    static_cast<autofill::BrowserAutofillManager*>(&manager)
-        ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
-                             autofill::mojom::FieldActionType::kSelectAll,
-                             form_data.value(), *form_field_data, u"",
-                             autofill::PopupItemId::kCompose);
-
-    // Update form_field_data to use the newly selected text.
-    autofill::FormFieldData updated_form_field_data =
-        autofill::FormFieldData(*form_field_data);
-
-    updated_form_field_data.selected_text = form_field_data->value;
-
-    form_field_data = &updated_form_field_data;
-  }
-
-  compose_callback = base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
-                                    form_data.value(), *form_field_data);
+  ComposeCallback compose_callback =
+      base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
+                     form_data.value(), *form_field_data);
 
   OpenComposeWithFormFieldData(ui_entry_point, *form_field_data,
                                manager.client().GetPopupScreenLocation(),

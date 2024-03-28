@@ -100,6 +100,11 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="The request timed out"/>
 </enum>
 
+<enum name="ComposeSelectAllStatus">
+  <int value="0" label="Did not select all text for the user"/>
+  <int value="1" label="Selected all text for the user"/>
+</enum>
+
 <enum name="ComposeSessionCloseReasonType">
   <int value="0" label="Accepted suggestion"/>
   <int value="1" label="Close button"/>
@@ -172,6 +177,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="autofill::FormFieldData not found"/>
   <int value="6" label="No WebContents instance"/>
   <int value="7" label="Failed creating ComposeDialogView"/>
+  <int value="8" label="autofill::FormData not found after select all"/>
 </enum>
 
 </enums>

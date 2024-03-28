@@ -55,6 +55,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.ContextMenu.SelectedAll" enum="ComposeSelectAllStatus"
+    expires_after="2024-11-01">
+  <owner>dewittj@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Histogram that records whether all text was selected on behalf of the user
+    when opening the Compose dialog from the context menu item.
+  </summary>
+</histogram>
+
 <histogram name="Compose.ContextMenu.ShowStatus" enum="ComposeShowStatus"
     expires_after="2024-11-01">
   <owner>sophey@chromium.org</owner>

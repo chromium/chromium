@@ -49,6 +49,7 @@ const char kInnerTextNodeOffsetFound[] =
 const char kComposeContextMenuCtr[] = "Compose.ContextMenu.CTR";
 const char kOpenComposeDialogResult[] =
     "Compose.ContextMenu.OpenComposeDialogResult";
+const char kComposeSelectAll[] = "Compose.ContextMenu.SelectedAll";
 
 namespace {
 
@@ -477,6 +478,10 @@ void LogComposeRequestFeedback(EvalLocation eval_location,
       base::StrCat(
           {"Compose.", EvalLocationString(eval_location), ".Request.Feedback"}),
       feedback);
+}
+
+void LogComposeSelectAllStatus(ComposeSelectAllStatus select_all_status) {
+  base::UmaHistogramEnumeration(kComposeSelectAll, select_all_status);
 }
 
 }  // namespace compose

@@ -41,7 +41,12 @@ class ComposeManagerImpl : public ComposeManager {
 
  private:
   bool IsEnabled() const;
-  void GetBrowserFormHandler(
+  void OpenComposeWithFormData(
+      autofill::FieldGlobalId field_id,
+      compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
+      autofill::AutofillDriver* driver,
+      const std::optional<autofill::FormData>& form_data);
+  void OpenComposeWithUpdatedSelection(
       autofill::FieldGlobalId field_id,
       compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
       autofill::AutofillDriver* driver,
