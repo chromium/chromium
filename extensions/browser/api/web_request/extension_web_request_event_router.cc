@@ -39,7 +39,6 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/common/api/web_request/web_request_activity_log_constants.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
@@ -449,49 +448,28 @@ class CrossContextData {
   CrossContextMap cross_context_data_;
 };
 
-class ExtensionWebRequestEventRouter : public WebRequestEventRouter {
- public:
-  ExtensionWebRequestEventRouter(const ExtensionWebRequestEventRouter&) =
-      delete;
-  ExtensionWebRequestEventRouter& operator=(
-      const ExtensionWebRequestEventRouter&) = delete;
-
-  ~ExtensionWebRequestEventRouter() override = default;
-
- private:
-  friend class extensions::WebRequestEventRouter;
-  friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
-
-  static ExtensionWebRequestEventRouter* GetInstance();
-
-  ExtensionWebRequestEventRouter() = default;
-};
-
-// static
-ExtensionWebRequestEventRouter* ExtensionWebRequestEventRouter::GetInstance() {
-  static base::NoDestructor<ExtensionWebRequestEventRouter> instance;
-  return instance.get();
+void ClearCrossContextData(content::BrowserContext* browser_context) {
+  CrossContextData::Get().RemoveContext(browser_context);
 }
 
 }  // namespace
 
-WebRequestEventRouter::WebRequestEventRouter() = default;
+WebRequestEventRouter::WebRequestEventRouter(content::BrowserContext* context)
+    : browser_context_(context) {}
+
 WebRequestEventRouter::~WebRequestEventRouter() = default;
+
+void WebRequestEventRouter::Shutdown() {
+  // TODO(crbug.com/1433136): This overlaps with OnOTRBrowserContextDestroyed.
+  // We should decide whether this can be cleaned up.
+  OnBrowserContextShutdown(browser_context_);
+  ClearCrossContextData(browser_context_);
+}
 
 // static
 WebRequestEventRouter* WebRequestEventRouter::Get(
     content::BrowserContext* browser_context) {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kUsePerBrowserContextWebRequestEventRouter)) {
-    return KeyedWebRequestEventRouter::Get(browser_context);
-  }
-  return ExtensionWebRequestEventRouter::GetInstance();
-}
-
-// static
-void WebRequestEventRouter::ClearCrossContextData(
-    content::BrowserContext* browser_context) {
-  CrossContextData::Get().RemoveContext(browser_context);
+  return WebRequestEventRouterFactory::GetForBrowserContext(browser_context);
 }
 
 // static
@@ -2602,25 +2580,6 @@ void WebRequestEventRouter::ClearSignaled(
     EventTypes event_type) {
   GetSignaledRequestIDTracker(browser_context)
       .ClearEventType(request_id, event_type);
-}
-
-KeyedWebRequestEventRouter::KeyedWebRequestEventRouter(
-    content::BrowserContext* context)
-    : browser_context_(context) {}
-
-KeyedWebRequestEventRouter::~KeyedWebRequestEventRouter() = default;
-
-void KeyedWebRequestEventRouter::Shutdown() {
-  // TODO(crbug.com/1433136): This overlaps with OnOTRBrowserContextDestroyed.
-  // We should decide whether this can be cleaned up.
-  OnBrowserContextShutdown(browser_context_);
-  ClearCrossContextData(browser_context_);
-}
-
-// static
-WebRequestEventRouter* KeyedWebRequestEventRouter::Get(
-    content::BrowserContext* browser_context) {
-  return WebRequestEventRouterFactory::GetForBrowserContext(browser_context);
 }
 
 }  // namespace extensions

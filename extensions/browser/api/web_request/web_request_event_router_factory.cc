@@ -18,9 +18,9 @@ using content::BrowserContext;
 namespace extensions {
 
 // static
-KeyedWebRequestEventRouter* WebRequestEventRouterFactory::GetForBrowserContext(
+WebRequestEventRouter* WebRequestEventRouterFactory::GetForBrowserContext(
     BrowserContext* context) {
-  return static_cast<KeyedWebRequestEventRouter*>(
+  return static_cast<WebRequestEventRouter*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
@@ -43,7 +43,7 @@ WebRequestEventRouterFactory::~WebRequestEventRouterFactory() = default;
 
 KeyedService* WebRequestEventRouterFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
-  return new KeyedWebRequestEventRouter(context);
+  return new WebRequestEventRouter(context);
 }
 
 BrowserContext* WebRequestEventRouterFactory::GetBrowserContextToUse(
