@@ -467,16 +467,19 @@ TestRunner.Session = class {
     }
   }
 
-  navigate(url) {
-    return this._navigate(this._testRunner.url(url));
+  navigate(url, waitUntil = 'load') {
+    return this._navigate(this._testRunner.url(url), waitUntil);
   }
 
-  async _navigate(url) {
+  async _navigate(url, waitUntil = 'load') {
     await this.protocol.Page.enable();
     await this.protocol.Page.setLifecycleEventsEnabled({enabled: true});
-    const frameId = (await this.protocol.Page.navigate({url: url})).result.frameId;
+    const frameTree = await this.protocol.Page.getFrameTree();
+    const frameId = frameTree.result.frameTree.frame.id;
+    const navigatePromise = this.protocol.Page.navigate({url: url});
     await this.protocol.Page.onceLifecycleEvent(
-        event => event.params.name === 'load' && event.params.frameId === frameId);
+        event => event.params.name === waitUntil && event.params.frameId === frameId);
+    await navigatePromise;
   }
 
   _dispatchMessage(message) {
