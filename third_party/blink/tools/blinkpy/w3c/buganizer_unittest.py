@@ -4,8 +4,17 @@
 
 import textwrap
 import unittest
+from unittest import mock
 
-from blinkpy.w3c.buganizer import BuganizerIssue, Status, Priority, Severity
+from blinkpy.common.net.web_mock import MockWeb
+from blinkpy.w3c.buganizer import (
+    BuganizerClient,
+    BuganizerError,
+    BuganizerIssue,
+    Status,
+    Priority,
+    Severity,
+)
 
 
 class BuganizerIssueTest(unittest.TestCase):
@@ -93,3 +102,49 @@ class BuganizerIssueTest(unittest.TestCase):
         self.assertIs(issue.priority, Priority.P1)
         self.assertEqual(issue.cc, ['test@chromium.org'])
         self.assertEqual(issue.description, 'test description')
+
+
+class BuganizerClientTest(unittest.TestCase):
+
+    def setUp(self):
+        self.service = mock.Mock()
+        self.web = MockWeb()
+        self.client = BuganizerClient(self.service, self.web)
+
+    def test_resolve_id_already_valid(self):
+        self.client.GetIssue(12_345_678)
+        fake_get = self.service.issues.return_value.get
+        fake_get.assert_called_once_with(issueId=12_345_678)
+
+    def test_resolve_id_already_valid_url(self):
+        self.client.GetIssue('crbug.com/12345678')
+        fake_get = self.service.issues.return_value.get
+        fake_get.assert_called_once_with(issueId=12_345_678)
+
+    def test_resolve_historic(self):
+        self.web.urls['https://crbug.com/123'] = (
+            b'window.location = "https://issues.chromium.org/12345678";')
+        self.client.GetIssue(123)
+        fake_get = self.service.issues.return_value.get
+        fake_get.assert_called_once_with(issueId=12_345_678)
+
+    def test_resolve_historic_url(self):
+        self.web.urls['https://crbug.com/123'] = (
+            b'window.location = "https://issues.chromium.org/12345678";')
+        self.client.GetIssue('crbug.com/123')
+        fake_get = self.service.issues.return_value.get
+        fake_get.assert_called_once_with(issueId=12_345_678)
+
+    def test_resolve_non_chromium_project(self):
+        self.web.urls['https://skbug.com/123'] = (
+            b'window.location = "https://issues.skia.org/12345678";')
+        self.client.GetIssue('https://skbug.com/123')
+        fake_get = self.service.issues.return_value.get
+        fake_get.assert_called_once_with(issueId=12_345_678)
+
+    def test_unsuccessful_resolve(self):
+        self.web.urls['https://crbug.com/123'] = b'404 not found'
+        with self.assertRaises(BuganizerError):
+            self.client.GetIssue(123)
+        fake_get = self.service.issues.return_value.get
+        fake_get.assert_not_called()

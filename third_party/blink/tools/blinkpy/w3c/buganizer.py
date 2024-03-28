@@ -5,10 +5,15 @@
 import enum
 import functools
 import logging
+import re
 import textwrap
 from dataclasses import dataclass, field
 from http import client as http_client
-from typing import List, Optional
+from typing import List, Optional, Union
+from urllib.parse import urlsplit
+
+from blinkpy.common.memoized import memoized
+from blinkpy.common.net.web import Web
 
 import google.auth
 import google_auth_httplib2
@@ -111,13 +116,26 @@ class BuganizerIssue:
             severity=Severity[state['severity']])
 
 
+# An issue ID may be one of:
+# * A valid Buganizer ID (at least 8 digits).
+# * A historic bug ID (7 digits or fewer) in the `chromium` Monorail project.
+# * A URL that will be resolved into one of the above. May also reference
+#   non-`chromium` projects (e.g., `skia`).
+IssueID = Union[str, int]
+
+
 class BuganizerClient:
-    def __init__(self):
+    MIN_ID: int = 10_000_000
+    _URL_PATTERN: re.Pattern = re.compile('https?://[^/]+/(?P<id>\d{8,})')
+
+    def __init__(self, service=None, web: Optional[Web] = None):
+        self._web = web or Web()
+        self._service = service
+        if self._service is not None:
+            return
+
         http = ServiceAccountHttp(BUGANIZER_SCOPES)
         http.timeout = 30
-
-        # Retry connecting at least 3 times.
-        self._service = None
         http_exception = None
         for attempt in range(MAX_DISCOVERY_RETRIES):
             try:
@@ -132,11 +150,12 @@ class BuganizerClient:
                 http_exception = e
 
         if self._service is None:
-            raise http_exception
+            raise BuganizerError(
+                'failed to connect to service') from http_exception
 
-    def GetIssue(self, id):
+    def GetIssue(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get an issue."""
-        request = self._service.issues().get(issueId=id)
+        request = self._service.issues().get(issueId=self._ResolveID(issue_id))
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
@@ -144,9 +163,10 @@ class BuganizerClient:
                           'error: %s', str(e))
             return {'error': str(e)}
 
-    def GetIssueComments(self, id):
+    def GetIssueComments(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get all the comments."""
-        request = self._service.issues().issueUpdates().list(issueId=id)
+        request = self._service.issues().issueUpdates().list(
+            issueId=self._ResolveID(issue_id))
 
         try:
             response = self._ExecuteRequest(request)
@@ -174,11 +194,11 @@ class BuganizerClient:
                 'error: %s', str(e))
             return {'error': str(e)}
 
-    def NewComment(self, id, comment):
+    def NewComment(self, issue_id: IssueID, comment: str):
         """Makes a request to the issue tracker to add a comment."""
         new_comment_request = {'issueComment': {'comment': comment}}
-        request = self._service.issues().modify(issueId=id,
-                                                body=new_comment_request)
+        request = self._service.issues().modify(
+            issueId=self._ResolveID(issue_id), body=new_comment_request)
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
@@ -186,6 +206,44 @@ class BuganizerClient:
                 '[BuganizerClient] Failed to NewComment '
                 'error: %s', str(e))
             return {'error': str(e)}
+
+    @memoized
+    def _ResolveID(self, issue_id: IssueID) -> int:
+        """Resolve any Buganizer or Monorail ID/URL into a valid Buganizer ID.
+
+        Notes on how different projects allocate IDs:
+        * Monorail is organized into different "projects" with separate ID
+          spaces (e.g., `crbug.com/v8/1` is a different issue from
+          `crbug.com/skia/1`).
+        * Buganizer has separate "trackers" for each project (e.g.,
+          `issues.chromium.org` versus `issues.skia.org`), but all IDs are
+          allocated from one space.
+        """
+        if isinstance(issue_id, str):
+            url = issue_id
+            if not urlsplit(url).scheme:
+                url = f'https://{url}'
+            # This URL might already contain a valid Buganizer ID.
+            maybe_match = self._URL_PATTERN.fullmatch(url)
+        elif issue_id >= self.MIN_ID:
+            return issue_id
+        else:
+            url, maybe_match = f'https://crbug.com/{issue_id}', None
+
+        # Unfortunately, there's no machine-readable way to translate historic
+        # Monorail bug IDs (seven digits or fewer) to the migrated Buganizer
+        # ones. Therefore, we must resort to scraping the JavaScript that
+        # performs the redirect:
+        # https://source.chromium.org/chromium/infra/infra/+/main:appengine/monorail/redirect/templates/redirect.html
+        #
+        # See b/331419421 for updates.
+        if not maybe_match:
+            text = self._web.get_binary(url).decode(errors='replace')
+            maybe_match = self._URL_PATTERN.search(text)
+        if not maybe_match:
+            raise BuganizerError(
+                f'{issue_id!r} did not resolve into a valid Buganizer ID')
+        return int(maybe_match.group('id'))
 
     def _ExecuteRequest(self, request):
         """Makes a request to the issue tracker.
