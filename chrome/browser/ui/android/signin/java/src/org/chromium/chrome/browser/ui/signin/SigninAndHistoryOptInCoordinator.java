@@ -117,6 +117,30 @@ public class SigninAndHistoryOptInCoordinator
         int REQUIRED = 2;
     }
 
+    public static boolean willShowSigninUI(Profile profile) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        return signinManager.isSigninAllowed();
+    }
+
+    public static boolean willShowHistorySyncUI(
+            Profile profile, @HistoryOptInMode int historyOptInMode) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (!willShowSigninUI(profile) && !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            // Signin is suppressed because of something other than the user being signed in. Since
+            // the user cannot sign in, we should not show history sync either.
+            return false;
+        }
+        return switch (historyOptInMode) {
+            case HistoryOptInMode.NONE -> false;
+                // TODO(crbug.com/331568233): Show history opt-in only if it's not suppressed.
+            case HistoryOptInMode.OPTIONAL, HistoryOptInMode.REQUIRED -> shouldShowHistorySync(
+                    profile);
+            default -> throw new IllegalArgumentException(
+                    "Unexpected value for historyOptInMode :" + historyOptInMode);
+        };
+    }
+
     /**
      * Creates an instance of {@link SigninAndHistoryOptInCoordinator} and shows the sign-in bottom
      * sheet.
@@ -393,7 +417,7 @@ public class SigninAndHistoryOptInCoordinator
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
-    private boolean shouldShowHistorySync(Profile profile) {
+    private static boolean shouldShowHistorySync(Profile profile) {
         HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(profile);
         if (historySyncHelper.didAlreadyOptIn()) {
             return false;

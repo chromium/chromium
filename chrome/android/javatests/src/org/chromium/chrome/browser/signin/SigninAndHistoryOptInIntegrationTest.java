@@ -16,6 +16,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
@@ -182,6 +183,28 @@ public class SigninAndHistoryOptInIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         verifyBottomSheetAndSignin(accountInfo);
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn() {
+        mSigninTestRule.addTestAccountThenSignin();
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.REQUIRED);
+
+        // Verify that the history opt-in dialog is shown and accept.
+        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+
+        // Verify signin and history sync state.
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        SyncTestUtil.waitForHistorySyncEnabled();
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);

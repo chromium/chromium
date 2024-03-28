@@ -59,8 +59,9 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
             @SigninAndHistoryOptInCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistoryOptInCoordinator.HistoryOptInMode int historyOptInMode,
             @AccessPoint int accessPoint) {
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        if (signinManager.isSigninAllowed()) {
+        if (SigninAndHistoryOptInCoordinator.willShowSigninUI(profile)
+                || SigninAndHistoryOptInCoordinator.willShowHistorySyncUI(
+                        profile, historyOptInMode)) {
             Intent intent =
                     SigninAndHistoryOptInActivity.createIntent(
                             context,
@@ -77,6 +78,8 @@ public final class SigninAndHistoryOptInActivityLauncherImpl
         }
         // TODO(https://crbug.com/1520783): Update the UI related to sign-in errors, and handle the
         // non-managed case.
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assert signinManager != null;
         if (signinManager.isSigninDisabledByPolicy()) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Signin.SigninDisabledNotificationShown", accessPoint, SigninAccessPoint.MAX);
