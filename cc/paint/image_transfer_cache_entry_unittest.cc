@@ -192,7 +192,7 @@ class ImageTransferCacheEntryTest
     }
     DCHECK_EQ(width, allocated_texture.width());
     DCHECK_EQ(height, allocated_texture.height());
-    DCHECK(!allocated_texture.hasMipMaps());
+    DCHECK(!allocated_texture.hasMipmaps());
     DCHECK(allocated_texture_info.fTarget == GL_TEXTURE_2D);
     *released = false;
     return SkImages::BorrowTextureFrom(
