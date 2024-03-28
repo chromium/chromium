@@ -286,7 +286,7 @@ The preferred way of posting to the current (virtual) thread is via
 ```cpp
 // The task will run on the current (virtual) thread's default task queue.
 base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-    FROM_HERE, base::BindOnce(&Task);
+    FROM_HERE, base::BindOnce(&Task));
 ```
 
 Note that `SequencedTaskRunner::GetCurrentDefault()` returns the default queue for the
