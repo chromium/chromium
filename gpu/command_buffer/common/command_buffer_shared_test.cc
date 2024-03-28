@@ -48,7 +48,8 @@ void WriteToState(int32_t* buffer, CommandBufferSharedState* shared_state) {
     state.token = i - 1;
     state.get_offset = i + 1;
     state.generation = i + 2;
-    state.error = static_cast<gpu::error::Error>(i + 3);
+    state.error =
+        static_cast<gpu::error::Error>((i + 3) % (gpu::error::kErrorLast + 1));
     // Ensure that the producer doesn't update the buffer until after the
     // consumer reads from it.
     EXPECT_EQ(buffer[i], 0);
@@ -87,7 +88,8 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
       EXPECT_EQ(state.token, state.get_offset - 2);
       EXPECT_EQ(state.generation,
                 static_cast<unsigned int>(state.get_offset) + 1);
-      EXPECT_EQ(state.error, state.get_offset + 2);
+      EXPECT_EQ(state.error,
+                (state.get_offset + 2) % (gpu::error::kErrorLast + 1));
 
       if (state.get_offset == kSize)
         break;
@@ -96,4 +98,3 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
 }
 
 }  // namespace gpu
-
