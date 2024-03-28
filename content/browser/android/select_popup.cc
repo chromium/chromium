@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/heap_array.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/android/content_jni_headers/SelectPopup_jni.h"
@@ -75,7 +76,7 @@ void SelectPopup::ShowMenu(
   // given |selected_item| as is.
   ScopedJavaLocalRef<jintArray> selected_array;
   if (multiple) {
-    std::unique_ptr<jint[]> native_selected_array(new jint[items.size()]);
+    auto native_selected_array = base::HeapArray<jint>::WithSize(items.size());
     size_t selected_count = 0;
     for (size_t i = 0; i < items.size(); ++i) {
       if (items[i]->checked)
@@ -85,7 +86,7 @@ void SelectPopup::ShowMenu(
     selected_array =
         ScopedJavaLocalRef<jintArray>(env, env->NewIntArray(selected_count));
     env->SetIntArrayRegion(selected_array.obj(), 0, selected_count,
-                           native_selected_array.get());
+                           native_selected_array.data());
   } else {
     selected_array = ScopedJavaLocalRef<jintArray>(env, env->NewIntArray(1));
     jint value = selected_item;
