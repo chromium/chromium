@@ -176,4 +176,9 @@ public interface SiteSettingsDelegate {
      * @param callback Callback runs with the BrowsingDataModel object when the model is built.
      */
     void getBrowsingDataModel(Callback<BrowsingDataModel> callback);
+
+    /**
+     * @return whether the Privacy Sandbox Rws UI should be shown in the Settings.
+     */
+    boolean shouldShowPrivacySandboxRwsUi();
 }

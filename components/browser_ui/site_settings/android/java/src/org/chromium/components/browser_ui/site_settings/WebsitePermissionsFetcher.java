@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -638,7 +639,7 @@ public class WebsitePermissionsFetcher {
             @Override
             public void run() {
                 if (canDealWithFirstPartySetsInfo()) {
-                    Map<String, Set<String>> fpsOwnerToMembers =
+                    Map<String, List<Website>> fpsOwnerToMembers =
                             buildOwnerToMembersMapFromFetchedSites();
 
                     // For each {@link Website} sets its FirstPartySet info: the FPS Owner and the
@@ -647,33 +648,42 @@ public class WebsitePermissionsFetcher {
                         String fpsOwnerHostname =
                                 mSiteSettingsDelegate.getFirstPartySetOwner(
                                         site.getAddress().getOrigin());
-                        if (fpsOwnerHostname == null) continue;
-                        int fpsMembersCount = fpsOwnerToMembers.get(fpsOwnerHostname).size();
-                        site.setFPSCookieInfo(new FPSCookieInfo(fpsOwnerHostname, fpsMembersCount));
+                        if (fpsOwnerHostname == null
+                                || fpsOwnerToMembers.get(fpsOwnerHostname) == null) continue;
+                        site.setFPSCookieInfo(
+                                new FPSCookieInfo(
+                                        fpsOwnerHostname, fpsOwnerToMembers.get(fpsOwnerHostname)));
                     }
                 }
             }
 
             /**
-             * Builds a {@link Map<String,  Set <String>>} of FPS Owner - Set of FPS Members from
+             * Builds a {@link Map<String, List <Website>>} of FPS Owner - Set of FPS Members from
              * the fetched websites.
              */
             @NonNull
-            private Map<String, Set<String>> buildOwnerToMembersMapFromFetchedSites() {
-                Map<String, Set<String>> fpsOwnerToMember = new HashMap<>();
+            private Map<String, List<Website>> buildOwnerToMembersMapFromFetchedSites() {
+                // set to avoid equals implementation for Website object
+                Set<String> domainAndRegistryToWebsite = new HashSet<>();
+                Map<String, List<Website>> fpsOwnerToMember = new HashMap<>();
+
                 for (Website site : mSites.values()) {
                     String fpsMemberHostname = site.getAddress().getDomainAndRegistry();
                     String fpsOwnerHostname =
                             mSiteSettingsDelegate.getFirstPartySetOwner(
                                     site.getAddress().getOrigin());
                     if (fpsOwnerHostname == null) continue;
-                    Set<String> members = fpsOwnerToMember.get(fpsOwnerHostname);
-                    if (members == null) {
-                        members = new HashSet<>();
+                    List<Website> members = fpsOwnerToMember.get(fpsOwnerHostname);
+                    if (!domainAndRegistryToWebsite.contains(fpsMemberHostname)) {
+                        if (members == null) {
+                            members = new ArrayList<>();
+                        }
+                        members.add(site);
+                        domainAndRegistryToWebsite.add(fpsMemberHostname);
+                        fpsOwnerToMember.put(fpsOwnerHostname, members);
                     }
-                    members.add(fpsMemberHostname);
-                    fpsOwnerToMember.put(fpsOwnerHostname, members);
                 }
+
                 return fpsOwnerToMember;
             }
         }

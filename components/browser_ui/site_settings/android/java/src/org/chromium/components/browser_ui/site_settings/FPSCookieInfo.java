@@ -4,16 +4,19 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import com.google.common.collect.ImmutableList;
+
 import java.io.Serializable;
+import java.util.List;
 
 /** First Party Sets information for a given website. */
 public class FPSCookieInfo implements Serializable {
     private final String mOwnerHost;
-    private final int mMembersCount;
+    private final List<Website> mMembers;
 
-    public FPSCookieInfo(String ownerHost, int membersCount) {
+    public FPSCookieInfo(String ownerHost, List<Website> members) {
         mOwnerHost = ownerHost;
-        mMembersCount = membersCount;
+        mMembers = members;
     }
 
     public String getOwner() {
@@ -21,6 +24,10 @@ public class FPSCookieInfo implements Serializable {
     }
 
     public int getMembersCount() {
-        return mMembersCount;
+        return mMembers != null ? mMembers.size() : 0;
+    }
+
+    public ImmutableList<Website> getMembers() {
+        return ImmutableList.copyOf(mMembers);
     }
 }

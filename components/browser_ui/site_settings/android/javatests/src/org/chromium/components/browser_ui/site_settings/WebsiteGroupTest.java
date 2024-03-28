@@ -138,7 +138,15 @@ public class WebsiteGroupTest {
     @Test
     @SmallTest
     public void testFPSInfo() {
-        var fpsInfo = new FPSCookieInfo("google.com", 5);
+        var fpsInfo =
+                new FPSCookieInfo(
+                        "google.com",
+                        Arrays.asList(
+                                new Website(null, null),
+                                new Website(null, null),
+                                new Website(null, null),
+                                new Website(null, null),
+                                new Website(null, null)));
         Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
         Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);

@@ -24,6 +24,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
@@ -938,8 +939,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     private void setupRelatedSitesPreferences() {
-        var relatedSitesHeader = findPreference(PREF_RELATED_SITES_HEADER);
-        TextMessagePreference relatedSitesText = findPreference(PREF_RELATED_SITES);
+        PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES_HEADER);
+        TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
                         && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
@@ -966,6 +967,21 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                     .isPartOfManagedFirstPartySet(mSite.getAddress().getOrigin());
                         }
                     });
+            relatedSitesHeader.addPreference(relatedSitesText);
+
+            if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
+                relatedSitesHeader.removeAll();
+                relatedSitesHeader.addPreference(relatedSitesText);
+                for (Website site : mSite.getFPSCookieInfo().getMembers()) {
+                    WebsiteRowPreference preference =
+                            new RwsRowPreference(
+                                    relatedSitesHeader.getContext(),
+                                    getSiteSettingsDelegate(),
+                                    site,
+                                    getActivity().getLayoutInflater());
+                    relatedSitesHeader.addPreference(preference);
+                }
+            }
         }
     }
 
