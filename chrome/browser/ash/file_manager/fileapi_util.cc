@@ -725,9 +725,12 @@ void GenerateUnusedFilename(
   state.extension = trimmed_filename.Extension();
   // Extracts the filename without extension or existing counter.
   // E.g. "foo (3).txt" -> "foo".
-  bool res = RE2::FullMatch(trimmed_filename.RemoveExtension().value(),
-                            R"((.*?)(?: \(\d+\))?)", &state.prefix);
-  DCHECK(res);
+  RE2::Options options;
+  options.set_dot_nl(true);  // Dot matches a new line.
+  const RE2 re(R"((.*?)(?: \(\d+\))?)", options);
+  const bool res = RE2::FullMatch(trimmed_filename.RemoveExtension().value(),
+                                  re, &state.prefix);
+  DCHECK(res) << " for '" << trimmed_filename << "'";
 
   auto get_metadata_callback = base::BindOnce(
       &GenerateUnusedFilenameOnGotMetadata, trial_url, std::move(state),

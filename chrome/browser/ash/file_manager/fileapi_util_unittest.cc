@@ -463,6 +463,17 @@ TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameBasic) {
   TestGenerateUnusedFilename({"foo.bar"}, " foo.bar", {" foo.bar"});
 }
 
+TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameNewLine) {
+  TestGenerateUnusedFilename({}, "new\nline.bar", {"new\nline.bar"});
+  TestGenerateUnusedFilename({"new\nline.bar"}, "new\nline.bar",
+                             {"new\nline (1).bar"});
+  TestGenerateUnusedFilename({"new\nline.bar", "new\nline (1).bar"},
+                             "new\nline.bar", {"new\nline (2).bar"});
+  TestGenerateUnusedFilename({}, "new\nline (\n)", {"new\nline (\n)"});
+  TestGenerateUnusedFilename({"new\nline (\n)"}, "new\nline (\n)",
+                             {"new\nline (\n) (1)"});
+}
+
 TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameUnicode) {
   TestGenerateUnusedFilename({}, "é è ê ô œ.txt€", {"é è ê ô œ.txt€"});
   TestGenerateUnusedFilename({"é è ê ô œ.txt€"}, "é è ê ô œ.txt€",
