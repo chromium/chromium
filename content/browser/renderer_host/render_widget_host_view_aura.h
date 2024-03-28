@@ -420,10 +420,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   ui::Compositor* GetCompositor() override;
 
-  void AllocateLocalSurfaceIdOnNextShow() {
-    allocate_local_surface_id_on_next_show_ = true;
-  }
-
   DelegatedFrameHost* GetDelegatedFrameHostForTesting() const {
     return delegated_frame_host_.get();
   }
@@ -827,8 +823,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 #endif
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
-
-  bool allocate_local_surface_id_on_next_show_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 };
