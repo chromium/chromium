@@ -24153,9 +24153,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridOpenIncognitoTabGroup">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened an incognito tab group by tapping on it.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenIncognitoTabGroupSearchResult">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened an incognito tab Group by tapping on it from
+    search results.
+  </description>
+</action>
+
 <action name="MobileTabGridOpenIncognitoTabSearchResult">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     User in the iOS tab grid opened an incognito tab by tapping on it from
     search results.
@@ -24163,16 +24180,33 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenRegularTab">
-  <owner>edchin@chromium.org</owner>
-  <owner>marq@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     User in the iOS tab grid opened a regular tab by tapping on it.
   </description>
 </action>
 
+<action name="MobileTabGridOpenRegularTabGroup">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened a regular tab group by tapping on it.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenRegularTabGroupSearchResult">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened a regular tab group by tapping on it from
+    search results.
+  </description>
+</action>
+
 <action name="MobileTabGridOpenRegularTabSearchResult">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
     User in the iOS tab grid opened a regular tab by tapping on it from search
     results.
@@ -24180,10 +24214,19 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTabGridOpenSearchResultInAnotherWindow">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <description>
-    User in the iOS tab grid opened a regular tab from another window by tapping
+    User in the iOS tab grid opened a tab from another window by tapping on it
+    from search results.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenTabGroupSearchResultInAnotherWindow">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the iOS tab grid opened a tab group from another window by tapping
     on it from search results.
   </description>
 </action>

@@ -421,6 +421,10 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
+- (void)selectTabGroup:(const TabGroup*)tabGroup {
+  NOTREACHED_NORETURN();
+}
+
 - (void)closeItemWithID:(web::WebStateID)itemID {
   // TODO(crbug.com/1418021): Add metrics when the user closes an inactive tab.
   int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{

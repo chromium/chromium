@@ -104,13 +104,30 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                                     ? browser_list->AllIncognitoBrowsers()
                                     : browser_list->AllRegularBrowsers();
   for (Browser* browser : browsers) {
-    WebStateList* webStateList = browser->GetWebStateList();
-    int index = GetWebStateIndex(webStateList,
+    WebStateList* web_state_list = browser->GetWebStateList();
+    int index = GetWebStateIndex(web_state_list,
                                  WebStateSearchCriteria{
                                      .identifier = identifier,
                                      .pinned_state = PinnedState::kNonPinned,
                                  });
     if (index != WebStateList::kInvalidIndex) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
+
+// Returns the Browser with `group` in its WebStateList. Returns `nullptr`
+// if not found.
+Browser* GetBrowserForGroup(BrowserList* browser_list,
+                            const TabGroup* group,
+                            bool is_otr_tab) {
+  std::set<Browser*> browsers = is_otr_tab
+                                    ? browser_list->AllIncognitoBrowsers()
+                                    : browser_list->AllRegularBrowsers();
+  for (Browser* browser : browsers) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    if (web_state_list->ContainsGroup(group)) {
       return browser;
     }
   }
@@ -617,22 +634,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   };
 
   int index = GetWebStateIndex(self.webStateList, searchCriteria);
-  // TODO(crbug.com/1501837): Adapt the condition to open a tab group UI only
-  // when `itemID` match a group.
-  if (IsTabGroupInGridEnabled()) {
-    // TODO(crbug.com/1501837): This should be move in the function (when
-    // available) which handle when a user tab on a group cell. This should also
-    // get the real group and not create one.
-    tab_groups::TabGroupVisualData temporaryVisualData(
-        u"To remove", tab_groups::TabGroupColorId::kCyan);
-    if (index == WebStateList::kInvalidIndex) {
-      [self.dispatcher showTabGroup:self.webStateList->CreateGroup(
-                                        {index}, temporaryVisualData)];
-    }
-
-    return;
-  }
-
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
     if (pinned) {
@@ -717,6 +718,50 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
   // It should be safe to activate here.
   itemWebStateList->ActivateWebStateAt(index);
+}
+
+- (void)selectTabGroup:(const TabGroup*)tabGroup {
+  WebStateList* webStateList = self.webStateList;
+
+  if (webStateList->ContainsGroup(tabGroup)) {
+    [self.dispatcher showTabGroup:tabGroup];
+    return;
+  }
+
+  // If this is a search result, it may contain items from other windows or
+  // from the inactive browser - check other windows before giving up.
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(self.browserState);
+  Browser* browser = GetBrowserForGroup(browserList, tabGroup,
+                                        self.browserState->IsOffTheRecord());
+
+  if (!browser) {
+    return;
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridOpenSearchResultInAnotherWindow"));
+
+  SceneState* targetSceneState = browser->GetSceneState();
+  SceneState* currentSceneState = self.browser->GetSceneState();
+
+  UISceneActivationRequestOptions* options =
+      [[UISceneActivationRequestOptions alloc] init];
+  options.requestingScene = currentSceneState.scene;
+
+  [[UIApplication sharedApplication]
+      requestSceneSessionActivation:targetSceneState.scene.session
+                       userActivity:nil
+                            options:options
+                       errorHandler:^(NSError* error) {
+                         LOG(ERROR) << base::SysNSStringToUTF8(
+                             error.localizedDescription);
+                         NOTREACHED();
+                       }];
+
+  id<TabGroupsCommands> tabGroupsHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), TabGroupsCommands);
+  [tabGroupsHandler showTabGroup:tabGroup];
 }
 
 - (BOOL)isItemWithIDSelected:(web::WebStateID)itemID {

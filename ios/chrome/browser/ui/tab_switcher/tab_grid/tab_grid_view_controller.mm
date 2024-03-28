@@ -1815,20 +1815,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [tabsDelegate selectItemWithID:itemID pinned:NO];
 
-  // TODO(crbug.com/1501837): Change the condition to verify if the given item
-  // ID is a group or not.
-  if (IsTabGroupInGridEnabled()) {
-    // Do not present the currently selected tab.
-    return;
-  }
-
   if (self.tabGridMode == TabGridModeSearch) {
     if (![tabsDelegate isItemWithIDSelected:itemID]) {
       // That can happen when the search result that was selected is from
       // another window. In that case don't change the active page for this
-      // window and don't close the tab grid.
+      // window and don't show the tab group view.
       base::RecordAction(base::UserMetricsAction(
-          "MobileTabGridOpenSearchResultInAnotherWindow"));
+          "MobileTabGridOpenTabGroupSearchResultInAnotherWindow"));
       return;
     } else {
       // Make sure that the keyboard is dismissed before starting the transition
@@ -1836,10 +1829,56 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.view endEditing:YES];
     }
   }
-  self.activePage = self.currentPage;
 
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO];
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+            didSelectGroup:(const TabGroup*)group {
+  // Check that the current page matches the grid view being interacted with.
+  BOOL isOnRegularTabsPage = self.currentPage == TabGridPageRegularTabs;
+  BOOL isOnIncognitoTabsPage = self.currentPage == TabGridPageIncognitoTabs;
+  BOOL isOnRemoteTabsPage = self.currentPage == TabGridPageRemoteTabs;
+  BOOL gridIsRegularTabs = gridViewController == self.regularTabsViewController;
+  BOOL gridIsIncognitoTabs =
+      gridViewController == self.incognitoTabsViewController;
+  if ((isOnRegularTabsPage && !gridIsRegularTabs) ||
+      (isOnIncognitoTabsPage && !gridIsIncognitoTabs) || isOnRemoteTabsPage) {
+    return;
+  }
+
+  if (self.tabGridMode == TabGridModeSelection) {
+    return;
+  }
+
+  id<GridCommands> tabsDelegate;
+  if (gridViewController == self.regularTabsViewController) {
+    tabsDelegate = self.regularGridHandler;
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridOpenRegularTabGroup"));
+    if (self.tabGridMode == TabGridModeSearch) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridOpenRegularTabGroupSearchResult"));
+    }
+  } else if (gridViewController == self.incognitoTabsViewController) {
+    tabsDelegate = self.incognitoGridHandler;
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridOpenIncognitoTabGroup"));
+    if (self.tabGridMode == TabGridModeSearch) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileTabGridOpenIncognitoTabGroupSearchResult"));
+    }
+  }
+
+  [self setCurrentIdlePageStatus:NO];
+
+  [tabsDelegate selectTabGroup:group];
+
+  if (self.tabGridMode == TabGridModeSearch) {
+    // Make sure that the keyboard is dismissed.
+    [self.view endEditing:YES];
+  }
 }
 
 // TODO(crbug.com/1457146): Remove once inactive tabs do not depends on it

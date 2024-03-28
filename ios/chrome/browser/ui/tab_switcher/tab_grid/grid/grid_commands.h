@@ -9,6 +9,8 @@
 
 #import <set>
 
+class TabGroup;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -62,6 +64,9 @@ class WebStateID;
 // Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made.
 - (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned;
+
+// Tells the receiver to select the `tabGroup`.
+- (void)selectTabGroup:(const TabGroup*)tabGroup;
 
 // Tells the receiver to close the item with identifier `itemID`. If there is
 // no item with that identifier, no item is closed.

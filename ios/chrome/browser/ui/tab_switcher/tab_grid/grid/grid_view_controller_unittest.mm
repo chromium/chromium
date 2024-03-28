@@ -38,6 +38,11 @@
   // generically when selectedIndex is updated.
 }
 - (void)gridViewController:(BaseGridViewController*)gridViewController
+            didSelectGroup:(const TabGroup*)group {
+  // No-op for unittests. This is only called when a user taps on a cell, not
+  // generically when selectedIndex is updated.
+}
+- (void)gridViewController:(BaseGridViewController*)gridViewController
          didMoveItemWithID:(web::WebStateID)itemID
                    toIndex:(NSUInteger)destinationIndex {
   // No-op for unittests. This is only called when a user interactively moves

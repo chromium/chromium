@@ -24,6 +24,7 @@
 @protocol TabContextMenuProvider;
 @protocol TabCollectionDragDropHandler;
 @class TabGridTransitionItem;
+class TabGroup;
 
 namespace web {
 class WebStateID;
@@ -36,6 +37,9 @@ class WebStateID;
 // `gridViewController`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID;
+// Tells the delegate that the `group` was selected in `gridViewController`.
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+            didSelectGroup:(const TabGroup*)group;
 // Tells the delegate that the item with `itemID` was closed in
 // `gridViewController`.
 - (void)gridViewController:(BaseGridViewController*)gridViewController

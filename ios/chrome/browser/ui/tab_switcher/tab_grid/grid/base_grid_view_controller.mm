@@ -647,7 +647,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // This is handled by
     // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16. The
     // method comment should be updated once iOS 15 is dropped.
-    return YES;
+    return NO;
   } else {
     [self tappedItemAtIndexPath:indexPath];
   }
@@ -1798,10 +1798,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self.delegate gridViewController:self didSelectItemWithID:itemID];
       break;
     }
-    case GridItemType::Group:
-      // TODO(crbug.com/1501837): Add the handling of groups selection in the
-      // grid view controller.
+    case GridItemType::Group: {
+      const TabGroup* group = itemIdentifier.tabGroupItem.tabGroup;
+      [self.delegate gridViewController:self didSelectGroup:group];
       break;
+    }
     case GridItemType::SuggestedActions:
       NOTREACHED();
       break;

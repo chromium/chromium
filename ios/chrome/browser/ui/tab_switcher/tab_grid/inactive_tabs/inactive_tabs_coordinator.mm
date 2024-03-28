@@ -302,6 +302,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
+            didSelectGroup:(const TabGroup*)group {
+  NOTREACHED_NORETURN();
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID {
   __weak __typeof(self) weakSelf = self;
   auto closeItem = ^{
