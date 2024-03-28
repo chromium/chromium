@@ -338,6 +338,15 @@ void CameraAppEventsSender::SendPerfEvent(
               static_cast<int64_t>(params->resolution_height))));
 }
 
+void CameraAppEventsSender::SendUnsupportedProtocolEvent() {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::CameraApp_UnsupportedProtocol()));
+}
+
 void CameraAppEventsSender::UpdateMemoryUsageEventParams(
     camera_app::mojom::MemoryUsageEventParamsPtr params) {
   if (!CanSendEvents()) {

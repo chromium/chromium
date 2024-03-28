@@ -314,6 +314,9 @@ interface EventsSender {
   // Sends an event when a performance measurement is performed.
   SendPerfEvent(PerfEventParams params);
 
+  // Sends an event when a barcode is detected and it is unsupported protocol.
+  SendUnsupportedProtocolEvent();
+
   // Update the memory usage events parameter of the current camera session
   // which will be sent when the camera session ends.
   UpdateMemoryUsageEventParams(MemoryUsageEventParams params);

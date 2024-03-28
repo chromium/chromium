@@ -7,7 +7,11 @@ import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
 import {I18nString} from './i18n_string.js';
-import {BarcodeContentType, sendBarcodeDetectedEvent} from './metrics.js';
+import {
+  BarcodeContentType,
+  sendBarcodeDetectedEvent,
+  sendUnsupportedProtocolEvent,
+} from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {
@@ -90,6 +94,7 @@ function isSafeUrl(s: string): boolean {
       reportError(
           ErrorType.UNSUPPORTED_PROTOCOL, ErrorLevel.WARNING,
           new Error(`Reject url with protocol: ${url.protocol}`));
+      sendUnsupportedProtocolEvent();
       return false;
     }
     return true;

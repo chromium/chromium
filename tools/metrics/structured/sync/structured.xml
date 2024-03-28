@@ -1362,6 +1362,12 @@
     </metric>
   </event>
 
+  <event name="CameraApp.UnsupportedProtocol">
+    <summary>
+      Event recorded when a barcode is detected and it is unsupported protocol.
+    </summary>
+  </event>
+
   <event name="CameraApp.EndSession">
     <summary>
       Event recorded when the camera app is closed.

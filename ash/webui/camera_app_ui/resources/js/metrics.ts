@@ -836,6 +836,20 @@ export function sendOpenCameraEvent(moduleId: string|null): void {
 }
 
 /**
+ * Sends unsupported protocol event.
+ */
+export function sendUnsupportedProtocolEvent(): void {
+  sendEvent({
+    eventCategory: 'barcode',
+    eventAction: 'unsupportedProtocol',
+  });
+
+  void (async () => {
+    (await getEventsSender()).sendUnsupportedProtocolEvent();
+  })();
+}
+
+/**
  * Updates the memory usage and session behavior value to untrusted_ga_helpers.
  *
  * @param updatedValue Updated memory usage dimensions value to be updated.

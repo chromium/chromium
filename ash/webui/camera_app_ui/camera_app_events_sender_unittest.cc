@@ -349,6 +349,18 @@ TEST_F(CameraAppEventsSenderTest, Perf) {
   EXPECT_EQ(received_event.metric_values(), expected_event.metric_values());
 }
 
+TEST_F(CameraAppEventsSenderTest, UnsupportedProtocol) {
+  cros_events::CameraApp_UnsupportedProtocol expected_event;
+
+  events_sender_->SendUnsupportedProtocolEvent();
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+
+  auto& received_event = events[0];
+  EXPECT_EQ(received_event.event_name(), expected_event.event_name());
+}
+
 TEST_F(CameraAppEventsSenderTest, EndSession) {
   // To send a end session event, a start session event should be sent first.
   auto start_session_params =
