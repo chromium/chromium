@@ -19,6 +19,7 @@ enum class SignatureValidationType {
 
   // Verify that the running application has a valid code signature.
   // Do not verify that the application matches the copy on disk.
+  // The contents of the Info.plist of the process must be provided.
   DynamicOnly,
 };
 
@@ -28,7 +29,8 @@ OSStatus ProcessIsSignedAndFulfillsRequirement(
     pid_t process,
     SecRequirementRef requirement,
     SignatureValidationType validation_type =
-        SignatureValidationType::DynamicAndStatic);
+        SignatureValidationType::DynamicAndStatic,
+    std::string_view info_plist_xml = {});
 
 // Reason why no requirement could be returned.
 enum class MissingRequirementReason {

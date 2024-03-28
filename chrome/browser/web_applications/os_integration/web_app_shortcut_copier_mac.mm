@@ -89,7 +89,7 @@ CreateParentAppRequirement() {
 // - True if the parent process satisfies the constructed designated requirement
 // tailored for the parent app based on the framework bundle's requirement.
 // - False otherwise.
-bool ValidateParentProcess() {
+bool ValidateParentProcess(std::string_view info_plist_xml) {
   base::expected<base::apple::ScopedCFTypeRef<SecRequirementRef>,
                  apps::MissingRequirementReason>
       parent_app_requirement = CreateParentAppRequirement();
@@ -113,7 +113,7 @@ bool ValidateParentProcess() {
   // match its on-disk signature if there is an update pending.
   OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
       getppid(), parent_app_requirement.value().get(),
-      apps::SignatureValidationType::DynamicOnly);
+      apps::SignatureValidationType::DynamicOnly, info_plist_xml);
   return status == errSecSuccess;
 }
 
@@ -130,13 +130,19 @@ __attribute__((visibility("default"))) int ChromeWebAppShortcutCopierMain(
 // Copies files from argv[1] to argv[2]
 //
 // When using ad-hoc signing for web app shims, the final app shim must be
-// written to disk by this helper tool. This separate helper tool exists so
-// that that binary authorization tools, such as Santa, can transitively trust
-// app shims that it creates without trusting all files written by Chrome. This
-// allows app shims to be trusted by the binary authorization tool despite
-// having only ad-hoc code signatures.
+// written to disk by this helper tool. This separate helper tool exists so that
+// binary authorization tools, such as Santa, can transitively trust app shims
+// that it creates without trusting all files written by Chrome. This allows app
+// shims to be trusted by the binary authorization tool despite having only
+// ad-hoc code signatures.
+//
+// argv[3] is the Info.plist contents of Chrome. This is needed to validate the
+// dynamic code signature of the running application as the Info.plist file on
+// disk may have changed if there is an update pending. The passed-in data is
+// validated against a hash recorded in the code signature before being used
+// during requirement validation.
 int ChromeWebAppShortcutCopierMain(int argc, char** argv) {
-  if (argc != 3) {
+  if (argc != 4) {
     return 1;
   }
 
@@ -148,7 +154,7 @@ int ChromeWebAppShortcutCopierMain(int argc, char** argv) {
   base::apple::SetOverrideFrameworkBundlePath(
       executable_path.DirName().DirName());
 
-  if (!ValidateParentProcess()) {
+  if (!ValidateParentProcess(argv[3])) {
     return 1;
   }
 
