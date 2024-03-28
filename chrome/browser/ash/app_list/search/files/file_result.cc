@@ -15,10 +15,10 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/files/file_title.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -87,20 +87,6 @@ ash::FileMetadata GetFileMetadata(base::FilePath file_path,
   metadata.displayable_folder_path = displayable_path.DirName();
 
   return metadata;
-}
-
-std::string StripHostedFileExtensions(const std::string& filename) {
-  static const base::NoDestructor<std::vector<std::string>> hosted_extensions(
-      {".GDOC", ".GSHEET", ".GSLIDES", ".GDRAW", ".GTABLE", ".GLINK", ".GFORM",
-       ".GMAPS", ".GSITE"});
-
-  for (const auto& extension : *hosted_extensions) {
-    if (EndsWith(filename, extension, base::CompareCase::INSENSITIVE_ASCII)) {
-      return filename.substr(0, filename.size() - extension.size());
-    }
-  }
-
-  return filename;
 }
 
 void LogRelevance(ChromeSearchResult::ResultType result_type,
@@ -179,8 +165,7 @@ FileResult::FileResult(const std::string& id,
       NOTREACHED();
   }
 
-  SetTitle(base::UTF8ToUTF16(
-      StripHostedFileExtensions(filepath.BaseName().value())));
+  SetTitle(GetFileTitle(filepath));
 
   if (details)
     SetDetails(details.value());
@@ -235,8 +220,7 @@ double FileResult::CalculateRelevance(
     const std::optional<TokenizedString>& query,
     const base::FilePath& filepath,
     const std::optional<base::Time>& last_accessed) {
-  const std::u16string raw_title =
-      base::UTF8ToUTF16(StripHostedFileExtensions(filepath.BaseName().value()));
+  const std::u16string raw_title = GetFileTitle(filepath);
   const TokenizedString title(raw_title, TokenizedString::Mode::kWords);
 
   const bool use_default_relevance =

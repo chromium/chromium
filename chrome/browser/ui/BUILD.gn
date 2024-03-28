@@ -2399,6 +2399,8 @@ static_library("ui") {
       "../ash/app_list/search/files/file_result.h",
       "../ash/app_list/search/files/file_search_provider.cc",
       "../ash/app_list/search/files/file_search_provider.h",
+      "../ash/app_list/search/files/file_title.cc",
+      "../ash/app_list/search/files/file_title.h",
       "../ash/app_list/search/files/justifications.cc",
       "../ash/app_list/search/files/justifications.h",
       "../ash/app_list/search/files/zero_state_drive_provider.cc",

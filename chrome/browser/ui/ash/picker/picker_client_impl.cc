@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/drive_search_provider.h"
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
+#include "chrome/browser/ash/app_list/search/files/file_title.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
@@ -72,7 +73,8 @@ storage::FileSystemContext* GetFileSystemContextForProfile(Profile* profile) {
 
 ash::PickerSearchResult CreateSearchResultForRecentFile(
     const ash::RecentFile& file) {
-  return ash::PickerSearchResult::LocalFile(u"file", file.url().path());
+  const base::FilePath& path = file.url().path();
+  return ash::PickerSearchResult::LocalFile(app_list::GetFileTitle(path), path);
 }
 
 int GetAllAutocompleteProviderTypes() {

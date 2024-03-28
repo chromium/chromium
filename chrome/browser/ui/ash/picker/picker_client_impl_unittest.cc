@@ -224,16 +224,22 @@ TEST_F(PickerClientImplTest, GetRecentFilesReturnsFiles) {
   EXPECT_THAT(
       future.Get(),
       UnorderedElementsAre(
-          Property("data", &ash::PickerSearchResult::data,
-                   VariantWith<ash::PickerSearchResult::LocalFileData>(
-                       Field("file_path",
-                             &ash::PickerSearchResult::LocalFileData::file_path,
-                             base::FilePath("aaa.jpg")))),
-          Property("data", &ash::PickerSearchResult::data,
-                   VariantWith<ash::PickerSearchResult::LocalFileData>(
-                       Field("file_path",
-                             &ash::PickerSearchResult::LocalFileData::file_path,
-                             base::FilePath("bbb.mp4"))))));
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::LocalFileData>(AllOf(
+                  Field("title", &ash::PickerSearchResult::LocalFileData::title,
+                        u"aaa.jpg"),
+                  Field("file_path",
+                        &ash::PickerSearchResult::LocalFileData::file_path,
+                        base::FilePath("aaa.jpg"))))),
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::LocalFileData>(AllOf(
+                  Field("title", &ash::PickerSearchResult::LocalFileData::title,
+                        u"bbb.mp4"),
+                  Field("file_path",
+                        &ash::PickerSearchResult::LocalFileData::file_path,
+                        base::FilePath("bbb.mp4")))))));
 }
 
 TEST_F(PickerClientImplTest, GetRecentFilesDoesNotReturnOldFiles) {
