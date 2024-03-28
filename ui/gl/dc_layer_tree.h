@@ -247,20 +247,8 @@ class GL_EXPORT DCLayerTree {
 
     ~VisualTree();
     // Given pending overlays, builds or updates this visual tree.
-    // This method is called to build visual tree when
-    // kDCompVisualTreeOptimization is disabled.
-    // Parameters:
-    // overlays - overlay inputs to build dcomp tree.
-    // needs_rebuild_visual_tree - true if the tree needs to be rebuilt.
     // Returns true if commit succeeded.
-    bool BuildTreeDefault(
-        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-        bool needs_rebuild_visual_tree);
-    // Given pending overlays, builds or updates this visual tree.
-    // This method is called to build visual tree when
-    // kDCompVisualTreeOptimization is enabled.
-    // Returns true if commit succeeded.
-    bool BuildTreeOptimized(
+    bool BuildTree(
         const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
         bool needs_rebuild_visual_tree);
 
@@ -499,13 +487,6 @@ class GL_EXPORT DCLayerTree {
   };
 
  private:
-  // Given pending overlays, builds or updates visual tree.
-  // Returns true if commit succeeded.
-  bool BuildVisualTreeHelper(
-      const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-      // True if the caller determined that rebuilding the tree is required.
-      bool needs_rebuild_visual_tree);
-
   // This will add an ink visual to the visual tree to enable delegated ink
   // trails. This will initially always be called directly before an OS
   // delegated ink API is used. After that, it can also be added anytime the
