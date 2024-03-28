@@ -151,19 +151,34 @@ static const char* kInterstitialFirstTimeBanner =
       performAction:grey_tap()];
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserSignin DISABLED_testSupervisedUserSignin
+#else
+#define MAYBE_testSupervisedUserSignin testSupervisedUserSignin
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the user is signed in.
-- (void)testSupervisedUserSignin {
+- (void)MAYBE_testSupervisedUserSignin {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
+  DISABLED_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
+#else
+#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
+  testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that only realized existing web states will display the interstitial
 // when a filtering for them is triggered. Also tests that the filtering logic
 // on existing tabs does not force-realize unrealized states. This is a
 // regression test for bug: 1486459.
-- (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
+- (void)
+    MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
   // Signing in the user and allow all sites.
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -223,9 +238,17 @@ static const char* kInterstitialFirstTimeBanner =
   }
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
+  DISABLED_testSupervisedUserSignedOutOnPolicyChange
+#else
+#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
+  testSupervisedUserSignedOutOnPolicyChange
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
-- (void)testSupervisedUserSignedOutOnPolicyChange {
+- (void)MAYBE_testSupervisedUserSignedOutOnPolicyChange {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -282,9 +305,17 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkInterstitalIsShown];
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted \
+  DISABLED_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted
+#else
+#define MAYBE_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted \
+  testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that users with "Allow All" filtering are shown the interstitial
 // when they navigate to a site that ClassifyUrl classifies as unsafe.
-- (void)testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted {
+- (void)MAYBE_testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
   [SupervisedUserSettingsAppInterface
@@ -537,9 +568,17 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkHideDetailsLinkVisibility:NO];
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserInterstitialShowBlockReasonAndDetails \
+  DISABLED_testSupervisedUserInterstitialShowBlockReasonAndDetails
+#else
+#define MAYBE_testSupervisedUserInterstitialShowBlockReasonAndDetails \
+  testSupervisedUserInterstitialShowBlockReasonAndDetails
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the that the Details link / Block reason is displayed on the
 // interstitial "Ask your parent" screen depending on the screen width.
-- (void)testSupervisedUserInterstitialShowBlockReasonAndDetails {
+- (void)MAYBE_testSupervisedUserInterstitialShowBlockReasonAndDetails {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -563,8 +602,16 @@ static const char* kInterstitialFirstTimeBanner =
   }
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserInterstitialOnBackButton \
+  DISABLED_testSupervisedUserInterstitialOnBackButton
+#else
+#define MAYBE_testSupervisedUserInterstitialOnBackButton \
+  testSupervisedUserInterstitialOnBackButton
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the Back Button of the interstitial gets us to the previous page.
-- (void)testSupervisedUserInterstitialOnBackButton {
+- (void)MAYBE_testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -640,8 +687,16 @@ static const char* kInterstitialFirstTimeBanner =
   [self checkElementDisplayStyleVisibility:@"banner" isVisible:NO];
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserInterstitialSupportsZoom \
+  DISABLED_testSupervisedUserInterstitialSupportsZoom
+#else
+#define MAYBE_testSupervisedUserInterstitialSupportsZoom \
+  testSupervisedUserInterstitialSupportsZoom
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the Zoom Text option is available for the interstitial.
-- (void)testSupervisedUserInterstitialSupportsZoom {
+- (void)MAYBE_testSupervisedUserInterstitialSupportsZoom {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
