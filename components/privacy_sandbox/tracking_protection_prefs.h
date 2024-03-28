@@ -118,20 +118,6 @@ inline constexpr char kFingerprintingProtectionEnabled[] =
 // Whether to send the DNT header.
 inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
 
-// Sentiment Survey Prefs
-
-// Indicates which group the profile belongs to.
-inline constexpr char kTrackingProtectionSentimentSurveyGroup[] =
-    "tracking_protection.tracking_protection_sentiment_survey_group";
-
-// Indicates the time the profile becomes eligible for surveying.
-inline constexpr char kTrackingProtectionSentimentSurveyStartTime[] =
-    "tracking_protection.tracking_protection_sentiment_survey_start_time";
-
-// Indicates the time the profile is no longer eligible for surveying.
-inline constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
-    "tracking_protection.tracking_protection_sentiment_survey_end_time";
-
 }  // namespace prefs
 
 namespace privacy_sandbox::tracking_protection {
@@ -169,26 +155,6 @@ enum class TrackingProtectionOnboardingAckAction {
   // Acked by clicking the close button/ESC/Swipe away.
   kClosed = 5,
   kMaxValue = kClosed,
-};
-
-// Different tracking protection sentiment survey groups stored in the pref
-// above.
-enum class TrackingProtectionSentimentSurveyGroup {
-  // No Group Set.
-  kNotSet = 0,
-  // Profile is to be surveyed shortly after being added to the Mode B Control
-  // Group.
-  kControlImmediate = 1,
-  // Profile is to be surveyed shortly after being added to the Mode B Treatment
-  // Group.
-  kTreatmentImmediate = 2,
-  // Profile is to be surveyed after a delay after being added to the Mode B
-  // Control Group.
-  kControlDelayed = 3,
-  // Profile is to be surveyed after a delay after being added to the Mode B
-  // Treatment Group.
-  kTreatmentDelayed = 4,
-  kMaxValue = kTreatmentDelayed,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

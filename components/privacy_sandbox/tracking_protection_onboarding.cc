@@ -27,9 +27,6 @@ using ::privacy_sandbox::tracking_protection::
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
-using ::privacy_sandbox::tracking_protection::
-    TrackingProtectionSentimentSurveyGroup;
-
 using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
 
 TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(

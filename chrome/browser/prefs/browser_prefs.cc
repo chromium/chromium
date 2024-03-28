@@ -1015,6 +1015,14 @@ constexpr char kShowInternalAccessibilityTree[] =
 constexpr char kDefaultSearchProviderChoicePendingDeprecated[] =
     "default_search_provider.choice_pending";
 
+// Deprecated 03/2024.
+constexpr char kTrackingProtectionSentimentSurveyGroup[] =
+    "tracking_protection.tracking_protection_sentiment_survey_group";
+constexpr char kTrackingProtectionSentimentSurveyStartTime[] =
+    "tracking_protection.tracking_protection_sentiment_survey_start_time";
+constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
+    "tracking_protection.tracking_protection_sentiment_survey_end_time";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1438,6 +1446,13 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 03/2024.
   registry->RegisterBooleanPref(kDefaultSearchProviderChoicePendingDeprecated,
                                 false);
+
+  // Deprecated 03/2024
+  registry->RegisterIntegerPref(kTrackingProtectionSentimentSurveyGroup, 0);
+  registry->RegisterTimePref(kTrackingProtectionSentimentSurveyStartTime,
+                             base::Time());
+  registry->RegisterTimePref(kTrackingProtectionSentimentSurveyEndTime,
+                             base::Time());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2719,6 +2734,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 03/2024.
   profile_prefs->ClearPref(kShowInternalAccessibilityTree);
+
+  // Added 03/2024.
+  profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyGroup);
+  profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyStartTime);
+  profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyEndTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
