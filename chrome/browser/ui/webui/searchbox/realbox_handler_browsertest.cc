@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, PedalVectorIcons) {
     const scoped_refptr<OmniboxPedal> pedal = it.second;
     const gfx::VectorIcon& vector_icon = pedal->GetVectorIcon();
     const std::string& svg_name =
-        RealboxHandler::PedalVectorIconToResourceName(vector_icon);
+        RealboxHandler::ActionVectorIconToResourceName(vector_icon);
     EXPECT_FALSE(svg_name.empty());
   }
 }
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, ActionVectorIcons) {
   for (auto const& action : actions) {
     const gfx::VectorIcon& vector_icon = action->GetVectorIcon();
     const std::string& svg_name =
-        RealboxHandler::PedalVectorIconToResourceName(vector_icon);
+        RealboxHandler::ActionVectorIconToResourceName(vector_icon);
     EXPECT_FALSE(svg_name.empty());
   }
 }

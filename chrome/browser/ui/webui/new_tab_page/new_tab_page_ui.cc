@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
@@ -634,7 +635,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   webui::SetupChromeRefresh2023(source);
 
-  RealboxHandler::SetupWebUIDataSource(source, profile);
+  SearchboxHandler::SetupWebUIDataSource(source, profile);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),

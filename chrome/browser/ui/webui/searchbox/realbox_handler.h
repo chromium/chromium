@@ -12,14 +12,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
-#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 
 class GURL;
@@ -30,7 +28,6 @@ class Profile;
 
 namespace content {
 class WebContents;
-class WebUIDataSource;
 }  // namespace content
 
 // An observer interface for changes to the WebUI Omnibox popup.
@@ -43,21 +40,6 @@ class OmniboxWebUIPopupChangeObserver : public base::CheckedObserver {
 // Handles bidirectional communication between NTP realbox JS and the browser.
 class RealboxHandler : public SearchboxHandler {
  public:
-  enum class FocusState {
-    // kNormal means the row is focused, and Enter key navigates to the match.
-    kFocusedMatch,
-
-    // kFocusedButtonRemoveSuggestion state means the Remove Suggestion (X)
-    // button is focused. Pressing enter will attempt to remove this suggestion.
-    kFocusedButtonRemoveSuggestion,
-  };
-
-  static void SetupWebUIDataSource(content::WebUIDataSource* source,
-                                   Profile* profile);
-  static std::string AutocompleteMatchVectorIconToResourceName(
-      const gfx::VectorIcon& icon);
-  static std::string PedalVectorIconToResourceName(const gfx::VectorIcon& icon);
-
   // Note: `omnibox_controller` may be null for the Realbox, in which case
   //  an internally owned controller is created and used.
   RealboxHandler(
@@ -112,17 +94,12 @@ class RealboxHandler : public SearchboxHandler {
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
   void PopupElementSizeChanged(const gfx::Size& size) override;
 
-  // AutocompleteController::Observer:
-  void OnResultChanged(AutocompleteController* controller,
-                       bool default_match_changed) override;
-
   // Invoked by OmniboxEditModel when selection changes.
   void UpdateSelection(OmniboxPopupSelection old_selection,
                        OmniboxPopupSelection selection);
 
  private:
   OmniboxEditModel* edit_model() const;
-  AutocompleteController* autocomplete_controller() const;
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
   base::ObserverList<OmniboxWebUIPopupChangeObserver> observers_;

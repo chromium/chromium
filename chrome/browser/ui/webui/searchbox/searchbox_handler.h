@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 
 class MetricsReporter;
@@ -19,12 +20,25 @@ class Profile;
 
 namespace content {
 class WebContents;
+class WebUIDataSource;
 }  // namespace content
 
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
 class SearchboxHandler : public searchbox::mojom::PageHandler,
                          public AutocompleteController::Observer {
+ public:
+  static void SetupWebUIDataSource(content::WebUIDataSource* source,
+                                   Profile* profile);
+  static std::string AutocompleteMatchVectorIconToResourceName(
+      const gfx::VectorIcon& icon);
+  static std::string ActionVectorIconToResourceName(
+      const gfx::VectorIcon& icon);
+
+  // AutocompleteController::Observer:
+  void OnResultChanged(AutocompleteController* controller,
+                       bool default_match_changed) override;
+
  protected:
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
@@ -36,6 +50,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   SearchboxHandler& operator=(const SearchboxHandler&) = delete;
 
   ~SearchboxHandler() override;
+
+  AutocompleteController* autocomplete_controller() const;
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
