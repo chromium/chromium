@@ -31,7 +31,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
@@ -76,7 +78,9 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_source.h"
@@ -114,6 +118,9 @@ TypeConverter<ash::SnapPosition, crosapi::mojom::SnapPosition>::Convert(
 namespace crosapi {
 
 namespace {
+
+constexpr int kSimulatedDisplayXResolution = 640;
+constexpr int kSimulatedDisplayYResolution = 480;
 
 // Returns whether the dispatcher or target was destroyed.
 bool Dispatch(aura::WindowTreeHost* host, ui::Event* event) {
@@ -1010,6 +1017,29 @@ void TestControllerAsh::SetAppInstallDialogAutoAccept(
     bool auto_accept,
     SetAppInstallDialogAutoAcceptCallback callback) {
   ash::app_install::AppInstallPageHandler::SetAutoAcceptForTesting(auto_accept);
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::UpdateDisplay(int number_of_displays,
+                                      UpdateDisplayCallback callback) {
+  CHECK(number_of_displays > 0 && number_of_displays <= 8);
+  display::test::DisplayManagerTestApi display_manager(
+      ash::Shell::Get()->display_manager());
+  const auto current_display_info =
+      display_manager.GetInternalManagedDisplayInfo(
+          display_manager.SetFirstDisplayAsInternalDisplay());
+  std::vector<display::ManagedDisplayInfo> display_infos;
+  display_infos.push_back(current_display_info);
+  for (int i = 1; i < number_of_displays; i++) {
+    // This simulates a series of screens that are aligned next to each other on
+    // the x-axis.
+    display_infos.push_back(display::ManagedDisplayInfo::CreateFromSpecWithID(
+        base::StrCat({base::ToString(i * kSimulatedDisplayXResolution), "+0-",
+                      base::ToString(kSimulatedDisplayXResolution), "x",
+                      base::ToString(kSimulatedDisplayYResolution)}),
+        current_display_info.id() + i));
+  }
+  display_manager.UpdateDisplayWithDisplayInfoList(display_infos);
   std::move(callback).Run();
 }
 

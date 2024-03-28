@@ -336,8 +336,8 @@ enum SnapPosition {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 33
-// Next method id: 48
+// Next version: 35
+// Next method id: 50
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -598,4 +598,8 @@ interface TestController {
   // installation without actual user input.
   [MinVersion=33]
   SetAppInstallDialogAutoAccept@48(bool auto_accept) => ();
+
+  // Sets the number of displays through the `DisplayManagerTestApi`.
+  // The values can be in the range [1, 8].
+  [MinVersion=34] UpdateDisplay@49(int32 number_of_displays) => ();
 };

@@ -167,6 +167,9 @@ class TestControllerAsh : public mojom::TestController,
       bool auto_accept,
       SetAppInstallDialogAutoAcceptCallback callback) override;
 
+  void UpdateDisplay(int number_of_displays,
+                     UpdateDisplayCallback callback) override;
+
   mojom::StandaloneBrowserTestController* GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
     return standalone_browser_test_controller_.get();

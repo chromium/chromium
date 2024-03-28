@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/test/display_manager_test_api.h"
 
@@ -52,10 +53,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 struct GetAllScreensMediaTestParameters {
@@ -117,6 +118,7 @@ bool CheckScreenDetailedExists(content::WebContents* tab,
 }
 
 void SetScreens(size_t screen_count) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // This part of the test only works on ChromeOS.
   std::stringstream screens;
   for (size_t screen_index = 0; screen_index + 1 < screen_count;
@@ -125,7 +127,7 @@ void SetScreens(size_t screen_count) {
     // specification following the format defined in
     // |ManagedDisplayInfo::CreateFromSpec|.
     // The used specification simulates screens with resolution 640x480
-    // at the host coordinates ((screen_index - 1) * 640, 0).
+    // at the host coordinates (screen_index * 640, 0).
     screens << screen_index * 640 << "+0-640x480,";
   }
   if (screen_count != 0) {
@@ -133,6 +135,25 @@ void SetScreens(size_t screen_count) {
   }
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay(screens.str());
+#else
+  base::test::TestFuture<void> future;
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->UpdateDisplay((uint8_t)screen_count, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+#endif
+}
+
+bool SupportsDisplaySetting() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kUpdateDisplayMinVersion)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  return true;
 }
 
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
@@ -163,6 +184,10 @@ class GetAllScreensMediaBrowserTestBase : public WebRtcTestBase {
   }
 
   void SetUpOnMainThread() override {
+    if (!SupportsDisplaySetting()) {
+      GTEST_SKIP();
+    }
+
     WebRtcTestBase::SetUpOnMainThread();
     browser_client_ = std::make_unique<ContentBrowserClientMock>();
     content::SetBrowserClientForTesting(browser_client_.get());
@@ -170,6 +195,15 @@ class GetAllScreensMediaBrowserTestBase : public WebRtcTestBase {
     contents_ = OpenTestPageInNewTab(base_page_);
     DCHECK(contents_);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void TearDownOnMainThread() override {
+    if (SupportsDisplaySetting()) {
+      SetScreens(/*screen_count=*/1u);
+    }
+    WebRtcTestBase::TearDownOnMainThread();
+  }
+#endif  // BUIDLFALG(IS_CHROMEOS_LACROS)
 
  protected:
   raw_ptr<content::WebContents, DanglingUntriaged> contents_ = nullptr;
@@ -228,7 +262,6 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
                        GetAllScreensMediaNoScreenSuccessIfStrictCSP) {
-  SetScreens(/*screen_count=*/0u);
   std::set<std::string> stream_ids;
   std::set<std::string> track_ids;
   std::string error_name;
@@ -407,8 +440,6 @@ IN_PROC_BROWSER_TEST_P(
   // by the user's interaction with the capture started via gDM.
   EXPECT_EQ(true, AreAllTracksLive("getAllScreensMedia"));
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class MultiCaptureNotificationTest : public InProcessBrowserTest {
  public:
