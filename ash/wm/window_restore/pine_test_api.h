@@ -13,6 +13,7 @@
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -73,8 +74,22 @@ class PineItemsOverflowViewTestApi {
   ~PineItemsOverflowViewTestApi();
 
   size_t image_views_count() const {
-    return overflow_view_->image_view_map_.size();
+    // Iterate through both rows to check how many `ImageView`s are shown
+    // (including `PineAppImageView`s).
+    size_t count = 0;
+    for (views::View* child : overflow_view_->top_row_view_->children()) {
+      if (views::IsViewClass<views::ImageView>(child)) {
+        ++count;
+      }
+    }
+    for (views::View* child : overflow_view_->bottom_row_view_->children()) {
+      if (views::IsViewClass<views::ImageView>(child)) {
+        ++count;
+      }
+    }
+    return count;
   }
+
   size_t top_row_view_children_count() const {
     return overflow_view_->top_row_view_->children().size();
   }
@@ -110,7 +125,13 @@ class PineScreenshotIconRowViewTestApi {
   ~PineScreenshotIconRowViewTestApi();
 
   size_t image_views_count() const {
-    return icon_row_view_->image_view_map_.size();
+    size_t count = 0;
+    for (views::View* child : icon_row_view_->children()) {
+      if (views::IsViewClass<views::ImageView>(child)) {
+        ++count;
+      }
+    }
+    return count;
   }
 
  private:

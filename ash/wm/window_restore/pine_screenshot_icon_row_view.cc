@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
+#include "ash/wm/window_restore/pine_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -16,7 +17,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 
@@ -78,19 +78,8 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
                              : elements_size;
 
     for (int i = 0; i < num_icon; i++) {
-      views::ImageView* image_view = AddChildView(
-          views::Builder<views::ImageView>()
-              .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
-              .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
-              .SetPreferredSize(pine::kScreenshotIconRowImageViewSize)
-              .SetImageSize(pine::kScreenshotIconRowImageViewSize)
-              .Build());
-      image_view_map_[i] = image_view;
-
-      Shell::Get()->saved_desk_delegate()->GetIconForAppId(
-          apps_infos[i].app_id, pine::kScreenshotIconRowIconSize,
-          base::BindOnce(&PineScreenshotIconRowView::SetIconForIndex,
-                         weak_ptr_factory_.GetWeakPtr(), i));
+      AddChildView(std::make_unique<PineAppImageView>(
+          apps_infos[i].app_id, PineAppImageView::Type::kScreenshot));
     }
     if (exceed_max_elements) {
       auto* count_label = AddChildView(
@@ -118,13 +107,6 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
 }
 
 PineScreenshotIconRowView::~PineScreenshotIconRowView() = default;
-
-void PineScreenshotIconRowView::SetIconForIndex(int index,
-                                                const gfx::ImageSkia& icon) {
-  views::ImageView* image_view = image_view_map_[index];
-  CHECK(image_view);
-  image_view->SetImage(ui::ImageModel::FromImageSkia(icon));
-}
 
 void PineScreenshotIconRowView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {

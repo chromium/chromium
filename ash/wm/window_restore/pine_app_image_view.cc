@@ -13,18 +13,40 @@
 namespace ash {
 
 namespace {
+
 constexpr gfx::Size kItemIconPreferredSize(32, 32);
+constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 constexpr int kItemIconBackgroundRounding = 10;
+
+gfx::Size GetImageSizeForType(const PineAppImageView::Type type) {
+  switch (type) {
+    case PineAppImageView::Type::kScreenshot:
+      return pine::kScreenshotIconRowImageViewSize;
+    case PineAppImageView::Type::kItem:
+      return kItemIconPreferredSize;
+    case PineAppImageView::Type::kOverflow:
+      return kOverflowIconPreferredSize;
+  }
+}
+
+gfx::Size GetPreferredSizeForType(const PineAppImageView::Type type) {
+  switch (type) {
+    case PineAppImageView::Type::kScreenshot:
+      return pine::kScreenshotIconRowImageViewSize;
+    case PineAppImageView::Type::kItem:
+      return pine::kItemIconBackgroundPreferredSize;
+    case PineAppImageView::Type::kOverflow:
+      return kOverflowIconPreferredSize;
+  }
+}
+
 }  // namespace
 
-PineAppImageView::PineAppImageView(const std::string& app_id,
-                                   bool inside_screenshot) {
-  SetImageSize(inside_screenshot ? pine::kScreenshotIconRowImageViewSize
-                                 : kItemIconPreferredSize);
-  SetPreferredSize(inside_screenshot ? pine::kScreenshotIconRowImageViewSize
-                                     : pine::kItemIconBackgroundPreferredSize);
+PineAppImageView::PineAppImageView(const std::string& app_id, const Type type) {
+  SetImageSize(GetImageSizeForType(type));
+  SetPreferredSize(GetPreferredSizeForType(type));
 
-  if (!inside_screenshot) {
+  if (type == Type::kItem) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         pine::kIconBackgroundColor, kItemIconBackgroundRounding));
   }
@@ -32,8 +54,8 @@ PineAppImageView::PineAppImageView(const std::string& app_id,
   // The callback may be called synchronously.
   Shell::Get()->saved_desk_delegate()->GetIconForAppId(
       app_id,
-      inside_screenshot ? pine::kScreenshotIconRowIconSize
-                        : pine::kAppImageSize,
+      type == Type::kScreenshot ? pine::kScreenshotIconRowIconSize
+                                : pine::kAppImageSize,
       base::BindOnce(&PineAppImageView::GetIconCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }

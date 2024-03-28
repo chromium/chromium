@@ -4,17 +4,16 @@
 
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 
-#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "ash/wm/window_restore/pine_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -27,7 +26,6 @@ constexpr int kOverflowTriangleElements = 6;
 constexpr int kOverflowIconSpacing = 2;
 constexpr int kOverflowBackgroundRounding = 20;
 constexpr int kOverflowCountBackgroundRounding = 9;
-constexpr gfx::Size kOverflowIconPreferredSize(20, 20);
 constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 
 }  // namespace
@@ -42,9 +40,6 @@ PineItemsOverflowView::PineItemsOverflowView(
   SetBetweenChildSpacing(pine::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-
-  // TODO(sammiequon): Handle case where the app is not ready or installed.
-  auto* delegate = Shell::Get()->saved_desk_delegate();
 
   // Create a series of `BoxLayoutView`s to represent a 1x2 row, a triangle
   // with one element on top and two on the bottom, or a 2x2 box. The triangle
@@ -114,21 +109,9 @@ PineItemsOverflowView::PineItemsOverflowView(
                 (elements != kOverflowTriangleElements && i <= pine::kMaxItems)
             ? top_row_view_
             : bottom_row_view_;
-    views::ImageView* image_view =
-        row_view->AddChildView(views::Builder<views::ImageView>()
-                                   .SetImageSize(kOverflowIconPreferredSize)
-                                   .SetPreferredSize(kOverflowIconPreferredSize)
-                                   .Build());
 
-    // Insert `image_view` into a map so it can be retrieved in a callback.
-    image_view_map_[i] = image_view;
-
-    // The callback may be called synchronously.
-    const PineContentsData::AppInfo& app_info = apps_infos[i];
-    delegate->GetIconForAppId(
-        app_info.app_id, pine::kAppImageSize,
-        base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
-                       weak_ptr_factory_.GetWeakPtr(), i));
+    row_view->AddChildView(std::make_unique<PineAppImageView>(
+        apps_infos[i].app_id, PineAppImageView::Type::kOverflow));
   }
 
   // Add a text label displaying the count of the remaining windows.
@@ -148,13 +131,6 @@ PineItemsOverflowView::PineItemsOverflowView(
 }
 
 PineItemsOverflowView::~PineItemsOverflowView() = default;
-
-void PineItemsOverflowView::SetIconForIndex(int index,
-                                            const gfx::ImageSkia& icon) {
-  views::ImageView* image_view = image_view_map_[index];
-  CHECK(image_view);
-  image_view->SetImage(ui::ImageModel::FromImageSkia(icon));
-}
 
 BEGIN_METADATA(PineItemsOverflowView)
 END_METADATA

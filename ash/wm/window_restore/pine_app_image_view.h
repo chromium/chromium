@@ -16,12 +16,16 @@ class ASH_EXPORT PineAppImageView : public views::ImageView {
   METADATA_HEADER(PineAppImageView, views::ImageView)
 
  public:
-  PineAppImageView(const std::string& app_id, bool inside_screenshot);
+  // Determines the styling of the view, based on where it is used.
+  enum class Type { kItem, kScreenshot, kOverflow };
+
+  PineAppImageView(const std::string& app_id, const Type type);
   PineAppImageView(const PineAppImageView&) = delete;
   PineAppImageView& operator=(const PineAppImageView&) = delete;
   ~PineAppImageView() override;
 
  private:
+  // Sets `icon` as the image for the view.
   void GetIconCallback(const gfx::ImageSkia& icon);
 
   base::WeakPtrFactory<PineAppImageView> weak_ptr_factory_{this};
