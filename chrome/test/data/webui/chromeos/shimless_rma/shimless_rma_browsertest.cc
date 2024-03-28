@@ -44,6 +44,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, CriticalErrorPage) {
   RunTest("chromeos/shimless_rma/critical_error_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, FakeShimlessRmaService) {
+  RunTest("chromeos/shimless_rma/fake_shimless_rma_service_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

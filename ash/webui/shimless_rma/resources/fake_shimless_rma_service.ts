@@ -1269,11 +1269,6 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     } else {
       // Success.
       this.stateIndex++;
-      if (method === 'chooseManuallyDisableWriteProtect') {
-        // A special case so that choosing manual WP disable sends you to the
-        // appropriate page in the fake app.
-        this.stateIndex++;
-      }
       const state = this.states[this.stateIndex];
       this.setFakeStateForMethod(
           method, state.state, state.canExit, state.canGoBack, state.error);
