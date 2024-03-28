@@ -87,9 +87,8 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   auto promise = resolver->Promise();
   manager->AcquireWakeLock(resolver);
   context.WaitForPromiseFulfillment(promise);
-  auto* sentinel =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          promise);
+  auto* sentinel = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), promise);
   ASSERT_NE(nullptr, sentinel);
   EXPECT_FALSE(sentinel->released());
 
@@ -135,9 +134,8 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
   ASSERT_TRUE(manager);
 
   context.WaitForPromiseFulfillment(screen_promise);
-  auto* sentinel =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          screen_promise);
+  auto* sentinel = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), screen_promise);
   ASSERT_TRUE(sentinel);
 
   auto* event_listener =
@@ -166,9 +164,8 @@ TEST(WakeLockSentinelTest, HasPendingActivityConditions) {
   auto promise = resolver->Promise();
   manager->AcquireWakeLock(resolver);
   context.WaitForPromiseFulfillment(promise);
-  auto* sentinel =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          promise);
+  auto* sentinel = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), promise);
   ASSERT_TRUE(sentinel);
 
   // A new WakeLockSentinel was created and it can be GC'ed.

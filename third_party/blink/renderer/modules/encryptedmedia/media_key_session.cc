@@ -435,7 +435,6 @@ MediaKeySession::MediaKeySession(ScriptState* script_state,
   DCHECK(std::isnan(expiration_));
 
   // 3.3 Let the closed attribute be a new promise.
-  DCHECK(!closed(script_state).IsUndefinedOrNull());
 
   // 3.4 Let the keyStatuses attribute be empty.
   DCHECK_EQ(0u, key_statuses_map_->size());

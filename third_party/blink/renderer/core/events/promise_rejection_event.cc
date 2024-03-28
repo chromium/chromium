@@ -17,7 +17,7 @@ PromiseRejectionEvent::PromiseRejectionEvent(
     const PromiseRejectionEventInit* initializer)
     : Event(type, initializer), world_(&script_state->World()) {
   DCHECK(initializer->hasPromise());
-  promise_.Reset(initializer->promise().GetIsolate(),
+  promise_.Reset(script_state->GetIsolate(),
                  initializer->promise().V8Promise());
   if (initializer->hasReason()) {
     reason_.Reset(script_state->GetIsolate(), initializer->reason().V8Value());

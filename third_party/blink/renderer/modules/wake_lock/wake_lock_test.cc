@@ -44,8 +44,8 @@ TEST(WakeLockTest, RequestWakeLockGranted) {
   context.WaitForPromiseFulfillment(screen_promise);
 
   EXPECT_NE(nullptr,
-            ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-                screen_promise));
+            ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+                context.GetScriptState()->GetIsolate(), screen_promise));
   EXPECT_TRUE(screen_lock.is_acquired());
 }
 
@@ -73,14 +73,14 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
   context.WaitForPromiseRejection(system_promise);
 
   EXPECT_EQ(v8::Promise::kRejected,
-            ScriptPromiseUntypedUtils::GetPromiseState(system_promise));
+            ScriptPromiseUtils::GetPromiseState(system_promise));
   EXPECT_FALSE(system_lock.is_acquired());
 
   // System locks are not allowed by default, so the promise should have been
   // rejected with a NotAllowedError DOMException.
   DOMException* dom_exception =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsDOMException(
-          system_promise);
+      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
+          context.GetScriptState()->GetIsolate(), system_promise);
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 }
@@ -222,10 +222,10 @@ TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   context.WaitForPromiseFulfillment(system_promise);
 
   EXPECT_EQ(v8::Promise::kRejected,
-            ScriptPromiseUntypedUtils::GetPromiseState(screen_promise));
+            ScriptPromiseUtils::GetPromiseState(screen_promise));
   DOMException* dom_exception =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsDOMException(
-          screen_promise);
+      ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
+          context.GetScriptState()->GetIsolate(), screen_promise);
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 

@@ -94,7 +94,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
             v8::Number::New(v8_scope.GetIsolate(), 320))
       .Check();
   DocumentPictureInPictureOptions* options =
-      DocumentPictureInPictureOptions::Create(resolver->Promise().GetIsolate(),
+      DocumentPictureInPictureOptions::Create(script_state->GetIsolate(),
                                               v8_object, exception_state);
 
   // Set a base URL for the opener window.
@@ -547,7 +547,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   // Verify rejected with DOMExceptionCode::kInvalidStateError.
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
   DOMException* dom_exception = V8DOMException::ToWrappable(
-      promise.GetIsolate(), promise.V8Promise()->Result());
+      scope.GetIsolate(), promise.V8Promise()->Result());
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
             dom_exception->code());
@@ -838,8 +838,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
   const auto promise = resolver->Promise();
   DocumentPictureInPictureOptions* options =
-      DocumentPictureInPictureOptions::Create(promise.GetIsolate(), v8_object,
-                                              exception_state);
+      DocumentPictureInPictureOptions::Create(script_state->GetIsolate(),
+                                              v8_object, exception_state);
 
   // Set a URL for the opener window.
   document.SetURL(opener_url);
@@ -856,7 +856,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // Verify rejected with DOMExceptionCode::kInvalidStateError.
   EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kRejected);
   DOMException* dom_exception = V8DOMException::ToWrappable(
-      promise.GetIsolate(), promise.V8Promise()->Result());
+      script_state->GetIsolate(), promise.V8Promise()->Result());
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ(dom_exception->code(),
             static_cast<int>(DOMExceptionCode::kInvalidStateError));

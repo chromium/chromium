@@ -184,24 +184,26 @@ class WakeLockTestingContext final {
   V8TestingScope testing_scope_;
 };
 
-// Utility functions to retrieve promise data out of a ScriptPromiseUntyped.
-class ScriptPromiseUntypedUtils final {
+// Utility functions to retrieve promise data out of a ScriptPromise.
+class ScriptPromiseUtils final {
  public:
-  // Shorthand for getting a PromiseState out of a ScriptPromiseUntyped.
+  // Shorthand for getting a PromiseState out of a ScriptPromise.
   static v8::Promise::PromiseState GetPromiseState(
-      const ScriptPromiseUntyped& promise);
+      const ScriptPromise<WakeLockSentinel>& promise);
 
-  // Shorthand for getting a DOMException* out of a ScriptPromiseUntyped. This
+  // Shorthand for getting a DOMException* out of a ScriptPromise. This
   // assumes the promise has been resolved with a DOMException. If the
   // conversion fails, nullptr is returned.
   static DOMException* GetPromiseResolutionAsDOMException(
-      const ScriptPromiseUntyped&);
+      v8::Isolate*,
+      const ScriptPromise<WakeLockSentinel>&);
 
-  // Shorthand for getting a WakeLockSentinel* out of a ScriptPromiseUntyped.
+  // Shorthand for getting a WakeLockSentinel* out of a ScriptPromise.
   // This assumes the promise has been resolved with a WakeLockSentinel. If the
   // conversion fails, nullptr is returned.
   static WakeLockSentinel* GetPromiseResolutionAsWakeLockSentinel(
-      const ScriptPromiseUntyped&);
+      v8::Isolate*,
+      const ScriptPromise<WakeLockSentinel>&);
 };
 
 }  // namespace blink

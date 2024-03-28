@@ -333,26 +333,26 @@ void WakeLockTestingContext::WaitForPromiseRejection(
   RunWithStack(&run_loop);
 }
 
-// ScriptPromiseUntypedUtils
+// ScriptPromiseUtils
 
 // static
-v8::Promise::PromiseState ScriptPromiseUntypedUtils::GetPromiseState(
-    const ScriptPromiseUntyped& promise) {
+v8::Promise::PromiseState ScriptPromiseUtils::GetPromiseState(
+    const ScriptPromise<WakeLockSentinel>& promise) {
   return promise.V8Promise()->State();
 }
 
 // static
-DOMException* ScriptPromiseUntypedUtils::GetPromiseResolutionAsDOMException(
-    const ScriptPromiseUntyped& promise) {
-  return V8DOMException::ToWrappable(promise.GetIsolate(),
-                                     promise.V8Promise()->Result());
+DOMException* ScriptPromiseUtils::GetPromiseResolutionAsDOMException(
+    v8::Isolate* isolate,
+    const ScriptPromise<WakeLockSentinel>& promise) {
+  return V8DOMException::ToWrappable(isolate, promise.V8Promise()->Result());
 }
 
 // static
-WakeLockSentinel*
-ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-    const ScriptPromiseUntyped& promise) {
-  return V8WakeLockSentinel::ToWrappable(promise.GetIsolate(),
+WakeLockSentinel* ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+    v8::Isolate* isolate,
+    const ScriptPromise<WakeLockSentinel>& promise) {
+  return V8WakeLockSentinel::ToWrappable(isolate,
                                          promise.V8Promise()->Result());
 }
 

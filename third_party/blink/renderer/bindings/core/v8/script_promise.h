@@ -83,14 +83,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   ScriptPromise<IDLAny> Then(ScriptFunction* on_fulfilled,
                              ScriptFunction* on_rejected = nullptr);
 
-  bool IsObject() const { return promise_.IsObject(); }
-
-  bool IsNull() const { return promise_.IsNull(); }
-
-  bool IsUndefinedOrNull() const {
-    return promise_.IsUndefined() || promise_.IsNull();
-  }
-
   ScriptValue AsScriptValue() const { return promise_; }
 
   v8::Local<v8::Value> V8Value() const { return promise_.V8Value(); }
@@ -99,8 +91,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
     // as it's non-empty.
     return V8Value().As<v8::Promise>();
   }
-
-  v8::Isolate* GetIsolate() const { return script_state_->GetIsolate(); }
 
   bool IsEmpty() const { return promise_.IsEmpty(); }
 

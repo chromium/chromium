@@ -53,12 +53,10 @@ TEST(WakeLockManagerTest, AcquireWakeLock) {
   context.WaitForPromiseFulfillment(promise1);
   context.WaitForPromiseFulfillment(promise2);
 
-  auto* sentinel1 =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          promise1);
-  auto* sentinel2 =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          promise2);
+  auto* sentinel1 = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), promise1);
+  auto* sentinel2 = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), promise2);
 
   EXPECT_TRUE(manager->wake_lock_sentinels_.Contains(sentinel1));
   EXPECT_TRUE(manager->wake_lock_sentinels_.Contains(sentinel2));
@@ -88,9 +86,8 @@ TEST(WakeLockManagerTest, ReleaseAllWakeLocks) {
   EXPECT_EQ(1U, manager->wake_lock_sentinels_.size());
   EXPECT_TRUE(screen_lock.is_acquired());
 
-  auto* sentinel =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          promise);
+  auto* sentinel = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), promise);
 
   manager->UnregisterSentinel(sentinel);
   screen_lock.WaitForCancelation();
@@ -128,9 +125,8 @@ TEST(WakeLockManagerTest, ReleaseOneWakeLock) {
   EXPECT_TRUE(screen_lock.is_acquired());
   EXPECT_EQ(2U, manager->wake_lock_sentinels_.size());
 
-  auto* sentinel1 =
-      ScriptPromiseUntypedUtils::GetPromiseResolutionAsWakeLockSentinel(
-          promise1);
+  auto* sentinel1 = ScriptPromiseUtils::GetPromiseResolutionAsWakeLockSentinel(
+      context.GetScriptState()->GetIsolate(), promise1);
   EXPECT_TRUE(manager->wake_lock_sentinels_.Contains(sentinel1));
 
   manager->UnregisterSentinel(sentinel1);
