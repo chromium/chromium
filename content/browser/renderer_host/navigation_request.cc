@@ -6091,6 +6091,9 @@ void NavigationRequest::CommitNavigation() {
       std::move(subresource_loader_params_), std::move(subresource_overrides_),
       std::move(service_worker_container_info), document_token_,
       devtools_navigation_token_);
+  if (service_worker_handle_ && service_worker_handle_->container_host()) {
+    service_worker_handle_->container_host()->SetContainerReady();
+  }
   UpdateNavigationHandleTimingsOnCommitSent();
 
   // Give SpareRenderProcessHostManager a heads-up about the most recently used

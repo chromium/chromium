@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -72,6 +73,18 @@ storage::mojom::CacheStorageControl* GetCacheStorageControl(
   }
   return control;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// TODO(crbug.com/40918057): remove this metrics if we confirm that
+// kContainerNotReady prevents calling the CountFeature IPC.
+enum class CountFeatureDropOutReason {
+  kOk = 0,
+  kContainerNotReady = 1,
+  kExecutionNotReady = 2,
+  kNotBoundOrNotConnected = 3,
+  kMaxValue = kNotBoundOrNotConnected,
+};
 
 }  // namespace
 
@@ -621,23 +634,45 @@ void ServiceWorkerContainerHost::CountFeature(
     blink::mojom::WebFeature feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SCOPED_CRASH_KEY_NUMBER("SWCH_CF", "feature", static_cast<int32_t>(feature));
+  SCOPED_CRASH_KEY_NUMBER("SWCH_CF", "client_type",
+                          static_cast<int32_t>(GetClientType()));
+
+  constexpr char kDropOutMetrics[] = "ServiceWorker.CountFeature.DropOut";
 
   // CountFeature is a message about the client's controller. It should be sent
   // only for clients.
   DCHECK(IsContainerForClient());
 
-  // And only when loading finished so the controller is really settled.
-  if (!is_execution_ready())
+  // `container_` can be used only if ServiceWorkerContainerInfoForClient has
+  // been passed to the renderer process. Otherwise, the method call will crash
+  // inside the mojo library (See crbug.com/40918057).
+  if (!is_container_ready_) {
+    // TODO(crbug.com/331682623): Record WebFeature to be resent after the
+    // container become ready.
+    base::UmaHistogramEnumeration(
+        kDropOutMetrics, CountFeatureDropOutReason::kContainerNotReady);
     return;
+  }
+
+  // And only when loading finished so the controller is really settled.
+  if (!is_execution_ready()) {
+    base::UmaHistogramEnumeration(
+        kDropOutMetrics, CountFeatureDropOutReason::kExecutionNotReady);
+    return;
+  }
 
   // `container_` shouldn't be disconnected during the lifetime of `this` but
   // there seems a situation where `container_` is disconnected or unbound.
   // TODO(crbug.com/1136843, crbug.com/40918057): Figure out the cause and
   // remove this check.
   if (!container_.is_bound() || !container_.is_connected()) {
+    base::UmaHistogramEnumeration(
+        kDropOutMetrics, CountFeatureDropOutReason::kNotBoundOrNotConnected);
     return;
   }
 
+  base::UmaHistogramEnumeration(kDropOutMetrics,
+                                CountFeatureDropOutReason::kOk);
   container_->CountFeature(feature);
 }
 

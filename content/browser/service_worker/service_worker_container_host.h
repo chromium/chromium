@@ -533,6 +533,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
+  void SetContainerReady() { is_container_ready_ = true; }
+
  private:
   class ServiceWorkerRunningStatusObserver;
   friend class ServiceWorkerContainerHostTest;
@@ -732,6 +734,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // |container_| is the remote renderer-side ServiceWorkerContainer that |this|
   // is hosting.
   mojo::AssociatedRemote<blink::mojom::ServiceWorkerContainer> container_;
+  // |is_container_ready_| is set to be true after |container_| has been passed
+  // to the renderer process. This flag is needed to prevent |container_| used
+  // before the association to the existing message pipe, which happens when
+  // |container_| is passed to the renderer via a mojo call. Note that the mojo
+  // call's message pipe is piggy-backed.
+  bool is_container_ready_ = false;
 
   // The type of client.
   std::optional<ServiceWorkerClientInfo> client_info_;

@@ -238,6 +238,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.CountFeature.DropOut"
+    enum="CountFeatureDropOutReason" expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The reason of not calling ServiceWorkerContainer::CountFeature is recorded
+    when ServiceWorkerContainerHost::CountFeature is called. This UMA is for
+    investigating crbug.com/40918057. With this UMA, we can decide which drop
+    out path can be removed.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.CountUse.CallerInterface"
     enum="WorkerOrWorkletInterfaceNameType" expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>

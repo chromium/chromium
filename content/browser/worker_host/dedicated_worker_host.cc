@@ -489,6 +489,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
       std::move(controller),
       BindAndPassRemoteForBackForwardCacheControllerHost());
+  if (service_worker_handle_->container_host()) {
+    service_worker_handle_->container_host()->SetContainerReady();
+  }
 
   // |service_worker_remote_object| is an associated remote, so calls can't be
   // made on it until its receiver is sent. Now that the receiver was sent, it

@@ -4167,6 +4167,13 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Cache miss"/>
 </enum>
 
+<enum name="CountFeatureDropOutReason">
+  <int value="0" label="kOk"/>
+  <int value="1" label="kContainerNotReady"/>
+  <int value="2" label="kExecutionNotReady"/>
+  <int value="3" label="kNotBoundOrNotConnected"/>
+</enum>
+
 <enum name="CpuTimeMetricsThreadType">
   <summary>Thread types used for CPU time metric breakdowns.</summary>
   <int value="0" label="UnattributedThread">
