@@ -165,6 +165,12 @@ InsertionContent GetInsertionContentForResult(
       result.data());
 }
 
+std::vector<PickerSearchResultsSection> CreateSingleSectionFromResults(
+    PickerSectionType section_type,
+    std::vector<PickerSearchResult> results) {
+  return {PickerSearchResultsSection(section_type, std::move(results))};
+}
+
 }  // namespace
 
 PickerController::PickerController() {
@@ -251,36 +257,27 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kEditor:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      recent_results.push_back(PickerSearchResult::BrowsingHistory(
-          GURL("http://crbug.com"), u"Crbug",
-          GetIconForPickerCategory(category)));
-      recent_results.push_back(PickerSearchResult::BrowsingHistory(
-          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
-          GetIconForPickerCategory(category)));
+      NOTIMPLEMENTED_LOG_ONCE();
       break;
     case PickerCategory::kExpressions:
       NOTREACHED_NORETURN();
     case PickerCategory::kClipboard:
+      NOTIMPLEMENTED_LOG_ONCE();
+      break;
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
-      client_->GetRecentFileResults(base::BindOnce(
-          [](SearchResultsCallback callback,
-             std::vector<PickerSearchResult> results) {
-            std::move(callback).Run({
-                PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,
-                                           std::move(results)),
-            });
-          },
-          std::move(callback)));
+      client_->GetRecentFileResults(
+          base::BindRepeating(CreateSingleSectionFromResults,
+                              PickerSectionType::kRecentlyUsed)
+              .Then(std::move(callback)));
       return;
     case PickerCategory::kDatesTimes:
+      NOTIMPLEMENTED_LOG_ONCE();
+      break;
     case PickerCategory::kUnitsMaths:
+      NOTIMPLEMENTED_LOG_ONCE();
       break;
   }
-  callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,
-                                 recent_results),
-  });
 }
 
 void PickerController::StartSearch(const std::u16string& query,
