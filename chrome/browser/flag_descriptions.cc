@@ -1123,14 +1123,6 @@ const char kAccessibilityChromeVoxPageMigrationDescription[] =
     "This option enables ChromeVox page migration from extension options page "
     "to a Chrome OS settings page.";
 
-const char kAccessibilityDictationKeyboardImprovementsName[] =
-    "Dictation keyboard improvements";
-const char kAccessibilityDictationKeyboardImprovementsDescription[] =
-    "This option enables Dictation keyboard improvements to enable a more "
-    "seemless experience when pressing Search + D or the Dictation key on "
-    "supported keyboards. This feature also includes some UI enhancements for "
-    "Dictation, including notifications during error states.";
-
 const char kAccessibilityExtraLargeCursorName[] =
     "Experimental extra large cursor";
 const char kAccessibilityExtraLargeCursorDescription[] =

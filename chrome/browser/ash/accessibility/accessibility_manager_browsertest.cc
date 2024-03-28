@@ -2087,8 +2087,6 @@ class AccessibilityManagerDictationKeyboardImprovementsTest
     // This will force Dictation to show the confirmation dialog when enabled.
     command_line->AppendSwitchASCII(::switches::kLang, "it-IT");
     AccessibilityManagerTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityDictationKeyboardImprovements);
   }
 
   void SetUpOnMainThread() override {
@@ -2121,7 +2119,6 @@ class AccessibilityManagerDictationKeyboardImprovementsTest
 
  private:
   std::unique_ptr<AccessibilityControllerTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

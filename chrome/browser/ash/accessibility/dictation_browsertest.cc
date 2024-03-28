@@ -2236,15 +2236,6 @@ class DictationKeyboardImprovementsTest : public DictationTestBase {
       const DictationKeyboardImprovementsTest&) = delete;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationTestBase::SetUpCommandLine(command_line);
-
-    std::vector<base::test::FeatureRef> enabled_features{
-        ::features::kAccessibilityDictationKeyboardImprovements};
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features, std::vector<base::test::FeatureRef>());
-  }
-
   void SetUpOnMainThread() override {
     DictationTestBase::SetUpOnMainThread();
     test_api_ = AccessibilityControllerTestApi::Create();
@@ -2282,7 +2273,6 @@ class DictationKeyboardImprovementsTest : public DictationTestBase {
  private:
   std::unique_ptr<AccessibilityControllerTestApi> test_api_;
   std::unique_ptr<AccessibilityToastCallbackManager> toast_callback_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

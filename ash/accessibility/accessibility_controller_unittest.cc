@@ -108,8 +108,7 @@ class AccessibilityControllerTest : public AshTestBase {
                               ::features::kAccessibilityMouseKeys,
                               ::features::
                                   kAccessibilityCaretBlinkIntervalSetting},
-        /*disabled_feaures=*/{
-            ::features::kAccessibilityDictationKeyboardImprovements});
+        /*disabled_feaures=*/{});
     AshTestBase::SetUp();
   }
 
@@ -1556,54 +1555,6 @@ TEST_F(AccessibilityControllerTest, VerifyFeatureData) {
   EXPECT_TRUE(accessibility_controller->VerifyFeaturesDataForTesting());
 }
 
-// Verifies the behavior of EnableOrToggleDictation without the keyboard
-// improvements feature (current behavior).
-TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
-  TestAccessibilityControllerClient client;
-  controller->SetClient(&client);
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-
-  // If Dictation is disabled, then EnableOrToggleDictation should do nothing.
-  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
-  ASSERT_FALSE(controller->dictation().enabled());
-  ASSERT_FALSE(controller->dictation_active());
-  ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
-  controller->EnableOrToggleDictationFromSource(
-      DictationToggleSource::kKeyboard);
-  ASSERT_FALSE(controller->dictation().enabled());
-  ASSERT_FALSE(controller->dictation_active());
-  ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
-
-  prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
-  ASSERT_FALSE(controller->dictation().enabled());
-  ASSERT_FALSE(controller->dictation_active());
-  controller->EnableOrToggleDictationFromSource(
-      DictationToggleSource::kKeyboard);
-  ASSERT_FALSE(controller->dictation().enabled());
-  ASSERT_FALSE(controller->dictation_active());
-  ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
-
-  // If Dictation is enabled, then EnableOrToggleDictation should toggle
-  // Dictation on/off.
-  ASSERT_TRUE(
-      prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
-  ASSERT_FALSE(controller->dictation_active());
-  controller->dictation().SetEnabled(true);
-  controller->EnableOrToggleDictationFromSource(
-      DictationToggleSource::kKeyboard);
-  ASSERT_TRUE(controller->dictation().enabled());
-  ASSERT_TRUE(controller->dictation_active());
-  ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
-  controller->EnableOrToggleDictationFromSource(
-      DictationToggleSource::kKeyboard);
-  ASSERT_TRUE(controller->dictation().enabled());
-  ASSERT_FALSE(controller->dictation_active());
-  ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
-}
-
 TEST_F(AccessibilityControllerTest, ChangingPrefChangesCaretBlinkInterval) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -1628,31 +1579,7 @@ TEST_F(AccessibilityControllerTest, ChangingPrefChangesCaretBlinkInterval) {
   EXPECT_EQ(expected_interval, native_theme->GetCaretBlinkInterval());
 }
 
-class AccessibilityControllerDictationKeyboardImprovementsTest
-    : public AshTestBase {
- protected:
-  AccessibilityControllerDictationKeyboardImprovementsTest() = default;
-  AccessibilityControllerDictationKeyboardImprovementsTest(
-      const AccessibilityControllerDictationKeyboardImprovementsTest&) = delete;
-  AccessibilityControllerDictationKeyboardImprovementsTest& operator=(
-      const AccessibilityControllerDictationKeyboardImprovementsTest&) = delete;
-  ~AccessibilityControllerDictationKeyboardImprovementsTest() override =
-      default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityDictationKeyboardImprovements);
-    AshTestBase::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Verifies the behavior of EnableOrToggleDictation with the keyboard
-// improvements feature (new behavior).
-TEST_F(AccessibilityControllerDictationKeyboardImprovementsTest,
-       EnableOrToggleDictation) {
+TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {
   AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;

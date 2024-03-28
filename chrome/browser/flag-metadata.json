@@ -2188,11 +2188,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "enable-accessibility-dictation-keyboard-improvements",
-    "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-accessibility-extra-large-cursor",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142

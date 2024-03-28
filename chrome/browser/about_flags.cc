@@ -7834,12 +7834,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kAccessibilitySelectToSpeakHoverTextImprovements)},
 
-    {"enable-accessibility-dictation-keyboard-improvements",
-     flag_descriptions::kAccessibilityDictationKeyboardImprovementsName,
-     flag_descriptions::kAccessibilityDictationKeyboardImprovementsDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityDictationKeyboardImprovements)},
-
     {"enable-accessibility-extra-large-cursor",
      flag_descriptions::kAccessibilityExtraLargeCursorName,
      flag_descriptions::kAccessibilityExtraLargeCursorDescription, kOsCrOS,

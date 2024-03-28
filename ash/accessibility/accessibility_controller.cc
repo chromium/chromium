@@ -1869,32 +1869,22 @@ void AccessibilityController::ToggleDictationFromSource(
 
 void AccessibilityController::EnableOrToggleDictationFromSource(
     DictationToggleSource source) {
-  if (::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
-    if (dictation().enabled()) {
-      ToggleDictationFromSource(source);
-    } else if (source == DictationToggleSource::kKeyboard) {
-      // Only allow direct-enabling of Dictation from the keyboard. Show the
-      // confirmation dialog if it hasn't been accepted yet.
-      if (active_user_prefs_->GetBoolean(
-              prefs::kDictationAcceleratorDialogHasBeenAccepted)) {
-        OnDictationKeyboardDialogAccepted();
-      } else {
-        ShowDictationKeyboardDialog();
-      }
-    }
-    return;
-  }
-
   if (dictation().enabled()) {
-    // If Dictation keyboard improvements aren't enabled, then only allow
-    // Dictation to be toggled if Dictation is already enabled.
     ToggleDictationFromSource(source);
+  } else if (source == DictationToggleSource::kKeyboard) {
+    // Only allow direct-enabling of Dictation from the keyboard. Show the
+    // confirmation dialog if it hasn't been accepted yet.
+    if (active_user_prefs_->GetBoolean(
+            prefs::kDictationAcceleratorDialogHasBeenAccepted)) {
+      OnDictationKeyboardDialogAccepted();
+    } else {
+      ShowDictationKeyboardDialog();
+    }
   }
 }
 
 void AccessibilityController::ShowDictationKeyboardDialog() {
-  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled() ||
-      !client_) {
+  if (!client_) {
     return;
   }
 
@@ -1937,10 +1927,6 @@ void AccessibilityController::ShowDictationKeyboardDialog() {
 }
 
 void AccessibilityController::OnDictationKeyboardDialogAccepted() {
-  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
-    return;
-  }
-
   dictation_keyboard_dialog_showing_for_testing_ = false;
   active_user_prefs_->SetBoolean(
       prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
@@ -1950,10 +1936,6 @@ void AccessibilityController::OnDictationKeyboardDialogAccepted() {
 }
 
 void AccessibilityController::OnDictationKeyboardDialogDismissed() {
-  if (!::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
-    return;
-  }
-
   dictation_keyboard_dialog_showing_for_testing_ = false;
 }
 

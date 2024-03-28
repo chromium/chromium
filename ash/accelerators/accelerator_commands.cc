@@ -578,11 +578,7 @@ bool CanSwapPrimaryDisplay() {
 }
 
 bool CanEnableOrToggleDictation() {
-  if (::features::IsAccessibilityDictationKeyboardImprovementsEnabled()) {
-    return true;
-  }
-
-  return Shell::Get()->accessibility_controller()->dictation().enabled();
+  return true;
 }
 
 bool CanToggleFloatingWindow() {
