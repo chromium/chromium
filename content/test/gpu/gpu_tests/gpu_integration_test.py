@@ -1064,6 +1064,7 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'qualcomm-adreno-(tm)-610',  # android-sm-a235m
         'qualcomm-adreno-(tm)-640',  # android-pixel-4
+        'qualcomm-adreno-(tm)-740',  # android-sm-s911u1
         'arm-mali-g78',  # android-pixel-6
         'nvidia-nvidia-tegra',  # android-shield-android-tv
         'vmware,',  # VMs

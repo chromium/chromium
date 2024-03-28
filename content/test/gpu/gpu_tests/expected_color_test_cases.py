@@ -186,6 +186,8 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               'SM-A135M': 1.1025,
               # Samsung A23.
               'SM-A235M': 1.1025,
+              # Samsung S23.
+              'SM-S911U1': 1.1,
           }),
   ]
 
