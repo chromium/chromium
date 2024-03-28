@@ -93,7 +93,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   // Captured new video data.
   void OnIncomingCapturedData(Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
                               base::TimeTicks reference_time,
-                              base::TimeDelta timestamp);
+                              base::TimeDelta timestamp,
+                              base::TimeTicks capture_begin_time);
   void OnFrameDropped(VideoCaptureFrameDropReason reason);
   void OnEvent(IMFMediaEvent* media_event);
 
@@ -168,14 +169,16 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
       Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
       ID3D11Texture2D* texture,
       base::TimeTicks reference_time,
-      base::TimeDelta timestamp);
+      base::TimeDelta timestamp,
+      base::TimeTicks capture_begin_time);
   HRESULT DeliverExternalBufferToClient(
       Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
       ID3D11Texture2D* texture,
       const gfx::Size& texture_size,
       const VideoPixelFormat& pixel_format,
       base::TimeTicks reference_time,
-      base::TimeDelta timestamp);
+      base::TimeDelta timestamp,
+      base::TimeTicks capture_begin_time);
   void OnCameraControlChangeInternal(REFGUID control_set, UINT32 id);
   void OnIncomingCapturedDataInternal();
   bool RecreateMFSource();
@@ -250,6 +253,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
       GUARDED_BY(queueing_lock_);
   base::TimeTicks input_reference_time_ GUARDED_BY(queueing_lock_);
   base::TimeDelta input_timestamp_ GUARDED_BY(queueing_lock_);
+  base::TimeTicks input_capture_begin_time_ GUARDED_BY(queueing_lock_);
 
   base::WeakPtrFactory<VideoCaptureDeviceMFWin> weak_factory_{this};
 };

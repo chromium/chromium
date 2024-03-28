@@ -6022,6 +6022,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.Device.CaptureBeginTime.Interval"
+    units="ms" expires_after="2024-06-30">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts the difference between consecutive capture begin times recieved from
+    MFSamples. Recorded on each received sample. Offset by +150ms to allow
+    recording of negative values.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Win.Device.CaptureBeginTime.MFTimeOffset"
+    units="ms" expires_after="2024-06-30">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Counts the difference between local chrome clock and MFTIME clock. Recorded
+    on each received sample. Offset by +150ms to allow recording of negative
+    values.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.Device.CapturePixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2025-05-19">
   <owner>ilnik@google.com</owner>
