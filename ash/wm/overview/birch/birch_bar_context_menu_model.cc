@@ -64,8 +64,6 @@ void BirchBarContextMenuModel::AddBarMenuItems() {
                  u"Google Calendar");
     AddCheckItem(base::to_underlying(CommandId::kDriveSuggestions),
                  u"Google Drive");
-    AddCheckItem(base::to_underlying(CommandId::kYouTubeSuggestions),
-                 u"YouTube");
     AddCheckItem(base::to_underlying(CommandId::kOtherDeviceSuggestions),
                  u"Chrome from other devices");
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);

@@ -100,6 +100,9 @@ class BirchBarController : public BirchModel::Observer {
   // Show/hide suggestions pref change registrar.
   PrefChangeRegistrar show_suggestions_pref_registrar_;
 
+  // Customize suggestions pref change registrar.
+  PrefChangeRegistrar customize_suggestions_pref_registrar_;
+
   base::ScopedObservation<BirchModel, BirchModel::Observer>
       birch_model_observer_{this};
 

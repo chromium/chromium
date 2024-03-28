@@ -29,12 +29,27 @@ PrefService* GetPrefService() {
 }  // namespace
 
 BirchBarController::BirchBarController() {
-  // Init and register the show suggestions pref callback.
+  // Init and register the show suggestions pref changed callback.
   show_suggestions_pref_registrar_.Init(GetPrefService());
   show_suggestions_pref_registrar_.Add(
       prefs::kBirchShowSuggestions,
       base::BindRepeating(&BirchBarController::OnShowSuggestionsPrefChanged,
                           base::Unretained(this)));
+
+  // Init and register the customize suggestion pref changed callback.
+  customize_suggestions_pref_registrar_.Init(GetPrefService());
+
+  // If any suggestion source is enabled/disabled, we re-fetch the data and
+  // update the birch bars.
+  for (const auto& suggestion_pref :
+       {prefs::kBirchUseCalendar, prefs::kBirchUseWeather,
+        prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs,
+        prefs::kBirchUseReleaseNotes}) {
+    customize_suggestions_pref_registrar_.Add(
+        suggestion_pref,
+        base::BindRepeating(&BirchBarController::MaybeFetchDataFromModel,
+                            base::Unretained(this)));
+  }
 
   if (GetShowBirchSuggestions()) {
     // Fetching data from model if going to show the suggestions.

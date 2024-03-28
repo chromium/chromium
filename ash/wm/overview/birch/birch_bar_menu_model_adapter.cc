@@ -5,11 +5,15 @@
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 
 #include "ash/app_menu/app_menu_model_adapter.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "ash/style/checkbox.h"
 #include "ash/style/switch.h"
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -18,6 +22,11 @@
 namespace ash {
 
 namespace {
+
+// Returns the pref service to use for Birch bar prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
 
 // Creates a switch button to control showing/hiding the birch bar.
 std::unique_ptr<Switch> CreateShowSuggestionSwitch(
@@ -34,6 +43,34 @@ std::unique_ptr<Switch> CreateShowSuggestionSwitch(
       model_adapter));
   switch_button->SetIsOn(BirchBarController::Get()->GetShowBirchSuggestions());
   return switch_button;
+}
+
+// Get suggestion pref name from the given command Id.
+std::string CommandIdToSuggestionPrefName(int command_id) {
+  switch (command_id) {
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kCalendarSuggestions):
+      return prefs::kBirchUseCalendar;
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kWeatherSuggestions):
+      return prefs::kBirchUseWeather;
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kDriveSuggestions):
+      return prefs::kBirchUseFileSuggest;
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kOtherDeviceSuggestions):
+      return prefs::kBirchUseRecentTabs;
+    default:
+      break;
+  }
+  NOTREACHED_NORETURN() << "No matching suggestion type for command Id: "
+                        << command_id;
+}
+
+void OnCheckboxPressed(int command_id) {
+  auto* pref_service = GetPrefService();
+  const std::string pref_name = CommandIdToSuggestionPrefName(command_id);
+  pref_service->SetBoolean(pref_name, !pref_service->GetBoolean(pref_name));
 }
 
 }  // namespace
@@ -94,8 +131,10 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
     // the checkbox button. Since we are not going to limit the minimum size, so
     // it is set to 0.
     auto* checkbox = item_view->AddChildView(std::make_unique<Checkbox>(
-        /*button_width=*/0, Checkbox::PressedCallback(),
+        /*button_width=*/0, base::BindRepeating(&OnCheckboxPressed, command_id),
         model->GetLabelAt(index)));
+    checkbox->SetSelected(GetPrefService()->GetBoolean(
+        CommandIdToSuggestionPrefName(command_id)));
     checkbox->set_delegate(this);
     checkbox->SetAccessibleName(label);
     return item_view;
