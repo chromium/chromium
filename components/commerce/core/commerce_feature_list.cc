@@ -204,6 +204,10 @@ BASE_FEATURE(kProductSpecificationsRegionLaunched,
              "ProductSpecificationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kProductSpecificationsSync,
+             "ProductSpecificationsSync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingIconColorVariant,
              "ShoppingIconColorVariant",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -25,6 +25,10 @@ const char kProductSpecificationsName[] = "Product Specifications";
 const char kProductSpecificationsDescription[] =
     "Enable the Product Specifications feature.";
 
+const char kProductSpecificationsSyncName[] = "Product Specifications Sync";
+const char kProductSpecificationsSyncDescription[] =
+    "Enable the Product Specifications Sync component.";
+
 const char kShoppingIconColorVariantName[] =
     "Enable color variant for shopping icons";
 const char kShoppingIconColorVariantDescription[] =

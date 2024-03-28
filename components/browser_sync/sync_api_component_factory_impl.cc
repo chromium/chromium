@@ -361,7 +361,7 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   }
 
   if (!disabled_types.Has(syncer::COMPARE) && product_specifications_service_ &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+      base::FeatureList::IsEnabled(commerce::kProductSpecificationsSync)) {
     controllers.push_back(std::make_unique<ModelTypeController>(
         syncer::COMPARE,
         product_specifications_service_->CreateSyncControllerDelegate(),

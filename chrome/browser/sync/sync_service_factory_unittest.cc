@@ -146,7 +146,7 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
-    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    if (base::FeatureList::IsEnabled(commerce::kProductSpecificationsSync)) {
       datatypes.Put(syncer::COMPARE);
     }
     datatypes.Put(syncer::CONTACT_INFO);

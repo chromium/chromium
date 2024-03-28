@@ -17380,6 +17380,7 @@ from previous Chrome versions.
   <int value="-1600187674" label="ClipboardUnsanitizedContent:enabled"/>
   <int value="-1599538279" label="enable-md-policy-page"/>
   <int value="-1598785167" label="RequestDesktopSiteAdditions:disabled"/>
+  <int value="-1597399851" label="ProductSpecificationsSync:disabled"/>
   <int value="-1597088741" label="RequestDesktopSiteAdditions:enabled"/>
   <int value="-1597053083" label="RelatedSearchesInBar:enabled"/>
   <int value="-1596859081" label="WebAuthenticationPINSupport:enabled"/>
@@ -19797,6 +19798,7 @@ from previous Chrome versions.
       label="AutofillEnableCardNicknameManagement:disabled"/>
   <int value="-511218457" label="NavBarColorMatchesTabBackground:enabled"/>
   <int value="-510488450" label="disable-pnacl"/>
+  <int value="-510423102" label="ProductSpecificationsSync:enabled"/>
   <int value="-508488651" label="WebviewAccelerateSmallCanvases:enabled"/>
   <int value="-508346329" label="TerminalSystemAppLegacySettings:disabled"/>
   <int value="-508250572" label="ServiceWorkerLongRunningMessage:disabled"/>
