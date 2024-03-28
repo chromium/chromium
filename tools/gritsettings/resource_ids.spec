@@ -186,7 +186,7 @@
     "includes": [2620],
   },
    "chrome/browser/resources/chromeos/mako/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
+    "META": {"sizes": {"includes": [150]}},
     "includes": [2640],
   },
   "chrome/browser/resources/chromeos/seal/resources.grd": {
