@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -209,7 +210,7 @@ void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
     DCHECK(stats);
 
     // Get the HWID.
-    std::optional<base::StringPiece> hwid =
+    std::optional<std::string_view> hwid =
         stats->GetMachineStatistic(ash::system::kHardwareClassKey);
     if (hwid) {
       response->emplace(kHWIDKey, std::string(hwid.value()));
