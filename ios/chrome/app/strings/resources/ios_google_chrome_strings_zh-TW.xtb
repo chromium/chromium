@@ -20,7 +20,7 @@
 <translation id="1436059927646026729">在 Chrome 中開啟我的最新分頁</translation>
 <translation id="1449241544691504574">在 Chrome 中新增書籤</translation>
 <translation id="1462727070346936664">登入以充分運用 Chrome 的各項功能。</translation>
-<translation id="1462833127986525564">如果想讓 Chrome 和其他 Google 服務運用彼此的資料，為你提供貼近個人需求的體驗，請連結 Chrome 和其他 Google 服務</translation>
+<translation id="1462833127986525564">如果想要 Chrome 和其他 Google 服務共用資料，來為你提供個人化體驗，請連結 Chrome 和其他 Google 服務</translation>
 <translation id="1491435845014430217">開啟「關閉 Chrome 時鎖定無痕分頁」。</translation>
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
@@ -141,7 +141,7 @@
 <translation id="4834499902900503484">登入 Chrome 後，密碼將儲存在 Google 帳戶中。如要關閉這項功能，請<ph name="BEGIN_LINK" />前往設定<ph name="END_LINK" />。</translation>
 <translation id="484033449593719797">Chrome Beta 版不支援這項功能</translation>
 <translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
-<translation id="4856636171409137183">如想獲得最貼近個人需求的體驗，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中加入 Chrome</translation>
+<translation id="4856636171409137183">如想獲得最個人化的體驗，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中加入 Chrome</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以在新分頁上追蹤這個包裹。}other{Chrome 可以在新分頁上追蹤這些包裹。}}</translation>
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
 <translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。系統管理員可以設定或限制特定功能。</translation>

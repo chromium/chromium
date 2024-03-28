@@ -321,7 +321,7 @@
 <translation id="123578888592755962">磁碟空間已滿</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="1236009322878349843">編輯手機</translation>
-<translation id="1237251612871334180">必須更新才能儲存密碼</translation>
+<translation id="1237251612871334180">須更新才能儲存密碼</translation>
 <translation id="1237950098253310325">使用 Ctrl + 向上鍵或向下鍵調整「<ph name="BUTTON_NAME" />」的順序</translation>
 <translation id="1238293488628890871">要切換設定檔嗎？</translation>
 <translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
@@ -6074,7 +6074,7 @@
 <translation id="5657667036353380798">這個外部擴充功能需要安裝 <ph name="MINIMUM_CHROME_VERSION" /> 版本以上的 Chrome 瀏覽器。</translation>
 <translation id="565899488479822148">正在安裝最新的更新版本</translation>
 <translation id="5659593005791499971">電子郵件</translation>
-<translation id="5659964844710667266">為這個 <ph name="DEVICE_TYPE" /> 建立密碼</translation>
+<translation id="5659964844710667266">為這部 <ph name="DEVICE_TYPE" /> 建立密碼</translation>
 <translation id="566040795510471729">自訂 Chrome(&amp;U)</translation>
 <translation id="5662513737565158057">變更 Linux 應用程式的運作方式。</translation>
 <translation id="5663459693447872156">自動切換為半形</translation>
@@ -6580,7 +6580,7 @@
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。為了節省電池電量，你可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理設定中進行選取，讓系統只有在裝置接上充電器時才會啟動「Ok Google」。</translation>
 <translation id="6064217302520318294">螢幕鎖定</translation>
 <translation id="606449270532897041">管理網站資料</translation>
-<translation id="6064764629679333574">將低解析度音訊提升至高解析度，改善藍牙麥克風音質。</translation>
+<translation id="6064764629679333574">將低解析度音訊提升至高解析度，來改善藍牙麥克風音質。</translation>
 <translation id="6065145031947216733">要分開保存瀏覽資料嗎？</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
