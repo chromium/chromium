@@ -11,14 +11,6 @@
       'amd_radeon_rx_5500_xt',
     ],
   },
-  'CROS_BRYA_RELEASE_ASH_LKGM': {
-    'identifier': 'BRYA_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'brya',
-      'use_lkgm': True,
-      'dut_pool': 'chrome',
-    },
-  },
   'CROS_BRYA_RELEASE_BETA': {
     'identifier': 'BRYA_RELEASE_BETA',
     'skylab': {
@@ -115,23 +107,6 @@
       'dut_pool': 'chrome',
     },
   },
-  'CROS_JACUZZI_CQ_PUBLIC_LKGM': {
-    'identifier': 'JACUZZI_CQ_PUBLIC_LKGM',
-    'skylab': {
-      'cros_board': 'jacuzzi',
-      'use_lkgm': True,
-      'bucket': 'chromiumos-image-archive',
-      'public_builder': 'cros_test_platform_public',
-      'public_builder_bucket': 'testplatform-public',
-    },
-  },
-  'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
-    'identifier': 'JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
-    'skylab': {
-      'cros_board': 'jacuzzi',
-      'use_lkgm': True,
-    },
-  },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'identifier': 'JACUZZI_RELEASE_LKGM',
     'skylab': {
@@ -139,22 +114,13 @@
       'use_lkgm': True,
     },
   },
-  'CROS_OCTOPUS_PUBLIC_LKGM': {
-    'identifier': 'OCTOPUS_PUBLIC_LKGM',
+  'CROS_PUBLIC_LKGM': {
+    'identifier': 'PUBLIC_LKGM',
     'skylab': {
-      'cros_board': 'octopus',
       'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
       'public_builder': 'cros_test_platform_public',
       'public_builder_bucket': 'testplatform-public',
-    },
-  },
-  'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {
-    'identifier': 'OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM',
-    'skylab': {
-      'cros_board': 'octopus',
-      'cros_model': 'casta',
-      'use_lkgm': True,
     },
   },
   'CROS_PUFF_RELEASE_BETA': {
@@ -189,6 +155,12 @@
       'dut_pool': 'chrome',
     },
   },
+  'CROS_RELEASE_LKGM': {
+    'identifier': 'RELEASE_LKGM',
+    'skylab': {
+      'use_lkgm': True,
+    },
+  },
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'identifier': 'STRONGBAD_RELEASE_LKGM',
     'skylab': {
@@ -202,13 +174,6 @@
       'cros_board': 'trogdor',
       'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
-    },
-  },
-  'CROS_TROGDOR_RELEASE_ASH_LKGM': {
-    'identifier': 'TROGDOR_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'trogdor',
-      'use_lkgm': True,
     },
   },
   'CROS_VOLTEER_PUBLIC_LKGM': {
@@ -233,13 +198,6 @@
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
       'public_builder_bucket': 'testplatform-public',
-    },
-  },
-  'CROS_VOLTEER_RELEASE_ASH_LKGM': {
-    'identifier': 'VOLTEER_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'volteer',
-      'use_lkgm': True,
     },
   },
   'DISABLE_FIELD_TRIAL_CONFIG': {

@@ -66,7 +66,9 @@
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
         },
-        'os_type': 'chromeos'
+        'os_type': 'chromeos',
+        'cros_board': 'brya',
+        'cros_dut_pool': 'chrome',
       },
       'chromeos-jacuzzi-chrome': {
         'additional_compile_targets': [
@@ -76,6 +78,7 @@
           'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'jacuzzi',
       },
       # TODO(b/314226799): Remove this after renaming of this builder.
       'chromeos-jacuzzi-chrome-skylab': {
@@ -86,6 +89,7 @@
           'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'jacuzzi',
       },
       'chromeos-octopus-chrome': {
         'additional_compile_targets': [
@@ -95,6 +99,7 @@
           'skylab_tests': 'chromeos_octopus_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'octopus',
       },
       'chromeos-reven-chrome': {
         'additional_compile_targets': [
@@ -115,6 +120,7 @@
           'skylab_tests': 'chromeos_volteer_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'volteer',
       },
       'lacros-amd64-generic-chrome': {
         'additional_compile_targets': [
@@ -371,6 +377,8 @@
           'skylab_tests': 'chromeos_brya_preuprev_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'brya',
+        'cros_dut_pool': 'chrome',
       },
       'chromeos-jacuzzi-chrome-preuprev': {
         'additional_compile_targets': [
@@ -380,6 +388,7 @@
           'skylab_tests': 'chromeos_jacuzzi_preuprev_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'jacuzzi',
       },
       'chromeos-volteer-chrome-preuprev': {
         'additional_compile_targets': [
@@ -389,6 +398,7 @@
           'skylab_tests': 'chromeos_volteer_preuprev_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'volteer',
       },
       'linux-chromeos-chrome-preuprev': {
         'additional_compile_targets': [
@@ -1554,6 +1564,7 @@
           'skylab_tests': 'chromeos_jacuzzi_rel_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'jacuzzi',
       },
       'chromeos-octopus-rel': {
         'additional_compile_targets': [
@@ -1563,6 +1574,7 @@
           'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'octopus',
       },
       'lacros-amd64-generic-rel': {
         'additional_compile_targets': [
@@ -6578,7 +6590,10 @@
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
-        }
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'brya',
+        'cros_dut_pool': 'chrome',
       },
       'chromeos-eve-chrome': {
         # This builder is build only.
@@ -6595,18 +6610,21 @@
           'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'jacuzzi',
       },
       'chromeos-trogdor-chrome-skylab-fyi': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
         'os_type': 'chromeos',
+        'cros_board': 'trogdor',
       },
       'chromeos-trogdor-chrome-skylab-tests-fyi': {
         'test_suites': {
           'skylab_tests': 'chromeos_trogdor_skylab_tests',
         },
         'os_type': 'chromeos',
+        'cros_board': 'trogdor',
       },
     },
   },

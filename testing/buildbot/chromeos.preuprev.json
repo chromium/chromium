@@ -121,27 +121,27 @@
         "autotest_name": "chromium",
         "cros_board": "brya",
         "dut_pool": "chrome",
-        "name": "base_unittests BRYA_RELEASE_LKGM",
+        "name": "base_unittests RELEASE_LKGM",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       },
       {
         "autotest_name": "chromium",
         "cros_board": "brya",
         "dut_pool": "chrome",
-        "name": "chromeos_integration_tests BRYA_RELEASE_LKGM",
+        "name": "chromeos_integration_tests RELEASE_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "brya",
         "dut_pool": "chrome",
-        "name": "cq_medium_tast_tests BRYA_RELEASE_LKGM",
+        "name": "cq_medium_tast_tests RELEASE_LKGM",
         "shards": 5,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "cq_medium_tast_tests",
@@ -149,7 +149,7 @@
         "test_level_retries": 2,
         "timeout_sec": 3600,
         "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       }
     ]
   },
@@ -161,25 +161,25 @@
       {
         "autotest_name": "chromium",
         "cros_board": "jacuzzi",
-        "name": "base_unittests JACUZZI_RELEASE_LKGM",
+        "name": "base_unittests RELEASE_LKGM",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       },
       {
         "autotest_name": "chromium",
         "cros_board": "jacuzzi",
-        "name": "chromeos_integration_tests JACUZZI_RELEASE_LKGM",
+        "name": "chromeos_integration_tests RELEASE_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "jacuzzi",
-        "name": "cq_medium_tast_tests JACUZZI_RELEASE_LKGM",
+        "name": "cq_medium_tast_tests RELEASE_LKGM",
         "shards": 10,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "cq_medium_tast_tests",
@@ -187,7 +187,7 @@
         "test_level_retries": 2,
         "timeout_sec": 3600,
         "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       }
     ]
   },
@@ -199,25 +199,25 @@
       {
         "autotest_name": "chromium",
         "cros_board": "volteer",
-        "name": "base_unittests VOLTEER_RELEASE_LKGM",
+        "name": "base_unittests RELEASE_LKGM",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       },
       {
         "autotest_name": "chromium",
         "cros_board": "volteer",
-        "name": "chromeos_integration_tests VOLTEER_RELEASE_LKGM",
+        "name": "chromeos_integration_tests RELEASE_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "volteer",
-        "name": "cq_medium_tast_tests VOLTEER_RELEASE_LKGM",
+        "name": "cq_medium_tast_tests RELEASE_LKGM",
         "shards": 5,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "cq_medium_tast_tests",
@@ -225,7 +225,7 @@
         "test_level_retries": 2,
         "timeout_sec": 3600,
         "use_lkgm": true,
-        "variant_id": "VOLTEER_RELEASE_LKGM"
+        "variant_id": "RELEASE_LKGM"
       }
     ]
   },

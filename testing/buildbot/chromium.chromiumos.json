@@ -1203,13 +1203,13 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "name": "base_unittests JACUZZI_CQ_PUBLIC_LKGM",
+        "name": "base_unittests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "use_lkgm": true,
-        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       },
       {
         "args": [
@@ -1219,7 +1219,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
-        "name": "chrome_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
+        "name": "chrome_all_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shards": 20,
@@ -1229,7 +1229,7 @@
         "test_level_retries": 2,
         "timeout_sec": 14400,
         "use_lkgm": true,
-        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       },
       {
         "args": [
@@ -1241,7 +1241,7 @@
         "ci_only": true,
         "cros_board": "jacuzzi",
         "experiment_percentage": 100,
-        "name": "chrome_criticalstaging_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
+        "name": "chrome_criticalstaging_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shards": 3,
@@ -1251,7 +1251,7 @@
         "test_level_retries": 2,
         "timeout_sec": 14400,
         "use_lkgm": true,
-        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       },
       {
         "args": [
@@ -1263,7 +1263,7 @@
         "ci_only": true,
         "cros_board": "jacuzzi",
         "experiment_percentage": 100,
-        "name": "chrome_disabled_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
+        "name": "chrome_disabled_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shards": 2,
@@ -1273,7 +1273,7 @@
         "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
-        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       }
     ]
   },
@@ -1286,13 +1286,13 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "name": "base_unittests OCTOPUS_PUBLIC_LKGM",
+        "name": "base_unittests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
         "use_lkgm": true,
-        "variant_id": "OCTOPUS_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       },
       {
         "args": [
@@ -1302,7 +1302,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "name": "chrome_all_tast_tests OCTOPUS_PUBLIC_LKGM",
+        "name": "chrome_all_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shards": 15,
@@ -1312,7 +1312,7 @@
         "test_level_retries": 2,
         "timeout_sec": 14400,
         "use_lkgm": true,
-        "variant_id": "OCTOPUS_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       },
       {
         "args": [
@@ -1324,7 +1324,7 @@
         "ci_only": true,
         "cros_board": "octopus",
         "experiment_percentage": 100,
-        "name": "chrome_criticalstaging_tast_tests OCTOPUS_PUBLIC_LKGM",
+        "name": "chrome_criticalstaging_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shards": 3,
@@ -1334,7 +1334,7 @@
         "test_level_retries": 2,
         "timeout_sec": 14400,
         "use_lkgm": true,
-        "variant_id": "OCTOPUS_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       },
       {
         "args": [
@@ -1346,7 +1346,7 @@
         "ci_only": true,
         "cros_board": "octopus",
         "experiment_percentage": 100,
-        "name": "chrome_disabled_tast_tests OCTOPUS_PUBLIC_LKGM",
+        "name": "chrome_disabled_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "shards": 2,
@@ -1356,7 +1356,7 @@
         "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
-        "variant_id": "OCTOPUS_PUBLIC_LKGM"
+        "variant_id": "PUBLIC_LKGM"
       }
     ]
   },
