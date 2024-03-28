@@ -11,6 +11,8 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ContentUriUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -27,7 +29,7 @@ public class PdfUtils {
     // TODO(shuyng): add this to android_chrome_strings.grd once the UX spec is finalized.
     static final String PDF_PAGE_TITLE = "PDF";
     private static final String PDF_EXTENSION = "pdf";
-    private static boolean sUseAndroidPdfViewerForTesting;
+    private static boolean sShouldOpenPdfInlineForTesting;
 
     /**
      * Determines whether the navigation is to a pdf file.
@@ -37,7 +39,7 @@ public class PdfUtils {
      * @return Whether the navigation is to a pdf file.
      */
     public static boolean isPdfNavigation(String url, @Nullable LoadUrlParams params) {
-        if (!useAndroidPdfViewer()) {
+        if (!shouldOpenPdfInline()) {
             return false;
         }
         Uri uri = Uri.parse(url);
@@ -58,9 +60,10 @@ public class PdfUtils {
         return false;
     }
 
-    /** Determines whether to use the Android PdfViewer to render pdf inline. */
-    public static boolean useAndroidPdfViewer() {
-        if (sUseAndroidPdfViewerForTesting) return true;
+    /** Determines whether to open pdf inline. */
+    @CalledByNative
+    public static boolean shouldOpenPdfInline() {
+        if (sShouldOpenPdfInlineForTesting) return true;
         // TODO(https://crbug.com/327492784): Update checks once release plan is finalized.
         return ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
@@ -112,7 +115,7 @@ public class PdfUtils {
         return null;
     }
 
-    static void setUseAndroidPdfViewerForTesting(boolean useAndroidPdfViewerForTesting) {
-        sUseAndroidPdfViewerForTesting = useAndroidPdfViewerForTesting;
+    static void setShouldOpenPdfInlineForTesting(boolean shouldOpenPdfInlineForTesting) {
+        sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
     }
 }

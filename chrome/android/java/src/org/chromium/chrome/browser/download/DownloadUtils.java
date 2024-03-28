@@ -497,7 +497,7 @@ public class DownloadUtils {
             return;
         }
         // TODO(https://crbug.com/327680567): Ensure the pdf page is opened in the intended window.
-        if (PdfUtils.useAndroidPdfViewer() && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
+        if (PdfUtils.shouldOpenPdfInline() && newMimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)) {
             LoadUrlParams params = new LoadUrlParams(filePath);
             ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(/* incognito= */ false);
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);

@@ -3541,6 +3541,7 @@ static_library("browser") {
       "//chrome/browser/translate/android",
       "//chrome/browser/translate/android:jni_headers",
       "//chrome/browser/ui/android/layouts:android",
+      "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/usb/android:jni_headers",
       "//chrome/browser/wallet/android:jni_headers",

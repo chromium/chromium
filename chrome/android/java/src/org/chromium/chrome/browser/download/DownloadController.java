@@ -32,7 +32,7 @@ public class DownloadController {
     private static void onDownloadCompleted(@Nullable Tab tab, DownloadInfo downloadInfo) {
         MediaStoreHelper.addImageToGalleryOnSDCard(
                 downloadInfo.getFilePath(), downloadInfo.getMimeType());
-        if (!PdfUtils.useAndroidPdfViewer()
+        if (!PdfUtils.shouldOpenPdfInline()
                 || tab == null
                 || !downloadInfo.getMimeType().equals(MimeTypeUtils.PDF_MIME_TYPE)) {
             return;
@@ -122,7 +122,7 @@ public class DownloadController {
 
     @CalledByNative
     private static void onPdfDownloadStarted(Tab tab, DownloadInfo downloadInfo) {
-        if (!PdfUtils.useAndroidPdfViewer()) {
+        if (!PdfUtils.shouldOpenPdfInline()) {
             return;
         }
         LoadUrlParams param = new LoadUrlParams(downloadInfo.getUrl());

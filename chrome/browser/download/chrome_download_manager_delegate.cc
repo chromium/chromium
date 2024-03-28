@@ -110,6 +110,7 @@
 #include "chrome/browser/download/android/insecure_download_dialog_bridge.h"
 #include "chrome/browser/download/android/insecure_download_infobar_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/pdf/pdf_jni_headers/PdfUtils_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -1933,9 +1934,8 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
 }
 
 bool ChromeDownloadManagerDelegate::ShouldOpenPdfInline() {
-  return base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
-         base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_U;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PdfUtils_shouldOpenPdfInline(env);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

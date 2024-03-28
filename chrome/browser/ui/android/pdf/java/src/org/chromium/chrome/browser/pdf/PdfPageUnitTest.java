@@ -65,13 +65,13 @@ public class PdfPageUnitTest {
                             doReturn(activity).when(mMockNativePageHost).getContext();
                         });
         doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginSupplier();
-        PdfUtils.setUseAndroidPdfViewerForTesting(true);
+        PdfUtils.setShouldOpenPdfInlineForTesting(true);
         mPdfInfo = new PdfInfo();
     }
 
     @After
     public void tearDown() throws Exception {
-        PdfUtils.setUseAndroidPdfViewerForTesting(false);
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
         mCloseableMocks.close();
     }
 
