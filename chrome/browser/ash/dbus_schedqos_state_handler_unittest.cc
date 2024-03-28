@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/process/process.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "dbus/dbus_result.h"
@@ -43,7 +45,8 @@ class DBusSchedQOSStateHandlerTest : public testing::Test {
   std::unique_ptr<DBusSchedQOSStateHandler> handler_;
   raw_ptr<FakeResourcedClient> resourced_client_ = nullptr;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(DBusSchedQOSStateHandlerTest, CanSetProcessPriority) {
@@ -213,6 +216,30 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityRetryOnDisconnect) {
       UnorderedElementsAre(
           Pair(process_.Pid(), resource_manager::ProcessState::kBackground),
           Pair(dummy_process1.Pid(), resource_manager::ProcessState::kNormal)));
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityUMA) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+
+  resourced_client_->DelaySetProcessStateResult(base::Microseconds(123));
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Microseconds(123));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.SetProcessStateLatency", 123, 1);
+
+  resourced_client_->DelaySetProcessStateResult(base::Microseconds(456));
+  process_.SetPriority(base::Process::Priority::kUserBlocking);
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Microseconds(456));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.SetProcessStateLatency", 456, 1);
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, GetProcessPriority) {
@@ -480,6 +507,25 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeRetryOnDisconnect) {
           FieldsAre(process_.Pid(), 102, resource_manager::ThreadState::kEco),
           FieldsAre(dummy_process1.Pid(), 103,
                     resource_manager::ThreadState::kUrgentBursty)));
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest, SetThreadTypeUMA) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  resourced_client_->DelaySetThreadStateResult(base::Microseconds(123));
+  base::PlatformThread::SetThreadType(process_.Pid(), 100,
+                                      base::ThreadType::kBackground,
+                                      base::IsViaIPC(false));
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Microseconds(123));
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Scheduling.DBusSchedQoS.SetThreadStateLatency", 123, 1);
 }
 
 }  // namespace ash

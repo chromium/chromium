@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ash/dbus_schedqos_state_handler.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "dbus/dbus_result.h"
 #include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
@@ -242,21 +245,30 @@ void DBusSchedQOSStateHandler::SetProcessPriorityOnThread(
       state = resource_manager::ProcessState::kNormal;
       break;
   }
+  base::ElapsedTimer elapsed_timer;
   ash::ResourcedClient::Get()->SetProcessState(
       process_id, state,
       base::BindOnce(&DBusSchedQOSStateHandler::OnSetProcessPriorityFinish,
-                     weak_ptr_factory_.GetWeakPtr(), process_id, priority));
+                     weak_ptr_factory_.GetWeakPtr(), process_id, priority,
+                     std::move(elapsed_timer)));
 }
 
 void DBusSchedQOSStateHandler::OnSetProcessPriorityFinish(
     base::ProcessId process_id,
     base::Process::Priority priority,
+    base::ElapsedTimer elapsed_timer,
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG_IF(ERROR, result != dbus::DBusResult::kSuccess)
-      << "set process state via resourced failed for pid " << process_id
-      << " to " << static_cast<int>(priority)
-      << " : DBusResult: " << static_cast<int>(result);
+  if (result == dbus::DBusResult::kSuccess) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Scheduling.DBusSchedQoS.SetProcessStateLatency",
+        elapsed_timer.Elapsed());
+  } else {
+    LOG(ERROR) << "set process state via resourced failed for pid "
+               << process_id << " to " << static_cast<int>(priority)
+               << " : DBusResult: " << static_cast<int>(result);
+  }
+
   CheckResourcedDisconnected(result);
   if (!is_connected_) {
     MarkProcessToRetry(process_id);
@@ -304,23 +316,31 @@ void DBusSchedQOSStateHandler::SetThreadTypeOnThread(
       state = resource_manager::ThreadState::kUrgentBursty;
       break;
   }
+  base::ElapsedTimer elapsed_timer;
   ash::ResourcedClient::Get()->SetThreadState(
       process_id, thread_id, state,
       base::BindOnce(&DBusSchedQOSStateHandler::OnSetThreadTypeFinish,
                      weak_ptr_factory_.GetWeakPtr(), process_id, thread_id,
-                     thread_type));
+                     thread_type, std::move(elapsed_timer)));
 }
 
 void DBusSchedQOSStateHandler::OnSetThreadTypeFinish(
     base::ProcessId process_id,
     base::PlatformThreadId thread_id,
     base::ThreadType thread_type,
+    base::ElapsedTimer elapsed_timer,
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG_IF(ERROR, result != dbus::DBusResult::kSuccess)
-      << "set thread state via resourced failed for tid " << thread_id << " to "
-      << static_cast<int>(thread_type)
-      << " : DBusResult: " << static_cast<int>(result);
+  if (result == dbus::DBusResult::kSuccess) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Scheduling.DBusSchedQoS.SetThreadStateLatency",
+        elapsed_timer.Elapsed());
+  } else {
+    LOG(ERROR) << "set thread state via resourced failed for tid " << thread_id
+               << " to " << static_cast<int>(thread_type)
+               << " : DBusResult: " << static_cast<int>(result);
+  }
+
   CheckResourcedDisconnected(result);
   if (!is_connected_) {
     AddThreadRetryEntry(process_id, thread_id, thread_type);

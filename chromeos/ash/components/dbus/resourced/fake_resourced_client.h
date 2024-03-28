@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
 namespace ash {
@@ -108,6 +109,10 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   void SetProcessStateResult(dbus::DBusResult);
   // Set response for next SetThreadState() calls.
   void SetThreadStateResult(dbus::DBusResult);
+  // Delays the response of the next SetProcessStateResult calls.
+  void DelaySetProcessStateResult(base::TimeDelta);
+  // Delays the response of the next SetThreadStateResult calls.
+  void DelaySetThreadStateResult(base::TimeDelta);
 
  private:
   std::optional<GameMode> set_game_mode_response_;
@@ -133,6 +138,8 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   dbus::DBusResult set_process_state_result_ = dbus::DBusResult::kSuccess;
   dbus::DBusResult set_thread_state_result_ = dbus::DBusResult::kSuccess;
+  base::TimeDelta set_process_state_delay_;
+  base::TimeDelta set_thread_state_delay_;
 
   base::ObserverList<Observer> observers_;
   base::ObserverList<ArcVmObserver> arcvm_observers_;

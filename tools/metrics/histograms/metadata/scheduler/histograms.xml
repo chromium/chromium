@@ -48,6 +48,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.DBusSchedQoS.SetProcessStateLatency"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records amount of time it takes to execute SetProcessState DBus request on
+    ChromeOS. This is emitted every time a new Chrome process is created or
+    changes background state. All ChromeOS clients have high-resolution timers.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.DBusSchedQoS.SetThreadStateLatency"
+    units="microseconds" expires_after="2024-09-12">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records amount of time it takes to execute SetThreadState DBus request on
+    ChromeOS. This is emitted every time Chrome creates a thread or changes a
+    thread type. All ChromeOS clients have high-resolution timers.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
     enum="MessagePumpPhases" expires_after="2024-08-04">
   <owner>gab@chromium.org</owner>

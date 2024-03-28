@@ -17,6 +17,7 @@
 #include "base/threading/cross_process_platform_thread_delegate.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_type_delegate.h"
+#include "base/timer/elapsed_timer.h"
 #include "dbus/dbus_result.h"
 
 namespace ash {
@@ -94,6 +95,7 @@ class DBusSchedQOSStateHandler
 
   void OnSetProcessPriorityFinish(base::ProcessId process_id,
                                   base::Process::Priority priority,
+                                  base::ElapsedTimer elapsed_timer,
                                   dbus::DBusResult result);
 
   void MarkProcessToRetry(base::ProcessId process_id);
@@ -105,6 +107,7 @@ class DBusSchedQOSStateHandler
   void OnSetThreadTypeFinish(base::ProcessId process_id,
                              base::PlatformThreadId thread_id,
                              base::ThreadType thread_type,
+                             base::ElapsedTimer elapsed_timer,
                              dbus::DBusResult result);
 
   void AddThreadRetryEntry(base::ProcessId process_id,
