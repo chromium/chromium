@@ -177,42 +177,6 @@ HRESULT CreateLocalServer(GUID clsid,
               .HasValue(service_name.c_str());
 }
 
-// Checks that only `LastInstaller*` values and, if a user install, active bits
-// under `ClientState` are in the registry.
-void ExpectUpdateRegKeyClean(UpdaterScope scope) {
-  const HKEY root = UpdaterScopeToHKeyRoot(scope);
-
-  if (IsSystemInstall(scope)) {
-    EXPECT_EQ(RegKeyExists(root, CLIENT_STATE_KEY), false);
-    return;
-  }
-
-  // `ClientState` may exist with lastrun values for user installs.
-  if (!RegKeyExists(root, CLIENT_STATE_KEY)) {
-    return;
-  }
-  EXPECT_THAT(base::win::RegKey(root, CLIENT_STATE_KEY, Wow6432(KEY_READ))
-                  .GetValueCount(),
-              base::test::ValueIs(0u));
-  const std::vector<std::wstring> allowed_values = {kDidRun, L"lastrun"};
-  for (base::win::RegistryKeyIterator client_state_iter(root, CLIENT_STATE_KEY,
-                                                        KEY_WOW64_32KEY);
-       client_state_iter.Valid(); ++client_state_iter) {
-    const std::wstring app_client_state_key_name =
-        GetAppClientStateKey(client_state_iter.Name());
-    for (base::win::RegistryValueIterator value_iter(
-             root, app_client_state_key_name.c_str(), KEY_WOW64_32KEY);
-         value_iter.Valid(); ++value_iter) {
-      EXPECT_TRUE(base::Contains(allowed_values, value_iter.Name()))
-          << value_iter.Name();
-    }
-    EXPECT_EQ(base::win::RegistryKeyIterator(
-                  root, app_client_state_key_name.c_str(), KEY_WOW64_32KEY)
-                  .SubkeyCount(),
-              0u);
-  }
-}
-
 // Checks the installation states (installed or uninstalled) and versions (SxS
 // only, or both active and SxS). The installation state includes
 // Client/ClientState registry, COM server registration, COM service
@@ -229,6 +193,10 @@ void CheckInstallation(UpdaterScope scope,
 
   if (is_active_and_sxs) {
     EXPECT_EQ(is_installed, base::PathExists(*GetGoogleUpdateExePath(scope)));
+    EXPECT_EQ(is_installed,
+              RegKeyExists(UpdaterScopeToHKeyRoot(scope),
+                           base::StrCat({CLIENT_STATE_KEY,
+                                         base::UTF8ToWide(kUpdaterAppId)})));
 
     if (is_installed) {
       for (const wchar_t* key : {CLIENTS_KEY, CLIENT_STATE_KEY, UPDATER_KEY}) {
@@ -278,9 +246,6 @@ void CheckInstallation(UpdaterScope scope,
           EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
         }
       }
-      EXPECT_FALSE(RegKeyExists(root, CLIENT_STATE_KEY));
-      ExpectUpdateRegKeyClean(scope);
-
       if (!IsSystemInstall(scope)) {
         ForEachRegistryRunValueWithPrefix(
             base::ASCIIToWide(PRODUCT_FULLNAME_STRING),

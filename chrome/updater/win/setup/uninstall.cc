@@ -4,8 +4,9 @@
 
 #include "chrome/updater/win/setup/uninstall.h"
 
-#include <shlobj.h>
 #include <windows.h>
+
+#include <shlobj.h>
 
 #include <memory>
 #include <optional>
@@ -21,6 +22,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat_win.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -99,7 +101,12 @@ void DeleteClientStateKey(UpdaterScope scope) {
   base::win::RegKey client_state;
   if (client_state.Open(UpdaterScopeToHKeyRoot(scope), CLIENT_STATE_KEY,
                         Wow6432(KEY_QUERY_VALUE)) == ERROR_SUCCESS) {
-    client_state.DeleteKey(L"", base::win::RegKey::RecursiveDelete(true));
+    // Delete the entire `ClientState` key only if all the apps are uninstalled
+    // already, as evidenced by the `--uninstall-if-unused` switch.
+    client_state.DeleteKey(base::CommandLine::ForCurrentProcess()->HasSwitch(
+                               kUninstallIfUnusedSwitch)
+                               ? L""
+                               : base::UTF8ToWide(kUpdaterAppId).c_str());
   }
 }
 
