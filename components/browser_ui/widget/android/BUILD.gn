@@ -210,7 +210,6 @@ android_resources("java_resources") {
     "java/res/drawable/bottom_sheet_background.xml",
     "java/res/drawable/card_with_corners_background.xml",
     "java/res/drawable/default_list_item_bg_rect.xml",
-    "java/res/drawable/gs_settings_gear_24dp.xml",
     "java/res/drawable/ic_arrow_back_24dp.xml",
     "java/res/drawable/ic_check_googblue_24dp_animated.xml",
     "java/res/drawable/ic_offline_pin_blue_white.xml",

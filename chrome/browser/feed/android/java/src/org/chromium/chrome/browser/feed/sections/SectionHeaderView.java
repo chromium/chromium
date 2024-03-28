@@ -221,7 +221,6 @@ public class SectionHeaderView extends LinearLayout {
             contentMarginLayoutParams.topMargin =
                     getResources().getDimensionPixelSize(R.dimen.feed_header_top_margin);
 
-            mMenuView.setImageResource(R.drawable.gs_settings_gear_24dp);
             MarginLayoutParams marginLayoutParams =
                     (MarginLayoutParams) mMenuView.getLayoutParams();
             marginLayoutParams.width =

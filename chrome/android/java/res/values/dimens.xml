@@ -175,7 +175,6 @@ found in the LICENSE file.
     <dimen name="ntp_search_box_transition_length_polish_offset">4dp</dimen>
     <dimen name="ntp_search_box_lateral_margin_tablet_polish">100dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
-    <dimen name="snippets_article_header_menu_size">48dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
@@ -186,7 +185,6 @@ found in the LICENSE file.
     <dimen name="feed_header_icon_margin">16dp</dimen>
     <dimen name="feed_header_icon_size">20dp</dimen>
     <dimen name="feed_header_tab_layout_height">40dp</dimen>
-    <dimen name="feed_v2_header_menu_width">20dp</dimen>
     <dimen name="feed_header_tab_list_view_top_bottom_margin">8dp</dimen>
 
     <!-- Incognito NTP -->

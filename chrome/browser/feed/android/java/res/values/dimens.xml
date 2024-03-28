@@ -49,7 +49,7 @@ found in the LICENSE file.
     <dimen name="feed_header_background_outer_corner_radius_polished">12dp</dimen>
     <dimen name="feed_header_tab_layout_width_max">165dp</dimen>
     <dimen name="feed_header_tab_layout_lateral_margin">8dp</dimen>
-    <dimen name="feed_header_menu_width_polished">24dp</dimen>
+    <dimen name="feed_header_menu_width_polished">48dp</dimen>
     <dimen name="feed_header_menu_end_margin">20dp</dimen>
     <dimen name="feed_header_top_margin">16dp</dimen>
     <dimen name="feed_header_title_view_margin_start">4dp</dimen>
