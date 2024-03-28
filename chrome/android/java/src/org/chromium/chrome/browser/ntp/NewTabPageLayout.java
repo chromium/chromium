@@ -39,7 +39,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoUtils;
+import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
 import org.chromium.chrome.browser.logo.LogoView;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -82,6 +84,7 @@ public class NewTabPageLayout extends LinearLayout {
     private View mMiddleSpacer; // Spacer between toolbar and Most Likely.
 
     private LogoCoordinator mLogoCoordinator;
+    private LogoView mLogoView;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
@@ -142,6 +145,7 @@ public class NewTabPageLayout extends LinearLayout {
     private Boolean mIsHalfMvtPortrait;
     private boolean mIsSurfacePolishEnabled;
     private boolean mIsSurfacePolishOmniboxColorEnabled;
+    private boolean mIsSurfacePolishLessBrandSpaceEnabled;
     private Boolean mIsMvtAllFilledLandscape;
     private Boolean mIsMvtAllFilledPortrait;
     private final int mTileViewIntervalPaddingTabletForPolish;
@@ -151,6 +155,12 @@ public class NewTabPageLayout extends LinearLayout {
     private float mTransitionLengthOffset;
     private boolean mIsTablet;
     private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private boolean mIsInNarrowWindowOnTablet;
+    // This variable is only valid when Surface Polish is enabled and the NTP surface is in tablet
+    // mode.
+    private boolean mIsInMultiWindowModeOnTablet;
+    private boolean mIsLogoPolishEnabled;
+    private @LogoSizeForLogoPolish int mLogoSizeForLogoPolish;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -211,6 +221,9 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      * @param isSurfacePolishOmniboxColorEnabled {@code true} if the NTP surface is polished and the
      *     omnibox should be colorful.
+     * @param isSurfacePolishLessBrandSpaceEnabled {@code true} if the NTP surface is polished with
+     *     less brand space.
+     * @param isLogoPolishEnabled {@code true} if the Logo in NTP is polished.
      * @param isTablet {@code true} if the NTP surface is in tablet mode.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
@@ -230,6 +243,8 @@ public class NewTabPageLayout extends LinearLayout {
             boolean isNtpAsHomeSurfaceOnTablet,
             boolean isSurfacePolishEnabled,
             boolean isSurfacePolishOmniboxColorEnabled,
+            boolean isSurfacePolishLessBrandSpaceEnabled,
+            boolean isLogoPolishEnabled,
             boolean isTablet,
             ObservableSupplier<Integer> tabStripHeightSupplier) {
         TraceEvent.begin(TAG + ".initialize()");
@@ -244,6 +259,9 @@ public class NewTabPageLayout extends LinearLayout {
         mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
+        mIsSurfacePolishLessBrandSpaceEnabled = isSurfacePolishLessBrandSpaceEnabled;
+        mIsLogoPolishEnabled = isLogoPolishEnabled;
+        mLogoSizeForLogoPolish = StartSurfaceConfiguration.getLogoSizeForLogoPolish();
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
 
@@ -458,17 +476,19 @@ public class NewTabPageLayout extends LinearLayout {
         // If pull up Feed position is enabled, doodle is not supported since there is not enough
         // room, we don't need to fetch logo image.
         boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
-        LogoView logoView = findViewById(R.id.search_provider_logo);
+        mLogoView = findViewById(R.id.search_provider_logo);
         if (mIsSurfacePolishEnabled) {
             LogoUtils.setLogoViewLayoutParams(
-                    logoView,
+                    mLogoView,
                     getResources(),
                     mIsTablet,
-                    StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue(),
-                    StartSurfaceConfiguration.isLogoPolishEnabled(mIsTablet),
-                    StartSurfaceConfiguration.getLogoSizeForLogoPolish());
+                    mIsSurfacePolishLessBrandSpaceEnabled,
+                    mIsLogoPolishEnabled,
+                    mIsInMultiWindowModeOnTablet
+                            ? LogoSizeForLogoPolish.SMALL
+                            : mLogoSizeForLogoPolish);
         } else if (mIsNtpAsHomeSurfaceOnTablet) {
-            logoView.getLayoutParams().height =
+            mLogoView.getLayoutParams().height =
                     mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
         }
 
@@ -476,7 +496,7 @@ public class NewTabPageLayout extends LinearLayout {
                 new LogoCoordinator(
                         mContext,
                         logoClickedCallback,
-                        logoView,
+                        mLogoView,
                         shouldFetchDoodle,
                         onLogoAvailableCallback,
                         /* isParentSurfaceShown= */ true,
@@ -1135,7 +1155,10 @@ public class NewTabPageLayout extends LinearLayout {
     private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         if (!mIsTablet) return;
 
+        mIsInNarrowWindowOnTablet = isInNarrowWindowOnTablet(mIsTablet, mUiConfig);
+
         if (mIsSurfacePolishEnabled) {
+            updateLogoOnTabletForLogoPolish();
             updateMvtOnTabletForPolish();
             updateSearchBoxWidthForPolish();
         } else if (mIsNtpAsHomeSurfaceOnTablet && isScrollableMvtEnabled()) {
@@ -1146,7 +1169,39 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     /**
+     * When Logo Polish is enabled with medium or large size, adjusts the logo size while the tablet
+     * transitions to or from a multi-screen layout, ensuring the change occurs post-logo
+     * initialization.
+     */
+    private void updateLogoOnTabletForLogoPolish() {
+        if (!mIsTablet) return;
+
+        boolean isInMultiWindowModeOnTabletPreviousValue = mIsInMultiWindowModeOnTablet;
+        mIsInMultiWindowModeOnTablet =
+                MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+
+        // According to the design of Logo Polish, the small logo size is used in split screens on
+        // tablets. Thus, if the default logo size is small, we don't need to adjust the logo size
+        // while the tablet transitions to or from a multi-screen layout.
+        if (mIsLogoPolishEnabled
+                && mLogoSizeForLogoPolish != LogoSizeForLogoPolish.SMALL
+                && mLogoView != null
+                && isInMultiWindowModeOnTabletPreviousValue != mIsInMultiWindowModeOnTablet) {
+            LogoUtils.setLogoViewLayoutParams(
+                    mLogoView,
+                    getResources(),
+                    mIsTablet,
+                    mIsSurfacePolishLessBrandSpaceEnabled,
+                    mIsLogoPolishEnabled,
+                    mIsInMultiWindowModeOnTablet
+                            ? LogoSizeForLogoPolish.SMALL
+                            : mLogoSizeForLogoPolish);
+        }
+    }
+
+    /**
      * Updates the margins for the MV tiles container when used in NTP on the tablet.
+     *
      * @param marginLayoutParams The {@link MarginLayoutParams} of the MV tiles container.
      */
     private void updateTilesLayoutLeftAndRightMarginsOnTablet(
@@ -1186,7 +1241,7 @@ public class NewTabPageLayout extends LinearLayout {
         }
 
         int lateralPaddingId =
-                isInNarrowWindowOnTablet(mIsTablet, mUiConfig)
+                mIsInNarrowWindowOnTablet
                         ? R.dimen.search_box_lateral_margin_polish
                         : R.dimen.mvt_container_lateral_margin_polish;
         int lateralPaddingsForNtp = getResources().getDimensionPixelSize(lateralPaddingId);
@@ -1195,7 +1250,7 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     private void updateSearchBoxWidthForPolish() {
-        if (isInNarrowWindowOnTablet(mIsTablet, mUiConfig)) {
+        if (mIsInNarrowWindowOnTablet) {
             mSearchBoxTwoSideMargin =
                     getResources().getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish)
                             * 2;

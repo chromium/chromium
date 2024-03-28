@@ -517,7 +517,6 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_large/true"})
     public void testLogoSizeForLargeLogo_LogoPolish() {
@@ -534,7 +533,6 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH + "<Study"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_medium/true"})
     public void testLogoSizeForMediumLogo_LogoPolish() {
@@ -551,7 +549,6 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testLogoSizeForSmallLogo_LogoPolish() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);

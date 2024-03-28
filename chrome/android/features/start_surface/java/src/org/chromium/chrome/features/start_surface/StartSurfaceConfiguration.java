@@ -147,10 +147,8 @@ public class StartSurfaceConfiguration {
     }
 
     /** Returns whether logo polish is enabled in the given context. */
-    public static boolean isLogoPolishEnabled(boolean isTablet) {
-        // TODO(b/328769923): Delete the check for tablet once the tablet spec is ready.
-        return !isTablet
-                && ChromeFeatureList.sSurfacePolish.isEnabled()
+    public static boolean isLogoPolishEnabled() {
+        return ChromeFeatureList.sSurfacePolish.isEnabled()
                 && ChromeFeatureList.sLogoPolish.isEnabled();
     }
 

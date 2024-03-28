@@ -8,4 +8,9 @@ found in the LICENSE file.
   <dimen name="logo_height_polished">72dp</dimen>
   <dimen name="logo_margin_top_polished">64dp</dimen>
   <dimen name="logo_margin_bottom_polished">24dp</dimen>
+  <dimen name="logo_height_logo_polish_large">112dp</dimen>
+  <dimen name="logo_height_logo_polish_medium">104dp</dimen>
+  <dimen name="logo_height_logo_polish_small">84dp</dimen>
+  <dimen name="logo_margin_top_logo_polish">@dimen/logo_margin_top_polished</dimen>
+  <dimen name="logo_margin_bottom_logo_polish">@dimen/logo_margin_bottom_polished</dimen>
 </resources>

@@ -495,7 +495,7 @@ public class StartSurfaceTestUtils {
         // Drag the Feed header title to scroll the toolbar to the top.
         Resources resources = cta.getResources();
         int logoInSurfaceHeight = 0;
-        if (StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false)) {
+        if (StartSurfaceConfiguration.isLogoPolishEnabled()) {
             logoInSurfaceHeight =
                     LogoUtils.getLogoTotalHeightForLogoPolish(
                             resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());

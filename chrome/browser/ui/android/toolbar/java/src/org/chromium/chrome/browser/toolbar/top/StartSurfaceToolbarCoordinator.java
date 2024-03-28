@@ -95,7 +95,7 @@ public class StartSurfaceToolbarCoordinator {
 
         if (mIsSurfacePolishEnabled) {
             setFakeSearchBoxToScreenTopOffsetForSurfacePolish(
-                    StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false));
+                    StartSurfaceConfiguration.isLogoPolishEnabled());
         }
 
         mPropertyModel =

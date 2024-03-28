@@ -188,8 +188,9 @@ public class NewTabPage
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsLogoPolishEnabled;
     private final boolean mIsSurfacePolishOmniboxColorEnabled;
+    private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
+    private final boolean mIsLogoPolishEnabled;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
@@ -430,10 +431,13 @@ public class NewTabPage
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsLogoPolishEnabled = StartSurfaceConfiguration.isLogoPolishEnabled(isTablet);
         mIsSurfacePolishOmniboxColorEnabled =
                 mIsSurfacePolishEnabled
                         && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
+        mIsSurfacePolishLessBrandSpaceEnabled =
+                mIsSurfacePolishEnabled
+                        && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
+        mIsLogoPolishEnabled = StartSurfaceConfiguration.isLogoPolishEnabled();
         if (mIsSurfacePolishEnabled) {
             mBackgroundColor =
                     ChromeColors.getSurfaceColor(
@@ -566,6 +570,8 @@ public class NewTabPage
                 isNtpAsHomeSurfaceOnTablet(),
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
+                mIsSurfacePolishLessBrandSpaceEnabled,
+                mIsLogoPolishEnabled,
                 mIsTablet,
                 mTabStripHeightSupplier);
 
@@ -1157,8 +1163,7 @@ public class NewTabPage
         }
 
         if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
-            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()
-                    && !mIsTablet) {
+            if (mIsSurfacePolishLessBrandSpaceEnabled && !mIsTablet) {
                 return LogoUtils.getTopMarginPolishedSmall(resources);
 
             } else {
@@ -1181,8 +1186,7 @@ public class NewTabPage
         }
 
         if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
-            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()
-                    && !mIsTablet) {
+            if (mIsSurfacePolishLessBrandSpaceEnabled && !mIsTablet) {
                 return LogoUtils.getBottomMarginPolishedSmall(resources);
             } else {
                 return LogoUtils.getBottomMarginPolished(resources);
