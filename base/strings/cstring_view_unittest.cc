@@ -4,15 +4,16 @@
 
 #include "base/strings/cstring_view.h"
 
-#include "base/containers/span.h"
-#include "base/debug/alias.h"
-#include "base/test/gtest_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include <concepts>
 #include <limits>
 #include <sstream>
 #include <type_traits>
+
+#include "base/containers/span.h"
+#include "base/debug/alias.h"
+#include "base/strings/strcat.h"
+#include "base/test/gtest_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace {
@@ -59,6 +60,12 @@ TEST(CStringViewTest, LiteralConstructed) {
   static_assert(empty[empty.size()] == '\0');
   static_assert(stuff[stuff.size()] == '\0');
   static_assert(other[other.size()] == '\0');
+
+  // Implicit construction.
+  {
+    cstring_view s = "stuff";
+    EXPECT_EQ(s, cstring_view("stuff"));
+  }
 }
 
 TEST(CStringViewTest, PointerSizeConstructed) {
@@ -107,6 +114,13 @@ TEST(CStringViewTest, StringConstructed) {
     EXPECT_EQ(c.size(), 5u);
   }
 #endif
+
+  // Implicit construction.
+  {
+    auto s = std::string("stuff");
+    cstring_view v = s;
+    EXPECT_EQ(v, cstring_view("stuff"));
+  }
 }
 
 TEST(CStringViewTest, Equality) {
@@ -934,6 +948,103 @@ TEST(CStringViewTest, IntoStdString) {
   EXPECT_EQ(cs, sv);
 
   static_assert(std::string(cstring_view("hello")) == "hello");
+}
+
+TEST(CStringViewTest, StringPlus) {
+  {
+    auto s = cstring_view("hello") + std::string("world");
+    static_assert(std::same_as<std::string, decltype(s)>);
+    EXPECT_EQ(s, "helloworld");
+  }
+  {
+    auto s = std::string("hello") + cstring_view("world");
+    static_assert(std::same_as<std::string, decltype(s)>);
+    EXPECT_EQ(s, "helloworld");
+  }
+  {
+    auto s = std::u16string(u"hello") + u16cstring_view(u"world");
+    static_assert(std::same_as<std::u16string, decltype(s)>);
+    EXPECT_EQ(s, u"helloworld");
+  }
+  {
+    auto s = std::u32string(U"hello") + u32cstring_view(U"world");
+    static_assert(std::same_as<std::u32string, decltype(s)>);
+    EXPECT_EQ(s, U"helloworld");
+  }
+  {
+#if BUILDFLAG(IS_WIN)
+    auto s = std::wstring(L"hello") + wcstring_view(L"world");
+    static_assert(std::same_as<std::wstring, decltype(s)>);
+    EXPECT_EQ(s, L"helloworld");
+#endif
+  }
+
+  // From lvalues.
+  {
+    auto h = cstring_view("hello");
+    auto w = std::string("world");
+    auto s = h + w;
+    static_assert(std::same_as<std::string, decltype(s)>);
+    EXPECT_EQ(s, "helloworld");
+  }
+
+  static_assert(cstring_view("hello") + std::string("world") == "helloworld");
+  static_assert(std::string("hello") + cstring_view("world") == "helloworld");
+}
+
+TEST(CStringViewTest, StringAppend) {
+  std::string s = "hello";
+  // string::append() can accept cstring_view like const char*.
+  s.append(cstring_view("world"));
+  EXPECT_EQ(s, "helloworld");
+}
+
+TEST(CStringViewTest, StringInsert) {
+  std::string s = "world";
+  // string::insert() can accept cstring_view like const char*.
+  s.insert(0u, cstring_view("hello"));
+  EXPECT_EQ(s, "helloworld");
+}
+
+TEST(CStringViewTest, StringReplace) {
+  std::string s = "goodbyeworld";
+  // string::replace() can accept cstring_view like const char*.
+  s.replace(0u, 7u, cstring_view("hello"));
+  EXPECT_EQ(s, "helloworld");
+}
+
+TEST(CStringViewTest, StringFind) {
+  const std::string s = "helloworld";
+  // string::find() can accept cstring_view like const char*.
+  EXPECT_EQ(s.find(cstring_view("owo")), 4u);
+}
+
+TEST(CStringViewTest, StringCompare) {
+  const std::string s = "hello";
+  // string::compare() can accept cstring_view like const char*.
+  EXPECT_EQ(s.compare(cstring_view("hello")), 0);
+  // string::operator== can accept cstring_view like const char*.
+  EXPECT_EQ(s, cstring_view("hello"));
+  // string::operator<=> can accept cstring_view like const char*.
+  EXPECT_EQ(s <=> cstring_view("hello"), std::weak_ordering::equivalent);
+  // string::operator<= etc can accept cstring_view like const char*. This
+  // follows from <=> normally but std::string has more overloads.
+  EXPECT_LE(s, cstring_view("hello"));
+}
+
+TEST(CStringViewTest, StringStartsEndsWith) {
+  const std::string s = "hello";
+  // string::starts_with() can accept cstring_view like const char*.
+  EXPECT_EQ(s.starts_with(cstring_view("hel")), true);
+  EXPECT_EQ(s.starts_with(cstring_view("lo")), false);
+  // string::ends_with() can accept cstring_view like const char*.
+  EXPECT_EQ(s.ends_with(cstring_view("hel")), false);
+  EXPECT_EQ(s.ends_with(cstring_view("lo")), true);
+}
+
+TEST(CStringViewTest, StrCat) {
+  EXPECT_EQ(base::StrCat({cstring_view("hello"), std::string_view("world")}),
+            "helloworld");
 }
 
 TEST(CStringViewTest, Example_CtorLiteral) {
