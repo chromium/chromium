@@ -7,13 +7,18 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <cstdint>
 #include <memory>
+#include <string_view>
 
 #include "base/base_paths.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,11 +57,13 @@ class BinaryFeatureExtractorTest : public testing::Test {
     path_ = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("file.dll"));
   }
 
-  // Writes |size| bytes from |data| to |path_|.
-  void WriteFileToHash(const char* data, int size) {
+  // Writes |buffer| to |path_|.
+  void WriteFileToHash(base::span<const uint8_t> buffer) {
     base::File file(path_, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(file.IsValid());
-    ASSERT_EQ(size, file.WriteAtCurrentPos(data, size));
+    std::optional<size_t> result = file.WriteAtCurrentPos(buffer);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_EQ(buffer.size(), result.value());
   }
 
   // Verifies that |path_| hashes to |digest|.
@@ -88,49 +95,49 @@ TEST_F(BinaryFeatureExtractorTest, ExtractDigestNoFile) {
 
 // Hash a file that is less than 1 4k block.
 TEST_F(BinaryFeatureExtractorTest, ExtractSmallDigest) {
-  static const uint8_t kDigest[] = {
+  constexpr uint8_t kDigest[] = {
       0x70, 0x27, 0x7b, 0xad, 0xfc, 0xb9, 0x97, 0x6b, 0x24, 0xf9, 0x80,
       0x22, 0x26, 0x2c, 0x31, 0xea, 0x8f, 0xb2, 0x1f, 0x54, 0x93, 0x6b,
       0x69, 0x8b, 0x5d, 0x54, 0xd4, 0xd4, 0x21, 0x0b, 0x98, 0xb7};
 
-  static const char kFileData[] = {"The mountains are robotic."};
-  static const int kDataLen = sizeof(kFileData) - 1;
-  WriteFileToHash(kFileData, kDataLen);
+  constexpr char kFileData[] = "The mountains are robotic.";
+  // Trip through `string_view` to avoid grabbing the null terminator.
+  WriteFileToHash(base::as_byte_span(std::string_view(kFileData)));
   ExpectFileDigestEq(kDigest);
 }
 
 // Hash a file that is exactly 1 4k block.
 TEST_F(BinaryFeatureExtractorTest, ExtractOneBlockDigest) {
-  static const uint8_t kDigest[] = {
+  constexpr uint8_t kDigest[] = {
       0x4f, 0x93, 0x6e, 0xee, 0x89, 0x55, 0xa5, 0xe7, 0x46, 0xd0, 0x61,
       0x43, 0x54, 0x5f, 0x33, 0x7b, 0xdc, 0x30, 0x3a, 0x4b, 0x18, 0xb4,
       0x82, 0x20, 0xe3, 0x93, 0x4c, 0x65, 0xe0, 0xc1, 0xc0, 0x19};
 
   const int kDataLen = kBlockSize;
-  std::unique_ptr<char[]> data(new char[kDataLen]);
-  memset(data.get(), 71, kDataLen);
-  WriteFileToHash(data.get(), kDataLen);
+  auto data = base::HeapArray<uint8_t>::Uninit(kDataLen);
+  base::ranges::fill(data, 71);
+  WriteFileToHash(data);
   ExpectFileDigestEq(kDigest);
 }
 
 // Hash a file that is larger than 1 4k block.
 TEST_F(BinaryFeatureExtractorTest, ExtractBigBlockDigest) {
-  static const uint8_t kDigest[] = {
+  constexpr uint8_t kDigest[] = {
       0xda, 0xae, 0xa0, 0xd5, 0x3b, 0xce, 0x0b, 0x4e, 0x5f, 0x5d, 0x0b,
       0xc7, 0x6a, 0x69, 0x0e, 0xf1, 0x8b, 0x2d, 0x20, 0xcd, 0xf2, 0x6d,
       0x33, 0xa7, 0x70, 0xf3, 0x6b, 0x85, 0xbf, 0xce, 0x9d, 0x5c};
 
   const int kDataLen = kBlockSize + 1;
-  std::unique_ptr<char[]> data(new char[kDataLen]);
-  memset(data.get(), 71, kDataLen);
-  WriteFileToHash(data.get(), kDataLen);
+  auto data = base::HeapArray<uint8_t>::Uninit(kDataLen);
+  base::ranges::fill(data, 71);
+  WriteFileToHash(data);
   ExpectFileDigestEq(kDigest);
 }
 
 TEST_F(BinaryFeatureExtractorTest, CanRemoveFileDuringExecution) {
   // mmap fails if the length parameter is 0, so we need a non-empty file.
   char data = ' ';
-  WriteFileToHash(&data, 1);
+  WriteFileToHash(base::byte_span_from_ref(data));
 
   scoped_refptr<MockBinaryFeatureExtractor> mock_extractor(
       new MockBinaryFeatureExtractor());

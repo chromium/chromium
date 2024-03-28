@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -69,17 +70,19 @@ void BinaryFeatureExtractor::ExtractDigest(
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (file.IsValid()) {
     const int kBufferSize = 1 << 12;
-    std::unique_ptr<char[]> buf(new char[kBufferSize]);
+    auto buf = base::HeapArray<uint8_t>::Uninit(kBufferSize);
     std::unique_ptr<crypto::SecureHash> ctx(
         crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-    int len = 0;
+    std::optional<size_t> result;
     while (true) {
-      len = file.ReadAtCurrentPos(buf.get(), kBufferSize);
-      if (len <= 0)
+      result = file.ReadAtCurrentPos(buf);
+      if (!result.has_value() || result.value() == 0) {
         break;
-      ctx->Update(buf.get(), len);
+      }
+      ctx->Update(buf.data(), result.value());
     }
-    if (!len) {
+    // The loop was broken out of because of EOF, not an error.
+    if (result.has_value() && result.value() == 0) {
       uint8_t hash[crypto::kSHA256Length];
       ctx->Finish(hash, sizeof(hash));
       digests->set_sha256(hash, sizeof(hash));

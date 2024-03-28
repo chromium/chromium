@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -120,10 +121,10 @@ void ReadMetadataInBackground(const base::FilePath& metadata_path,
   base::File::Info info;
   if (metadata_file.IsValid() && metadata_file.GetInfo(&info) &&
       info.size <= INT_MAX) {
-    const int size = static_cast<int>(info.size);
-    std::unique_ptr<char[]> file_data(new char[info.size]);
-    if (metadata_file.Read(0, file_data.get(), size) &&
-        metadata->ParseFromArray(file_data.get(), size) &&
+    auto file_data = base::HeapArray<uint8_t>::Uninit(info.size);
+    if (metadata_file.Read(0, file_data).value_or(0) &&
+        metadata->ParseFromArray(file_data.data(),
+                                 static_cast<int>(file_data.size())) &&
         MetadataIsValid(*metadata)) {
       return;
     }
