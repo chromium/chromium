@@ -18,6 +18,8 @@ class ModelError;
 
 namespace commerce {
 
+class MockProductSpecificationsSyncBridge;
+class ProductSpecificationsService;
 class ProductSpecificationsSyncBridgeTest;
 
 // Integration point between sync and ProductSpecificationService.
@@ -43,10 +45,14 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void GetAllDataForDebugging(DataCallback callback) override;
 
  private:
+  friend class commerce::MockProductSpecificationsSyncBridge;
   friend class commerce::ProductSpecificationsSyncBridgeTest;
+  friend class commerce::ProductSpecificationsService;
   using CompareSpecificsEntries =
       std::map<std::string, sync_pb::CompareSpecifics>;
   CompareSpecificsEntries entries_;
+  CompareSpecificsEntries entries() { return entries_; }
+
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,

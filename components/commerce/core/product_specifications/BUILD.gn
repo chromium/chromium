@@ -6,6 +6,8 @@ source_set("product_specifications") {
   sources = [
     "product_specifications_service.cc",
     "product_specifications_service.h",
+    "product_specifications_set.cc",
+    "product_specifications_set.h",
     "product_specifications_sync_bridge.cc",
     "product_specifications_sync_bridge.h",
   ]
@@ -19,7 +21,10 @@ source_set("product_specifications") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "product_specifications_sync_bridge_unittest.cc" ]
+  sources = [
+    "product_specifications_service_unittest.cc",
+    "product_specifications_sync_bridge_unittest.cc",
+  ]
   deps = [
     ":product_specifications",
     "//base/test:test_support",

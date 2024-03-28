@@ -1,0 +1,55 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SET_H_
+#define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SET_H_
+
+#include <vector>
+
+#include "base/time/time.h"
+#include "base/uuid.h"
+#include "url/gurl.h"
+
+namespace commerce {
+
+// Contains a set of product specifications.
+class ProductSpecificationsSet {
+ public:
+  ProductSpecificationsSet(const std::string& uuid,
+                           const int64_t creation_time_usec_since_epoch,
+                           const int64_t update_time_usec_since_epoch,
+                           const std::vector<const GURL>& urls,
+                           const std::string& name);
+
+  ProductSpecificationsSet(const ProductSpecificationsSet&);
+  ProductSpecificationsSet& operator=(const ProductSpecificationsSet&) = delete;
+
+  ~ProductSpecificationsSet();
+
+  // Unique identifier for the set
+  const base::Uuid& uuid() const { return uuid_; }
+
+  // Time the set was created
+  const base::Time& creation_time() const { return creation_time_; }
+
+  // Time the set was updated
+  const base::Time& update_time() const { return update_time_; }
+
+  // Product urls for each item in the set
+  const std::vector<const GURL>& urls() const { return urls_; }
+
+  // Name of the set
+  const std::string& name() const { return name_; }
+
+ private:
+  const base::Uuid uuid_;
+  const base::Time creation_time_;
+  const base::Time update_time_;
+  const std::vector<const GURL> urls_;
+  const std::string name_;
+};
+
+}  // namespace commerce
+
+#endif  // COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SET_H_

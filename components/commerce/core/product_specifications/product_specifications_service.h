@@ -9,11 +9,9 @@
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace syncer {
-class ModelTypeControllerDelegate;
-}  // namespace syncer
-
 namespace commerce {
+
+class ProductSpecificationsSet;
 
 // Acquires synced data about product specifications.
 class ProductSpecificationsService : public KeyedService {
@@ -27,6 +25,9 @@ class ProductSpecificationsService : public KeyedService {
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
+
+  const std::vector<const ProductSpecificationsSet>
+  GetAllProductSpecifications();
 
  private:
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
