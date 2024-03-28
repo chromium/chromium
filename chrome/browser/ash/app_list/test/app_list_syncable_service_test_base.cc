@@ -31,6 +31,12 @@ void AppListSyncableServiceTestBase::SetUp() {
   content::RunAllTasksUntilIdle();
 }
 
+void AppListSyncableServiceTestBase::RestartSyncableService() {
+  app_list_syncable_service_ =
+      std::make_unique<app_list::AppListSyncableService>(profile_.get());
+  content::RunAllTasksUntilIdle();
+}
+
 void AppListSyncableServiceTestBase::RemoveAllExistingItems() {
   std::vector<std::string> existing_item_ids;
   for (const auto& pair : app_list_syncable_service()->sync_items()) {

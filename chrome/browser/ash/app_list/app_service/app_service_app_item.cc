@@ -106,12 +106,6 @@ AppServiceAppItem::AppServiceAppItem(
         SetChromeFolderId(app_info->folder_id);
     }
 
-    if (!position().IsValid()) {
-      // If there is no default positions, the model builder will handle it when
-      // the item is inserted.
-      SetPosition(CalculateDefaultPositionIfApplicable());
-    }
-
     // Crostini and Bruschetta apps start in their respective folders.
     if (app_type_ == apps::AppType::kCrostini) {
       DCHECK(folder_id().empty());

@@ -16,6 +16,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
@@ -25,6 +26,10 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#endif  // GOOGLE_CHROME_BRANDING
 
 namespace chromeos {
 namespace default_app_order {
@@ -97,8 +102,16 @@ void GetDefault(std::vector<std::string>* app_ids) {
     arc::kPlayStoreAppId,
 
     extension_misc::kFilesManagerAppId,
-    file_manager::kFileManagerSwaAppId,
+    file_manager::kFileManagerSwaAppId
+  });
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
+      app_ids->push_back(web_app::kContainerAppId);
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+  app_ids->insert(app_ids->end(), {
     arc::kGmailAppId,
     extension_misc::kGmailAppId,
     web_app::kGmailAppId,

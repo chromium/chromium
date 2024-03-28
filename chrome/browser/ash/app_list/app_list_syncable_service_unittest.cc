@@ -3549,6 +3549,310 @@ TEST_F(AppListSyncableServiceTest, PageBreaksAfterSortWithTwoFullPagesInSync) {
                   "Item 5",  "Item 6",  "Item 7",  "Item 8",  "Item 9"}}));
 }
 
+TEST_F(AppListSyncableServiceTest, DefaultPositionOfContainerApp) {
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+
+  // Merge empty sync data, and verify the app item ordinal matches the default
+  // item ordinal.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+  ChromeAppListItem* youtube_item =
+      GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+}
+
+TEST_F(AppListSyncableServiceTest,
+       DefaultPositionOfContainerAppWithDelayedInitialSync) {
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+  ChromeAppListItem* youtube_item =
+      GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+
+  // Merge empty sync data, and verify the app item ordinal matches the default
+  // item ordinal.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  youtube_sync_item = GetSyncItem(extension_misc::kYoutubeAppId);
+  youtube_item = GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+}
+
+TEST_F(AppListSyncableServiceTest,
+       PositionOfContainerAppWithNonEmptyLocalState) {
+  // Make sure the local app list state is non-empty, and restart app list
+  // syncable service.
+  scoped_refptr<extensions::Extension> webstore =
+      MakeApp(kSomeAppName, extensions::kWebStoreAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(webstore.get());
+
+  RestartSyncableService();
+
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+  // Install the test app, and verify that it's positioned as the first app in
+  // the app list (as it's installed in session where app list syncable service
+  // local state was not initially empty).
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_EQ(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+  ChromeAppListItem* youtube_item =
+      GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_NE(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+
+  // Verify that the test app position does not changes after empty sync.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_EQ(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  youtube_sync_item = GetSyncItem(extension_misc::kYoutubeAppId);
+  youtube_item = GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_NE(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+}
+
+TEST_F(AppListSyncableServiceTest, PositionOfContainerAppWithNonEmptySyncData) {
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+
+  // Merge non-empty sync data, and verify the test app is added to front of the
+  // app list.
+  syncer::SyncDataList sync_data_list;
+  sync_data_list.push_back(
+      CreateAppRemoteData(GenerateId("item_id"), "item_name",
+                          GenerateId("parent_id"), "ordinal", "pin_ordinal"));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_data_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_EQ(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+  ChromeAppListItem* youtube_item =
+      GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_NE(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+}
+
+TEST_F(AppListSyncableServiceTest, RespectContainerAppPositionInSync) {
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+  ChromeAppListItem* youtube_item =
+      GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+
+  // Merge non-empty sync data, and verify the test app is added to front of the
+  // app list.
+  syncer::SyncDataList sync_data_list;
+  sync_data_list.push_back(CreateAppRemoteData(
+      GenerateId("item_id"), "item_name", GenerateId("parent_id"),
+      GetLastPositionString(), "pin_ordinal"));
+  auto youtube_sync_position = GetLastPositionString();
+  sync_data_list.push_back(CreateAppRemoteData(extension_misc::kYoutubeAppId,
+                                               "item_name", "",
+                                               youtube_sync_position, kUnset));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_data_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  youtube_sync_item = GetSyncItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_position,
+            youtube_sync_item->item_ordinal.ToDebugString());
+}
+
+TEST_F(AppListSyncableServiceTest,
+       RespectContainerAppPositionInSyncWithDelayedSync) {
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+
+  // Merge non-empty sync data, and verify the test app is added to front of the
+  // app list.
+  syncer::SyncDataList sync_data_list;
+  sync_data_list.push_back(CreateAppRemoteData(
+      GenerateId("item_id"), "item_name", GenerateId("parent_id"),
+      GetLastPositionString(), "pin_ordinal"));
+  auto youtube_sync_position = GetLastPositionString();
+  sync_data_list.push_back(CreateAppRemoteData(extension_misc::kYoutubeAppId,
+                                               "item_name", "",
+                                               youtube_sync_position, kUnset));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_data_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_position,
+            youtube_sync_item->item_ordinal.ToDebugString());
+}
+
+TEST_F(AppListSyncableServiceTest,
+       PositionOfContainerAppUpdatedAferNonEmptySyncData) {
+  // Use youtube as a stand-in for container app - a default app that takes
+  // default app position for new users only.
+  scoped_refptr<extensions::Extension> youtube =
+      MakeApp(kSomeAppName, extension_misc::kYoutubeAppId,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+
+  app_list_syncable_service()
+      ->set_app_default_positioned_for_new_users_only_for_test(
+          extension_misc::kYoutubeAppId);
+  InstallExtension(youtube.get());
+
+  std::vector<std::string> app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_NE(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  const AppListSyncableService::SyncItem* youtube_sync_item =
+      GetSyncItem(extension_misc::kYoutubeAppId);
+  ChromeAppListItem* youtube_item =
+      GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_EQ(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+
+  // Merge non-empty sync data, and verify the test app is added to front of the
+  // app list.
+  syncer::SyncDataList sync_data_list;
+  sync_data_list.push_back(
+      CreateAppRemoteData(GenerateId("item_id"), "item_name",
+                          GenerateId("parent_id"), "ordinal", "pin_ordinal"));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_data_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  app_ids = GetOrderedItemIdsFromSyncableService();
+  ASSERT_GE(app_ids.size(), 0u);
+  EXPECT_EQ(extension_misc::kYoutubeAppId, app_ids[0]);
+
+  youtube_sync_item = GetSyncItem(extension_misc::kYoutubeAppId);
+  youtube_item = GetModelUpdater()->FindItem(extension_misc::kYoutubeAppId);
+
+  EXPECT_NE(youtube_sync_item->item_ordinal,
+            youtube_item->CalculateDefaultPositionIfApplicable());
+}
+
 // Base class for tests of `AppListSyncableService::OnFirstSync()` parameterized
 // by whether the first sync in the session is the first sync ever across all
 // ChromeOS devices and sessions for the associated user.

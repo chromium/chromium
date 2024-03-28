@@ -92,6 +92,16 @@ class AppListSyncableService : public syncer::SyncableService,
     // https://crbug.com/1306913.
     bool empty_item_ordinal_fixable = true;
 
+    // If set with value equal to `item_ordinal`, indicates that the item
+    // ordinal should be reset to a value used by default for new apps. Used for
+    // default installed apps that need to be added to default app order for new
+    // users, but positioned to the front (as if it was a newly installed app)
+    // of the app list for existing users. This will be set if the app position
+    // is set to the default order before initial sync completes (as initial
+    // sync may change whether the  user is considered new or existing).
+    std::optional<syncer::StringOrdinal>
+        ordinal_to_undo_on_non_empty_initial_sync;
+
     // Indicates whether the sync item is ephemeral - i.e. an app or a folder
     // that does not persist across sessions. These items have a uniquely
     // generated ID per-session.
@@ -318,6 +328,11 @@ class AppListSyncableService : public syncer::SyncableService,
       syncer::StringOrdinal* target_position) const override;
   ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
+  void set_app_default_positioned_for_new_users_only_for_test(
+      const std::string& app_id) {
+    app_default_positioned_for_new_users_only_ = app_id;
+  }
+
  private:
   friend class AppListSyncModelSanitizer;
   friend struct base::ScopedObservationTraits<AppListSyncableService,
@@ -457,6 +472,11 @@ class AppListSyncableService : public syncer::SyncableService,
   bool MaybeCreateFolderBeforeAddingItem(ChromeAppListItem* app_item,
                                          const std::string& folder_id);
 
+  // Returns whether the app with `app_id` should be positioned in the default
+  // app order for new users only (for existing users, the app will be added to
+  // front of the app list when installed).
+  bool IsAppDefaultPositionedForNewUsersOnly(const std::string& app_id) const;
+
   raw_ptr<Profile> profile_;
   raw_ptr<extensions::ExtensionSystem> extension_system_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
@@ -475,6 +495,7 @@ class AppListSyncableService : public syncer::SyncableService,
   // another.
   SyncItemMap pending_transfer_map_;
   syncer::SyncableService::StartSyncFlare flare_;
+  bool local_state_initially_empty_ = false;
   bool initial_sync_data_processed_ = false;
   bool first_app_list_sync_ = true;
   // Whether OEM folder position is set to a provisional value - the default OEM
@@ -495,6 +516,11 @@ class AppListSyncableService : public syncer::SyncableService,
   // Map from a promise app item to an app sync item linked with the promise app
   // - created by `CreateLinkedPromiseSyncItemIfAvailable()`.
   std::map<std::string, std::string> items_linked_to_promise_item_;
+
+  // Used in tests to add an extra app whose default position is used for new
+  // users only. `IsAppDefaultPositionedForNewUsersOnly()` will return true for
+  // this app.
+  std::optional<std::string> app_default_positioned_for_new_users_only_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
