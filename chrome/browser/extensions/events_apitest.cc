@@ -19,9 +19,12 @@
 #include "chrome/common/extensions/api/web_navigation.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -929,6 +932,63 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          NavigatingEventDispatchingApiTest,
                          ::testing::Values(ContextType::kEventPage));
+
+using ServiceWorkerEventAckBrowserTest = EventDispatchingApiTest;
+
+// Tests that when a renderer process is no longer available that we clear any
+// unacked events from EventAckData for that render process. Otherwise we would
+// leak these unacked events and never remove them.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
+                       RendererProcessGoesAway_ClearsUnackedEventData) {
+  // TODO(crbug.com/331358155): This currently tests
+  // EventRouter::RenderProcessExited(), but it does not test the case of
+  // EventRouter::RenderProcessHostDestroyed(). It can be simulated with a
+  // worker that is delayed in terminating.
+
+  // Load an extension and wait until the service worker is running.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/memory"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      // The first SW version ID is always 0.
+      GetServiceWorkerContext(), /*service_worker_version_id=*/0));
+
+  // Dispatch an event that the renderer will never ack (that the event was
+  // executed), therefore simulating that the render process has gone away
+  // before it could ack. This should keep the unacked event info in
+  // `EventAckData`.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Confirm the `EventInfo` for the above event is still unacked.
+  EventRouter* event_router = EventRouter::Get(profile());
+  EventAckData::EventInfo* unacked_event_info =
+      // 1 is inferred since the extension has two listeners and the above
+      // navigation should be the second event encountered.
+      event_router->event_ack_data()->GetUnackedEventForTesting(/*event_id=*/1);
+  ASSERT_TRUE(unacked_event_info);
+  content::RenderProcessHost* worker_render_process_host =
+      content::RenderProcessHost::FromID(unacked_event_info->render_process_id);
+  ASSERT_TRUE(worker_render_process_host);
+  ASSERT_EQ(unacked_event_info->render_process_id,
+            worker_render_process_host->GetID());
+
+  // Terminate worker's RenderProcessHost which triggers the cleanup logic.
+  content::RenderProcessHostWatcher process_exit_observer(
+      worker_render_process_host,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  worker_render_process_host->Shutdown(content::RESULT_CODE_KILLED);
+  process_exit_observer.Wait();
+
+  // Confirm we no longer have the `EventInfo` for the unacked event.
+  EXPECT_FALSE(event_router->event_ack_data()->GetUnackedEventForTesting(
+      /*event_id=*/1));
+}
 
 }  // namespace
 }  // namespace extensions

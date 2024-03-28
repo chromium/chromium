@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -49,8 +50,6 @@ void EventAckData::IncrementInflightEvent(
     start_ok = false;
   }
 
-  // TODO(lazyboy): Clean up |unacked_events_| if RenderProcessHost died before
-  // it got a chance to ack |event_id|. This shouldn't happen in common cases.
   auto insert_result = unacked_events_.try_emplace(
       event_id,
       EventInfo{request_uuid, render_process_id, start_ok, dispatch_start_time,
@@ -184,6 +183,20 @@ void EventAckData::DecrementInflightEvent(
       // indicate a bug in the tracking of external requests in the browser.
       break;
   }
+}
+
+void EventAckData::ClearUnackedEventsForRenderProcess(int render_process_id) {
+  for (auto it = unacked_events_.begin(); it != unacked_events_.end();) {
+    if (it->second.render_process_id == render_process_id) {
+      it = unacked_events_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+EventAckData::EventInfo* EventAckData::GetUnackedEventForTesting(int event_id) {
+  return base::FindOrNull(unacked_events_, event_id);
 }
 
 }  // namespace extensions

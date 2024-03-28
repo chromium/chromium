@@ -718,6 +718,7 @@ void EventRouter::RenderProcessExited(
     RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   listeners_.RemoveListenersForProcess(host);
+  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetID());
   observed_process_set_.erase(host);
   rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
@@ -725,6 +726,7 @@ void EventRouter::RenderProcessExited(
 
 void EventRouter::RenderProcessHostDestroyed(RenderProcessHost* host) {
   listeners_.RemoveListenersForProcess(host);
+  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetID());
   observed_process_set_.erase(host);
   rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);

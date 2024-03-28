@@ -50,7 +50,6 @@ class EventAckData {
                               bool worker_stopped,
                               base::OnceClosure failure_callback);
 
- private:
   // Information about an unacked event.
   struct EventInfo {
     EventInfo(const base::Uuid& request_uuid,
@@ -84,6 +83,12 @@ class EventAckData {
     bool lazy_background_active_on_dispatch;
   };
 
+  // Removes any `unacked_events_` for `render_process_id`.
+  void ClearUnackedEventsForRenderProcess(int render_process_id);
+
+  EventAckData::EventInfo* GetUnackedEventForTesting(int event_id);
+
+ private:
   // Emits a stale event ack metric if an event with `event_id` is not present
   // in `unacked_events_`. Meaning that the event was not yet acked by the
   // renderer to the browser.
