@@ -26,7 +26,10 @@ import type {Result} from '../utils/result.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
+import {CdpTargetManager} from './modules/cdp/CdpTargetManager.js';
 import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
+import {NetworkStorage} from './modules/network/NetworkStorage.js';
+import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import {RealmStorage} from './modules/script/RealmStorage.js';
 import {
   EventManager,
@@ -47,7 +50,11 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
   #eventManager: EventManager;
+
   #browsingContextStorage = new BrowsingContextStorage();
+  #realmStorage = new RealmStorage();
+  #preloadScriptStorage = new PreloadScriptStorage();
+
   #logger?: LoggerFn;
 
   #handleIncomingMessage = (message: ChromiumBidi.Command) => {
@@ -85,15 +92,32 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
     this.#eventManager = new EventManager(this.#browsingContextStorage);
+    const networkStorage = new NetworkStorage(
+      this.#eventManager,
+      browserCdpClient,
+      logger
+    );
+    new CdpTargetManager(
+      cdpConnection,
+      browserCdpClient,
+      selfTargetId,
+      this.#eventManager,
+      this.#browsingContextStorage,
+      this.#realmStorage,
+      networkStorage,
+      this.#preloadScriptStorage,
+      options?.acceptInsecureCerts ?? false,
+      defaultUserContextId,
+      logger
+    );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
       this.#eventManager,
-      selfTargetId,
-      defaultUserContextId,
       this.#browsingContextStorage,
-      new RealmStorage(),
-      options?.acceptInsecureCerts ?? false,
+      this.#realmStorage,
+      this.#preloadScriptStorage,
+      networkStorage,
       parser,
       this.#logger
     );

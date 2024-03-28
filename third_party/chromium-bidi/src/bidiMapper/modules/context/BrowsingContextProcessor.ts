@@ -17,75 +17,28 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {CdpClient} from '../../../cdp/CdpClient.js';
-import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,
   type EmptyResult,
   NoSuchUserContextException,
-  type Browser,
   NoSuchAlertException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {NetworkStorage} from '../network/NetworkStorage.js';
-import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
-import type {Realm} from '../script/Realm.js';
-import type {RealmStorage} from '../script/RealmStorage.js';
-import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
-import type {EventManager} from '../session/EventManager.js';
 
-import {BrowsingContextImpl, serializeOrigin} from './BrowsingContextImpl.js';
+import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
-import {CdpTarget} from './CdpTarget.js';
-
-const cdpToBidiTargetTypes = {
-  service_worker: 'service-worker',
-  shared_worker: 'shared-worker',
-  worker: 'dedicated-worker',
-} as const;
 
 export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
-  readonly #cdpConnection: CdpConnection;
-  readonly #selfTargetId: string;
-  readonly #eventManager: EventManager;
-
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #networkStorage: NetworkStorage;
-  readonly #acceptInsecureCerts: boolean;
-  readonly #preloadScriptStorage: PreloadScriptStorage;
-  readonly #realmStorage: RealmStorage;
-
-  readonly #defaultUserContextId: Browser.UserContext;
-  readonly #logger?: LoggerFn;
 
   constructor(
-    cdpConnection: CdpConnection,
     browserCdpClient: CdpClient,
-    selfTargetId: string,
-    eventManager: EventManager,
-    browsingContextStorage: BrowsingContextStorage,
-    realmStorage: RealmStorage,
-    networkStorage: NetworkStorage,
-    preloadScriptStorage: PreloadScriptStorage,
-    acceptInsecureCerts: boolean,
-    defaultUserContextId: Browser.UserContext,
-    logger?: LoggerFn
+    browsingContextStorage: BrowsingContextStorage
   ) {
-    this.#acceptInsecureCerts = acceptInsecureCerts;
-    this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
-    this.#selfTargetId = selfTargetId;
-    this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#preloadScriptStorage = preloadScriptStorage;
-    this.#networkStorage = networkStorage;
-    this.#realmStorage = realmStorage;
-    this.#defaultUserContextId = defaultUserContextId;
-    this.#logger = logger;
-
-    this.#setEventListeners(browserCdpClient);
   }
 
   getTree(
@@ -333,241 +286,5 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.LocateNodesResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
     return await context.locateNodes(params);
-  }
-
-  /**
-   * This method is called for each CDP session, since this class is responsible
-   * for creating and destroying all targets and browsing contexts.
-   */
-  #setEventListeners(cdpClient: CdpClient) {
-    cdpClient.on('Target.attachedToTarget', (params) => {
-      this.#handleAttachedToTargetEvent(params, cdpClient);
-    });
-    cdpClient.on('Target.detachedFromTarget', (params) => {
-      this.#handleDetachedFromTargetEvent(params);
-    });
-    cdpClient.on('Target.targetInfoChanged', (params) => {
-      this.#handleTargetInfoChangedEvent(params);
-    });
-    cdpClient.on('Inspector.targetCrashed', () => {
-      this.#handleTargetCrashedEvent(cdpClient);
-    });
-
-    cdpClient.on(
-      'Page.frameAttached',
-      (params: Protocol.Page.FrameAttachedEvent) => {
-        this.#handleFrameAttachedEvent(params);
-      }
-    );
-    cdpClient.on(
-      'Page.frameDetached',
-      (params: Protocol.Page.FrameDetachedEvent) => {
-        this.#handleFrameDetachedEvent(params);
-      }
-    );
-  }
-
-  #handleFrameAttachedEvent(params: Protocol.Page.FrameAttachedEvent) {
-    const parentBrowsingContext = this.#browsingContextStorage.findContext(
-      params.parentFrameId
-    );
-    if (parentBrowsingContext !== undefined) {
-      BrowsingContextImpl.create(
-        parentBrowsingContext.cdpTarget,
-        this.#realmStorage,
-        params.frameId,
-        params.parentFrameId,
-        parentBrowsingContext.userContext,
-        this.#eventManager,
-        this.#browsingContextStorage,
-        this.#logger
-      );
-    }
-  }
-
-  #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
-    // In case of OOPiF no need in deleting BrowsingContext.
-    if (params.reason === 'swap') {
-      return;
-    }
-    this.#browsingContextStorage.findContext(params.frameId)?.dispose();
-  }
-
-  #handleAttachedToTargetEvent(
-    params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: CdpClient
-  ) {
-    const {sessionId, targetInfo} = params;
-    const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
-
-    this.#logger?.(
-      LogType.debugInfo,
-      'AttachedToTarget event received:',
-      params
-    );
-
-    switch (targetInfo.type) {
-      case 'page':
-      case 'iframe': {
-        if (targetInfo.targetId === this.#selfTargetId) {
-          break;
-        }
-
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-        const maybeContext = this.#browsingContextStorage.findContext(
-          targetInfo.targetId
-        );
-        if (maybeContext) {
-          // OOPiF.
-          maybeContext.updateCdpTarget(cdpTarget);
-        } else {
-          // New context.
-          BrowsingContextImpl.create(
-            cdpTarget,
-            this.#realmStorage,
-            targetInfo.targetId,
-            null,
-            targetInfo.browserContextId &&
-              targetInfo.browserContextId !== this.#defaultUserContextId
-              ? targetInfo.browserContextId
-              : 'default',
-            this.#eventManager,
-            this.#browsingContextStorage,
-            this.#logger
-          );
-        }
-        return;
-      }
-      case 'service_worker':
-      case 'worker': {
-        const realm = this.#realmStorage.findRealm({
-          cdpSessionId: parentSessionCdpClient.sessionId,
-        });
-        // If there is no browsing context, this worker is already terminated.
-        if (!realm) {
-          break;
-        }
-
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-        this.#handleWorkerTarget(
-          cdpToBidiTargetTypes[targetInfo.type],
-          cdpTarget,
-          realm
-        );
-        return;
-      }
-      // In CDP, we only emit shared workers on the browser and not the set of
-      // frames that use the shared worker. If we change this in the future to
-      // behave like service workers (emits on both browser and frame targets),
-      // we can remove this block and merge service workers with the above one.
-      case 'shared_worker': {
-        const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
-        this.#handleWorkerTarget(
-          cdpToBidiTargetTypes[targetInfo.type],
-          cdpTarget
-        );
-        return;
-      }
-    }
-
-    // DevTools or some other not supported by BiDi target. Just release
-    // debugger and ignore them.
-    targetCdpClient
-      .sendCommand('Runtime.runIfWaitingForDebugger')
-      .then(() =>
-        parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
-      )
-      .catch((error) => this.#logger?.(LogType.debugError, error));
-  }
-
-  #createCdpTarget(
-    targetCdpClient: CdpClient,
-    targetInfo: Protocol.Target.TargetInfo
-  ) {
-    this.#setEventListeners(targetCdpClient);
-
-    const target = CdpTarget.create(
-      targetInfo.targetId,
-      targetCdpClient,
-      this.#browserCdpClient,
-      this.#realmStorage,
-      this.#eventManager,
-      this.#preloadScriptStorage,
-      this.#networkStorage,
-      this.#acceptInsecureCerts,
-      this.#logger
-    );
-
-    this.#networkStorage.onCdpTargetCreated(target);
-
-    return target;
-  }
-
-  #workers = new Map<string, Realm>();
-  #handleWorkerTarget(
-    realmType: WorkerRealmType,
-    cdpTarget: CdpTarget,
-    ownerRealm?: Realm
-  ) {
-    cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
-      const {uniqueId, id, origin} = params.context;
-      const workerRealm = new WorkerRealm(
-        cdpTarget.cdpClient,
-        this.#eventManager,
-        id,
-        this.#logger,
-        serializeOrigin(origin),
-        ownerRealm ? [ownerRealm] : [],
-        uniqueId,
-        this.#realmStorage,
-        realmType
-      );
-      this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
-    });
-  }
-
-  #handleDetachedFromTargetEvent(
-    params: Protocol.Target.DetachedFromTargetEvent
-  ) {
-    const context = this.#browsingContextStorage.findContextBySession(
-      params.sessionId
-    );
-    if (context) {
-      context.dispose();
-      this.#preloadScriptStorage
-        .find({targetId: context.id})
-        .map((preloadScript) => preloadScript.dispose(context.id));
-      return;
-    }
-
-    const worker = this.#workers.get(params.sessionId);
-    if (worker) {
-      this.#realmStorage.deleteRealms({
-        cdpSessionId: worker.cdpClient.sessionId,
-      });
-    }
-  }
-
-  #handleTargetInfoChangedEvent(
-    params: Protocol.Target.TargetInfoChangedEvent
-  ) {
-    const context = this.#browsingContextStorage.findContext(
-      params.targetInfo.targetId
-    );
-    if (context) {
-      context.onTargetInfoChanged(params);
-    }
-  }
-
-  #handleTargetCrashedEvent(cdpClient: CdpClient) {
-    // This is primarily used for service and shared workers. CDP tends to not
-    // signal they closed gracefully and instead says they crashed to signal
-    // they are closed.
-    const realms = this.#realmStorage.findRealms({
-      cdpSessionId: cdpClient.sessionId,
-    });
-    for (const realm of realms) {
-      realm.dispose();
-    }
   }
 }

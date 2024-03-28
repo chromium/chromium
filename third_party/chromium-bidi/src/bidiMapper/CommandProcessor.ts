@@ -22,7 +22,6 @@ import {
   UnknownCommandException,
   UnknownErrorException,
   type ChromiumBidi,
-  type Browser,
   type Script,
 } from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
@@ -37,9 +36,9 @@ import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcess
 import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
 import {InputProcessor} from './modules/input/InputProcessor.js';
 import {NetworkProcessor} from './modules/network/NetworkProcessor.js';
-import {NetworkStorage} from './modules/network/NetworkStorage.js';
+import type {NetworkStorage} from './modules/network/NetworkStorage.js';
 import {PermissionsProcessor} from './modules/permissions/PermissionsProcessor.js';
-import {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
+import type {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './modules/script/RealmStorage.js';
 import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
 import type {EventManager} from './modules/session/EventManager.js';
@@ -78,11 +77,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     cdpConnection: CdpConnection,
     browserCdpClient: CdpClient,
     eventManager: EventManager,
-    selfTargetId: string,
-    defaultUserContextId: Browser.UserContext,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
-    acceptInsecureCerts: boolean,
+    preloadScriptStorage: PreloadScriptStorage,
+    networkStorage: NetworkStorage,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     logger?: LoggerFn
   ) {
@@ -90,27 +88,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     this.#parser = parser;
     this.#logger = logger;
 
-    const networkStorage = new NetworkStorage(
-      eventManager,
-      browserCdpClient,
-      logger
-    );
-    const preloadScriptStorage = new PreloadScriptStorage();
-
     // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(browserCdpClient);
     this.#browsingContextProcessor = new BrowsingContextProcessor(
-      cdpConnection,
       browserCdpClient,
-      selfTargetId,
-      eventManager,
-      browsingContextStorage,
-      realmStorage,
-      networkStorage,
-      preloadScriptStorage,
-      acceptInsecureCerts,
-      defaultUserContextId,
-      logger
+      browsingContextStorage
     );
     this.#cdpProcessor = new CdpProcessor(
       browsingContextStorage,
