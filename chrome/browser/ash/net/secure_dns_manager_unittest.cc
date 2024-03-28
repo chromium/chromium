@@ -382,5 +382,14 @@ TEST_F(SecureDnsManagerTest, DefaultNetworkObservedForIpAddressPlaceholder) {
             ++expected_uri_template_update_count);
 }
 
+TEST_F(SecureDnsManagerTest, DefaultTemplateUrisForwardedToShill) {
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  auto providers = GetDOHProviders();
+  // The content of the provider list depends on the current country.
+  EXPECT_FALSE(providers.empty());
+}
+
 }  // namespace
 }  // namespace ash

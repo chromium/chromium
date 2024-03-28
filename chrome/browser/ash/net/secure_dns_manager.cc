@@ -170,13 +170,6 @@ void SecureDnsManager::UpdateTemplateUri() {
   const std::string effective_uri_templates =
       doh_templates_uri_resolver_->GetEffectiveTemplates();
 
-  const std::string current_templates_uri =
-      pref_service_->GetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
-
-  if (current_templates_uri == effective_uri_templates) {
-    return;
-  }
-
   // Set the DoH URI template pref which is synced with Lacros and the
   // NetworkService.
   pref_service_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
@@ -187,6 +180,12 @@ void SecureDnsManager::UpdateTemplateUri() {
   base::Value::Dict doh_providers =
       GetProviders(registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
                    effective_uri_templates);
+
+  if (cached_doh_providers_ == doh_providers) {
+    return;
+  }
+
+  cached_doh_providers_ = doh_providers.Clone();
 
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty,

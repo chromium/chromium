@@ -67,6 +67,8 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
 
   std::unique_ptr<dns_over_https::TemplatesUriResolver>
       doh_templates_uri_resolver_;
+
+  base::Value::Dict cached_doh_providers_;
 };
 
 }  // namespace ash
