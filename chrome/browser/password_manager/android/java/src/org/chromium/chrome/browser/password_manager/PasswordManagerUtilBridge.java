@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.prefs.PrefService;
@@ -47,6 +48,11 @@ public class PasswordManagerUtilBridge {
             PrefService prefService, boolean isPwdSyncEnabled) {
         return PasswordManagerUtilBridgeJni.get()
                 .isGmsCoreUpdateRequired(prefService, isPwdSyncEnabled);
+    }
+
+    @CalledByNative
+    public static boolean isInternalBackendPresent() {
+        return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
     /**

@@ -33,15 +33,16 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return A non-null implementation of the {@link PasswordStoreAndroidBackend}.
      */
     public PasswordStoreAndroidBackend createBackend() {
-        assert canCreateBackend() : "Ensure that prerequisites of `canCreateBackend` are met!";
         return null;
     }
 
     /**
-     * Returns whether a down-stream implementation can be instantiated.
+     * Returns whether a down-stream implementation can be instantiated. TODO (b/321223016): Remove
+     * this method after removing the internal implementation.
      *
      * @return True iff all preconditions for using the down-steam implementations are fulfilled.
      */
+    @Deprecated
     public boolean canCreateBackend() {
         return false;
     }

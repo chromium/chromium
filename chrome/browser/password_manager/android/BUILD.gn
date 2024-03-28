@@ -57,7 +57,6 @@ source_set("backend") {
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
     "password_manager_lifecycle_helper_impl.h",
-    "password_manager_util_bridge.cc",
     "password_settings_updater_android_bridge_helper.h",
     "password_settings_updater_android_bridge_helper_impl.cc",
     "password_settings_updater_android_bridge_helper_impl.h",
@@ -468,14 +467,18 @@ source_set("utils") {
     "password_manager_android_util.h",
     "password_manager_eviction_util.cc",
     "password_manager_eviction_util.h",
+    "password_manager_util_bridge.cc",
+    "password_manager_util_bridge.h",
     "password_store_android_backend_api_error_codes.h",
   ]
 
   deps = [
+    ":jni_headers",
     "//chrome/common:non_code_constants",
     "//components/autofill/core/common",
     "//components/browser_sync",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_manager_buildflags",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",

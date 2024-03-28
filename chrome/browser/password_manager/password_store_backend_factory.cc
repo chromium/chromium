@@ -9,6 +9,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
@@ -22,7 +23,6 @@
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "chrome/browser/password_manager/android/android_backend_with_double_deletion.h"
 #include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
@@ -146,8 +146,8 @@ CreateProfilePasswordStoreBackend(
           std::move(profile_login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs);
 
-  if (password_manager::PasswordStoreAndroidBackendBridgeHelper::
-          CanCreateBackend()) {
+  // This are the absolute minimum requirements to have any version of UPM.
+  if (password_manager_android_util::AreMinUpmRequirementsMet()) {
     return CreateProfilePasswordStoreBackendForUpmAndroid(
         prefs, std::move(built_in_backend), affiliations_prefetcher);
   }
@@ -170,8 +170,7 @@ CreateAccountPasswordStoreBackend(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
       prefs, std::move(unsynced_deletions_notifier));
 #else  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (!password_manager::PasswordStoreAndroidBackendBridgeHelper::
-          CanCreateBackend()) {
+  if (!password_manager_android_util::AreMinUpmRequirementsMet()) {
     // Can happen if the downstream code is not available.
     return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
         std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,

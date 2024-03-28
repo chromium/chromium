@@ -13,6 +13,11 @@ class FilePath;
 
 namespace password_manager_android_util {
 
+// Used to decide whether using UPM as backend is possible. The check is based
+// on whether the GMSCore is installed and the internal wiring is present, and
+// whether the requirement for the minimum version is met.
+bool AreMinUpmRequirementsMet();
+
 // Used to decide whether to show the UPM password settings and password check
 // UIs or the old pre-UPM UIs. There are 2 cases when this check returns true:
 //  - If the user is using UPM and everything works as expected.

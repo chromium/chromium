@@ -83,6 +83,10 @@ public class PasswordSavingIntegrationTest {
 
     @Before
     public void setup() throws Exception {
+        FakePasswordManagerBackendSupportHelper fakePasswordManagerBackend =
+                new FakePasswordManagerBackendSupportHelper();
+        fakePasswordManagerBackend.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(fakePasswordManagerBackend);
         PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
                 new FakePasswordStoreAndroidBackendFactoryImpl());
         runOnUiThreadBlocking(

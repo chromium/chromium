@@ -12,6 +12,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -27,12 +28,11 @@ using JobId = PasswordStoreAndroidBackendBridgeHelper::JobId;
 std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper>
 PasswordStoreAndroidBackendBridgeHelper::Create(
     password_manager::IsAccountStore is_account_store) {
+  // The bridge is not supposed to be created when UPM is completely unusable.
+  // But it should be created for non-syncing users if sync is enabled later.
+  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   return std::make_unique<PasswordStoreAndroidBackendBridgeHelperImpl>(
       is_account_store);
-}
-
-bool PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() {
-  return PasswordStoreAndroidBackendDispatcherBridge::CanCreateBackend();
 }
 
 PasswordStoreAndroidBackendBridgeHelperImpl::

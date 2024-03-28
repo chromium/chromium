@@ -23,7 +23,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -204,6 +206,10 @@ public class BrowsingDataTest {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
                 new FakePasswordStoreAndroidBackendFactoryImpl());
+        FakePasswordManagerBackendSupportHelper fakePasswordManagerBackend =
+                new FakePasswordManagerBackendSupportHelper();
+        fakePasswordManagerBackend.setBackendPresent(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(fakePasswordManagerBackend);
         PasswordStoreBridge bridge =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> new PasswordStoreBridge());
         TestThreadUtils.runOnUiThreadBlocking(

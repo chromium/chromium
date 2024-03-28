@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
+
 #include <jni.h>
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
@@ -51,3 +53,10 @@ JNI_PasswordManagerUtilBridge_IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled(
   return password_manager::features::
       IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 }
+
+namespace password_manager_android_util {
+bool IsInternalBackendPresent() {
+  return Java_PasswordManagerUtilBridge_isInternalBackendPresent(
+      base::android::AttachCurrentThread());
+}
+}  // namespace password_manager_android_util
