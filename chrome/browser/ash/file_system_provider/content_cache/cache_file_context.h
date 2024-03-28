@@ -7,33 +7,14 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 
 namespace ash::file_system_provider {
 
 // Context relating to a file that is cached on disk. Used to make decisions
-// around evicting files from the cache (e.g. until N bytes have been evicted)
-// and guard against multiple writers to a single file.
+// around evicting files from the cache (e.g. until N bytes have been evicted).
 struct CacheFileContext {
-  // The number of contiguous bytes that are written to this file currently. If
-  // a file write is in progress, this might not represent the entire size of
-  // the file on disk.
-  int64_t bytes_on_disk = 0;
-
-  // The latest access time, cryptohome is mounted with MS_NOATIME so we need to
-  // keep track of this separately.
-  base::Time accessed_time = base::Time::Now();
-
-  // The version tag for this specific file.
-  std::string version_tag;
-
-  // A unique ID associated with this file that is used to write the file on
-  // disk.
-  base::UnguessableToken id = base::UnguessableToken::Create();
-
-  // True if there is an open writer to this file, multiple writers at
-  // disjoint offset ranges is currently not supported.
-  bool in_progress_writer = false;
+  int64_t bytes_on_disk;
+  base::Time accessed_time;
 };
 
 using PathContextPair = std::pair<base::FilePath, CacheFileContext>;

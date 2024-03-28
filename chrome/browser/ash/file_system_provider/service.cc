@@ -49,7 +49,8 @@ Service::Service(Profile* profile,
   extension_registry_->AddObserver(this);
   if (chromeos::features::IsFileSystemProviderContentCacheEnabled()) {
     DCHECK(profile);
-    cache_manager_ = std::make_unique<CacheManager>(profile->GetPath());
+    cache_manager_ = std::make_unique<CacheManager>(profile->GetPath(),
+                                                    /*in_memory_only=*/true);
   }
 }
 

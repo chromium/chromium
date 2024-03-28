@@ -5596,7 +5596,6 @@ source_set("unit_tests") {
     "file_suggest/local_file_suggestion_provider_unittest.cc",
     "file_system_provider/cloud_file_system_unittest.cc",
     "file_system_provider/content_cache/cache_manager_unittest.cc",
-    "file_system_provider/content_cache/content_cache_unittest.cc",
     "file_system_provider/content_cache/content_lru_cache_unittest.cc",
     "file_system_provider/fake_registry.cc",
     "file_system_provider/fake_registry.h",
