@@ -217,8 +217,14 @@ export class NetworkRequest {
       // is the only place we can find out
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
+    const noInterceptionExpected =
+      // We can't intercept data urls from CDP
+      this.isDataUrl() ||
+      // Cached requests never hit the network
+      this.#servedFromCache;
+
     const requestInterceptionExpected =
-      !this.isDataUrl() &&
+      !noInterceptionExpected &&
       this.#isBlockedInPhase(Network.InterceptPhase.BeforeRequestSent);
 
     const requestInterceptionCompleted =
@@ -242,7 +248,7 @@ export class NetworkRequest {
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
     const responseInterceptionExpected =
-      !this.isDataUrl() &&
+      !noInterceptionExpected &&
       this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted);
 
     if (
