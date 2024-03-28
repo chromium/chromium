@@ -1987,6 +1987,23 @@ BASE_FEATURE(kSysUiDownloadsIntegrationV2,
              "SysUiDownloadsIntegrationV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature Management flag for the Sys UI holdback experiment, used to avoid
+// certain devices.
+BASE_FEATURE(kFeatureManagementShouldExcludeFromSysUiHoldback,
+             "FeatureManagementShouldExcludeFromSysUiHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a holdback experiment for GIF Recording.
+BASE_FEATURE(kSysUiShouldHoldbackGifRecording,
+             "SysUiShouldHoldbackGifRecording",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a holdback experiment for Task Management
+// Glanceables.
+BASE_FEATURE(kSysUiShouldHoldbackTaskManagement,
+             "SysUiShouldHoldbackTaskManagement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, "NightLight", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3577,7 +3594,12 @@ bool IsGalleryAppPdfEditNotificationEnabled() {
 }
 
 bool IsGifRecordingEnabled() {
-  return base::FeatureList::IsEnabled(kGifRecording);
+  const bool device_enrolled_in_holdback =
+      !base::FeatureList::IsEnabled(
+          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
+      base::FeatureList::IsEnabled(kSysUiShouldHoldbackGifRecording);
+  return !device_enrolled_in_holdback &&
+         base::FeatureList::IsEnabled(kGifRecording);
 }
 
 bool IsFeatureManagementGrowthFrameworkEnabled() {
@@ -3629,6 +3651,9 @@ bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
 }
 
 bool IsGlanceablesTimeManagementTasksViewEnabled() {
+  // Allow users to force-enable/disable the feature via the key even if the
+  // `kSysUiShouldHoldbackTaskManagement` is applied to their device. This will
+  // allow developers to escape the holdback.
   const auto* const command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kGlanceablesKeySwitch)) {
     // Force-enable or -disable based on hash correctness.
@@ -3637,7 +3662,12 @@ bool IsGlanceablesTimeManagementTasksViewEnabled() {
            switches::kGlanceablesKeyExpectedHash;
   }
 
-  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
+  const bool device_enrolled_in_holdback =
+      !base::FeatureList::IsEnabled(
+          kFeatureManagementShouldExcludeFromSysUiHoldback) &&
+      base::FeatureList::IsEnabled(kSysUiShouldHoldbackTaskManagement);
+  return !device_enrolled_in_holdback &&
+         base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
 }
 
 bool AreAnyGlanceablesTimeManagementViewsEnabled() {
