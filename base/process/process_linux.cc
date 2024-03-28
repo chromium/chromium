@@ -205,6 +205,10 @@ Process::Priority Process::GetPriority() const {
   DCHECK(IsValid());
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (g_process_priority_delegate) {
+    return g_process_priority_delegate->GetProcessPriority(process_);
+  }
+
   if (CGroups::Get().enabled) {
     // Used to allow reading the process priority from proc on thread launch.
     ScopedAllowBlocking scoped_allow_blocking;
@@ -350,13 +354,18 @@ bool Process::OneGroupPerRendererEnabledForTesting() {
   return OneGroupPerRendererEnabled();
 }
 
-// On Chrome OS, each renderer runs in its own cgroup when running in the
-// foreground. After process creation the cgroup is created using a
-// unique token.
 void Process::InitializePriority() {
+  if (g_process_priority_delegate) {
+    g_process_priority_delegate->InitializeProcessPriority(process_);
+    return;
+  }
+
   if (!OneGroupPerRendererEnabled() || !IsValid() || !unique_token_.empty()) {
     return;
   }
+  // On Chrome OS, each renderer runs in its own cgroup when running in the
+  // foreground. After process creation the cgroup is created using a
+  // unique token.
 
   // The token has the following format:
   //   {cgroup_prefix}{UnguessableToken}
@@ -390,6 +399,13 @@ void Process::InitializePriority() {
                  CGroups::Get().uclamp_max)) {
     LOG(ERROR) << "Failed to write uclamp max file, cgroup_path="
                << cgroup_path;
+  }
+}
+
+void Process::ForgetPriority() {
+  if (g_process_priority_delegate) {
+    g_process_priority_delegate->ForgetProcessPriority(process_);
+    return;
   }
 }
 

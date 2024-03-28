@@ -266,11 +266,25 @@ class BASE_EXPORT Process {
   // browser process.
   static void CleanUpStaleProcessStates();
 
-  // Initializes the process's priority. If OneGroupPerRenderer is enabled, it
-  // creates a unique cgroup for the process. This should be called before
-  // SetPriority(). This is a no-op if the Process is not valid or if it has
-  // already been called.
+  // Initializes the process's priority.
+  //
+  // This should be called before SetPriority().
+  //
+  // If SchedQoSOnResourcedForChrome is enabled, this creates a cache entry for
+  // the process priority. The returned `base::Process::PriorityEntry` should be
+  // freed when the process is terminated so that the cached entry is freed from
+  // the internal map.
+  //
+  // If OneGroupPerRenderer is enabled, it also creates a unique cgroup for the
+  // process.
+  // This is a no-op if the Process is not valid or if it has already been
+  // called.
   void InitializePriority();
+
+  // Clears the entities initialized by InitializePriority().
+  //
+  // This is no-op if SchedQoSOnResourcedForChrome is disabled.
+  void ForgetPriority();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)

@@ -984,9 +984,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   if (base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
     ash::DBusSchedQOSStateHandler::Create(
         base::SequencedTaskRunner::GetCurrentDefault());
-    // DBusSchedQOSStateHandler requires to set process priority explicitly.
-    base::Process::Current().SetPriority(
-        base::Process::Priority::kUserBlocking);
+    base::Process::Current().InitializePriority();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -13,6 +13,7 @@ namespace base {
 // A ProcessPriorityDelegate can intercept process priority changes. This can be
 // used to adjust process properties via another process (e.g. resourced on
 // ChromeOS).
+// Methods are thread-safe.
 class BASE_EXPORT ProcessPriorityDelegate {
  public:
   ProcessPriorityDelegate() = default;
@@ -26,10 +27,18 @@ class BASE_EXPORT ProcessPriorityDelegate {
   // `base::Process::SetPriority()` is possible.
   virtual bool CanSetProcessPriority() = 0;
 
-  // Set process priotiry on behalf of base::Process::SetPriority(). This is
-  // thread-safe interface.
+  // Initialize internal state for the process priority.
+  virtual void InitializeProcessPriority(ProcessId process_id) = 0;
+
+  // Clears internal state for the process priority.
+  virtual void ForgetProcessPriority(ProcessId process_id) = 0;
+
+  // Set process priotiry on behalf of base::Process::SetPriority().
   virtual bool SetProcessPriority(ProcessId process_id,
                                   Process::Priority priority) = 0;
+
+  // Returns the process priority on behalf of base::Process::GetPriority().
+  virtual Process::Priority GetProcessPriority(ProcessId process_id) = 0;
 };
 
 }  // namespace base

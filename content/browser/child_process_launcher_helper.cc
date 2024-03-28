@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_descriptors.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/core/configuration.h"
@@ -211,7 +212,14 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
   command_line_->DetachFromCurrentSequence();
 }
 
-ChildProcessLauncherHelper::~ChildProcessLauncherHelper() = default;
+ChildProcessLauncherHelper::~ChildProcessLauncherHelper() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome) &&
+      process_id_.has_value()) {
+    base::Process::Open(process_id_.value()).ForgetPriority();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
 
 void ChildProcessLauncherHelper::StartLaunchOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());

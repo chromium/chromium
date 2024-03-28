@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_SCHEDQOS_STATE_HANDLER_H_
 #define CHROME_BROWSER_ASH_DBUS_SCHEDQOS_STATE_HANDLER_H_
 
+#include <map>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_priority_delegate.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/dbus_result.h"
 
@@ -19,6 +22,13 @@ namespace ash {
 // settings directly.
 //
 // DBusSchedQOSStateHandler is for ChromeOS only.
+//
+// DBusSchedQOSStateHandler caches process priorities to be consistent with
+// `base::Process::GetPriority()`. Processes which will change their priorities
+// need to call `base::Process::InitializePriority()` before calling
+// `base::Process::SetPriority()`. Otherwise `base::Process::SetPriority()`
+// fails. Also the processes must call `base::Process::ForgetPriority()` when
+// they terminate. Otherwise the cache in this class leaks.
 class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
  public:
   DBusSchedQOSStateHandler(const DBusSchedQOSStateHandler&) = delete;
@@ -36,8 +46,13 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
 
   // base::ProcessPriorityDelegate :
   bool CanSetProcessPriority() override;
+  void InitializeProcessPriority(base::ProcessId process_id) override;
+  void ForgetProcessPriority(base::ProcessId process_id) override;
   bool SetProcessPriority(base::ProcessId process_id,
                           base::Process::Priority priority) override;
+
+  base::Process::Priority GetProcessPriority(
+      base::ProcessId process_id) override;
 
  private:
   explicit DBusSchedQOSStateHandler(
@@ -49,6 +64,11 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
   void OnSetProcessPriorityFinish(base::ProcessId process_id,
                                   base::Process::Priority priority,
                                   dbus::DBusResult result);
+
+  base::Lock process_priority_map_lock_;
+
+  std::map<base::ProcessId, base::Process::Priority> process_priority_map_
+      GUARDED_BY(process_priority_map_lock_);
 
   // ResourcedClient need to be called on the main thread.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

@@ -113,12 +113,9 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
-    // All child processes in ChromeOS inherit the main process's priority when
-    // it is forked. It is required to set priority explicitly here because
-    // setting thread QoS states requires the process QoS state in advance.
-    process.process.SetPriority(base::Process::Priority::kUserBlocking);
-  } else if (GetProcessType() == switches::kRendererProcess) {
+  process_id_ = process.process.Pid();
+  if (GetProcessType() == switches::kRendererProcess ||
+      base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
     process.process.InitializePriority();
   }
 #endif
