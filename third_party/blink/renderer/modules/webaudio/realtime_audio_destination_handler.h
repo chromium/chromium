@@ -65,7 +65,8 @@ class RealtimeAudioDestinationHandler final
               const AudioCallbackMetric& metric) final;
 
   // For `AudioIOCallback`. This is invoked by the `AudioDestination` to notify
-  // when an error has occurred in the lower layer in the stack.
+  // when an error has occurred in the lower layer in the stack. It may be
+  // called from either the main thread or non-main threads.
   void OnRenderError() final;
 
   // Returns a hardware callback buffer size from audio infra.
