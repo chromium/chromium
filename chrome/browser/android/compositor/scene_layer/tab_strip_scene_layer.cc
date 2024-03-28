@@ -485,6 +485,7 @@ void TabStripSceneLayer::PutStripTabLayer(
 void TabStripSceneLayer::PutGroupIndicatorLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
+    jboolean incognito,
     jint id,
     jint tint,
     jfloat x,
@@ -522,7 +523,8 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   title_indicator_layer->SetBackgroundColor(SkColor4f::FromColor(tint));
 
   // Set title.
-  DecorationTitle* title_layer = layer_title_cache->GetGroupTitleLayer(id);
+  DecorationTitle* title_layer =
+      layer_title_cache->GetGroupTitleLayer(id, incognito);
   if (title_layer) {
     float title_y = (height - title_layer->size().height()) / 2.f;
     title_layer->setOpacity(1.0f);

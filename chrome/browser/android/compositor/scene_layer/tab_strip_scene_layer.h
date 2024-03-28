@@ -162,6 +162,7 @@ class TabStripSceneLayer : public SceneLayer {
   void PutGroupIndicatorLayer(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
+      jboolean incognito,
       jint id,
       jint tint,
       jfloat x,

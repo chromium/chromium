@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.content.Context;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,8 +46,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
     private static final int EFFECTIVE_MAX_WIDTH = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
 
-    // External dependencies.
-    private final Context mContext;
+    // State variables.
+    private final boolean mIncognito;
 
     // Position variables.
     private float mDrawX;
@@ -56,18 +56,31 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private float mHeight;
 
     // Tab group variables.
-    int mRootId;
-    String mTitle;
-    @ColorInt int mColor;
+    private int mRootId;
+    private String mTitle;
+    @ColorInt private int mColor;
 
     // Bottom indicator variables
     private float mBottomIndicatorWidth;
 
+    /**
+     * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
+     *
+     * @param incognito Whether or not this tab group is Incognito.
+     * @param rootId The root ID for the tab group.
+     * @param title The title of the tab group, if it is set. Null otherwise.
+     * @param textWidth The width of the title text in px.
+     * @param color The color of the tab group.
+     */
     public StripLayoutGroupTitle(
-            Context context, int rootId, String title, float textWidth, @ColorInt int color) {
+            boolean incognito,
+            int rootId,
+            @Nullable String title,
+            float textWidth,
+            @ColorInt int color) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
-        mContext = context;
+        mIncognito = incognito;
 
         updateRootId(rootId);
         updateTitle(title, textWidth);
@@ -134,6 +147,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void handleClick(long time) {
         // No-op for now. We eventually plan to add functionality, such as collapsing a tab group.
+    }
+
+    /**
+     * @return Whether the tab group this represents is Incognito or not.
+     */
+    public boolean isIncognito() {
+        return mIncognito;
     }
 
     /**

@@ -270,6 +270,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     .putGroupIndicatorLayer(
                             mNativePtr,
                             TabStripSceneLayer.this,
+                            gt.isIncognito(),
                             gt.getRootId(),
                             gt.getTint(),
                             gt.getDrawX() * mDpToPx,
@@ -416,6 +417,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,
                 TabStripSceneLayer caller,
+                boolean incognito,
                 int id,
                 int tint,
                 float x,

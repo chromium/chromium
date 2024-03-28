@@ -85,7 +85,7 @@ class LayerTitleCache {
 
   // Returns the layer that represents the title of group of group_root_id.
   // Returns NULL if no layer can be found.
-  DecorationTitle* GetGroupTitleLayer(int group_root_id);
+  DecorationTitle* GetGroupTitleLayer(int group_root_id, bool incognito);
 
  private:
   const int kInvalidResourceId = -1;

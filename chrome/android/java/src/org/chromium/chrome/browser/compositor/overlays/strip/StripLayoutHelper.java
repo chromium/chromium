@@ -210,7 +210,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
                     // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
                     //  with groupTitle.isVisible() check to avoid creating when unneeded.
-                    mLayerTitleCache.getUpdatedGroupTitle(rootId, groupTitle.getTitle());
+                    mLayerTitleCache.getUpdatedGroupTitle(
+                            rootId, groupTitle.getTitle(), mIncognito);
                     mRenderHost.requestRender();
                 }
 
@@ -228,7 +229,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     // Title may also need to change color.
                     // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
                     //  with groupTitle.isVisible() check to avoid creating when unneeded.
-                    mLayerTitleCache.getUpdatedGroupTitle(rootId, groupTitle.getTitle());
+                    mLayerTitleCache.getUpdatedGroupTitle(
+                            rootId, groupTitle.getTitle(), mIncognito);
                     mRenderHost.requestRender();
                 }
             };
@@ -2318,7 +2320,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(mContext, rootId, titleString, textWidth, color);
+                new StripLayoutGroupTitle(mIncognito, rootId, titleString, textWidth, color);
         pushPropertiesToGroupTitle(groupTitle);
 
         return groupTitle;

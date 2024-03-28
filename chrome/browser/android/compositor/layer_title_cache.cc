@@ -137,11 +137,12 @@ DecorationTitle* LayerTitleCache::GetTitleLayer(int tab_id) {
   return layer_cache_.Lookup(tab_id);
 }
 
-DecorationTitle* LayerTitleCache::GetGroupTitleLayer(int group_root_id) {
+DecorationTitle* LayerTitleCache::GetGroupTitleLayer(int group_root_id,
+                                                     bool incognito) {
   if (!group_layer_cache_.Lookup(group_root_id)) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LayerTitleCache_buildUpdatedGroupTitle(
-        env, weak_java_title_cache_.get(env), group_root_id);
+        env, weak_java_title_cache_.get(env), group_root_id, incognito);
   }
 
   return group_layer_cache_.Lookup(group_root_id);

@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -160,24 +160,25 @@ public class LayerTitleCache {
     }
 
     @CalledByNative
-    private void buildUpdatedGroupTitle(int groupRootId) {
+    private void buildUpdatedGroupTitle(int groupRootId, boolean incognito) {
         // TODO(crbug.com/331642736): Investigate if this can be called with a different width than
         //  what is stored for the corresponding group title.
-        getUpdatedGroupTitle(groupRootId, TabGroupTitleUtils.getTabGroupTitle(groupRootId));
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(incognito);
+        String titleString = filter.getTabGroupTitle(groupRootId);
+        getUpdatedGroupTitle(groupRootId, titleString, incognito);
     }
 
-    public String getUpdatedGroupTitle(int groupRootId, String titleString) {
+    public String getUpdatedGroupTitle(int groupRootId, String titleString, boolean incognito) {
         // TODO(crbug.com/331642736): Investigate skipping creating the bitmap for empty titles.
         if (titleString == null) titleString = "";
 
-        getUpdatedGroupTitleInternal(groupRootId, titleString);
+        getUpdatedGroupTitleInternal(groupRootId, titleString, incognito);
         return titleString;
     }
 
-    private String getUpdatedGroupTitleInternal(int rootId, String titleString) {
-        Tab tab = mTabModelSelector.getTabById(rootId);
-        boolean incognito = tab.isIncognito();
-
+    private String getUpdatedGroupTitleInternal(int rootId, String titleString, boolean incognito) {
         TitleBitmapFactory titleBitmapFactory =
                 incognito ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
 
@@ -192,10 +193,9 @@ public class LayerTitleCache {
         title.set(titleBitmap);
 
         if (mNativeLayerTitleCache != 0) {
-            String tabTitle = tab.getTitle();
             boolean isRtl =
-                    tabTitle != null
-                            && LocalizationUtils.getFirstStrongCharacterDirection(tabTitle)
+                    titleString != null
+                            && LocalizationUtils.getFirstStrongCharacterDirection(titleString)
                                     == LocalizationUtils.RIGHT_TO_LEFT;
             LayerTitleCacheJni.get()
                     .updateGroupLayer(
