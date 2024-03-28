@@ -258,6 +258,9 @@ LoadState HttpStreamFactory::JobController::GetLoadState() const {
 void HttpStreamFactory::JobController::OnRequestComplete() {
   DCHECK(request_);
   request_ = nullptr;
+  // This is called when the delegate is destroying its HttpStreamRequest, so
+  // it's no longer safe to call into it after this point.
+  delegate_ = nullptr;
 
   if (!job_bound_) {
     alternative_job_.reset();

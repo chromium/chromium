@@ -161,15 +161,15 @@ class NET_EXPORT HttpStreamFactory {
 
   const raw_ptr<HttpNetworkSession> session_;
 
+  // Factory used by job controllers for creating jobs.
+  std::unique_ptr<JobFactory> job_factory_;
+
   // All Requests/Preconnects are assigned with a JobController to manage
   // serving Job(s). JobController might outlive Request when Request
   // is served while there's some working Job left. JobController will be
   // deleted from |job_controller_set_| when it determines the completion of
   // its work.
   JobControllerSet job_controller_set_;
-
-  // Factory used by job controllers for creating jobs.
-  std::unique_ptr<JobFactory> job_factory_;
 };
 
 }  // namespace net
