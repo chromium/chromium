@@ -437,8 +437,8 @@ void DialogDelegate::SetWidgetOwnsNativeWidget() {
   widget_owns_native_widget_ = true;
 }
 
-std::unique_ptr<View> DialogDelegate::DisownExtraView() {
-  return std::move(extra_view_);
+std::optional<std::unique_ptr<View>> DialogDelegate::DisownExtraView() {
+  return std::exchange(extra_view_, std::nullopt);
 }
 
 bool DialogDelegate::Close() {

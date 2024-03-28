@@ -409,6 +409,7 @@ void SaveCardOfferBubbleViews::ShowThrobber() {
   }
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetExtraView({nullptr});
 
   CHECK(loading_throbber_);
   loading_throbber_->Start();
