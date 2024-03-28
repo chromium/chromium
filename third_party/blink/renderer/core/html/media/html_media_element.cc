@@ -1440,26 +1440,29 @@ LocalFrame* HTMLMediaElement::LocalFrameForPlayer() {
                           : GetDocument().GetFrame();
 }
 
+bool HTMLMediaElement::IsValidInvokeAction(HTMLElement& invoker,
+                                           InvokeAction action) {
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return HTMLElement::IsValidInvokeAction(invoker, action);
+  }
+
+  return HTMLElement::IsValidInvokeAction(invoker, action) ||
+         action == InvokeAction::kPlaypause || action == InvokeAction::kPause ||
+         action == InvokeAction::kPlay || action == InvokeAction::kToggleMuted;
+}
+
 bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
-                                            AtomicString& action) {
+                                            InvokeAction action) {
+  CHECK(IsValidInvokeAction(invoker, action));
+
   if (HTMLElement::HandleInvokeInternal(invoker, action)) {
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
-    return false;
-  }
-
-  if (!(EqualIgnoringASCIICase(action, keywords::kPlaypause) ||
-        EqualIgnoringASCIICase(action, keywords::kPause) ||
-        EqualIgnoringASCIICase(action, keywords::kPlay) ||
-        EqualIgnoringASCIICase(action, keywords::kToggleMuted))) {
-    return false;
-  }
   Document& document = GetDocument();
   LocalFrame* frame = document.GetFrame();
 
-  if (EqualIgnoringASCIICase(action, keywords::kPlaypause)) {
+  if (action == InvokeAction::kPlaypause) {
     if (paused_) {
       if (LocalFrame::HasTransientUserActivation(frame)) {
         Play();
@@ -1475,12 +1478,12 @@ bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
       pause();
       return true;
     }
-  } else if (EqualIgnoringASCIICase(action, keywords::kPause)) {
+  } else if (action == InvokeAction::kPause) {
     if (!paused_) {
       pause();
     }
     return true;
-  } else if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
+  } else if (action == InvokeAction::kPlay) {
     if (paused_) {
       if (LocalFrame::HasTransientUserActivation(frame)) {
         Play();
@@ -1493,13 +1496,14 @@ bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
       }
     }
     return true;
-  } else {
-    CHECK(EqualIgnoringASCIICase(action, keywords::kToggleMuted));
+  } else if (action == InvokeAction::kToggleMuted) {
     // No user activation check as `setMuted` already handles the autoplay
     // policy check.
     setMuted(!muted_);
     return true;
   }
+
+  return false;
 }
 
 void HTMLMediaElement::StartPlayerLoad() {
