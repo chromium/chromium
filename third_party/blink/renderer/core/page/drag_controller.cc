@@ -138,8 +138,6 @@ static WebMouseEvent CreateMouseEvent(DragData* drag_data) {
       drag_data->GlobalPosition(), WebPointerProperties::Button::kLeft, 0,
       static_cast<WebInputEvent::Modifiers>(drag_data->GetModifiers()),
       base::TimeTicks::Now());
-  // TODO(dtapuska): Really we should chnage DragData to store the viewport
-  // coordinates and scale.
   result.SetFrameScale(1);
   return result;
 }
@@ -309,11 +307,8 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
     // initiator of the navigation is a user dragging files from *outside* of
     // the current page.  See also https://crbug.com/930049.
     //
-    // TODO(lukasza): Once drag-and-drop remembers the source of the drag
-    // (unique origin for drags started from top-level Chrome like bookmarks
-    // or for drags started from other apps like Windows Explorer;  specific
-    // origin for drags started from another tab) we should use the source of
-    // the drag as the initiator of the navigation below.
+    // TODO(crbug.com/331733543): Once supported, use the source of the drag as
+    // the initiator of the navigation below.
     resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
 
     FrameLoadRequest request(nullptr, resource_request);
@@ -346,7 +341,8 @@ DragController::Operation DragController::DragEnteredOrUpdated(
   MouseMovedIntoDocument(local_root.DocumentAtPoint(
       PhysicalOffset::FromPointFRound(drag_data->ClientPosition())));
 
-  // TODO(esprehn): Replace acceptsLoadDrops with a Setting used in core.
+  // TODO(crbug.com/331682039): Replace `AcceptsLoadDrops` with a Setting used
+  // in core.
   drag_destination_action_ =
       page_->GetChromeClient().AcceptsLoadDrops()
           ? kDragDestinationActionAny
@@ -507,15 +503,12 @@ DragOperation DragController::OperationForLoad(DragData* drag_data,
 
 // Returns true if node at |point| is editable with populating |dragCaret| and
 // |range|, otherwise returns false.
-// TODO(yosin): We should return |VisibleSelection| rather than three values.
 static bool SetSelectionToDragCaret(LocalFrame* frame,
                                     const SelectionInDOMTree& drag_caret,
                                     Range*& range,
                                     const PhysicalOffset& point) {
   frame->Selection().SetSelection(drag_caret, SetSelectionOptions());
-  // TODO(editing-dev): The use of
-  // UpdateStyleAndLayout
-  // needs to be audited.  See http://crbug.com/590369 for more details.
+  // TODO(crbug.com/40458806): Audit the usage of `UpdateStyleAndLayout`.
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (!frame->Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return frame->Selection()
@@ -530,9 +523,7 @@ static bool SetSelectionToDragCaret(LocalFrame* frame,
   frame->Selection().SetSelection(
       SelectionInDOMTree::Builder().Collapse(position).Build(),
       SetSelectionOptions());
-  // TODO(editing-dev): The use of
-  // UpdateStyleAndLayout
-  // needs to be audited.  See http://crbug.com/590369 for more details.
+  // TODO(crbug.com/40458806): Audit the usage of `UpdateStyleAndLayout`.
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   const VisibleSelection& visible_selection =
       frame->Selection().ComputeVisibleSelectionInDOMTree();
@@ -598,7 +589,6 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
     return file_input->ReceiveDroppedFiles(drag_data);
   }
 
-  // TODO(paulmeyer): Isn't |m_page->dragController()| the same as |this|?
   if (!page_->GetDragController().CanProcessDrag(
           drag_data, inner_frame->LocalFrameRoot())) {
     page_->GetDragCaret().Clear();
@@ -606,8 +596,7 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
   }
 
   if (page_->GetDragCaret().HasCaret()) {
-    // TODO(editing-dev): Use of UpdateStyleAndLayout
-    // needs to be audited.  See http://crbug.com/590369 for more details.
+    // TODO(crbug.com/40458806): Audit the usage of` UpdateStyleAndLayout`.
     page_->GetDragCaret()
         .CaretPosition()
         .GetPosition()
@@ -942,7 +931,7 @@ static void PrepareDataTransferForImageDrag(LocalFrame* source,
                                             const String& label) {
   node->GetDocument().UpdateStyleAndLayoutTree();
   if (IsRichlyEditable(*node)) {
-    // TODO(editing-dev): We should use |EphemeralRange| instead of |Range|.
+    // TODO(crbug.com/331666850): Replace `EphemeralRange` usage with `Range`.
     Range* range = source->GetDocument()->createRange();
     range->selectNode(node, ASSERT_NO_EXCEPTION);
     source->Selection().SetSelection(
@@ -1153,7 +1142,8 @@ gfx::Rect DragRectForLink(const DragImage* link_image,
   // |origin| is in the coordinate space of the frame's contents whereas the
   // size of |link_image| is in physical pixels. Adjust the image offset to be
   // scaled in the frame's contents.
-  // TODO(pdr): Unify this calculation with the DragImageForImage scaling code.
+  // TODO(crbug.com/331670940): Unify this calculation with the
+  // `DragImageForImage` scaling code.
   float scale = 1.f / (device_scale_factor * page_scale_factor);
   image_offset.Scale(scale);
   image_offset += origin.OffsetFromOrigin();
@@ -1264,17 +1254,17 @@ std::unique_ptr<DragImage> DetermineDragImageAndRect(
     if (!drag_image) {
       auto* element = DynamicTo<Element>(state.drag_src_.Get());
       const gfx::Rect& image_rect = hit_test_result.ImageRect();
-      // TODO(oshima): Remove this scaling and simply pass imageRect to
-      // dragImageForImage once all platforms are migrated to use zoom for dsf.
+      // TODO(crbug.com/331670941): Remove this scaling and simply pass
+      // `imageRect`to `dragImageForImage` once all platforms are migrated
+      // to use zoom for dsf.
       gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
           image_rect.size(), frame->GetPage()->GetVisualViewport().Scale());
 
       // Pass the selected image size in DIP becasue dragImageForImage clips the
       // image in DIP.  The coordinates of the locations are in Viewport
       // coordinates, and they're converted in the Blink client.
-      // TODO(oshima): Currently, the dragged image on high DPI is scaled and
-      // can be blurry because of this.  Consider to clip in the screen
-      // coordinates to use high resolution image on high DPI screens.
+      // TODO(crbug.com/331753419): Consider clipping screen coordinates to
+      // use a high resolution image on high DPI screens.
       drag_image = DragImageForImage(*element, device_scale_factor,
                                      image_size_in_pixels);
       drag_obj_rect =
@@ -1365,9 +1355,9 @@ void DragController::DoSystemDrag(DragImage* image,
   drag_initiator_ = frame->DomWindow();
   SetExecutionContext(frame->DomWindow());
 
-  // TODO(pdr): |drag_obj_rect| and |drag_initiation_location| should be
-  // passed in as |gfx::RectF| and |gfx::PointF| respectively to avoid
-  // unnecessary rounding.
+  // TODO(crbug.com/331753420): `drag_obj_rect` and `drag_initiation_location`
+  // should be passed in as `gfx::RectF` and `gfx::PointF` respectively to
+  // avoid unnecessary rounding.
   gfx::Point adjusted_drag_obj_location =
       frame->View()->FrameToViewport(drag_obj_rect.origin());
   gfx::Point adjusted_event_pos =

@@ -51,6 +51,8 @@ class CORE_EXPORT DragData {
 
   // clientPosition is taken to be the position of the drag event within the
   // target window, with (0,0) at the top left.
+  // TODO(crbug.com/331733541): Update `DragData` to store the viewport
+  // coordinates and scale.
   DragData(DataObject*,
            const gfx::PointF& client_position,
            const gfx::PointF& global_position,
