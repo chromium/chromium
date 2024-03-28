@@ -9023,17 +9023,25 @@
         {
             "platforms": [
                 "android",
+                "android_weblayer",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240115",
+                    "name": "WithReadAndDiscardBody_20240328",
+                    "params": {
+                        "http_disk_cache_prewarming_use_read_and_discard_body_option": "true"
+                    },
                     "enable_features": [
-                        "HttpDiskCachePrewarming"
+                        "HttpDiskCachePrewarming",
+                        "SimpleURLLoaderUseReadAndDiscardBodyOption"
                     ]
                 }
             ]
@@ -17765,30 +17773,6 @@
                     },
                     "enable_features": [
                         "IPH_SideSearch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SimpleURLLoaderUseReadAndDiscardBodyOption": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SimpleURLLoaderUseReadAndDiscardBodyOption"
                     ]
                 }
             ]
