@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tab_ui;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -10,6 +10,7 @@ import android.os.SystemClock;
 import android.util.Size;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,13 +18,23 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** Interface for the Tab Switcher. */
 public interface TabSwitcher {
+    @IntDef({TabSwitcherType.GRID, TabSwitcherType.SINGLE, TabSwitcherType.NONE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TabSwitcherType {
+        int GRID = 0;
+        // int CAROUSEL_DEPRECATED = 1;
+        int SINGLE = 2;
+        int NONE = 3;
+    }
+
     /** Defines an interface to pass out tab selecting event. */
     interface OnTabSelectingListener {
         /**
@@ -203,7 +214,7 @@ public interface TabSwitcher {
 
         /**
          * Set a hook to receive all the {@link Bitmap}s returned by
-         * {@link TabListMediator.ThumbnailFetcher} for testing.
+         * {@link ThumbnailFetcher} for testing.
          * @param callback The callback to send bitmaps through.
          */
         void setBitmapCallbackForTesting(Callback<Bitmap> callback);
@@ -229,13 +240,18 @@ public interface TabSwitcher {
      * TabSwitcherCoordinator}.
      */
     @Nullable
-    TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
+    default TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        return null;
+    }
 
     /** Returns the number of elements in the tab switcher's tab list model. */
     int getTabSwitcherTabListModelSize();
 
-    /** Set the tab switcher's current RecyclerViewPosition. */
-    void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
+    /**
+     * Set the tab switcher's current RecyclerViewPosition. This is a no-op for tab switcher without
+     * a recyclerView.
+     */
+    default void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {}
 
     /**
      * Show the Quick Delete animation on the tab list.

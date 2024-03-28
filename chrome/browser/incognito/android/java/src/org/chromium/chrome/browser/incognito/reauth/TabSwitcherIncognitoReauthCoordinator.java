@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** The coordinator responsible for showing the tab-switcher re-auth screen. */

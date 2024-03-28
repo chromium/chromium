@@ -30,10 +30,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -248,17 +246,9 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     }
 
     @Override
-    public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
-        return null;
-    }
-
-    @Override
     public int getTabSwitcherTabListModelSize() {
         return 0;
     }
-
-    @Override
-    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {}
 
     @Override
     public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {

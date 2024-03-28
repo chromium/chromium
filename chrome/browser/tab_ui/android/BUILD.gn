@@ -9,8 +9,11 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_ui/InvalidationAwareThumbnailProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/RecyclerViewPosition.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabContentManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcher.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManager.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabThumbnailView.java",
     "java/src/org/chromium/chrome/browser/tab_ui/TabUiThemeUtils.java",
     "java/src/org/chromium/chrome/browser/tab_ui/ThumbnailProvider.java",
@@ -28,6 +31,7 @@ android_library("java") {
     "//chrome/browser/ui/android/favicon:java_resources",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/tab_groups:tab_groups_java",
     "//content/public/android:content_full_java",
@@ -71,7 +75,10 @@ robolectric_library("junit") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.tab_ui"
 
-  sources = [ "junit/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProviderTest.java" ]
+  sources = [
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabListFaviconProviderTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/TabSwitcherCustomViewManagerUnitTest.java",
+  ]
 
   deps = [
     ":java",
@@ -84,6 +91,7 @@ robolectric_library("junit") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/tab_groups:tab_groups_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",

@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimationData;
 import org.chromium.chrome.browser.hub.ShrinkExpandHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;

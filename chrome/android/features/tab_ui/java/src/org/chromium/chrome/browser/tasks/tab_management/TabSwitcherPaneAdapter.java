@@ -9,8 +9,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
+import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 
 import java.util.List;
 

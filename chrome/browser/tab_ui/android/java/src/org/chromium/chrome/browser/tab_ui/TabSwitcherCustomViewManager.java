@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tab_ui;
 
 import android.view.View;
 
@@ -15,7 +15,7 @@ public class TabSwitcherCustomViewManager {
      * An interface for tab switcher, via which it can listen for signals concerning
      * addition and removal of custom views.
      */
-    interface Delegate {
+    public interface Delegate {
         /**
          * This is fired when a client has requested a view to be shown.
          *
