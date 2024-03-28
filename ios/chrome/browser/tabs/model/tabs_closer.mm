@@ -168,6 +168,7 @@ void TabsCloser::UndoStorage::Undo() {
                                 opener->opener_navigation_index));
     }
   }
+  openers_.clear();
 }
 
 void TabsCloser::UndoStorage::Drop() {
@@ -185,6 +186,8 @@ void TabsCloser::UndoStorage::Drop() {
 
   CloseAllWebStates(*temporary_browser_->GetWebStateList(),
                     WebStateList::CLOSE_USER_ACTION);
+
+  openers_.clear();
 }
 
 TabsCloser::TabsCloser(Browser* browser, ClosePolicy policy)
