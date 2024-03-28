@@ -332,12 +332,15 @@ public class MultiProfileTest extends AwParameterizedTest {
     public void testGetBrowserContextThrowsExceptionIfWebViewDestroyed() {
         mRule.startBrowserProcess();
         final AwBrowserContext myProfile = mRule.getProfileSync("my-profile", true);
-        final AwContents awContents = mRule.createAwContents(myProfile);
-        awContents.destroy();
-        Assert.assertThrows(
-                "Cannot get profile for destroyed WebView.",
-                IllegalStateException.class,
-                awContents::getBrowserContext);
+        mRule.runOnUiThread(
+                () -> {
+                    final AwContents awContents = mRule.createAwContents(myProfile);
+                    awContents.destroy();
+                    Assert.assertThrows(
+                            "Cannot get profile for destroyed WebView.",
+                            IllegalStateException.class,
+                            awContents::getBrowserContext);
+                });
     }
 
     @Test

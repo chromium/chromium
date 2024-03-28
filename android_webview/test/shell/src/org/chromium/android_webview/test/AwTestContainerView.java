@@ -316,11 +316,7 @@ public class AwTestContainerView extends FrameLayout {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (mHardwareView == null || mHardwareView.isReadyToRender()) {
-            attachedContentsInternal();
-        } else {
-            mHardwareView.setReadyToRenderCallback(() -> attachedContentsInternal());
-        }
+        attachedContentsInternal();
     }
 
     @Override
