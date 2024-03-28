@@ -27,16 +27,15 @@ import page_sets
 from benchmarks import press
 
 
-class _JetStream2Base(press._PressBenchmark):  # pylint: disable=protected-access
+class _JetStream2Base(press._PressBenchmark):  # pylint:disable=protected-access
   """JetStream2, a combination of JavaScript and Web Assembly benchmarks.
 
   Run all the JetStream 2 benchmarks by default.
   """
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--test-list',
-                      type="string",
-                      help="Only run specific tests, separated by commas.")
+    parser.add_argument('--test-list',
+                        help='Only run specific tests, separated by commas.')
 
 
 @benchmark.Info(

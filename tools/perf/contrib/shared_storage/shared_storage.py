@@ -54,29 +54,26 @@ class SharedStoragePerfBase(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--xvfb',
-                      action='store_true',
-                      default=False,
-                      help='Run with Xvfb server if possible.')
-    parser.add_option('--user-agent',
-                      action='store',
-                      type='string',
-                      default='desktop',
-                      help="Options are 'desktop' (the default) and 'mobile'.")
-    parser.add_option('--verbose-cpu-metrics',
-                      action='store_true',
-                      help='Enables non-UMA CPU metrics.')
-    parser.add_option('--verbose-memory-metrics',
-                      action='store_true',
-                      help='Enables non-UMA memory metrics.')
-    iter_help = ('Number of times (default %d, max %d)' %
-                 (_DEFAULT_NUM_ITERATIONS, _MAX_NUM_ITERATIONS))
-    iter_help += ' to repeat action for each story run.'
-    parser.add_option('--iterations',
-                      action='store',
-                      type='int',
-                      default=_DEFAULT_NUM_ITERATIONS,
-                      help=iter_help)
+    parser.add_argument('--xvfb',
+                        action='store_true',
+                        default=False,
+                        help='Run with Xvfb server if possible.')
+    parser.add_argument(
+        '--user-agent',
+        default='desktop',
+        help='Options are "desktop" (the default) and "mobile".')
+    parser.add_argument('--verbose-cpu-metrics',
+                        action='store_true',
+                        help='Enables non-UMA CPU metrics.')
+    parser.add_argument('--verbose-memory-metrics',
+                        action='store_true',
+                        help='Enables non-UMA memory metrics.')
+    iter_help = (f'Number of times (default {_DEFAULT_NUM_ITERATIONS}, max '
+                 f'{_MAX_NUM_ITERATIONS}) to repeat action for each story run.')
+    parser.add_argument('--iterations',
+                        type=int,
+                        default=_DEFAULT_NUM_ITERATIONS,
+                        help=iter_help)
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

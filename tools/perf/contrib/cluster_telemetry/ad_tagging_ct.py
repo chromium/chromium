@@ -24,16 +24,15 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
-    parser.add_option(
+    parser.add_argument(
         '--additional-histograms',
-        action='store',
         help='Comma-separated list of additional UMA histograms to record.')
-    parser.add_option('--verbose-cpu-metrics',
-                      action='store_true',
-                      help='Enables non-UMA CPU metrics.')
-    parser.add_option('--verbose-memory-metrics',
-                      action='store_true',
-                      help='Enables non-UMA memory metrics.')
+    parser.add_argument('--verbose-cpu-metrics',
+                        action='store_true',
+                        help='Enables non-UMA CPU metrics.')
+    parser.add_argument('--verbose-memory-metrics',
+                        action='store_true',
+                        help='Enables non-UMA memory metrics.')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

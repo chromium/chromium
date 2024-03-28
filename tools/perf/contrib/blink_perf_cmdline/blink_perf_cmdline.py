@@ -18,12 +18,12 @@ class BlinkPerfAll(blink_perf._BlinkPerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--test-path', type='string',
-                      default=blink_perf.BLINK_PERF_BASE_DIR,
-                      help=('Path to blink perf tests. Could be an absolute '
-                            'path, a relative path with respect to your '
-                            'current directory or a relative path with '
-                            'respect to third_party/blink/perf_tests)'))
+    parser.add_argument('--test-path',
+                        default=blink_perf.BLINK_PERF_BASE_DIR,
+                        help=('Path to blink perf tests. Could be an absolute '
+                              'path, a relative path with respect to your '
+                              'current directory or a relative path with '
+                              'respect to third_party/blink/perf_tests)'))
 
   def CreateStorySet(self, options):
     if os.path.exists(options.test_path):

@@ -21,27 +21,39 @@ class ScreenshotCT(perf_benchmark.PerfBenchmark):
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
-    parser.add_option('--png-outdir', type='string',
-                      default=None,
-                      help='Output directory for the PNG files')
-    parser.add_option('--wait-time', type='float', default=0,
-                      help='Wait time before the benchmark is started')
-    parser.add_option('--dc-detect', action='store_true', dest='dc_detect',
-                      default=False, help='Detects dynamic content by marking'
-                      'pixels that were not consistent across multiple '
-                      'screenshots with cyan')
-    parser.add_option('--dc-wait-time', type='float', default=1,
-                      help='Wait time in between screenshots. Only applicable '
-                      'if dc_detect flag is true.')
-    parser.add_option('--dc-extra-screenshots', type='int', default=1,
-                      help='Number of extra screenshots taken to detect '
-                      'dynamic content. Only applicable if dc_detect flag is '
-                      'true.')
-    parser.add_option('--dc-threshold', type='float', default=0.5,
-                      help='Maximum tolerable percentage of dynamic content '
-                      'pixels. Raises an exception if percentage of dynamic '
-                      'content is beyond this threshold. Only applicable if '
-                      'dc_detect flag is true.')
+    parser.add_argument('--png-outdir',
+                        help='Output directory for the PNG files')
+    parser.add_argument('--wait-time',
+                        type=float,
+                        default=0,
+                        help='Wait time before the benchmark is started')
+    parser.add_argument('--dc-detect',
+                        action='store_true',
+                        default=False,
+                        help=('Detects dynamic content by marking'
+                              'pixels that were not consistent across multiple '
+                              'screenshots with cyan'))
+    parser.add_argument(
+        '--dc-wait-time',
+        type=float,
+        default=1,
+        help=('Wait time in between screenshots. Only applicable '
+              'if dc_detect flag is true.'))
+    parser.add_argument(
+        '--dc-extra-screenshots',
+        type=int,
+        default=1,
+        help=('Number of extra screenshots taken to detect '
+              'dynamic content. Only applicable if dc_detect flag is '
+              'true.'))
+    parser.add_argument(
+        '--dc-threshold',
+        type=float,
+        default=0.5,
+        help=('Maximum tolerable percentage of dynamic content '
+              'pixels. Raises an exception if percentage of dynamic '
+              'content is beyond this threshold. Only applicable if '
+              'dc_detect flag is true.'))
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

@@ -43,9 +43,10 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--allow-software-compositing', action='store_true',
-                      help='If set, allows the benchmark to run with software '
-                           'compositing.')
+    parser.add_argument(
+        '--allow-software-compositing',
+        action='store_true',
+        help='If set, allows the benchmark to run with software compositing.')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

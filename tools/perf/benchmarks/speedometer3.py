@@ -96,22 +96,21 @@ class _Speedometer3(press._PressBenchmark):  # pylint: disable=protected-access
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--suite',
-                      type="string",
-                      help="Only runs suites that match regex provided")
-    parser.add_option('--enable-rcs',
-                      '--rcs',
-                      action="store_true",
-                      help="Enables runtime call stats")
-    parser.add_option('--enable-details',
-                      '--details',
-                      action="store_true",
-                      help=("Enables detailed benchmark metrics "
-                            "(per line-item, iteration,...)"))
-    parser.add_option('--iteration-count',
-                      '--iterations',
-                      type="int",
-                      help="Override the default number of iterations")
+    parser.add_argument('--suite',
+                        help='Only runs suites that match regex provided')
+    parser.add_argument('--enable-rcs',
+                        '--rcs',
+                        action='store_true',
+                        help='Enables runtime call stats')
+    parser.add_argument('--enable-details',
+                        '--details',
+                        action='store_true',
+                        help=('Enables detailed benchmark metrics '
+                              '(per line-item, iteration,...)'))
+    parser.add_argument('--iteration-count',
+                        '--iterations',
+                        type=int,
+                        help='Override the default number of iterations')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

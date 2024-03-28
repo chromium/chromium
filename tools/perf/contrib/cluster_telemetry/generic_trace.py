@@ -72,12 +72,17 @@ class _GenericTraceMeasurement(legacy_page_test.LegacyPageTest):
 class _GenericTraceBenchmark(perf_benchmark.PerfBenchmark):
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--trace-categories', default=[], action='append',
-                      help='Trace categories to enable')
-    parser.add_option('--trace-names', default=[], action='append',
-                      help='Names of trace event to collect '
-                           'If not specified, all trace events in the enabled '
-                           'categories will be collected')
+    parser.add_argument('--trace-categories',
+                        default=[],
+                        action='append',
+                        help='Trace categories to enable')
+    parser.add_argument(
+        '--trace-names',
+        default=[],
+        action='append',
+        help=('Names of trace event to collect '
+              'If not specified, all trace events in the enabled '
+              'categories will be collected'))
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

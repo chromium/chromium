@@ -51,18 +51,22 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--scroll-forever', action='store_true',
-                      help='If set, continuously scroll up and down forever. '
-                           'This is useful for analysing scrolling behaviour '
-                           'with tools such as perf.')
-    parser.add_option('--allow-software-compositing', action='store_true',
-                      help='If set, allows the benchmark to run with software '
-                           'compositing.')
-    parser.add_option('--extra-uma-metrics',
-                      action='store',
-                      help='Comma separated list of additional UMA metrics to '
-                      'include in result output. Note that histogram buckets '
-                      'in telemetry report may not match buckets from UMA.')
+    parser.add_argument(
+        '--scroll-forever',
+        action='store_true',
+        help=('If set, continuously scroll up and down forever. '
+              'This is useful for analysing scrolling behaviour '
+              'with tools such as perf.'))
+    parser.add_argument(
+        '--allow-software-compositing',
+        action='store_true',
+        help=('If set, allows the benchmark to run with software '
+              'compositing.'))
+    parser.add_argument(
+        '--extra-uma-metrics',
+        help=('Comma separated list of additional UMA metrics to '
+              'include in result output. Note that histogram buckets '
+              'in telemetry report may not match buckets from UMA.'))
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
