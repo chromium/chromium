@@ -735,6 +735,10 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
     is_moving_floated_window_ = true;
   }
 
+  // Mark the currently dragged or resized window as excluded for occlusion
+  // purposes.
+  scoped_exclude_.emplace(window);
+
   return true;
 }
 
@@ -908,8 +912,11 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
 }
 
 bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
-  if (!window_resizer_)
+  scoped_exclude_.reset();
+
+  if (!window_resizer_) {
     return false;
+  }
 
   std::unique_ptr<ScopedWindowResizer> resizer(std::move(window_resizer_));
   switch (result) {

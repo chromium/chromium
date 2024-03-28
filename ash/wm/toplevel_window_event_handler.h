@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gestures/gesture_types.h"
@@ -224,6 +225,13 @@ class ASH_EXPORT ToplevelWindowEventHandler
   bool in_pinch_ = false;
 
   std::unique_ptr<ScopedWindowResizer> window_resizer_;
+
+  // We exclude dragged or resized windows from occluding things below them to
+  // prevent windows from being marked as occluded temporarily while another
+  // window is being, for example, dragged over them. This is particularly
+  // necessary for lacros where occlusion may cause the content to be evicted
+  // and replaced with a snapshot.
+  std::optional<aura::WindowOcclusionTracker::ScopedExclude> scoped_exclude_;
 
   display::ScopedDisplayObserver display_observer_{this};
 
