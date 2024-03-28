@@ -321,7 +321,8 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
 
   bool needs_to_render = false;
 #if BUILDFLAG(IS_ANDROID)
-  if (manager->GetDelegate() && manager->GetDelegate()->ShouldOpenPdfInline() &&
+  if (manager && manager->GetDelegate() &&
+      manager->GetDelegate()->ShouldOpenPdfInline() &&
       !item->IsMustDownload() &&
       base::EqualsCaseInsensitiveASCII(item->GetMimeType(),
                                        pdf::kPDFMimeType)) {
