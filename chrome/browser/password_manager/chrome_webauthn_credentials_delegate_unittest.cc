@@ -102,8 +102,8 @@ class ChromeWebAuthnCredentialsDelegateTest
 #if !BUILDFLAG(IS_ANDROID)
     AuthenticatorRequestDialogController::TransportAvailabilityInfo tai;
     tai.recognized_credentials = std::move(creds);
-    dialog_model()->StartFlow(std::move(tai),
-                              /*is_conditional_mediation=*/true);
+    dialog_controller()->StartFlow(std::move(tai),
+                                   /*is_conditional_mediation=*/true);
 #else
     delegate_->OnWebAuthnRequestPending(
         main_rfh(), creds, /*is_conditional_request=*/true,
@@ -115,8 +115,8 @@ class ChromeWebAuthnCredentialsDelegateTest
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  AuthenticatorRequestDialogController* dialog_model() {
-    return authenticator_request_delegate_->GetDialogModelForTesting();
+  AuthenticatorRequestDialogController* dialog_controller() {
+    return authenticator_request_delegate_->dialog_controller();
   }
 #endif
 
@@ -224,7 +224,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
-  dialog_model()->SetAccountPreselectedCallback(base::BindLambdaForTesting(
+  dialog_controller()->SetAccountPreselectedCallback(base::BindLambdaForTesting(
       [&](device::DiscoverableCredentialMetadata cred) {
         EXPECT_THAT(cred.cred_id, testing::ElementsAreArray(kCredId2));
         run_loop.Quit();

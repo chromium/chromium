@@ -112,7 +112,7 @@ class ChromeWebAuthenticationDelegate
 
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
-      public AuthenticatorRequestDialogController::Observer {
+      public AuthenticatorRequestDialogModel::Observer {
  public:
   // TestObserver is an interface that observes certain events related to this
   // class for testing purposes. Only a single instance of this interface can
@@ -160,8 +160,12 @@ class ChromeAuthenticatorRequestDelegate
 
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> AsWeakPtr();
 
-  AuthenticatorRequestDialogController* dialog_model() const {
+  AuthenticatorRequestDialogModel* dialog_model() const {
     return dialog_model_.get();
+  }
+
+  AuthenticatorRequestDialogController* dialog_controller() const {
+    return dialog_controller_.get();
   }
 
   // content::AuthenticatorRequestClientDelegate:
@@ -223,15 +227,12 @@ class ChromeAuthenticatorRequestDelegate
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
 
-  // AuthenticatorRequestDialogController::Observer:
+  // AuthenticatorRequestDialogModel::Observer:
   void OnStartOver() override;
-  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnStepTransition() override;
   void OnCancelRequest() override;
   void OnManageDevicesClicked() override;
-
-  // A non-const version of dialog_model().
-  AuthenticatorRequestDialogController* GetDialogModelForTesting();
 
   // SetPassEmptyUsbDeviceManagerForTesting controls whether the
   // `DiscoveryFactory` will be given an empty USB device manager. This is
@@ -359,7 +360,9 @@ class ChromeAuthenticatorRequestDelegate
 #endif
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
-  const std::unique_ptr<AuthenticatorRequestDialogController> dialog_model_;
+  const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  const std::unique_ptr<AuthenticatorRequestDialogController>
+      dialog_controller_;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
   AccountPreselectedCallback account_preselected_callback_;

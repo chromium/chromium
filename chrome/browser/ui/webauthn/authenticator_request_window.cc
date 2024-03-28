@@ -17,17 +17,15 @@ namespace {
 // Shows a top-level window containing some WebAuthn-related UI.
 class AuthenticatorRequestWindow
     : public views::DialogDelegateView,
-      public AuthenticatorRequestDialogController::Observer {
+      public AuthenticatorRequestDialogModel::Observer {
  public:
-  explicit AuthenticatorRequestWindow(
-      AuthenticatorRequestDialogController* model)
-      : step_(model->current_step()), model_(model) {
+  explicit AuthenticatorRequestWindow(AuthenticatorRequestDialogModel* model)
+      : step_(model->step()), model_(model) {
     // Only one UI step involves showing a top-level window:
-    CHECK_EQ(
-        step_,
-        AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+    CHECK_EQ(step_,
+             AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
 
-    model_->AddObserver(this);
+    model_->observers.AddObserver(this);
 
     SetHasWindowSizeControls(true);
     SetCanResize(true);
@@ -75,38 +73,35 @@ class AuthenticatorRequestWindow
 
   ~AuthenticatorRequestWindow() override {
     if (model_) {
-      model_->RemoveObserver(this);
+      model_->observers.RemoveObserver(this);
     }
   }
 
  protected:
   void OnClose() { model_->OnRecoverSecurityDomainClosed(); }
 
-  // AuthenticatorRequestDialogController::Observer:
-  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override {
+  // AuthenticatorRequestDialogModel::Observer:
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
     model_ = nullptr;
   }
 
   void OnStepTransition() override {
-    if (model_->current_step() != step_) {
+    if (model_->step() != step_) {
       // Only one UI step involves a window so far. So any transition of the
       // model must be to a step that doesn't have one.
       GetWidget()->Close();
     }
   }
 
-  void OnSheetModelChanged() override {}
-
  private:
-  const AuthenticatorRequestDialogController::Step step_;
-  raw_ptr<AuthenticatorRequestDialogController> model_;
+  const AuthenticatorRequestDialogModel::Step step_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
   base::WeakPtrFactory<AuthenticatorRequestWindow> weak_ptr_factory_{this};
 };
 
 }  // namespace
 
-void ShowAuthenticatorRequestWindow(
-    AuthenticatorRequestDialogController* model) {
+void ShowAuthenticatorRequestWindow(AuthenticatorRequestDialogModel* model) {
   auto delegate = std::make_unique<AuthenticatorRequestWindow>(model);
   auto* delegate_ptr = delegate.get();
   views::DialogDelegate::CreateDialogWidget(std::move(delegate),

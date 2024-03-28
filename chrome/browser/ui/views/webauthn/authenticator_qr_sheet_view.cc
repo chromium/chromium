@@ -113,9 +113,9 @@ END_METADATA
 AuthenticatorQRSheetView::AuthenticatorQRSheetView(
     std::unique_ptr<AuthenticatorQRSheetModel> sheet_model)
     : AuthenticatorRequestSheetView(std::move(sheet_model)),
-      qr_string_(static_cast<AuthenticatorQRSheetModel*>(model())
-                     ->dialog_model()
-                     ->cable_qr_string()) {}
+      qr_string_(*static_cast<AuthenticatorQRSheetModel*>(model())
+                      ->dialog_model()
+                      ->cable_qr_string) {}
 
 AuthenticatorQRSheetView::~AuthenticatorQRSheetView() = default;
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-class AuthenticatorRequestDialogController;
+struct AuthenticatorRequestDialogModel;
 class AuthenticatorRequestDialogView;
 class AuthenticatorRequestSheetView;
 
@@ -23,7 +23,7 @@ class AuthenticatorRequestDialogViewTestApi {
   // testing.
   static AuthenticatorRequestDialogView* CreateDialogView(
       content::WebContents* web_contents,
-      AuthenticatorRequestDialogController* dialog_model);
+      AuthenticatorRequestDialogModel* dialog_model);
 
   // Replaces the current sheet on |dialog| with |new_sheet|.
   static void ShowWithSheet(

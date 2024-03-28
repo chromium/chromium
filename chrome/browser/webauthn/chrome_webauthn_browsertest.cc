@@ -404,7 +404,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
-      delegate->dialog_model()->OnAccountPreselected(
+      delegate->dialog_controller()->OnAccountPreselected(
           device::fido_parsing_utils::Materialize(kCredentialID));
     }
 
@@ -761,7 +761,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
   std::ostringstream& trace() { return trace_; }
 
-  AuthenticatorRequestDialogController*& model() { return model_; }
+  AuthenticatorRequestDialogController*& controller() { return controller_; }
 
  protected:
   // DiscoveryFactory vends a single discovery that doesn't discover anything
@@ -825,7 +825,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
                 // same name.
                 base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                     FROM_HERE, base::BindLambdaForTesting([this]() {
-                      parent_->model()->ContactPhoneForTesting("name2");
+                      parent_->controller()->ContactPhoneForTesting("name2");
                     }));
                 break;
 
@@ -833,7 +833,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
                 // Try some other phones.
                 base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                     FROM_HERE, base::BindLambdaForTesting([this]() {
-                      parent_->model()->ContactPhoneForTesting("zzz");
+                      parent_->controller()->ContactPhoneForTesting("zzz");
                     }));
                 break;
 
@@ -841,7 +841,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
                 // Try some other phones.
                 base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                     FROM_HERE, base::BindLambdaForTesting([this]() {
-                      parent_->model()->ContactPhoneForTesting("aaa");
+                      parent_->controller()->ContactPhoneForTesting("aaa");
                     }));
                 break;
 
@@ -919,7 +919,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       // Only a single delegate should be observed.
-      CHECK(!parent_->model());
+      CHECK(!parent_->controller());
     }
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>>
@@ -970,14 +970,15 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
-      parent_->model() = delegate->dialog_model();
+      parent_->controller() = delegate->dialog_controller();
 
-      for (const auto& name : parent_->model()->paired_phone_names()) {
+      for (const auto& name :
+           parent_->controller()->model()->paired_phone_names) {
         parent_->trace() << "UINAME: " << name << std::endl;
       }
 
       // Simulate a click on the transport selection sheet.
-      parent_->model()->ContactPhoneForTesting("name2");
+      parent_->controller()->ContactPhoneForTesting("name2");
     }
 
     void CableV2ExtensionSeen(
@@ -1002,7 +1003,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
   std::ostringstream trace_;
   // This field is not a raw_ptr<> to avoid returning a reference to a temporary
   // T* (result of implicitly casting raw_ptr<T> to T*).
-  RAW_PTR_EXCLUSION AuthenticatorRequestDialogController* model_ = nullptr;
+  RAW_PTR_EXCLUSION AuthenticatorRequestDialogController* controller_ = nullptr;
 #if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
   device::WinWebAuthnApi::ScopedOverride override_win_webauthn_api_{

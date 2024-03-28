@@ -106,7 +106,7 @@ class RequestCallbackReceiver {
 };
 
 class MockDialogModelObserver
-    : public AuthenticatorRequestDialogController::Observer {
+    : public AuthenticatorRequestDialogModel::Observer {
  public:
   MockDialogModelObserver() = default;
 
@@ -114,7 +114,7 @@ class MockDialogModelObserver
   MockDialogModelObserver& operator=(const MockDialogModelObserver&) = delete;
 
   MOCK_METHOD0(OnStartOver, void());
-  MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogController*));
+  MOCK_METHOD1(OnModelDestroyed, void(AuthenticatorRequestDialogModel*));
   MOCK_METHOD0(OnStepTransition, void());
   MOCK_METHOD0(OnCancelRequest, void());
   MOCK_METHOD0(OnBluetoothPoweredStateChanged, void());
@@ -305,9 +305,9 @@ const device::DiscoverableCredentialMetadata
 const device::DiscoverableCredentialMetadata
     kTouchIDCred1(device::AuthenticatorType::kTouchID, "rp.com", {4}, kUser1);
 
-AuthenticatorRequestDialogController::Mechanism::CredentialInfo
-CredentialInfoFrom(const device::DiscoverableCredentialMetadata& metadata) {
-  return AuthenticatorRequestDialogController::Mechanism::CredentialInfo(
+AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
+    const device::DiscoverableCredentialMetadata& metadata) {
+  return AuthenticatorRequestDialogModel::Mechanism::CredentialInfo(
       metadata.source, metadata.user.id);
 }
 
@@ -316,7 +316,7 @@ CredentialInfoFrom(const device::DiscoverableCredentialMetadata& metadata) {
 class AuthenticatorRequestDialogControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  using Step = AuthenticatorRequestDialogController::Step;
+  using Step = AuthenticatorRequestDialogModel::Step;
 
   AuthenticatorRequestDialogControllerTest()
       : ChromeRenderViewHostTestHarness(
@@ -382,14 +382,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   [[maybe_unused]] const auto ickc_creds =
       TransportAvailabilityParam::kHasICloudKeychainCreds;
   [[maybe_unused]] const auto uv_req = TransportAvailabilityParam::kUVRequired;
-  using c = AuthenticatorRequestDialogController::Mechanism::Credential;
-  using t = AuthenticatorRequestDialogController::Mechanism::Transport;
-  using p = AuthenticatorRequestDialogController::Mechanism::Phone;
-  const auto winapi =
-      AuthenticatorRequestDialogController::Mechanism::WindowsAPI();
-  const auto add = AuthenticatorRequestDialogController::Mechanism::AddPhone();
+  using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
+  using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
+  using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
+  const auto winapi = AuthenticatorRequestDialogModel::Mechanism::WindowsAPI();
+  const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone();
   [[maybe_unused]] const auto ickc =
-      AuthenticatorRequestDialogController::Mechanism::ICloudKeychain();
+      AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain();
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
@@ -410,7 +409,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     base::flat_set<AuthenticatorTransport> transports;
     base::flat_set<TransportAvailabilityParam> params;
     std::vector<PhoneVariant> phones;
-    std::vector<AuthenticatorRequestDialogController::Mechanism::Type>
+    std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
         expected_mechanisms;
     Step expected_first_step;
   };
@@ -1171,7 +1170,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
           device::AuthenticatorAttachment::kPlatform;
     }
 
-    AuthenticatorRequestDialogController model(main_rfh());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
 
     std::optional<bool> has_v2_cable_extension;
     if (base::Contains(test.params,
@@ -1185,16 +1185,16 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       has_v2_cable_extension = true;
     }
 
-    model.set_allow_icloud_keychain(transports_info.has_icloud_keychain);
+    controller.set_allow_icloud_keychain(transports_info.has_icloud_keychain);
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kCreateInICloudKeychain)) {
-      model.set_should_create_in_icloud_keychain(true);
+      controller.set_should_create_in_icloud_keychain(true);
     }
 #if BUILDFLAG(IS_MAC)
     if (base::Contains(test.params, TransportAvailabilityParam::kNoTouchId)) {
-      model.set_local_biometrics_override_for_testing(false);
+      controller.set_local_biometrics_override_for_testing(false);
     } else {
-      model.set_local_biometrics_override_for_testing(true);
+      controller.set_local_biometrics_override_for_testing(true);
     }
 #endif
 
@@ -1217,10 +1217,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     if (hint_transport.has_value()) {
       content::AuthenticatorRequestClientDelegate::Hints hints;
       hints.transport = hint_transport;
-      model.SetHints(hints);
+      controller.SetHints(hints);
     }
 
-    model.SetAccountPreselectedCallback(base::BindRepeating(
+    controller.SetAccountPreselectedCallback(base::BindRepeating(
         [](device::DiscoverableCredentialMetadata cred) {}));
 
     if (has_v2_cable_extension.has_value() || !test.phones.empty() ||
@@ -1241,33 +1241,34 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
             base::checked_cast<uint8_t>(phones.size());
         phones.emplace_back(std::move(pairing));
       }
-      model.set_cable_transport_info(has_v2_cable_extension, std::move(phones),
-                                     base::DoNothing(), std::nullopt);
+      controller.set_cable_transport_info(has_v2_cable_extension,
+                                          std::move(phones), base::DoNothing(),
+                                          std::nullopt);
     }
 
     bool is_conditional_ui = base::Contains(
         test.params, TransportAvailabilityParam::kIsConditionalUI);
-    model.StartFlow(std::move(transports_info), is_conditional_ui);
+    controller.StartFlow(std::move(transports_info), is_conditional_ui);
     if (is_conditional_ui) {
-      EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
-      model.TransitionToModalWebAuthnRequest();
+      EXPECT_EQ(model.step(), Step::kConditionalMediation);
+      controller.TransitionToModalWebAuthnRequest();
     }
 
-    EXPECT_EQ(test.expected_first_step, model.current_step());
+    EXPECT_EQ(test.expected_first_step, model.step());
 
-    std::vector<AuthenticatorRequestDialogController::Mechanism::Type>
+    std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
         mechanism_types;
-    for (const auto& mech : model.mechanisms()) {
+    for (const auto& mech : model.mechanisms) {
       mechanism_types.push_back(mech.type);
     }
     EXPECT_EQ(test.expected_mechanisms, mechanism_types);
 
-    if (!model.offer_try_again_in_ui()) {
+    if (!model.offer_try_again_in_ui) {
       return;
     }
 
     model.StartOver();
-    EXPECT_EQ(Step::kMechanismSelection, model.current_step());
+    EXPECT_EQ(Step::kMechanismSelection, model.step());
   };
 
   for (const auto& test : kTests) {
@@ -1314,42 +1315,43 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
                              : device::ResidentKeyRequirement::kDiscouraged;
       tai.is_ble_powered = true;
 
-      AuthenticatorRequestDialogController model(main_rfh());
-      model.saved_authenticators().AddAuthenticator(
+      AuthenticatorRequestDialogModel model(main_rfh());
+      AuthenticatorRequestDialogController controller(&model);
+      controller.saved_authenticators().AddAuthenticator(
           AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                                  device::AuthenticatorType::kWinNative));
-      model.set_cable_transport_info(std::nullopt, {}, base::DoNothing(),
-                                     "fido:/1234");
+      controller.set_cable_transport_info(std::nullopt, {}, base::DoNothing(),
+                                          "fido:/1234");
 
-      model.StartFlow(std::move(tai),
-                      /*is_conditional_mediation=*/false);
+      controller.StartFlow(std::move(tai),
+                           /*is_conditional_mediation=*/false);
 
       const bool win_ui_was_immediately_triggered =
           !is_passkey_request || win_webauthn_api_version == 6;
       if (!win_ui_was_immediately_triggered) {
-        EXPECT_NE(model.current_step(), Step::kNotStarted);
+        EXPECT_NE(model.step(), Step::kNotStarted);
         // Canceling the Windows UI ends the request because the user must have
         // selected the Windows option first.
-        EXPECT_FALSE(model.OnWinUserCancelled());
+        EXPECT_FALSE(controller.OnWinUserCancelled());
         continue;
       }
 
-      EXPECT_EQ(model.current_step(), Step::kNotStarted);
+      EXPECT_EQ(model.step(), Step::kNotStarted);
 
       if (win_webauthn_api_version >= 6) {
         // Windows handles hybrid itself starting with this version, so
         // canceling shouldn't try to show Chrome UI.
-        EXPECT_FALSE(model.OnWinUserCancelled());
+        EXPECT_FALSE(controller.OnWinUserCancelled());
         continue;
       }
 
       // Canceling the Windows native UI should be handled.
-      EXPECT_TRUE(model.OnWinUserCancelled());
+      EXPECT_TRUE(controller.OnWinUserCancelled());
       // The mechanism selection sheet should now be showing.
-      EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+      EXPECT_EQ(model.step(), Step::kMechanismSelection);
       // Canceling the Windows UI ends the request because the user must have
       // selected the Windows option first.
-      EXPECT_FALSE(model.OnWinUserCancelled());
+      EXPECT_FALSE(controller.OnWinUserCancelled());
     }
   }
 }
@@ -1376,27 +1378,28 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   tai.has_platform_authenticator_credential = device::FidoRequestHandlerBase::
       RecognizedCredential::kHasRecognizedCredential;
 
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.saved_authenticators().AddAuthenticator(
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  controller.saved_authenticators().AddAuthenticator(
       AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                              device::AuthenticatorType::kWinNative));
-  model.set_cable_transport_info(std::nullopt, {}, base::DoNothing(),
-                                 "fido:/1234");
-  model.StartFlow(std::move(tai),
-                  /*is_conditional_mediation=*/false);
+  controller.set_cable_transport_info(std::nullopt, {}, base::DoNothing(),
+                                      "fido:/1234");
+  controller.StartFlow(std::move(tai),
+                       /*is_conditional_mediation=*/false);
 
   // The Windows native UI should have been triggered.
-  EXPECT_EQ(model.current_step(), Step::kNotStarted);
+  EXPECT_EQ(model.step(), Step::kNotStarted);
 
   // Canceling the Windows native UI should be handled.
-  EXPECT_TRUE(model.OnWinUserCancelled());
+  EXPECT_TRUE(controller.OnWinUserCancelled());
 
   // The mechanism selection sheet should now be showing.
-  EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+  EXPECT_EQ(model.step(), Step::kMechanismSelection);
 
   // Canceling the Windows UI ends the request because the user must have
   // selected the Windows option first.
-  EXPECT_FALSE(model.OnWinUserCancelled());
+  EXPECT_FALSE(controller.OnWinUserCancelled());
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
@@ -1406,24 +1409,26 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
   tai.request_is_internal_only = true;
   tai.win_is_uvpaa = false;
   tai.has_win_native_api_authenticator = true;
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.StartFlow(std::move(tai), /*is_conditional_mediation=*/false);
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  controller.StartFlow(std::move(tai), /*is_conditional_mediation=*/false);
   EXPECT_EQ(
-      model.current_step(),
-      AuthenticatorRequestDialogController::Step::kErrorWindowsHelloNotEnabled);
-  EXPECT_FALSE(model.offer_try_again_in_ui());
+      model.step(),
+      AuthenticatorRequestDialogModel::Step::kErrorWindowsHelloNotEnabled);
+  EXPECT_FALSE(model.offer_try_again_in_ui);
 }
 #endif
 
 TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.AddObserver(&mock_observer);
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  model.observers.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
-  model.StartFlow(TransportAvailabilityInfo(),
-                  /*is_conditional_mediation=*/false);
-  EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
+  controller.StartFlow(TransportAvailabilityInfo(),
+                       /*is_conditional_mediation=*/false);
+  EXPECT_EQ(Step::kErrorNoAvailableTransports, model.step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnCancelRequest());
@@ -1432,7 +1437,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.OnRequestComplete();
-  EXPECT_EQ(Step::kClosed, model.current_step());
+  EXPECT_EQ(Step::kClosed, model.step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnModelDestroyed(&model));
@@ -1501,29 +1506,29 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
     transports_info.is_off_the_record_context =
         test.profile == Profile::INCOGNITO;
 
-    AuthenticatorRequestDialogController model(main_rfh());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings;
     pairings.emplace_back(GetPairingFromQR());
-    model.set_cable_transport_info(
+    controller.set_cable_transport_info(
         /*extension_is_v2=*/std::nullopt, std::move(pairings),
         base::DoNothing(), std::nullopt);
 
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
-    ASSERT_EQ(model.mechanisms().size(), 2u);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
+    ASSERT_EQ(model.mechanisms.size(), 2u);
 
     for (const auto step : test.steps) {
-      ASSERT_EQ(step, model.current_step())
-          << static_cast<int>(step)
-          << " != " << static_cast<int>(model.current_step());
+      ASSERT_EQ(step, model.step())
+          << static_cast<int>(step) << " != " << static_cast<int>(model.step());
 
       switch (step) {
         case Step::kMechanismSelection:
           // Click the first (and only) phone.
-          for (const auto& mechanism : model.mechanisms()) {
+          for (const auto& mechanism : model.mechanisms) {
             if (absl::holds_alternative<
-                    AuthenticatorRequestDialogController::Mechanism::Phone>(
+                    AuthenticatorRequestDialogModel::Mechanism::Phone>(
                     mechanism.type)) {
               mechanism.callback.Run();
               break;
@@ -1532,7 +1537,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
           break;
 
         case Step::kBlePowerOnAutomatic:
-          model.BluetoothAdapterPowerChanged(/*powered=*/true);
+          controller.BluetoothAdapterPowerChanged(/*powered=*/true);
           break;
 
         case Step::kOffTheRecordInterstitial:
@@ -1564,8 +1569,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
 
   for (const auto& test_case : kTestCases) {
     testing::StrictMock<MockDialogModelObserver> mock_observer;
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.AddObserver(&mock_observer);
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    model.observers.AddObserver(&mock_observer);
 
     TransportAvailabilityInfo transports_info;
     transports_info.request_type = RequestType::kMakeCredential;
@@ -1574,20 +1580,20 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
     transports_info.available_transports = kAllTransportsWithoutCable;
 
     EXPECT_CALL(mock_observer, OnStepTransition());
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
-    EXPECT_EQ(Step::kMechanismSelection, model.current_step());
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
+    EXPECT_EQ(Step::kMechanismSelection, model.step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
     EXPECT_CALL(mock_observer, OnStepTransition());
-    (model.*test_case.event)();
-    EXPECT_EQ(test_case.expected_sheet, model.current_step());
+    (controller.*test_case.event)();
+    EXPECT_EQ(test_case.expected_sheet, model.step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
     EXPECT_CALL(mock_observer, OnStepTransition());
     EXPECT_CALL(mock_observer, OnCancelRequest());
-    model.CancelAuthenticatorRequest();
-    EXPECT_EQ(Step::kClosed, model.current_step());
+    controller.CancelAuthenticatorRequest();
+    EXPECT_EQ(Step::kClosed, model.step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
     EXPECT_CALL(mock_observer, OnModelDestroyed(&model));
@@ -1610,13 +1616,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterAlreadyPowered) {
     transports_info.is_ble_powered = true;
 
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), std::nullopt);
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
-    EXPECT_EQ(test_case.expected_final_step, model.current_step());
-    EXPECT_TRUE(model.ble_adapter_is_powered());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
+    controller.set_cable_transport_info(true, {}, base::DoNothing(),
+                                        std::nullopt);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
+    EXPECT_EQ(test_case.expected_final_step, model.step());
+    EXPECT_TRUE(model.ble_adapter_is_powered);
     EXPECT_FALSE(power_receiver.was_called());
   }
 }
@@ -1639,26 +1647,28 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
     testing::NiceMock<MockDialogModelObserver> mock_observer;
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.AddObserver(&mock_observer);
-    model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), std::nullopt);
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    model.observers.AddObserver(&mock_observer);
+    controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
+    controller.set_cable_transport_info(true, {}, base::DoNothing(),
+                                        std::nullopt);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
 
-    EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
-    EXPECT_FALSE(model.ble_adapter_is_powered());
+    EXPECT_EQ(Step::kBlePowerOnManual, model.step());
+    EXPECT_FALSE(model.ble_adapter_is_powered);
 
     EXPECT_CALL(mock_observer, OnBluetoothPoweredStateChanged());
-    model.BluetoothAdapterPowerChanged(true /* powered */);
+    controller.BluetoothAdapterPowerChanged(true /* powered */);
 
-    EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
-    EXPECT_TRUE(model.ble_adapter_is_powered());
+    EXPECT_EQ(Step::kBlePowerOnManual, model.step());
+    EXPECT_TRUE(model.ble_adapter_is_powered);
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-    model.ContinueWithFlowAfterBleAdapterPowered();
+    controller.ContinueWithFlowAfterBleAdapterPowered();
 
-    EXPECT_EQ(test_case.expected_final_step, model.current_step());
+    EXPECT_EQ(test_case.expected_final_step, model.step());
     EXPECT_FALSE(power_receiver.was_called());
   }
 }
@@ -1680,47 +1690,50 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     transports_info.is_ble_powered = false;
 
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    model.set_cable_transport_info(true, {}, base::DoNothing(), std::nullopt);
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
+    controller.set_cable_transport_info(true, {}, base::DoNothing(),
+                                        std::nullopt);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
 
-    EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
+    EXPECT_EQ(Step::kBlePowerOnAutomatic, model.step());
 
-    model.PowerOnBleAdapter();
+    controller.PowerOnBleAdapter();
 
-    EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
+    EXPECT_EQ(Step::kBlePowerOnAutomatic, model.step());
     EXPECT_TRUE(power_receiver.was_called());
-    EXPECT_FALSE(model.ble_adapter_is_powered());
+    EXPECT_FALSE(model.ble_adapter_is_powered);
 
-    model.BluetoothAdapterPowerChanged(true /* powered */);
+    controller.BluetoothAdapterPowerChanged(true /* powered */);
 
-    EXPECT_EQ(test_case.expected_final_step, model.current_step());
-    EXPECT_TRUE(model.ble_adapter_is_powered());
+    EXPECT_EQ(test_case.expected_final_step, model.step());
+    EXPECT_TRUE(model.ble_adapter_is_powered);
   }
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUINoRecognizedCredential) {
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
 
   int preselect_num_called = 0;
-  model.SetAccountPreselectedCallback(base::BindRepeating(
+  controller.SetAccountPreselectedCallback(base::BindRepeating(
       [](int* i, device::DiscoverableCredentialMetadata cred) {
         EXPECT_EQ(cred.cred_id, std::vector<uint8_t>({1, 2, 3, 4}));
         ++(*i);
       },
       &preselect_num_called));
   int request_num_called = 0;
-  model.SetRequestCallback(base::BindRepeating(
+  controller.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
       &request_num_called));
-  model.saved_authenticators().AddAuthenticator(
+  controller.saved_authenticators().AddAuthenticator(
       AuthenticatorReference(/*device_id=*/"authenticator",
                              AuthenticatorTransport::kUsbHumanInterfaceDevice,
                              device::AuthenticatorType::kOther));
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"authenticator", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
@@ -1728,10 +1741,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/true);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/true);
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  EXPECT_EQ(model.step(), Step::kConditionalMediation);
   EXPECT_TRUE(model.should_dialog_be_closed());
   EXPECT_EQ(preselect_num_called, 0);
   EXPECT_EQ(request_num_called, 0);
@@ -1739,25 +1752,26 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
 TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUIRecognizedCredential) {
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
   int preselect_num_called = 0;
-  model.SetAccountPreselectedCallback(base::BindRepeating(
+  controller.SetAccountPreselectedCallback(base::BindRepeating(
       [](int* i, device::DiscoverableCredentialMetadata cred) {
         EXPECT_EQ(cred.cred_id, std::vector<uint8_t>({0}));
         ++(*i);
       },
       &preselect_num_called));
   int request_num_called = 0;
-  model.SetRequestCallback(base::BindRepeating(
+  controller.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) {
         EXPECT_EQ(authenticator_id, "internal");
         ++(*i);
       },
       &request_num_called));
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice,
       device::AuthenticatorType::kOther));
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
@@ -1766,15 +1780,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   transports_info.recognized_credentials = {kCred1, kCred2};
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/true);
-  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/true);
+  EXPECT_EQ(model.step(), Step::kConditionalMediation);
   EXPECT_TRUE(model.should_dialog_be_closed());
   EXPECT_EQ(request_num_called, 0);
 
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
-  model.OnAccountPreselected(kCred1.cred_id);
+  controller.OnAccountPreselected(kCred1.cred_id);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
@@ -1784,27 +1798,28 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 // it.
 TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.AddObserver(&mock_observer);
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  model.observers.AddObserver(&mock_observer);
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
   EXPECT_CALL(mock_observer, OnStepTransition());
-  model.StartFlow(std::move(TransportAvailabilityInfo()),
-                  /*is_conditional_mediation=*/true);
-  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  controller.StartFlow(std::move(TransportAvailabilityInfo()),
+                       /*is_conditional_mediation=*/true);
+  EXPECT_EQ(model.step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Cancel an ongoing request (as if e.g. the user clicked the accept button).
   // The request should be restarted.
   EXPECT_CALL(mock_observer, OnStartOver());
   EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
-  model.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
-  model.CancelAuthenticatorRequest();
-  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  controller.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
+  controller.CancelAuthenticatorRequest();
+  EXPECT_EQ(model.step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  model.RemoveObserver(&mock_observer);
+  model.observers.RemoveObserver(&mock_observer);
 }
 
 // Tests that selecting a phone passkey on Conditional UI contacts the priority
@@ -1817,10 +1832,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
   std::optional<std::string> phone_name;
   // Creates a new dialog model for the given list of |phones|.
   auto MakeModel = [&](bool include_old_phone)
-      -> std::unique_ptr<AuthenticatorRequestDialogController> {
-    auto model =
-        std::make_unique<AuthenticatorRequestDialogController>(main_rfh());
-    model->SetAccountPreselectedCallback(base::DoNothing());
+      -> std::pair<std::unique_ptr<AuthenticatorRequestDialogModel>,
+                   std::unique_ptr<AuthenticatorRequestDialogController>> {
+    auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
+    auto controller =
+        std::make_unique<AuthenticatorRequestDialogController>(model.get());
+
+    controller->SetAccountPreselectedCallback(base::DoNothing());
 
     // Store the contacted phone.
     base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
@@ -1851,9 +1869,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
     recently_synced_phone->last_updated = today;
     recently_synced_phone->name = kNewSyncedPhoneName;
     phones.emplace_back(std::move(recently_synced_phone));
-    model->set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                    std::move(phones), std::move(callback),
-                                    std::nullopt);
+    controller->set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
+                                         std::move(phones), std::move(callback),
+                                         std::nullopt);
 
     // Set up a single credential from a phone.
     device::DiscoverableCredentialMetadata credential = kCred1;
@@ -1863,37 +1881,38 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
     tai.is_ble_powered = true;
     tai.request_type = device::FidoRequestType::kGetAssertion;
     tai.available_transports = {AuthenticatorTransport::kHybrid};
-    model->StartFlow(tai, /*is_conditional_mediation=*/true);
-    CHECK_EQ(model->current_step(), Step::kConditionalMediation);
-    return model;
+    controller->StartFlow(tai, /*is_conditional_mediation=*/true);
+    CHECK_EQ(model->step(), Step::kConditionalMediation);
+    return std::make_pair(std::move(model), std::move(controller));
   };
 
   // Preselect the credential. This should select the phone that last contacted
   // sync.
-  std::unique_ptr<AuthenticatorRequestDialogController> model =
-      MakeModel(/*include_old_phone=*/true);
-  model->OnAccountPreselected(kCred1.cred_id);
-  EXPECT_EQ(model->current_step(), Step::kCableActivate);
+  std::unique_ptr<AuthenticatorRequestDialogModel> model;
+  std::unique_ptr<AuthenticatorRequestDialogController> controller;
+  std::tie(model, controller) = MakeModel(/*include_old_phone=*/true);
+  controller->OnAccountPreselected(kCred1.cred_id);
+  EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
 
   // Manually contact the "old" phone from sync. This should give it priority as
   // the most recently used.
-  model = MakeModel(/*include_old_phone=*/true);
-  model->ContactPhoneForTesting(kOldSyncedPhoneName);
+  std::tie(model, controller) = MakeModel(/*include_old_phone=*/true);
+  controller->ContactPhoneForTesting(kOldSyncedPhoneName);
   ASSERT_EQ(phone_name, kOldSyncedPhoneName);
 
   // Preselect the credential. This should contact the priority phone, which is
   // the "old" phone now.
-  model = MakeModel(/*include_old_phone=*/true);
-  model->OnAccountPreselected(kCred1.cred_id);
-  EXPECT_EQ(model->current_step(), Step::kCableActivate);
+  std::tie(model, controller) = MakeModel(/*include_old_phone=*/true);
+  controller->OnAccountPreselected(kCred1.cred_id);
+  EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kOldSyncedPhoneName);
 
   // Remove the "old" phone so that preselecting the credential again picks the
   // "new" one.
-  model = MakeModel(/*include_old_phone=*/false);
-  model->OnAccountPreselected(kCred1.cred_id);
-  EXPECT_EQ(model->current_step(), Step::kCableActivate);
+  std::tie(model, controller) = MakeModel(/*include_old_phone=*/false);
+  controller->OnAccountPreselected(kCred1.cred_id);
+  EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_EQ(phone_name, kNewSyncedPhoneName);
 }
 
@@ -1903,28 +1922,29 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUIPhonePasskeyUpdated) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-  auto model =
-      std::make_unique<AuthenticatorRequestDialogController>(main_rfh());
-  model->StartFlow(TransportAvailabilityInfo(),
-                   /*is_conditional_mediation=*/true);
-  ASSERT_EQ(model->current_step(),
-            AuthenticatorRequestDialogController::Step::kConditionalMediation);
+  auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
+  auto controller =
+      std::make_unique<AuthenticatorRequestDialogController>(model.get());
+  controller->StartFlow(TransportAvailabilityInfo(),
+                        /*is_conditional_mediation=*/true);
+  ASSERT_EQ(model->step(),
+            AuthenticatorRequestDialogModel::Step::kConditionalMediation);
   testing::NiceMock<MockDialogModelObserver> mock_observer;
-  model->AddObserver(&mock_observer);
+  model->observers.AddObserver(&mock_observer);
 
   // Notifying that passkeys changed during a conditional request should restart
   // it.
   EXPECT_CALL(mock_observer, OnStartOver());
-  static_cast<webauthn::PasskeyModel::Observer*>(model.get())
+  static_cast<webauthn::PasskeyModel::Observer*>(controller.get())
       ->OnPasskeysChanged({});
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Notifying that passkeys changed during any other step should be ignored.
-  model->SetCurrentStepForTesting(Step::kUsbInsertAndActivate);
-  static_cast<webauthn::PasskeyModel::Observer*>(model.get())
+  controller->SetCurrentStepForTesting(Step::kUsbInsertAndActivate);
+  static_cast<webauthn::PasskeyModel::Observer*>(controller.get())
       ->OnPasskeysChanged({});
   EXPECT_CALL(mock_observer, OnStartOver()).Times(0);
-  model->RemoveObserver(&mock_observer);
+  model->observers.RemoveObserver(&mock_observer);
 }
 
 // Tests that if the transport availability is updated during a conditional UI
@@ -1940,25 +1960,27 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
           ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(delegate);
 
-  auto model =
-      std::make_unique<AuthenticatorRequestDialogController>(main_rfh());
+  auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
+  auto controller =
+      std::make_unique<AuthenticatorRequestDialogController>(model.get());
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.recognized_credentials = {};
-  model->StartFlow(transports_info, /*is_conditional_mediation=*/true);
+  controller->StartFlow(transports_info, /*is_conditional_mediation=*/true);
   EXPECT_TRUE(delegate->GetPasskeys()->empty());
 
   transports_info.recognized_credentials = {kCred1};
-  model->OnTransportAvailabilityChanged(transports_info);
+  controller->OnTransportAvailabilityChanged(transports_info);
   EXPECT_FALSE(delegate->GetPasskeys()->empty());
 }
 
 // Tests that if the stored preference for the most recently used phone is not
 // valid base64, the value is ignored.
 TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
-  auto model =
-      std::make_unique<AuthenticatorRequestDialogController>(main_rfh());
-  model->SetAccountPreselectedCallback(base::DoNothing());
+  auto model = std::make_unique<AuthenticatorRequestDialogModel>(main_rfh());
+  auto controller =
+      std::make_unique<AuthenticatorRequestDialogController>(model.get());
+  controller->SetAccountPreselectedCallback(base::DoNothing());
 
   // Store the contacted phone.
   std::unique_ptr<device::cablev2::Pairing> contacted_phone;
@@ -1971,9 +1993,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromSync());
-  model->set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                  std::move(phones), std::move(callback),
-                                  std::nullopt);
+  controller->set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
+                                       std::move(phones), std::move(callback),
+                                       std::nullopt);
 
   // Set up a single credential from a phone.
   device::DiscoverableCredentialMetadata credential = kCred1;
@@ -1983,14 +2005,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
   tai.is_ble_powered = true;
   tai.request_type = device::FidoRequestType::kGetAssertion;
   tai.available_transports = {AuthenticatorTransport::kHybrid};
-  model->StartFlow(tai, /*is_conditional_mediation=*/true);
-  ASSERT_EQ(model->current_step(), Step::kConditionalMediation);
+  controller->StartFlow(tai, /*is_conditional_mediation=*/true);
+  ASSERT_EQ(model->step(), Step::kConditionalMediation);
 
   // Set an invalid base64 string as the last used pairing preference.
   profile()->GetPrefs()->SetString(
       webauthn::pref_names::kLastUsedPairingFromSyncPublicKey, "oops!");
-  model->OnAccountPreselected(credential.cred_id);
-  EXPECT_EQ(model->current_step(), Step::kCableActivate);
+  controller->OnAccountPreselected(credential.cred_id);
+  EXPECT_EQ(model->step(), Step::kCableActivate);
   EXPECT_TRUE(contacted_phone);
 }
 
@@ -1999,25 +2021,26 @@ TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
 // UI request restarts it.
 TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.AddObserver(&mock_observer);
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  model.observers.AddObserver(&mock_observer);
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
   EXPECT_CALL(mock_observer, OnStepTransition());
-  model.StartFlow(std::move(TransportAvailabilityInfo()),
-                  /*is_conditional_mediation=*/true);
-  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  controller.StartFlow(std::move(TransportAvailabilityInfo()),
+                       /*is_conditional_mediation=*/true);
+  EXPECT_EQ(model.step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Simulate the Windows authenticator cancelling.
   EXPECT_CALL(mock_observer, OnStepTransition());
   EXPECT_CALL(mock_observer, OnStartOver());
-  model.OnWinUserCancelled();
-  EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+  controller.OnWinUserCancelled();
+  EXPECT_EQ(model.step(), Step::kConditionalMediation);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  model.RemoveObserver(&mock_observer);
+  model.observers.RemoveObserver(&mock_observer);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -2026,13 +2049,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
 // on Mac.
 // Regression test for crbug.com/1520898.
 TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"virtual-authenticator", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
-  model.SetAccountPreselectedCallback(base::DoNothing());
+  controller.SetAccountPreselectedCallback(base::DoNothing());
   base::RunLoop run_loop;
-  model.SetRequestCallback(
+  controller.SetRequestCallback(
       base::BindLambdaForTesting([&](const std::string& authenticator_id) {
         EXPECT_EQ(authenticator_id, "virtual-authenticator");
         run_loop.Quit();
@@ -2043,8 +2067,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.has_empty_allow_list = false;
   transports_info.recognized_credentials = {kCred2};
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
   run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -2054,25 +2078,26 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     SCOPED_TRACE(::testing::Message()
                  << "has_empty_allow_list=" << has_empty_allow_list);
 
-    AuthenticatorRequestDialogController model(main_rfh());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
     int preselect_num_called = 0;
-    model.SetAccountPreselectedCallback(base::BindLambdaForTesting(
+    controller.SetAccountPreselectedCallback(base::BindLambdaForTesting(
         [&preselect_num_called](device::DiscoverableCredentialMetadata cred) {
           EXPECT_EQ(cred.cred_id, std::vector<uint8_t>({1}));
           ++preselect_num_called;
         }));
     int request_num_called = 0;
-    model.SetRequestCallback(base::BindLambdaForTesting(
+    controller.SetRequestCallback(base::BindLambdaForTesting(
         [&request_num_called](const std::string& authenticator_id) {
           EXPECT_EQ(authenticator_id, "internal-authenticator");
           ++request_num_called;
         }));
 
-    model.saved_authenticators().AddAuthenticator(
+    controller.saved_authenticators().AddAuthenticator(
         AuthenticatorReference(/*device_id=*/"usb-authenticator",
                                AuthenticatorTransport::kUsbHumanInterfaceDevice,
                                device::AuthenticatorType::kOther));
-    model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+    controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
         /*device_id=*/"internal-authenticator",
         AuthenticatorTransport::kInternal, device::AuthenticatorType::kOther));
 
@@ -2084,20 +2109,20 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     // The TouchID authenticator will be immediately dispatched to if the device
     // has biometrics configured. Simulate a lack of biometrics to align with
     // other platforms.
-    model.set_local_biometrics_override_for_testing(false);
+    controller.set_local_biometrics_override_for_testing(false);
 #endif  // BUILDFLAG(IS_MAC)
     transports_info.user_verification_requirement =
         device::UserVerificationRequirement::kPreferred;
     transports_info.has_platform_authenticator_credential = device::
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
     transports_info.recognized_credentials = {kCred1FromICloudKeychain, kCred2};
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
 
     if (has_empty_allow_list) {
-      EXPECT_EQ(model.current_step(), Step::kSelectPriorityMechanism);
+      EXPECT_EQ(model.step(), Step::kSelectPriorityMechanism);
     } else {
-      EXPECT_EQ(model.current_step(), Step::kPreSelectSingleAccount);
+      EXPECT_EQ(model.step(), Step::kPreSelectSingleAccount);
     }
     task_environment()->RunUntilIdle();
 
@@ -2106,17 +2131,17 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
       EXPECT_EQ(request_num_called, 0);
       // After preselecting an account, the request should be dispatched to the
       // platform authenticator.
-      model.OnAccountPreselected(kCred2.cred_id);
+      controller.OnAccountPreselected(kCred2.cred_id);
       task_environment()->RunUntilIdle();
       EXPECT_EQ(preselect_num_called, 1);
       EXPECT_EQ(request_num_called, 1);
     } else {
       EXPECT_EQ(request_num_called, 0);
-      ASSERT_EQ(model.creds().size(), 1u);
+      ASSERT_EQ(model.creds.size(), 1u);
       // `kCred1FromICloudKeychain` is an iCloud Keychain credential so,
       // even though it's in `recognized_credentials`, it shouldn't have been
       // used by the standard platform authenticator code.
-      EXPECT_EQ(model.creds()[0].cred_id, std::vector<uint8_t>({1}));
+      EXPECT_EQ(model.creds[0].cred_id, std::vector<uint8_t>({1}));
     }
   }
 }
@@ -2124,7 +2149,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
 #if BUILDFLAG(IS_WIN)
 // Regression test for crbug.com/1476884.
 TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
 
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2135,14 +2161,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   transports_info.recognized_credentials = {kWinCred1, kWinCred2};
 
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"win", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative));
 
   RequestCallbackReceiver request_callback;
-  model.SetRequestCallback(request_callback.Callback());
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+  controller.SetRequestCallback(request_callback.Callback());
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
   EXPECT_EQ(request_callback.WaitForResult(), "win");
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -2161,12 +2187,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ContactPriorityPhone_NoSync) {
   fake_win_webauthn_api.set_version(4);
 #endif  // BUILDFLAG(IS_WIN)
 
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
-  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                 std::move(phones), base::DoNothing(),
-                                 std::nullopt);
+  controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
+                                      std::move(phones), base::DoNothing(),
+                                      std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2176,13 +2203,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ContactPriorityPhone_NoSync) {
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
   transports_info.has_icloud_keychain_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
-  EXPECT_EQ(model.current_step(), Step::kPhoneConfirmationSheet);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
+  EXPECT_EQ(model.step(), Step::kPhoneConfirmationSheet);
   EXPECT_EQ(model.GetPriorityPhoneName(), u"Phone from QR");
   model.ContactPriorityPhone();
-  EXPECT_EQ(model.current_step(), Step::kCableActivate);
-  EXPECT_EQ(model.selected_phone_name(), "Phone from QR");
+  EXPECT_EQ(model.step(), Step::kCableActivate);
+  EXPECT_EQ(model.selected_phone_name, "Phone from QR");
 }
 
 // Tests that if the user has a phone from sync, Chrome offers a phone
@@ -2192,13 +2219,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
        ContactPriorityPhone_WithSync) {
   base::test::ScopedFeatureList scoped_feature_list{
       syncer::kSyncWebauthnCredentials};
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
   phones.emplace_back(GetPairingFromSync());
-  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                 std::move(phones), base::DoNothing(),
-                                 std::nullopt);
+  controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
+                                      std::move(phones), base::DoNothing(),
+                                      std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.recognized_credentials = {kPhoneCred1, kPhoneCred2};
   transports_info.is_ble_powered = true;
@@ -2209,13 +2237,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
   transports_info.has_icloud_keychain_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
-  EXPECT_EQ(model.current_step(), Step::kPhoneConfirmationSheet);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
+  EXPECT_EQ(model.step(), Step::kPhoneConfirmationSheet);
   EXPECT_EQ(model.GetPriorityPhoneName(), u"Phone from sync");
   model.ContactPriorityPhone();
-  EXPECT_EQ(model.current_step(), Step::kCableActivate);
-  EXPECT_EQ(model.selected_phone_name(), "Phone from sync");
+  EXPECT_EQ(model.step(), Step::kCableActivate);
+  EXPECT_EQ(model.selected_phone_name, "Phone from sync");
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -2230,12 +2258,13 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
       SCOPED_TRACE(::testing::Message()
                    << "click_specific_phone=" << click_specific_phone);
 
-      AuthenticatorRequestDialogController model(main_rfh());
+      AuthenticatorRequestDialogModel model(main_rfh());
+      AuthenticatorRequestDialogController controller(&model);
       std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
       phones.emplace_back(GetPairingFromQR());
-      model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                     std::move(phones), base::DoNothing(),
-                                     std::nullopt);
+      controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
+                                          std::move(phones), base::DoNothing(),
+                                          std::nullopt);
       TransportAvailabilityInfo transports_info;
       transports_info.is_ble_powered = true;
       transports_info.ble_access_denied = ble_access_denied;
@@ -2243,30 +2272,28 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
       transports_info.available_transports = {
           AuthenticatorTransport::kHybrid,
           AuthenticatorTransport::kUsbHumanInterfaceDevice};
-      model.StartFlow(std::move(transports_info),
-                      /*is_conditional_mediation=*/false);
+      controller.StartFlow(std::move(transports_info),
+                           /*is_conditional_mediation=*/false);
 
       base::ranges::find_if(
-          model.mechanisms(),
+          model.mechanisms,
           [click_specific_phone](const auto& m) -> bool {
             if (click_specific_phone) {
               return absl::holds_alternative<
-                  AuthenticatorRequestDialogController::Mechanism::Phone>(
-                  m.type);
+                  AuthenticatorRequestDialogModel::Mechanism::Phone>(m.type);
             } else {
               return absl::holds_alternative<
-                  AuthenticatorRequestDialogController::Mechanism::AddPhone>(
-                  m.type);
+                  AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
             }
           })
           ->callback.Run();
 
       if (ble_access_denied) {
-        EXPECT_EQ(model.current_step(), Step::kBlePermissionMac);
+        EXPECT_EQ(model.step(), Step::kBlePermissionMac);
       } else if (click_specific_phone) {
-        EXPECT_EQ(model.current_step(), Step::kCableActivate);
+        EXPECT_EQ(model.step(), Step::kCableActivate);
       } else {
-        EXPECT_EQ(model.current_step(), Step::kCableV2QRCode);
+        EXPECT_EQ(model.step(), Step::kCableV2QRCode);
       }
     }
   }
@@ -2274,54 +2301,56 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
 #endif
 
 TEST_F(AuthenticatorRequestDialogControllerTest, AdvanceThroughCableV2States) {
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
-                                 base::DoNothing(), std::nullopt);
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
+                                      base::DoNothing(), std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
 
-  model.OnCableEvent(device::cablev2::Event::kPhoneConnected);
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
-  model.OnCableEvent(device::cablev2::Event::kBLEAdvertReceived);
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
-  model.OnCableEvent(device::cablev2::Event::kReady);
+  controller.OnCableEvent(device::cablev2::Event::kPhoneConnected);
+  EXPECT_EQ(model.step(), Step::kCableV2Connecting);
+  controller.OnCableEvent(device::cablev2::Event::kBLEAdvertReceived);
+  EXPECT_EQ(model.step(), Step::kCableV2Connecting);
+  controller.OnCableEvent(device::cablev2::Event::kReady);
   // kCableV2Connecting won't flash by too quickly, so it'll still be showing.
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+  EXPECT_EQ(model.step(), Step::kCableV2Connecting);
 
   task_environment()->FastForwardBy(base::Seconds(2));
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connected);
+  EXPECT_EQ(model.step(), Step::kCableV2Connected);
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest,
        AdvanceThroughCableV2StatesStopTimer) {
-  AuthenticatorRequestDialogController model(main_rfh());
-  model.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
-                                 base::DoNothing(), std::nullopt);
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
+  controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt, {},
+                                      base::DoNothing(), std::nullopt);
   TransportAvailabilityInfo transports_info;
   transports_info.is_ble_powered = true;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
 
-  model.OnCableEvent(device::cablev2::Event::kPhoneConnected);
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
-  model.OnCableEvent(device::cablev2::Event::kBLEAdvertReceived);
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
-  model.OnCableEvent(device::cablev2::Event::kReady);
+  controller.OnCableEvent(device::cablev2::Event::kPhoneConnected);
+  EXPECT_EQ(model.step(), Step::kCableV2Connecting);
+  controller.OnCableEvent(device::cablev2::Event::kBLEAdvertReceived);
+  EXPECT_EQ(model.step(), Step::kCableV2Connecting);
+  controller.OnCableEvent(device::cablev2::Event::kReady);
   // kCableV2Connecting won't flash by too quickly, so it'll still be showing.
-  EXPECT_EQ(model.current_step(), Step::kCableV2Connecting);
+  EXPECT_EQ(model.step(), Step::kCableV2Connecting);
 
   // Moving to a different step should stop the timer so that kCableV2Connected
   // never shows.
-  model.SetCurrentStepForTesting(Step::kCableActivate);
+  controller.SetCurrentStepForTesting(Step::kCableActivate);
 
   task_environment()->FastForwardBy(base::Seconds(10));
-  EXPECT_EQ(model.current_step(), Step::kCableActivate);
+  EXPECT_EQ(model.step(), Step::kCableActivate);
 }
 
 template <class Value>
@@ -2362,16 +2391,18 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Crbug1503187) {
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
 
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
   RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
       account_preselected_callback;
-  model.SetAccountPreselectedCallback(account_preselected_callback.Callback());
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+  controller.SetAccountPreselectedCallback(
+      account_preselected_callback.Callback());
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
-  using Mechanism = AuthenticatorRequestDialogController::Mechanism;
+  using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
   const struct {
     std::vector<device::DiscoverableCredentialMetadata> recognized_credentials;
     std::optional<Mechanism::Type> type_of_priority_mechanism;
@@ -2391,23 +2422,23 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
     transports_info.recognized_credentials = test.recognized_credentials;
     transports_info.has_empty_allow_list = true;
 
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.set_allow_icloud_keychain(true);
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    controller.set_allow_icloud_keychain(true);
     RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
         account_preselected_callback;
-    model.SetAccountPreselectedCallback(
+    controller.SetAccountPreselectedCallback(
         account_preselected_callback.Callback());
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
-    ASSERT_EQ(model.model()->priority_mechanism_index.has_value(),
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
+    ASSERT_EQ(model.priority_mechanism_index.has_value(),
               test.type_of_priority_mechanism.has_value());
     if (!test.type_of_priority_mechanism.has_value()) {
       continue;
     }
 
-    EXPECT_EQ(
-        *test.type_of_priority_mechanism,
-        model.mechanisms()[*model.model()->priority_mechanism_index].type);
+    EXPECT_EQ(*test.type_of_priority_mechanism,
+              model.mechanisms[*model.priority_mechanism_index].type);
   }
 }
 
@@ -2442,75 +2473,76 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
           platform_attachment ? device::AuthenticatorAttachment::kPlatform
                               : device::AuthenticatorAttachment::kAny;
 
-      AuthenticatorRequestDialogController model(main_rfh());
-      model.set_allow_icloud_keychain(true);
-      model.set_should_create_in_icloud_keychain(
+      AuthenticatorRequestDialogModel model(main_rfh());
+      AuthenticatorRequestDialogController controller(&model);
+      controller.set_allow_icloud_keychain(true);
+      controller.set_should_create_in_icloud_keychain(
           should_create_in_icloud_keychain);
 
       RequestCallbackReceiver request_callback;
-      model.SetRequestCallback(request_callback.Callback());
+      controller.SetRequestCallback(request_callback.Callback());
 
       const std::string kProfileAuthenticatorId = "platauth";
-      model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
           kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
           device::AuthenticatorType::kTouchID));
       const std::string kICloudKeychainId = "ickc";
-      model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
           kICloudKeychainId, AuthenticatorTransport::kInternal,
           device::AuthenticatorType::kICloudKeychain));
 
-      model.StartFlow(std::move(transports_info),
-                      /*is_conditional_mediation=*/false);
+      controller.StartFlow(std::move(transports_info),
+                           /*is_conditional_mediation=*/false);
       if (platform_attachment) {
         if (should_create_in_icloud_keychain) {
           EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
         } else {
-          EXPECT_EQ(model.current_step(),
-                    AuthenticatorRequestDialogController::Step::kCreatePasskey);
-          model.HideDialogAndDispatchToPlatformAuthenticator();
+          EXPECT_EQ(model.step(),
+                    AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+          controller.HideDialogAndDispatchToPlatformAuthenticator();
           EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
         }
       } else {
-        EXPECT_EQ(
-            model.current_step(),
-            AuthenticatorRequestDialogController::Step::kMechanismSelection);
+        EXPECT_EQ(model.step(),
+                  AuthenticatorRequestDialogModel::Step::kMechanismSelection);
       }
 
       if (!platform_attachment) {
         // Dispatch to iCloud Keychain to check that canceling doesn't show
         // a Chrome error dialog.
-        model.HideDialogAndDispatchToPlatformAuthenticator(
+        controller.HideDialogAndDispatchToPlatformAuthenticator(
             device::AuthenticatorType::kICloudKeychain);
       }
 
-      model.OnUserConsentDenied();
+      controller.OnUserConsentDenied();
 
       if (platform_attachment) {
-        EXPECT_EQ(model.current_step(),
-                  should_create_in_icloud_keychain
-                      ? AuthenticatorRequestDialogController::Step::
-                            kMechanismSelection
-                      : AuthenticatorRequestDialogController::Step::
-                            kErrorInternalUnrecognized);
+        EXPECT_EQ(model.step(), should_create_in_icloud_keychain
+                                    ? AuthenticatorRequestDialogController::
+                                          Step::kMechanismSelection
+                                    : AuthenticatorRequestDialogController::
+                                          Step::kErrorInternalUnrecognized);
 
-        model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-            kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
-            device::AuthenticatorType::kTouchID));
-        model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-            kICloudKeychainId, AuthenticatorTransport::kInternal,
-            device::AuthenticatorType::kICloudKeychain));
+        controller.saved_authenticators().AddAuthenticator(
+            AuthenticatorReference(kProfileAuthenticatorId,
+                                   AuthenticatorTransport::kInternal,
+                                   device::AuthenticatorType::kTouchID));
+        controller.saved_authenticators().AddAuthenticator(
+            AuthenticatorReference(kICloudKeychainId,
+                                   AuthenticatorTransport::kInternal,
+                                   device::AuthenticatorType::kICloudKeychain));
 
         // Dispatch and cancel again to confirm that canceling the non-automatic
         // dispatch cancels the whole request.
-        model.HideDialogAndDispatchToPlatformAuthenticator(
+        controller.HideDialogAndDispatchToPlatformAuthenticator(
             device::AuthenticatorType::kICloudKeychain);
-        model.OnUserConsentDenied();
+        controller.OnUserConsentDenied();
       }
 
       // Canceling after a non-automatic dispatch to iCloud Keychain should
       // end the request.
-      EXPECT_EQ(model.current_step(),
-                AuthenticatorRequestDialogController::Step::kNotStarted);
+      EXPECT_EQ(model.step(),
+                AuthenticatorRequestDialogModel::Step::kNotStarted);
     }
   }
 }
@@ -2543,17 +2575,18 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
               kHasRecognizedCredential;
     }
 
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.set_allow_icloud_keychain(true);
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    controller.set_allow_icloud_keychain(true);
     RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
         account_preselected_callback;
-    model.SetAccountPreselectedCallback(
+    controller.SetAccountPreselectedCallback(
         account_preselected_callback.Callback());
 
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
 
-    EXPECT_EQ(model.current_step(), Step::kNotStarted);
+    EXPECT_EQ(model.step(), Step::kNotStarted);
     device::DiscoverableCredentialMetadata descriptor =
         account_preselected_callback.WaitForResult();
     if (credential_source == device::AuthenticatorType::kTouchID) {
@@ -2592,35 +2625,38 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.recognized_credentials = {kPhoneCred1};
   {
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.StartFlow(transports_info,
-                    /*is_conditional_mediation=*/true);
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    controller.StartFlow(transports_info,
+                         /*is_conditional_mediation=*/true);
 
     // There is no phone available, so no passkeys should be sent to autofill.
     EXPECT_TRUE(delegate->GetPasskeys()->empty());
   }
   {
-    AuthenticatorRequestDialogController model(main_rfh());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
     phones.emplace_back(GetPairingFromQR());
-    model.set_cable_transport_info(
+    controller.set_cable_transport_info(
         /*extension_is_v2=*/std::nullopt, std::move(phones), base::DoNothing(),
         std::nullopt);
-    model.StartFlow(transports_info,
-                    /*is_conditional_mediation=*/true);
+    controller.StartFlow(transports_info,
+                         /*is_conditional_mediation=*/true);
 
     // There is no phone from sync, so no passkeys should be sent to autofill.
     EXPECT_TRUE(delegate->GetPasskeys()->empty());
   }
   {
-    AuthenticatorRequestDialogController model(main_rfh());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
     phones.emplace_back(GetPairingFromSync());
-    model.set_cable_transport_info(
+    controller.set_cable_transport_info(
         /*extension_is_v2=*/std::nullopt, std::move(phones), base::DoNothing(),
         std::nullopt);
-    model.StartFlow(transports_info,
-                    /*is_conditional_mediation=*/true);
+    controller.StartFlow(transports_info,
+                         /*is_conditional_mediation=*/true);
 
     ASSERT_EQ(delegate->GetPasskeys()->size(), 1u);
     const password_manager::PasskeyCredential& passkey =
@@ -2640,7 +2676,8 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
 
 TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   // Set up a model with two local passkeys and a GPM passkey.
-  AuthenticatorRequestDialogController model(main_rfh());
+  AuthenticatorRequestDialogModel model(main_rfh());
+  AuthenticatorRequestDialogController controller(&model);
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kInternal};
@@ -2652,27 +2689,27 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   phones.emplace_back(GetPairingFromSync());
   RepeatingValueCallbackReceiver<std::unique_ptr<device::cablev2::Pairing>>
       contact_phone_callback;
-  model.set_cable_transport_info(
+  controller.set_cable_transport_info(
       /*extension_is_v2=*/std::nullopt, std::move(phones),
       contact_phone_callback.Callback(), std::nullopt);
   RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
       account_preselected_callback;
-  model.SetAccountPreselectedCallback(account_preselected_callback.Callback());
+  controller.SetAccountPreselectedCallback(
+      account_preselected_callback.Callback());
 
   RequestCallbackReceiver request_callback;
-  model.SetRequestCallback(request_callback.Callback());
+  controller.SetRequestCallback(request_callback.Callback());
   const std::string kLocalAuthenticatorId = "local-authenticator";
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+  controller.StartFlow(std::move(transports_info),
+                       /*is_conditional_mediation=*/false);
 
   // Entries will be sorted by username. So the first entry should correspond to
   // the first local passkey.
-  const AuthenticatorRequestDialogController::Mechanism& mech1 =
-      model.mechanisms()[0];
+  const AuthenticatorRequestDialogModel::Mechanism& mech1 = model.mechanisms[0];
   EXPECT_EQ(mech1.name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.short_name, base::UTF8ToUTF16(*kUser1.name));
   EXPECT_EQ(mech1.description,
@@ -2686,14 +2723,13 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
 
   // Reset the model as if the user had cancelled out of the operation.
-  model.StartOver();
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.StartOver();
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
   // The second entry will be `kCred2`.
-  const AuthenticatorRequestDialogController::Mechanism& mech2 =
-      model.mechanisms()[1];
+  const AuthenticatorRequestDialogModel::Mechanism& mech2 = model.mechanisms[1];
   EXPECT_EQ(mech2.name, base::UTF8ToUTF16(*kUser2.name));
   EXPECT_EQ(mech2.short_name, base::UTF8ToUTF16(*kUser2.name));
   EXPECT_EQ(mech2.description, u"Use device sign-in");
@@ -2705,14 +2741,13 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   EXPECT_EQ(request_callback.WaitForResult(), kLocalAuthenticatorId);
 
   // Reset the model as if the user had cancelled out of the operation.
-  model.StartOver();
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+  controller.StartOver();
+  controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
 
   // The third entry should correspond to `kPhoneCred1`.
-  const AuthenticatorRequestDialogController::Mechanism& mech3 =
-      model.mechanisms()[2];
+  const AuthenticatorRequestDialogModel::Mechanism& mech3 = model.mechanisms[2];
   EXPECT_EQ(mech3.name, base::UTF8ToUTF16(*kPhoneUser1.name));
   EXPECT_EQ(mech3.short_name, base::UTF8ToUTF16(*kPhoneUser1.name));
   EXPECT_EQ(mech3.description,
@@ -2803,8 +2838,9 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
       &fake_win_webauthn_api);
   for (const auto& test_case : kWinHelloButtonGetAssertionTestCases) {
-    AuthenticatorRequestDialogController model(main_rfh());
-    model.SetAccountPreselectedCallback(base::DoNothing());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
+    controller.SetAccountPreselectedCallback(base::DoNothing());
 
     TransportAvailabilityInfo transports_info;
     transports_info.has_win_native_api_authenticator = true;
@@ -2830,21 +2866,20 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
     SCOPED_TRACE(testing::Message()
                  << "Handles hybrid: " << test_case.supports_hybrid);
 
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
     auto win_button_it =
-        base::ranges::find_if(model.mechanisms(), [](const auto& m) {
+        base::ranges::find_if(model.mechanisms, [](const auto& m) {
           return absl::holds_alternative<
-              AuthenticatorRequestDialogController::Mechanism::WindowsAPI>(
-              m.type);
+              AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
         });
     if (test_case.expected_button == kNoWinButton) {
-      EXPECT_EQ(win_button_it, model.mechanisms().end());
+      EXPECT_EQ(win_button_it, model.mechanisms.end());
     } else if (test_case.expected_button == kNoChromeUI) {
       // In these cases, Chrome should have invoked the Windows UI immediately.
-      EXPECT_EQ(model.current_step(), Step::kNotStarted);
+      EXPECT_EQ(model.step(), Step::kNotStarted);
     } else {
-      ASSERT_NE(win_button_it, model.mechanisms().end());
+      ASSERT_NE(win_button_it, model.mechanisms.end());
       EXPECT_EQ(win_button_it->name,
                 l10n_util::GetStringUTF16(test_case.expected_button));
       EXPECT_EQ(win_button_it->short_name,
@@ -2885,7 +2920,8 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
       &fake_win_webauthn_api);
   for (const auto& test_case : kWinHelloButtonMakeCredentialTestCases) {
-    AuthenticatorRequestDialogController model(main_rfh());
+    AuthenticatorRequestDialogModel model(main_rfh());
+    AuthenticatorRequestDialogController controller(&model);
     TransportAvailabilityInfo transports_info;
     transports_info.has_win_native_api_authenticator = true;
     transports_info.request_type = device::FidoRequestType::kMakeCredential;
@@ -2894,15 +2930,14 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
     SCOPED_TRACE(testing::Message()
                  << "Attachment: " << static_cast<int>(test_case.attachment));
 
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
+    controller.StartFlow(std::move(transports_info),
+                         /*is_conditional_mediation=*/false);
     auto win_button_it =
-        base::ranges::find_if(model.mechanisms(), [](const auto& m) {
+        base::ranges::find_if(model.mechanisms, [](const auto& m) {
           return absl::holds_alternative<
-              AuthenticatorRequestDialogController::Mechanism::WindowsAPI>(
-              m.type);
+              AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
         });
-    ASSERT_NE(win_button_it, model.mechanisms().end());
+    ASSERT_NE(win_button_it, model.mechanisms.end());
     EXPECT_EQ(win_button_it->name,
               l10n_util::GetStringUTF16(test_case.expected_button));
     EXPECT_EQ(win_button_it->short_name,

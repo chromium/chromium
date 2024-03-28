@@ -171,7 +171,7 @@ class AuthenticatorRequestDialogController;
   AUTHENTICATOR_REQUEST_EVENT_1(OnHavePIN, std::u16string)                       \
   /* Called just before the model is destructed. */                              \
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                                \
-                                AuthenticatorRequestDialogController*)
+                                AuthenticatorRequestDialogModel*)
 
 struct AuthenticatorRequestDialogModel {
   // Each Step defines a unique UI state. Setting a Step causes the matching
@@ -426,6 +426,11 @@ struct AuthenticatorRequestDialogModel {
   // Similar to above, but for bubbles.
   bool should_bubble_be_closed() const;
 
+  // Returns the name of the "priority" paired phone. This is the phone from
+  // sync if there are a priori discovered GPM passkeys, or the first phone on
+  // the list otherwise.
+  std::optional<std::u16string> GetPriorityPhoneName() const;
+
   const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
   device::FidoRequestType request_type = device::FidoRequestType::kGetAssertion;
   device::ResidentKeyRequirement resident_key_requirement =
@@ -576,7 +581,7 @@ class AuthenticatorRequestDialogController
   std::vector<std::string> paired_phone_names() const;
 #endif
 
-  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
   // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
   void HideDialog();
@@ -823,11 +828,6 @@ class AuthenticatorRequestDialogController
   // Only for unittests. UI should use |mechanisms()| to enumerate the
   // user-visible mechanisms and use the callbacks therein.
   void ContactPhoneForTesting(const std::string& name);
-
-  // Returns the name of the "priority" paired phone. This is the phone from
-  // sync if there are a priori discovered GPM passkeys, or the first phone on
-  // the list otherwise.
-  virtual std::optional<std::u16string> GetPriorityPhoneName() const;
 
   // StartTransportFlowForTesting moves the UI to focus on the given transport.
   // UI should use |mechanisms()| to enumerate the user-visible mechanisms and

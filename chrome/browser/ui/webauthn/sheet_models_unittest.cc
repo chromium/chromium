@@ -5,40 +5,28 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/grit/generated_resources.h"
 #include "device/fido/fido_types.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-using Mechanism = AuthenticatorRequestDialogController::Mechanism;
+using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
 using MechanismVisibility =
     AuthenticatorGenericErrorSheetModel::OtherMechanismButtonVisibility;
 
 class AuthenticatorSheetBaseTest : public testing::Test {};
 
-class MockDialogModel : public AuthenticatorRequestDialogController {
- public:
-  MockDialogModel()
-      : AuthenticatorRequestDialogController(
-            static_cast<content::RenderFrameHost*>(nullptr)) {}
-
-  MOCK_METHOD(base::span<const Mechanism>, mechanisms, (), (const));
-  MOCK_METHOD(std::optional<std::u16string>,
-              GetPriorityPhoneName,
-              (),
-              (const override));
-};
-
 class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
  public:
   TestAuthenticatorSheetModel(
-      AuthenticatorRequestDialogController* dialog_model,
+      AuthenticatorRequestDialogModel* dialog_model,
       OtherMechanismButtonVisibility other_mechanism_button_visibility)
       : AuthenticatorSheetModelBase(dialog_model,
                                     other_mechanism_button_visibility) {
@@ -58,49 +46,47 @@ class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
 };
 
 TEST_F(AuthenticatorSheetBaseTest, IsOtherMechanismButtonVisible) {
-  MockDialogModel dialog_model;
+  AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
 
   // No mechanisms present.
   {
     TestAuthenticatorSheetModel sheet_model(&dialog_model,
                                             MechanismVisibility::kVisible);
-    std::vector<Mechanism> mechanisms;
-    EXPECT_CALL(dialog_model, mechanisms)
-        .WillOnce(testing::Return(base::make_span(mechanisms)));
+    dialog_model.mechanisms.clear();
     EXPECT_FALSE(sheet_model.IsOtherMechanismButtonVisible());
-    testing::Mock::VerifyAndClearExpectations(&dialog_model);
   }
 
   // Two mechanisms present.
   {
     TestAuthenticatorSheetModel sheet_model(&dialog_model,
                                             MechanismVisibility::kVisible);
-    std::vector<Mechanism> mechanisms;
-    mechanisms.emplace_back(Mechanism::Phone("phone"), u"phone", u"ph",
-                            kPasskeyAoaIcon, base::DoNothing());
-    mechanisms.emplace_back(
+    dialog_model.mechanisms.clear();
+    dialog_model.mechanisms.emplace_back(Mechanism::Phone("phone"), u"phone",
+                                         u"ph", kPasskeyAoaIcon,
+                                         base::DoNothing());
+    dialog_model.mechanisms.emplace_back(
         Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
         u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
-    EXPECT_CALL(dialog_model, mechanisms)
-        .WillOnce(testing::Return(base::make_span(mechanisms)));
     EXPECT_TRUE(sheet_model.IsOtherMechanismButtonVisible());
-    testing::Mock::VerifyAndClearExpectations(&dialog_model);
   }
 
   // Hidden button.
   {
     TestAuthenticatorSheetModel sheet_model(&dialog_model,
                                             MechanismVisibility::kHidden);
-    EXPECT_CALL(dialog_model, mechanisms).Times(0);
+    dialog_model.mechanisms.clear();
+    dialog_model.mechanisms.emplace_back(Mechanism::Phone("phone"), u"phone",
+                                         u"ph", kPasskeyAoaIcon,
+                                         base::DoNothing());
     EXPECT_FALSE(sheet_model.IsOtherMechanismButtonVisible());
-    testing::Mock::VerifyAndClearExpectations(&dialog_model);
   }
 }
 
 // Regression test for crbug.com/1408492.
 TEST_F(AuthenticatorSheetBaseTest,
        IsOtherMechanismButtonVisible_NoDialogModel) {
-  auto dialog_model = std::make_unique<MockDialogModel>();
+  auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>(
+      /*render_frame_host=*/nullptr);
   TestAuthenticatorSheetModel sheet_model(dialog_model.get(),
                                           MechanismVisibility::kVisible);
   dialog_model.reset();
@@ -114,21 +100,18 @@ constexpr char16_t kPasskeyName2[] = u"kodai";
 constexpr char16_t kPhoneName[] = u"pixel 7";
 
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
-  MockDialogModel dialog_model;
-  std::vector<Mechanism> mechanisms;
-  EXPECT_CALL(dialog_model, GetPriorityPhoneName)
-      .WillRepeatedly(testing::Return(kPhoneName));
-  mechanisms.emplace_back(
+  AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
+  dialog_model.paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
+  dialog_model.priority_phone_index = 0;
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
-  mechanisms.emplace_back(
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {1}}),
       kPasskeyName2, kPasskeyName2, kPasskeyPhoneIcon, base::DoNothing());
-  mechanisms.emplace_back(
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
       u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
-  EXPECT_CALL(dialog_model, mechanisms)
-      .WillRepeatedly(testing::Return(base::make_span(mechanisms)));
 
   AuthenticatorMultiSourcePickerSheetModel model(&dialog_model);
   EXPECT_THAT(model.primary_passkey_indices(), testing::ElementsAre(0, 1));
@@ -139,21 +122,18 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
 }
 
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
-  MockDialogModel dialog_model;
-  std::vector<Mechanism> mechanisms;
-  EXPECT_CALL(dialog_model, GetPriorityPhoneName)
-      .WillRepeatedly(testing::Return(kPhoneName));
-  mechanisms.emplace_back(
+  AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
+  dialog_model.paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
+  dialog_model.priority_phone_index = 0;
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
-  mechanisms.emplace_back(
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Credential({device::AuthenticatorType::kTouchID, {1}}),
       kPasskeyName2, kPasskeyName2, kPasskeyAoaIcon, base::DoNothing());
-  mechanisms.emplace_back(
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
       u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
-  EXPECT_CALL(dialog_model, mechanisms)
-      .WillRepeatedly(testing::Return(base::make_span(mechanisms)));
 
   AuthenticatorMultiSourcePickerSheetModel model(&dialog_model);
   EXPECT_THAT(model.primary_passkey_indices(), testing::ElementsAre(1));
@@ -163,13 +143,10 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMAndLocalPasskeys) {
 }
 
 TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, NoDiscoveredPasskeys) {
-  MockDialogModel dialog_model;
-  std::vector<Mechanism> mechanisms;
-  mechanisms.emplace_back(
+  AuthenticatorRequestDialogModel dialog_model(/*render_frame_host=*/nullptr);
+  dialog_model.mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
       u"security key", u"usb", kPasskeyAoaIcon, base::DoNothing());
-  EXPECT_CALL(dialog_model, mechanisms)
-      .WillRepeatedly(testing::Return(base::make_span(mechanisms)));
 
   AuthenticatorMultiSourcePickerSheetModel model(&dialog_model);
   EXPECT_TRUE(model.primary_passkey_indices().empty());

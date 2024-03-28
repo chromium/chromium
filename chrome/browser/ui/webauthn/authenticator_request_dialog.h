@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_H_
 
-class AuthenticatorRequestDialogController;
+struct AuthenticatorRequestDialogModel;
 
 namespace content {
 class WebContents;
@@ -13,8 +13,7 @@ class WebContents;
 
 // Creates and shows the dialog for a given WebContents.
 // |model| must outlive the dialog.
-void ShowAuthenticatorRequestDialog(
-    content::WebContents* web_contents,
-    AuthenticatorRequestDialogController* model);
+void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
+                                    AuthenticatorRequestDialogModel* model);
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_DIALOG_H_

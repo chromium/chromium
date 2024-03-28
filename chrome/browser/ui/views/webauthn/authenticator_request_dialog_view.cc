@@ -26,9 +26,8 @@
 #include "ui/views/layout/fill_layout.h"
 
 // static
-void ShowAuthenticatorRequestDialog(
-    content::WebContents* web_contents,
-    AuthenticatorRequestDialogController* model) {
+void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
+                                    AuthenticatorRequestDialogModel* model) {
   // The authenticator request dialog will only be shown for common user-facing
   // WebContents, which have a |manager|. Most other sources without managers,
   // like service workers and extension background pages, do not allow WebAuthn
@@ -50,8 +49,11 @@ void ShowAuthenticatorRequestDialog(
 
 AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   if (model_) {
-    model_->RemoveObserver(this);
+    model_->observers.RemoveObserver(this);
   }
+
+  // TODO(enclave): the below comment hasn't been true for some time. It can
+  // probably be removed, but we didn't want to remove it in a refactoring CL.
 
   // AuthenticatorRequestDialogView is a WidgetDelegate, owned by views::Widget.
   // It's only destroyed by Widget::OnNativeWidgetDestroyed() invoking
@@ -60,11 +62,11 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   // shouldn't be doing anything interesting in their destructors, so it should
   // be okay to destroy the |sheet_| immediately after this line.
   //
-  // However, as AuthenticatorRequestDialogController is owned by |this|, and
+  // However, as AuthenticatorRequestDialogModel is owned by |this|, and
   // ObservableAuthenticatorList is owned by
-  // AuthenticatorRequestDialogController, destroy all view components that
+  // AuthenticatorRequestDialogModel, destroy all view components that
   // might own models observing the list prior to destroying
-  // AuthenticatorRequestDialogController.
+  // AuthenticatorRequestDialogModel.
   RemoveAllChildViews();
 }
 
@@ -235,7 +237,7 @@ std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
 }
 
 void AuthenticatorRequestDialogView::OnModelDestroyed(
-    AuthenticatorRequestDialogController* model) {
+    AuthenticatorRequestDialogModel* model) {
   model_ = nullptr;
 }
 
@@ -281,14 +283,14 @@ void AuthenticatorRequestDialogView::OnVisibilityChanged(
 
 AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     content::WebContents* web_contents,
-    AuthenticatorRequestDialogController* model)
+    AuthenticatorRequestDialogModel* model)
     : content::WebContentsObserver(web_contents),
       model_(model),
       web_contents_hidden_(web_contents->GetVisibility() ==
                            content::Visibility::HIDDEN) {
   SetShowTitle(false);
   DCHECK(!model_->should_dialog_be_closed());
-  model_->AddObserver(this);
+  model_->observers.AddObserver(this);
 
   SetCloseCallback(
       base::BindOnce(&AuthenticatorRequestDialogView::OnDialogClosing,

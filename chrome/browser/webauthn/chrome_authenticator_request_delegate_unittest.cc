@@ -142,31 +142,31 @@ class ChromeAuthenticatorRequestDelegateTest
 };
 
 class TestAuthenticatorModelObserver final
-    : public AuthenticatorRequestDialogController::Observer {
+    : public AuthenticatorRequestDialogModel::Observer {
  public:
   explicit TestAuthenticatorModelObserver(
-      AuthenticatorRequestDialogController* model)
+      AuthenticatorRequestDialogModel* model)
       : model_(model) {
-    last_step_ = model_->current_step();
+    last_step_ = model_->step();
   }
   ~TestAuthenticatorModelObserver() override {
     if (model_) {
-      model_->RemoveObserver(this);
+      model_->observers.RemoveObserver(this);
     }
   }
 
-  AuthenticatorRequestDialogController::Step last_step() { return last_step_; }
+  AuthenticatorRequestDialogModel::Step last_step() { return last_step_; }
 
-  // AuthenticatorRequestDialogController::Observer:
-  void OnStepTransition() override { last_step_ = model_->current_step(); }
+  // AuthenticatorRequestDialogModel::Observer:
+  void OnStepTransition() override { last_step_ = model_->step(); }
 
-  void OnModelDestroyed(AuthenticatorRequestDialogController* model) override {
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
     model_ = nullptr;
   }
 
  private:
-  raw_ptr<AuthenticatorRequestDialogController> model_;
-  AuthenticatorRequestDialogController::Step last_step_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
+  AuthenticatorRequestDialogModel::Step last_step_;
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
@@ -422,17 +422,16 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(
-              delegate.dialog_model()->cable_ui_type(),
-              AuthenticatorRequestDialogController::CableUIType::CABLE_V1);
+          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
+                    AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
           break;
 
         case Result::kServerLink:
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
-                    AuthenticatorRequestDialogController::CableUIType::
+          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
+                    AuthenticatorRequestDialogModel::CableUIType::
                         CABLE_V2_SERVER_LINK);
           break;
 
@@ -440,8 +439,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
-                    AuthenticatorRequestDialogController::CableUIType::
+          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
+                    AuthenticatorRequestDialogModel::CableUIType::
                         CABLE_V2_2ND_FACTOR);
           break;
       }
@@ -495,17 +494,16 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetConditionalRequest(conditional_ui);
     delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
-    AuthenticatorRequestDialogController* model = delegate.dialog_model();
+    AuthenticatorRequestDialogModel* model = delegate.dialog_model();
     TestAuthenticatorModelObserver observer(model);
-    model->AddObserver(&observer);
+    model->observers.AddObserver(&observer);
     EXPECT_EQ(observer.last_step(),
-              AuthenticatorRequestDialogController::Step::kNotStarted);
+              AuthenticatorRequestDialogModel::Step::kNotStarted);
     delegate.OnTransportAvailabilityEnumerated(
         AuthenticatorRequestDialogController::TransportAvailabilityInfo());
-    EXPECT_EQ(
-        observer.last_step() ==
-            AuthenticatorRequestDialogController::Step::kConditionalMediation,
-        conditional_ui);
+    EXPECT_EQ(observer.last_step() ==
+                  AuthenticatorRequestDialogModel::Step::kConditionalMediation,
+              conditional_ui);
   }
 }
 

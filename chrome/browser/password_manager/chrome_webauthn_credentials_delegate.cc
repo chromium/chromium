@@ -41,7 +41,8 @@ void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
   if (!authenticator_delegate) {
     return;
   }
-  authenticator_delegate->dialog_model()->TransitionToModalWebAuthnRequest();
+  authenticator_delegate->dialog_controller()
+      ->TransitionToModalWebAuthnRequest();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -69,7 +70,7 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
     std::move(callback).Run();
     return;
   }
-  authenticator_delegate->dialog_model()->OnAccountPreselected(
+  authenticator_delegate->dialog_controller()->OnAccountPreselected(
       *selected_credential_id);
   // TODO(crbug.com/40274370): Update the OnAccountPreselected to run the
   // callback.

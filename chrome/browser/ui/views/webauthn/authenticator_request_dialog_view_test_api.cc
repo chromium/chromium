@@ -14,7 +14,7 @@ namespace test {
 AuthenticatorRequestDialogView*
 AuthenticatorRequestDialogViewTestApi::CreateDialogView(
     content::WebContents* web_contents,
-    AuthenticatorRequestDialogController* dialog_model) {
+    AuthenticatorRequestDialogModel* dialog_model) {
   return new AuthenticatorRequestDialogView(web_contents, dialog_model);
 }
 

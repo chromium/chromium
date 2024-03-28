@@ -613,9 +613,11 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
-      dialog_model_(std::make_unique<AuthenticatorRequestDialogController>(
-          GetRenderFrameHost())) {
-  dialog_model_->AddObserver(this);
+      dialog_model_(std::make_unique<AuthenticatorRequestDialogModel>(
+          GetRenderFrameHost())),
+      dialog_controller_(std::make_unique<AuthenticatorRequestDialogController>(
+          dialog_model_.get())) {
+  dialog_model_->observers.AddObserver(this);
   if (g_observer) {
     g_observer->Created(this);
   }
@@ -625,7 +627,7 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
   // Currently, completion of the request is indicated by //content destroying
   // this delegate.
   dialog_model_->OnRequestComplete();
-  dialog_model_->RemoveObserver(this);
+  dialog_model_->observers.RemoveObserver(this);
 }
 
 // static
@@ -642,7 +644,7 @@ ChromeAuthenticatorRequestDelegate::AsWeakPtr() {
 
 void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
     const std::string& rp_id) {
-  dialog_model_->set_relying_party_id(rp_id);
+  dialog_model_->relying_party_id = rp_id;
 }
 
 bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
@@ -661,49 +663,49 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
 
   switch (reason) {
     case InterestingFailureReason::kTimeout:
-      dialog_model_->OnRequestTimeout();
+      dialog_controller_->OnRequestTimeout();
       break;
     case InterestingFailureReason::kKeyNotRegistered:
-      dialog_model_->OnActivatedKeyNotRegistered();
+      dialog_controller_->OnActivatedKeyNotRegistered();
       break;
     case InterestingFailureReason::kKeyAlreadyRegistered:
-      dialog_model_->OnActivatedKeyAlreadyRegistered();
+      dialog_controller_->OnActivatedKeyAlreadyRegistered();
       break;
     case InterestingFailureReason::kSoftPINBlock:
-      dialog_model_->OnSoftPINBlock();
+      dialog_controller_->OnSoftPINBlock();
       break;
     case InterestingFailureReason::kHardPINBlock:
-      dialog_model_->OnHardPINBlock();
+      dialog_controller_->OnHardPINBlock();
       break;
     case InterestingFailureReason::kAuthenticatorRemovedDuringPINEntry:
-      dialog_model_->OnAuthenticatorRemovedDuringPINEntry();
+      dialog_controller_->OnAuthenticatorRemovedDuringPINEntry();
       break;
     case InterestingFailureReason::kAuthenticatorMissingResidentKeys:
-      dialog_model_->OnAuthenticatorMissingResidentKeys();
+      dialog_controller_->OnAuthenticatorMissingResidentKeys();
       break;
     case InterestingFailureReason::kAuthenticatorMissingUserVerification:
-      dialog_model_->OnAuthenticatorMissingUserVerification();
+      dialog_controller_->OnAuthenticatorMissingUserVerification();
       break;
     case InterestingFailureReason::kAuthenticatorMissingLargeBlob:
-      dialog_model_->OnAuthenticatorMissingLargeBlob();
+      dialog_controller_->OnAuthenticatorMissingLargeBlob();
       break;
     case InterestingFailureReason::kNoCommonAlgorithms:
-      dialog_model_->OnNoCommonAlgorithms();
+      dialog_controller_->OnNoCommonAlgorithms();
       break;
     case InterestingFailureReason::kStorageFull:
-      dialog_model_->OnAuthenticatorStorageFull();
+      dialog_controller_->OnAuthenticatorStorageFull();
       break;
     case InterestingFailureReason::kUserConsentDenied:
-      dialog_model_->OnUserConsentDenied();
+      dialog_controller_->OnUserConsentDenied();
       break;
     case InterestingFailureReason::kWinUserCancelled:
-      return dialog_model_->OnWinUserCancelled();
+      return dialog_controller_->OnWinUserCancelled();
     case InterestingFailureReason::kHybridTransportError:
-      return dialog_model_->OnHybridTransportError();
+      return dialog_controller_->OnHybridTransportError();
     case InterestingFailureReason::kNoPasskeys:
-      return dialog_model_->OnNoPasskeys();
+      return dialog_controller_->OnNoPasskeys();
     case InterestingFailureReason::kEnclaveError:
-      return dialog_model_->OnEnclaveError();
+      return dialog_controller_->OnEnclaveError();
   }
   return true;
 }
@@ -726,7 +728,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
                 base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
   }
 
-  dialog_model_->RecordMacOsSuccessHistogram(request_type, authenticator_type);
+  dialog_controller_->RecordMacOsSuccessHistogram(request_type,
+                                                  authenticator_type);
 #endif
 }
 
@@ -741,11 +744,11 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
   start_over_callback_ = std::move(start_over_callback);
   account_preselected_callback_ = std::move(account_preselected_callback);
 
-  dialog_model_->SetRequestCallback(request_callback);
-  dialog_model_->SetAccountPreselectedCallback(base::BindRepeating(
+  dialog_controller_->SetRequestCallback(request_callback);
+  dialog_controller_->SetAccountPreselectedCallback(base::BindRepeating(
       &ChromeAuthenticatorRequestDelegate::OnAccountPreselected,
       weak_ptr_factory_.GetWeakPtr()));
-  dialog_model_->SetBluetoothAdapterPowerOnCallback(
+  dialog_controller_->SetBluetoothAdapterPowerOnCallback(
       bluetooth_adapter_power_on_callback);
 }
 
@@ -785,8 +788,8 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  dialog_model_->RequestAttestationPermission(is_enterprise_attestation,
-                                              std::move(callback));
+  dialog_controller_->RequestAttestationPermission(is_enterprise_attestation,
+                                                   std::move(callback));
 }
 
 void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
@@ -826,20 +829,20 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
           request_type == device::FidoRequestType::kGetAssertion) {
         // No possibility of using GPM for this request.
         FIDO_LOG(EVENT) << "Enclave is not a candidate for this request";
-        dialog_model_->set_account_state(AccountState::kNone);
+        dialog_controller_->set_account_state(AccountState::kNone);
       } else if (enclave_manager_->is_ready()) {
         FIDO_LOG(EVENT) << "Enclave is ready";
         SetAccountStateReady();
       } else if (enclave_manager_->is_loaded()) {
         FIDO_LOG(EVENT) << "Account state needs to be checked";
-        dialog_model_->set_account_state(AccountState::kChecking);
+        dialog_controller_->set_account_state(AccountState::kChecking);
         DownloadAccountState();
       } else {
         FIDO_LOG(EVENT) << "Enclave state is loading";
         enclave_manager_->Load(
             base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded,
                            weak_ptr_factory_.GetWeakPtr()));
-        dialog_model_->set_account_state(AccountState::kLoading);
+        dialog_controller_->set_account_state(AccountState::kLoading);
       }
     }
   }
@@ -976,7 +979,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     if (cable_extension_provided) {
       extension_is_v2 = cablev2_extension_provided;
     }
-    dialog_model_->set_cable_transport_info(
+    dialog_controller_->set_cable_transport_info(
         extension_is_v2, std::move(paired_phones),
         std::move(contact_phone_callback), qr_string);
     discovery_factory->set_cable_data(request_type, std::move(pairings),
@@ -1006,8 +1009,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
 
-  dialog_model_->set_is_non_webauthn_request(request_source !=
-                                             RequestSource::kWebAuthentication);
+  dialog_controller_->set_is_non_webauthn_request(
+      request_source != RequestSource::kWebAuthentication);
 
 #if BUILDFLAG(IS_MAC)
   ConfigureICloudKeychain(request_source, rp_id);
@@ -1016,7 +1019,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
 void ChromeAuthenticatorRequestDelegate::SetHints(
     const AuthenticatorRequestClientDelegate::Hints& hints) {
-  dialog_model_->SetHints(hints);
+  dialog_controller_->SetHints(hints);
 }
 
 void ChromeAuthenticatorRequestDelegate::SelectAccount(
@@ -1041,7 +1044,7 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
     return;
   }
 
-  dialog_model_->SelectAccount(std::move(responses), std::move(callback));
+  dialog_controller_->SelectAccount(std::move(responses), std::move(callback));
 }
 
 void ChromeAuthenticatorRequestDelegate::DisableUI() {
@@ -1070,13 +1073,13 @@ void ChromeAuthenticatorRequestDelegate::SetCredentialIdFilter(
 
 void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity& user_entity) {
-  dialog_model()->set_user_entity(user_entity);
+  dialog_model_->user_entity = user_entity;
 }
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
   if (base::FeatureList::IsEnabled(device::kWebAuthnFilterGooglePasskeys) &&
-      dialog_model()->relying_party_id() == kGoogleRpId &&
+      dialog_model()->relying_party_id == kGoogleRpId &&
       base::ranges::any_of(data.recognized_credentials,
                            IsCredentialFromPlatformAuthenticator)) {
     // Regrettably, Chrome will create webauthn credentials for things other
@@ -1120,9 +1123,9 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  if (dialog_model_->current_step() !=
-      AuthenticatorRequestDialogController::Step::kNotStarted) {
-    dialog_model_->OnTransportAvailabilityChanged(std::move(data));
+  if (dialog_model_->step() !=
+      AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    dialog_controller_->OnTransportAvailabilityChanged(std::move(data));
     return;
   }
 
@@ -1149,10 +1152,10 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
     return false;
   }
   if (is_conditional_ &&
-      (dialog_model_->current_step() ==
-           AuthenticatorRequestDialogController::Step::kConditionalMediation ||
-       dialog_model_->current_step() ==
-           AuthenticatorRequestDialogController::Step::kNotStarted)) {
+      (dialog_model_->step() ==
+           AuthenticatorRequestDialogModel::Step::kConditionalMediation ||
+       dialog_model_->step() ==
+           AuthenticatorRequestDialogModel::Step::kNotStarted)) {
     // There is an active conditional request that is not showing any UI. The UI
     // will dispatch to any plugged in authenticators after the user selects an
     // option.
@@ -1172,7 +1175,7 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(
     return;
   }
 
-  dialog_model_->AddAuthenticator(authenticator);
+  dialog_controller_->AddAuthenticator(authenticator);
 }
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
@@ -1181,12 +1184,12 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
     return;
   }
 
-  dialog_model_->RemoveAuthenticator(authenticator_id);
+  dialog_controller_->RemoveAuthenticator(authenticator_id);
 }
 
 void ChromeAuthenticatorRequestDelegate::BluetoothAdapterPowerChanged(
     bool is_powered_on) {
-  dialog_model_->BluetoothAdapterPowerChanged(is_powered_on);
+  dialog_controller_->BluetoothAdapterPowerChanged(is_powered_on);
 }
 
 bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {
@@ -1196,27 +1199,27 @@ bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {
 void ChromeAuthenticatorRequestDelegate::CollectPIN(
     CollectPINOptions options,
     base::OnceCallback<void(std::u16string)> provide_pin_cb) {
-  dialog_model_->CollectPIN(options.reason, options.error,
-                            options.min_pin_length, options.attempts,
-                            std::move(provide_pin_cb));
+  dialog_controller_->CollectPIN(options.reason, options.error,
+                                 options.min_pin_length, options.attempts,
+                                 std::move(provide_pin_cb));
 }
 
 void ChromeAuthenticatorRequestDelegate::StartBioEnrollment(
     base::OnceClosure next_callback) {
-  dialog_model_->StartInlineBioEnrollment(std::move(next_callback));
+  dialog_controller_->StartInlineBioEnrollment(std::move(next_callback));
 }
 
 void ChromeAuthenticatorRequestDelegate::OnSampleCollected(
     int bio_samples_remaining) {
-  dialog_model_->OnSampleCollected(bio_samples_remaining);
+  dialog_controller_->OnSampleCollected(bio_samples_remaining);
 }
 
 void ChromeAuthenticatorRequestDelegate::FinishCollectToken() {
-  dialog_model_->FinishCollectToken();
+  dialog_controller_->FinishCollectToken();
 }
 
 void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {
-  dialog_model_->OnRetryUserVerification(attempts);
+  dialog_controller_->OnRetryUserVerification(attempts);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnStartOver() {
@@ -1225,20 +1228,20 @@ void ChromeAuthenticatorRequestDelegate::OnStartOver() {
 }
 
 void ChromeAuthenticatorRequestDelegate::OnModelDestroyed(
-    AuthenticatorRequestDialogController* model) {
+    AuthenticatorRequestDialogModel* model) {
   DCHECK_EQ(model, dialog_model_.get());
 }
 
 void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
   bool start_transaction = false;
 
-  if (dialog_model_->current_step() ==
-      AuthenticatorRequestDialogController::Step::kWaitingForEnclave) {
-    if (dialog_model_->account_state() == AccountState::kRecoverable &&
+  if (dialog_model_->step() ==
+      AuthenticatorRequestDialogModel::Step::kWaitingForEnclave) {
+    if (dialog_controller_->account_state() == AccountState::kRecoverable &&
         enclave_manager_->has_pending_keys()) {
       // In this case, we were waiting for the user to create their GPM PIN
       // and the needed enclave action is to set up using that PIN.
-      gpm_pin_stashed_ = dialog_model_->TakeGPMPin();
+      gpm_pin_stashed_ = dialog_controller_->TakeGPMPin();
       enclave_manager_->AddDeviceAndPINToAccount(
           *gpm_pin_stashed_,
           base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
@@ -1246,19 +1249,18 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
       return;
     }
 
-    if (dialog_model_->account_state() == AccountState::kEmpty) {
+    if (dialog_controller_->account_state() == AccountState::kEmpty) {
       // The user has set a PIN to create the account.
       enclave_manager_->SetupWithPIN(
-          dialog_model_->TakeGPMPin(),
+          dialog_controller_->TakeGPMPin(),
           base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
     start_transaction = true;
-  } else if (dialog_model_->current_step() ==
-                 AuthenticatorRequestDialogController::Step::
-                     kRecoverSecurityDomain &&
+  } else if (dialog_model_->step() == AuthenticatorRequestDialogModel::Step::
+                                          kRecoverSecurityDomain &&
              enclave_manager_->is_ready()) {
     // Finished setting up without enrolling a GPM PIN.
     start_transaction = true;
@@ -1290,11 +1292,6 @@ void ChromeAuthenticatorRequestDelegate::OnManageDevicesClicked() {
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
   }
-}
-
-AuthenticatorRequestDialogController*
-ChromeAuthenticatorRequestDelegate::GetDialogModelForTesting() {
-  return dialog_model_.get();
 }
 
 void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
@@ -1339,7 +1336,7 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
 
 void ChromeAuthenticatorRequestDelegate::ShowUI(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
-  dialog_model_->StartFlow(std::move(data), is_conditional_);
+  dialog_controller_->StartFlow(std::move(data), is_conditional_);
 
   if (g_observer) {
     g_observer->UIShown(this);
@@ -1347,14 +1344,14 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
 }
 
 void ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded() {
-  CHECK_EQ(dialog_model_->account_state(), AccountState::kLoading);
+  CHECK_EQ(dialog_controller_->account_state(), AccountState::kLoading);
 
   if (enclave_manager_->is_ready()) {
     FIDO_LOG(EVENT) << "Enclave is ready";
     SetAccountStateReady();
   } else {
     FIDO_LOG(EVENT) << "Account state needs to be checked";
-    dialog_model_->set_account_state(AccountState::kChecking);
+    dialog_controller_->set_account_state(AccountState::kChecking);
     DownloadAccountState();
   }
 
@@ -1368,8 +1365,8 @@ void ChromeAuthenticatorRequestDelegate::OnEnclaveLoaded() {
 }
 
 void ChromeAuthenticatorRequestDelegate::OnKeysStored() {
-  if (dialog_model_->current_step() !=
-      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain) {
+  if (dialog_model_->step() !=
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain) {
     return;
   }
   CHECK(enclave_manager_->has_pending_keys());
@@ -1388,7 +1385,7 @@ void ChromeAuthenticatorRequestDelegate::OnKeysStored() {
     // If the user has local biometrics, and an existing recovery factor,
     // we'll likely choose not to create a GPM PIN. For now, however, we
     // always do:
-    dialog_model_->OnCreateGPMPin();
+    dialog_controller_->OnCreateGPMPin();
   }
 }
 
@@ -1455,9 +1452,9 @@ void ChromeAuthenticatorRequestDelegate::SetAccountStateReady() {
       break;
   }
 
-  dialog_model_->set_gpm_pin_is_arbitrary(
+  dialog_controller_->set_gpm_pin_is_arbitrary(
       has_pin && enclave_manager_->wrapped_pin_is_arbitrary());
-  dialog_model_->set_account_state(account_state);
+  dialog_controller_->set_account_state(account_state);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
@@ -1471,22 +1468,22 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
   switch (result.state) {
     case Result::State::kError:
       state_str = "Error";
-      dialog_model_->set_account_state(AccountState::kNone);
+      dialog_controller_->set_account_state(AccountState::kNone);
       break;
 
     case Result::State::kEmpty:
       state_str = "Empty";
-      dialog_model_->set_account_state(AccountState::kEmpty);
+      dialog_controller_->set_account_state(AccountState::kEmpty);
       break;
 
     case Result::State::kRecoverable:
       state_str = "Recoverable";
-      dialog_model_->set_account_state(AccountState::kRecoverable);
+      dialog_controller_->set_account_state(AccountState::kRecoverable);
       break;
 
     case Result::State::kIrrecoverable:
       state_str = "Irrecoverable";
-      dialog_model_->set_account_state(AccountState::kIrrecoverable);
+      dialog_controller_->set_account_state(AccountState::kIrrecoverable);
       break;
   }
 
@@ -1499,8 +1496,9 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
 
 void ChromeAuthenticatorRequestDelegate::MaybeHashPinAndStartEnclaveTransaction(
     std::optional<std::string> token) {
-  std::string pin = gpm_pin_stashed_.has_value() ? std::move(*gpm_pin_stashed_)
-                                                 : dialog_model_->TakeGPMPin();
+  std::string pin = gpm_pin_stashed_.has_value()
+                        ? std::move(*gpm_pin_stashed_)
+                        : dialog_controller_->TakeGPMPin();
   gpm_pin_stashed_.reset();
   if (pin.empty()) {
     StartEnclaveTransaction(std::move(token), nullptr);
@@ -1645,7 +1643,7 @@ void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
 
   // Contact the next phone with the same name, if any, given that no
   // notification has been sent.
-  dialog_model_->OnPhoneContactFailed(failed_pairing->name);
+  dialog_controller_->OnPhoneContactFailed(failed_pairing->name);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnCableEvent(
@@ -1654,7 +1652,7 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
     cable_device_ready_ = true;
   }
 
-  dialog_model_->OnCableEvent(event);
+  dialog_controller_->OnCableEvent(event);
 }
 
 void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
@@ -1672,7 +1670,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
             Profile::FromBrowserContext(GetBrowserContext()));
     CHECK(passkey_model);
     credentials_vec = passkey_model->GetPasskeysForRelyingPartyId(
-        dialog_model_->relying_party_id());
+        dialog_model_->relying_party_id);
   }
 
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& credentials =
@@ -1806,12 +1804,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
   const bool is_icloud_drive_enabled = IsICloudDriveEnabled();
   const bool is_active_profile_authenticator_user =
       IsActiveProfileAuthenticatorUser(prefs);
-  dialog_model_->set_allow_icloud_keychain(request_source ==
-                                           RequestSource::kWebAuthentication);
-  dialog_model_->set_has_icloud_drive_enabled(is_icloud_drive_enabled);
-  dialog_model_->set_is_active_profile_authenticator_user(
+  dialog_controller_->set_allow_icloud_keychain(
+      request_source == RequestSource::kWebAuthentication);
+  dialog_controller_->set_has_icloud_drive_enabled(is_icloud_drive_enabled);
+  dialog_controller_->set_is_active_profile_authenticator_user(
       is_active_profile_authenticator_user);
-  dialog_model_->set_should_create_in_icloud_keychain(
+  dialog_controller_->set_should_create_in_icloud_keychain(
       ShouldCreateInICloudKeychain(
           request_source, is_active_profile_authenticator_user,
           is_icloud_drive_enabled, rp_id == "google.com",

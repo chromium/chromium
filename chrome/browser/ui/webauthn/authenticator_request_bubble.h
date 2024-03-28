@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_BUBBLE_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_BUBBLE_H_
 
-class AuthenticatorRequestDialogController;
+struct AuthenticatorRequestDialogModel;
 
 namespace content {
 class WebContents;
 }
 
-void ShowAuthenticatorRequestBubble(
-    content::WebContents* web_contents,
-    AuthenticatorRequestDialogController* model);
+void ShowAuthenticatorRequestBubble(content::WebContents* web_contents,
+                                    AuthenticatorRequestDialogModel* model);
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_BUBBLE_H_

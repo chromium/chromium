@@ -8,7 +8,7 @@
 #include <memory>
 
 class AuthenticatorRequestSheetView;
-class AuthenticatorRequestDialogController;
+struct AuthenticatorRequestDialogModel;
 
 namespace autofill {
 class WebauthnDialogModel;
@@ -18,7 +18,7 @@ class WebauthnDialogModel;
 // along with the appropriate AuthenticatorRequestSheetModel, for the current
 // step of the |dialog_model|.
 std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
-    AuthenticatorRequestDialogController* dialog_model);
+    AuthenticatorRequestDialogModel* dialog_model);
 
 // Creates the AuthenticatorRequestSheetView instance used by
 // WebauthnDialogView.

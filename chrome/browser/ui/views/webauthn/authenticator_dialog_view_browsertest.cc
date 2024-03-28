@@ -121,16 +121,18 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    dialog_model_ = std::make_unique<AuthenticatorRequestDialogController>(
-        static_cast<content::RenderFrameHost*>(nullptr));
-    dialog_model_->set_relying_party_id("example.com");
+    dialog_model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+        /*web_contents=*/nullptr);
+    dialog_model_->relying_party_id = "example.com";
+    dialog_controller_ = std::make_unique<AuthenticatorRequestDialogController>(
+        dialog_model_.get());
 
     if (name == "default") {
-      dialog_model_->StartFlow(
+      dialog_controller_->StartFlow(
           device::FidoRequestHandlerBase::TransportAvailabilityInfo(),
           /*is_conditional_mediation=*/false);
-      dialog_model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogController::Step::kTimedOut);
+      dialog_controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kTimedOut);
       content::WebContents* const web_contents =
           browser()->tab_strip_model()->GetActiveWebContents();
       AuthenticatorRequestDialogView* dialog =
@@ -155,11 +157,11 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       pairing->from_sync_deviceinfo = false;
       pairing->name = "Phone";
       phones.emplace_back(std::move(pairing));
-      dialog_model_->set_cable_transport_info(
+      dialog_controller_->set_cable_transport_info(
           /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
-      dialog_model_->StartFlow(std::move(transport_availability),
-                               /*is_conditional_mediation=*/false);
+      dialog_controller_->StartFlow(std::move(transport_availability),
+                                    /*is_conditional_mediation=*/false);
 
       // The dialog is owned by the Views hierarchy so this is a non-owning
       // pointer.
@@ -174,15 +176,16 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
               test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
                   ->model())
               ->dialog_model()
-              ->current_step(),
-          AuthenticatorRequestDialogController::Step::kMechanismSelection);
+              ->step(),
+          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
       EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
                       ->model()
                       ->IsManageDevicesButtonVisible());
     }
   }
 
-  std::unique_ptr<AuthenticatorRequestDialogController> dialog_model_;
+  std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  std::unique_ptr<AuthenticatorRequestDialogController> dialog_controller_;
 
  protected:
 #if BUILDFLAG(IS_WIN)

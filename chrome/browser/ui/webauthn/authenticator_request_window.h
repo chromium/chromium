@@ -9,10 +9,9 @@ namespace content {
 class WebContents;
 }
 
-class AuthenticatorRequestDialogController;
+struct AuthenticatorRequestDialogModel;
 
 // Open a dialog window to render a step of the WebAuthn UI.
-void ShowAuthenticatorRequestWindow(
-    AuthenticatorRequestDialogController* model);
+void ShowAuthenticatorRequestWindow(AuthenticatorRequestDialogModel* model);
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_WINDOW_H_

@@ -447,7 +447,7 @@ AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
 
 AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
   for (auto& observer : observers) {
-    observer.OnModelDestroyed(/*should be `this`*/ controller_);
+    observer.OnModelDestroyed(this);
   }
 }
 
@@ -465,15 +465,15 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
         break;
 
       case StepUIType::DIALOG:
-        ShowAuthenticatorRequestDialog(web_contents, controller_);
+        ShowAuthenticatorRequestDialog(web_contents, this);
         break;
 
       case StepUIType::BUBBLE:
-        ShowAuthenticatorRequestBubble(web_contents, controller_);
+        ShowAuthenticatorRequestBubble(web_contents, this);
         break;
 
       case StepUIType::WINDOW:
-        ShowAuthenticatorRequestWindow(controller_);
+        ShowAuthenticatorRequestWindow(this);
         break;
     }
   }
@@ -505,6 +505,14 @@ bool AuthenticatorRequestDialogModel::should_dialog_be_closed() const {
 
 bool AuthenticatorRequestDialogModel::should_bubble_be_closed() const {
   return step_ui_type(step_) != StepUIType::BUBBLE;
+}
+
+std::optional<std::u16string>
+AuthenticatorRequestDialogModel::GetPriorityPhoneName() const {
+  if (!priority_phone_index) {
+    return std::nullopt;
+  }
+  return base::UTF8ToUTF16(paired_phone_names.at(*priority_phone_index));
 }
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name)      \
@@ -725,7 +733,7 @@ AuthenticatorRequestDialogController::paired_phone_names() const {
 #endif
 
 void AuthenticatorRequestDialogController::OnModelDestroyed(
-    AuthenticatorRequestDialogController* controller) {
+    AuthenticatorRequestDialogModel* model) {
   // This stops the destructor of this object from trying to remove itself from
   // the list of observers. But this is not a valid state for this object to be
   // in: many functions will crash. So this is just to make destroying the two
@@ -1696,14 +1704,6 @@ void AuthenticatorRequestDialogController::ContactPhoneForTesting(
   ContactPhone(name);
 }
 
-std::optional<std::u16string>
-AuthenticatorRequestDialogController::GetPriorityPhoneName() const {
-  if (!model_->priority_phone_index) {
-    return std::nullopt;
-  }
-  return base::UTF8ToUTF16(paired_phones_[*model_->priority_phone_index]->name);
-}
-
 void AuthenticatorRequestDialogController::StartTransportFlowForTesting(
     AuthenticatorTransport transport) {
   StartGuidedFlowForTransport(transport);
@@ -2318,7 +2318,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
   model_->priority_phone_index = GetIndexOfMostRecentlyUsedPhoneFromSync();
-  std::optional<std::u16string> priority_phone_name = GetPriorityPhoneName();
+  std::optional<std::u16string> priority_phone_name =
+      model_->GetPriorityPhoneName();
   bool list_phone_passkeys =
       is_get_assertion && model_->priority_phone_index &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
