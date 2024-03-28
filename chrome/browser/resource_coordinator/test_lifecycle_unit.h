@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
@@ -35,7 +36,7 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
   void SetSortKey(LifecycleUnit::SortKey sort_key) { sort_key_ = sort_key; }
 
-  void SetTitle(base::StringPiece16 title) { title_ = std::u16string(title); }
+  void SetTitle(std::u16string_view title) { title_ = std::u16string(title); }
 
   void SetDiscardFailureReason(DecisionFailureReason failure_reason) {
     failure_reason_ = failure_reason;
