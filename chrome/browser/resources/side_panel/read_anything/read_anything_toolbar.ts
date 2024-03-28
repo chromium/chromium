@@ -353,7 +353,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.textStyleOptions_ =
         this.textStyleOptions_.concat(this.moreOptionsButtons_);
 
+    // TODO(b/329677511): Font names should be displayed as
+    // "Font name (loading)" until the fonts have been loaded.
     this.updateFonts();
+    this.loadFontsStylesheet();
   }
 
   override disconnectedCallback() {
@@ -362,6 +365,26 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       window.removeEventListener('resize', this.dragResizeCallback_);
     }
     this.toolbarContainerObserver_?.disconnect();
+  }
+
+  // Loading the fonts stylesheet can take a while, especially with slow
+  // Internet connections. Since we don't want this to block the rest of
+  // Reading Mode from loading, we load this stylesheet asynchronously
+  // in TypeScript instead of in read_anything.html
+  async loadFontsStylesheet() {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'style';
+    link.href =
+        'https://fonts.googleapis.com/css?family=Poppins|Comic+Neue|Lexend+Deca|' +
+        'EB+Garamond|STIX+Two+Text|Andika';
+
+    link.onload = function() {
+      link.media = 'all';
+      link.rel = 'stylesheet';
+    };
+
+    document.head.appendChild(link);
   }
 
   private onDragResize_() {
