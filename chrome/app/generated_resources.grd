@@ -4714,6 +4714,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_TAB_SHARING_INFOBAR_SWITCH_TO_CAPTURED_BUTTON" desc="Text displayed on an infobar button offering to change focus to the capturer if its hostname cannot be determined. (Otherwise, IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON will be used.)">
        Switch to captured tab
       </message>
+      <message name="IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON" desc="Text informing users that shared tabs can be scrolled and zoomed.">
+        Shared tabs can be scrolled and zoomed
+      </message>
 
       <!-- Tab casting infobar -->
       <message name="IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL" desc="Text displayed on an infobar when current tab is being cast. The placeholder text (DEVICE_NAME) represents the name of the cast receiver.">

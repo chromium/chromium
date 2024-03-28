@@ -9,17 +9,24 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+constexpr auto kCscPermissionButtonInsets = gfx::Insets::VH(4, 8);
+}
 
 TabSharingInfoBar::TabSharingInfoBar(
     std::unique_ptr<TabSharingInfoBarDelegate> delegate)
@@ -31,9 +38,12 @@ TabSharingInfoBar::TabSharingInfoBar(
   const auto buttons = delegate_ptr->GetButtons();
   const auto create_button = [&](TabSharingInfoBarDelegate::InfoBarButton type,
                                  void (TabSharingInfoBar::*click_function)()) {
+    const bool use_text_color_for_icon =
+        type != TabSharingInfoBarDelegate::kCscPermission;
     auto* button = AddChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(click_function, base::Unretained(this)),
-        delegate_ptr->GetButtonLabel(type)));
+        delegate_ptr->GetButtonLabel(type), views::style::CONTEXT_BUTTON_MD,
+        use_text_color_for_icon));
     button->SetProperty(
         views::kMarginsKey,
         gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -68,6 +78,18 @@ TabSharingInfoBar::TabSharingInfoBar(
                       &TabSharingInfoBar::QuickNavButtonPressed);
   }
 
+  if (buttons & TabSharingInfoBarDelegate::kCscPermission) {
+    csc_permission_button_ =
+        create_button(TabSharingInfoBarDelegate::kCscPermission,
+                      &TabSharingInfoBar::CscPermissionButtonPressed);
+    csc_permission_button_->SetStyle(ui::ButtonStyle::kDefault);
+    csc_permission_button_->SetCornerRadius(
+        GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
+    csc_permission_button_->SetCustomPadding(kCscPermissionButtonInsets);
+    csc_permission_button_->SetTextColorId(
+        views::Button::ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
+  }
+
   // TODO(josephjoopark): It seems like link_ isn't always needed, but it's
   // added regardless. See about only adding when necessary.
   link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText()));
@@ -88,6 +110,10 @@ void TabSharingInfoBar::Layout(PassKey) {
 
   if (quick_nav_button_) {
     quick_nav_button_->SizeToPreferredSize();
+  }
+
+  if (csc_permission_button_) {
+    csc_permission_button_->SizeToPreferredSize();
   }
 
   int x = GetStartX();
@@ -117,6 +143,9 @@ void TabSharingInfoBar::Layout(PassKey) {
   }
   if (quick_nav_button_) {
     order_of_buttons.push_back(quick_nav_button_);
+  }
+  if (csc_permission_button_) {
+    order_of_buttons.push_back(csc_permission_button_);
   }
 
   if (!views::PlatformStyle::kIsOkButtonLeading) {
@@ -160,6 +189,15 @@ void TabSharingInfoBar::QuickNavButtonPressed() {
   }
 }
 
+void TabSharingInfoBar::CscPermissionButtonPressed() {
+  if (!owner()) {
+    return;  // We're closing; don't call anything, it might access the owner.
+  }
+  if (GetDelegate()->OpenCscPermissions()) {
+    RemoveSelf();
+  }
+}
+
 TabSharingInfoBarDelegate* TabSharingInfoBar::GetDelegate() {
   return static_cast<TabSharingInfoBarDelegate*>(delegate());
 }
@@ -177,9 +215,9 @@ int TabSharingInfoBar::NonLabelWidth() const {
   const int button_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-  const int button_count = (stop_button_ ? 1 : 0) +
-                           (share_this_tab_instead_button_ ? 1 : 0) +
-                           (quick_nav_button_ ? 1 : 0);
+  const int button_count =
+      (stop_button_ ? 1 : 0) + (share_this_tab_instead_button_ ? 1 : 0) +
+      (quick_nav_button_ ? 1 : 0) + (csc_permission_button_ ? 1 : 0);
 
   int width =
       (label_->GetText().empty() || button_count == 0) ? 0 : label_spacing;
@@ -191,6 +229,7 @@ int TabSharingInfoBar::NonLabelWidth() const {
                ? share_this_tab_instead_button_->width()
                : 0;
   width += quick_nav_button_ ? quick_nav_button_->width() : 0;
+  width += csc_permission_button_ ? csc_permission_button_->width() : 0;
 
   return width + ((width && !link_->GetText().empty()) ? label_spacing : 0);
 }

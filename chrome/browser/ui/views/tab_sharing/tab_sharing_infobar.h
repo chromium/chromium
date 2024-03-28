@@ -45,6 +45,7 @@ class TabSharingInfoBar : public InfoBarView {
   void StopButtonPressed();
   void ShareThisTabInsteadButtonPressed();
   void QuickNavButtonPressed();
+  void CscPermissionButtonPressed();
 
   // Returns the width of all content other than the label and link.
   // Layout uses this to determine how much space the label and link can take.
@@ -54,6 +55,7 @@ class TabSharingInfoBar : public InfoBarView {
   raw_ptr<views::MdTextButton> stop_button_ = nullptr;
   raw_ptr<views::MdTextButton> share_this_tab_instead_button_ = nullptr;
   raw_ptr<views::MdTextButton> quick_nav_button_ = nullptr;
+  raw_ptr<views::MdTextButton> csc_permission_button_ = nullptr;
   raw_ptr<views::Link> link_ = nullptr;
 };
 

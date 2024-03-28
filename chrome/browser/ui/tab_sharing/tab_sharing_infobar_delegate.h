@@ -49,6 +49,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     kStop = 1 << 0,
     kShareThisTabInstead = 1 << 1,
     kQuickNav = 1 << 2,
+    kCscPermission = 1 << 3,
   };
 
   enum class ButtonState {
@@ -69,6 +70,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   class TabSharingInfoBarDelegateButton;
   class ShareTabInsteadButton;
   class SwitchToTabButton;
+  class CscPermissionButton;
 
   // Creates a tab sharing infobar, which has 1-2 buttons.
   //
@@ -103,6 +105,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   bool Stop();
   bool ShareThisTabInstead();
   bool QuickNav();
+  bool OpenCscPermissions();
 
   // InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -140,6 +143,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
 
   std::unique_ptr<ShareTabInsteadButton> share_this_tab_instead_button_;
   std::unique_ptr<SwitchToTabButton> quick_nav_button_;
+  std::unique_ptr<CscPermissionButton> csc_permission_button_;
 };
 
 std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(

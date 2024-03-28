@@ -24,10 +24,15 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+
+namespace {
+constexpr int kCscPermissionButtonIconHeight = 16;
+}  // namespace
 
 class TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
@@ -155,6 +160,30 @@ class TabSharingInfoBarDelegate::SwitchToTabButton
   const bool focus_target_is_capturer_;
 };
 
+class TabSharingInfoBarDelegate::CscPermissionButton
+    : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
+ public:
+  CscPermissionButton() = default;
+  ~CscPermissionButton() override = default;
+
+  void Click(infobars::InfoBar* infobar) override {
+    // TODO(crbug.com/324468211): Implement
+  }
+
+  std::u16string GetLabel() const override {
+    return l10n_util::GetStringUTF16(
+        IDS_TAB_SHARING_INFOBAR_CAPTURED_SURFACE_CONTROL_PERMISSION_BUTTON);
+  }
+
+  bool IsEnabled() const override { return true; }
+
+  ui::ImageModel GetImage() const override {
+    return ui::ImageModel::FromVectorIcon(vector_icons::kTouchpadMouseIcon,
+                                          ui::kColorSysPrimary,
+                                          kCscPermissionButtonIconHeight);
+  }
+};
+
 namespace {
 
 std::u16string GetMessageTextCastingNoSinkName(
@@ -254,6 +283,13 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     quick_nav_button_ =
         std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
   }
+
+  // TODO(crbug.com/324468211): Initialize csc_permission_button_ only when it
+  // should be shown
+  if (base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlStickyPermissions)) {
+    csc_permission_button_ = std::make_unique<CscPermissionButton>();
+  }
 }
 
 TabSharingInfoBarDelegate::~TabSharingInfoBarDelegate() = default;
@@ -307,16 +343,16 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
     case kQuickNav:
       DCHECK(quick_nav_button_);
       return quick_nav_button_->GetLabel();
+
+    case kCscPermission:
+      DCHECK(csc_permission_button_);
+      return csc_permission_button_->GetLabel();
   }
   NOTREACHED_NORETURN();
 }
 
 ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
     InfoBarButton button) const {
-  if (!favicons_used_for_switch_to_tab_button_) {
-    return ui::ImageModel();
-  }
-
   switch (button) {
     case kNone:
       break;
@@ -326,11 +362,17 @@ ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
 
     case kShareThisTabInstead:
       DCHECK(share_this_tab_instead_button_);
-      return share_this_tab_instead_button_->GetImage();
+      return favicons_used_for_switch_to_tab_button_
+                 ? share_this_tab_instead_button_->GetImage()
+                 : ui::ImageModel();
 
     case kQuickNav:
       DCHECK(quick_nav_button_);
       return quick_nav_button_->GetImage();
+
+    case kCscPermission:
+      DCHECK(csc_permission_button_);
+      return csc_permission_button_->GetImage();
   }
   NOTREACHED_NORETURN();
 }
@@ -350,6 +392,10 @@ bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
     case kQuickNav:
       DCHECK(quick_nav_button_);
       return quick_nav_button_->IsEnabled();
+
+    case kCscPermission:
+      DCHECK(csc_permission_button_);
+      return csc_permission_button_->IsEnabled();
   }
   NOTREACHED_NORETURN();
 }
@@ -370,13 +416,18 @@ std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
     case kQuickNav:
       DCHECK(quick_nav_button_);
       return quick_nav_button_->GetTooltip();
+
+    case kCscPermission:
+      DCHECK(csc_permission_button_);
+      return csc_permission_button_->GetTooltip();
   }
   NOTREACHED_NORETURN();
 }
 
 int TabSharingInfoBarDelegate::GetButtons() const {
   return kStop | (share_this_tab_instead_button_ ? kShareThisTabInstead : 0) |
-         (quick_nav_button_ ? kQuickNav : 0);
+         (quick_nav_button_ ? kQuickNav : 0) |
+         (csc_permission_button_ ? kCscPermission : 0);
 }
 
 bool TabSharingInfoBarDelegate::Stop() {
@@ -393,6 +444,12 @@ bool TabSharingInfoBarDelegate::ShareThisTabInstead() {
 bool TabSharingInfoBarDelegate::QuickNav() {
   DCHECK(quick_nav_button_);
   quick_nav_button_->Click(infobar());
+  return false;
+}
+
+bool TabSharingInfoBarDelegate::OpenCscPermissions() {
+  DCHECK(csc_permission_button_);
+  csc_permission_button_->Click(infobar());
   return false;
 }
 
