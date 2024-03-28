@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/client/shared_image_interface.h"
 
+#include <GLES2/gl2.h>
+
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -52,14 +54,13 @@ SharedImageInterface::AddReferenceToSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  // NOTE: This method exists only until the one client
-  // (AcceleratedStaticBitmapImage) is ported to use ClientSharedImage. Until
-  // then, that client uses the texture target in its MailboxHolder.
+  // TODO(crbug.com/41494843): Have this method take in the texture target from
+  // the client and pass it along below.
   return ImportSharedImage(ExportedSharedImage(
       mailbox,
       SharedImageMetadata{format, size, color_space, surface_origin, alpha_type,
                           usage},
-      sync_token, /*client_side_native_buffer_used=*/false));
+      sync_token, /*texture_target=*/GL_TEXTURE_2D));
 }
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(

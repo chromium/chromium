@@ -15,6 +15,6 @@ struct ExportedSharedImage {
   gpu.mojom.SyncToken creation_sync_token;
 
   // Necessary to allow the ClientSharedImage that is created from this
-  // ExportedSharedImage to correctly compute the GL texture target to use.
-  bool client_side_native_buffer_used;
+  // ExportedSharedImage to use the correct GL texture target.
+  uint32 texture_target;
 };

@@ -33,9 +33,8 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
     return shared_image.creation_sync_token_;
   }
 
-  static bool client_side_native_buffer_used(
-      const gpu::ExportedSharedImage& shared_image) {
-    return shared_image.client_side_native_buffer_used_;
+  static uint32_t texture_target(const gpu::ExportedSharedImage& shared_image) {
+    return shared_image.texture_target_;
   }
 
   static bool Read(gpu::mojom::ExportedSharedImageDataView data,
@@ -45,8 +44,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ExportedSharedImageDataView,
         !data.ReadCreationSyncToken(&out->creation_sync_token_)) {
       return false;
     }
-    out->client_side_native_buffer_used_ =
-        data.client_side_native_buffer_used();
+    out->texture_target_ = data.texture_target();
     return true;
   }
 };

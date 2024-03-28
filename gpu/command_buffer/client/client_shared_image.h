@@ -214,8 +214,8 @@ class GPU_EXPORT ClientSharedImage
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   ~ClientSharedImage();
 
-  // This constructor is used only when importing a self-owned
-  // ClientSharedImage, which should only be done via implementations of
+  // This constructor is used only when importing a ClientSharedImage, which
+  // should only be done via implementations of
   // SharedImageInterface::ImportSharedImage().
   friend class ClientSharedImageInterface;
   friend class viz::TestSharedImageInterface;
@@ -223,10 +223,10 @@ class GPU_EXPORT ClientSharedImage
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
-                    bool client_side_native_buffer_used);
+                    uint32_t texture_target);
 
   // Initializes `texture_target_`.
-  void SetTextureTarget();
+  void SetTextureTarget(bool client_side_native_buffer_used);
 
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
@@ -236,11 +236,6 @@ class GPU_EXPORT ClientSharedImage
 
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;
-
-  // Whether a client-side native buffer was used in the creation of this
-  // SharedImage.
-  // TODO(crbug.com/41494843): Eliminate this field.
-  bool client_side_native_buffer_used_ = false;
 };
 
 struct GPU_EXPORT ExportedSharedImage {
@@ -258,12 +253,12 @@ struct GPU_EXPORT ExportedSharedImage {
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
                       const SyncToken& sync_token,
-                      bool client_side_native_buffer_used);
+                      uint32_t texture_target);
 
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
-  bool client_side_native_buffer_used_ = false;
+  uint32_t texture_target_ = 0;
 };
 
 }  // namespace gpu

@@ -315,15 +315,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
   const auto& mailbox = exported_shared_image.mailbox_;
   const auto& metadata = exported_shared_image.metadata_;
   const auto& sync_token = exported_shared_image.creation_sync_token_;
-  bool client_side_native_buffer_used =
-      exported_shared_image.client_side_native_buffer_used_;
+  uint32_t texture_target = exported_shared_image.texture_target_;
 
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, metadata.usage);
 
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
-      mailbox, metadata, sync_token, holder_, client_side_native_buffer_used));
+      mailbox, metadata, sync_token, holder_, texture_target));
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

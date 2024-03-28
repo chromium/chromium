@@ -306,7 +306,7 @@ TestSharedImageInterface::ImportSharedImage(
       new gpu::ClientSharedImage(
           exported_shared_image.mailbox_, exported_shared_image.metadata_,
           exported_shared_image.creation_sync_token_, holder_,
-          exported_shared_image.client_side_native_buffer_used_));
+          exported_shared_image.texture_target_));
 }
 
 void TestSharedImageInterface::DestroySharedImage(

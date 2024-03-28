@@ -109,25 +109,29 @@ ClientSharedImage::ClientSharedImage(
     const SyncToken& sync_token,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
     gfx::GpuMemoryBufferType gmb_type)
-    : ClientSharedImage(mailbox,
-                        metadata,
-                        sync_token,
-                        std::move(sii_holder),
-                        GMBIsNative(gmb_type)) {}
+    : mailbox_(mailbox),
+      metadata_(metadata),
+      creation_sync_token_(sync_token),
+      sii_holder_(std::move(sii_holder)) {
+  CHECK(!mailbox.IsZero());
+  SetTextureTarget(GMBIsNative(gmb_type));
+}
 
 ClientSharedImage::ClientSharedImage(
     const Mailbox& mailbox,
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
-    bool client_side_native_buffer_used)
+    uint32_t texture_target)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
-      client_side_native_buffer_used_(client_side_native_buffer_used) {
+      texture_target_(texture_target) {
   CHECK(!mailbox.IsZero());
-  SetTextureTarget();
+#if !BUILDFLAG(IS_FUCHSIA)
+  CHECK(texture_target);
+#endif
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -152,8 +156,7 @@ ClientSharedImage::ClientSharedImage(
               base::DoNothing())),
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
-  client_side_native_buffer_used_ = GMBIsNative(gpu_memory_buffer_->GetType());
-  SetTextureTarget();
+  SetTextureTarget(GMBIsNative(gpu_memory_buffer_->GetType()));
 }
 
 ClientSharedImage::~ClientSharedImage() = default;
@@ -188,7 +191,7 @@ uint32_t ClientSharedImage::GetTextureTarget() {
   return texture_target_;
 }
 
-void ClientSharedImage::SetTextureTarget() {
+void ClientSharedImage::SetTextureTarget(bool client_side_native_buffer_used) {
   // This function should only be called if `texture_target_` has not yet been
   // initialized.
   CHECK(!texture_target_);
@@ -203,7 +206,7 @@ void ClientSharedImage::SetTextureTarget() {
                                             SHARED_IMAGE_USAGE_WEBGPU_READ |
                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
-  bool uses_native_buffer = client_side_native_buffer_used_ ||
+  bool uses_native_buffer = client_side_native_buffer_used ||
                             (usage() & usages_requiring_native_buffer);
 
   texture_target_ =
@@ -214,7 +217,7 @@ void ClientSharedImage::SetTextureTarget() {
 
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
-  CHECK(!uses_external_sampler || client_side_native_buffer_used_ ||
+  CHECK(!uses_external_sampler || client_side_native_buffer_used ||
         allow_external_sampling_without_native_buffers_for_testing);
 
   texture_target_ = uses_external_sampler ? GetPlatformSpecificTextureTarget()
@@ -289,7 +292,7 @@ ExportedSharedImage ClientSharedImage::Export() {
     sii_holder_->Get()->VerifySyncToken(creation_sync_token_);
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
-                             client_side_native_buffer_used_);
+                             texture_target_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
@@ -297,17 +300,17 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
       exported_shared_image.creation_sync_token_, nullptr,
-      exported_shared_image.client_side_native_buffer_used_));
+      exported_shared_image.texture_target_));
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;
 ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
                                          const SharedImageMetadata& metadata,
                                          const SyncToken& sync_token,
-                                         bool client_side_native_buffer_used)
+                                         uint32_t texture_target)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
-      client_side_native_buffer_used_(client_side_native_buffer_used) {}
+      texture_target_(texture_target) {}
 
 }  // namespace gpu
