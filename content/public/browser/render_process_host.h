@@ -13,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/id_map.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/safety_checks.h"
@@ -399,8 +400,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void DisableAudioDebugRecordings() = 0;
 
   using WebRtcRtpPacketCallback =
-      base::RepeatingCallback<void(std::unique_ptr<uint8_t[]> packet_header,
-                                   size_t header_length,
+      base::RepeatingCallback<void(base::HeapArray<uint8_t> packet_header,
                                    size_t packet_length,
                                    bool incoming)>;
 

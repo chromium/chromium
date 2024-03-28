@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -115,8 +116,7 @@ class WebRtcLoggingController
 
   // Called when an RTP packet is sent or received. Must be called on the UI
   // thread.
-  void OnRtpPacket(std::unique_ptr<uint8_t[]> packet_header,
-                   size_t header_length,
+  void OnRtpPacket(base::HeapArray<uint8_t> packet_header,
                    size_t packet_length,
                    bool incoming);
 

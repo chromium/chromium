@@ -337,8 +337,7 @@ void WebRtcLoggingController::GrantLogsDirectoryAccess(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void WebRtcLoggingController::OnRtpPacket(
-    std::unique_ptr<uint8_t[]> packet_header,
-    size_t header_length,
+    base::HeapArray<uint8_t> packet_header,
     size_t packet_length,
     bool incoming) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -346,7 +345,7 @@ void WebRtcLoggingController::OnRtpPacket(
   // |rtp_dump_handler_| could be null if we are waiting for the FILE thread to
   // create/ensure the log directory.
   if (rtp_dump_handler_) {
-    rtp_dump_handler_->OnRtpPacket(packet_header.get(), header_length,
+    rtp_dump_handler_->OnRtpPacket(packet_header.data(), packet_header.size(),
                                    packet_length, incoming);
   }
 }
