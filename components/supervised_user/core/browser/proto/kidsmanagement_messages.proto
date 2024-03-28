@@ -23,9 +23,6 @@ message ListMembersResponse {
 }
 
 message ClassifyUrlRequest {
-  // Must be "me".
-  optional string person_id = 2;
-
   // The URL to be classified.
   optional string url = 3;
 
