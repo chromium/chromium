@@ -158,6 +158,7 @@ _CONFIG = [
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::span',
+            'base::Span(Reader|Writer)',
             'logging::GetVlogLevel',
             'logging::SetLogItems',
 
@@ -295,10 +296,9 @@ _CONFIG = [
             'base::SingleThreadTaskRunnerThreadMode',
 
             # Byte order
-            'base::NetToHost(16|32|64)',
-            'base::HostToNet(16|32|64)',
-            'base::numerics::U(8|16|32|64)(To|From)(Big|Little|Native)Endian'
-            'base::numerics::ByteSwap'
+            'base::BigEndian(Reader|Writer)',
+            'base::numerics::U(8|16|32|64)(To|From)(Big|Little|Native)Endian',
+            'base::numerics::ByteSwap',
 
             # (Cryptographic) random number generation
             'base::RandUint64',

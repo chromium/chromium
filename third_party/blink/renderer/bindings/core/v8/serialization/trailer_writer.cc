@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_writer.h"
 
+#include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/sys_byteorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 
@@ -25,16 +25,18 @@ void TrailerWriter::RequireExposedInterface(SerializationTag tag) {
 
 Vector<uint8_t> TrailerWriter::MakeTrailerData() const {
   Vector<uint8_t> trailer;
+  // The code below assumes that the size of SerializationTag is one byte.
+  static_assert(sizeof(SerializationTag) == 1u);
   if (wtf_size_t num_exposed = requires_exposed_interfaces_.size();
       num_exposed && base::FeatureList::IsEnabled(
                          features::kSSVTrailerWriteExposureAssertion)) {
-    uint32_t num_exposed_enc = base::HostToNet32(num_exposed);
     wtf_size_t start = trailer.size();
     trailer.Grow(start + 1 + sizeof(uint32_t) + num_exposed);
-    trailer[start] = kTrailerRequiresInterfacesTag;
-    memcpy(&trailer[start + 1], &num_exposed_enc, sizeof(uint32_t));
-    base::ranges::copy(requires_exposed_interfaces_,
-                       &trailer[start + 1 + sizeof(uint32_t)]);
+    base::SpanWriter writer(base::span(trailer).subspan(start));
+    writer.WriteU8BigEndian(kTrailerRequiresInterfacesTag);
+    writer.WriteU32BigEndian(num_exposed);
+    writer.Write(base::as_byte_span(requires_exposed_interfaces_));
+    CHECK_EQ(writer.remaining(), 0u);
   }
   return trailer;
 }

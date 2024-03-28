@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZATION_TAG_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_SERIALIZATION_TAG_H_
 
+#include <cstdint>
+
 namespace blink {
 
 // Serialization format is a sequence of tags followed by zero or more data
@@ -36,7 +38,7 @@ namespace blink {
 // the contents of these values, they are first given object reference IDs (by
 // GenerateFreshObjectTag/GenerateFreshArrayTag); these reference IDs are then
 // used with ObjectReferenceTag to tie the recursive knot.
-enum SerializationTag {
+enum SerializationTag : uint8_t {
   kMessagePortTag = 'M',  // index:int -> MessagePort. Fills the result with
                           // transferred MessagePort.
   kMojoHandleTag = 'h',   // index:int -> MojoHandle. Fills the result with

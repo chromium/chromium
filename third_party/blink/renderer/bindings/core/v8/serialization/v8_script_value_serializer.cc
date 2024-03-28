@@ -296,21 +296,26 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
   }
 
   // Finalize the results.
-  std::pair<uint8_t*, size_t> buffer = serializer_.Release();
+  auto [buffer_ptr, buffer_size] = serializer_.Release();
+  auto buffer =
+      // SAFETY: The size from Release() is promised to be the size of the
+      // allocation for the returned pointer. The pointer is allocated by the
+      // serializer_ delegate which is `this` and `ReallocateBufferMemory`
+      // allocates memory such that it can be deleted by the DataBufferPtr's
+      // Deleter.
+      UNSAFE_BUFFERS(SerializedScriptValue::DataBufferPtr::FromOwningPointer(
+          buffer_ptr, buffer_size));
   if (!trailer.empty()) {
     CHECK(base::FeatureList::IsEnabled(features::kSSVTrailerWriteNewVersion));
-    CHECK_GT(buffer.second, kTrailerOffsetPosition + sizeof(uint64_t) +
-                                sizeof(uint32_t) + trailer.size());
-    const uint64_t trailer_offset =
-        base::HostToNet64(buffer.second - trailer.size());
-    const uint32_t trailer_size = base::HostToNet32(trailer.size());
-    memcpy(buffer.first + kTrailerOffsetPosition, &trailer_offset,
-           sizeof(uint64_t));
-    memcpy(buffer.first + kTrailerOffsetPosition + sizeof(uint64_t),
-           &trailer_size, sizeof(uint32_t));
+    buffer.as_span()
+        .subspan<kTrailerOffsetPosition, sizeof(uint64_t)>()
+        .copy_from(
+            base::numerics::U64ToBigEndian(buffer.size() - trailer.size()));
+    buffer.as_span()
+        .subspan<kTrailerOffsetPosition + sizeof(uint64_t), sizeof(uint32_t)>()
+        .copy_from(base::numerics::U32ToBigEndian(trailer.size()));
   }
-  serialized_script_value_->SetData(
-      SerializedScriptValue::DataBufferPtr(buffer.first), buffer.second);
+  serialized_script_value_->SetData(std::move(buffer));
   return std::move(serialized_script_value_);
 }
 

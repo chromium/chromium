@@ -7,9 +7,11 @@
 // Include HarfBuzz to have a cross-platform way to retrieve table tags without
 // having to rely on the platform being able to instantiate this font format.
 #include <hb.h>
+
 #include <hb-cplusplus.hh>
 
-#include "base/sys_byteorder.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -33,13 +35,18 @@ FontFormatCheck::COLRVersion determineCOLRVersion(
       return FontFormatCheck::COLRVersion::kNoCOLR;
 
     unsigned required_bytes_count = 2u;
-    const char* colr_data =
+    const char* colr_ptr =
         hb_blob_get_data(table_blob.get(), &required_bytes_count);
-    if (required_bytes_count < 2u)
-      return FontFormatCheck::COLRVersion::kNoCOLR;
+    base::span<const uint8_t> colr_data = base::as_bytes(
+        // SAFETY: hb_blob_get_data() populates the 2nd argument with the
+        // number of bytes at the returned pointer.
+        UNSAFE_BUFFERS(base::span(colr_ptr, required_bytes_count)));
 
+    if (colr_data.size() < 2u) {
+      return FontFormatCheck::COLRVersion::kNoCOLR;
+    }
     uint16_t colr_version =
-        base::NetToHost16(*reinterpret_cast<const uint16_t*>(colr_data));
+        base::numerics::U16FromBigEndian(colr_data.first<2u>());
 
     if (colr_version == 0)
       return FontFormatCheck::COLRVersion::kCOLRV0;

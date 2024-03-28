@@ -126,6 +126,44 @@ TEST(BufferIteratorTest, Span) {
   }
 }
 
+TEST(BufferIteratorTest, FixedSpan) {
+  TestStruct expected = CreateTestStruct();
+
+  std::vector<char> buffer(sizeof(TestStruct) * 3);
+
+  {
+    // Load the span with data.
+    BufferIterator<char> iterator(buffer);
+    auto span = iterator.MutableSpan<TestStruct, 3u>();
+    static_assert(std::same_as<std::optional<base::span<TestStruct, 3u>>,
+                               decltype(span)>);
+    for (auto& ts : *span) {
+      memcpy(&ts, &expected, sizeof(expected));
+    }
+  }
+  {
+    // Read the data back out.
+    BufferIterator<char> iterator(buffer);
+
+    const TestStruct* actual = iterator.Object<TestStruct>();
+    EXPECT_EQ(expected, *actual);
+
+    actual = iterator.Object<TestStruct>();
+    EXPECT_EQ(expected, *actual);
+
+    actual = iterator.Object<TestStruct>();
+    EXPECT_EQ(expected, *actual);
+
+    EXPECT_EQ(iterator.total_size(), iterator.position());
+  }
+  {
+    // Cannot create spans larger than there are data for.
+    BufferIterator<char> iterator(buffer);
+    auto maybe_span = iterator.Span<TestStruct, 4u>();
+    EXPECT_FALSE(maybe_span.has_value());
+  }
+}
+
 TEST(BufferIteratorTest, SpanOverflow) {
   char buffer[64];
 
@@ -134,9 +172,11 @@ TEST(BufferIteratorTest, SpanOverflow) {
       // pointer, stored in the BufferIterator is never moved past the start in
       // this test, as that would cause Undefined Behaviour.
       UNSAFE_BUFFERS(span(buffer, std::numeric_limits<size_t>::max())));
+
+  constexpr size_t kInvalidU64Size =
+      (std::numeric_limits<size_t>::max() / sizeof(uint64_t)) + 1u;
   {
-    span<const uint64_t> empty_span = iterator.Span<uint64_t>(
-        (std::numeric_limits<size_t>::max() / sizeof(uint64_t)) + 1);
+    span<const uint64_t> empty_span = iterator.Span<uint64_t>(kInvalidU64Size);
     EXPECT_TRUE(empty_span.empty());
   }
   {

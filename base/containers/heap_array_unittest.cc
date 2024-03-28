@@ -58,6 +58,13 @@ TEST(HeapArray, WithSizeNonZero) {
   EXPECT_NE(vec.data(), nullptr);
 }
 
+TEST(HeapArray, FromOwningPointer) {
+  auto vec = UNSAFE_BUFFERS(
+      HeapArray<uint32_t>::FromOwningPointer(new uint32_t[3], 3u));
+  EXPECT_EQ(vec.size(), 3u);
+  EXPECT_NE(vec.data(), nullptr);
+}
+
 TEST(HeapArray, MoveConstructor) {
   auto that = HeapArray<uint32_t>::WithSize(2u);
   base::HeapArray<uint32_t> vec(std::move(that));

@@ -162,6 +162,29 @@ class BufferIterator {
     return UNSAFE_BUFFERS(span<T>(reinterpret_cast<T*>(lhs.data()), count));
   }
 
+  // An overload for when the size is known at compile time. The result will be
+  // a fixed-size span.
+  template <typename T,
+            size_t N,
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+    requires(N <= std::numeric_limits<size_t>::max() / sizeof(T))
+  std::optional<span<T, N>> MutableSpan() {
+    constexpr size_t byte_size =
+        N * sizeof(T);  // Overflow is checked by `requires`.
+    if (byte_size > remaining_.size()) {
+      return std::nullopt;
+    }
+    auto [lhs, rhs] = remaining_.split_at(byte_size);
+    remaining_ = rhs;
+    // SAFETY: The byte size of `span<T>` with size `count` is `count *
+    // sizeof(T)` which is exactly `byte_size`, the byte size of `lhs`.
+    //
+    // TODO(danakj): This is UB without creating a lifetime for the object in
+    // the compiler, which we can not do before C++23:
+    // https://en.cppreference.com/w/cpp/memory/start_lifetime_as
+    return UNSAFE_BUFFERS(span<T, N>(reinterpret_cast<T*>(lhs.data()), N));
+  }
+
   // Returns a span to |count| const objects of type T in the buffer at the
   // current position.
   //
@@ -174,6 +197,16 @@ class BufferIterator {
             typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
   span<const T> Span(size_t count) {
     return MutableSpan<const T>(count);
+  }
+
+  // An overload for when the size is known at compile time. The result will be
+  // a fixed-size span.
+  template <typename T,
+            size_t N,
+            typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
+    requires(N <= std::numeric_limits<size_t>::max() / sizeof(T))
+  std::optional<span<const T, N>> Span() {
+    return MutableSpan<const T, N>();
   }
 
   // Resets the iterator position to the absolute offset |to|.

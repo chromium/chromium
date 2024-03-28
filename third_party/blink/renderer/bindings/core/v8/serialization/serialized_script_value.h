@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
@@ -200,7 +201,7 @@ class CORE_EXPORT SerializedScriptValue
   String ToWireString() const;
 
   base::span<const uint8_t> GetWireData() const {
-    return {data_buffer_.get(), data_buffer_size_};
+    return data_buffer_.as_span();
   }
 
   // Deserializes the value (in the current context). Returns a null value in
@@ -271,8 +272,8 @@ class CORE_EXPORT SerializedScriptValue
   // hence subsequent calls will be no-ops.
   void UnregisterMemoryAllocatedWithCurrentScriptContext();
 
-  const uint8_t* Data() const { return data_buffer_.get(); }
-  size_t DataLengthInBytes() const { return data_buffer_size_; }
+  const uint8_t* Data() const { return data_buffer_.data(); }
+  size_t DataLengthInBytes() const { return data_buffer_.size(); }
 
   TransferredWasmModulesArray& WasmModules() { return wasm_modules_; }
   SharedArrayBufferContentsArray& SharedArrayBuffersContents() {
@@ -361,17 +362,14 @@ class CORE_EXPORT SerializedScriptValue
   struct BufferDeleter {
     void operator()(uint8_t* buffer) { WTF::Partitions::BufferFree(buffer); }
   };
-  using DataBufferPtr = std::unique_ptr<uint8_t[], BufferDeleter>;
+  using DataBufferPtr = base::HeapArray<uint8_t, BufferDeleter>;
 
   SerializedScriptValue();
-  SerializedScriptValue(DataBufferPtr, size_t data_size);
+  explicit SerializedScriptValue(DataBufferPtr);
 
   static DataBufferPtr AllocateBuffer(size_t);
 
-  void SetData(DataBufferPtr data, size_t size) {
-    data_buffer_ = std::move(data);
-    data_buffer_size_ = size;
-  }
+  void SetData(DataBufferPtr data) { data_buffer_ = std::move(data); }
 
   void TransferArrayBuffers(v8::Isolate*,
                             const ArrayBufferArray&,

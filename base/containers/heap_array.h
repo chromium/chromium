@@ -25,7 +25,7 @@ namespace base {
 // for primitive types) when the array is created using the WithSize()
 // static method, or uninitialized when the array is created via the Uninit()
 // static method.
-template <typename T>
+template <typename T, typename Deleter = void>
 class TRIVIAL_ABI GSL_OWNER HeapArray {
  public:
   static_assert(!std::is_const_v<T>, "HeapArray cannot hold const types");
@@ -34,6 +34,10 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
 
   using iterator = base::span<T>::iterator;
   using const_iterator = base::span<const T>::iterator;
+  // We don't put this default value in the template parameter list to allow the
+  // static_assert on is_reference_v to give a nicer error message.
+  using deleter_type = std::
+      conditional_t<std::is_void_v<Deleter>, std::default_delete<T[]>, Deleter>;
 
   // Allocates initialized memory capable of holding `size` elements. No memory
   // is allocated for zero-sized arrays.
@@ -43,7 +47,7 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     if (!size) {
       return HeapArray();
     }
-    return HeapArray(std::unique_ptr<T[]>(new T[size]()), size);
+    return HeapArray(std::unique_ptr<T[], deleter_type>(new T[size]()), size);
   }
 
   // Allocates uninitialized memory capable of holding `size` elements. T must
@@ -56,13 +60,32 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     if (!size) {
       return HeapArray();
     }
-    return HeapArray(std::unique_ptr<T[]>(new T[size]), size);
+    return HeapArray(std::unique_ptr<T[], deleter_type>(new T[size]), size);
   }
 
   static HeapArray CopiedFrom(base::span<const T> that) {
     auto result = HeapArray::Uninit(that.size());
     result.copy_from(that);
     return result;
+  }
+
+  // Constructs a HeapArray from an existing pointer, taking ownership of the
+  // pointer.
+  //
+  // # Safety
+  // The pointer must be correctly aligned for type `T` and able to be deleted
+  // through the `deleter_type`, which defaults to the `delete[]` operation. The
+  // `ptr` must point to an array of at least `size` many elements. If these are
+  // not met, then Undefined Behaviour can result.
+  //
+  // # Checks
+  // When the `size` is zero, the `ptr` must be null.
+  UNSAFE_BUFFER_USAGE static HeapArray FromOwningPointer(T* ptr, size_t size) {
+    if (!size) {
+      CHECK_EQ(ptr, nullptr);
+      return HeapArray();
+    }
+    return HeapArray(std::unique_ptr<T[], deleter_type>(ptr), size);
   }
 
   // Constructs an empty array and does not allocate any memory.
@@ -179,14 +202,14 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   // with typical void (*cb)(void*) C-style deletion callback.
   static void DeleteLeakedData(void* ptr) {
     // Memory is freed by unique ptr going out of scope.
-    std::unique_ptr<T[]> deleter(static_cast<T*>(ptr));
+    std::unique_ptr<T[], deleter_type> deleter(static_cast<T*>(ptr));
   }
 
  private:
-  HeapArray(std::unique_ptr<T[]> data, size_t size)
+  HeapArray(std::unique_ptr<T[], deleter_type> data, size_t size)
       : data_(std::move(data)), size_(size) {}
 
-  std::unique_ptr<T[]> data_;
+  std::unique_ptr<T[], deleter_type> data_;
   size_t size_ = 0u;
 };
 

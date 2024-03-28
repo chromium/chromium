@@ -32,6 +32,8 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -112,10 +114,14 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     return Create();
 
   DataBufferPtr data_buffer = AllocateBuffer(data_buffer_size.ValueOrDie());
-  data.CopyTo(reinterpret_cast<UChar*>(data_buffer.get()), 0, data.length());
+  // TODO(danakj): This cast is valid, since it's at the start of the allocation
+  // which will be aligned correctly for UChar. However the pattern of casting
+  // byte pointers to other types is problematic and can cause UB. String should
+  // provide a way to copy directly to a byte array without forcing the caller
+  // to do this case.
+  data.CopyTo(reinterpret_cast<UChar*>(data_buffer.data()), 0, data.length());
 
-  return base::AdoptRef(new SerializedScriptValue(
-      std::move(data_buffer), data_buffer_size.ValueOrDie()));
+  return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
 
 // Returns whether `tag` was a valid tag in the v0 serialization format.
@@ -145,7 +151,7 @@ inline static constexpr bool IsV0VersionTag(uint8_t tag) {
 //
 // As IndexedDB stores SSVs to disk indefinitely, we still need to keep around
 // the code needed to deserialize the old format.
-inline static bool IsByteSwappedWiredData(const uint8_t* data, size_t length) {
+inline static bool IsByteSwappedWiredData(base::span<const uint8_t> data) {
   // TODO(pwnall): Return false early if we're on big-endian hardware. Chromium
   // doesn't currently support big-endian hardware, and there's no header
   // exposing endianness to Blink yet. ARCH_CPU_LITTLE_ENDIAN seems promising,
@@ -153,8 +159,9 @@ inline static bool IsByteSwappedWiredData(const uint8_t* data, size_t length) {
 
   // The first SSV version without byte-swapping has two envelopes (Blink, V8),
   // each of which is at least 2 bytes long.
-  if (length < 4)
+  if (data.size() < 4u) {
     return true;
+  }
 
   // This code handles the following cases:
   //
@@ -197,18 +204,19 @@ inline static bool IsByteSwappedWiredData(const uint8_t* data, size_t length) {
   return true;
 }
 
-static void SwapWiredDataIfNeeded(uint8_t* buffer, size_t buffer_size) {
-  if (buffer_size % sizeof(UChar))
+static void SwapWiredDataIfNeeded(base::span<uint8_t> buffer) {
+  if (buffer.size() % sizeof(UChar)) {
     return;
+  }
 
-  if (!IsByteSwappedWiredData(buffer, buffer_size))
+  if (!IsByteSwappedWiredData(buffer)) {
     return;
+  }
 
-  UChar* uchars = reinterpret_cast<UChar*>(buffer);
-  size_t uchars_size = buffer_size / sizeof(UChar);
-
-  for (size_t i = 0; i < uchars_size; ++i)
-    uchars[i] = base::NetToHost16(uchars[i]);
+  static_assert(sizeof(UChar) == 2u);
+  for (size_t i = 0u; i < buffer.size(); i += 2u) {
+    std::swap(buffer[i], buffer[i + 1u]);
+  }
 }
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
@@ -217,11 +225,10 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     return Create();
 
   DataBufferPtr data_buffer = AllocateBuffer(data.size());
-  base::ranges::copy(data, data_buffer.get());
-  SwapWiredDataIfNeeded(data_buffer.get(), data.size());
+  data_buffer.as_span().copy_from(data);
+  SwapWiredDataIfNeeded(data_buffer.as_span());
 
-  return base::AdoptRef(
-      new SerializedScriptValue(std::move(data_buffer), data.size()));
+  return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
 
 scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
@@ -230,24 +237,21 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
     return Create();
 
   DataBufferPtr data_buffer = AllocateBuffer(buffer->size());
-  size_t offset = 0;
-  for (const auto& span : *buffer) {
-    base::ranges::copy(span, data_buffer.get() + offset);
+  size_t offset = 0u;
+  for (base::span<const char> span : *buffer) {
+    data_buffer.subspan(offset, span.size()).copy_from(base::as_bytes(span));
     offset += span.size();
   }
-  SwapWiredDataIfNeeded(data_buffer.get(), buffer->size());
+  SwapWiredDataIfNeeded(data_buffer.as_span());
 
-  return base::AdoptRef(
-      new SerializedScriptValue(std::move(data_buffer), buffer->size()));
+  return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
 }
 
 SerializedScriptValue::SerializedScriptValue()
     : has_registered_external_allocation_(false) {}
 
-SerializedScriptValue::SerializedScriptValue(DataBufferPtr data,
-                                             size_t data_size)
+SerializedScriptValue::SerializedScriptValue(DataBufferPtr data)
     : data_buffer_(std::move(data)),
-      data_buffer_size_(data_size),
       has_registered_external_allocation_(false) {}
 
 void SerializedScriptValue::SetImageBitmapContentsArray(
@@ -257,8 +261,12 @@ void SerializedScriptValue::SetImageBitmapContentsArray(
 
 SerializedScriptValue::DataBufferPtr SerializedScriptValue::AllocateBuffer(
     size_t buffer_size) {
-  return DataBufferPtr(static_cast<uint8_t*>(WTF::Partitions::BufferMalloc(
-      buffer_size, "SerializedScriptValue buffer")));
+  // SAFETY: BufferMalloc() always returns a pointer to at least
+  // `buffer_size` bytes.
+  return UNSAFE_BUFFERS(DataBufferPtr::FromOwningPointer(
+      static_cast<uint8_t*>(WTF::Partitions::BufferMalloc(
+          buffer_size, "SerializedScriptValue buffer")),
+      buffer_size));
 }
 
 SerializedScriptValue::~SerializedScriptValue() {
@@ -289,14 +297,22 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::UndefinedValue() {
 String SerializedScriptValue::ToWireString() const {
   // Add the padding '\0', but don't put it in |data_buffer_|.
   // This requires direct use of uninitialized strings, though.
-  UChar* destination;
-  wtf_size_t string_size_bytes =
-      base::checked_cast<wtf_size_t>((data_buffer_size_ + 1) & ~1);
-  String wire_string =
-      String::CreateUninitialized(string_size_bytes / 2, destination);
-  memcpy(destination, data_buffer_.get(), data_buffer_size_);
-  if (string_size_bytes > data_buffer_size_)
-    reinterpret_cast<char*>(destination)[string_size_bytes - 1] = '\0';
+  auto string_size_bytes = base::checked_cast<wtf_size_t>(
+      base::bits::AlignUp(data_buffer_.size(), sizeof(UChar)));
+  UChar* backing_ptr;
+  String wire_string = String::CreateUninitialized(
+      string_size_bytes / sizeof(UChar), backing_ptr);
+  auto backing =
+      // TODO(crbug.com/40284755): CreateUninitialized should return a span
+      // pointing to the string backing, instead of a pointer.
+      UNSAFE_BUFFERS(base::span(backing_ptr, wire_string.length()));
+  auto [content, padding] =
+      base::as_writable_bytes(backing).split_at(data_buffer_.size());
+  content.copy_from(data_buffer_);
+  if (!padding.empty()) {
+    CHECK_EQ(padding.size(), 1u);
+    padding[0u] = '\0';
+  }
   return wire_string;
 }
 

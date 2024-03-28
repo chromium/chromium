@@ -338,8 +338,9 @@ static std::pair<int16_t, int16_t> TypoAscenderAndDescender(
   size_t size = typeface->getTableData(SkSetFourByteTag('O', 'S', '/', '2'), 68,
                                        sizeof(buffer), buffer);
   if (size == sizeof(buffer)) {
-    return std::make_pair(static_cast<int16_t>(base::NetToHost16(buffer[0])),
-                          -static_cast<int16_t>(base::NetToHost16(buffer[1])));
+    // The buffer values are in big endian.
+    return std::make_pair(base::numerics::ByteSwap(buffer[0]),
+                          -base::numerics::ByteSwap(buffer[1]));
   }
   return std::make_pair(0, 0);
 }

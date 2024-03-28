@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace base {
-template <typename T>
+template <typename T, typename Deleter>
 class HeapArray;
 template <typename, typename>
 class RefCountedThreadSafe;
@@ -103,11 +103,14 @@ struct CrossThreadCopier<base::WeakPtr<T>>
   STATIC_ONLY(CrossThreadCopier);
 };
 
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename T,
+          typename Deleter,
+          wtf_size_t inlineCapacity,
+          typename Allocator>
 struct CrossThreadCopier<
-    Vector<base::HeapArray<T>, inlineCapacity, Allocator>> {
+    Vector<base::HeapArray<T, Deleter>, inlineCapacity, Allocator>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = Vector<base::HeapArray<T>, inlineCapacity, Allocator>;
+  using Type = Vector<base::HeapArray<T, Deleter>, inlineCapacity, Allocator>;
   static Type Copy(Type pointer) {
     return pointer;  // This is in fact a move.
   }
