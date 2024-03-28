@@ -141,7 +141,7 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
 
   // Read buffer and length used for both synchronous and asynchronous
   // read operations.
-  raw_ptr<IOBuffer, DanglingUntriaged> read_buffer_ = nullptr;
+  raw_ptr<IOBuffer> read_buffer_ = nullptr;
   size_t read_length_ = 0u;
 
   // Read callback saved for asynchronous reads.

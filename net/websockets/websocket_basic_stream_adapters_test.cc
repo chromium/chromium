@@ -672,6 +672,11 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenStreamEnd) {
   EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
   EXPECT_CALL(mock_delegate_, OnClose(ERR_CONNECTION_CLOSED));
 
+  // Must create buffer before `adapter`, since `adapter` doesn't hold onto a
+  // reference to it.
+  constexpr int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
+
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
   WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
@@ -681,8 +686,6 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenStreamEnd) {
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  constexpr int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -1107,6 +1110,11 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   EXPECT_CALL(mock_delegate_, OnHeadersSent());
   EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
 
+  // Must create buffer before `adapter`, since `adapter` doesn't hold onto a
+  // reference to it.
+  const int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
+
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
   WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
@@ -1118,8 +1126,6 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
