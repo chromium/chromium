@@ -70,10 +70,7 @@ ProductSpecificationsServiceFactory::BuildServiceInstanceForBrowserContext(
           ModelTypeStoreServiceFactory::GetForProfile(
               Profile::FromBrowserContext(context))
               ->GetStoreFactory(),
-          CreateChangeProcessor()),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+          CreateChangeProcessor()));
 }
 
 }  // namespace commerce

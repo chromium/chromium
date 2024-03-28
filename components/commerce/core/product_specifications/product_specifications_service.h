@@ -18,22 +18,17 @@ namespace commerce {
 // Acquires synced data about product specifications.
 class ProductSpecificationsService : public KeyedService {
  public:
-  ProductSpecificationsService(
-      std::unique_ptr<ProductSpecificationsSyncBridge> bridge,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+  explicit ProductSpecificationsService(
+      std::unique_ptr<ProductSpecificationsSyncBridge> bridge);
   ProductSpecificationsService(const ProductSpecificationsService&) = delete;
   ProductSpecificationsService& operator=(const ProductSpecificationsService&) =
       delete;
   ~ProductSpecificationsService() override;
 
-  // Instantiates a controller delegate to interact with
-  // ProductSpecificationsSyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
-  CreateSyncControllerDelegate();
-
- private:
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
+
+ private:
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 };
