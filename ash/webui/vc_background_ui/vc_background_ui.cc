@@ -18,12 +18,14 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -34,8 +36,9 @@ namespace {
 using std::literals::string_view_literals::operator""sv;
 
 void AddStrings(content::WebUIDataSource* source) {
-  // TODO(b/311416410) real translated title.
-  source->AddString("vcBackgroundTitle", u"VC Background");
+  source->AddString("vcBackgroundTitle",
+                    l10n_util::GetStringUTF16(IDS_VC_BACKGROUND_APP_TITLE));
+
   ::ash::common::AddSeaPenStrings(source);
   ::ash::common::AddSeaPenVcBackgroundTemplateStrings(source);
 

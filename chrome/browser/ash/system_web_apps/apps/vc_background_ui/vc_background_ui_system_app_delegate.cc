@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/grit/ash_personalization_app_resources.h"
+#include "ash/webui/grit/ash_vc_background_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
@@ -17,8 +17,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -39,14 +41,22 @@ VcBackgroundUISystemAppDelegate::GetWebAppInfo() const {
   info->start_url = GURL(kChromeUIVcBackgroundURL);
   info->scope = GURL(kChromeUIVcBackgroundURL);
   // TODO(b/311416410) real title and icon.
-  info->title = u"VC Background";
+  info->title = l10n_util::GetStringUTF16(IDS_VC_BACKGROUND_APP_TITLE);
+
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {
           {
-              "app_hub_icon_256.png",
-              256,
-              IDR_ASH_PERSONALIZATION_APP_HUB_ICON_256_PNG,
+              .icon_name = "vc_background_ui_app_icon_128.png",
+              .size = 128,
+              .resource_id =
+                  IDR_ASH_VC_BACKGROUND_VC_BACKGROUND_UI_APP_ICON_128_PNG,
+          },
+          {
+              .icon_name = "vc_background_ui_app_icon_256.png",
+              .size = 256,
+              .resource_id =
+                  IDR_ASH_VC_BACKGROUND_VC_BACKGROUND_UI_APP_ICON_256_PNG,
           },
       },
       *info);

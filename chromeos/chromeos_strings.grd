@@ -3112,6 +3112,9 @@
         <message name="IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING" desc="Section heading for recently-created wallpapers.">
           Recent wallpapers powered by Google AI
         </message>
+        <message name="IDS_VC_BACKGROUND_APP_TITLE" desc="Title for the VC Camera Background System Web App. Displayed when the user hovers over the app icon while the app is open.">
+          Camera Background
+        </message>
         <message name="IDS_VC_BACKGROUND_RECENT_WALLPAPERS_HEADING" desc="Section heading for recently-created camera backgrounds.">
           Recent camera backgrounds powered by Google AI
         </message>
