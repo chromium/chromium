@@ -416,9 +416,6 @@ void VersionUpdater::UpdateErrorMessage(const NetworkState* network,
       error_state = NetworkError::ERROR_STATE_PORTAL;
       network_name = network->name();
       break;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      error_state = NetworkError::ERROR_STATE_PROXY;
-      break;
     case NetworkState::PortalState::kOnline:
       NOTREACHED();
       return;

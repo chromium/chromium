@@ -262,10 +262,6 @@ std::string PortalStatusString(ash::NetworkState::PortalState portal_state) {
     case PortalState::kNoInternet:
       return ash::NetworkPortalDetector::CaptivePortalStatusString(
           ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
-    case PortalState::kProxyAuthRequired:
-      return ash::NetworkPortalDetector::CaptivePortalStatusString(
-          ash::NetworkPortalDetector::
-              CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
   }
   return "Unrecognized";
 }

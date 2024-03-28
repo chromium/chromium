@@ -2299,8 +2299,6 @@ void NetworkStateHandler::UpdatePortalStateAndNotify(
       case NetworkState::PortalState::kPortal:
         time_in_portal_ = base::ElapsedTimer();
         break;
-      case NetworkState::PortalState::kProxyAuthRequired:
-        [[fallthrough]];
       case NetworkState::PortalState::kNoInternet:
         // We don't track these states, reset the timer.
         time_in_portal_.reset();

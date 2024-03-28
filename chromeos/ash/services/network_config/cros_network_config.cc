@@ -200,7 +200,6 @@ mojom::ConnectionStateType GetMojoConnectionStateType(
         return mojom::ConnectionStateType::kOnline;
       case NetworkState::PortalState::kPortalSuspected:
       case NetworkState::PortalState::kPortal:
-      case NetworkState::PortalState::kProxyAuthRequired:
       case NetworkState::PortalState::kNoInternet:
         // See PortalState for differentiation of portal states.
         return mojom::ConnectionStateType::kPortal;
@@ -336,8 +335,6 @@ mojom::PortalState GetMojoPortalState(
       return mojom::PortalState::kPortalSuspected;
     case NetworkState::PortalState::kPortal:
       return mojom::PortalState::kPortal;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      return mojom::PortalState::kProxyAuthRequired;
     case NetworkState::PortalState::kNoInternet:
       return mojom::PortalState::kNoInternet;
   }
@@ -353,9 +350,7 @@ std::optional<GURL> GetPortalProbeUrl(const NetworkState* network) {
       return std::nullopt;
     case NetworkState::PortalState::kPortalSuspected:
       [[fallthrough]];
-    case NetworkState::PortalState::kPortal:
-      [[fallthrough]];
-    case NetworkState::PortalState::kProxyAuthRequired: {
+    case NetworkState::PortalState::kPortal: {
       const GURL& probe_url = network->probe_url();
       if (probe_url.is_valid())
         return probe_url;

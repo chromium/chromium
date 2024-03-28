@@ -221,8 +221,6 @@ mojom::CaptivePortalStatus GetCaptivePortalStatusFromNetworkState(
     case NetworkState::PortalState::kPortal:
     case NetworkState::PortalState::kNoInternet:
       return mojom::CaptivePortalStatus::kPortal;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      return mojom::CaptivePortalStatus::kProxyAuthRequired;
   }
 }
 

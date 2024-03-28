@@ -231,11 +231,6 @@ TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
                   NetworkState::PortalState::kPortal);
   EXPECT_FALSE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
-
-  SendPortalState(hats_notification_controller,
-                  NetworkState::PortalState::kProxyAuthRequired);
-  EXPECT_FALSE(display_service_->GetNotification(
-      HatsNotificationController::kNotificationId));
 }
 
 TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {

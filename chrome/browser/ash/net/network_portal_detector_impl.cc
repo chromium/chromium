@@ -217,11 +217,6 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
         default_portal_status_ = CAPTIVE_PORTAL_STATUS_OFFLINE;
       }
       return;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      // This may happen if a global proxy is applied. Run Chrome detection
-      // to verify.
-      ScheduleAttempt();
-      return;
   }
 }
 
@@ -341,7 +336,6 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
       // TODO(b/207069182): Handle each state correctly.
       case NetworkState::PortalState::kPortalSuspected:
       case NetworkState::PortalState::kPortal:
-      case NetworkState::PortalState::kProxyAuthRequired:
       case NetworkState::PortalState::kNoInternet:
         shill_is_captive_portal = true;
         break;

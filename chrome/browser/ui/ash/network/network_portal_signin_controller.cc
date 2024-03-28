@@ -125,10 +125,8 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   }
   auto portal_state = default_network->GetPortalState();
   if (portal_state != NetworkState::PortalState::kPortal &&
-      portal_state != NetworkState::PortalState::kPortalSuspected &&
-      portal_state != NetworkState::PortalState::kProxyAuthRequired) {
-    // If no portal or proxy signin is required, do not attempt to show the
-    // signin page.
+      portal_state != NetworkState::PortalState::kPortalSuspected) {
+    // If no portal signin is required, do not attempt to show the signin page.
     NET_LOG(EVENT) << "Show signin mode from: " << source << ": Network '"
                    << NetworkId(default_network)
                    << "' is in a non portal state: " << portal_state;
@@ -208,11 +206,6 @@ NetworkPortalSigninController::GetSigninMode(
   if (!profile) {
     NET_LOG(DEBUG) << "GetSigninMode: No profile";
     return SigninMode::kSigninDialog;
-  }
-
-  // When showing a proxy auth window, use a normal tab with proxies enabled.
-  if (portal_state == NetworkState::PortalState::kProxyAuthRequired) {
-    return SigninMode::kNormalTab;
   }
 
   // This pref defaults to true, but if a policy is active the policy value

@@ -47,8 +47,7 @@ const char kNotifierNetworkPortalDetector[] = "ash.network.portal-detector";
 
 bool IsPortalState(NetworkState::PortalState portal_state) {
   return portal_state == NetworkState::PortalState::kPortal ||
-         portal_state == NetworkState::PortalState::kPortalSuspected ||
-         portal_state == NetworkState::PortalState::kProxyAuthRequired;
+         portal_state == NetworkState::PortalState::kPortalSuspected;
 }
 
 std::unique_ptr<message_center::Notification> CreateNotification(
@@ -71,13 +70,6 @@ std::unique_ptr<message_center::Notification> CreateNotification(
       message = IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE;
       button.title = l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON);
-      data.buttons.emplace_back(std::move(button));
-      break;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      message =
-          IDS_NEW_PORTAL_PROXY_AUTH_REQUIRED_DETECTION_NOTIFICATION_MESSAGE;
-      button.title = l10n_util::GetStringUTF16(
-          IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON);
       data.buttons.emplace_back(std::move(button));
       break;
     default:

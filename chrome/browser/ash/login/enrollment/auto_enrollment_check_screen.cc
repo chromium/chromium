@@ -198,9 +198,6 @@ bool AutoEnrollmentCheckScreen::ShowCaptivePortalState(
       if (captive_portal_state_ != new_captive_portal_state)
         error_screen_->FixCaptivePortal();
       return true;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      ShowErrorScreen(NetworkError::ERROR_STATE_PROXY);
-      return true;
   }
 }
 

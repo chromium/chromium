@@ -110,7 +110,6 @@ NetworkConnectionState NetworkTelemetrySampler::GetNetworkConnectionState(
         return NetworkConnectionState::ONLINE;
       case ash::NetworkState::PortalState::kPortalSuspected:
       case ash::NetworkState::PortalState::kPortal:
-      case ash::NetworkState::PortalState::kProxyAuthRequired:
       case ash::NetworkState::PortalState::kNoInternet:
         return NetworkConnectionState::PORTAL;
     }

@@ -762,7 +762,6 @@ std::ostream& operator<<(std::ostream& out,
     PRINT(Online)
     PRINT(PortalSuspected)
     PRINT(Portal)
-    PRINT(ProxyAuthRequired)
     PRINT(NoInternet)
 #undef PRINT
   }

@@ -62,8 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     kPortalSuspected,
     // The network is in a portal state with a redirect URL.
     kPortal,
-    // A proxy requiring authentication is detected.
-    kProxyAuthRequired,
     // The network is connected but no internet is available and no proxy was
     // detected.
     kNoInternet,

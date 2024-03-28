@@ -3014,9 +3014,6 @@
   <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE" desc="Body of the new system notification that current wired network is behind captive portal">
     Sign in to "<ph name="NETWORK_ID">$1<ex>Public Network</ex></ph>"
   </message>
-  <message name="IDS_NEW_PORTAL_PROXY_AUTH_REQUIRED_DETECTION_NOTIFICATION_MESSAGE" desc="Body of the new system notification that current wired network is behind captive portal">
-    Proxy authentication is required for "<ph name="NETWORK_ID">$1<ex>Public Network</ex></ph>"
-  </message>
   <message name="IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE" desc="Body of the new system notification that current wired network is behind captive portal">
     Connectivity on "<ph name="NETWORK_ID">$1<ex>Public Network</ex></ph>" may be limited
   </message>
