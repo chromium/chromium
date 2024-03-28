@@ -61,6 +61,7 @@ void SetupChip(views::LabelButton* chip, bool first) {
   views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(1),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
+  chip->SetTooltipText(chip->GetText());
 }
 
 void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
