@@ -783,6 +783,17 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "ios_blink_dbg_tests",
+    basic_suites = {
+        "ios_blink_tests": targets.legacy_matrix_config(
+            variants = [
+                "SIM_IPHONE_14_17_4",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "ios_clang_tot_device_tests",
     basic_suites = {
         "clang_tot_gtests": targets.legacy_matrix_config(

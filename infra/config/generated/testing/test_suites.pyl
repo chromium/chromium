@@ -4045,6 +4045,19 @@
       'headless_unittests': {},
     },
 
+    'ios_blink_tests': {
+      'absl_hardening_tests': {},
+      'angle_unittests': {
+        'use_isolated_scripts_api': True,
+      },
+      'base_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter',
+        ],
+      },
+    },
+
     'ios_common_tests': {
       'absl_hardening_tests': {},
       'boringssl_crypto_tests': {},
@@ -7289,6 +7302,14 @@
         'variants': [
           'SIM_IPAD_AIR_2_15_5',
           'SIM_IPHONE_X_15_5',
+        ],
+      },
+    },
+
+    'ios_blink_dbg_tests': {
+      'ios_blink_tests': {
+        'variants': [
+          'SIM_IPHONE_14_17_4',
         ],
       },
     },

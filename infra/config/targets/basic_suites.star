@@ -3722,6 +3722,22 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "ios_blink_tests",
+    tests = {
+        "absl_hardening_tests": targets.legacy_test_config(),
+        "angle_unittests": targets.legacy_test_config(
+            use_isolated_scripts_api = True,
+        ),
+        "base_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "ios_common_tests",
     tests = {
         "absl_hardening_tests": targets.legacy_test_config(),
