@@ -95,8 +95,11 @@ void OnManifestFetchedShowCrosDialog(
   args->description = base::UTF16ToUTF8(web_app_info->description);
   args->icon_url = GetIconUrl(web_app_info->manifest_icons);
   for (const auto& screenshot : screenshots) {
-    args->screenshot_urls.push_back(
-        GURL(webui::GetBitmapDataUrl(screenshot.image)));
+    auto dialog_screenshot = ash::app_install::mojom::Screenshot::New();
+    dialog_screenshot->url = GURL(webui::GetBitmapDataUrl(screenshot.image));
+    dialog_screenshot->size =
+        gfx::Size(screenshot.image.width(), screenshot.image.height());
+    args->screenshots.push_back(std::move(dialog_screenshot));
   }
 
   dialog_handle->Show(

@@ -253,9 +253,14 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
             args->name = data->name;
             args->description = data->description;
             args->icon_url = data->icon ? data->icon->url : GURL::EmptyGURL();
-            base::ranges::transform(data->screenshots,
-                                    std::back_inserter(args->screenshot_urls),
-                                    &AppInstallScreenshot::url);
+            for (auto& screenshot : data->screenshots) {
+              auto dialog_screenshot =
+                  ash::app_install::mojom::Screenshot::New();
+              dialog_screenshot->url = screenshot.url;
+              dialog_screenshot->size = gfx::Size(screenshot.width_in_pixels,
+                                                  screenshot.height_in_pixels);
+              args->screenshots.push_back(std::move(dialog_screenshot));
+            }
 
             webapps::AppId expected_app_id = GetAppId(data->package_id);
             base::WeakPtr<ash::app_install::AppInstallDialog> dialog =

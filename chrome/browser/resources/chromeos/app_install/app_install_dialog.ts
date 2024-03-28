@@ -76,12 +76,12 @@ class AppInstallDialogElement extends HTMLElement {
         this.$<HTMLHRElement>('#divider').hidden = false;
       }
 
-      if (dialogArgs.args.screenshotUrls[0]) {
+      if (dialogArgs.args.screenshots[0]) {
         this.$<HTMLSpanElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
         this.$<HTMLSpanElement>('#screenshot-container').hidden = false;
         this.$<HTMLImageElement>('#screenshot')
-            .setAttribute('auto-src', dialogArgs.args.screenshotUrls[0].url);
+            .setAttribute('auto-src', dialogArgs.args.screenshots[0].url.url);
       }
     } catch (e) {
       // TODO(crbug.com/1488697) Define expected behavior.

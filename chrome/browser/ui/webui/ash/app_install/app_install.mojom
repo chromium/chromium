@@ -4,6 +4,7 @@
 
 module ash.app_install.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 struct DialogArgs {
@@ -15,7 +16,13 @@ struct DialogArgs {
 
   url.mojom.Url icon_url;
 
-  array<url.mojom.Url> screenshot_urls;
+  array<Screenshot> screenshots;
+};
+
+struct Screenshot {
+  url.mojom.Url url;
+
+  gfx.mojom.Size size;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler

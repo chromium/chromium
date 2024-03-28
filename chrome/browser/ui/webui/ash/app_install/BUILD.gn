@@ -12,6 +12,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"

@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 
 #include <cmath>
+#include <utility>
+#include <vector>
 
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,6 +51,16 @@ void AppInstallDialog::Show(
   expected_app_id_ = std::move(expected_app_id);
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
 
+  // Filter out portrait screenshots.
+  std::vector<mojom::ScreenshotPtr> filtered_screenshots;
+  for (const auto& screenshot : args->screenshots) {
+    if (screenshot->size.width() >= screenshot->size.height() &&
+        screenshot->size.width() != 0) {
+      filtered_screenshots.push_back(screenshot.Clone());
+    }
+  }
+  args->screenshots = std::move(filtered_screenshots);
+
   dialog_args_ = std::move(args);
   dialog_args_->description = base::UTF16ToUTF8(gfx::TruncateString(
       base::UTF8ToUTF16(dialog_args_->description),
@@ -92,7 +104,7 @@ constexpr int kMinimumDialogHeight = 282;
 constexpr int kDescriptionContainerWidth = 408;
 constexpr int kDescriptionLineHeight = 18;
 constexpr int kDescriptionVerticalPadding = 24;
-constexpr int kScreenshotHeight = 256;
+constexpr int kScreenshotPadding = 20;
 constexpr int kDividerHeight = 1;
 }  // namespace
 
@@ -107,16 +119,24 @@ void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
     float description_width = gfx::GetStringWidth(
         base::UTF8ToUTF16(dialog_args_->description), font_list);
     int num_lines = std::ceil(description_width / kDescriptionContainerWidth);
-    height +=
-        ((kDescriptionLineHeight * num_lines) + kDescriptionVerticalPadding);
+    height += (kDescriptionLineHeight * num_lines);
   }
-  if (!dialog_args_->screenshot_urls.empty()) {
-    // TODO(b/329515116): Account for different sized screenshots.
-    height += kScreenshotHeight;
+  if (!dialog_args_->screenshots.empty()) {
+    // TODO(b/329515116): This won't work when we show more than one screenshot,
+    // if the screenshots are different sizes.
+    // The screenshot is displayed at a width of 408px, so calculate the
+    // height given that width.
+    CHECK(dialog_args_->screenshots[0]->size.width() != 0);
+    height += std::ceil(dialog_args_->screenshots[0]->size.height() /
+                        (dialog_args_->screenshots[0]->size.width() /
+                         float(kDescriptionContainerWidth)));
+    height += kScreenshotPadding;
   }
   if (dialog_args_->description.length() ||
-      !dialog_args_->screenshot_urls.empty()) {
+      !dialog_args_->screenshots.empty()) {
     height += kDividerHeight;
+    // The description padding is there even when there is no description.
+    height += kDescriptionVerticalPadding;
   }
 
   size->SetSize(SystemWebDialogDelegate::kDialogWidth, height);
