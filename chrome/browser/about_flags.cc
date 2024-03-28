@@ -7712,10 +7712,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableEdgeDetectionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableEdgeDetection)},
 
-    {"fast-pair", flag_descriptions::kFastPairName,
-     flag_descriptions::kFastPairDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFastPair)},
-
     {"fast-pair-debug-metadata", flag_descriptions::kFastPairDebugMetadataName,
      flag_descriptions::kFastPairDebugMetadataDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairDebugMetadata)},
@@ -7737,10 +7733,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"fast-pair-pwa-companion", flag_descriptions::kFastPairPwaCompanionName,
      flag_descriptions::kFastPairPwaCompanionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairPwaCompanion)},
-
-    {"fast-pair-saved-devices", flag_descriptions::kFastPairSavedDevicesName,
-     flag_descriptions::kFastPairSavedDevicesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFastPairSavedDevices)},
 
     {"fast-pair-software-scanning-support",
      flag_descriptions::kFastPairSoftwareScanningSupportName,

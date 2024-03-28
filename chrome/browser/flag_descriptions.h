@@ -3495,9 +3495,6 @@ extern const char kDropdownPanelDescription[];
 extern const char kFasterSplitScreenSetupName[];
 extern const char kFasterSplitScreenSetupDescription[];
 
-extern const char kFastPairName[];
-extern const char kFastPairDescription[];
-
 extern const char kFastPairDebugMetadataName[];
 extern const char kFastPairDebugMetadataDescription[];
 
@@ -3512,9 +3509,6 @@ extern const char kFastPairPwaCompanionDescription[];
 
 extern const char kFastPairSoftwareScanningSupportName[];
 extern const char kFastPairSoftwareScanningSupportDescription[];
-
-extern const char kFastPairSavedDevicesName[];
-extern const char kFastPairSavedDevicesDescription[];
 
 extern const char kFastPairDevicesBluetoothSettingsName[];
 extern const char kFastPairDevicesBluetoothSettingsDescription[];

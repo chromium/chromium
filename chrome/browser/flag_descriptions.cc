@@ -6047,11 +6047,6 @@ const char kFasterSplitScreenSetupDescription[] =
     "Enables faster split screen setup process by showing partial overview on "
     "window snapped";
 
-const char kFastPairName[] = "Enable Fast Pair";
-const char kFastPairDescription[] =
-    "Enables Google Fast Pair service which uses BLE to discover supported "
-    "nearby Bluetooth devices and surfaces a notification for quick pairing.";
-
 const char kFastPairDebugMetadataName[] = "Enable Fast Pair Debug Metadata";
 const char kFastPairDebugMetadataDescription[] =
     "Enables Fast Pair to use Debug metadata when checking device "
@@ -6077,12 +6072,6 @@ const char kFastPairSoftwareScanningSupportName[] =
 const char kFastPairSoftwareScanningSupportDescription[] =
     "Enable support for software-based scanning on devices that don't support "
     "hardware-based BLE advertisement filtering.";
-
-const char kFastPairSavedDevicesName[] = "Enable Fast Pair Saved Devices";
-const char kFastPairSavedDevicesDescription[] =
-    "Enables the Fast Pair \"Saved Devices\" page to display a list of the "
-    "user's devices and provide the option to opt in or out of saving devices "
-    "to their account.";
 
 const char kFastPairDevicesBluetoothSettingsName[] =
     "Enable Fast Pair Devices in Bluetooth Settings";
