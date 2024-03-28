@@ -381,15 +381,6 @@ BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
              "RestrictCanAccessDataForOriginToUIThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for moving the checking of specific requested files from
-// SecurityState::CanCommitURL() to SecurityState::CanRequestURL() in
-// ChildProcessSecurityPolicy.
-// TODO(https://crbug.com/764958): Remove this once the move is verified to be
-// safe.
-BASE_FEATURE(kRequestFileSetCheckedInCanRequestURL,
-             "RequestFileSetCheckedInCanRequestURL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
              "SendBeaconThrowForBlobWithNonSimpleType",

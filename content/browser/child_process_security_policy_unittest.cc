@@ -759,12 +759,7 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanRequestURL(kRendererID, sensitive_url));
   EXPECT_TRUE(p->CanRedirectToURL(icon_url));
   EXPECT_TRUE(p->CanRedirectToURL(sensitive_url));
-  if (base::FeatureList::IsEnabled(
-          features::kRequestFileSetCheckedInCanRequestURL)) {
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
-  } else {
-    EXPECT_TRUE(p->CanCommitURL(kRendererID, icon_url));
-  }
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, sensitive_url));
 
   p->GrantCommitURL(kRendererID, icon_url);

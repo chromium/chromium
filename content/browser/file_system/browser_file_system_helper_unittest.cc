@@ -13,7 +13,6 @@
 #include "base/test/null_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
-#include "content/common/features.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -205,21 +204,14 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   EXPECT_EQ(kDraggedFile, drop_data.filenames[0].path);
 
   // Verify that read access (and no other access) is granted for
-  // |kDraggedFile|.  After RequestFileSetCheckedInCanRequestURL ships, the
-  // renderer should be allowed to request this file, but not commit it;
-  // previously it was allowed to do both.
+  // |kDraggedFile|.  The renderer should be allowed to request this file, but
+  // not commit it.
   EXPECT_TRUE(p->CanReadFile(kRendererID, kDraggedFile));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kDraggedFile));
   EXPECT_TRUE(
       p->CanRequestURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
-  if (base::FeatureList::IsEnabled(
-          features::kRequestFileSetCheckedInCanRequestURL)) {
-    EXPECT_FALSE(
-        p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
-  } else {
-    EXPECT_TRUE(
-        p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
-  }
+  EXPECT_FALSE(
+      p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
 
   // Verify that there is still no access for |kOtherFile|.
   EXPECT_FALSE(p->CanReadFile(kRendererID, kOtherFile));
