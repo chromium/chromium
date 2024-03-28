@@ -46,7 +46,6 @@
 namespace blink {
 
 struct SameSizeAsNodeRareData : NodeData {
-  uint16_t bit_fields_;
   Member<void*> member_[5];
 };
 
@@ -81,12 +80,7 @@ void NodeMutationObserverData::RemoveRegistration(
 
 NodeData::NodeData(LayoutObject* layout_object,
                    const ComputedStyle* computed_style)
-    : computed_style_(computed_style),
-      layout_object_(layout_object),
-      bit_field_(RestyleFlags::encode(0) |
-                 ClassTypeData::encode(static_cast<uint16_t>(
-                     ClassType::kNodeRareData))  // Just pick any.
-      ) {}
+    : computed_style_(computed_style), layout_object_(layout_object) {}
 
 NodeData::NodeData(blink::NodeData&&) = default;
 NodeData::~NodeData() = default;

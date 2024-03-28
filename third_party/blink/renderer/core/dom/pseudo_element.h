@@ -51,6 +51,8 @@ class CORE_EXPORT PseudoElement : public Element {
                 PseudoId,
                 const AtomicString& view_transition_name = g_null_atom);
 
+  bool IsPseudoElement() const final { return true; }
+
   const AtomicString& view_transition_name() const {
     return view_transition_name_;
   }

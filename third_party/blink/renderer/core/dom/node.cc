@@ -2183,13 +2183,6 @@ uint16_t Node::compareDocumentPosition(const Node* other_node,
                                kDocumentPositionContains | connection;
 }
 
-NodeData& Node::EnsureMutableData() {
-  if (data_->IsSharedEmptyData()) {
-    data_ = MakeGarbageCollected<NodeData>(nullptr, nullptr);
-  }
-  return *data_;
-}
-
 void Node::InvalidateIfHasEffectiveAppearance() const {
   auto* layout_object = GetLayoutObject();
   if (!layout_object)

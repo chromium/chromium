@@ -37,7 +37,7 @@
 namespace blink {
 
 ElementRareDataVector::ElementRareDataVector(NodeData* node_layout_data)
-    : NodeRareData(ClassType::kElementRareData, std::move(*node_layout_data)) {}
+    : NodeRareData(std::move(*node_layout_data)) {}
 
 ElementRareDataVector::~ElementRareDataVector() {
   DCHECK(!GetField(FieldId::kPseudoElementData));

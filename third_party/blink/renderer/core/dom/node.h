@@ -345,12 +345,6 @@ class CORE_EXPORT Node : public EventTarget {
     return GetElementNamespaceType() == ElementNamespaceType::kSVG;
   }
 
-  DISABLE_CFI_PERF bool IsPseudoElement() const {
-#if DCHECK_IS_ON()
-    DCHECK_EQ(data_->IsPseudoElement(), GetPseudoId() != kPseudoIdNone);
-#endif
-    return data_->IsPseudoElement();
-  }
   DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdBefore;
   }
@@ -380,6 +374,7 @@ class CORE_EXPORT Node : public EventTarget {
   }
   void SetCustomElementState(CustomElementState);
 
+  virtual bool IsPseudoElement() const { return false; }
   virtual bool IsMediaControlElement() const { return false; }
   virtual bool IsMediaControls() const { return false; }
   virtual bool IsMediaElement() const { return false; }
@@ -1157,7 +1152,6 @@ class CORE_EXPORT Node : public EventTarget {
 
     return CreateRareData();
   }
-  NodeData& EnsureMutableData();
 
   void SetHasCustomStyleCallbacks() {
     SetFlag(true, kHasCustomStyleCallbacksFlag);

@@ -179,7 +179,6 @@ PseudoElement::PseudoElement(Element* parent,
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentOrShadowHostNode(parent);
   SetHasCustomStyleCallbacks();
-  EnsureMutableData().SetIsPseudoElement(true);
   if ((pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) &&
       parent->HasTagName(html_names::kInputTag)) {
     UseCounter::Count(parent->GetDocument(),
