@@ -197,6 +197,39 @@ bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
   return false;
 }
 
+// If the CSSValue is an absolute color, return the corresponding Color.
+std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
+    return color_value->Value();
+  }
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    // We can resolve <named-color> and 'transparent' at parse-time.
+    CSSValueID value_id = identifier_value->GetValueID();
+    if ((value_id >= CSSValueID::kAqua && value_id <= CSSValueID::kYellow) ||
+        (value_id >= CSSValueID::kAliceblue &&
+         value_id <= CSSValueID::kYellowgreen) ||
+        value_id == CSSValueID::kTransparent || value_id == CSSValueID::kGrey) {
+      // We're passing 'light' as the color-scheme, but nothing above should
+      // depend on that value (i.e it's a dummy argument). Ditto for the null
+      // color provider.
+      return StyleColor::ColorFromKeyword(
+          value_id, mojom::blink::ColorScheme::kLight, nullptr);
+    }
+    return std::nullopt;
+  }
+  if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
+    auto color1 = TryResolveAtParseTime(color_mix_value->Color1());
+    auto color2 = TryResolveAtParseTime(color_mix_value->Color2());
+    if (color1 && color2) {
+      return StyleColor::UnresolvedColorMix(
+                 color_mix_value, StyleColor(*color1), StyleColor(*color2))
+          .Resolve(Color());
+    }
+    return std::nullopt;
+  }
+  return std::nullopt;
+}
+
 // https://www.w3.org/TR/css-color-5/#relative-colors
 // e.g. lab(from magenta l a b), consume the "magenta" after the from. The
 // result needs to be a blink::Color as we need actual values for the color
@@ -208,31 +241,15 @@ bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
     return false;
   }
   if (CSSValue* css_color = css_parsing_utils::ConsumeColor(args, context)) {
-    if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_color)) {
-      result = color_value->Value();
-      return true;
-    } else if (auto* css_color_mix_value =
-                   DynamicTo<cssvalue::CSSColorMixValue>(css_color)) {
-      // TODO(crbug.com/41492196): Support color-mix as origin color.
-      return false;
-    } else {
-      CSSValueID value_id = To<CSSIdentifierValue>(css_color)->GetValueID();
-      // TODO(crbug.com/325309578): Just like with
-      // css_parsing_utils::ResolveColor(), currentcolor is not currently
-      // handled.
-      if (value_id == CSSValueID::kCurrentcolor) {
-        return false;
-      }
-      // TODO(crbug.com/40935612): Handle color scheme.
-      const ui::ColorProvider* color_provider =
-          context.GetDocument()
-              ? context.GetDocument()->GetColorProviderForPainting(
-                    mojom::blink::ColorScheme::kLight)
-              : nullptr;
-      result = StyleColor::ColorFromKeyword(
-          value_id, mojom::blink::ColorScheme::kLight, color_provider);
+    if (auto absolute_color = TryResolveAtParseTime(*css_color)) {
+      result = absolute_color.value();
       return true;
     }
+    // TODO(crbug.com/325309578): Just like with
+    // css_parsing_utils::ResolveColor(), currentcolor is not currently
+    // handled.
+    // TODO(crbug.com/41492196): Similarly, color-mix() with non-absolute
+    // arguments is not supported as an origin color yet.
   }
   return false;
 }
