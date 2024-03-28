@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage+Testing.h"
 
 #import <map>
 
@@ -21,8 +20,10 @@
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_image_file_manager.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage+Testing.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 
 namespace {
 
@@ -45,21 +46,21 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 }  // namespace
 
 // Protocol observers subclass that explicitly implements
-// <LegacySnapshotStorageObserver>.
-@interface LegacySnapshotStorageObservers
-    : CRBProtocolObservers <LegacySnapshotStorageObserver>
+// <SnapshotStorageObserver>.
+@interface SnapshotStorageObservers
+    : CRBProtocolObservers <SnapshotStorageObserver>
 + (instancetype)observers;
 @end
 
-@implementation LegacySnapshotStorageObservers
+@implementation SnapshotStorageObservers
 + (instancetype)observers {
-  return [self observersWithProtocol:@protocol(LegacySnapshotStorageObserver)];
+  return [self observersWithProtocol:@protocol(SnapshotStorageObserver)];
 }
 @end
 
 @interface LegacySnapshotStorage ()
 // List of observers to be notified of changes to the snapshot storage.
-@property(nonatomic, strong) LegacySnapshotStorageObservers* observers;
+@property(nonatomic, strong) SnapshotStorageObservers* observers;
 @end
 
 @implementation LegacySnapshotStorage {
@@ -83,7 +84,7 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
         [[LegacyImageFileManager alloc] initWithStoragePath:storagePath
                                                  legacyPath:legacyPath];
 
-    _observers = [LegacySnapshotStorageObservers observers];
+    _observers = [SnapshotStorageObservers observers];
 
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -172,7 +173,9 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
                       CGImageGetHeight(image.CGImage) * [_lruCache count];
   base::UmaHistogramMemoryKB("IOS.Snapshots.CacheSize", imageSizes / 1024);
 
-  [self.observers snapshotStorage:self didUpdateSnapshotForID:snapshotID];
+  [self.observers
+      didUpdateSnapshotStorageWithSnapshotID:
+          [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshotID]];
 
   // Save the image to disk.
   [_fileManager writeImage:image withSnapshotID:snapshotID];
@@ -181,7 +184,9 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 - (void)removeImageWithSnapshotID:(SnapshotID)snapshotID {
   [_lruCache removeObjectForKey:snapshotID];
 
-  [self.observers snapshotStorage:self didUpdateSnapshotForID:snapshotID];
+  [self.observers
+      didUpdateSnapshotStorageWithSnapshotID:
+          [[SnapshotIDWrapper alloc] initWithSnapshotID:snapshotID]];
 
   [_fileManager removeImageWithSnapshotID:snapshotID];
 }
@@ -230,11 +235,11 @@ const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
   [_lruCache removeAllObjects];
 }
 
-- (void)addObserver:(id<LegacySnapshotStorageObserver>)observer {
+- (void)addObserver:(id<SnapshotStorageObserver>)observer {
   [self.observers addObserver:observer];
 }
 
-- (void)removeObserver:(id<LegacySnapshotStorageObserver>)observer {
+- (void)removeObserver:(id<SnapshotStorageObserver>)observer {
   [self.observers removeObserver:observer];
 }
 

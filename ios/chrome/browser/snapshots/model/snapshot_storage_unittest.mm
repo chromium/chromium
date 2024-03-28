@@ -13,7 +13,6 @@
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
@@ -21,27 +20,12 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-// TODO(crbug.com/1502841): Remove FakeLegacySnapshotStorageObserver once the
-// new implementation is enabled by default.
-@interface FakeLegacySnapshotStorageObserver
-    : NSObject <LegacySnapshotStorageObserver>
-@property(nonatomic, assign) SnapshotID lastUpdatedID;
-@end
-
-@implementation FakeLegacySnapshotStorageObserver
-- (void)snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
-    didUpdateSnapshotForID:(SnapshotID)snapshotID {
-  self.lastUpdatedID = snapshotID;
-}
-@end
-
 @interface FakeSnapshotStorageObserver : NSObject <SnapshotStorageObserver>
 @property(nonatomic, strong) SnapshotIDWrapper* lastUpdatedID;
 @end
 
 @implementation FakeSnapshotStorageObserver
-- (void)didUpdateSnapshotStorage:(SnapshotStorage*)snapshotStorage
-                      snapshotID:(SnapshotIDWrapper*)snapshotID {
+- (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
   self.lastUpdatedID = snapshotID;
 }
 @end
@@ -327,17 +311,22 @@ TEST_F(LegacySnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
   ASSERT_TRUE(CreateSnapshotStorage());
   LegacySnapshotStorage* storage = GetSnapshotStorage();
 
-  FakeLegacySnapshotStorageObserver* observer =
-      [[FakeLegacySnapshotStorageObserver alloc] init];
+  FakeSnapshotStorageObserver* observer =
+      [[FakeSnapshotStorageObserver alloc] init];
   [storage addObserver:observer];
-  EXPECT_FALSE(observer.lastUpdatedID.valid());
+  EXPECT_FALSE(observer.lastUpdatedID.snapshot_id.valid());
   ASSERT_TRUE(!test_images_.empty());
+
+  // Check if setting a new image is notified to the observer.
   std::pair<SnapshotID, UIImage*> pair = *test_images_.begin();
   [storage setImage:pair.second withSnapshotID:pair.first];
-  EXPECT_EQ(pair.first, observer.lastUpdatedID);
-  observer.lastUpdatedID = SnapshotID();
+  EXPECT_EQ(pair.first, observer.lastUpdatedID.snapshot_id);
+
+  // Check if removing an image is notified to the observer.
+  observer.lastUpdatedID =
+      [[SnapshotIDWrapper alloc] initWithSnapshotID:SnapshotID()];
   [storage removeImageWithSnapshotID:pair.first];
-  EXPECT_EQ(pair.first, observer.lastUpdatedID);
+  EXPECT_EQ(pair.first, observer.lastUpdatedID.snapshot_id);
   [storage removeObserver:observer];
 }
 
@@ -793,10 +782,12 @@ TEST_F(SnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
   EXPECT_FALSE(observer.lastUpdatedID.snapshot_id.valid());
   ASSERT_TRUE(!test_images_.empty());
 
+  // Check if setting a new image is notified to the observer.
   std::pair<SnapshotIDWrapper*, UIImage*> pair = *test_images_.begin();
   [storage setImage:pair.second snapshotID:pair.first];
   EXPECT_EQ(pair.first, observer.lastUpdatedID);
 
+  // Check if removing an image is notified to the observer.
   observer.lastUpdatedID =
       [[SnapshotIDWrapper alloc] initWithSnapshotID:SnapshotID()];
   [storage removeImageWithSnapshotID:pair.first];

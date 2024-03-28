@@ -18,7 +18,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
@@ -84,7 +85,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
                                     PrefObserverDelegate,
-                                    LegacySnapshotStorageObserver,
+                                    SnapshotStorageObserver,
                                     WebStateListObserving> {
   // The list of inactive tabs.
   raw_ptr<WebStateList> _webStateList;
@@ -224,15 +225,14 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 }
 
-#pragma mark - LegacySnapshotStorageObserver
+#pragma mark - SnapshotStorageObserver
 
-- (void)snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
-    didUpdateSnapshotForID:(SnapshotID)snapshotID {
+- (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = 0; i < _webStateList->count(); i++) {
     SnapshotTabHelper* snapshotTabHelper =
         SnapshotTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
-    if (snapshotID == snapshotTabHelper->GetSnapshotID()) {
+    if (snapshotID.snapshot_id == snapshotTabHelper->GetSnapshotID()) {
       webState = _webStateList->GetWebStateAt(i);
       break;
     }

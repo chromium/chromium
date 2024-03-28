@@ -15,7 +15,7 @@ class FilePath;
 class Time;
 }  // namespace base
 
-@protocol LegacySnapshotStorageObserver;
+@protocol SnapshotStorageObserver;
 
 // A class providing an in-memory and on-disk storage of tab snapshots.
 // A snapshot is a full-screen image of the contents of the page at the current
@@ -83,10 +83,10 @@ class Time;
                  toSnapshotStorage:(LegacySnapshotStorage*)destinationCache;
 
 // Adds an observer to this snapshot storage.
-- (void)addObserver:(id<LegacySnapshotStorageObserver>)observer;
+- (void)addObserver:(id<SnapshotStorageObserver>)observer;
 
 // Removes an observer from this snapshot storage.
-- (void)removeObserver:(id<LegacySnapshotStorageObserver>)observer;
+- (void)removeObserver:(id<SnapshotStorageObserver>)observer;
 
 // Must be invoked before the instance is deallocated. It is needed to release
 // all references to C++ objects. The receiver will likely soon be deallocated.

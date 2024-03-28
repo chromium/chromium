@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import <memory>
 
 #import "base/debug/dump_without_crashing.h"
@@ -45,8 +46,9 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage_observer.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
@@ -130,7 +132,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
-                                LegacySnapshotStorageObserver,
+                                SnapshotStorageObserver,
                                 WebStateListObserving>
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
@@ -551,16 +553,15 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   [self.consumer replaceItem:item withReplacementItem:item];
 }
 
-#pragma mark - LegacySnapshotStorageObserver
+#pragma mark - SnapshotStorageObserver
 
-- (void)snapshotStorage:(LegacySnapshotStorage*)snapshotStorage
-    didUpdateSnapshotForID:(SnapshotID)snapshotID {
+- (void)didUpdateSnapshotStorageWithSnapshotID:(SnapshotIDWrapper*)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = self.webStateList->pinned_tabs_count();
        i < self.webStateList->count(); i++) {
     SnapshotTabHelper* snapshotTabHelper =
         SnapshotTabHelper::FromWebState(self.webStateList->GetWebStateAt(i));
-    if (snapshotID == snapshotTabHelper->GetSnapshotID()) {
+    if (snapshotID.snapshot_id == snapshotTabHelper->GetSnapshotID()) {
       webState = self.webStateList->GetWebStateAt(i);
       break;
     }

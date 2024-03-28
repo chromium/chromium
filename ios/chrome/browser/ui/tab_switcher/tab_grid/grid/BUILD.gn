@@ -64,6 +64,8 @@ source_set("grid_mediator") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:model_common",
+    "//ios/chrome/browser/snapshots/model:model_swift",
     "//ios/chrome/browser/tabs_search/model",
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/ui/menu",

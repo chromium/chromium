@@ -4,8 +4,7 @@
 
 // Interface for listening to events occurring to the SnapshotStorage.
 @objc protocol SnapshotStorageObserver {
-  // Tells the observing object that the `snapshotStorage` was updated with a new
-  // snapshot corresponding to `snapshotID`.
-  @objc optional func didUpdateSnapshotStorage(
-    _ snapshotStorage: SnapshotStorage, snapshotID: SnapshotIDWrapper)
+  // Tells the observing object that the storage was updated with a new snapshot corresponding to
+  // `snapshotID`.
+  @objc optional func didUpdateSnapshotStorage(snapshotID: SnapshotIDWrapper)
 }

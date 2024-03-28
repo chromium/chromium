@@ -130,7 +130,7 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
     }
 
     for observer in observers {
-      observer.didUpdateSnapshotStorage?(self, snapshotID: snapshotID)
+      observer.didUpdateSnapshotStorage?(snapshotID: snapshotID)
     }
   }
 
@@ -140,7 +140,7 @@ let kLRUCacheMaxCapacityForPinnedTabsEnabled = 10
     fileManager.removeImage(snapshotID: snapshotID)
 
     for observer in observers {
-      observer.didUpdateSnapshotStorage?(self, snapshotID: snapshotID)
+      observer.didUpdateSnapshotStorage?(snapshotID: snapshotID)
     }
   }
 
