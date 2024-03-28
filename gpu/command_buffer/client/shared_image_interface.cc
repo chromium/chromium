@@ -53,14 +53,13 @@ SharedImageInterface::AddReferenceToSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
-  // TODO(crbug.com/41494843): Have this method take in the texture target from
-  // the client and pass it along below.
+    uint32_t usage,
+    uint32_t texture_target) {
   return ImportSharedImage(ExportedSharedImage(
       mailbox,
       SharedImageMetadata{format, size, color_space, surface_origin, alpha_type,
                           usage},
-      sync_token, /*texture_target=*/GL_TEXTURE_2D));
+      sync_token, texture_target));
 }
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(

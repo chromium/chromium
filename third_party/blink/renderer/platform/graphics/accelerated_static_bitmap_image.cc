@@ -113,7 +113,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
           gfx::SkISizeToSize(sk_image_info.dimensions()), color_space,
           (is_origin_top_left) ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin,
-          sk_image_info.alphaType(), usage);
+          sk_image_info.alphaType(), usage, mailbox_holder.texture_target);
   auto release_token = sii->GenVerifiedSyncToken();
   // No need to keep the original image after the new reference has been added.
   // Need to update the sync token, however.
