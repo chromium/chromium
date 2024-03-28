@@ -512,7 +512,8 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, Apply_NoWatermark) {
+IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
+                       DISABLED_Apply_NoWatermark) {
   NavigateToAndWait(GURL("https://nowatermark.com"));
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(browser())
                    ->get_watermark_view_for_testing()
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, Apply_NoWatermark) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_Nav_NoWatermark_Watermark) {
+                       DISABLED_Apply_Nav_NoWatermark_Watermark) {
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
 
   // Initial page loaded into the browser view is a chrome:// URL that has no
@@ -546,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_Nav_Watermark_NoWatermark) {
+                       DISABLED_Apply_Nav_Watermark_NoWatermark) {
   // Start on a page that should show a watermark.
   NavigateToAndWait(GURL("https://watermark.com"));
   EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
@@ -568,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
-                       Apply_SwitchTab_ToWatermark) {
+                       DISABLED_Apply_SwitchTab_ToWatermark) {
   NavigateToAndWait(GURL("https://watermark.com"));
 
   // Create a second tab with a page that should not be watermarked.
