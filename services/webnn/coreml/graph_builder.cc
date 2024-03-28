@@ -33,7 +33,6 @@
 namespace webnn::coreml {
 
 using mojom::Operand;
-using mojom::OperandPtr;
 using mojom::Operation;
 
 namespace {
@@ -335,7 +334,7 @@ GraphBuilder::BuildCoreMLModel(const mojom::GraphInfo& graph_info,
   // Add output.
   for (auto& output_id : graph_info.output_operands) {
     block.add_outputs(GetCoreMLNameFromOperand(
-        output_id, *graph_info_->id_to_operand_map.at(output_id)));
+        output_id, GetOperand(output_id)));
     RETURN_IF_ERROR(AddOutput(output_id));
   }
   return base::ok();
@@ -367,14 +366,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
   current_offset += sizeof(header);
 
   for (auto& [key, buffer] : graph_info_->constant_id_to_buffer_map) {
-    auto& operand = graph_info_->id_to_operand_map.at(key);
-    if (operand->dimensions.empty()) {
+    const Operand& operand = GetOperand(key);
+    if (operand.dimensions.empty()) {
       AddConstantImmediateValue(key, block);
       continue;
     }
 
     std::optional<BlobDataType> weight_type =
-        OperandTypeToDataTypeInWeightFile(operand->data_type);
+        OperandTypeToDataTypeInWeightFile(operand.data_type);
     if (!weight_type.has_value()) {
       return NewNotSupportedError("Unsupported constant type.");
     }
@@ -391,7 +390,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
       return NewUnknownError(kWriteFileErrorMessage);
     }
 
-    AddConstantFileValue(key, current_offset, *operand, block);
+    AddConstantFileValue(key, current_offset, operand, block);
     current_offset += sizeof(metadata);
     current_offset += buffer.size();
     current_offset = base::bits::AlignUp(current_offset, kWeightAlignment);
@@ -400,6 +399,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::WriteWeightsToFile(
     }
   }
   return base::ok();
+}
+
+const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
+  return *graph_info_->id_to_operand_map.at(operand_id);
 }
 
 const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
@@ -461,14 +464,13 @@ void GraphBuilder::AddPlaceholderInput(
     CoreML::Specification::MILSpec::Function& main_function) {
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_input();
-  const OperandPtr& operand = graph_info_->id_to_operand_map.at(input_id);
+  const Operand& operand = GetOperand(input_id);
   RETURN_IF_ERROR(
-      PopulateFeatureDescription(input_id, *operand, *feature_description));
+      PopulateFeatureDescription(input_id, operand, *feature_description));
 
-  PopulateNamedValueType(input_id, *graph_info_->id_to_operand_map.at(input_id),
-                         *main_function.add_inputs());
+  PopulateNamedValueType(input_id, operand, *main_function.add_inputs());
 
-  CHECK(input_name_to_id_map_.try_emplace(operand->name.value(), input_id)
+  CHECK(input_name_to_id_map_.try_emplace(operand.name.value(), input_id)
             .second);
   return base::ok();
 }
@@ -477,11 +479,11 @@ void GraphBuilder::AddPlaceholderInput(
     uint64_t output_id) {
   const auto output_iterator = id_to_op_input_info_map_.find(output_id);
   CHECK(output_iterator != id_to_op_input_info_map_.end());
-  const OperandPtr& operand = graph_info_->id_to_operand_map.at(output_id);
+  const Operand& operand = GetOperand(output_id);
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
   RETURN_IF_ERROR(
-      PopulateFeatureDescription(output_id, *operand, *feature_description));
+      PopulateFeatureDescription(output_id, operand, *feature_description));
   return base::ok();
 }
 
@@ -543,7 +545,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
 
   PopulateNamedValueType(
       operation.output_operand_id,
-      *graph_info_->id_to_operand_map.at(operation.output_operand_id),
+      GetOperand(operation.output_operand_id),
       *op->add_outputs());
 
   return base::ok();
@@ -552,7 +554,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
 void GraphBuilder::AddConstantImmediateValue(
     uint32_t constant_id,
     CoreML::Specification::MILSpec::Block& block) {
-  auto& operand = *graph_info_->id_to_operand_map.at(constant_id);
+  const Operand& operand = GetOperand(constant_id);
   auto* op = block.add_operations();
   PopulateNamedValueType(constant_id, operand, *op->add_outputs());
   op->set_type(kOpConstTypeName);

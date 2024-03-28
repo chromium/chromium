@@ -27,8 +27,6 @@ std::string GetCoreMLNameFromOutput(const std::string& output_name);
 // produce CoreML model and serializes to provided `working_directory`.
 // There is nothing macOS-specific in this class.
 class GraphBuilder {
-  using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
-
  public:
   // Factory method that creates a GraphBuilder, builds and serializes the
   // CoreML model to the `working_directory`. This expects the
@@ -80,6 +78,10 @@ class GraphBuilder {
   [[nodiscard]] bool SerializeModel();
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> WriteWeightsToFile(
       CoreML::Specification::MILSpec::Block& block);
+
+  // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
+  // Will crash if `graph_info_` does not contain `operand_id`.
+  const mojom::Operand& GetOperand(uint64_t operand_id) const;
 
   // Add input in Model.description and in Program's main function inputs.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddInput(

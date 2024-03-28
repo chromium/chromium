@@ -97,7 +97,7 @@ class GraphBuilder final {
   uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code);
 
   // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
-  // Will craash if `graph_info_` does not contain `operand_id`.
+  // Will crash if `graph_info_` does not contain `operand_id`.
   const mojom::Operand& GetOperand(uint64_t operand_id) const;
 
   // Operation serialization helpers for operations not directly declared in the
