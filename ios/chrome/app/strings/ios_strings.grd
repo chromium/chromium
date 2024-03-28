@@ -4942,9 +4942,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE" desc="Section header for the section that contains all the open tabs from the search results.">
         Open Tabs
       </message>
-      <message name="IDS_IOS_TABS_SEARCH_TAB_GROUPS_SECTION_HEADER_TITLE" desc="Section header for the section that contains all the tab groups from the search results.">
-        Tab Groups
-      </message>
       <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS" desc="Section header for the suggested actions section shown in the tab grid at the bottom of search results.">
         Suggested
       </message>

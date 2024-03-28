@@ -517,7 +517,7 @@ using base::UserMetricsAction;
 - (void)keyCommand_goToTabGrid {
   RecordAction(UserMetricsAction("MobileKeyCommandGoToTabGrid"));
   [_applicationHandler prepareTabSwitcher];
-  [_applicationHandler displayTabSwitcherInGridLayout];
+  [_applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 
 - (void)keyCommand_clearBrowsingData {

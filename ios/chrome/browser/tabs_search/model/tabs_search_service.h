@@ -18,6 +18,7 @@
 
 class Browser;
 class BrowserList;
+class TabGroup;
 
 namespace history {
 class HistoryService;
@@ -68,16 +69,20 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                     WebHistoryServiceGetter web_history_service_getter);
   ~TabsSearchService() override;
 
-  // A container to store matched WebStates with a reference to their associated
+  // A container to store matched WebStates and TabGroups with a reference to
+  // their associated `browser`.
   // `browser`.
   struct TabsSearchBrowserResults {
-    TabsSearchBrowserResults(const Browser*, const std::vector<web::WebState*>);
+    TabsSearchBrowserResults(Browser*,
+                             const std::vector<web::WebState*>,
+                             const std::vector<const TabGroup*>);
     ~TabsSearchBrowserResults();
 
     TabsSearchBrowserResults(const TabsSearchBrowserResults&);
 
-    raw_ptr<const Browser> browser;
+    raw_ptr<Browser> browser;
     const std::vector<web::WebState*> web_states;
+    const std::vector<const TabGroup*> tab_groups;
   };
   // Searches through tabs in all the Browsers associated with `browser_state`
   // for WebStates with current titles or URLs matching `term`. The matching

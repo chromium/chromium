@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -728,12 +729,12 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     return;
   }
 
+  BOOL incognito = self.browserState->IsOffTheRecord();
   // If this is a search result, it may contain items from other windows or
   // from the inactive browser - check other windows before giving up.
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(self.browserState);
-  Browser* browser = GetBrowserForGroup(browserList, tabGroup,
-                                        self.browserState->IsOffTheRecord());
+  Browser* browser = GetBrowserForGroup(browserList, tabGroup, incognito);
 
   if (!browser) {
     return;
@@ -758,6 +759,16 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
                              error.localizedDescription);
                          NOTREACHED();
                        }];
+
+  if (!targetSceneState.UIEnabled) {
+    return;
+  }
+
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  TabGridOpeningMode openingMode =
+      incognito ? TabGridOpeningMode::kIncognito : TabGridOpeningMode::kRegular;
+  [applicationHandler displayTabGridInMode:openingMode];
 
   id<TabGroupsCommands> tabGroupsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), TabGroupsCommands);
@@ -939,6 +950,22 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         NSMutableArray* remainingItems = [[NSMutableArray alloc] init];
         for (const TabsSearchService::TabsSearchBrowserResults& browserResults :
              results) {
+          if (IsTabGroupInGridEnabled()) {
+            for (const TabGroup* group : browserResults.tab_groups) {
+              GridItemIdentifier* item = [GridItemIdentifier
+                  groupIdentifier:
+                      [[TabGroupItem alloc]
+                          initWithTabGroup:group
+                              webStateList:browserResults.browser
+                                               ->GetWebStateList()]];
+              if (browserResults.browser == self.browser) {
+                [currentBrowserItems addObject:item];
+              } else {
+                [remainingItems addObject:item];
+              }
+            }
+          }
+
           for (web::WebState* webState : browserResults.web_states) {
             GridItemIdentifier* item = [GridItemIdentifier
                 tabIdentifier:[[WebStateTabSwitcherItem alloc]

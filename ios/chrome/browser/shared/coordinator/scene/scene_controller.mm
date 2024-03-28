@@ -1530,20 +1530,17 @@ void OnListFamilyMembersResponse(
   }
 }
 
-- (void)displayRegularTabSwitcherInGridLayout {
-  [self displayTabSwitcherForcingRegularTabs:YES];
-}
+- (void)displayTabGridInMode:(TabGridOpeningMode)mode {
+  if (self.mainCoordinator.isTabGridActive) {
+    return;
+  }
 
-- (void)displayTabSwitcherInGridLayout {
-  [self displayTabSwitcherForcingRegularTabs:NO];
-}
-
-- (void)displayTabSwitcherForcingRegularTabs:(BOOL)forcing {
-  DCHECK(!self.mainCoordinator.isTabGridActive);
   if (!self.isProcessingVoiceSearchCommand) {
-
-    if (forcing && self.currentInterface.incognito) {
+    BOOL incognito = self.currentInterface.incognito;
+    if (mode == TabGridOpeningMode::kRegular && incognito) {
       [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];
+    } else if (mode == TabGridOpeningMode::kIncognito && !incognito) {
+      [self setCurrentInterfaceForMode:ApplicationMode::INCOGNITO];
     }
 
     [self showTabSwitcher];

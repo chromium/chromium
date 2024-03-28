@@ -14,6 +14,7 @@ source_set("model") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync_sessions",
+    "//components/tab_groups",
     "//ios/chrome/browser/history/model:utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",

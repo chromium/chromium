@@ -51,7 +51,7 @@
 }
 
 - (void)tabGridTouchUp {
-  [self.applicationHandler displayTabSwitcherInGridLayout];
+  [self.applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kTabGridToolbarItemUsed);

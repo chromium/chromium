@@ -14,9 +14,11 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/history/model/history_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -58,9 +60,10 @@ TabsSearchService::TabsSearchService(
 }
 
 TabsSearchService::TabsSearchBrowserResults::TabsSearchBrowserResults(
-    const Browser* browser,
-    const std::vector<web::WebState*> web_states)
-    : browser(browser), web_states(web_states) {}
+    Browser* browser,
+    const std::vector<web::WebState*> web_states,
+    const std::vector<const TabGroup*> tab_groups)
+    : browser(browser), web_states(web_states), tab_groups(tab_groups) {}
 
 TabsSearchService::TabsSearchBrowserResults::~TabsSearchBrowserResults() =
     default;
@@ -218,8 +221,18 @@ void TabsSearchService::SearchWithinBrowsers(
       }
     }
 
-    if (!matching_web_states.empty()) {
-      TabsSearchBrowserResults browser_results(browser, matching_web_states);
+    std::vector<const TabGroup*> matching_tab_groups;
+    for (const TabGroup* group : webStateList->GetGroups()) {
+      std::u16string group_title = group->visual_data().title();
+      if (query_search.Search(group_title, /*match_index=*/nullptr,
+                              /*match_length=*/nullptr)) {
+        matching_tab_groups.push_back(group);
+      }
+    }
+
+    if (!matching_web_states.empty() || !matching_tab_groups.empty()) {
+      TabsSearchBrowserResults browser_results(browser, matching_web_states,
+                                               matching_tab_groups);
       results.push_back(browser_results);
     }
   }

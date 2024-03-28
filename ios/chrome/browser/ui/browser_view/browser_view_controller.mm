@@ -2370,9 +2370,12 @@ enum HeaderBehaviour {
           forControlEvents:UIControlEventTouchUpInside];
 
       DCHECK(self.applicationCommandsHandler);
+      __weak __typeof(self) weakSelf = self;
       [self.blockingView.tabSwitcherButton
-                 addTarget:self.applicationCommandsHandler
-                    action:@selector(displayRegularTabSwitcherInGridLayout)
+                 addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                   [weakSelf.applicationCommandsHandler
+                       displayTabGridInMode:TabGridOpeningMode::kRegular];
+                 }]
           forControlEvents:UIControlEventTouchUpInside];
     }
 

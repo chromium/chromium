@@ -25,6 +25,16 @@ enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 @class UIViewController;
 
+// The mode in which the TabGrid should be opened.
+enum class TabGridOpeningMode {
+  // Don't force any mode, use the current one.
+  kDefault,
+  // Force to display the incognito mode.
+  kIncognito,
+  // Force to display the regular mode.
+  kRegular,
+};
+
 // Protocol for commands that will generally be handled by the application,
 // rather than a specific tab; in practice this means the SceneController
 // instance.
@@ -98,12 +108,8 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Prepare to show the TabSwitcher UI.
 - (void)prepareTabSwitcher;
 
-// Shows the TabSwitcher UI.
-- (void)displayTabSwitcherInGridLayout;
-
-// Same as displayTabSwitcherInGridLayout, but also force tab switcher to
-// regular tabs page.
-- (void)displayRegularTabSwitcherInGridLayout;
+// Shows the TabGrid, in the chosen `mode`.
+- (void)displayTabGridInMode:(TabGridOpeningMode)mode;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the settings Privacy UI.
