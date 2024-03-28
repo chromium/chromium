@@ -1248,6 +1248,7 @@ source_set("ash") {
     "file_system_provider/abort_callback.h",
     "file_system_provider/cloud_file_system.cc",
     "file_system_provider/cloud_file_system.h",
+    "file_system_provider/content_cache/cache_file_context.cc",
     "file_system_provider/content_cache/cache_file_context.h",
     "file_system_provider/content_cache/cache_manager.cc",
     "file_system_provider/content_cache/cache_manager.h",
