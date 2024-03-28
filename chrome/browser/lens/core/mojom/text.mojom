@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // These Mojo structs are converted from
-// chrome/browser/lens/server/proto/lens_overlay_text.proto.
+// third_party/lens_server_proto/lens_overlay_text.proto.
 module lens.mojom;
 
 import "chrome/browser/lens/core/mojom/geometry.mojom";

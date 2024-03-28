@@ -10,5 +10,5 @@ package lens;
 
 enum Surface {
   SURFACE_UNSPECIFIED = 0;
-  CHROMIUM = 4;
+  SURFACE_CHROMIUM = 4;
 }
