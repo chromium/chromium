@@ -50,4 +50,18 @@ public interface OneshotSupplier<T> extends Supplier<T> {
      */
     @Nullable
     T onAvailable(Callback<T> callback);
+
+    /**
+     * Runs the {@link Callback} synchronously if there is already a value assigned, otherwise, it
+     * will add the callback to be notified when a value becomes available.
+     *
+     * @param callback The callback to be called (either async or sync).
+     */
+    default void runSyncOrOnAvailable(Callback<T> callback) {
+        if (hasValue()) {
+            callback.onResult(get());
+        } else {
+            onAvailable(callback);
+        }
+    }
 }

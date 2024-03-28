@@ -1832,7 +1832,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         super.finishNativeInitialization();
 
-        getProfileProviderSupplier().onAvailable(this::initializeManualFillingComponent);
+        getProfileProviderSupplier().runSyncOrOnAvailable(this::initializeManualFillingComponent);
 
         mTabReparentingControllerSupplier.set(
                 new TabReparentingController(
@@ -1863,6 +1863,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     private void initializeManualFillingComponent(ProfileProvider profileProvider) {
+        if (isDestroyed()) return;
         mManualFillingComponentSupplier
                 .get()
                 .initialize(
