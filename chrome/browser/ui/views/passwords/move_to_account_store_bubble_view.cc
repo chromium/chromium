@@ -341,12 +341,6 @@ void MoveToAccountStoreBubbleView::OnFaviconReady(const gfx::Image& favicon) {
   if (!favicon.IsEmpty()) {
     moving_banner_->UpdateFavicon(*favicon.ToImageSkia());
   }
-  // This bubble can be opened automatically from the management bubble, while
-  // this happens password manager ui loses focus. Since this bubble is part of
-  // a critical user journey, the focus should be granted to password
-  // manager ui when it is opened. Activating it here ensures that this bubble
-  // is visible and the focus can be requested.
-  GetWidget()->Activate();
 }
 
 BEGIN_METADATA(MoveToAccountStoreBubbleView)

@@ -267,6 +267,9 @@ class ManagePasswordsUIController
     SHOWN,
     // Same as SHOWN but the icon is to be updated when the bubble is closed.
     SHOWN_PENDING_ICON_UPDATE,
+    // The bubble is to be popped up in the next call to
+    // UpdateBubbleAndIconVisibility() and will be focused automatically.
+    SHOULD_POP_UP_WITH_FOCUS,
   };
 
   bool IsShowingBubble() const {

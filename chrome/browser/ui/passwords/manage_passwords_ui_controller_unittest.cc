@@ -1047,7 +1047,7 @@ TEST_F(ManagePasswordsUIControllerTest,
       password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
 
   controller()->PromptSaveBubbleAfterDefaultStoreChanged();
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
   EXPECT_EQ(url::Origin::Create(test_local_form().url),
             controller()->GetOrigin());
   ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
@@ -1767,7 +1767,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoveBubbleFromManagementBubble) {
 
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
   controller()->ShowMovePasswordBubble(test_local_form());
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
 
@@ -1797,7 +1797,7 @@ TEST_F(ManagePasswordsUIControllerTest, CloseMoveBubble) {
 
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
   controller()->ShowMovePasswordBubble(test_local_form());
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
 

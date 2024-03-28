@@ -469,7 +469,7 @@ void ManagePasswordsUIController::ShowMovePasswordBubble(
       std::make_unique<password_manager::PasswordForm>(form));
   passwords_data_.TransitionToState(
       password_manager::ui::MOVE_CREDENTIAL_FROM_MANAGE_BUBBLE_STATE);
-  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP_WITH_FOCUS;
   UpdateBubbleAndIconVisibility();
 }
 
@@ -539,7 +539,8 @@ void ManagePasswordsUIController::OnLoginsRetained(
 
 void ManagePasswordsUIController::UpdateIconAndBubbleState(
     ManagePasswordsIconView* icon) {
-  if (IsAutomaticallyOpeningBubble()) {
+  if (IsAutomaticallyOpeningBubble() ||
+      bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
     DCHECK(!dialog_controller_);
     // This will detach any existing bubble so OnBubbleHidden() isn't called.
     weak_ptr_factory_.InvalidateWeakPtrs();
@@ -867,7 +868,7 @@ void ManagePasswordsUIController::PromptSaveBubbleAfterDefaultStoreChanged() {
       << GetState();
   passwords_data_.TransitionToState(
       password_manager::ui::PENDING_PASSWORD_STATE);
-  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP_WITH_FOCUS;
   UpdateBubbleAndIconVisibility();
 }
 
@@ -1167,7 +1168,8 @@ base::TimeDelta ManagePasswordsUIController::GetTimeoutForSaveFallback() {
 }
 
 void ManagePasswordsUIController::ShowBubbleWithoutUserInteraction() {
-  DCHECK(IsAutomaticallyOpeningBubble());
+  CHECK(IsAutomaticallyOpeningBubble() ||
+         bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS);
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Can be zero in the tests.
   if (!browser)
@@ -1177,7 +1179,8 @@ void ManagePasswordsUIController::ShowBubbleWithoutUserInteraction() {
 }
 
 void ManagePasswordsUIController::ClearPopUpFlagForBubble() {
-  if (IsAutomaticallyOpeningBubble()) {
+  if (IsAutomaticallyOpeningBubble() ||
+      bubble_status_ == BubbleStatus::SHOULD_POP_UP_WITH_FOCUS) {
     bubble_status_ = BubbleStatus::NOT_SHOWN;
   }
 }
