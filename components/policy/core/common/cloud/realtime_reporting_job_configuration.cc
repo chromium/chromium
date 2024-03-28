@@ -132,9 +132,11 @@ std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
       response->GetDict().FindList(kFailedUploadsKey);
   if (failedUploads) {
     for (const auto& failedUpload : *failedUploads) {
-      auto* id = failedUpload.GetDict().FindString(kEventIdKey);
-      if (id) {
-        failedIds.insert(*id);
+      if (failedUpload.is_dict()) {
+        const auto* const id = failedUpload.GetDict().FindString(kEventIdKey);
+        if (id) {
+          failedIds.insert(*id);
+        }
       }
     }
   }
