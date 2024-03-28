@@ -794,30 +794,6 @@ bool Color::IsBakedGamutMappingEnabled() {
 }
 
 SkColor4f Color::ToSkColor4fInternal(bool gamut_map_oklab_oklch) const {
-  // Used value of an lab/lch color with lightness outside of the range
-  // (0, 100) maps to black/white respectively.
-  // The same is true for oklab/oklch, except the range is (0, 1).
-  // See: https://github.com/w3c/csswg-drafts/issues/8794
-  if (IsLightnessFirstComponent(color_space_) && !param0_is_none_) {
-    float upper_bound = 100.0;
-    if (color_space_ == ColorSpace::kOklab ||
-        color_space_ == ColorSpace::kOklch) {
-      upper_bound = 1.0;
-    }
-
-    if (IsBakedGamutMappingEnabled() && (color_space_ == ColorSpace::kOklab ||
-                                         color_space_ == ColorSpace::kOklch)) {
-      // Disable this behavior for oklab and oklch in the baked gamut mapping
-      // prototype.
-    } else {
-      if (param0_ >= upper_bound) {
-        return SkColor4f{1.f, 1.f, 1.f, alpha_};
-      }
-      if (param0_ <= 0.0) {
-        return SkColor4f{0.f, 0.f, 0.f, alpha_};
-      }
-    }
-  }
   switch (color_space_) {
     case ColorSpace::kSRGB:
       return SkColor4f{param0_, param1_, param2_, alpha_};
