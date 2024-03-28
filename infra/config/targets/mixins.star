@@ -1276,6 +1276,19 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "motorola_moto_g_power_5g",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "devonn",
+            "device_os": "T1TOS33.33-45-23-12",
+            "device_os_flavor": "motorola",
+            "os": "Android",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "no_gpu",
     swarming = targets.swarming(
         dimensions = {

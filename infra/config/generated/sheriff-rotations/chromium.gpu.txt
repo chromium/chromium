@@ -1,4 +1,5 @@
 ci/Android FYI Experimental Release (Pixel 6)
+ci/Android FYI Release (Motorola Moto G Power 5G)
 ci/Android FYI Release (NVIDIA Shield TV)
 ci/Android FYI Release (Nexus 5X)
 ci/Android FYI Release (Pixel 2)

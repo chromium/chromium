@@ -4075,6 +4075,19 @@
           'gpu_telemetry_tests': 'gpu_pixel_6_telemetry_tests',
         },
       },
+      'Android FYI Release (Motorola Moto G Power 5G)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'has_native_resultdb_integration',
+          'motorola_moto_g_power_5g',
+          'limited_capacity_bot',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Android FYI Release (NVIDIA Shield TV)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',

@@ -996,6 +996,17 @@
       },
     },
   },
+  'motorola_moto_g_power_5g': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'devonn',
+        'device_os': 'T1TOS33.33-45-23-12',
+        'device_os_flavor': 'motorola',
+        'os': 'Android',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'no_gpu': {
     'swarming': {
       'dimensions': {
