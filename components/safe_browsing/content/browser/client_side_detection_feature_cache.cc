@@ -59,6 +59,7 @@ long ClientSideDetectionFeatureCache::GetTotalVerdictEntriesSize() {
 LoginReputationClientRequest::DebuggingMetadata*
 ClientSideDetectionFeatureCache::GetOrCreateDebuggingMetadataForURL(
     const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DebuggingMetadata* debugging_metadata = GetDebuggingMetadataForURL(url);
 
   if (!debugging_metadata) {
@@ -82,6 +83,7 @@ ClientSideDetectionFeatureCache::GetOrCreateDebuggingMetadataForURL(
 
 void ClientSideDetectionFeatureCache::RemoveDebuggingMetadataForURL(
     const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (debug_metadata_map_.contains(url)) {
     debug_metadata_map_.erase(url);
     // The remove function is called when PW-Reuse is called, and we want to

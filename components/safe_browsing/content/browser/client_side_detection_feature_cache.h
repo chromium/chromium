@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/queue.h"
+#include "base/sequence_checker.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/web_contents.h"
@@ -68,9 +69,12 @@ class ClientSideDetectionFeatureCache
       std::unique_ptr<LoginReputationClientRequest::DebuggingMetadata>>
       debug_metadata_map_;
   base::queue<GURL> gurl_queue_;
-  base::queue<GURL> debugging_metadata_queue_;
+  base::queue<GURL> debugging_metadata_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   static constexpr size_t kMaxMapCapacity = 10;
   base::CallbackListSubscription clear_cache_subscription_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
