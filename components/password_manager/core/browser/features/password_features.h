@@ -112,6 +112,10 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
 // See also kLocalUpmMinGmsVersionParam below.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
 
+// Helper function which returns the delay when the local passwords migration is
+// triggered after Chrome startup in seconds.
+int GetLocalPasswordsMigrationToAndroidBackendDelay();
+
 // Enables UPM M4 that no longer needs Password sync engine to sync passwords.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
 

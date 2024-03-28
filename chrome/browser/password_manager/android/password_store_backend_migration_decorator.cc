@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -20,13 +21,8 @@
 
 namespace password_manager {
 
-namespace {
-
-// Time in seconds by which the passwords migration from the built-in backend to
-// the Android backend is delayed.
-constexpr int kMigrationToAndroidBackendDelay = 30;
-
-}  // namespace
+using password_manager::features::
+    GetLocalPasswordsMigrationToAndroidBackendDelay;
 
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
@@ -77,7 +73,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
                          StartMigrationOfLocalPasswords,
                      migrator_->GetWeakPtr()),
-      base::Seconds(kMigrationToAndroidBackendDelay));
+      base::Seconds(GetLocalPasswordsMigrationToAndroidBackendDelay()));
 }
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(
