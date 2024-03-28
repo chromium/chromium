@@ -421,6 +421,10 @@ void WaitForVisibleChromeManagementURL() {
 // Tests that the managed accout confirmation dialog is shown in the sign-in
 // flow with its contextual and specific content when user policies are enabled.
 - (void)testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
+  // TODO(crbug.com/331775412): Test fails on iPad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
+  }
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
   // Enable User Policy for sign-in consent level exclusively.
   config.features_enabled.push_back(
