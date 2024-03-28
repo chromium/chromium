@@ -16,12 +16,12 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+class LensOverlayController;
 class TabStripModel;
 
 namespace tabs {
 
 class TabCollection;
-class TabFeatures;
 
 class TabModel final : public SupportsHandles<const TabModel> {
  public:
@@ -74,7 +74,9 @@ class TabModel final : public SupportsHandles<const TabModel> {
   // The current contents of the tab must be |nullptr|.
   void SetContents(std::unique_ptr<content::WebContents> contents);
 
-  TabFeatures* tab_features() { return tab_features_.get(); }
+  LensOverlayController* lens_overlay_controller() {
+    return lens_overlay_controller_.get();
+  }
 
   // Returns a pointer to the parent TabCollection. This method is specifically
   // designed to be accessible only within the collection tree that has the
@@ -110,8 +112,8 @@ class TabModel final : public SupportsHandles<const TabModel> {
 
   base::ObserverList<TabModelObserver> observers_;
 
-  // Features that are per-tab will be owned by this class.
-  std::unique_ptr<TabFeatures> tab_features_;
+  // Features that are per-tab will each have a controller.
+  std::unique_ptr<LensOverlayController> lens_overlay_controller_;
 };
 
 using TabHandle = TabModel::Handle;
