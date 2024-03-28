@@ -89,7 +89,7 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override {
-    if (window_state_->IsFullscreen()) {
+    if (!window_state_ || window_state_->IsFullscreen()) {
       return;
     }
 
