@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_PARSER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_PARSER_H_
 
+#include <stdint.h>
+
 #include <iosfwd>
 #include <optional>
 #include <string>
@@ -18,6 +20,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -27,18 +30,45 @@ class HttpResponseHeaders;
 namespace content {
 
 struct AttributionSimulationEvent {
-  attribution_reporting::SuitableOrigin reporting_origin;
-  attribution_reporting::SuitableOrigin context_origin;
-  network::mojom::AttributionReportingEligibility eligibility;
-  scoped_refptr<net::HttpResponseHeaders> response_headers;
-  base::Time time;
-  bool debug_permission = false;
-  // Only relevant for sources, not triggers.
-  attribution_reporting::RandomizedResponse randomized_response;
+  struct StartRequest {
+    int64_t request_id;
+    attribution_reporting::SuitableOrigin context_origin;
+    network::mojom::AttributionReportingEligibility eligibility;
+  };
 
-  AttributionSimulationEvent(
-      attribution_reporting::SuitableOrigin reporting_origin,
-      attribution_reporting::SuitableOrigin context_origin);
+  struct Response {
+    int64_t request_id;
+    attribution_reporting::SuitableOrigin reporting_origin;
+    scoped_refptr<net::HttpResponseHeaders> response_headers;
+    // Only relevant for sources, not triggers.
+    attribution_reporting::RandomizedResponse randomized_response;
+    bool debug_permission = false;
+
+    Response(int64_t request_id,
+             attribution_reporting::SuitableOrigin reporting_origin,
+             scoped_refptr<net::HttpResponseHeaders>,
+             attribution_reporting::RandomizedResponse,
+             bool debug_permission);
+
+    ~Response();
+
+    Response(const Response&) = delete;
+    Response& operator=(const Response&) = delete;
+
+    Response(Response&&);
+    Response& operator=(Response&&);
+  };
+
+  struct EndRequest {
+    int64_t request_id;
+  };
+
+  using Data = absl::variant<StartRequest, Response, EndRequest>;
+
+  base::Time time;
+  Data data;
+
+  AttributionSimulationEvent(base::Time, Data);
 
   ~AttributionSimulationEvent();
 

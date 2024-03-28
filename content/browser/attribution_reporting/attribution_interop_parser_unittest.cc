@@ -42,6 +42,7 @@ using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Optional;
+using ::testing::VariantWith;
 
 using ::attribution_reporting::SuitableOrigin;
 
@@ -62,7 +63,36 @@ TEST(AttributionInteropParserTest, EmptyInputParses) {
   }
 }
 
-TEST(AttributionInteropParserTest, ValidSourceParses) {
+MATCHER_P(SimulationEventTimeIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.time, result_listener);
+}
+
+MATCHER_P(StartRequestIs, matcher, "") {
+  return ExplainMatchResult(
+      VariantWith<AttributionSimulationEvent::StartRequest>(matcher), arg.data,
+      result_listener);
+}
+
+MATCHER_P(ResponseIs, matcher, "") {
+  return ExplainMatchResult(
+      VariantWith<AttributionSimulationEvent::Response>(matcher), arg.data,
+      result_listener);
+}
+
+MATCHER_P(EndRequestIs, matcher, "") {
+  return ExplainMatchResult(
+      VariantWith<AttributionSimulationEvent::EndRequest>(matcher), arg.data,
+      result_listener);
+}
+
+MATCHER_P(RequestIdIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.request_id, result_listener);
+}
+
+TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
+  using Response = ::content::AttributionSimulationEvent::Response;
+  using StartRequest = ::content::AttributionSimulationEvent::StartRequest;
+
   constexpr char kJson[] = R"json({"registrations": [
     {
       "timestamp": "1643235573123",
@@ -103,74 +133,57 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
 
   ASSERT_OK_AND_ASSIGN(
       auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
-  ASSERT_EQ(result.size(), 2u);
 
-  EXPECT_EQ(result.front().time,
-            kOffsetTime + base::Milliseconds(1643235573123));
-  EXPECT_EQ(result.front().eligibility,
-            network::mojom::AttributionReportingEligibility::kNavigationSource);
-  EXPECT_EQ(result.front().reporting_origin,
-            *SuitableOrigin::Deserialize("https://a.r.test"));
-  EXPECT_EQ(result.front().context_origin,
-            *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_TRUE(result.front().response_headers->HasHeaderValue(
-      "Attribution-Reporting-Register-Source", R"({"a":"b"})"));
-  EXPECT_EQ(result.front().randomized_response, std::nullopt);
-  EXPECT_TRUE(result.front().debug_permission);
+  const base::Time kExpectedTime1 =
+      kOffsetTime + base::Milliseconds(1643235573123);
+  const base::Time kExpectedTime2 =
+      kOffsetTime + base::Milliseconds(1643235574123);
 
-  EXPECT_EQ(result.back().time,
-            kOffsetTime + base::Milliseconds(1643235574123));
-  EXPECT_EQ(result.back().eligibility,
-            network::mojom::AttributionReportingEligibility::kEventSource);
-  EXPECT_EQ(result.back().reporting_origin,
-            *SuitableOrigin::Deserialize("https://b.r.test"));
-  EXPECT_EQ(result.back().context_origin,
-            *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_TRUE(result.back().response_headers->HasHeaderValue(
-      "Attribution-Reporting-Register-Source", "!!!"));
-  EXPECT_THAT(result.back().randomized_response,
-              Optional(ElementsAre(attribution_reporting::FakeEventLevelReport{
-                  .trigger_data = 5,
-                  .window_index = 1,
-              })));
-  EXPECT_FALSE(result.back().debug_permission);
-}
+  const int64_t kExpectedRequestId1 = 0;
+  const int64_t kExpectedRequestId2 = 1;
 
-TEST(AttributionInteropParserTest, ValidTriggerParses) {
-  constexpr char kJson[] = R"json({"registrations": [
-    {
-      "timestamp": "1643235575123",
-      "registration_request": {
-        "attribution_src_url": "https://a.r.test",
-        "context_origin": " https://b.d.test",
-      },
-      "responses": [{
-        "url": "https://a.r.test",
-        "debug_permission": true,
-        "response": {
-          "Attribution-Reporting-Register-Trigger": {"a": "b" }
-        }
-      }]
-    }
-  ]})json";
-
-  base::Value::Dict value = base::test::ParseJsonDict(kJson);
-
-  ASSERT_OK_AND_ASSIGN(
-      auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
-  ASSERT_EQ(result.size(), 1u);
-
-  EXPECT_EQ(result.front().time,
-            kOffsetTime + base::Milliseconds(1643235575123));
-  EXPECT_EQ(result.front().reporting_origin,
-            *SuitableOrigin::Deserialize("https://a.r.test"));
-  EXPECT_EQ(result.front().context_origin,
-            *SuitableOrigin::Deserialize("https://b.d.test"));
-  EXPECT_EQ(result.front().eligibility,
-            network::mojom::AttributionReportingEligibility::kUnset);
-  EXPECT_TRUE(result.front().response_headers->HasHeaderValue(
-      "Attribution-Reporting-Register-Trigger", R"({"a":"b"})"));
-  EXPECT_TRUE(result.front().debug_permission);
+  EXPECT_THAT(
+      result,
+      ElementsAre(
+          AllOf(SimulationEventTimeIs(kExpectedTime1),
+                StartRequestIs(AllOf(
+                    RequestIdIs(kExpectedRequestId1),
+                    Field(&StartRequest::context_origin,
+                          *SuitableOrigin::Deserialize("https://a.s.test")),
+                    Field(&StartRequest::eligibility,
+                          network::mojom::AttributionReportingEligibility::
+                              kNavigationSource)))),
+          AllOf(SimulationEventTimeIs(kExpectedTime1),
+                ResponseIs(AllOf(
+                    RequestIdIs(kExpectedRequestId1),
+                    Field(&Response::reporting_origin,
+                          *SuitableOrigin::Deserialize("https://a.r.test")),
+                    Field(&Response::response_headers,
+                          ::testing::ResultOf(
+                              [](const auto& headers) {
+                                return headers->HasHeaderValue(
+                                    "Attribution-Reporting-Register-Source",
+                                    R"({"a":"b"})");
+                              },
+                              true)),
+                    Field(&Response::randomized_response, std::nullopt),
+                    Field(&Response::debug_permission, true)))),
+          AllOf(SimulationEventTimeIs(kExpectedTime1),
+                EndRequestIs(RequestIdIs(kExpectedRequestId1))),
+          AllOf(SimulationEventTimeIs(kExpectedTime2),
+                StartRequestIs(RequestIdIs(kExpectedRequestId2))),
+          AllOf(SimulationEventTimeIs(kExpectedTime2),
+                ResponseIs(
+                    AllOf(RequestIdIs(kExpectedRequestId2),
+                          Field(&Response::randomized_response,
+                                Optional(ElementsAre(
+                                    attribution_reporting::FakeEventLevelReport{
+                                        .trigger_data = 5,
+                                        .window_index = 1,
+                                    }))),
+                          Field(&Response::debug_permission, false)))),
+          AllOf(SimulationEventTimeIs(kExpectedTime2),
+                EndRequestIs(RequestIdIs(kExpectedRequestId2)))));
 }
 
 struct ParseErrorTestCase {

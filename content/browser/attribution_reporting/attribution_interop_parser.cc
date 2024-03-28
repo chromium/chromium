@@ -139,8 +139,9 @@ class AttributionInteropParser {
     static constexpr char kKeyRegistrations[] = "registrations";
     if (base::Value* registrations = input.Find(kKeyRegistrations)) {
       auto context = PushContext(kKeyRegistrations);
+      int64_t request_id = 0;
       ParseListOfDicts(registrations, [&](base::Value::Dict registration) {
-        ParseRegistration(std::move(registration), events);
+        ParseRegistration(std::move(registration), events, request_id++);
       });
     }
 
@@ -322,7 +323,8 @@ class AttributionInteropParser {
   }
 
   void ParseRegistration(base::Value::Dict dict,
-                         std::vector<AttributionSimulationEvent>& events) {
+                         std::vector<AttributionSimulationEvent>& events,
+                         int64_t request_id) {
     const base::Time time =
         ParseTime(dict, /*key=*/"timestamp",
                   /*previous_time=*/events.empty() ? base::Time::Min()
@@ -342,6 +344,10 @@ class AttributionInteropParser {
     if (has_error_) {
       return;
     }
+
+    events.emplace_back(
+        time, AttributionSimulationEvent::StartRequest(
+                  request_id, std::move(*context_origin), eligibility));
 
     {
       auto context = PushContext(kResponsesKey);
@@ -379,17 +385,19 @@ class AttributionInteropParser {
                     }
                   }
 
-                  auto& event = events.emplace_back(
-                      std::move(*reporting_origin), std::move(*context_origin));
-                  event.eligibility = eligibility;
-                  event.response_headers = builder.Build();
-                  event.time = time;
-                  event.debug_permission = debug_permission;
-                  event.randomized_response = std::move(randomized_response);
+                  events.emplace_back(
+                      time, AttributionSimulationEvent::Response(
+                                request_id, std::move(*reporting_origin),
+                                builder.Build(), std::move(randomized_response),
+                                debug_permission));
+
                 });
           },
           /*expected_size=*/1);
     }
+
+    events.emplace_back(time,
+                        AttributionSimulationEvent::EndRequest(request_id));
   }
 
   void ParseReport(base::Value::Dict dict,
@@ -707,11 +715,9 @@ class AttributionInteropParser {
 
 }  // namespace
 
-AttributionSimulationEvent::AttributionSimulationEvent(
-    SuitableOrigin reporting_origin,
-    SuitableOrigin context_origin)
-    : reporting_origin(std::move(reporting_origin)),
-      context_origin(std::move(context_origin)) {}
+AttributionSimulationEvent::AttributionSimulationEvent(base::Time time,
+                                                       Data data)
+    : time(time), data(std::move(data)) {}
 
 AttributionSimulationEvent::~AttributionSimulationEvent() = default;
 
@@ -720,6 +726,25 @@ AttributionSimulationEvent::AttributionSimulationEvent(
 
 AttributionSimulationEvent& AttributionSimulationEvent::operator=(
     AttributionSimulationEvent&&) = default;
+
+AttributionSimulationEvent::Response::Response(
+    int64_t request_id,
+    attribution_reporting::SuitableOrigin reporting_origin,
+    scoped_refptr<net::HttpResponseHeaders> response_headers,
+    attribution_reporting::RandomizedResponse randomized_response,
+    bool debug_permission)
+    : request_id(request_id),
+      reporting_origin(std::move(reporting_origin)),
+      response_headers(std::move(response_headers)),
+      randomized_response(std::move(randomized_response)),
+      debug_permission(debug_permission) {}
+
+AttributionSimulationEvent::Response::~Response() = default;
+
+AttributionSimulationEvent::Response::Response(Response&&) = default;
+
+AttributionSimulationEvent::Response&
+AttributionSimulationEvent::Response::operator=(Response&&) = default;
 
 base::expected<AttributionSimulationEvents, std::string>
 ParseAttributionInteropInput(base::Value::Dict input,

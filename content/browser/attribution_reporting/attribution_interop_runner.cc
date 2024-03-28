@@ -22,7 +22,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -82,6 +81,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -239,7 +239,9 @@ class FakeCookieChecker : public AttributionCookieChecker {
       const std::vector<AttributionSimulationEvent>& events) {
     std::vector<base::Time> times;
     for (const auto& event : events) {
-      if (event.debug_permission) {
+      if (const auto* data =
+              absl::get_if<AttributionSimulationEvent::Response>(&event.data);
+          data && data->debug_permission) {
         times.push_back(event.time);
       }
     }
@@ -273,9 +275,11 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
                                        config) {
     std::vector<std::pair<base::Time, RandomizedResponse>> responses;
     for (auto& event : events) {
-      if (event.randomized_response.has_value()) {
+      if (auto* data =
+              absl::get_if<AttributionSimulationEvent::Response>(&event.data);
+          data && data->randomized_response.has_value()) {
         responses.emplace_back(
-            event.time, std::exchange(event.randomized_response, std::nullopt));
+            event.time, std::exchange(data->randomized_response, std::nullopt));
       }
     }
     randomized_responses_.replace(std::move(responses));
@@ -332,93 +336,80 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-// Registers sources and triggers in the `AttributionManagerImpl`.
-class AttributionEventHandler {
- public:
-  explicit AttributionEventHandler(
-      std::unique_ptr<AttributionManagerImpl> manager)
-      : manager_(std::move(manager)) {
-    DCHECK(manager_);
+void Handle(const AttributionSimulationEvent::StartRequest& event,
+            AttributionDataHostManager& data_host_manager) {
+  std::optional<RegistrationEligibility> eligibility =
+      attribution_reporting::GetRegistrationEligibility(event.eligibility);
+  if (!eligibility.has_value()) {
+    return;
   }
 
-  void Handle(AttributionSimulationEvent event) {
-    std::optional<RegistrationEligibility> eligibility =
-        attribution_reporting::GetRegistrationEligibility(event.eligibility);
-    if (!eligibility.has_value()) {
-      return;
-    }
-
-    const BackgroundRegistrationsId id(unique_id_counter_++);
-
-    auto* attribution_data_host_manager = manager_->GetDataHostManager();
-
-    std::optional<blink::AttributionSrcToken> attribution_src_token;
-
-    if (event.eligibility ==
-        AttributionReportingEligibility::kNavigationSource) {
-      attribution_src_token.emplace();
-      attribution_data_host_manager
-          ->NotifyNavigationWithBackgroundRegistrationsWillStart(
-              attribution_src_token.value(),
-              /*background_registrations_count=*/1);
-      attribution_data_host_manager->NotifyNavigationRegistrationStarted(
-          AttributionSuitableContext::CreateForTesting(
-              event.context_origin,
-              /*is_nested_within_fenced_frame=*/false, kFrameId,
-              /*last_navigation_id=*/kNavigationId),
-          attribution_src_token.value(), kNavigationId,
-          /*devtools_request_id=*/"");
-      attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
-          attribution_src_token.value());
-    }
-
-    attribution_data_host_manager->NotifyBackgroundRegistrationStarted(
-        id,
+  std::optional<blink::AttributionSrcToken> attribution_src_token;
+  if (event.eligibility == AttributionReportingEligibility::kNavigationSource) {
+    attribution_src_token.emplace();
+    data_host_manager.NotifyNavigationWithBackgroundRegistrationsWillStart(
+        *attribution_src_token,
+        /*background_registrations_count=*/1);
+    data_host_manager.NotifyNavigationRegistrationStarted(
         AttributionSuitableContext::CreateForTesting(
             event.context_origin,
-            /*is_nested_within_fenced_frame=*/false, kFrameId, kNavigationId),
-        *eligibility, attribution_src_token,
+            /*is_nested_within_fenced_frame=*/false, kFrameId,
+            /*last_navigation_id=*/kNavigationId),
+        *attribution_src_token, kNavigationId,
         /*devtools_request_id=*/"");
-
-    attribution_data_host_manager->NotifyBackgroundRegistrationData(
-        id, event.response_headers.get(), event.reporting_origin->GetURL(),
-        network::AttributionReportingRuntimeFeatures(),
-        /*trigger_verification=*/{});
-    attribution_data_host_manager->NotifyBackgroundRegistrationCompleted(id);
+    data_host_manager.NotifyNavigationRegistrationCompleted(
+        *attribution_src_token);
   }
 
-  void FastForwardUntilReportsConsumed(
-      BrowserTaskEnvironment& task_environment) {
-    while (true) {
-      auto delta = base::TimeDelta::Min();
-      base::RunLoop run_loop;
+  data_host_manager.NotifyBackgroundRegistrationStarted(
+      BackgroundRegistrationsId(event.request_id),
+      AttributionSuitableContext::CreateForTesting(
+          event.context_origin,
+          /*is_nested_within_fenced_frame=*/false, kFrameId, kNavigationId),
+      *eligibility, attribution_src_token,
+      /*devtools_request_id=*/"");
+}
 
-      manager_->GetPendingReportsForInternalUse(
-          /*limit=*/-1, base::BindLambdaForTesting(
-                            [&](std::vector<AttributionReport> reports) {
-                              auto it = base::ranges::max_element(
-                                  reports, /*comp=*/{},
-                                  &AttributionReport::report_time);
-                              if (it != reports.end()) {
-                                delta = it->report_time() - base::Time::Now();
-                              }
-                              run_loop.Quit();
-                            }));
+void Handle(const AttributionSimulationEvent::Response& event,
+            AttributionDataHostManager& data_host_manager) {
+  data_host_manager.NotifyBackgroundRegistrationData(
+      BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
+      event.reporting_origin->GetURL(),
+      network::AttributionReportingRuntimeFeatures(),
+      /*trigger_verification=*/{});
+}
 
-      run_loop.Run();
+void Handle(const AttributionSimulationEvent::EndRequest& event,
+            AttributionDataHostManager& data_host_manager) {
+  data_host_manager.NotifyBackgroundRegistrationCompleted(
+      BackgroundRegistrationsId(event.request_id));
+}
 
-      if (delta.is_negative()) {
-        break;
-      }
-      task_environment.FastForwardBy(delta);
+void FastForwardUntilReportsConsumed(AttributionManager& manager,
+                                     BrowserTaskEnvironment& task_environment) {
+  while (true) {
+    auto delta = base::TimeDelta::Min();
+    base::RunLoop run_loop;
+
+    manager.GetPendingReportsForInternalUse(
+        /*limit=*/-1,
+        base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
+          auto it = base::ranges::max_element(reports, /*comp=*/{},
+                                              &AttributionReport::report_time);
+          if (it != reports.end()) {
+            delta = it->report_time() - base::Time::Now();
+          }
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+
+    if (delta.is_negative()) {
+      break;
     }
+    task_environment.FastForwardBy(delta);
   }
-
- private:
-  const std::unique_ptr<AttributionManagerImpl> manager_;
-
-  int64_t unique_id_counter_ = 0;
-};
+}
 
 }  // namespace
 
@@ -461,12 +452,8 @@ RunAttributionInteropSimulation(base::Value::Dict input,
 
   DCHECK(base::ranges::is_sorted(events, /*comp=*/{},
                                  &AttributionSimulationEvent::time));
-  DCHECK(base::ranges::adjacent_find(
-             events, /*pred=*/{},
-             [](const auto& event) { return event.time; }) == events.end());
 
   const base::Time min_event_time = events.front().time;
-  const base::Time max_event_time = events.back().time;
 
   task_environment.FastForwardBy(min_event_time - time_origin);
 
@@ -505,8 +492,6 @@ RunAttributionInteropSimulation(base::Value::Dict input,
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
       storage_task_runner);
 
-  AttributionEventHandler handler(std::move(manager));
-
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
       ->SetPublicKeysForTesting(
@@ -517,18 +502,15 @@ RunAttributionInteropSimulation(base::Value::Dict input,
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
-  for (auto& event : events) {
-    base::Time event_time = event.time;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&AttributionEventHandler::Handle,
-                       base::Unretained(&handler), std::move(event)),
-        event_time - base::Time::Now());
+  for (const auto& event : events) {
+    task_environment.FastForwardBy(event.time - base::Time::Now());
+
+    absl::visit(
+        [&](const auto& data) { Handle(data, *manager->GetDataHostManager()); },
+        event.data);
   }
 
-  task_environment.FastForwardBy(max_event_time - base::Time::Now());
-
-  handler.FastForwardUntilReportsConsumed(task_environment);
+  FastForwardUntilReportsConsumed(*manager, task_environment);
 
   return output;
 }
