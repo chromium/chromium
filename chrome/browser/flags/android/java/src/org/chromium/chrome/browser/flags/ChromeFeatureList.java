@@ -281,6 +281,7 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_WEB_EDGE_TO_EDGE = "DrawWebEdgeToEdge";
     public static final String DYNAMIC_TOP_CHROME = "DynamicTopChrome";
     public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
+    public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
     public static final String FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE =
             "FeedImageMemoryCacheSizePercentage";

@@ -123,6 +123,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebNfc,
     &features::kIncognitoNtpRevamp,
     &feature_engagement::kIPHTabSwitcherButtonFeature,
+    &feed::kFeedContainment,
     &feed::kFeedDynamicColors,
     &feed::kFeedFollowUiUpdate,
     &feed::kFeedImageMemoryCacheSizePercentage,

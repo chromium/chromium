@@ -120,6 +120,9 @@ BASE_DECLARE_FEATURE(kFeedSportsCard);
 // Feature that enables refreshing feed when Chrome restarts.
 BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 
+// Feature that enables feed containment.
+BASE_DECLARE_FEATURE(kFeedContainment);
+
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed

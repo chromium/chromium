@@ -4316,6 +4316,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "feed-containment",
+    "owners": ["//chrome/android/feed/OWNERS", "jianli@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "feed-discofeed-endpoint",
     "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
     "expiry_milestone": 130

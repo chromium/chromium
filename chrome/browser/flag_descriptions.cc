@@ -4061,6 +4061,10 @@ const char kFeedCloseRefreshName[] = "Feed-close refresh";
 const char kFeedCloseRefreshDescription[] =
     "Enables scheduling a background refresh of the feed following feed use.";
 
+const char kFeedContainmentName[] = "Feed containment";
+const char kFeedContainmentDescription[] =
+    "Enables putting the feed in a container.";
+
 const char kFeedDiscoFeedEndpointName[] =
     "Feed using the DiscoFeed backend endpoint";
 const char kFeedDiscoFeedEndpointDescription[] =

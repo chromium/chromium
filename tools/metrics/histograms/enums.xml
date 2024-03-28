@@ -18484,6 +18484,7 @@ from previous Chrome versions.
   <int value="-1110928012" label="force-companion-pinned-state"/>
   <int value="-1110240043" label="FastPairSoftwareScanningSupport:disabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
+  <int value="-1109559578" label="FeedContainment:enabled"/>
   <int value="-1109489088" label="LauncherFuzzyMatchForOmnibox:disabled"/>
   <int value="-1109309340" label="ContextualPageActionReaderMode:enabled"/>
   <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
@@ -18530,6 +18531,7 @@ from previous Chrome versions.
   <int value="-1086656172"
       label="PrefetchNotificationSchedulingIntegration:disabled"/>
   <int value="-1085492638" label="FetchKeepaliveTimeoutSetting:enabled"/>
+  <int value="-1085157892" label="FeedContainment:disabled"/>
   <int value="-1084618227" label="CompositeBGColorAnimation:disabled"/>
   <int value="-1084500756" label="EnableViewPpd:enabled"/>
   <int value="-1084055006" label="disable-web-notification-custom-layouts"/>
