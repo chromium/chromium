@@ -733,6 +733,7 @@ src/webgpu/shader/validation/expression/call/builtin/ceil.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/clamp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/cos.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/cosh.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/cross.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/degrees.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/derivatives.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/determinant.spec.ts
