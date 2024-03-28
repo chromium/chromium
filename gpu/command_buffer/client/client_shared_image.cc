@@ -127,6 +127,7 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)),
       client_side_native_buffer_used_(client_side_native_buffer_used) {
   CHECK(!mailbox.IsZero());
+  SetTextureTarget();
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -152,6 +153,7 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   client_side_native_buffer_used_ = GMBIsNative(gpu_memory_buffer_->GetType());
+  SetTextureTarget();
 }
 
 ClientSharedImage::~ClientSharedImage() = default;
@@ -173,6 +175,24 @@ void ClientSharedImage::SetColorSpaceOnNativeBuffer(
 #endif
 
 uint32_t ClientSharedImage::GetTextureTarget() {
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Check that `texture_target_` has been initialized (note that on Fuchsia it
+  // is possible for `texture_target_` to be initialized to 0: Fuchsia does not
+  // support import of external images to GL for usage with external sampling.
+  // SetTextureTarget() sets the texture target to 0 in the case where external
+  // sampling would be used to signal this lack of support to the //media code,
+  // which detects the lack of support *based on* on the texture target being
+  // 0).
+  CHECK(texture_target_);
+#endif
+  return texture_target_;
+}
+
+void ClientSharedImage::SetTextureTarget() {
+  // This function should only be called if `texture_target_` has not yet been
+  // initialized.
+  CHECK(!texture_target_);
+
   // On Mac, the platform-specific texture target is required if this
   // SharedImage is backed by a native buffer. On other platforms, the
   // platform-specific target is required if external sampling is used.
@@ -186,8 +206,8 @@ uint32_t ClientSharedImage::GetTextureTarget() {
   bool uses_native_buffer = client_side_native_buffer_used_ ||
                             (usage() & usages_requiring_native_buffer);
 
-  return uses_native_buffer ? GetPlatformSpecificTextureTarget()
-                            : GL_TEXTURE_2D;
+  texture_target_ =
+      uses_native_buffer ? GetPlatformSpecificTextureTarget() : GL_TEXTURE_2D;
 #else
   bool uses_external_sampler =
       format().PrefersExternalSampler() || format().IsLegacyMultiplanar();
@@ -197,8 +217,8 @@ uint32_t ClientSharedImage::GetTextureTarget() {
   CHECK(!uses_external_sampler || client_side_native_buffer_used_ ||
         allow_external_sampling_without_native_buffers_for_testing);
 
-  return uses_external_sampler ? GetPlatformSpecificTextureTarget()
-                               : GL_TEXTURE_2D;
+  texture_target_ = uses_external_sampler ? GetPlatformSpecificTextureTarget()
+                                          : GL_TEXTURE_2D;
 #endif
 }
 

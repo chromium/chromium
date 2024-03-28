@@ -225,14 +225,21 @@ class GPU_EXPORT ClientSharedImage
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     bool client_side_native_buffer_used);
 
+  // Initializes `texture_target_`.
+  void SetTextureTarget();
+
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 
+  // The texture target returned by `GetTextureTarget()`.
+  uint32_t texture_target_ = 0;
+
   // Whether a client-side native buffer was used in the creation of this
   // SharedImage.
+  // TODO(crbug.com/41494843): Eliminate this field.
   bool client_side_native_buffer_used_ = false;
 };
 
