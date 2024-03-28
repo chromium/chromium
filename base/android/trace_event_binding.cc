@@ -257,8 +257,8 @@ static void JNI_TraceEvent_Instant(JNIEnv* env,
         });
   } else {
     TRACE_EVENT_INSTANT(
-        internal::kJavaTraceCategory, nullptr, converter.arg_name(),
-        converter.arg(), [&](::perfetto::EventContext& ctx) {
+        internal::kJavaTraceCategory, nullptr,
+        [&](::perfetto::EventContext& ctx) {
           ctx.event()->set_name(ConvertJavaStringToUTF8(env, jname));
         });
   }
