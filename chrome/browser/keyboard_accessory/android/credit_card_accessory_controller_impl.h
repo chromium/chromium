@@ -90,8 +90,8 @@ class CreditCardAccessoryControllerImpl
 
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();
-  const BrowserAutofillManager* GetManager() const;
-  BrowserAutofillManager* GetManager();
+  const BrowserAutofillManager* GetAutofillManager() const;
+  BrowserAutofillManager* GetAutofillManager();
 
   content::WebContents& GetWebContents() const;
 
