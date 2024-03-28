@@ -286,6 +286,19 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Notifications blocked
     </message>
 
+    <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_CHIP" desc="Button text representing a request for permission to scroll and zoom captured tabs by a capturing website. When clicked, shows a permission prompt bubble with more information.">
+      Scroll and zoom your shared tab?
+    </message>
+    <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for scrolling and zooming shared tabs from a website. When clicked, shows a permission prompt bubble with more information.">
+      Scroll &amp; zoom blocked
+    </message>
+    <message name="IDS_PERMISSIONS_CAPTURED_SURFACE_CONTROL_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a scroll and zoom permission requested has been granted.">
+      Scroll &amp; zoom allowed
+    </message>
+    <message name="IDS_PERMISSIONS_CAPTURED_SURFACE_CONTROL_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a scroll and zoom permission requested has been denied.">
+      Scroll &amp; zoom not allowed
+    </message>
+
     <message name="IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION" desc="Text displayed next to a permission icon confirming that a permission has been granted.">
         Allowed
     </message>

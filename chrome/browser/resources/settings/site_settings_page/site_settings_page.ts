@@ -130,6 +130,15 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsCameraBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL,
+      id: Id.CAPTURED_SURFACE_CONTROL,
+      label: 'siteSettingsCapturedSurfaceControl',
+      icon: 'settings:touchpad-mouse',
+      enabledLabel: 'siteSettingsCapturedSurfaceControlAllowed',
+      disabledLabel: 'siteSettingsCapturedSurfaceControlBlocked',
+      shouldShow: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+    },
+    {
       route: routes.SITE_SETTINGS_CLIPBOARD,
       id: Id.CLIPBOARD,
       label: 'siteSettingsClipboard',
@@ -476,6 +485,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.WINDOW_MANAGEMENT,
               Id.LOCAL_FONTS,
               Id.AUTO_PICTURE_IN_PICTURE,
+              Id.CAPTURED_SURFACE_CONTROL,
 
             ]),
             contentBasic: buildItemListFromIds([

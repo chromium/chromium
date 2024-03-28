@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/render_frame_host.h"
@@ -32,6 +33,12 @@ class CscMockPermissionController : public MockPermissionController {
  public:
   ~CscMockPermissionController() override = default;
 
+  PermissionStatus GetPermissionStatusForCurrentDocument(
+      blink::PermissionType permission,
+      RenderFrameHost* render_frame_host) override {
+    return permission_status_;
+  }
+
   void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
@@ -40,12 +47,17 @@ class CscMockPermissionController : public MockPermissionController {
     std::move(callback_action_).Run(std::move(callback));
   }
 
+  void SetPermissionStatus(PermissionStatus permission_status) {
+    permission_status_ = permission_status;
+  }
+
   void SetCallbackAction(CallbackActionType callback_action) {
     callback_action_ = std::move(callback_action);
   }
 
  private:
   CallbackActionType callback_action_;
+  PermissionStatus permission_status_ = PermissionStatus::ASK;
 };
 
 // Encapsulates the state and logic of an invocation of
@@ -99,8 +111,15 @@ class PermissionCheckState final {
 };
 
 class CapturedSurfaceControlPermissionManagerTest
-    : public RenderViewHostTestHarness {
+    : public RenderViewHostTestHarness,
+      public ::testing::WithParamInterface<bool> {
  public:
+  CapturedSurfaceControlPermissionManagerTest()
+      : sticky_permissions_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kCapturedSurfaceControlStickyPermissions,
+        sticky_permissions_);
+  }
   ~CapturedSurfaceControlPermissionManagerTest() override = default;
 
   std::unique_ptr<TestWebContents> MakeTestWebContents() {
@@ -162,11 +181,19 @@ class CapturedSurfaceControlPermissionManagerTest
         base::Unretained(state.get())));
 
     permission_manager_->CheckPermission(base::BindOnce(
-        [](PermissionCheckState* state,
+        [](PermissionCheckState* state, bool sticky_permissions,
+           CscMockPermissionController* mock_permission_controller,
            PermissionManager::PermissionResult result) {
+          if (sticky_permissions) {
+            mock_permission_controller->SetPermissionStatus(
+                result == PermissionManager::PermissionResult::kGranted
+                    ? PermissionStatus::GRANTED
+                    : PermissionStatus::DENIED);
+          }
           state->SetResult(result);
         },
-        base::Unretained(state.get())));
+        base::Unretained(state.get()), sticky_permissions_,
+        base::Unretained(mock_permission_controller_.get())));
 
     return state;
   }
@@ -183,12 +210,19 @@ class CapturedSurfaceControlPermissionManagerTest
     CHECK_EQ(rfh->HasTransientUserActivation(), has_activation);
   }
 
+ protected:
+  const bool sticky_permissions_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestWebContents> capturing_wc_;
   raw_ptr<CscMockPermissionController> mock_permission_controller_ = nullptr;
   std::unique_ptr<CapturedSurfaceControlPermissionManager> permission_manager_;
 };
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         CapturedSurfaceControlPermissionManagerTest,
+                         ::testing::Bool());
+
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        UserNotPromptedOnFirstCheckAndHasNoTransientActivation) {
   SetTransientActivation(false);
 
@@ -199,7 +233,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kDenied);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        UserPromptedOnFirstCheckAndHasTransientActivation) {
   SetTransientActivation(true);
 
@@ -209,7 +243,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_TRUE(state->user_prompted());
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        DeniedReportedIfUserDeniesPrompt) {
   SetTransientActivation(true);
 
@@ -222,7 +256,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kDenied);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        GrantedReportedIfUserApprovesPrompt) {
   SetTransientActivation(true);
 
@@ -235,7 +269,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kGranted);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        AfterFirstGrantNoPromptAndNoActivationRequirement) {
   // This block repeats `GrantedReportedIfUserApprovesPrompt`.
   {
@@ -259,7 +293,11 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kGranted);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest, CanGrantAfterDenying) {
+TEST_P(CapturedSurfaceControlPermissionManagerTest, CanGrantAfterDenying) {
+  if (sticky_permissions_) {
+    GTEST_SKIP() << "With sticky permissions, denials are persisted.";
+  }
+
   // This block repeats `DeniedReportedIfUserDeniesPrompt`.
   {
     SetTransientActivation(true);
@@ -284,7 +322,12 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest, CanGrantAfterDenying) {
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kGranted);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest, EmbargoObserved) {
+TEST_P(CapturedSurfaceControlPermissionManagerTest, EmbargoObserved) {
+  if (sticky_permissions_) {
+    GTEST_SKIP() << "With sticky permissions, embargo is managed by the "
+                    "PermissionController.";
+  }
+
   // Prompt and deny `kMaxPromptAttempts` times.
   for (int i = 0; i < PermissionManager::kMaxPromptAttempts; ++i) {
     SetTransientActivation(true);
@@ -307,8 +350,13 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest, EmbargoObserved) {
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kDenied);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        AdditionalPermissionChecksDeniedWhilePromptPending) {
+  if (sticky_permissions_) {
+    GTEST_SKIP() << "With sticky permissions, the PermissionController manages "
+                    "limitations on concurrent prompting.";
+  }
+
   // User prompted but does not yet respond.
   SetTransientActivation(true);
   std::unique_ptr<PermissionCheckState> state_1 = CheckPermission();
@@ -323,8 +371,12 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state_2->result(), PermissionManager::PermissionResult::kDenied);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        SubsequentPermissionChecksAllowedAfterPromptAcceptedByUser) {
+  if (sticky_permissions_) {
+    GTEST_SKIP() << "State managed by PermissionController.";
+  }
+
   // User prompted but does not yet respond.
   SetTransientActivation(true);
   std::unique_ptr<PermissionCheckState> state_1 = CheckPermission();
@@ -359,8 +411,12 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state_2->result(), PermissionManager::PermissionResult::kGranted);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        SubsequentPermissionChecksCauseNewPromptAfterPromptRejecdByUser) {
+  if (sticky_permissions_) {
+    GTEST_SKIP() << "With sticky permissions, denials are persisted.";
+  }
+
   // User prompted but does not yet respond.
   SetTransientActivation(true);
   std::unique_ptr<PermissionCheckState> state_1 = CheckPermission();
@@ -395,7 +451,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state_2->result(), std::nullopt);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        CallFailsIfCapturerUnfocused) {
   UnFocusCapturer();
   SetTransientActivation(true);
@@ -407,7 +463,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kError);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
+TEST_P(CapturedSurfaceControlPermissionManagerTest,
        UserPromptedIfCapturerFocused) {
   // Capturer focused in SetUp()
   SetTransientActivation(true);

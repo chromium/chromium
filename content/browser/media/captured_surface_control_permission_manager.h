@@ -59,7 +59,7 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
   // passing in an error. This is done to ensure that the callback is always
   // executed, even if the user closes the captured tab while the prompt is
   // pending. This method runs on the IO thread.
-  static void OnPromptResultStatic(
+  static void OnCheckResultStatic(
       base::WeakPtr<CapturedSurfaceControlPermissionManager> manager,
       base::OnceCallback<void(PermissionResult)> callback,
       PermissionResult result);
@@ -69,10 +69,12 @@ class CONTENT_EXPORT CapturedSurfaceControlPermissionManager {
   // receives the user's choice, updates this object's state accordingly, and
   // invokes `callback` to inform the original caller of CheckPermission() of
   // the result.
-  void OnPromptResult(base::OnceCallback<void(PermissionResult)> callback,
-                      PermissionResult result);
+  void OnCheckResult(base::OnceCallback<void(PermissionResult)> callback,
+                     PermissionResult result);
 
   const GlobalRenderFrameHostId capturer_rfh_id_;
+
+  const bool sticky_permissions_;
 
   // Indicates whether the user has given permission to use Captured Surface
   // Control APIs for the capture session with which this object is associated.

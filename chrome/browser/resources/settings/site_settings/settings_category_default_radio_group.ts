@@ -148,6 +148,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.BLUETOOTH_DEVICES:
       case ContentSettingsTypes.BLUETOOTH_SCANNING:
       case ContentSettingsTypes.CAMERA:
+      case ContentSettingsTypes.CAPTURED_SURFACE_CONTROL:
       case ContentSettingsTypes.CLIPBOARD:
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
       case ContentSettingsTypes.GEOLOCATION:

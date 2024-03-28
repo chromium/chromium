@@ -82,6 +82,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE =
         r.SITE_SETTINGS.createChild('autoPictureInPicture');
   }
+  if (loadTimeData.getBoolean('capturedSurfaceControlEnabled')) {
+    r.SITE_SETTINGS_CAPTURED_SURFACE_CONTROL =
+        r.SITE_SETTINGS.createChild('capturedSurfaceControl');
+  }
   if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
     r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   }

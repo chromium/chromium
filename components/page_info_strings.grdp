@@ -403,6 +403,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera permission is in the ask state and the site can prompt the user to ask if they allow the site to use their camera.">
       Can ask to use your camera
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_CAPTURED_SURFACE_CONTROL_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the scroll and zoom permission is in the ask state and the site can prompt the user to ask if they allow the site to scroll and zoom shared tabs.">
+      Can ask to scroll and zoom shared tabs
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_PAN_TILT_ZOOM_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera and movement permission is in the ask state and the site can prompt the user to ask if they allow the site to use and move their camera.">
       Can ask to use &amp; move your camera
     </message>

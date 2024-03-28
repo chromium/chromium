@@ -595,6 +595,13 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       base_types->push_back(ContentSettingsType::SPEAKER_SELECTION);
     }
 
+    if (base::FeatureList::IsEnabled(
+            features::kCapturedSurfaceControlKillswitch) &&
+        base::FeatureList::IsEnabled(
+            features::kCapturedSurfaceControlStickyPermissions)) {
+      base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
+    }
+
     initialized = true;
   }
 

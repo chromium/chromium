@@ -28,6 +28,9 @@ class CapturedSurfaceControlPermissionContext
                             const GURL& embedding_origin,
                             ContentSetting content_setting,
                             bool is_one_time) override;
+
+ private:
+  const bool sticky_permissions_;
 };
 
 }  // namespace permissions

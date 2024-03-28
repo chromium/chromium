@@ -23,6 +23,7 @@ export enum ContentSettingsTypes {
   BLUETOOTH_DEVICES = 'bluetooth-devices',
   BLUETOOTH_SCANNING = 'bluetooth-scanning',
   CAMERA = 'media-stream-camera',
+  CAPTURED_SURFACE_CONTROL = 'captured-surface-control',
   CLIPBOARD = 'clipboard',
   COOKIES = 'cookies',
   FEDERATED_IDENTITY_API = 'federated-identity-api',

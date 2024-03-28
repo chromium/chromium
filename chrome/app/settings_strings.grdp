@@ -2603,6 +2603,21 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_BLOCKED" desc="Label for the disabled option of the bluetooth devices site setting.">
     Don't allow sites to connect to Bluetooth devices
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_DESCRIPTION" desc="Description of the Captured Surface Control content setting.">
+    Sites use this setting to scroll and zoom shared tabs
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_ALLOWED" desc="Label for the enabled option of the Captured Surface Control content setting.">
+    Sites can ask to scroll and zoom shared tabs
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_BLOCKED" desc="Label for the disabled option of the Captured Surface Control content setting.">
+    Don't allow sites to scroll and zoom shared tabs
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Captured Surface Control content setting.">
+    Allowed to scroll and zoom shared tabs
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Captured Surface Control content setting.">
+    Not allowed to scroll and zoom shared tabs
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_DESCRIPTION" desc="Description of the camera content setting.">
     Sites usually use your video camera for communication features like video chatting
   </message>

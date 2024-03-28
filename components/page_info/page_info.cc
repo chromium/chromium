@@ -136,6 +136,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::FEDERATED_IDENTITY_API,
 #if !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+    ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif  // !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::AUTOMATIC_FULLSCREEN,
 };

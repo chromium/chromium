@@ -31,6 +31,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsBluetoothScanningMidSentence';
     case ContentSettingsTypes.CAMERA:
       return 'siteSettingsCameraMidSentence';
+    case ContentSettingsTypes.CAPTURED_SURFACE_CONTROL:
+      return 'siteSettingsCapturedSurfaceControlMidSentence';
     case ContentSettingsTypes.CLIPBOARD:
       return 'siteSettingsClipboardMidSentence';
     case ContentSettingsTypes.COOKIES:

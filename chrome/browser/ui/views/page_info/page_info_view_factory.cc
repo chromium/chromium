@@ -520,6 +520,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::AUTOMATIC_FULLSCREEN:
       icon = &kFullscreenIcon;
       break;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      icon = &vector_icons::kTouchpadMouseIcon;
+      break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.
