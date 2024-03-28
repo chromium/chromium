@@ -335,7 +335,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
   }
 
   private computeActivationCodeClass_(): string {
-    return this.isScanningAvailable_() ? 'relative' : 'center width-92';
+    return this.isScanningAvailable_() ? 'relative' : 'center';
   }
 
   private updateCameraCount_(): void {

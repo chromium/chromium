@@ -11,7 +11,7 @@
     transition-duration: 200ms;
   }
   :host(:not([expanded_])) #esimQrCodeDetection {
-    height: 140px;
+    height: 120px;
     transition-duration: 150ms;
   }
 
@@ -21,10 +21,12 @@
 
   #esimQrCodeDetection {
     background-color: var(--cros-bg-color-dropped-elevation-1);
-    border-radius: 4px;
-    margin: 20px 0 15px 0;
+    border-radius: 8px;
+    margin: 28px 0 16px 0;
     overflow: hidden;
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   paper-spinner-lite {
@@ -54,17 +56,6 @@
   .animate {
     transition-property: height;
     transition-timing-function: cubic-bezier(0.00, 0.00, 0.20, 1.00);
-  }
-
-  .center {
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%) translateX(-50%);
-  }
-
-  .width-92 {
-    width: 92%;
   }
 
   .label {
@@ -114,6 +105,11 @@
     width: 1px;
   }
 
+  #activationCode {
+    --cr-input-border-radius: 8px;
+    --cr-input-border-bottom: none;
+  }
+
   #scanSucessHeader {
     --iron-icon-fill-color: var(--cros-icon-color-positive);
     margin-bottom: 8px;
@@ -161,7 +157,7 @@
     font-size: var(--cr-form-field-label-font-size);
     letter-spacing: .4px;
     line-height: var(--cr-form-field-label-line-height);
-    margin-top: -16px;
+    margin-top: -8px;
   }
 
   #video {

@@ -11,19 +11,15 @@
     }
   }
 
-  :host {
-    --cr-dialog-body-padding-horizontal: 24px;
-    --cr-dialog-title-slot-padding-bottom: 0;
-    --cr-dialog-title-slot-padding-end: 0;
-    --cr-dialog-title-slot-padding-start: 0;
-    --cr-dialog-title-slot-padding-top: 0;
-  }
+  [slot=title] {
+      --cr-dialog-title-slot-padding-bottom: 8px;
+      --cr-dialog-title-slot-padding-end: 32px;
+      --cr-dialog-title-slot-padding-start: 32px;
+      --cr-dialog-title-slot-padding-top: 32px;
+    }
 
-  #header {
-    padding-bottom: 8px;
-    padding-inline-end:  24px;
-    padding-inline-start: 24px;
-    padding-top: 24px;
+  #dialog [slot=body] {
+    --cr-dialog-body-padding-horizontal: 32px;
   }
 
   #title {
