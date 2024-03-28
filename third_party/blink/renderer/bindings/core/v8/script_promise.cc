@@ -259,14 +259,6 @@ ScriptPromiseUntyped ScriptPromiseUntyped::Reject(
   return promise;
 }
 
-ScriptPromiseUntyped ScriptPromiseUntyped::RejectWithDOMException(
-    ScriptState* script_state,
-    DOMException* exception) {
-  DCHECK(script_state->GetIsolate()->InContext());
-  return Reject(script_state,
-                ToV8Traits<DOMException>::ToV8(script_state, exception));
-}
-
 v8::Local<v8::Promise> ScriptPromiseUntyped::ResolveRaw(
     ScriptState* script_state,
     v8::Local<v8::Value> value) {

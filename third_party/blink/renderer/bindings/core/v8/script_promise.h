@@ -135,9 +135,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   // Rejects with a given exception. The ExceptionState gets cleared.
   static ScriptPromiseUntyped Reject(ScriptState*, ExceptionState&);
 
-  static ScriptPromiseUntyped RejectWithDOMException(ScriptState*,
-                                                     DOMException*);
-
   // Constructs and returns a ScriptPromiseUntyped to be resolved when all
   // |promises| are resolved. If one of |promises| is rejected, the returned
   // ScriptPromiseUntyped is rejected.

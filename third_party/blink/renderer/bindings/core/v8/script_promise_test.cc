@@ -280,17 +280,17 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
   V8TestingScope scope;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       scope.GetScriptState());
-  ScriptPromiseUntyped promise = resolver->Promise();
+  auto promise = resolver->Promise();
   ScriptValue on_rejected, on_fulfilled2, on_rejected2;
 
-  promise =
+  auto promise2 =
       promise.Then(CreateFunction<ThrowingCallable>(scope.GetScriptState()),
                    CreateFunction<FunctionForScriptPromiseTest>(
                        scope.GetScriptState(), &on_rejected));
-  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
-                   scope.GetScriptState(), &on_fulfilled2),
-               CreateFunction<FunctionForScriptPromiseTest>(
-                   scope.GetScriptState(), &on_rejected2));
+  promise2.Then(CreateFunction<FunctionForScriptPromiseTest>(
+                    scope.GetScriptState(), &on_fulfilled2),
+                CreateFunction<FunctionForScriptPromiseTest>(
+                    scope.GetScriptState(), &on_rejected2));
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
@@ -316,13 +316,13 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilledScriptFunction) {
   V8TestingScope scope;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(
       scope.GetScriptState());
-  ScriptPromiseUntyped promise = resolver->Promise();
+  auto promise = resolver->Promise();
   auto* const on_rejected = MakeGarbageCollected<ScriptValueHolder>();
 
-  promise =
+  auto promise2 =
       promise.Then(CreateFunction<ThrowingCallable>(scope.GetScriptState()),
                    CreateFunction<NotReached>(scope.GetScriptState()));
-  promise.Then(
+  promise2.Then(
       CreateFunction<NotReached>(scope.GetScriptState()),
       CreateFunction<CapturingCallable>(scope.GetScriptState(), on_rejected));
 
@@ -344,17 +344,17 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
   V8TestingScope scope;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  ScriptPromiseUntyped promise = resolver->Promise();
+  auto promise = resolver->Promise();
   ScriptValue on_fulfilled, on_fulfilled2, on_rejected2;
 
-  promise =
+  auto promise2 =
       promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                        scope.GetScriptState(), &on_fulfilled2),
                    CreateFunction<ThrowingCallable>(scope.GetScriptState()));
-  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
-                   scope.GetScriptState(), &on_fulfilled2),
-               CreateFunction<FunctionForScriptPromiseTest>(
-                   scope.GetScriptState(), &on_rejected2));
+  promise2.Then(CreateFunction<FunctionForScriptPromiseTest>(
+                    scope.GetScriptState(), &on_fulfilled2),
+                CreateFunction<FunctionForScriptPromiseTest>(
+                    scope.GetScriptState(), &on_rejected2));
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_fulfilled.IsEmpty());
@@ -380,13 +380,13 @@ TEST(ScriptPromiseTest, ThrowingOnRejectedScriptFunction) {
   V8TestingScope scope;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       scope.GetScriptState());
-  ScriptPromiseUntyped promise = resolver->Promise();
+  auto promise = resolver->Promise();
   auto* const on_rejected = MakeGarbageCollected<ScriptValueHolder>();
 
-  promise =
+  auto promise2 =
       promise.Then(CreateFunction<NotReached>(scope.GetScriptState()),
                    CreateFunction<ThrowingCallable>(scope.GetScriptState()));
-  promise.Then(
+  promise2.Then(
       CreateFunction<NotReached>(scope.GetScriptState()),
       CreateFunction<CapturingCallable>(scope.GetScriptState(), on_rejected));
 
@@ -446,10 +446,9 @@ TEST(ScriptPromiseTest, CastPromise) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto resolver = v8::Promise::Resolver::New(scope.GetContext());
-  v8::Local<v8::Value> promise = resolver.ToLocalChecked()->GetPromise();
-  ScriptPromiseUntyped new_promise =
-      ScriptPromiseUntyped::FromUntypedValueForBindings(scope.GetScriptState(),
-                                                        promise);
+  v8::Local<v8::Promise> promise = resolver.ToLocalChecked()->GetPromise();
+  auto new_promise =
+      ScriptPromise<IDLAny>::FromV8Promise(scope.GetScriptState(), promise);
 
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_EQ(promise, new_promise.V8Value());
@@ -502,8 +501,8 @@ TEST(ScriptPromiseTest, Reject) {
 
   ScriptValue value =
       ScriptValue(scope.GetIsolate(), V8String(scope.GetIsolate(), "hello"));
-  ScriptPromiseUntyped promise =
-      ScriptPromiseUntyped::Reject(scope.GetScriptState(), ScriptValue(value));
+  auto promise = ScriptPromise<IDLUndefined>::Reject(scope.GetScriptState(),
+                                                     ScriptValue(value));
   promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
                CreateFunction<FunctionForScriptPromiseTest>(
@@ -525,7 +524,7 @@ TEST(ScriptPromiseTest, RejectWithExceptionState) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
-  ScriptPromiseUntyped promise = ScriptPromiseUntyped::RejectWithDOMException(
+  auto promise = ScriptPromise<IDLUndefined>::RejectWithDOMException(
       scope.GetScriptState(),
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
                                          "some syntax error"));
