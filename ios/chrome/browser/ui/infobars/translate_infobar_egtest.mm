@@ -655,7 +655,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Test that the Show Original banner dismisses with a longer delay since it is
 // a high priority banner.
-- (void)testInfobarAcceptedBannerDismissWithHighPriorityDelay {
+// TODO(crbug.com/331774758): Test flaky.
+- (void)DISABLED_testInfobarAcceptedBannerDismissWithHighPriorityDelay {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
