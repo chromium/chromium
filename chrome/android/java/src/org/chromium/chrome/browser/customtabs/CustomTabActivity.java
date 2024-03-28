@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsMod
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
+import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryTabHelper;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -116,6 +117,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     private void maybeCreateHistoryTabHelper(Tab tab) {
+        if (!HistoryManager.isAppSpecificHistoryEnabled()) return;
         String appId = mIntentDataProvider.getClientPackageNameIdentitySharing();
         if (appId != null) HistoryTabHelper.from(tab).setAppId(appId, tab.getWebContents());
     }
@@ -320,16 +322,17 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             pageInsights.launch();
             return true;
         } else if (id == R.id.open_history_menu_id) {
-            if (ChromeFeatureList.sAppSpecificHistory.isEnabled()) {
-                HistoryManagerUtils.showAppSpecificHistoryManager(
-                        this,
-                        getTabModelSelector().isIncognitoSelected(),
-                        mIntentDataProvider.getClientPackageNameIdentitySharing());
-                CustomTabHistoryIPHController historyIPH =
-                        mBaseCustomTabRootUiCoordinator.getHistoryIPHController();
-                if (historyIPH != null) {
-                    historyIPH.notifyUserEngaged();
-                }
+            // The menu is visible only when the app-specific history is enabled. Assert that.
+            assert HistoryManager.isAppSpecificHistoryEnabled();
+            HistoryManagerUtils.showAppSpecificHistoryManager(
+                    this,
+                    getTabModelSelector().isIncognitoSelected(),
+                    mIntentDataProvider.getClientPackageNameIdentitySharing());
+
+            CustomTabHistoryIPHController historyIPH =
+                    mBaseCustomTabRootUiCoordinator.getHistoryIPHController();
+            if (historyIPH != null) {
+                historyIPH.notifyUserEngaged();
             }
             return true;
         }
@@ -452,7 +455,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             mTabProvider.getTab().loadUrl(params);
         }
 
-        if (ChromeFeatureList.sAppSpecificHistory.isEnabled()
+        if (HistoryManager.isAppSpecificHistoryEnabled()
                 && requestCode == HistoryManagerUtils.HISTORY_REQUEST_CODE) {
             LoadUrlParams params =
                     new LoadUrlParams(

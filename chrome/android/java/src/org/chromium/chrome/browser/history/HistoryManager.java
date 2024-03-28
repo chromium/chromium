@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.history;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -98,6 +100,11 @@ public class HistoryManager
     private @Nullable TabLayout mJourneysTabToggle;
 
     private boolean mIsSearching;
+
+    public static boolean isAppSpecificHistoryEnabled() {
+        return ChromeFeatureList.sAppSpecificHistory.isEnabled()
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+    }
 
     /**
      * Creates a new HistoryManager.

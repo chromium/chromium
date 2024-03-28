@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
@@ -158,7 +158,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean requestDesktopSiteVisible = true;
             boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
             boolean historyItemVisible = true;
-            if (!ChromeFeatureList.sAppSpecificHistory.isEnabled() || !mHasClientPackage) {
+            if (!HistoryManager.isAppSpecificHistoryEnabled() || !mHasClientPackage) {
                 historyItemVisible = false;
             }
 

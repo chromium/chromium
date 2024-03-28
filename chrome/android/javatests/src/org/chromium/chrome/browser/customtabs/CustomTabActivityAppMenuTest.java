@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.core.os.BuildCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -202,6 +203,38 @@ public class CustomTabActivityAppMenuTest {
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(mCustomTabActivityTestRule.getActivity());
     }
 
+    private static int adjustMenuSize(int expectedMenuSize) {
+        // history menu won't be shown on pre-U devices. Decrease the expected size by 1.
+        return BuildCompat.isAtLeastU() ? expectedMenuSize : expectedMenuSize - 1;
+    }
+
+    private void assertHistoryMenuVisibility() {
+        var historyMenu =
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id);
+        if (BuildCompat.isAtLeastU()) {
+            Assert.assertNotNull(historyMenu);
+        } else {
+            Assert.assertNull(historyMenu);
+        }
+    }
+
+    private void assertHistoryMenuIsNotShown() {
+        openAppMenuAndAssertMenuShown();
+
+        Assert.assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.open_history_menu_id));
+
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
+        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+    }
+
     /** Test the entries in the app menu. */
     @Test
     @SmallTest
@@ -261,10 +294,8 @@ public class CustomTabActivityAppMenuTest {
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(),
                         R.id.share_row_menu_id));
-        Assert.assertNotNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.open_history_menu_id));
+
+        assertHistoryMenuVisibility();
 
         // Assert the divider line is displayed in the correct position.
         int dividerLine =
@@ -273,7 +304,7 @@ public class CustomTabActivityAppMenuTest {
         int expectedPos = numMenuEntries + 1; // Add 1 to account for app menu icon row.
         Assert.assertEquals("Divider line at incorrect index.", expectedPos, dividerLine);
 
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, adjustMenuSize(expectedMenuSize));
     }
 
     @Test
@@ -304,7 +335,7 @@ public class CustomTabActivityAppMenuTest {
         int expectedPos = -1; // No custom menu entries, not expecting a divider line.
         Assert.assertEquals("Divider present when it shouldn't be.", expectedPos, dividerLine);
 
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, adjustMenuSize(expectedMenuSize));
     }
 
     /** Test the App Menu does not show for media viewer. */
@@ -529,7 +560,7 @@ public class CustomTabActivityAppMenuTest {
                         mCustomTabActivityTestRule.getAppMenuCoordinator());
         final int expectedMenuSize = MAX_MENU_CUSTOM_ITEMS + NUM_CHROME_MENU_ITEMS_WITH_DIVIDER;
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, adjustMenuSize(expectedMenuSize));
     }
 
     /**
@@ -674,17 +705,7 @@ public class CustomTabActivityAppMenuTest {
                         LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
 
         openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    Assert.assertNotNull(
-                            AppMenuTestSupport.getMenuItemPropertyModel(
-                                    mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                                    R.id.open_history_menu_id));
-                    mCustomTabActivityTestRule
-                            .getActivity()
-                            .onMenuOrKeyboardAction(R.id.open_history_menu_id, false);
-                });
+        assertHistoryMenuVisibility();
     }
 
     @Test
@@ -694,35 +715,25 @@ public class CustomTabActivityAppMenuTest {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        openAppMenuAndAssertMenuShown();
-        Assert.assertNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.open_history_menu_id));
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+        // History menu won't show, since the feature flag is disabled.
+        assertHistoryMenuIsNotShown();
     }
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
     public void testNoHistoryItem_NoClientPackage() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        openAppMenuAndAssertMenuShown();
-        Assert.assertNull(
-                AppMenuTestSupport.getMenuItemPropertyModel(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                        R.id.open_history_menu_id));
+        CustomTabAppMenuPropertiesDelegate propertiesDelegate =
+                (CustomTabAppMenuPropertiesDelegate)
+                        mCustomTabActivityTestRule
+                                .getAppMenuCoordinator()
+                                .getAppMenuPropertiesDelegate();
+        propertiesDelegate.setHasClientPackageForTesting(false);
 
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(
-                        mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = NUM_CHROME_MENU_ITEMS - 1;
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+        // History menu won't show, since package name is not set.
+        assertHistoryMenuIsNotShown();
     }
 }
