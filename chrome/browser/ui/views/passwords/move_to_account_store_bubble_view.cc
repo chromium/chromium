@@ -320,7 +320,6 @@ MoveToAccountStoreBubbleView::~MoveToAccountStoreBubbleView() = default;
 void MoveToAccountStoreBubbleView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
 }
 
 MoveToAccountStoreBubbleController*
