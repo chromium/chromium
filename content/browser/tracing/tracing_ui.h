@@ -24,7 +24,6 @@ class TraceConfig;
 
 namespace content {
 
-class TracingDelegate;
 class TracingUI;
 
 // WebUIConfig for the chrome://tracing page.
@@ -50,7 +49,6 @@ class CONTENT_EXPORT TracingUI : public WebUIController {
                                 std::string& out_stream_format);
 
  private:
-  std::unique_ptr<TracingDelegate> delegate_;
   base::WeakPtrFactory<TracingUI> weak_factory_{this};
 };
 

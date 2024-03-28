@@ -827,7 +827,7 @@ ContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
   return {};
 }
 
-TracingDelegate* ContentBrowserClient::GetTracingDelegate() {
+std::unique_ptr<TracingDelegate> ContentBrowserClient::CreateTracingDelegate() {
   return nullptr;
 }
 

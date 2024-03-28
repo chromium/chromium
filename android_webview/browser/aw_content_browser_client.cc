@@ -494,8 +494,9 @@ bool AwContentBrowserClient::IsPepperVpnProviderAPIAllowed(
   return false;
 }
 
-content::TracingDelegate* AwContentBrowserClient::GetTracingDelegate() {
-  return new AwTracingDelegate();
+std::unique_ptr<content::TracingDelegate>
+AwContentBrowserClient::CreateTracingDelegate() {
+  return std::make_unique<AwTracingDelegate>();
 }
 
 void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(

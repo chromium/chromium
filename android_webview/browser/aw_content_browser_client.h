@@ -130,7 +130,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const content::SocketPermissionRequest* params) override;
   bool IsPepperVpnProviderAPIAllowed(content::BrowserContext* browser_context,
                                      const GURL& url) override;
-  content::TracingDelegate* GetTracingDelegate() override;
+  std::unique_ptr<content::TracingDelegate> CreateTracingDelegate() override;
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,

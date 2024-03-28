@@ -241,9 +241,3 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 #endif
 }
-
-std::optional<base::Value::Dict> ChromeTracingDelegate::GenerateMetadataDict() {
-  base::Value::Dict metadata_dict;
-  metadata_dict.Set("revision", version_info::GetLastChange());
-  return metadata_dict;
-}

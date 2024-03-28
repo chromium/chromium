@@ -32,9 +32,6 @@ class CONTENT_EXPORT TracingDelegate {
   // Whether system-wide performance trace collection using the external system
   // tracing service is enabled.
   virtual bool IsSystemWideTracingEnabled();
-
-  // Used to add any additional metadata to traces.
-  virtual std::optional<base::Value::Dict> GenerateMetadataDict();
 };
 
 }  // namespace content

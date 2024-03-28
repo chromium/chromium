@@ -1371,7 +1371,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Creates a new TracingDelegate. The caller owns the returned value.
   // It's valid to return nullptr.
-  virtual TracingDelegate* GetTracingDelegate();
+  virtual std::unique_ptr<TracingDelegate> CreateTracingDelegate();
 
   // Returns true if plugin referred to by the url can use
   // pp::FileIO::RequestOSFileHandle.

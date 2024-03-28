@@ -30,6 +30,7 @@
 #include "base/trace_event/trace_config.h"
 #include "base/tracing/protos/grit/tracing_proto_resources.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
@@ -42,7 +43,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tracing_controller.h"
-#include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/tracing_service.h"
 #include "content/public/common/content_client.h"
 #include "gpu/config/gpu_info.h"
@@ -182,8 +182,7 @@ TracingController* TracingController::GetInstance() {
   return TracingControllerImpl::GetInstance();
 }
 
-TracingControllerImpl::TracingControllerImpl()
-    : delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
+TracingControllerImpl::TracingControllerImpl() {
   DCHECK(!g_tracing_controller);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Deliberately leaked, like this class.
@@ -223,14 +222,9 @@ void TracingControllerImpl::AddAgents() {
   auto* metadata_source = tracing::TraceEventMetadataSource::GetInstance();
   metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataDict, base::Unretained(this)));
-  if (delegate_) {
-    metadata_source->AddGeneratorFunction(
-        base::BindRepeating(&TracingDelegate::GenerateMetadataDict,
-                            base::Unretained(delegate_.get())));
-    metadata_source->AddGeneratorFunction(base::BindRepeating(
-        &TracingControllerImpl::GenerateMetadataPacketFieldTrials,
-        base::Unretained(this)));
-  }
+  metadata_source->AddGeneratorFunction(base::BindRepeating(
+      &TracingControllerImpl::GenerateMetadataPacketFieldTrials,
+      base::Unretained(this)));
   metadata_source->AddGeneratorFunction(base::BindRepeating(
       &TracingControllerImpl::GenerateMetadataPacket, base::Unretained(this)));
 #if BUILDFLAG(IS_ANDROID)
@@ -290,7 +284,8 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
           .Set("network-type", GetNetworkTypeString())
           .Set("product-version", GetContentClient()->browser()->GetProduct())
           .Set("v8-version", V8_VERSION_STRING)
-          .Set("user-agent", GetContentClient()->browser()->GetUserAgent());
+          .Set("user-agent", GetContentClient()->browser()->GetUserAgent())
+          .Set("revision", version_info::GetLastChange());
 
 #if BUILDFLAG(IS_ANDROID)
   // The library name is used for symbolizing heap profiles. This cannot be
@@ -606,14 +601,5 @@ void TracingControllerImpl::OnMachineStatisticsLoaded() {
   are_statistics_loaded_ = true;
 }
 #endif
-
-void TracingControllerImpl::SetTracingDelegateForTesting(
-    std::unique_ptr<TracingDelegate> delegate) {
-  if (!delegate) {
-    delegate_.reset(GetContentClient()->browser()->GetTracingDelegate());
-  } else {
-    delegate_ = std::move(delegate);
-  }
-}
 
 }  // namespace content

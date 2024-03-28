@@ -19,10 +19,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif
 
-namespace base {
-class Value;
-}
-
 class ChromeTracingDelegate : public content::TracingDelegate,
 #if BUILDFLAG(IS_ANDROID)
                               public TabModelListObserver
@@ -49,8 +45,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   bool ShouldSaveUnuploadedTrace() const override;
   bool IsSystemWideTracingEnabled() override;
-
-  std::optional<base::Value::Dict> GenerateMetadataDict() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeTracingDelegateBrowserTest,

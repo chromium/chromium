@@ -26,8 +26,4 @@ bool TracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 }
 
-std::optional<base::Value::Dict> TracingDelegate::GenerateMetadataDict() {
-  return std::nullopt;
-}
-
 }  // namespace content

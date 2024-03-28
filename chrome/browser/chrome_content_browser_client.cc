@@ -5496,8 +5496,9 @@ ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
   return features::kSpareRendererWarmupDelay.Get();
 }
 
-content::TracingDelegate* ChromeContentBrowserClient::GetTracingDelegate() {
-  return new ChromeTracingDelegate();
+std::unique_ptr<content::TracingDelegate>
+ChromeContentBrowserClient::CreateTracingDelegate() {
+  return std::make_unique<ChromeTracingDelegate>();
 }
 
 bool ChromeContentBrowserClient::IsPluginAllowedToCallRequestOSFileHandle(

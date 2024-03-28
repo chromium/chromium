@@ -112,6 +112,7 @@ source_set("browser") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
+    "//components/version_info",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",

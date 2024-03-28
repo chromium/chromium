@@ -512,8 +512,8 @@ bool ShouldAllowSystemTracingConsumer() {
 // TODO(crbug.com/1173395): Also enable for Lacros-Chrome.
 #if BUILDFLAG(IS_CHROMEOS)
   // The consumer should only be enabled when the delegate allows it.
-  TracingDelegate* delegate =
-      GetContentClient()->browser()->GetTracingDelegate();
+  std::unique_ptr<TracingDelegate> delegate =
+      GetContentClient()->browser()->CreateTracingDelegate();
   return delegate && delegate->IsSystemWideTracingEnabled();
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   return false;

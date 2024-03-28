@@ -215,8 +215,6 @@ class TracingControllerTest : public ContentBrowserTest {
   }
 
   void TestStartAndStopTracingStringWithFilter() {
-    TracingControllerImpl::GetInstance()->SetTracingDelegateForTesting(
-        std::make_unique<TracingDelegate>());
 
     Navigate(shell());
 
@@ -256,8 +254,6 @@ class TracingControllerTest : public ContentBrowserTest {
       run_loop.Run();
       EXPECT_EQ(disable_recording_done_callback_count(), 1);
     }
-
-    TracingControllerImpl::GetInstance()->SetTracingDelegateForTesting(nullptr);
   }
 
   void TestStartAndStopTracingCompressed() {

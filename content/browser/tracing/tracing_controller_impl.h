@@ -39,8 +39,6 @@ class BaseAgent;
 
 namespace content {
 
-class TracingDelegate;
-
 class TracingControllerImpl : public TracingController,
                               public mojo::DataPipeDrainer::Client,
                               public tracing::mojom::TracingSessionClient {
@@ -78,10 +76,6 @@ class TracingControllerImpl : public TracingController,
 
   void OnTracingFailed();
 
-  // For unittests.
-  CONTENT_EXPORT void SetTracingDelegateForTesting(
-      std::unique_ptr<TracingDelegate> delegate);
-
  private:
   friend std::default_delete<TracingControllerImpl>;
 
@@ -115,7 +109,6 @@ class TracingControllerImpl : public TracingController,
   StartTracingDoneCallback start_tracing_callback_;
 
   std::vector<std::unique_ptr<tracing::BaseAgent>> agents_;
-  std::unique_ptr<TracingDelegate> delegate_;
   std::unique_ptr<base::trace_event::TraceConfig> trace_config_;
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
   scoped_refptr<TraceDataEndpoint> trace_data_endpoint_;

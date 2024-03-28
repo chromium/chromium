@@ -234,7 +234,7 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 }
 
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
-    : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
+    : delegate_(GetContentClient()->browser()->CreateTracingDelegate()),
       database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),

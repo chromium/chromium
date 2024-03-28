@@ -11,10 +11,6 @@
 
 class PrefRegistrySimple;
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace android_webview {
 
 class AwTracingDelegate : public content::TracingDelegate {
@@ -27,7 +23,6 @@ class AwTracingDelegate : public content::TracingDelegate {
   // content::TracingDelegate implementation:
   bool OnBackgroundTracingActive(bool requires_anonymized_data) override;
   bool OnBackgroundTracingIdle(bool requires_anonymized_data) override;
-  std::optional<base::Value::Dict> GenerateMetadataDict() override;
 
  private:
   bool IsAllowedToStartScenario() const;

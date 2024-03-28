@@ -33,7 +33,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/tracing_controller.h"
-#include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -233,9 +232,7 @@ void OnTracingRequest(const std::string& path,
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-TracingUI::TracingUI(WebUI* web_ui)
-    : WebUIController(web_ui),
-      delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
+TracingUI::TracingUI(WebUI* web_ui) : WebUIController(web_ui) {
   // Set up the chrome://tracing/ source.
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUITracingHost);

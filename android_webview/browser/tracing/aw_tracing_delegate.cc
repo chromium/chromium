@@ -88,10 +88,4 @@ bool AwTracingDelegate::OnBackgroundTracingIdle(bool requires_anonymized_data) {
   return true;
 }
 
-std::optional<base::Value::Dict> AwTracingDelegate::GenerateMetadataDict() {
-  base::Value::Dict metadata_dict;
-  metadata_dict.Set("revision", version_info::GetLastChange());
-  return metadata_dict;
-}
-
 }  // namespace android_webview
