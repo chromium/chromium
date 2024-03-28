@@ -31,7 +31,8 @@ void DeviceOwnershipWaiterImpl::WaitForOwnershipFetched(
 
   // We assume that there are no kiosk sessions in consumer setups, for more
   // information see docs of this method.
-  CHECK(!UserManager::Get()->IsLoggedInAsKioskApp());
+  // TODO(elkurin): Reintroduce the check to assert the device is not in an
+  // unmanaged kiosk session.
 
   UserManager::Get()->GetOwnerAccountIdAsync(
       base::IgnoreArgs<const AccountId&>(std::move(callback)));
