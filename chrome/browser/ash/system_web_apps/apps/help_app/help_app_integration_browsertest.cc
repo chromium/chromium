@@ -88,6 +88,8 @@
 namespace ash {
 
 namespace {
+constexpr char kExploreUpdatesPageUrl[] =
+    "chrome://help-app/updates?launchSource=version-update";
 
 class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
@@ -147,6 +149,21 @@ class HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kHelpAppOpensInsteadOfReleaseNotesNotification};
+};
+
+class HelpAppIntegrationTestWithBirchFeatureEnabled
+    : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationTestWithBirchFeatureEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kHelpAppOpensInsteadOfReleaseNotesNotification,
+         features::kForestFeature},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -482,8 +499,7 @@ IN_PROC_BROWSER_TEST_P(
     OpensHelpApp) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
-  GURL expected_trusted_frame_url =
-      GURL("chrome://help-app/updates?launchSource=version-update");
+  GURL expected_trusted_frame_url = GURL(kExploreUpdatesPageUrl);
   content::TestNavigationObserver navigation_observer(
       expected_trusted_frame_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -512,6 +528,44 @@ IN_PROC_BROWSER_TEST_P(
       apps::LaunchSource::kFromReleaseNotesNotification, 1);
 #else
   // We just have the original browser. No new app opens.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  histogram_tester.ExpectUniqueSample(
+      "Discover.Overall.AppLaunched",
+      apps::LaunchSource::kFromReleaseNotesNotification, 0);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithBirchFeatureEnabled,
+                       HelpAppRemainsClosed) {
+  WaitForTestSystemAppInstall();
+  base::HistogramTester histogram_tester;
+  GURL expected_trusted_frame_url = GURL(kExploreUpdatesPageUrl);
+  content::TestNavigationObserver navigation_observer(
+      expected_trusted_frame_url);
+  navigation_observer.StartWatchingNewWebContents();
+  auto display_service =
+      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kHelpAppNotificationLastShownMilestone, 20);
+  std::make_unique<HelpAppNotificationController>(profile())
+      ->MaybeShowReleaseNotesNotification();
+
+  // The release notes notification should not appear.
+  auto notifications = display_service->GetDisplayedNotificationsForType(
+      NotificationHandler::Type::TRANSIENT);
+  EXPECT_EQ(0u, notifications.size());
+  // The release notes suggestion chip should not appear.
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(
+                prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
+            0);
+#if BUILDFLAG(ENABLE_CROS_HELP_APP)
+  // No new app should open because of birch flag.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  histogram_tester.ExpectUniqueSample(
+      "Discover.Overall.AppLaunched",
+      apps::LaunchSource::kFromReleaseNotesNotification, 0);
+#else
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   histogram_tester.ExpectUniqueSample(
       "Discover.Overall.AppLaunched",
@@ -1134,4 +1188,7 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationTestWithBirchFeatureEnabled);
 }  // namespace ash

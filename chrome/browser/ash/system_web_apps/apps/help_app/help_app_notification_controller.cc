@@ -66,6 +66,9 @@ void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
           features::kReleaseNotesNotificationAlwaysEligible)) {
     return;
   }
+  if (base::FeatureList::IsEnabled(features::kForestFeature)) {
+    return;
+  }
   ReleaseNotesStorage release_notes_storage(profile_);
   if (!release_notes_storage.ShouldNotify()) {
     return;

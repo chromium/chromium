@@ -83,6 +83,16 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
 
   void OnNotificationAdded() { notification_count_++; }
 
+  void TurnOnBirchFeature() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kReleaseNotesNotificationAllChannels,
+         features::kHelpAppOpensInsteadOfReleaseNotesNotification,
+         features::kForestFeature},
+        /*disabled_features=*/{});
+  }
+
  protected:
   bool HasReleaseNotesNotification() {
     return notification_tester_
@@ -112,7 +122,7 @@ class HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled
             features::kReleaseNotesNotificationAllChannels,
             features::kHelpAppOpensInsteadOfReleaseNotesNotification,
         },
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kForestFeature});
     BrowserWithTestWindowTest::SetUp();
     help_app_notification_controller_ =
         std::make_unique<HelpAppNotificationController>(profile());
@@ -236,6 +246,24 @@ TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled,
   EXPECT_EQ(CurrentMilestone(),
             profile->GetPrefs()->GetInteger(
                 prefs::kHelpAppNotificationLastShownMilestone));
+}
+
+// Tests for help app doesn't open if birch feature flag is on.
+TEST_F(HelpAppNotificationControllerTestWithHelpAppOpensInsteadEnabled,
+       DoesNotOpenHelpAppIfBirchFeatureEnabled) {
+  TurnOnBirchFeature();
+  Profile* profile = CreateRegularProfile();
+  profile->GetPrefs()->SetInteger(prefs::kHelpAppNotificationLastShownMilestone,
+                                  91);
+  std::unique_ptr<HelpAppNotificationController> controller =
+      std::make_unique<HelpAppNotificationController>(profile);
+
+  controller->MaybeShowReleaseNotesNotification();
+
+  EXPECT_EQ(0, notification_count_);
+  EXPECT_EQ(false, HasReleaseNotesNotification());
+  EXPECT_EQ(91, profile->GetPrefs()->GetInteger(
+                    prefs::kHelpAppNotificationLastShownMilestone));
 }
 
 }  // namespace ash
