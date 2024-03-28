@@ -1870,6 +1870,19 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       treat_as_error = False,
     ),
+    BanRule(
+      pattern =  '/(CUIAutomation|AccessibleObjectFromWindow)',
+      explanation = (
+          'Direct usage of UIAutomation or IAccessible2 in client code is '
+          'discouraged in Chromium, as it is not an assistive technology and '
+          'should not rely on accessibility APIs directly. These APIs can '
+          'introduce significant performance overhead. However, if you believe '
+          'your use case warrants an exception, please discuss it with an '
+          'accessibility owner before proceeding. For more information on the '
+          'performance implications, see https://docs.google.com/document/d/1jN4itpCe_bDXF0BhFaYwv4xVLsCWkL9eULdzjmLzkuk/edit#heading=h.pwth3nbwdub0.',
+      ),
+      treat_as_error = False,
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
