@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -289,19 +290,19 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
       size_t buffer_size,
       bool fill_with_noise) {
     DCHECK(capture_callback);
-    std::unique_ptr<uint8_t[]> audio_buffer(new uint8_t[buffer_size]);
+    auto audio_buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
     if (fill_with_noise) {
       for (size_t i = 0; i < buffer_size; ++i)
         audio_buffer[i] =
             static_cast<uint8_t>(127 * sin(i * 3.14F / (16 * buffer_size)));
     } else {
-      memset(audio_buffer.get(), 0, buffer_size);
+      base::ranges::fill(audio_buffer, 0);
     }
 
     std::unique_ptr<media::AudioBus> audio_bus =
         media::AudioBus::Create(audio_params);
     audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-        reinterpret_cast<int16_t*>(&audio_buffer.get()[0]),
+        reinterpret_cast<int16_t*>(&audio_buffer.data()[0]),
         audio_bus->frames());
     capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), {}, 0.0,
                               false);
