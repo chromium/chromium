@@ -104,10 +104,17 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedDefaultSearch(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service);
 
-// Test Utilities -------------------------------------------------------------
-
-// Returns all prepopulated engines for all locales. Used only by tests.
+// Returns all prepopulated engines for all locales.
 std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines();
+
+// Returns all the prepopulated engines that are used in the EEA region.
+std::vector<std::unique_ptr<TemplateURLData>>
+GetAllEeaRegionPrepopulatedEngines();
+
+// Returns the set of search engines that is used when the country is unknown.
+std::vector<std::unique_ptr<TemplateURLData>> GetDefaultPrepopulatedEngines();
+
+// Test Utilities -------------------------------------------------------------
 
 const std::vector<raw_ptr<const PrepopulatedEngine>>
 GetPrepopulationSetFromCountryIDForTesting(int country_id);

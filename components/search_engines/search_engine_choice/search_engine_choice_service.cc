@@ -292,11 +292,13 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 }
 
 int SearchEngineChoiceService::GetCountryId() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSearchEngineChoiceCountry)) {
-    return country_codes::CountryStringToCountryID(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kSearchEngineChoiceCountry));
+  std::optional<SearchEngineCountryOverride> country_override =
+      GetSearchEngineCountryOverride();
+  if (country_override.has_value()) {
+    if (absl::holds_alternative<int>(country_override.value())) {
+      return absl::get<int>(country_override.value());
+    }
+    return country_codes::kCountryIDUnknown;
   }
 
   bool force_eea_country =
