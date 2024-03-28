@@ -233,8 +233,11 @@ export class ModulesV2Element extends AppElementBase {
 
 
       if (modules.length > 1) {
-        const maxModuleInstanceCount = loadTimeData.getInteger(
-            'multipleLoadedModulesMaxModuleInstanceCount');
+        const maxModuleInstanceCount =
+            (modules.length >= this.maxColumnCount_) ?
+            1 :
+            loadTimeData.getInteger(
+                'multipleLoadedModulesMaxModuleInstanceCount');
         if (maxModuleInstanceCount > 0) {
           modules.forEach(module => {
             module.elements.splice(

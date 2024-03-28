@@ -43,7 +43,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
   });
 
   async function createModulesElement(
-      modules: Module[], enabled: boolean, width: number) {
+      modules: Module[], enabled: boolean,
+      width: number): Promise<ModulesV2Element> {
     if (!enabled) {
       assertTrue(
           modules.length === 0,
@@ -62,6 +63,24 @@ suite('NewTabPageModulesModulesV2Test', () => {
     document.body.appendChild(element);
     await modulesPromise;
     return element;
+  }
+
+  async function createModulesElementFromDescriptors(
+      descriptors: ModuleDescriptor[],
+      instanceCount: number): Promise<HTMLElement> {
+    handler.setResultFor('getModulesIdNames', {
+      data: descriptors,
+    });
+
+    const modules: Module[] = descriptors.map(descriptor => {
+      return {
+        descriptor: descriptor,
+        elements: Array(instanceCount).fill(0).map(_ => createElement()),
+      } as Module;
+    });
+    const modulesElement =
+        await createModulesElement(modules, true, SAMPLE_SCREEN_WIDTH);
+    return modulesElement;
   }
 
   const NARROW_WIDTH = SUPPORTED_MODULE_WIDTHS[0]!;
@@ -293,34 +312,40 @@ suite('NewTabPageModulesModulesV2Test', () => {
     const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
     const barDescriptor = new ModuleDescriptor('bar', initNullModule);
     const descriptors = [
-      {id: fooDescriptor.id, name: fooDescriptor.id},
-      {id: barDescriptor.id, name: barDescriptor.id},
+      fooDescriptor,
+      barDescriptor,
     ];
-    handler.setResultFor('getModulesIdNames', {
-      data: descriptors,
-    });
-
-    const modulesElement = await createModulesElement(
-        [
-          {
-            descriptor: fooDescriptor,
-            elements: Array(SAMPLE_MAX_MODULE_INSTANCE_COUNT + 1)
-                          .fill(0)
-                          .map(_ => createElement()),
-          },
-          {
-            descriptor: barDescriptor,
-            elements: Array(SAMPLE_MAX_MODULE_INSTANCE_COUNT + 1)
-                          .fill(0)
-                          .map(_ => createElement()),
-          },
-        ],
-        true, SAMPLE_SCREEN_WIDTH);
+    const modulesElement = await createModulesElementFromDescriptors(
+        descriptors, SAMPLE_MAX_MODULE_INSTANCE_COUNT + 1);
     const moduleWrappers =
         modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
     assertEquals(
         descriptors.length * SAMPLE_MAX_MODULE_INSTANCE_COUNT,
         moduleWrappers.length);
+  });
+
+  test('modules maxium instance capped to maximum column count', async () => {
+    const SAMPLE_MAX_COLUMN_COUNT = 3;
+    const SAMPLE_MAX_MODULE_INSTANCE_COUNT = 3;
+    loadTimeData.overrideValues({
+      modulesMaxColumnCount: SAMPLE_MAX_COLUMN_COUNT,
+      multipleLoadedModulesMaxModuleInstanceCount:
+          SAMPLE_MAX_MODULE_INSTANCE_COUNT,
+    });
+
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+    const bazDescriptor = new ModuleDescriptor('baz', initNullModule);
+    const descriptors = [
+      fooDescriptor,
+      barDescriptor,
+      bazDescriptor,
+    ];
+    const modulesElement = await createModulesElementFromDescriptors(
+        descriptors, SAMPLE_MAX_MODULE_INSTANCE_COUNT);
+    const moduleWrappers =
+        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
+    assertEquals(SAMPLE_MAX_COLUMN_COUNT, moduleWrappers.length);
   });
 
   enum UndoStrategy {
