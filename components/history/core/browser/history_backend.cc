@@ -2931,11 +2931,6 @@ void HistoryBackend::GetRedirectsToSpecificVisit(VisitID cur_visit,
   }
 }
 
-void HistoryBackend::ScheduleAutocomplete(
-    base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback) {
-  std::move(callback).Run(this, db_.get());
-}
-
 void HistoryBackend::DeleteFTSIndexDatabases() {
   // Find files on disk matching the text databases file pattern so we can
   // quickly test for and delete them.
@@ -3589,6 +3584,11 @@ void HistoryBackend::ProcessDBTask(
       std::move(task), origin_loop, is_canceled));
   if (!scheduled)
     ProcessDBTaskImpl();
+}
+
+void HistoryBackend::RunDBTask(
+    base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback) {
+  std::move(callback).Run(this, db_.get());
 }
 
 void HistoryBackend::NotifyFaviconsChanged(const std::set<GURL>& page_urls,

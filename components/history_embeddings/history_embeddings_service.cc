@@ -10,9 +10,11 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/url_database.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
@@ -64,6 +66,36 @@ std::vector<Embedding> StubComputePassagesEmbeddings(
   // TODO(b/328114635): Synchronous inference to compute vector embeddings?
   return std::vector<Embedding>(url_passages.passages.passages_size(),
                                 StubComputeQueryEmbedding(""));
+}
+
+// This is run on the HistoryService's worker thread to access the full URL
+// database and finish the results for a completed embeddings search.
+// Finished results are then sent to the given callback using the task_runner.
+void FinishSearchResultWithHistory(
+    const scoped_refptr<base::SequencedTaskRunner> task_runner,
+    SearchResultCallback callback,
+    std::vector<ScoredUrl> scored_urls,
+    history::HistoryBackend* history_backend,
+    history::URLDatabase* url_database) {
+  SearchResult result;
+  if (url_database) {
+    // Move each ScoredUrl into a more complete ScoredUrlRow with more info from
+    // the history database.
+    result.reserve(scored_urls.size());
+    for (ScoredUrl& scored_url : scored_urls) {
+      result.emplace_back(std::move(scored_url));
+      if (!url_database->GetURLRow(result.back().scored_url.url_id,
+                                   &result.back().row)) {
+        // This omission covers an edge case and should generally not happen
+        // unless a notification was missed or the history database and
+        // history_embeddings database went out of sync. It's theoretically
+        // possible since operations across separate databases are not atomic.
+        result.pop_back();
+      }
+    }
+  }
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), std::move(result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -181,27 +213,14 @@ void HistoryEmbeddingsService::OnPassagesRetrieved(PassagesCallback callback,
 void HistoryEmbeddingsService::OnSearchCompleted(
     SearchResultCallback callback,
     std::vector<ScoredUrl> scored_urls) {
-  SearchResult result;
-  result.reserve(scored_urls.size());
-
-  if (history::URLDatabase* history_database =
-          history_service_->InMemoryDatabase()) {
-    // Move each ScoredUrl into a more complete ScoredUrlRow with more info from
-    // the history database.
-    for (ScoredUrl& scored_url : scored_urls) {
-      result.emplace_back(std::move(scored_url));
-      if (!history_database->GetURLRow(result.back().scored_url.url_id,
-                                       &result.back().row)) {
-        // This omission covers an edge case and should generally not happen
-        // unless a notification was missed or the history database and
-        // history_embeddings database went out of sync. It's theoretically
-        // possible since operations across separate databases are not atomic.
-        result.pop_back();
-      }
-    }
-  }
-
-  std::move(callback).Run(std::move(result));
+  // TODO(b/330925683): Handle search interruption. This may not still need to
+  //  happen by now.
+  // Use the callback task mechanism for simplicity and easier control with
+  // other standard async machinery.
+  history_service_->ScheduleDBTaskForUI(
+      base::BindOnce(&FinishSearchResultWithHistory,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback), std::move(scored_urls)));
 }
 
 }  // namespace history_embeddings

@@ -551,6 +551,14 @@ base::CancelableTaskTracker::TaskId HistoryService::ScheduleDBTask(
   return task_id;
 }
 
+void HistoryService::ScheduleDBTaskForUI(
+    base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_UI,
+               base::BindOnce(&HistoryBackend::RunDBTask, history_backend_,
+                              std::move(callback)));
+}
+
 void HistoryService::FlushForTest(base::OnceClosure flushed) {
   backend_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                          std::move(flushed));
@@ -1481,14 +1489,6 @@ bool HistoryService::Init(
     history_client_->OnHistoryServiceCreated(this);
 
   return true;
-}
-
-void HistoryService::ScheduleAutocomplete(
-    base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ScheduleTask(PRIORITY_UI,
-               base::BindOnce(&HistoryBackend::ScheduleAutocomplete,
-                              history_backend_, std::move(callback)));
 }
 
 void HistoryService::ScheduleTask(SchedulePriority priority,

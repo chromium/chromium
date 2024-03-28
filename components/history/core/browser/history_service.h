@@ -47,7 +47,6 @@
 
 class GURL;
 class HistoryQuickProviderTest;
-class HistoryURLProvider;
 class InMemoryURLIndexTest;
 class SkBitmap;
 
@@ -751,6 +750,14 @@ class HistoryService : public KeyedService,
       std::unique_ptr<HistoryDBTask> task,
       base::CancelableTaskTracker* tracker);
 
+  // Called by the HistoryURLProvider class to schedule an autocomplete, or by
+  // the HistoryEmbeddingsService to fill in details for user searches. The
+  // `callback` will be called with the history database so it can query.
+  // See history_url_provider.h for a diagram. This is similar to above
+  // `ScheduleDBTask` but uses a callback instead of interface inheritance.
+  void ScheduleDBTaskForUI(
+      base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
+
   // Callback for when favicon data changes. Contains a std::set of page URLs
   // (e.g. http://www.google.com) for which the favicon data has changed and the
   // icon URL (e.g. http://www.google.com/favicon.ico) for which the favicon
@@ -851,7 +858,6 @@ class HistoryService : public KeyedService,
   friend class HistoryQueryTest;
   friend class ::HistoryQuickProviderTest;
   friend class HistoryServiceTest;
-  friend class ::HistoryURLProvider;
   friend class HQPPerfTestOnePopularURL;
   friend class ::InMemoryURLIndexTest;
   friend std::unique_ptr<HistoryService> CreateHistoryService(
@@ -872,12 +878,6 @@ class HistoryService : public KeyedService,
   // Low-level Init().  Same as the public version, but adds a `no_db` parameter
   // that is only set by unittests which causes the backend to not init its DB.
   bool Init(bool no_db, const HistoryDatabaseParams& history_database_params);
-
-  // Called by the HistoryURLProvider class to schedule an autocomplete, it will
-  // be called back with the history database so it can query. See
-  // history_url_provider.h for a diagram.
-  void ScheduleAutocomplete(
-      base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
 
   // Notification from the backend that it has finished loading. Sends
   // notification (NOTIFY_HISTORY_LOADED) and sets backend_loaded_ to true.

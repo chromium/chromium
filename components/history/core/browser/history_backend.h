@@ -286,11 +286,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Querying ------------------------------------------------------------------
 
-  // Run the `callback` on the History thread.
-  // `callback` should handle the null database case.
-  void ScheduleAutocomplete(
-      base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
-
   QueryURLResult QueryURL(const GURL& url, bool want_visits);
   std::vector<QueryURLResult> QueryURLs(const std::vector<GURL>& urls,
                                         bool want_visits);
@@ -613,6 +608,14 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       std::unique_ptr<HistoryDBTask> task,
       scoped_refptr<base::SequencedTaskRunner> origin_loop,
       const base::CancelableTaskTracker::IsCanceledCallback& is_canceled);
+
+  // Run the `callback` with `this` and its database. Expected to be called from
+  // the history thread. `callback` should handle the null database case.
+  // Similar in purpose to above `ProcessDBTask` but this simply runs
+  // immediately instead of possibly being queued. It's essentially just an
+  // access mechanism.
+  void RunDBTask(
+      base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
 
   bool CanAddURL(const GURL& url) const override;
 
