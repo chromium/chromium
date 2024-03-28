@@ -13553,9 +13553,8 @@
                         "PasswordGenerationExperimentSurveyTriggedId": "DX4MWyX4R0ugnJ3q1cK0YjEiaErj",
                         "probability": "0.25"
                     },
-                    "disable_features": [
-                        "PasswordGenerationExperiment",
-                        "PasswordStrongLabel"
+                    "enable_features": [
+                        "PasswordGenerationExperiment"
                     ]
                 }
             ]
