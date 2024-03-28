@@ -468,9 +468,9 @@ void SavedTabGroupKeyedService::FocusFirstTabOrWindowInOpenGroup(
   std::optional<int> first_tab = tab_group->GetFirstTab();
   std::optional<int> last_tab = tab_group->GetLastTab();
   int active_index = browser_for_activation->tab_strip_model()->active_index();
-  DCHECK(first_tab.has_value());
-  DCHECK(last_tab.has_value());
-  DCHECK_GT(active_index, 0);
+  CHECK(first_tab.has_value());
+  CHECK(last_tab.has_value());
+  CHECK_GE(active_index, 0);
 
   if (active_index >= first_tab.value() && active_index <= last_tab) {
     browser_for_activation->window()->Activate();
