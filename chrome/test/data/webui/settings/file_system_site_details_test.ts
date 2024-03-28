@@ -26,13 +26,11 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
   const directoryFilePath: string = 'g/h/';
 
   const TEST_FILE_SYSTEM_FILE_WRITE_GRANT: FileSystemGrant = {
-    origin: origin,
     filePath: filePath,
     displayName: filePath,
     isDirectory: false,
   };
   const TEST_FILE_SYSTEM_DIRECTORY_READ_GRANT: FileSystemGrant = {
-    origin: origin,
     filePath: directoryFilePath,
     displayName: directoryFilePath,
     isDirectory: true,

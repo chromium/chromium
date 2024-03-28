@@ -199,12 +199,7 @@ export interface ZoomLevelEntry {
   zoom: string;
 }
 
-/**
- * TODO(crbug.com/1523673): Consider refactoring to remove the origin key from
- * the `FileSystemGrant` interface.
- */
 export interface FileSystemGrant {
-  origin: string;
   filePath: string;
   displayName: string;
   isDirectory: boolean;
