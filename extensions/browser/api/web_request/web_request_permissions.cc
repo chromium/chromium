@@ -10,8 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -358,14 +356,7 @@ bool WebRequestPermissions::HideRequest(
   // during that cleanup.
   if (extension_urls::IsWebstoreUpdateUrl(url) ||
       extension_urls::IsBlocklistUpdateUrl(url) ||
-      extension_urls::IsSafeBrowsingUrl(url::Origin::Create(url),
-                                        url.path_piece()) ||
-      // TODO(crbug.com/1476651): The following check should ideally be within
-      // IsSafeBrowsingUrl. This will be possible if hash_realtime_utils is
-      // moved to live within /content instead of /browser.
-      (safe_browsing::hash_realtime_utils::
-           IsHashRealTimeLookupEligibleInSession() &&
-       url == safe_browsing::kHashPrefixRealTimeLookupsRelayUrl.Get()) ||
+      extension_urls::IsSafeBrowsingUrl(url) ||
       (url.DomainIs("chrome.google.com") &&
        base::StartsWith(url.path_piece(), "/webstore",
                         base::CompareCase::SENSITIVE)) ||

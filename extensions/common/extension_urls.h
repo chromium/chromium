@@ -99,8 +99,7 @@ bool IsWebstoreUpdateUrl(const GURL& update_url);
 bool IsBlocklistUpdateUrl(const GURL& url);
 
 // Returns true if the origin points to an URL used for safebrowsing.
-// TODO(devlin): Update other methods to also take an url::Origin?
-bool IsSafeBrowsingUrl(const url::Origin& origin, std::string_view path);
+bool IsSafeBrowsingUrl(const GURL& url);
 
 }  // namespace extension_urls
 
