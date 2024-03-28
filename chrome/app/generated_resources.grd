@@ -6564,6 +6564,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_ENTERPRISE_EXTENSION_SITE_ACCESS_TOOLTIP" desc="Tooltip text of an extension's site permissions button installed by enterprise.">
         Installed by your administrator
       </message>
+       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME" desc="Accessible name of an extension's site permissions button.">
+        <ph name="SITE_ACCESS">$1<ex>Always on this site</ex></ph>. Select to change site permissions
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_ENTERPRISE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME" desc="Accessible name of an extension's site permissions button installed by enterprise.">
+       <ph name="SITE_ACCESS">$1<ex>Always on this site</ex></ph>. Installed by your administrator
+      </message>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_HAS_ACCESS_TOOLTIP" desc="Tooltip text of an extension's menu button when the extension has access to the current site.">
         Allowed to read &amp; change this site
       </message>
@@ -6572,9 +6578,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_BUTTON_REQUESTS_TOOLTIP" desc="Tooltip text of an extension's menu button when the extension is requesting access to the current site.">
         Requesting to read &amp; change this site
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME" desc="Accessibility string of an extension's site permissions button.">
-        <ph name="SITE_ACCESS">$1<ex>Always on this site</ex></ph>. Select to change site permissions
       </message>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK" desc="Text of the site permissions button when extension has site access only when clicked.">
         Ask on every visit

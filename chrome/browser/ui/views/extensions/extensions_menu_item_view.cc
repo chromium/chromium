@@ -151,6 +151,26 @@ std::u16string GetSitePermissionsButtonTooltip(
   return std::u16string();
 }
 
+std::u16string GetSitePermissionsButtonAccName(
+    bool is_enterprise,
+    ExtensionMenuItemView::SitePermissionsButtonAccess button_access,
+    std::u16string& button_text) {
+  if (is_enterprise) {
+    return l10n_util::GetStringFUTF16(
+        IDS_EXTENSIONS_MENU_MAIN_PAGE_ENTERPRISE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
+        button_text);
+  }
+
+  if (button_access !=
+      ExtensionMenuItemView::SitePermissionsButtonAccess::kNone) {
+    return l10n_util::GetStringFUTF16(
+        IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
+        button_text);
+  }
+
+  return button_text;
+}
+
 const gfx::VectorIcon& GetPinIcon(bool is_pinned) {
   if (is_pinned) {
     return features::IsChromeRefresh2023() ? kKeepPinFilledChromeRefreshIcon
@@ -387,6 +407,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   // accessible name.
   site_access_toggle_->GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  site_permissions_button_->GetViewAccessibility().SetDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 
 ExtensionMenuItemView::~ExtensionMenuItemView() = default;
@@ -437,9 +459,8 @@ void ExtensionMenuItemView::Update(
     site_permissions_button_->SetText(site_permissions_text);
     site_permissions_button_->SetTooltipText(GetSitePermissionsButtonTooltip(
         is_enterprise, site_permissions_button_access));
-    site_permissions_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-        IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ACCESSIBLE_NAME,
-        site_permissions_text));
+    site_permissions_button_->SetAccessibleName(GetSitePermissionsButtonAccName(
+        is_enterprise, site_permissions_button_access, site_permissions_text));
 
     // Update button size after changing its contents so it fits in the menu
     // item row.

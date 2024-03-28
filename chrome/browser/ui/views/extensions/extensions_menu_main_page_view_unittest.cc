@@ -238,6 +238,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, NoSiteAccessRequested) {
             u"No access needed");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             std::u16string());
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"No access needed");
 
   // When site setting is set to "block all extensions":
   //   - site access toggle is hidden.
@@ -274,6 +277,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"No access needed");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Installed by your administrator");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"No access needed. Installed by your administrator");
 
   // When site setting is set to "block all extensions":
   //   - site access toggle is hidden
@@ -330,6 +336,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Ask on every visit");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Change site permissions");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Ask on every visit. Select to change site permissions");
 
   // When site access is toggled ON:
   //   - extension site access is "on site", since that was the previous
@@ -348,6 +357,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Always on this site");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Change site permissions");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Always on this site. Select to change site permissions");
 }
 
 // Verifies the site access toggle and site permissions button properties when
@@ -381,6 +393,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Always on all sites");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Change site permissions");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Always on all sites. Select to change site permissions");
 
   // When site access is toggled OFF:
   //   - extension site access is changed to "on click".
@@ -398,6 +413,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Ask on every visit");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Change site permissions");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Ask on every visit. Select to change site permissions");
 
   // When site access is toggled ON:
   //   - extension site access is "on all sites", since that was the previous
@@ -416,6 +434,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Always on all sites");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Change site permissions");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Always on all sites. Select to change site permissions");
 }
 
 // Verifies the site access toggle and site permissions button properties for an
@@ -557,6 +578,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Always on all sites");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Installed by your administrator");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Always on all sites. Installed by your administrator");
 
   // When site setting is set to "block all extensions":
   //   - extension site access is still "on all sites".
@@ -579,6 +603,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
             u"Always on all sites");
   EXPECT_EQ(menu_item->site_permissions_button_for_testing()->GetTooltipText(),
             u"Installed by your administrator");
+  EXPECT_EQ(
+      menu_item->site_permissions_button_for_testing()->GetAccessibleName(),
+      u"Always on all sites. Installed by your administrator");
 }
 
 // Verifies the site access toggle and site permissions button properties when
