@@ -227,7 +227,7 @@ void SadTab::PerformAction(SadTab::Action action) {
       content::OpenURLParams params(GURL(GetHelpLinkURL()), content::Referrer(),
                                     WindowOpenDisposition::CURRENT_TAB,
                                     ui::PAGE_TRANSITION_LINK, false);
-      web_contents_->OpenURL(params);
+      web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
       break;
   }
 }

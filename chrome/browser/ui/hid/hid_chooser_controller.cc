@@ -210,10 +210,12 @@ void HidChooserController::OpenHelpCenterUrl() const {
   if (!web_contents)
     return;
 
-  web_contents->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChooserHidOverviewUrl), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
+  web_contents->OpenURL(
+      content::OpenURLParams(
+          GURL(chrome::kChooserHidOverviewUrl), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 }
 
 void HidChooserController::OnDeviceAdded(

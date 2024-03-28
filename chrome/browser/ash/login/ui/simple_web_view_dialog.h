@@ -63,7 +63,10 @@ class SimpleWebViewDialog : public views::View,
   void Init();
 
   // Implements content::PageNavigator:
-  content::WebContents* OpenURL(const content::OpenURLParams& params) override;
+  content::WebContents* OpenURL(
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 
   // Implements content::WebContentsDelegate:
   void NavigationStateChanged(content::WebContents* source,

@@ -497,7 +497,7 @@ void SidePanelCoordinator::OpenInNewTab() {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                 /*is_renderer_initiated=*/false);
-  browser_view_->browser()->OpenURL(params);
+  browser_view_->browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   Close();
 }
 

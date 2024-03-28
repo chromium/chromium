@@ -72,7 +72,9 @@ bool WebUIContentsWrapper::Host::HandleContextMenu(
 
 content::WebContents* WebUIContentsWrapper::Host::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   return nullptr;
 }
 
@@ -152,8 +154,12 @@ std::unique_ptr<content::EyeDropper> WebUIContentsWrapper::OpenEyeDropper(
 
 content::WebContents* WebUIContentsWrapper::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
-  return host_ ? host_->OpenURLFromTab(source, params) : nullptr;
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  return host_ ? host_->OpenURLFromTab(source, params,
+                                       std::move(navigation_handle_callback))
+               : nullptr;
 }
 
 void WebUIContentsWrapper::RequestMediaAccessPermission(

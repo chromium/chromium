@@ -44,7 +44,9 @@ void ShellAppDelegate::ResizeWebContents(content::WebContents* web_contents,
 content::WebContents* ShellAppDelegate::OpenURLFromTab(
     content::BrowserContext* context,
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   NOTIMPLEMENTED();
   return nullptr;
 }

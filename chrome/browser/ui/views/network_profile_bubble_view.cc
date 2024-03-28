@@ -98,7 +98,7 @@ void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
       GURL("https://sites.google.com/a/chromium.org/dev/administrators/"
            "common-problems-and-solutions#network_profile"),
       content::Referrer(), disposition, ui::PAGE_TRANSITION_LINK, false);
-  navigator_->OpenURL(params);
+  navigator_->OpenURL(params, /*navigation_handle_callback=*/{});
 
   // If the user interacted with the bubble we don't reduce the number of
   // warnings left.

@@ -116,7 +116,9 @@ bool ExtensionViewHost::IsBackgroundPage() const {
 
 content::WebContents* ExtensionViewHost::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   // Allowlist the dispositions we will allow to be opened.
   switch (params.disposition) {
     case WindowOpenDisposition::SINGLETON_TAB:
@@ -128,7 +130,9 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
     case WindowOpenDisposition::OFF_THE_RECORD: {
       // Only allow these from hosts that are bound to a browser (e.g. popups).
       // Otherwise they are not driven by a user gesture.
-      return GetBrowser() ? GetBrowser()->OpenURL(params) : nullptr;
+      return GetBrowser() ? GetBrowser()->OpenURL(
+                                params, std::move(navigation_handle_callback))
+                          : nullptr;
     }
     default:
       return nullptr;

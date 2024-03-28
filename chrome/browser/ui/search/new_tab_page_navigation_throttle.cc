@@ -67,6 +67,7 @@ NewTabPageNavigationThrottle::OpenLocalNewTabPage() {
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.url = GURL(chrome::kChromeUINewTabPageThirdPartyURL);
   params.is_renderer_initiated = false;
-  navigation_handle()->GetWebContents()->OpenURL(std::move(params));
+  navigation_handle()->GetWebContents()->OpenURL(
+      std::move(params), /*navigation_handle_callback=*/{});
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }

@@ -2807,11 +2807,13 @@ IN_PROC_BROWSER_TEST_F(
       FrameNavigateParamsCapturer capturer(FrameTreeNode::From(child_frame));
       const GURL kSameOriginSubframeUrl3 =
           GetUrl("/empty.html?same_origin_iframe3");
-      shell()->web_contents()->OpenURL(OpenURLParams(
-          kSameOriginSubframeUrl3, Referrer(),
-          child_frame->GetFrameTreeNodeId(), WindowOpenDisposition::CURRENT_TAB,
-          ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-          /*is_renderer_initiated=*/false));
+      shell()->web_contents()->OpenURL(
+          OpenURLParams(kSameOriginSubframeUrl3, Referrer(),
+                        child_frame->GetFrameTreeNodeId(),
+                        WindowOpenDisposition::CURRENT_TAB,
+                        ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+                        /*is_renderer_initiated=*/false),
+          /*navigation_handle_callback=*/{});
       capturer.Wait();
       child_frame = ChildFrameAt(prerender_frame_host, 0);
       EXPECT_EQ(kSameOriginSubframeUrl3, child_frame->GetLastCommittedURL());
@@ -3171,11 +3173,13 @@ class PrerenderMainFrameNavigationBrowserTest
   };
 
   void NavigatePrimaryPageFromAddressBar(const GURL& url) {
-    web_contents()->OpenURL(OpenURLParams(
-        url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        /*is_renderer_initiated=*/false));
+    web_contents()->OpenURL(
+        OpenURLParams(
+            url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
   }
 
   // Runs navigations in the `navigations_types` order and makes sure it ends
@@ -3968,7 +3972,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest, SuppressOpenURL) {
   params.source_render_process_id =
       prerendered_render_frame_host->GetProcess()->GetID();
   params.source_render_frame_id = prerendered_render_frame_host->GetRoutingID();
-  auto* new_web_contents = prerender_web_contents->OpenURL(params);
+  auto* new_web_contents = prerender_web_contents->OpenURL(
+      params, /*navigation_handle_callback=*/{});
   EXPECT_EQ(nullptr, new_web_contents);
 }
 
@@ -6177,11 +6182,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // Activate the embedder triggered prerender.
   test::PrerenderHostObserver embedder_observer(
       *web_contents(), GetHostForUrl(kEmbedderPrerender));
-  shell()->web_contents()->OpenURL(OpenURLParams(
-      kEmbedderPrerender, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
+  shell()->web_contents()->OpenURL(
+      OpenURLParams(
+          kEmbedderPrerender, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   embedder_observer.WaitForActivation();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kEmbedderPrerender);
@@ -6989,10 +6996,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
   // Navigate the iframe's FrameTreeNode in the prerendering frame tree. This
   // should successfully navigate.
   TestNavigationManager iframe_observer(shell()->web_contents(), kNewIframeUrl);
-  shell()->web_contents()->OpenURL(OpenURLParams(
-      kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-      /*is_renderer_initiated=*/false));
+  shell()->web_contents()->OpenURL(
+      OpenURLParams(
+          kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
   ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
   EXPECT_TRUE(iframe_observer.was_committed());
   EXPECT_TRUE(iframe_observer.was_successful());
@@ -7131,10 +7140,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // should successfully navigate but the navigation will be deferred until the
   // prerendering page is activated.
   {
-    shell()->web_contents()->OpenURL(OpenURLParams(
-        kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-        /*is_renderer_initiated=*/false));
+    shell()->web_contents()->OpenURL(
+        OpenURLParams(kNewIframeUrl, Referrer(),
+                      child_frame->GetFrameTreeNodeId(),
+                      WindowOpenDisposition::CURRENT_TAB,
+                      ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+                      /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
     ASSERT_TRUE(iframe_observer.WaitForFirstYieldAfterDidStartNavigation());
     NavigationRequest* request =
         static_cast<NavigationRequest*>(iframe_observer.GetNavigationHandle());
@@ -7842,10 +7854,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   {
     TestNavigationManager iframe_observer(shell()->web_contents(),
                                           kNewIframeUrl);
-    shell()->web_contents()->OpenURL(OpenURLParams(
-        kNewIframeUrl, Referrer(), child_frame->GetFrameTreeNodeId(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_AUTO_SUBFRAME,
-        /*is_renderer_initiated=*/false));
+    shell()->web_contents()->OpenURL(
+        OpenURLParams(kNewIframeUrl, Referrer(),
+                      child_frame->GetFrameTreeNodeId(),
+                      WindowOpenDisposition::CURRENT_TAB,
+                      ui::PAGE_TRANSITION_AUTO_SUBFRAME,
+                      /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
     ASSERT_TRUE(iframe_observer.WaitForNavigationFinished());
     EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
   }
@@ -10131,11 +10146,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       *shell()->web_contents(), redirected_url_node_2);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
                                                  prerender_initial_url);
-  shell()->web_contents()->OpenURL(OpenURLParams(
-      prerender_initial_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
+  shell()->web_contents()->OpenURL(
+      OpenURLParams(
+          prerender_initial_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   prerender_observer.WaitForActivation();
   ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
@@ -11564,7 +11581,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderClientHintsBrowserTest,
   OpenURLParams params(
       new_tab_url, Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-  auto* new_web_contents = web_contents_impl()->OpenURL(params);
+  auto* new_web_contents =
+      web_contents_impl()->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_NE(nullptr, new_web_contents);
   GURL new_tab_image_url = GetUrl("/blank.jpg");
   WaitForRequest(new_tab_image_url, 1);
@@ -11781,11 +11799,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           *web_contents_impl(), prerendering_url, redirected_url);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
                                                  prerendering_url);
-  shell()->web_contents()->OpenURL(OpenURLParams(
-      prerendering_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
+  shell()->web_contents()->OpenURL(
+      OpenURLParams(
+          prerendering_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
   prerender_observer.WaitForActivation();
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -11810,11 +11830,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           *web_contents_impl(), prerendering_url, redirected_url);
   test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
                                                  prerendering_url);
-  shell()->web_contents()->OpenURL(OpenURLParams(
-      prerendering_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
+  shell()->web_contents()->OpenURL(
+      OpenURLParams(
+          prerendering_url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
   prerender_observer.WaitForActivation();
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"

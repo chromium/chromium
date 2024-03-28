@@ -178,7 +178,7 @@ void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  web_contents()->OpenURL(params);
+  web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void ContentTranslateDriver::InitiateTranslationIfReload(

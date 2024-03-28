@@ -38,8 +38,12 @@ void WebDialogWebContentsDelegate::Detach() {
 }
 
 WebContents* WebDialogWebContentsDelegate::OpenURLFromTab(
-    WebContents* source, const OpenURLParams& params) {
-  return handler_->OpenURLFromTab(browser_context_, source, params);
+    WebContents* source,
+    const OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  return handler_->OpenURLFromTab(browser_context_, source, params,
+                                  std::move(navigation_handle_callback));
 }
 
 void WebDialogWebContentsDelegate::AddNewContents(

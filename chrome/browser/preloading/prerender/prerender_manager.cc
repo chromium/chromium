@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
+#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -60,9 +60,9 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
 
 void AttachBookmarkBarNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  BookmarkNavigationHandleUserData::CreateForNavigationHandle(
+  NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle,
-      BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar);
+      NavigationHandleUserData::InitiatorLocation::kBookmarkBar);
 }
 
 }  // namespace
@@ -322,12 +322,17 @@ PrerenderManager::StartPrerenderNewTabPage(
     new_tab_page_prerender_handle_.reset();
   }
 
+  base::RepeatingCallback<void(content::NavigationHandle&)>
+      prerender_navigation_handle_callback = base::BindRepeating(
+          &NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData);
+
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
-      /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
+      /*url_match_predicate=*/{},
+      std::move(prerender_navigation_handle_callback));
 
   return new_tab_page_prerender_handle_
              ? new_tab_page_prerender_handle_->GetWeakPtr()

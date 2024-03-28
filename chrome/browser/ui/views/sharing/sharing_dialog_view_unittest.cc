@@ -48,9 +48,11 @@ class SharingDialogViewTest : public TestWithBrowserView {
 
     // We create |web_contents_| to have a valid committed page origin to check
     // against when showing the origin view.
-    web_contents_ = browser()->OpenURL(content::OpenURLParams(
-        GURL("https://google.com"), content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+    web_contents_ = browser()->OpenURL(
+        content::OpenURLParams(GURL("https://google.com"), content::Referrer(),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
     CommitPendingLoad(&web_contents_->GetController());
   }
 

@@ -3127,9 +3127,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
 
       if (browser) {
-        browser->OpenURL(params);
+        browser->OpenURL(params, /*navigation_handle_callback=*/{});
       } else {
-        source_web_contents_->OpenURL(params);
+        source_web_contents_->OpenURL(params,
+                                      /*navigation_handle_callback=*/{});
       }
       break;
     }

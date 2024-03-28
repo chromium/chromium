@@ -67,12 +67,12 @@ void SpellingBubbleModel::OpenHelpPage() {
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
   if (web_contents_) {
-    web_contents_->OpenURL(params);
+    web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
     return;
   }
   // The web contents used to open this dialog have been destroyed.
   Browser* browser = chrome::ScopedTabbedBrowserDisplayer(profile_).browser();
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void SpellingBubbleModel::SetPref(bool enabled) {

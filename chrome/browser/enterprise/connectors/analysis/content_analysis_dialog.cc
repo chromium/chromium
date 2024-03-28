@@ -317,10 +317,12 @@ void ContentAnalysisDialog::CancelButtonCallback() {
 void ContentAnalysisDialog::LearnMoreLinkClickedCallback(
     const ui::Event& event) {
   DCHECK(has_learn_more_url());
-  web_contents_->OpenURL(content::OpenURLParams(
-      (*delegate_->GetCustomLearnMoreUrl()), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false));
+  web_contents_->OpenURL(
+      content::OpenURLParams((*delegate_->GetCustomLearnMoreUrl()),
+                             content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 void ContentAnalysisDialog::SuccessCallback() {
@@ -1000,11 +1002,13 @@ void ContentAnalysisDialog::AddLinksToDialogMessage() {
               if (!web_contents) {
                 return;
               }
-              web_contents->OpenURL(content::OpenURLParams(
-                  url, content::Referrer(),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                  ui::PAGE_TRANSITION_LINK,
-                  /*is_renderer_initiated=*/false));
+              web_contents->OpenURL(
+                  content::OpenURLParams(
+                      url, content::Referrer(),
+                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                      ui::PAGE_TRANSITION_LINK,
+                      /*is_renderer_initiated=*/false),
+                  /*navigation_handle_callback=*/{});
             },
             web_contents_->GetWeakPtr(), range.second)));
   }

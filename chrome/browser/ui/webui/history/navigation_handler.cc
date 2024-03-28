@@ -44,7 +44,8 @@ void NavigationHandler::HandleNavigateToUrl(const base::Value::List& list) {
                                   : WindowOpenDisposition::CURRENT_TAB);
   web_ui()->GetWebContents()->OpenURL(
       content::OpenURLParams(GURL(url_string), content::Referrer(), disposition,
-                             ui::PAGE_TRANSITION_LINK, false));
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 
   // This may delete us!
 }

@@ -128,10 +128,12 @@ void AdsBlockedMessageDelegate::HandleDialogLearnMoreClicked() {
   reprompt_required_ = true;
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
       subresource_filter::SubresourceFilterAction::kClickedLearnMore);
-  web_contents()->OpenURL(content::OpenURLParams(
-      GURL(subresource_filter::kLearnMoreLink), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false));
+  web_contents()->OpenURL(
+      content::OpenURLParams(GURL(subresource_filter::kLearnMoreLink),
+                             content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 void AdsBlockedMessageDelegate::HandleDialogDismissed() {

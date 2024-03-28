@@ -20,10 +20,11 @@ class TabSensitivityCacheBrowserTest : public InProcessBrowserTest {
       const TabSensitivityCacheBrowserTest&) = delete;
 
   content::WebContents* AddTab(GURL url) {
-    content::WebContents* contents_ptr =
-        browser()->OpenURL(content::OpenURLParams(
-            url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-            ui::PAGE_TRANSITION_TYPED, false));
+    content::WebContents* contents_ptr = browser()->OpenURL(
+        content::OpenURLParams(url, content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
 
     return contents_ptr;
   }

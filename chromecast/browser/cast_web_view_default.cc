@@ -168,7 +168,9 @@ void CastWebViewDefault::CloseContents(content::WebContents* source) {
 
 content::WebContents* CastWebViewDefault::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   LOG(INFO) << "Change url: " << params.url;
   // If source is NULL which means current tab, use web_contents_ of this class.
   if (!source)
@@ -176,8 +178,12 @@ content::WebContents* CastWebViewDefault::OpenURLFromTab(
   DCHECK_EQ(source, web_contents_.get());
   // We don't want to create another web_contents. Load url only when source is
   // specified.
-  source->GetController().LoadURL(params.url, params.referrer,
-                                  params.transition, params.extra_headers);
+  auto navigation_handle = source->GetController().LoadURL(
+      params.url, params.referrer, params.transition, params.extra_headers);
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
   return source;
 }
 

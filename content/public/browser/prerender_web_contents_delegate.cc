@@ -12,7 +12,8 @@ namespace content {
 
 WebContents* PrerenderWebContentsDelegate::OpenURLFromTab(
     WebContents* source,
-    const OpenURLParams& params) {
+    const OpenURLParams& params,
+    base::OnceCallback<void(NavigationHandle&)> navigation_handle_callback) {
   NOTREACHED_NORETURN();
 }
 

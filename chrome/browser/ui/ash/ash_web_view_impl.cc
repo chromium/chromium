@@ -127,13 +127,16 @@ bool AshWebViewImpl::IsWebContentsCreationOverridden(
 
 content::WebContents* AshWebViewImpl::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   if (params_.suppress_navigation) {
     NotifyDidSuppressNavigation(params.url, params.disposition,
                                 params.user_gesture);
     return nullptr;
   }
-  return content::WebContentsDelegate::OpenURLFromTab(source, params);
+  return content::WebContentsDelegate::OpenURLFromTab(
+      source, params, std::move(navigation_handle_callback));
 }
 
 void AshWebViewImpl::ResizeDueToAutoResize(content::WebContents* web_contents,

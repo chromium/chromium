@@ -177,7 +177,7 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_TYPED,
                                 /*is_renderer_initiated=*/false);
-  browser_view_->browser()->OpenURL(params);
+  browser_view_->browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.LoadResultsInNewTab"));
   SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())->Close();
@@ -282,14 +282,18 @@ bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
 
 content::WebContents* LensUnifiedSidePanelView::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   if (lens::features::GetEnableContextMenuInLensSidePanel()) {
     // Use |OpenURL| so that we create a new tab rather than trying to open
     // this link in the side panel.
-    browser_view_->browser()->OpenURL(params);
+    browser_view_->browser()->OpenURL(params,
+                                      std::move(navigation_handle_callback));
     return nullptr;
   } else {
-    return content::WebContentsDelegate::OpenURLFromTab(source, params);
+    return content::WebContentsDelegate::OpenURLFromTab(
+        source, params, std::move(navigation_handle_callback));
   }
 }
 
@@ -317,7 +321,7 @@ void LensUnifiedSidePanelView::DidOpenRequestedURL(
   if (renderer_initiated)
     params.initiator_origin = url::Origin::Create(url);
 
-  browser_view_->browser()->OpenURL(params);
+  browser_view_->browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.ResultLinkClick"));
 }

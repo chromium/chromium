@@ -431,7 +431,7 @@ void SigninViewController::ShowDiceSigninTab(
     content::OpenURLParams params(signin_url, content::Referrer(),
                                   WindowOpenDisposition::CURRENT_TAB,
                                   ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-    active_contents->OpenURL(params);
+    active_contents->OpenURL(params, /*navigation_handle_callback=*/{});
   } else {
     // Check if there is already a signin-tab open.
     TabStripModel* tab_strip = browser_->tab_strip_model();

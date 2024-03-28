@@ -168,7 +168,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 
   _webContents->OpenURL(OpenURLParams(gurl, content::Referrer(),
                                       WindowOpenDisposition::CURRENT_TAB,
-                                      ui::PAGE_TRANSITION_TYPED, false));
+                                      ui::PAGE_TRANSITION_TYPED, false),
+                        /*navigation_handle_callback=*/{});
 }
 
 - (NSString*)title {

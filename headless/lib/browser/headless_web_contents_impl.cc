@@ -143,7 +143,9 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override {
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
     DCHECK_EQ(source, headless_web_contents_->web_contents());
     content::WebContents* target = nullptr;
     switch (params.disposition) {
@@ -173,8 +175,12 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         return nullptr;
     }
 
-    target->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(params));
+    base::WeakPtr<content::NavigationHandle> navigation =
+        target->GetController().LoadURLWithParams(
+            content::NavigationController::LoadURLParams(params));
+    if (navigation_handle_callback && navigation) {
+      std::move(navigation_handle_callback).Run(*navigation);
+    }
     return target;
   }
 

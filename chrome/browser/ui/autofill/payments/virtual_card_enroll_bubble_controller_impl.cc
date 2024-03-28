@@ -189,9 +189,11 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
         link_type, GetVirtualCardEnrollmentBubbleSource());
   }
 
-  web_contents()->OpenURL(content::OpenURLParams(
-      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, false));
+  web_contents()->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 
 #if !BUILDFLAG(IS_ANDROID)
   bubble_state_ = BubbleState::kShowingIconAndBubble;

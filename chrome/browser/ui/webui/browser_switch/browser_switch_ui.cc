@@ -42,7 +42,7 @@ void GotoNewTabPage(content::WebContents* web_contents) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-  web_contents->OpenURL(params);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 // Returns true if there's only 1 tab left open in this profile. Incognito

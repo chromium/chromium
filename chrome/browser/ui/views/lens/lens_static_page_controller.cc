@@ -50,7 +50,8 @@ void LensStaticPageController::LoadChromeLens(gfx::Image image) {
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
   params.initiator_origin = url::Origin::Create(url);
-  content::WebContents* new_tab = browser_->OpenURL(params);
+  content::WebContents* new_tab =
+      browser_->OpenURL(params, /*navigation_handle_callback=*/{});
   // Observe the new web contents in order to start the region search controller
   // once it is properly loaded (this prevents the region search controller from
   // closing prematurely).

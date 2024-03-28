@@ -298,12 +298,14 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
 
   void NavigateToPrerenderedResult(const GURL& expected_prerender_url) {
     content::TestNavigationObserver observer(GetActiveWebContents());
-    GetActiveWebContents()->OpenURL(content::OpenURLParams(
-        expected_prerender_url, content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB,
-        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        /*is_renderer_initiated=*/false));
+    GetActiveWebContents()->OpenURL(
+        content::OpenURLParams(
+            expected_prerender_url, content::Referrer(),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
     observer.Wait();
   }
 

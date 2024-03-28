@@ -307,7 +307,8 @@ void SavedTabGroupButton::TabMenuItemPressed(const GURL& url, int event_flags) {
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                                 /*is_renderer_initiated=*/false,
                                 /*started_from_context_menu=*/true);
-  page_navigator_callback_.Run()->OpenURL(params);
+  page_navigator_callback_.Run()->OpenURL(params,
+                                          /*navigation_handle_callback=*/{});
 }
 
 void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {

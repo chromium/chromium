@@ -53,6 +53,8 @@ class LoginWebDialog : public ui::WebDialogDelegate {
                        bool* out_close_dialog) override;
   bool HandleOpenURLFromTab(content::WebContents* source,
                             const content::OpenURLParams& params,
+                            base::OnceCallback<void(content::NavigationHandle&)>
+                                navigation_handle_callback,
                             content::WebContents** out_new_contents) override;
 
  private:

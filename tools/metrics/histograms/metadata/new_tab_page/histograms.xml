@@ -1455,6 +1455,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.NavigationOrActivationToFirstContentfulPaint"
+    units="ms" expires_after="2024-05-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from navigation start or prerender activation to first
+    contentful paint for new tab page. The metrics is recorded when painting
+    timing update events are dispatched by PageLoadMetricsUpdateDispatcher.
+    Refer to NewTabPagePageLoadMetricsObserver::OnFirstContentfulPaintInPage()
+    for details.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.NavigationOrActivationToFirstMeaningfulPaint"
+    units="ms" expires_after="2024-05-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from navigation start or prerender activation to first
+    meaningful paint for new tab page. The metrics is recorded when painting
+    timing update events are dispatched by PageLoadMetricsUpdateDispatcher.
+    Refer to
+    NewTabPagePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument()
+    for details.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.NavigationOrActivationToLargestContentfulPaint"
+    units="ms" expires_after="2024-05-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from navigation start or prerender activation to largest
+    contentful paint for new tab page. The metrics is recorded when painting
+    timing update events are dispatched by PageLoadMetricsUpdateDispatcher.
+    Refer to NewTabPagePageLoadMetricsObserver::OnComplete() for details.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.NumberOfTiles" units="units"
     expires_after="2024-08-04">
   <owner>tiborg@chromium.org</owner>
@@ -1559,6 +1598,17 @@ chromium-metrics-reviews@google.com.
     (OptIn/SoftOptOut/HardOptOut). Only logged on the 1P NTP. Note that even if
     the user has Google as their default search engine, Incognito and Guest mode
     NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.PrerenderNavigationToActivation" units="ms"
+    expires_after="2024-05-30">
+  <owner>robertlin@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Measures the time from the prerendering navigation starts to prerender
+    activation. This metrics is recorded upon prerneder activation. Refer to
+    NewTabPagePageLoadMetricsObserver::DidActivatePrerenderedPage() for details.
   </summary>
 </histogram>
 

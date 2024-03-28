@@ -48,9 +48,11 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     model_ = std::make_unique<ReadAnythingModel>();
     controller_ =
         std::make_unique<ReadAnythingController>(model_.get(), browser());
-    auto* web_contents_ = browser()->OpenURL(content::OpenURLParams(
-        GURL("https://google.com"), content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+    auto* web_contents_ = browser()->OpenURL(
+        content::OpenURLParams(GURL("https://google.com"), content::Referrer(),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
     controller_for_web_contents_ =
         std::make_unique<ReadAnythingController>(model_.get(), web_contents_);
 

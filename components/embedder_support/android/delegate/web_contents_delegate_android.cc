@@ -70,7 +70,9 @@ WebContentsDelegateAndroid::OpenColorChooser(
 // RenderViewImpl::decidePolicyForNavigation for more details).
 WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   const GURL& url = params.url;
   WindowOpenDisposition disposition = params.disposition;
 
@@ -84,8 +86,10 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return WebContentsDelegate::OpenURLFromTab(source, params);
+  if (obj.is_null()) {
+    return WebContentsDelegate::OpenURLFromTab(
+        source, params, std::move(navigation_handle_callback));
+  }
 
   if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
@@ -102,8 +106,12 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
     return NULL;
   }
 
-  source->GetController().LoadURLWithParams(
+  auto navigation_handle = source->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
 
   return source;
 }

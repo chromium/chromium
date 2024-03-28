@@ -645,8 +645,10 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  web_contents_->OpenURL(content::OpenURLParams(
-      destination_url, content::Referrer(), disposition, transition, false));
+  web_contents_->OpenURL(
+      content::OpenURLParams(destination_url, content::Referrer(), disposition,
+                             transition, false),
+      /*navigation_handle_callback=*/{});
 }
 
 base::WeakPtr<OmniboxClient> RealboxOmniboxClient::AsWeakPtr() {

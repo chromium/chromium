@@ -54,7 +54,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
         content::MediaResponseCallback callback) {}
     virtual content::WebContents* OpenURLFromTab(
         content::WebContents* source,
-        const content::OpenURLParams& params);
+        const content::OpenURLParams& params,
+        base::OnceCallback<void(content::NavigationHandle&)>
+            navigation_handle_callback);
     virtual void RunFileChooser(
         content::RenderFrameHost* render_frame_host,
         scoped_refptr<content::FileSelectListener> listener,
@@ -92,7 +94,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
       content::MediaResponseCallback callback) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;

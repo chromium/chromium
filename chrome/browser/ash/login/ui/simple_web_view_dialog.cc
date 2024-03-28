@@ -232,7 +232,9 @@ void SimpleWebViewDialog::Init() {
 }
 
 content::WebContents* SimpleWebViewDialog::OpenURL(
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   // As there are no Browsers right now, this could not actually ever work.
   NOTIMPLEMENTED();
   return nullptr;

@@ -82,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, IncognitoOpenUrl) {
   content::OpenURLParams params(GURL(url::kAboutBlankURL), {},
                                 WindowOpenDisposition::OFF_THE_RECORD,
                                 ui::PAGE_TRANSITION_LINK, false);
-  content::WebContents* new_contents = app_contents->OpenURL(params);
+  content::WebContents* new_contents =
+      app_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 
   Profile* profile =
       Profile::FromBrowserContext(new_contents->GetBrowserContext());

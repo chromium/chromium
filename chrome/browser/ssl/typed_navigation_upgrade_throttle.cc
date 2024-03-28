@@ -224,7 +224,8 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
               // This deletes the NavigationThrottle and NavigationHandle.
               web_contents->Stop();
             }
-            web_contents->OpenURL(url_params);
+            web_contents->OpenURL(url_params,
+                                  /*navigation_handle_callback=*/{});
           },
           web_contents->GetWeakPtr(), std::move(params), stop_navigation));
 

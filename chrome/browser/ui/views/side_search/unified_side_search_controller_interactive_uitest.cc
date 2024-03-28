@@ -922,7 +922,8 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
       content::OpenURLParams(embedded_test_server()->GetURL("/foo"),
                              content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_TYPED, false));
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
 
   // When swtiched to the new tab, side panel web contents should not be
   // destroyed. Otherwise a UAF will occur.

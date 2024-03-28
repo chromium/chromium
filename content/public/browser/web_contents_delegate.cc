@@ -30,8 +30,10 @@ namespace content {
 
 WebContentsDelegate::WebContentsDelegate() = default;
 
-WebContents* WebContentsDelegate::OpenURLFromTab(WebContents* source,
-                                                 const OpenURLParams& params) {
+WebContents* WebContentsDelegate::OpenURLFromTab(
+    WebContents* source,
+    const OpenURLParams& params,
+    base::OnceCallback<void(NavigationHandle&)> navigation_handle_callback) {
   return nullptr;
 }
 

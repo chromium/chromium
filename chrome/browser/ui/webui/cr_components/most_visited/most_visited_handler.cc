@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
+#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -194,11 +195,16 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
   // query tiles could also be offered as most visited.
   // |is_query_tile| can be true only when history::kOrganicRepeatableQueries
   // is enabled.
-  web_contents_->OpenURL(content::OpenURLParams(
-      tile->url, content::Referrer(), disposition,
-      tile->is_query_tile ? ui::PAGE_TRANSITION_LINK
-                          : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      false));
+  base::OnceCallback<void(content::NavigationHandle&)>
+      navigation_handle_callback = base::BindRepeating(
+          &NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData);
+  web_contents_->OpenURL(
+      content::OpenURLParams(tile->url, content::Referrer(), disposition,
+                             tile->is_query_tile
+                                 ? ui::PAGE_TRANSITION_LINK
+                                 : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+                             /*is_renderer_initiated=*/false),
+      std::move(navigation_handle_callback));
 }
 
 void MostVisitedHandler::PrerenderMostVisitedTile(

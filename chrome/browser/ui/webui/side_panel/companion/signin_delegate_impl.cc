@@ -95,7 +95,7 @@ void SigninDelegateImpl::OpenUrlInBrowser(const GURL& url, bool use_new_tab) {
                                     : WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                 /*is_renderer_initiated*/ false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 bool SigninDelegateImpl::ShouldShowRegionSearchIPH() {

@@ -89,8 +89,12 @@ void SideSearchTabContentsHelper::CarryOverSideSearchStateToNewTab(
 
 content::WebContents* SideSearchTabContentsHelper::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
-  return delegate_ ? delegate_->OpenURLFromTab(source, params) : nullptr;
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  return delegate_ ? delegate_->OpenURLFromTab(
+                         source, params, std::move(navigation_handle_callback))
+                   : nullptr;
 }
 
 void SideSearchTabContentsHelper::DidOpenRequestedURL(

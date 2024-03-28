@@ -714,17 +714,21 @@ void ComposeSession::OpenBugReportingLink() {
           ->response->on_device_evaluation_used) {
     url = kOnDeviceComposeBugReportURL;
   }
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(url), content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK,
-      /* is_renderer_initiated= */ false));
+  web_contents_->OpenURL(
+      content::OpenURLParams(GURL(url), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
 }
 
 void ComposeSession::OpenComposeLearnMorePage() {
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(kComposeLearnMorePageURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /* is_renderer_initiated= */ false));
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          GURL(kComposeLearnMorePageURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
 }
 
 void ComposeSession::OpenFeedbackSurveyLink() {
@@ -734,17 +738,21 @@ void ComposeSession::OpenFeedbackSurveyLink() {
           ->response->on_device_evaluation_used) {
     url = kOnDeviceComposeFeedbackSurveyURL;
   }
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(url), content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK,
-      /* is_renderer_initiated= */ false));
+  web_contents_->OpenURL(
+      content::OpenURLParams(GURL(url), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
 }
 
 void ComposeSession::OpenSignInPage() {
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(kSignInPageURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /* is_renderer_initiated= */ false));
+  web_contents_->OpenURL(
+      content::OpenURLParams(GURL(kSignInPageURL), content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
 }
 
 bool ComposeSession::CanShowFeedbackPage() {

@@ -2561,7 +2561,10 @@ namespace {
 
 class MockPageNavigator : public content::PageNavigator {
  public:
-  MOCK_METHOD1(OpenURL, content::WebContents*(const content::OpenURLParams&));
+  MOCK_METHOD2(OpenURL,
+               content::WebContents*(
+                   const content::OpenURLParams&,
+                   base::OnceCallback<void(content::NavigationHandle&)>));
 };
 
 // A custom matcher that matches a OpenURLParams value with a url with a query
@@ -2583,7 +2586,8 @@ TEST_F(DownloadProtectionServiceTest, ShowDetailsForDownloadHasContext) {
 
   EXPECT_CALL(mock_download_item, GetDangerType())
       .WillOnce(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST));
-  EXPECT_CALL(mock_page_navigator, OpenURL(OpenURLParamsWithContextValue("7")));
+  EXPECT_CALL(mock_page_navigator,
+              OpenURL(OpenURLParamsWithContextValue("7"), _));
 
   download_service_->ShowDetailsForDownload(&mock_download_item,
                                             &mock_page_navigator);

@@ -83,7 +83,7 @@ void SecurityInterstitialControllerClient::OpenUrlInCurrentTab(
   content::OpenURLParams params(url, Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
@@ -91,7 +91,7 @@ void SecurityInterstitialControllerClient::OpenUrlInNewForegroundTab(
   content::OpenURLParams params(url, Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {

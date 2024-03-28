@@ -249,7 +249,9 @@ class TestingPageNavigator : public PageNavigator {
 
   ~TestingPageNavigator() override {}
 
-  WebContents* OpenURL(const OpenURLParams& params) override {
+  WebContents* OpenURL(const OpenURLParams& params,
+                       base::OnceCallback<void(content::NavigationHandle&)>
+                           navigation_handle_callback) override {
     urls_.push_back(params.url);
     transitions_.push_back(params.transition);
     return nullptr;

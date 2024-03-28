@@ -94,7 +94,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
+        browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
       }
 
@@ -102,7 +102,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::NEW_WINDOW,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
+        browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
       }
 
@@ -110,7 +110,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::OFF_THE_RECORD,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
+        browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
       }
 
@@ -195,7 +195,7 @@ void ReadingListPageHandler::OpenURL(
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
   scoped_refptr<const ReadingListEntry> entry =
       reading_list_model_->GetEntryByURL(url);

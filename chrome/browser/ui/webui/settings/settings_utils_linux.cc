@@ -67,8 +67,9 @@ void ShowLinuxProxyConfigUrl(base::WeakPtr<content::WebContents> web_contents,
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PAGE_TRANSITION_LINK, false);
 
-  if (web_contents)
-    web_contents->OpenURL(params);
+  if (web_contents) {
+    web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
 }
 
 // Start the given proxy configuration utility.

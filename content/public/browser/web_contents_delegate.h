@@ -125,12 +125,18 @@ class CONTENT_EXPORT WebContentsDelegate {
   //
   // A nullptr source indicates the current tab (callers should probably use
   // OpenURL() for these cases which does it for you).
-
+  // If a `navigation_handle_callback` function is provided, it should be called
+  // ith the pending navigation (if any) when the navigation handle become
+  // available. This allows callers to observe or attach their specific data.
+  // This function may not be called if the navigation fails for any reason.
+  //
   // Returns the WebContents the URL is opened in, or nullptr if the URL wasn't
   // opened immediately. Note that the URL might be opened in another context
   // when a nullptr is returned.
-  virtual WebContents* OpenURLFromTab(WebContents* source,
-                                      const OpenURLParams& params);
+  virtual WebContents* OpenURLFromTab(
+      WebContents* source,
+      const OpenURLParams& params,
+      base::OnceCallback<void(NavigationHandle&)> navigation_handle_callback);
 
   // Allows the delegate to optionally cancel navigations that attempt to
   // transfer to a different process between the start of the network load and

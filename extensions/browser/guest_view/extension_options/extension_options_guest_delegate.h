@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_GUEST_DELEGATE_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_GUEST_DELEGATE_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace content {
@@ -12,7 +13,8 @@ struct ContextMenuParams;
 struct OpenURLParams;
 class RenderFrameHost;
 class WebContents;
-}
+class NavigationHandle;
+}  // namespace content
 
 namespace extensions {
 
@@ -41,7 +43,9 @@ class ExtensionOptionsGuestDelegate {
                                  const content::ContextMenuParams& params) = 0;
 
   virtual content::WebContents* OpenURLInNewTab(
-      const content::OpenURLParams& params) = 0;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) = 0;
 
   ExtensionOptionsGuest* extension_options_guest() const { return guest_; }
 

@@ -117,10 +117,12 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
         !IsChromeControlledNtpUrl(new_tab_page);
 
     if (has_extention_override || is_non_chrome_controlled_ntp) {
-      web_contents()->OpenURL(content::OpenURLParams(
-          GURL(url::kAboutBlankURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
+      web_contents()->OpenURL(
+          content::OpenURLParams(GURL(url::kAboutBlankURL), content::Referrer(),
+                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                 /*is_renderer_initiated=*/false),
+          /*navigation_handle_callback=*/{});
       base::UmaHistogramEnumeration(
           kPrivacySandboxPromptHelperEventHistogram,
           SettingsPrivacySandboxPromptHelperEvent::kAboutBlankOpened);

@@ -107,7 +107,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
       DCHECK(devtools_window);
       devtools_window->OpenURLFromInspectedTab(params);
     } else {
-      browser_->OpenURL(params);
+      browser_->OpenURL(params, /*navigation_handle_callback=*/{});
     }
     return nullptr;
   }

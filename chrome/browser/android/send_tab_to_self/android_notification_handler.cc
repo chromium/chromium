@@ -183,7 +183,7 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
   auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
                     ->GetSendTabToSelfModel();
   model->DismissEntry(guid);

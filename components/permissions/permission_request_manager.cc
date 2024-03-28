@@ -728,11 +728,14 @@ void PermissionRequestManager::OpenHelpCenterLink(const ui::Event& event) {
   CHECK_GT(requests_.size(), 0u);
   switch (requests_[0]->request_type()) {
     case permissions::RequestType::kStorageAccess:
-      GetAssociatedWebContents()->OpenURL(content::OpenURLParams(
-          GURL(permissions::kEmbeddedContentHelpCenterURL), content::Referrer(),
-          ui::DispositionFromEventFlags(
-              event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+      GetAssociatedWebContents()->OpenURL(
+          content::OpenURLParams(
+              GURL(permissions::kEmbeddedContentHelpCenterURL),
+              content::Referrer(),
+              ui::DispositionFromEventFlags(
+                  event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+              ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+          /*navigation_handle_callback=*/{});
       break;
     default:
       NOTREACHED_NORETURN();

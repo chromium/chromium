@@ -24,6 +24,7 @@ namespace content {
 enum class PictureInPictureResult;
 class BrowserContext;
 class FileSelectListener;
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 struct OpenURLParams;
@@ -56,7 +57,9 @@ class AppDelegate {
   virtual content::WebContents* OpenURLFromTab(
       content::BrowserContext* context,
       content::WebContents* source,
-      const content::OpenURLParams& params) = 0;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) = 0;
   virtual void AddNewContents(
       content::BrowserContext* context,
       std::unique_ptr<content::WebContents> new_contents,

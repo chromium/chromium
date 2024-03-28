@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "chrome/browser/page_load_metrics/observers/bookmark_navigation_handle_user_data.h"
+#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -64,15 +64,14 @@ void BookmarkBarMetricsObserver::DidActivatePrerenderedPage(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 BookmarkBarMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  // We set the BookmarkNavigationHandleUserData for all BookmarkBar triggered
+  // We set the NavigationHandleUserData for all BookmarkBar triggered
   // prerender and non-prerender navigation. We check it here to keep on
   // monitoring only BookmarkBar triggered cases.
   auto* navigation_userdata =
-      BookmarkNavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
+      NavigationHandleUserData::GetForNavigationHandle(*navigation_handle);
   if (!navigation_userdata ||
       navigation_userdata->navigation_type() !=
-          BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar) {
+          NavigationHandleUserData::InitiatorLocation::kBookmarkBar) {
     return STOP_OBSERVING;
   }
   return CONTINUE_OBSERVING;

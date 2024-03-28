@@ -207,7 +207,8 @@ void WellKnownChangePasswordNavigationThrottle::Redirect(const GURL& url) {
                         const content::OpenURLParams& params) {
                        if (!web_contents)
                          return;
-                       web_contents->OpenURL(params);
+                       web_contents->OpenURL(params,
+                                             /*navigation_handle_callback=*/{});
                      },
                      web_contents->GetWeakPtr(), std::move(params)));
 }

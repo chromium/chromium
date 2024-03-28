@@ -36,7 +36,9 @@ class SideSearchTabContentsHelper
 
     virtual content::WebContents* OpenURLFromTab(
         content::WebContents* source,
-        const content::OpenURLParams& params) = 0;
+        const content::OpenURLParams& params,
+        base::OnceCallback<void(content::NavigationHandle&)>
+            navigation_handle_callback) = 0;
 
     // Notifies the delegate that the side panel's availability has changed.
     // `should_close` determines whether the side panel should be closed. This
@@ -65,7 +67,9 @@ class SideSearchTabContentsHelper
       const content::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   content::WebContents* GetTabWebContents() override;
   void CarryOverSideSearchStateToNewTab(
       const GURL& search_url,

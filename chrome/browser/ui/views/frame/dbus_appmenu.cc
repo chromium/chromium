@@ -596,7 +596,8 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
       browser_->OpenURL(
           content::OpenURLParams(item->url, content::Referrer(),
                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
+                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false),
+          /*navigation_handle_callback=*/{});
     }
   } else if (base::Contains(profile_commands_, command_id)) {
     avatar_menu_->SwitchToProfile(profile_commands_[command_id], false);

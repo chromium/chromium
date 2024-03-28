@@ -98,7 +98,7 @@ void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void ShoppingUiHandlerDelegate::ShowFeedback() {

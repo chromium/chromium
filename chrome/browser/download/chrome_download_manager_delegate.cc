@@ -994,10 +994,11 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false);
 
-  if (download->GetMimeType() == "application/x-x509-user-cert")
+  if (download->GetMimeType() == "application/x-x509-user-cert") {
     chrome::ShowSettingsSubPage(browser, "certificates");
-  else
-    browser->OpenURL(params);
+  } else {
+    browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  }
 
   RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
                      download->GetMimeType());

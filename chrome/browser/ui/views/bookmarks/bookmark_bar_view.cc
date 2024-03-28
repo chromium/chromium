@@ -1290,7 +1290,7 @@ void BookmarkBarView::AppsPageShortcutPressed(const ui::Event& event) {
                                 content::Referrer(),
                                 ui::DispositionFromEventFlags(event.flags()),
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  page_navigator_->OpenURL(params);
+  page_navigator_->OpenURL(params, /*navigation_handle_callback=*/{});
   RecordBookmarkAppsPageOpen(BookmarkLaunchLocation::kAttachedBar);
 }
 
@@ -1303,7 +1303,7 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   chrome::OpenAllIfAllowed(
       browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
       /*add_to_group=*/false,
-      BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar,
+      NavigationHandleUserData::InitiatorLocation::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
@@ -1320,7 +1320,7 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
     chrome::OpenAllIfAllowed(
         browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
         /*add_to_group=*/false,
-        BookmarkNavigationHandleUserData::InitiatorLocation::kBookmarkBar,
+        NavigationHandleUserData::InitiatorLocation::kBookmarkBar,
         {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   } else {
     RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);

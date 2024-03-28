@@ -95,9 +95,13 @@ bool UnifiedSideSearchController::HandleKeyboardEvent(
 
 content::WebContents* UnifiedSideSearchController::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   auto* browser_view = GetBrowserView();
-  return browser_view ? browser_view->browser()->OpenURL(params) : nullptr;
+  return browser_view ? browser_view->browser()->OpenURL(
+                            params, std::move(navigation_handle_callback))
+                      : nullptr;
 }
 
 void UnifiedSideSearchController::SidePanelAvailabilityChanged(

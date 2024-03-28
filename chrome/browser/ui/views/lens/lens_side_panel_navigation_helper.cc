@@ -107,7 +107,7 @@ void LensSidePanelNavigationHelper::OpenInNewTab(
   if (browser_ == nullptr)
     return;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  browser_->OpenURL(params);
+  browser_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 const GURL& LensSidePanelNavigationHelper::GetOriginUrl() {

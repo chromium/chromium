@@ -61,10 +61,12 @@ void OnDialogAccepted(content::PageNavigator* navigator,
     base::RecordAction(
         base::UserMetricsAction("OutdatedUpgradeBubble.Reinstall"));
 
-    navigator->OpenURL(content::OpenURLParams(
-        GURL(update_browser_redirect_url), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-        false));
+    navigator->OpenURL(
+        content::OpenURLParams(GURL(update_browser_redirect_url),
+                               content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK, false),
+        /*navigation_handle_callback=*/{});
 #if BUILDFLAG(IS_WIN)
   } else {
     DCHECK(UpgradeDetector::GetInstance()->is_outdated_install_no_au());

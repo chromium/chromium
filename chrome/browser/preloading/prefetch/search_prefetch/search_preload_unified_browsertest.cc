@@ -354,12 +354,14 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
           content::TestNavigationObserver::WaitEvent::kLoadStopped) {
     content::TestNavigationObserver observer(GetActiveWebContents());
     observer.set_wait_event(wait_event);
-    GetActiveWebContents()->OpenURL(content::OpenURLParams(
-        expected_prerender_url, content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB,
-        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        /*is_renderer_initiated=*/false));
+    GetActiveWebContents()->OpenURL(
+        content::OpenURLParams(
+            expected_prerender_url, content::Referrer(),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
     observer.Wait();
   }
 
@@ -2441,13 +2443,14 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
   // 4. Open the search in a background new tab. This is the default disposition
   // when users open a suggestion in another tab. Prerender will be canceled in
   // this case.
-  content::WebContents* new_prefetch_tab =
-      GetActiveWebContents()->OpenURL(content::OpenURLParams(
+  content::WebContents* new_prefetch_tab = GetActiveWebContents()->OpenURL(
+      content::OpenURLParams(
           expected_prerender_url, content::Referrer(),
           WindowOpenDisposition::NEW_BACKGROUND_TAB,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false));
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url), {});
 
   // TODO(crbug.com/1423259): Ideally we should open the tab with the

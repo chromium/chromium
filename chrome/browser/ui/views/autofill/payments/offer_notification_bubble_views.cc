@@ -354,10 +354,13 @@ void OfferNotificationBubbleViews::OnPromoCodeButtonClicked() {
 
 void OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked() {
   DCHECK(controller_->GetOffer()->GetOfferDetailsUrl().is_valid());
-  web_contents()->OpenURL(content::OpenURLParams(
-      GURL(controller_->GetOffer()->GetOfferDetailsUrl()), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false));
+  web_contents()->OpenURL(
+      content::OpenURLParams(
+          GURL(controller_->GetOffer()->GetOfferDetailsUrl()),
+          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 }
 
 void OfferNotificationBubbleViews::UpdateButtonTooltipsAndAccessibleNames() {

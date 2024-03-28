@@ -172,9 +172,12 @@ void ExtensionOptionsGuest::AddNewContents(
 
 WebContents* ExtensionOptionsGuest::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
-  if (!extension_options_guest_delegate_)
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (!extension_options_guest_delegate_) {
     return nullptr;
+  }
 
   // Don't allow external URLs with the CURRENT_TAB disposition be opened in
   // this guest view, change the disposition to NEW_FOREGROUND_TAB.
@@ -182,12 +185,14 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
        params.url.host() != options_page_.host()) &&
       params.disposition == WindowOpenDisposition::CURRENT_TAB) {
     return extension_options_guest_delegate_->OpenURLInNewTab(
-        content::OpenURLParams(
-            params.url, params.referrer, params.frame_tree_node_id,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB, params.transition,
-            params.is_renderer_initiated));
+        content::OpenURLParams(params.url, params.referrer,
+                               params.frame_tree_node_id,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               params.transition, params.is_renderer_initiated),
+        std::move(navigation_handle_callback));
   }
-  return extension_options_guest_delegate_->OpenURLInNewTab(params);
+  return extension_options_guest_delegate_->OpenURLInNewTab(
+      params, std::move(navigation_handle_callback));
 }
 
 void ExtensionOptionsGuest::CloseContents(WebContents* source) {
@@ -241,7 +246,8 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
     extension_options_guest_delegate_->OpenURLInNewTab(
         content::OpenURLParams(target_url, content::Referrer(),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false));
+                               ui::PAGE_TRANSITION_LINK, false),
+        /*navigation_handle_callback=*/{});
   }
 
   // Returning nullptr here ensures that the guest-view can never get a

@@ -214,9 +214,17 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // A callback to allow the delegate to open a new URL inside |source|.
   // On return |out_new_contents| should contain the WebContents the URL
   // is opened in. Return false to use the default handler.
-  virtual bool HandleOpenURLFromTab(content::WebContents* source,
-                                    const content::OpenURLParams& params,
-                                    content::WebContents** out_new_contents);
+  // If a `navigation_handle_callback` function is provided, it should be called
+  // with the pending navigation (if any) when the navigation handle become
+  // available. This allows callers to observe or attach their specific data.
+  // `navigation_handle_callback` may not be called if the navigation fails for
+  // any reason.
+  virtual bool HandleOpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback,
+      content::WebContents** out_new_contents);
 
   // A callback to control whether a WebContents will be created. Returns
   // true to disallow the creation. Return false to use the default handler.

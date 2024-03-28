@@ -379,14 +379,16 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
 
   const int tab_index = tab_strip->GetIndexOfWebContents(existing_tab);
 
-  existing_tab->OpenURL(content::OpenURLParams(
-      launch_url,
-      content::Referrer::SanitizeForRequest(
+  existing_tab->OpenURL(
+      content::OpenURLParams(
           launch_url,
-          content::Referrer(existing_tab->GetURL(),
-                            network::mojom::ReferrerPolicy::kDefault)),
-      navigation_disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      /*is_renderer_initiated=*/false));
+          content::Referrer::SanitizeForRequest(
+              launch_url,
+              content::Referrer(existing_tab->GetURL(),
+                                network::mojom::ReferrerPolicy::kDefault)),
+          navigation_disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
   tab_strip->ActivateTabAt(

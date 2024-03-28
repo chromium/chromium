@@ -183,11 +183,13 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   VerifyUi();
 
   // Navigate to a page where there are isComplete and token query params.
-  GetPopupWebContents()->OpenURL(content::OpenURLParams(
-      GURL("https://site.example/?isComplete=true&token=sometesttoken"),
-      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?isComplete=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   EXPECT_TRUE(ClosePopup());
 
@@ -251,11 +253,13 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Navigate to a page where there is an isComplete query param that denotes
   // the authentication failed.
-  GetPopupWebContents()->OpenURL(content::OpenURLParams(
-      GURL("https://site.example/?isComplete=false"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL("https://site.example/?isComplete=false"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   EXPECT_TRUE(ClosePopup());
 
@@ -309,11 +313,13 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Navigate to a page where there is an isComplete query param but not token
   // query param.
-  GetPopupWebContents()->OpenURL(content::OpenURLParams(
-      GURL("https://site.example/?isComplete=true"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL("https://site.example/?isComplete=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   EXPECT_TRUE(ClosePopup());
 
@@ -342,11 +348,13 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   VerifyUi();
 
   // Navigate to a page where there are isComplete and token query params.
-  GetPopupWebContents()->OpenURL(content::OpenURLParams(
-      GURL("https://site.example/?isComplete=true&token=sometesttoken"),
-      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-      /*is_renderer_initiated=*/false));
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?isComplete=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   EXPECT_TRUE(ClosePopup());
 

@@ -309,7 +309,7 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
       content::OpenURLParams url_params(options_page_url, content::Referrer(),
                                         WindowOpenDisposition::SINGLETON_TAB,
                                         ui::PAGE_TRANSITION_LINK, false);
-      browser->OpenURL(url_params);
+      browser->OpenURL(url_params, /*navigation_handle_callback=*/{});
     }
   }
   return RespondNow(NoArguments());

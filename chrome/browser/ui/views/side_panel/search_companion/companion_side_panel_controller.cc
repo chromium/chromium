@@ -324,7 +324,8 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   content::WebContents* tab_web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (should_open_url) {
-    tab_web_contents = browser->OpenURL(params);
+    tab_web_contents =
+        browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
     if (open_in_current_tab && tab_web_contents) {
       // Add metrics to record the open trigger for the companion page as a link

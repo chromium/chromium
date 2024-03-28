@@ -39,7 +39,7 @@ void OpenBrowserSwitchPage(base::WeakPtr<content::WebContents> web_contents,
   content::OpenURLParams params(about_url, content::Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 transition_type, false);
-  web_contents->OpenURL(params);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 bool MaybeLaunchAlternativeBrowser(

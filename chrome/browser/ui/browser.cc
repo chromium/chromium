@@ -61,6 +61,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -1243,12 +1244,15 @@ void Browser::UnregisterKeepAlive() {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, PageNavigator implementation:
 
-WebContents* Browser::OpenURL(const OpenURLParams& params) {
+WebContents* Browser::OpenURL(
+    const OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
 #if DCHECK_IS_ON()
   DCHECK(params.Valid());
 #endif
 
-  return OpenURLFromTab(nullptr, params);
+  return OpenURLFromTab(nullptr, params, std::move(navigation_handle_callback));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1645,8 +1649,11 @@ void Browser::OnWindowDidShow() {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, content::WebContentsDelegate implementation:
 
-WebContents* Browser::OpenURLFromTab(WebContents* source,
-                                     const OpenURLParams& params) {
+WebContents* Browser::OpenURLFromTab(
+    WebContents* source,
+    const OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   TRACE_EVENT1("navigation", "Browser::OpenURLFromTab", "source", source);
 #if DCHECK_IS_ON()
   DCHECK(params.Valid());
@@ -1655,7 +1662,8 @@ WebContents* Browser::OpenURLFromTab(WebContents* source,
   if (is_type_devtools()) {
     DevToolsWindow* window = DevToolsWindow::AsDevToolsWindow(source);
     DCHECK(window);
-    return window->OpenURLFromTab(source, params);
+    return window->OpenURLFromTab(source, params,
+                                  std::move(navigation_handle_callback));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1689,7 +1697,12 @@ WebContents* Browser::OpenURLFromTab(WebContents* source,
 
   chrome::ConfigureTabGroupForNavigation(popup_delegate->nav_params());
 
-  Navigate(popup_delegate->nav_params());
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(popup_delegate->nav_params());
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
 
   content::WebContents* navigated_or_inserted_contents =
       popup_delegate->nav_params()->navigated_or_inserted_contents;
@@ -2482,7 +2495,8 @@ void Browser::FileSelected(const ui::SelectedFileInfo& file_info,
     return;
 
   OpenURL(OpenURLParams(url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                        ui::PAGE_TRANSITION_TYPED, false));
+                        ui::PAGE_TRANSITION_TYPED, false),
+          /*navigation_handle_callback=*/{});
 }
 
 void Browser::FileSelectionCanceled(void* params) {

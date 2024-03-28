@@ -36,11 +36,18 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
   // Handles OpenURLFromTab and AddNewContents for WebDialogWebContentsDelegate.
   class WebContentsHandler {
    public:
-    virtual ~WebContentsHandler() {}
+    virtual ~WebContentsHandler() = default;
+    // If a `navigation_handle_callback` function is provided, it should be
+    // called with the pending navigation (if any) when the navigation handle
+    // become available. This allows callers to observe or attach their specific
+    // data. `navigation_handle_callback` may not be called if the navigation
+    // fails for any reason.
     virtual content::WebContents* OpenURLFromTab(
         content::BrowserContext* context,
         content::WebContents* source,
-        const content::OpenURLParams& params) = 0;
+        const content::OpenURLParams& params,
+        base::OnceCallback<void(content::NavigationHandle&)>
+            navigation_handle_callback) = 0;
     virtual void AddNewContents(
         content::BrowserContext* context,
         content::WebContents* source,
@@ -81,7 +88,9 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
   // content::WebContentsDelegate declarations.
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,

@@ -450,6 +450,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
     web_view_guest->NavigateGuest(embedded_https_test_server()
                                       .GetURL("/controlled_frame_cancel.html")
                                       .spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(net::Error::ERR_BLOCKED_BY_CLIENT,
@@ -466,6 +467,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
     web_view_guest->NavigateGuest(embedded_https_test_server()
                                       .GetURL("/controlled_frame_redirect.html")
                                       .spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(embedded_https_test_server().GetURL(
@@ -481,6 +483,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, URLLoaderIsProxied) {
     const GURL& kControlledFrameSuccessUrl =
         embedded_https_test_server().GetURL("/controlled_frame_success.html");
     web_view_guest->NavigateGuest(kControlledFrameSuccessUrl.spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(kControlledFrameSuccessUrl,
@@ -537,6 +540,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
     const GURL& kAuthBasicUrl =
         embedded_https_test_server().GetURL("/auth-basic?password=pass");
     web_view_guest->NavigateGuest(kAuthBasicUrl.spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(kAuthBasicUrl,
@@ -553,6 +557,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
     const GURL& kAuthBasicUrl =
         embedded_https_test_server().GetURL("/auth-basic?password=badpass");
     web_view_guest->NavigateGuest(kAuthBasicUrl.spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(kAuthBasicUrl,
@@ -647,6 +652,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
         guest_web_contents,
         /*expected_number_of_navigations=*/1u);
     web_view_guest->NavigateGuest(kWebSocketConnectCheckUrl.spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(kWebSocketConnectCheckUrl,
@@ -660,6 +666,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
         guest_web_contents,
         /*expected_number_of_navigations=*/1u);
     web_view_guest->NavigateGuest(kOriginalControlledFrameUrl.spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(kOriginalControlledFrameUrl,
@@ -691,6 +698,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameWebSocketApiTest, WebSocketIsProxied) {
         guest_web_contents,
         /*expected_number_of_navigations=*/1u);
     web_view_guest->NavigateGuest(kWebSocketConnectCheckUrl.spec(),
+                                  /*navigation_handle_callback=*/{},
                                   /*force_navigation=*/false);
     navigation_observer.WaitForNavigationFinished();
     EXPECT_EQ(kWebSocketConnectCheckUrl,

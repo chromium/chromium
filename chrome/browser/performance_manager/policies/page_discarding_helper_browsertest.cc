@@ -72,7 +72,8 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
         embedded_test_server()->GetURL("/favicon/title2_with_favicon.html"),
         content::Referrer(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui::PAGE_TRANSITION_TYPED, false);
-    content::WebContents* contents = browser()->OpenURL(page);
+    content::WebContents* contents =
+        browser()->OpenURL(page, /*navigation_handle_callback=*/{});
     content::TestNavigationObserver observer(contents);
     observer.set_expected_initial_url(page.url);
 

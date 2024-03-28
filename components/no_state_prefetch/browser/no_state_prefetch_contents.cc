@@ -95,8 +95,11 @@ class NoStatePrefetchContents::WebContentsDelegateImpl
       : no_state_prefetch_contents_(no_state_prefetch_contents) {}
 
   // content::WebContentsDelegate implementation:
-  WebContents* OpenURLFromTab(WebContents* source,
-                              const OpenURLParams& params) override {
+  WebContents* OpenURLFromTab(
+      WebContents* source,
+      const OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
     // |OpenURLFromTab| is typically called when a frame performs a navigation
     // that requires the browser to perform the transition instead of WebKit.
     // Examples include client redirects to hosted app URLs.

@@ -133,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest,
       embedded_test_server()->GetURL("a.com", "/empty.html"),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_TYPED, false);
-  content::WebContents* const web_contents = browser()->OpenURL(open);
+  content::WebContents* const web_contents =
+      browser()->OpenURL(open, /*navigation_handle_callback=*/{});
   EXPECT_TRUE(web_contents->IsLoading());
 
   RunLoopUntilLoadedAndPainted run_until_loaded_and_painted(web_contents);
@@ -153,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, DISABLED_LoadAndPaintFileScheme) {
   content::OpenURLParams open(file_url, content::Referrer(),
                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
                               ui::PAGE_TRANSITION_TYPED, false);
-  content::WebContents* const web_contents = browser()->OpenURL(open);
+  content::WebContents* const web_contents =
+      browser()->OpenURL(open, /*navigation_handle_callback=*/{});
   EXPECT_TRUE(web_contents->IsLoading());
 
   RunLoopUntilLoadedAndPainted run_until_loaded_and_painted(web_contents);

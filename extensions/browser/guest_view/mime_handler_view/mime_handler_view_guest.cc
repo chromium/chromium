@@ -252,10 +252,14 @@ content::RenderFrameHost* MimeHandlerViewGuest::GetProspectiveOuterDocument() {
 
 WebContents* MimeHandlerViewGuest::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   auto* delegate = embedder_web_contents()->GetDelegate();
-  return delegate ? delegate->OpenURLFromTab(embedder_web_contents(), params)
-                  : nullptr;
+  return delegate
+             ? delegate->OpenURLFromTab(embedder_web_contents(), params,
+                                        std::move(navigation_handle_callback))
+             : nullptr;
 }
 
 void MimeHandlerViewGuest::NavigationStateChanged(
@@ -412,8 +416,10 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
   // running as a mime handler.
   open_params.user_gesture = true;
   auto* delegate = embedder_web_contents()->GetDelegate();
-  if (delegate)
-    delegate->OpenURLFromTab(embedder_web_contents(), open_params);
+  if (delegate) {
+    delegate->OpenURLFromTab(embedder_web_contents(), open_params,
+                             /*navigation_handle_callback=*/{});
+  }
   return nullptr;
 }
 

@@ -44,7 +44,9 @@ class UnifiedSideSearchController
       const content::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   void SidePanelAvailabilityChanged(bool should_close) override;
   void OpenSidePanel() override;
 

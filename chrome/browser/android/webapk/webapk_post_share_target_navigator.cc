@@ -35,7 +35,7 @@ void NavigateShareTargetPost(
       false /* is_renderer_initiated */);
   open_url_params.post_data = post_data;
   open_url_params.extra_headers = header_list;
-  web_contents->OpenURL(open_url_params);
+  web_contents->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
 }
 }  // namespace webapk
 

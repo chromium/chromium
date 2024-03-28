@@ -193,10 +193,10 @@ void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {
 
   learn_more_clicked_ = true;
   if (parent_web_contents_) {
-    parent_web_contents_->OpenURL(params);
+    parent_web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
   } else {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-    displayer.browser()->OpenURL(params);
+    displayer.browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   }
 
   CancelDialog();

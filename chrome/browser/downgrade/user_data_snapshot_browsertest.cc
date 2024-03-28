@@ -405,13 +405,18 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
 
   void SimulateUserActions() override {
     browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
-    browser()->OpenURL(content::OpenURLParams(
-        embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-    browser()->OpenURL(content::OpenURLParams(
-        embedded_test_server()->GetURL("/title2.html"), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-        false));
+    browser()->OpenURL(
+        content::OpenURLParams(embedded_test_server()->GetURL("/title1.html"),
+                               content::Referrer(),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        content::OpenURLParams(embedded_test_server()->GetURL("/title2.html"),
+                               content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK, false),
+        /*navigation_handle_callback=*/{});
   }
 
   void ValidateUserActions() override {

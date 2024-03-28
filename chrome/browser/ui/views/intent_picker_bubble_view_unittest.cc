@@ -97,7 +97,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     GURL url("http://www.google.com");
     WebContents* web_contents = browser()->OpenURL(
         OpenURLParams(url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false));
+                      ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
     CommitPendingLoad(&web_contents->GetController());
 
     auto* widget = IntentPickerBubbleView::ShowBubble(

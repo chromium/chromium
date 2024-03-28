@@ -40,10 +40,12 @@ bool ChromeExtensionOptionsGuestDelegate::HandleContextMenu(
 }
 
 content::WebContents* ChromeExtensionOptionsGuestDelegate::OpenURLInNewTab(
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   Browser* browser = chrome::FindBrowserWithTab(
       extension_options_guest()->embedder_web_contents());
-  return browser->OpenURL(params);
+  return browser->OpenURL(params, std::move(navigation_handle_callback));
 }
 
 }  // namespace extensions

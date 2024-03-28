@@ -128,6 +128,8 @@ bool WebDialogDelegate::HandleContextMenu(
 bool WebDialogDelegate::HandleOpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback,
     content::WebContents** out_new_contents) {
   return false;
 }

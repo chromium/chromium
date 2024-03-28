@@ -606,10 +606,11 @@ void ExtensionInstallDialogView::LinkClicked() {
 
   DCHECK(show_params_);
   if (show_params_->GetParentWebContents()) {
-    show_params_->GetParentWebContents()->OpenURL(params);
+    show_params_->GetParentWebContents()->OpenURL(
+        params, /*navigation_handle_callback=*/{});
   } else {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
-    displayer.browser()->OpenURL(params);
+    displayer.browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   }
   CloseDialog();
 }

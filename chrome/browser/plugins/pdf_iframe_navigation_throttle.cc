@@ -43,7 +43,7 @@ class PdfWebContentsLifetimeHelper
   }
 
   void NavigateIFrameToPlaceholder(const content::OpenURLParams& url_params) {
-    GetWebContents().OpenURL(url_params);
+    GetWebContents().OpenURL(url_params, /*navigation_handle_callback=*/{});
   }
 
  private:

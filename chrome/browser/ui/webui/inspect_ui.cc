@@ -447,7 +447,8 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
       inspect_ui,
       content::OpenURLParams(gurl, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+      /*navigation_handle_callback=*/{});
   // When the front-end is started, disable the launch button.
   inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ false);
 
@@ -582,7 +583,8 @@ void InspectUI::InspectBrowserWithCustomFrontend(
       inspect_ui,
       content::OpenURLParams(frontend_url, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+      /*navigation_handle_callback=*/{});
 
   // Install devtools bindings.
   DevToolsUIBindingsEnabler* bindings_enabler =

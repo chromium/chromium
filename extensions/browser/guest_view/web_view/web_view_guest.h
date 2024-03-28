@@ -76,7 +76,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   zoom::ZoomController::ZoomMode GetZoomMode();
 
   // Request navigating the guest to the provided |src| URL.
-  void NavigateGuest(const std::string& src, bool force_navigation);
+  void NavigateGuest(const std::string& src,
+                     base::OnceCallback<void(content::NavigationHandle&)>
+                         navigation_handle_callback,
+                     bool force_navigation);
 
   // Shows the context menu for the guest.
   void ShowContextMenu(int request_id);
@@ -240,7 +243,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                       bool* was_blocked) final;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) final;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) final;
   void WebContentsCreated(content::WebContents* source_contents,
                           int opener_render_process_id,
                           int opener_render_frame_id,
@@ -287,13 +292,18 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   void PushWebViewStateToIOThread(content::RenderFrameHost* guest_host);
 
-  // Loads the |url| provided. |force_navigation| indicates whether to reload
-  // the content if the provided |url| matches the current page of the guest.
-  void LoadURLWithParams(
-      const GURL& url,
-      const content::Referrer& referrer,
-      ui::PageTransition transition_type,
-      bool force_navigation);
+  // Loads the `url` provided. `force_navigation` indicates whether to reload
+  // the content if the provided `url` matches the current page of the guest.
+  // If a `navigation_handle_callback` function is provided, it should be called
+  // with the pending navigation (if any) when the navigation handle become
+  // available. This allows callers to observe or attach their specific data.
+  // This function may not be called if the navigation fails for any reason.
+  void LoadURLWithParams(const GURL& url,
+                         const content::Referrer& referrer,
+                         ui::PageTransition transition_type,
+                         base::OnceCallback<void(content::NavigationHandle&)>
+                             navigation_handle_callback,
+                         bool force_navigation);
 
   void RequestNewWindowPermission(WindowOpenDisposition disposition,
                                   const gfx::Rect& initial_bounds,

@@ -395,13 +395,20 @@ void WebDialogView::CloseContents(WebContents* source) {
 
 content::WebContents* WebDialogView::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   content::WebContents* new_contents = nullptr;
+  auto split_navigation_handle_callback =
+      base::SplitOnceCallback(std::move(navigation_handle_callback));
   if (delegate_ &&
-      delegate_->HandleOpenURLFromTab(source, params, &new_contents)) {
+      delegate_->HandleOpenURLFromTab(
+          source, params, std::move(split_navigation_handle_callback.first),
+          &new_contents)) {
     return new_contents;
   }
-  return WebDialogWebContentsDelegate::OpenURLFromTab(source, params);
+  return WebDialogWebContentsDelegate::OpenURLFromTab(
+      source, params, std::move(split_navigation_handle_callback.second));
 }
 
 void WebDialogView::AddNewContents(

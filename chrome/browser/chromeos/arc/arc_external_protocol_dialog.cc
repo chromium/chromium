@@ -206,7 +206,7 @@ void OpenUrlInChrome(base::WeakPtr<WebContents> web_contents, const GURL& url) {
                         network::mojom::ReferrerPolicy::kDefault),
       WindowOpenDisposition::CURRENT_TAB, page_transition_type,
       kIsRendererInitiated);
-  web_contents->OpenURL(params);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 ArcIntentHelperMojoDelegate::IntentInfo CreateIntentInfo(const GURL& url,

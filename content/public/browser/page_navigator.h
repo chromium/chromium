@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
@@ -170,11 +171,18 @@ class PageNavigator {
  public:
   virtual ~PageNavigator() {}
 
-  // Opens a URL with the given disposition.  The transition specifies how this
-  // navigation should be recorded in the history system (for example, typed).
-  // Returns the WebContents the URL is opened in, or nullptr if the URL wasn't
-  // opened immediately.
-  virtual WebContents* OpenURL(const OpenURLParams& params) = 0;
+  // Opens a URL using parameters from `params`.
+  // Returns:
+  //    * A pointer to the WebContents object where the URL is opened.
+  //    * nullptr if the URL could not be opened immediately.
+  //
+  // If a `navigation_handle_callback` function is provided, it should be called
+  // with the pending navigation (if any) when the navigation handle become
+  // available. This allows callers to observe or attach their specific data.
+  // This function may not be called if the navigation fails for any reason.
+  virtual WebContents* OpenURL(const OpenURLParams& params,
+                               base::OnceCallback<void(NavigationHandle&)>
+                                   navigation_handle_callback) = 0;
 };
 
 }  // namespace content

@@ -90,12 +90,15 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           [](content::WebContents* web_contents, const ui::Event& event) {
-            web_contents->OpenURL(content::OpenURLParams(
-                GURL(chrome::kAdvancedProtectionDownloadLearnMoreURL),
-                content::Referrer(),
-                ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-                ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+            web_contents->OpenURL(
+                content::OpenURLParams(
+                    GURL(chrome::kAdvancedProtectionDownloadLearnMoreURL),
+                    content::Referrer(),
+                    ui::DispositionFromEventFlags(
+                        event.flags(),
+                        WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                    ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+                /*navigation_handle_callback=*/{});
           },
           web_contents));
   label->AddStyleRange(learn_more_range, link_style);

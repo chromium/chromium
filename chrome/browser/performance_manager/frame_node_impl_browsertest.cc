@@ -116,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_out_of_view.html"));
   browser()->OpenURL(content::OpenURLParams(main_frame_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   run_loop.Run();
 }
 
@@ -147,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_hidden.html"));
   browser()->OpenURL(content::OpenURLParams(main_frame_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   run_loop.Run();
 }
 
@@ -178,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_partially_visible.html"));
   browser()->OpenURL(content::OpenURLParams(main_frame_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   run_loop.Run();
 }
 
@@ -209,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_scaled.html"));
   browser()->OpenURL(content::OpenURLParams(main_frame_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   run_loop.Run();
 }
 
@@ -240,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
       embedded_test_server()->GetURL("/iframe_rotated.html"));
   browser()->OpenURL(content::OpenURLParams(main_frame_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   run_loop.Run();
 }
 

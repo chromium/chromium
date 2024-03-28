@@ -461,7 +461,8 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
       url, referring_url, initiator, disposition, transition, extra_headers,
       started_from_context_menu);
 
-  source_web_contents_->OpenURL(open_url_params);
+  source_web_contents_->OpenURL(open_url_params,
+                                /*navigation_handle_callback=*/{});
 }
 
 content::OpenURLParams

@@ -150,7 +150,8 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
         active_contents->GetPrimaryMainFrame()->GetRoutingID();
     open_url_params.user_gesture = user_gesture;
 
-    return active_contents->OpenURL(open_url_params);
+    return active_contents->OpenURL(open_url_params,
+                                    /*navigation_handle_callback=*/{});
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

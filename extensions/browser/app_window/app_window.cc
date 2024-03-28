@@ -352,10 +352,13 @@ bool AppWindow::CheckMediaAccessPermission(
                                              type);
 }
 
-WebContents* AppWindow::OpenURLFromTab(WebContents* source,
-                                       const content::OpenURLParams& params) {
+WebContents* AppWindow::OpenURLFromTab(
+    WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   DCHECK_EQ(web_contents(), source);
-  return helper_->OpenURLFromTab(params);
+  return helper_->OpenURLFromTab(params, std::move(navigation_handle_callback));
 }
 
 void AppWindow::AddNewContents(

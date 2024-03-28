@@ -240,12 +240,15 @@ WebContents* OpenApplicationTab(Profile* profile,
     TabStripModel* model = browser->tab_strip_model();
     int tab_index = model->GetIndexOfWebContents(existing_tab);
 
-    existing_tab->OpenURL(content::OpenURLParams(
-        url,
-        content::Referrer::SanitizeForRequest(
-            url, content::Referrer(existing_tab->GetURL(),
-                                   network::mojom::ReferrerPolicy::kDefault)),
-        disposition, transition, false));
+    existing_tab->OpenURL(
+        content::OpenURLParams(
+            url,
+            content::Referrer::SanitizeForRequest(
+                url,
+                content::Referrer(existing_tab->GetURL(),
+                                  network::mojom::ReferrerPolicy::kDefault)),
+            disposition, transition, false),
+        /*navigation_handle_callback=*/{});
     // Reset existing_tab as OpenURL() may have clobbered it.
     existing_tab = browser->tab_strip_model()->GetActiveWebContents();
     if (params.tabstrip_add_types & AddTabTypes::ADD_PINNED) {

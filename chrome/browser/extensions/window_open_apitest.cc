@@ -203,10 +203,12 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, PopupBlockingHostedApp) {
 
   browser()->OpenURL(OpenURLParams(open_tab, Referrer(),
                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                   ui::PAGE_TRANSITION_TYPED, false));
+                                   ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   browser()->OpenURL(OpenURLParams(open_popup, Referrer(),
                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                   ui::PAGE_TRANSITION_TYPED, false));
+                                   ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
 
   EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 3, 1, 0));
 }

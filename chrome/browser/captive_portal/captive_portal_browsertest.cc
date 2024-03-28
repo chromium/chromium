@@ -1820,7 +1820,8 @@ void CaptivePortalBrowserTest::RunNavigateLoadingTabToTimeoutTest(
              TabStripUserGestureDetails::GestureType::kOther));
   browser->OpenURL(content::OpenURLParams(timeout_url, content::Referrer(),
                                           WindowOpenDisposition::CURRENT_TAB,
-                                          ui::PAGE_TRANSITION_TYPED, false));
+                                          ui::PAGE_TRANSITION_TYPED, false),
+                   /*navigation_handle_callback=*/{});
   portal_observer.WaitForResults(1);
   EXPECT_FALSE(CheckPending(browser));
   EXPECT_EQ(1, NumLoadingTabs());
@@ -2267,9 +2268,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
   // Can't use ui_test_utils::NavigateToURLWithDisposition because it waits for
   // a load stop notification before starting a new navigation.
   MultiNavigationObserver test_navigation_observer;
-  browser()->OpenURL(content::OpenURLParams(
-      embedded_test_server()->GetURL("/title2.html"), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+  browser()->OpenURL(
+      content::OpenURLParams(
+          embedded_test_server()->GetURL("/title2.html"), content::Referrer(),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
   test_navigation_observer.WaitForNavigations(1);
 
   // Make sure that the |ssl_error_handler| is deleted.
@@ -2334,7 +2337,8 @@ IN_PROC_BROWSER_TEST_F(
   MultiNavigationObserver test_navigation_observer;
   browser()->OpenURL(content::OpenURLParams(cert_error_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   test_navigation_observer.WaitForNavigations(1);
   // Should end up with an SSL interstitial.
   ASSERT_TRUE(IsShowingInterstitial(broken_tab_contents));
@@ -2378,7 +2382,8 @@ IN_PROC_BROWSER_TEST_F(
   MultiNavigationObserver test_navigation_observer;
   browser()->OpenURL(content::OpenURLParams(cert_error_url, content::Referrer(),
                                             WindowOpenDisposition::CURRENT_TAB,
-                                            ui::PAGE_TRANSITION_TYPED, false));
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
   // Expect two navigations:
   // 1- For completing the load of the above navigation.
   // 2- For completing the load of the login tab.

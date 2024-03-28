@@ -141,7 +141,8 @@ void PriceTrackingEmailDialogView::OpenHelpArticle() {
   web_contents()->OpenURL(
       content::OpenURLParams(GURL(kPriceTrackingHelpLink), content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+      /*navigation_handle_callback=*/{});
   base::RecordAction(base::UserMetricsAction(
       "Commerce.PriceTracking.EmailConsentDialog.HelpLinkClicked"));
 }

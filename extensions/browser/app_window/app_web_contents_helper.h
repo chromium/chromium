@@ -19,7 +19,8 @@ class BrowserContext;
 class RenderFrameHost;
 struct OpenURLParams;
 class WebContents;
-}
+class NavigationHandle;
+}  // namespace content
 
 namespace extensions {
 
@@ -43,7 +44,9 @@ class AppWebContentsHelper {
 
   // Opens a new URL inside the passed in WebContents. See WebContentsDelegate.
   content::WebContents* OpenURLFromTab(
-      const content::OpenURLParams& params) const;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) const;
 
   // Requests to lock the mouse pointer. See WebContentsDelegate.
   void RequestPointerLock() const;

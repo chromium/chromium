@@ -202,10 +202,11 @@ void UsbChooserController::Close() {}
 void UsbChooserController::OpenHelpCenterUrl() const {
   WebContents::FromRenderFrameHost(requesting_frame_)
       ->OpenURL(content::OpenURLParams(
-          GURL(chrome::kChooserUsbOverviewURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-          false /* is_renderer_initialized */));
+                    GURL(chrome::kChooserUsbOverviewURL), content::Referrer(),
+                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                    false /* is_renderer_initialized */),
+                /*navigation_handle_callback=*/{});
 }
 
 void UsbChooserController::OnDeviceAdded(

@@ -168,7 +168,9 @@ class DevToolsToolboxDelegate
 
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
@@ -193,12 +195,20 @@ DevToolsToolboxDelegate::~DevToolsToolboxDelegate() {
 
 content::WebContents* DevToolsToolboxDelegate::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   DCHECK(source == web_contents());
-  if (!params.url.SchemeIs(content::kChromeDevToolsScheme))
+  if (!params.url.SchemeIs(content::kChromeDevToolsScheme)) {
     return nullptr;
-  source->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(params));
+  }
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      source->GetController().LoadURLWithParams(
+          content::NavigationController::LoadURLParams(params));
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
   return source;
 }
 
@@ -1365,11 +1375,15 @@ DevToolsWindow* DevToolsWindow::AsDevToolsWindow(Browser* browser) {
 
 WebContents* DevToolsWindow::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   DCHECK(source == main_web_contents_);
   if (!params.url.SchemeIs(content::kChromeDevToolsScheme)) {
+    // TODO(https://crbug.com/40275094): Plumb the `navigation_handle_callback`.
     return OpenURLFromInspectedTab(params);
   }
+  // TODO(https://crbug.com/40275094): Plumb the `navigation_handle_callback`.
   main_web_contents_->GetController().Reload(content::ReloadType::NORMAL,
                                              false);
   return main_web_contents_;
@@ -1382,7 +1396,8 @@ WebContents* DevToolsWindow::OpenURLFromInspectedTab(
     return nullptr;
   content::OpenURLParams modified = params;
   modified.referrer = content::Referrer();
-  return inspected_web_contents->OpenURL(modified);
+  return inspected_web_contents->OpenURL(modified,
+                                         /*navigation_handle_callback=*/{});
 }
 
 void DevToolsWindow::ActivateContents(WebContents* contents) {
@@ -1690,7 +1705,9 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
   content::OpenURLParams params(fixed_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  if (!inspected_web_contents || !inspected_web_contents->OpenURL(params)) {
+  if (!inspected_web_contents ||
+      !inspected_web_contents->OpenURL(params,
+                                       /*navigation_handle_callback=*/{})) {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
     chrome::AddSelectedTabWithURL(displayer.browser(), fixed_url,
                                   ui::PAGE_TRANSITION_LINK);

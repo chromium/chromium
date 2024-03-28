@@ -143,8 +143,8 @@ bool OpenTabFromSourceIndex(int browser_index,
   open_url_params.source_render_process_id =
       source_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
 
-  content::WebContents* new_contents =
-      source_contents->OpenURL(open_url_params);
+  content::WebContents* new_contents = source_contents->OpenURL(
+      open_url_params, /*navigation_handle_callback=*/{});
   if (!new_contents) {
     return false;
   }

@@ -48,7 +48,8 @@ void SimulateRendererCrash(Browser* browser) {
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser->OpenURL(OpenURLParams(GURL(blink::kChromeUICrashURL), Referrer(),
                                  WindowOpenDisposition::CURRENT_TAB,
-                                 ui::PAGE_TRANSITION_TYPED, false));
+                                 ui::PAGE_TRANSITION_TYPED, false),
+                   /*navigation_handle_callback=*/{});
   crash_observer.Wait();
 }
 

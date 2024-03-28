@@ -197,7 +197,7 @@ void OpenUrl(content::WebContents* current_web_contents,
                                     : WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_LINK,
                                 /*is_renderer_initiated=*/false);
-  current_web_contents->OpenURL(params);
+  current_web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 int64_t GetNavigationIDFromPrefsByOrigin(PrefService* prefs,
@@ -564,7 +564,7 @@ void ChromePasswordProtectionService::ShowInterstitial(
 
   params.post_data = network::ResourceRequestBody::CreateFromBytes(
       post_data.data(), post_data.size());
-  web_contents->OpenURL(params);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 
   LogWarningAction(WarningUIType::INTERSTITIAL, WarningAction::SHOWN,
                    password_type);

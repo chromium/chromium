@@ -128,9 +128,12 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
          Site site) {
         base::UmaHistogramEnumeration(
             "Extensions.ForceInstalledPreInstalledDeprecatedAppOpenUrl", site);
-        web_contents->OpenURL(content::OpenURLParams(
-            url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-            ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+        web_contents->OpenURL(
+            content::OpenURLParams(url, content::Referrer(),
+                                   WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                   ui::PAGE_TRANSITION_LINK,
+                                   /*is_renderer_initiated=*/false),
+            /*navigation_handle_callback=*/{});
       },
       web_contents->GetWeakPtr(), link_config.link, link_config.site));
   delegate->SetContentsView(
@@ -184,11 +187,14 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
             if (!web_contents) {
               return;
             }
-            web_contents->OpenURL(content::OpenURLParams(
-                url, content::Referrer(),
-                ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-                ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+            web_contents->OpenURL(
+                content::OpenURLParams(
+                    url, content::Referrer(),
+                    ui::DispositionFromEventFlags(
+                        event.flags(),
+                        WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                    ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+                /*navigation_handle_callback=*/{});
           },
           web_contents->GetWeakPtr(), app_link)));
 
@@ -200,12 +206,14 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
         if (!web_contents) {
           return;
         }
-        web_contents->OpenURL(content::OpenURLParams(
-            GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
-            content::Referrer(),
-            ui::DispositionFromEventFlags(
-                event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-            ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+        web_contents->OpenURL(
+            content::OpenURLParams(
+                GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
+                content::Referrer(),
+                ui::DispositionFromEventFlags(
+                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+            /*navigation_handle_callback=*/{});
       },
       web_contents->GetWeakPtr()));
   learn_more->SetAccessibleName(

@@ -123,7 +123,8 @@ TabbedWebAppNavigationThrottle::OpenInNewTab() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  navigation_handle()->GetWebContents()->OpenURL(std::move(params));
+  navigation_handle()->GetWebContents()->OpenURL(
+      std::move(params), /*navigation_handle_callback=*/{});
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
 }
 
@@ -140,7 +141,8 @@ TabbedWebAppNavigationThrottle::FocusHomeTab() {
 
   if (params.url != tab_strip->GetWebContentsAt(0)->GetLastCommittedURL()) {
     // Only do the navigation if the URL has changed.
-    tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params));
+    tab_strip->GetWebContentsAt(0)->OpenURL(std::move(params),
+                                            /*navigation_handle_callback=*/{});
   }
   tab_strip->ActivateTabAt(0);
   return content::NavigationThrottle::CANCEL_AND_IGNORE;

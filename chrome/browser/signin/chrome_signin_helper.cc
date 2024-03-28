@@ -351,9 +351,11 @@ void ProcessMirrorHeader(
     GURL url(manage_accounts_params.continue_url.empty()
                  ? chrome::kChromeUINativeNewTabURL
                  : manage_accounts_params.continue_url);
-    web_contents->OpenURL(content::OpenURLParams(
-        url, content::Referrer(), WindowOpenDisposition::OFF_THE_RECORD,
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+    web_contents->OpenURL(
+        content::OpenURLParams(url, content::Referrer(),
+                               WindowOpenDisposition::OFF_THE_RECORD,
+                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+        /*navigation_handle_callback=*/{});
   } else {
     signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
         account_reconcilor->GetState());

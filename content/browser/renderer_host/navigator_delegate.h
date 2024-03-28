@@ -91,7 +91,9 @@ class NavigatorDelegate {
 
   // Opens a URL with the given parameters. See PageNavigator::OpenURL, which
   // this is an alias of.
-  virtual WebContents* OpenURL(const OpenURLParams& params) = 0;
+  virtual WebContents* OpenURL(const OpenURLParams& params,
+                               base::OnceCallback<void(NavigationHandle&)>
+                                   navigation_handle_callback) = 0;
 
   // Returns whether to continue a navigation that needs to transfer to a
   // different process between the load start and commit.

@@ -736,10 +736,10 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
     lens::OpenLensSidePanel(chrome::FindBrowserWithTab(web_contents()),
                             open_url_params);
 #else
-    web_contents()->OpenURL(open_url_params);
+    web_contents()->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   } else {
-    web_contents()->OpenURL(open_url_params);
+    web_contents()->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
   }
 }
 

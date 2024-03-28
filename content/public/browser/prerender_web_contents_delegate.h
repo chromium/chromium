@@ -19,7 +19,9 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
 
   // WebContentsDelegate overrides.
   WebContents* OpenURLFromTab(WebContents* source,
-                              const OpenURLParams& params) override;
+                              const OpenURLParams& params,
+                              base::OnceCallback<void(NavigationHandle&)>
+                                  navigation_handle_callback) override;
   void AddNewContents(WebContents* source,
                       std::unique_ptr<WebContents> new_contents,
                       const GURL& target_url,

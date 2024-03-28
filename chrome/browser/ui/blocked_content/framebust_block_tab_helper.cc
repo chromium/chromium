@@ -29,9 +29,11 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   const GURL& url = blocked_urls_[index];
   if (!callbacks_[index].is_null())
     std::move(callbacks_[index]).Run(url, index, total_size);
-  web_contents()->OpenURL(content::OpenURLParams(
-      url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_LINK, false));
+  web_contents()->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 FramebustBlockTabHelper::FramebustBlockTabHelper(

@@ -264,7 +264,9 @@ void TabWebContentsDelegateAndroid::SetOverlayMode(bool use_overlay_mode) {
 
 WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   WindowOpenDisposition disposition = params.disposition;
   if (!source || (disposition != WindowOpenDisposition::CURRENT_TAB &&
                   disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
@@ -273,7 +275,8 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
                   disposition != WindowOpenDisposition::NEW_POPUP &&
                   disposition != WindowOpenDisposition::NEW_WINDOW)) {
     // We can't handle this here.  Give the parent a chance.
-    return WebContentsDelegateAndroid::OpenURLFromTab(source, params);
+    return WebContentsDelegateAndroid::OpenURLFromTab(
+        source, params, std::move(navigation_handle_callback));
   }
 
   Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
@@ -297,7 +300,8 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
 
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     // Ask the parent to handle in-place opening.
-    return WebContentsDelegateAndroid::OpenURLFromTab(source, params);
+    return WebContentsDelegateAndroid::OpenURLFromTab(
+        source, params, std::move(navigation_handle_callback));
   }
 
   popup_delegate->nav_params()->opened_by_another_window = true;

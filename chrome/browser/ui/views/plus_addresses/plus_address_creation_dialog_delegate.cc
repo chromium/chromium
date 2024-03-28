@@ -301,11 +301,13 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
 void PlusAddressCreationDialogDelegate::OpenSettingsLink(
     content::WebContents* web_contents) {
   if (web_contents && !features::kPlusAddressManagementUrl.Get().empty()) {
-    web_contents->OpenURL(content::OpenURLParams(
-        GURL(features::kPlusAddressManagementUrl.Get()), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PageTransition::PAGE_TRANSITION_LINK,
-        /*is_renderer_initiated=*/false));
+    web_contents->OpenURL(
+        content::OpenURLParams(GURL(features::kPlusAddressManagementUrl.Get()),
+                               content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PageTransition::PAGE_TRANSITION_LINK,
+                               /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
   }
 }
 
@@ -313,11 +315,13 @@ void PlusAddressCreationDialogDelegate::OpenSettingsLink(
 void PlusAddressCreationDialogDelegate::OpenErrorReportLink(
     content::WebContents* web_contents) {
   if (web_contents && !features::kPlusAddressErrorReportUrl.Get().empty()) {
-    web_contents->OpenURL(content::OpenURLParams(
-        GURL(features::kPlusAddressErrorReportUrl.Get()), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PageTransition::PAGE_TRANSITION_LINK,
-        /*is_renderer_initiated=*/false));
+    web_contents->OpenURL(
+        content::OpenURLParams(GURL(features::kPlusAddressErrorReportUrl.Get()),
+                               content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PageTransition::PAGE_TRANSITION_LINK,
+                               /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
   }
 }
 

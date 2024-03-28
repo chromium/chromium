@@ -194,7 +194,7 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
@@ -208,7 +208,7 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
   content::OpenURLParams params(GURL(url), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void DefaultBindingsDelegate::InspectedContentsClosing() {

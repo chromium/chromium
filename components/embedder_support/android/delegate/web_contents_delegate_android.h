@@ -20,6 +20,7 @@ class GURL;
 namespace content {
 class WebContents;
 class WebContentsDelegate;
+class NavigationHandle;
 struct NativeWebKeyboardEvent;
 struct OpenURLParams;
 }  // namespace content
@@ -49,7 +50,9 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   // Overridden from WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   std::unique_ptr<content::ColorChooser> OpenColorChooser(
       content::WebContents* source,
       SkColor color,

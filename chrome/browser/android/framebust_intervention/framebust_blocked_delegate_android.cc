@@ -117,9 +117,11 @@ void FramebustBlockedMessageDelegate::HandleClick() {
 }
 
 void FramebustBlockedMessageDelegate::HandleOpenLink() {
-  GetWebContents().OpenURL(content::OpenURLParams(
-      blocked_url_, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_LINK, false));
+  GetWebContents().OpenURL(
+      content::OpenURLParams(blocked_url_, content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 
   if (intervention_callback_)
     std::move(intervention_callback_)

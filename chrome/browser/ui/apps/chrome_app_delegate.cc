@@ -72,7 +72,9 @@ bool disable_external_open_for_testing_ = false;
 // Opens a URL with Chromium (not external browser) with the right profile.
 content::WebContents* OpenURLFromTabInternal(
     content::BrowserContext* context,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   NavigateParams new_tab_params(static_cast<Browser*>(nullptr), params.url,
                                 params.transition);
   new_tab_params.FillNavigateParamsFromOpenURLParams(params);
@@ -93,7 +95,12 @@ content::WebContents* OpenURLFromTabInternal(
   }
 
   new_tab_params.initiating_profile = Profile::FromBrowserContext(context);
-  Navigate(&new_tab_params);
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&new_tab_params);
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
 
   return new_tab_params.navigated_or_inserted_contents;
 }
@@ -101,6 +108,8 @@ content::WebContents* OpenURLFromTabInternal(
 void OpenURLAfterCheckIsDefaultBrowser(
     std::unique_ptr<content::WebContents> source,
     const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback,
     shell_integration::DefaultWebClientState state) {
   // Open a URL based on if this browser instance is the default system browser.
   // If it is the default, open the URL directly instead of asking the system to
@@ -111,7 +120,8 @@ void OpenURLAfterCheckIsDefaultBrowser(
     return;
   switch (state) {
     case shell_integration::IS_DEFAULT:
-      OpenURLFromTabInternal(profile, params);
+      OpenURLFromTabInternal(profile, params,
+                             std::move(navigation_handle_callback));
       return;
     case shell_integration::NOT_DEFAULT:
     case shell_integration::UNKNOWN_DEFAULT:
@@ -163,7 +173,9 @@ class ChromeAppDelegate::NewWindowContentsDelegate
 
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 
  private:
   std::vector<std::unique_ptr<content::WebContents>> owned_contents_;
@@ -172,7 +184,9 @@ class ChromeAppDelegate::NewWindowContentsDelegate
 content::WebContents*
 ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   if (source) {
     // This NewWindowContentsDelegate was given ownership of the incoming
     // WebContents by being assigned as its delegate within
@@ -197,7 +211,8 @@ ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab(
         check_if_default_browser_worker =
             new shell_integration::DefaultBrowserWorker();
     check_if_default_browser_worker->StartCheckIsDefault(base::BindOnce(
-        &OpenURLAfterCheckIsDefaultBrowser, std::move(owned_source), params));
+        &OpenURLAfterCheckIsDefaultBrowser, std::move(owned_source), params,
+        std::move(navigation_handle_callback)));
   }
   return nullptr;
 }
@@ -275,8 +290,11 @@ void ChromeAppDelegate::ResizeWebContents(content::WebContents* web_contents,
 content::WebContents* ChromeAppDelegate::OpenURLFromTab(
     content::BrowserContext* context,
     content::WebContents* source,
-    const content::OpenURLParams& params) {
-  return OpenURLFromTabInternal(context, params);
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  return OpenURLFromTabInternal(context, params,
+                                std::move(navigation_handle_callback));
 }
 
 void ChromeAppDelegate::AddNewContents(

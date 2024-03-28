@@ -275,7 +275,7 @@ void UserNotesPageHandler::NoteOverviewSelected(
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser_->OpenURL(params);
+  browser_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void UserNotesPageHandler::SetSortOrder(bool sort_by_newest) {

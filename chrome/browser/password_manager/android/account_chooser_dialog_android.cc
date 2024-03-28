@@ -182,10 +182,12 @@ void AccountChooserDialogAndroid::CancelDialog(
 void AccountChooserDialogAndroid::OnLinkClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
-      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, false /* is_renderer_initiated */));
+  web_contents_->OpenURL(
+      content::OpenURLParams(
+          GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
+          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK, false /* is_renderer_initiated */),
+      /*navigation_handle_callback=*/{});
   delete this;
 }
 

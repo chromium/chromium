@@ -73,10 +73,12 @@ void NotificationBlockedMessageDelegate::OnLearnMoreClicked() {
   should_reshow_dialog_on_focus_ = true;
   dialog_controller_->DismissDialog();
   delegate_->SetLearnMoreClicked();
-  web_contents_->OpenURL(content::OpenURLParams(
-      GetNotificationBlockedLearnMoreUrl(), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false));
+  web_contents_->OpenURL(
+      content::OpenURLParams(GetNotificationBlockedLearnMoreUrl(),
+                             content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 void NotificationBlockedMessageDelegate::OnOpenedSettings() {

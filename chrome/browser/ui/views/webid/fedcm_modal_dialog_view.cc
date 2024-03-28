@@ -37,8 +37,8 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(const GURL& url) {
   content::OpenURLParams params(
       url, content::Referrer(), WindowOpenDisposition::NEW_POPUP,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false);
-  popup_window_ =
-      source_window_->GetDelegate()->OpenURLFromTab(source_window_, params);
+  popup_window_ = source_window_->GetDelegate()->OpenURLFromTab(
+      source_window_, params, /*navigation_handle_callback=*/{});
 
   if (!popup_window_) {
     UMA_HISTOGRAM_ENUMERATION(
