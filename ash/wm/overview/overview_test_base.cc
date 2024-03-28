@@ -45,6 +45,10 @@ void OverviewTestBase::EnterTabletMode() {
   base::RunLoop().RunUntilIdle();
 }
 
+void OverviewTestBase::LeaveTabletMode() {
+  TabletModeControllerTestApi().LeaveTabletMode();
+}
+
 bool OverviewTestBase::InOverviewSession() const {
   return OverviewController::Get()->InOverviewSession();
 }

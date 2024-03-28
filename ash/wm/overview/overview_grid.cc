@@ -65,6 +65,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/overview/scoped_overview_wallpaper_clipper.h"
 #include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -2585,12 +2586,16 @@ void OverviewGrid::OnSplitViewStateChanged(
     return;
   }
 
-  // Hide the birch bar in partial split view and show the birch bar if the
-  // partial split view ends.
+  // Update visibility on split state change: hide `birch_bar_widget_`,
+  // `desks_widget_`, `saved_desk_library_widget_`, and
+  // `save_desk_button_container_widget_` in partial overview; show in full
+  // overview.
   if (state == SplitViewController::State::kNoSnap) {
     MaybeInitBirchBarWidget();
+    RefreshDesksWidgets(/*visible=*/true);
   } else {
     DestroyBirchBarWidget();
+    RefreshDesksWidgets(/*visible=*/false);
   }
 
   // Update the cannot snap warnings and adjust the grid bounds.
@@ -3176,6 +3181,33 @@ void OverviewGrid::OnBirchBarLayoutChanged(
       RefreshGridBounds(/*animate=*/true);
       PositionWindows(/*animate=*/true);
     }
+  }
+}
+
+void OverviewGrid::RefreshDesksWidgets(bool visible) {
+  if (!features::IsForestFeatureEnabled()) {
+    return;
+  }
+
+  if (!visible) {
+    views::Widget::Widgets desks_widgets = {
+        desks_widget_.get(), saved_desk_library_widget_.get(),
+        save_desk_button_container_widget_.get()};
+    aura::Window::Windows hide_windows;
+    base::ranges::for_each(
+        desks_widgets, [&hide_windows](views::Widget* widget) {
+          if (widget) {
+            hide_windows.emplace_back(widget->GetNativeWindow());
+          }
+        });
+
+    hide_windows_in_partial_overview_ =
+        std::make_unique<ScopedOverviewHideWindows>(
+            /*windows=*/hide_windows,
+            /*forced_hidden=*/true);
+  } else {
+    hide_windows_in_partial_overview_.reset();
+    MaybeUpdateDesksWidgetBounds();
   }
 }
 

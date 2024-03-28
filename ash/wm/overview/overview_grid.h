@@ -51,6 +51,7 @@ class OverviewSession;
 class RoundedLabelWidget;
 class SavedDeskSaveDeskButton;
 class SavedDeskLibraryView;
+class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
 class SplitViewController;
 
@@ -614,6 +615,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // reposition the windows if the relayout is due to the contents change.
   void OnBirchBarLayoutChanged(BirchBarView::RelayoutReason reason);
 
+  // Refreshes desks widgets visibility: hidden in partial Overview, visibility
+  // restored when partial Overview ends.
+  void RefreshDesksWidgets(bool visible);
+
   // Updates the number of unsupported windows of saved desk. This includes
   // `num_incognito_windows_` and `num_unsupported_windows` as of now. When
   // the overview item that represents the `windows` is being added to `this`,
@@ -728,6 +733,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Handles events that are not handled by the OverviewItems.
   std::unique_ptr<OverviewGridEventHandler> grid_event_handler_;
+
+  // Hides scoped windows in partial overview, restores their visibility when
+  // partial overview ends.
+  std::unique_ptr<ScopedOverviewHideWindows> hide_windows_in_partial_overview_;
 
   // Records the presentation time of scrolling the grid in overview mode.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;

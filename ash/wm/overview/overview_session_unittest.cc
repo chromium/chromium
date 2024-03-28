@@ -11069,6 +11069,43 @@ TEST_F(OakTest, PartialOverviewVisualsAndResize) {
   event_generator->ReleaseLeftButton();
 }
 
+// Tests that snapping a window in full Overview hides desks widgets; closing
+// the window restores full Overview and shows the desks widgets again.
+TEST_F(OakTest, HideDesksWidgetInPartialOverview) {
+  std::unique_ptr<aura::Window> win1(
+      CreateAppWindow(gfx::Rect(10, 10, 200, 100)));
+  std::unique_ptr<aura::Window> win2(
+      CreateAppWindow(gfx::Rect(20, 20, 500, 200)));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  auto* desks_widget = overview_grid->desks_widget();
+  ASSERT_TRUE(desks_widget->IsVisible());
+
+  SnapOneTestWindow(win2.get(), chromeos::WindowStateType::kSecondarySnapped,
+                    chromeos::kTwoThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(desks_widget->IsVisible());
+
+  // Verify that the desks bar remain invisible in tablet partial overview mode.
+  EnterTabletMode();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(desks_widget->IsVisible());
+
+  LeaveTabletMode();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(desks_widget->IsVisible());
+
+  // Closing `w2` in partial overview restores full Overview mode, making desks
+  // widgets visible again.
+  win2.reset();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(desks_widget->IsVisible());
+}
+
 // Tests that the wallpaper view layer clips correctly with animation upon
 // entering Overview mode and that both the wallpaper view layer and underlay
 // layer restore properly upon exiting.
