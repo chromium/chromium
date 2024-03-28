@@ -2241,6 +2241,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.URLScoringModelExecuted.MLScoreCoverage"
+    units="% of matches" expires_after="2025-02-23">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the percentage of scoring-eligible autocomplete matches that were
+    assigned non-null scores by the ML scoring model. This will be recorded for
+    each batch that is submitted to the ML scoring service.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Views.PopupFirstPaint" units="ms"
     expires_after="2024-08-01">
   <owner>tluk@chromium.org</owner>

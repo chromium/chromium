@@ -1863,6 +1863,7 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   std::priority_queue<int> relevance_heap;
   std::priority_queue<std::tuple<float, int, AutocompleteResult::iterator>>
       prediction_and_match_itr_heap;
+  size_t score_coverage_count = 0;
   // Likewise, keep the same number of shortcut boosted suggestions but reassign
   // them to the highest scoring suggestions.
   size_t boosted_shortcut_count = 0;
@@ -1871,6 +1872,7 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     if (!prediction.has_value()) {
       continue;
     }
+    score_coverage_count++;
 
     auto match_itr = eligible_match_itrs[index];
     relevance_heap.emplace(match_itr->relevance);
@@ -1879,6 +1881,13 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
     if (match_itr->shortcut_boosted)
       boosted_shortcut_count++;
   }
+
+  // Record the percentage of matches that were assigned non-null scores by
+  // the ML scoring model.
+  int percent_score_coverage = score_coverage_count * 100 / results.size();
+  base::UmaHistogramPercentage(
+      "Omnibox.URLScoringModelExecuted.MLScoreCoverage",
+      percent_score_coverage);
 
   if (!relevance_heap.empty()) {
     // Record whether the model was executed for at least one eligible match.
