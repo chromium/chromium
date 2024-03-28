@@ -164,7 +164,6 @@ def main():
         shutil.rmtree(profiledir)
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
-    run_benchmark(['speedometer2'])
     run_benchmark(['speedometer3'])
     run_benchmark(['jetstream2'])
 
