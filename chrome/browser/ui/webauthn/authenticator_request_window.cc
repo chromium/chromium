@@ -137,7 +137,7 @@ class AuthenticatorRequestWindow
             web_contents.get(), url,
             // Unretained: `reauth_observer_` is owned by this object so if
             // it exists, this object also exists.
-            base::BindOnce(&AuthenticatorRequestWindow::OnReauthComplete,
+            base::BindOnce(&AuthenticatorRequestWindow::OnHaveToken,
                            base::Unretained(this)));
         break;
 
@@ -191,9 +191,10 @@ class AuthenticatorRequestWindow
     delete this;
   }
 
-  void OnReauthComplete(std::string rapt) {
-    // TODO(enclave): plumb this value for resetting a GPM PIN.
-    NOTIMPLEMENTED();
+  void OnHaveToken(std::string rapt) {
+    if (model_) {
+      model_->OnReauthComplete(std::move(rapt));
+    }
   }
 
   const AuthenticatorRequestDialogModel::Step step_;

@@ -173,6 +173,9 @@ class AuthenticatorRequestDialogController;
   /* On success, the emitter must set the model's |lacontext| to an */        \
   /* authenticated LAContext. */                                              \
   AUTHENTICATOR_REQUEST_EVENT_1(OnTouchIDComplete, bool)                      \
+  /* Called when GAIA reauth has completed. The argument is the reauth */     \
+  /* proof token. */                                                          \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnReauthComplete, std::string)                \
   /* Called just before the model is destructed. */                           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
                                 AuthenticatorRequestDialogModel*)

@@ -8,13 +8,19 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/sync/base/features.h"
+#include "components/trusted_vault/features.h"
 #include "content/public/test/browser_test.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -25,6 +31,12 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "google_apis/gaia/gaia_switches.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 namespace {
 
@@ -843,3 +855,172 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+// Tests the UI steps that show a pop-up window.
+class AuthenticatorWindowTest : public InProcessBrowserTest {
+ public:
+  AuthenticatorWindowTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {trusted_vault::kSetClientEncryptionKeysJsApi,
+         device::kWebAuthnEnclaveAuthenticator},
+        /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&AuthenticatorWindowTest::HandleNetworkRequest,
+                            base::Unretained(this)));
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    command_line->AppendSwitchASCII(
+        switches::kGaiaUrl,
+        https_server_.GetURL("accounts.google.com", "/").spec());
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server_.StartAcceptingConnections();
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    model_ = std::make_unique<AuthenticatorRequestDialogModel>(
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame());
+  }
+
+ protected:
+  std::unique_ptr<AuthenticatorRequestDialogModel> model_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleNetworkRequest(
+      const net::test_server::HttpRequest& request) {
+    const GURL url = request.GetURL();
+    const std::string_view path = url.path_piece();
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+
+    if (path == "/encryption/unlock/desktop") {
+      response->set_code(net::HTTP_OK);
+      response->set_content(R"(<html><head><title>Test MagicArch</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  chrome.setClientEncryptionKeys(
+      function() {},
+      "1234",
+      new Map([["hw_protected", [{epoch: 1, key: new ArrayBuffer(32)}]]]));
+});
+</script></head><body><p>Test MagicArch</p></body></html>)");
+    } else if (path == "/embedded/xreauth/chrome") {
+      response->set_code(net::HTTP_OK);
+      response->set_content(R"(<html><head><title>Test Reauth</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("rapt") === null) {
+    url.searchParams.set("rapt", "RAPT");
+    window.location.href = url.href;
+  }
+});
+</script></head><body><p>Test Reauth</p></body></html>)");
+    } else {
+      LOG(ERROR) << "Unknown network request: " << url.spec();
+      response->set_code(net::HTTP_NOT_FOUND);
+    }
+
+    return response;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// This test doesn't work on Chrome OS because
+// `trusted_vault_encryption_key_tab_helper.cc` will not send the keys to the
+// EnclaveManager, since Chrome OS doesn't use the enclave.
+
+// Quits the browser (and thus finishes the test) when keys are received by the
+// EnclaveManager.
+class QuitBrowserWhenKeysStored : public EnclaveManager::Observer {
+ public:
+  explicit QuitBrowserWhenKeysStored(Browser* browser) : browser_(browser) {
+    EnclaveManagerFactory::GetForProfile(browser_->profile())
+        ->AddObserver(this);
+  }
+
+  // EnclaveManager::Observer
+  void OnKeysStored() override {
+    LOG(INFO) << "QuitBrowserWhenKeysStored::OnKeysStored";
+    EnclaveManagerFactory::GetForProfile(browser_->profile())
+        ->RemoveObserver(this);
+    browser_ = nullptr;
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+  }
+
+ private:
+  raw_ptr<Browser> browser_;
+};
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, RecoverSecurityDomain) {
+  QuitBrowserWhenKeysStored observer(browser());
+
+  // This should open a pop-up to MagicArch. The fake MagicArch, configured
+  // by this test class, will immediately return keys, which will cause the
+  // browser to exit.
+  model_->SetStep(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+
+  RunUntilBrowserProcessQuits();
+}
+#endif
+
+class QuitBrowserWhenReauthTokenReceived
+    : public AuthenticatorRequestDialogModel::Observer {
+ public:
+  explicit QuitBrowserWhenReauthTokenReceived(
+      AuthenticatorRequestDialogModel* model)
+      : model_(model) {
+    model_->observers.AddObserver(this);
+  }
+
+  // AuthenticatorRequestDialogModel::Observer
+  void OnReauthComplete(std::string token) override {
+    LOG(INFO) << "QuitBrowserWhenKeysStored::OnReauthComplete";
+    CHECK_EQ(token, "RAPT");
+    model_->observers.RemoveObserver(this);
+    model_ = nullptr;
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&chrome::AttemptExit));
+  }
+
+ private:
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
+};
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, Reauth) {
+  QuitBrowserWhenReauthTokenReceived observer(model_.get());
+
+  // This should open a pop-up to a GAIA reauth page. That page will be faked
+  // by this test class and the fake will immediately complete with a token
+  // with the value "RAPT". That will cause `QuitBrowserWhenReauthTokenReceived`
+  // to close the browser and complete the test.
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMReauthAccount);
+
+  RunUntilBrowserProcessQuits();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
+  // Test that closing the window (e.g. due to a timeout) doesn't cause any
+  // issues.
+  model_->SetStep(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kNotStarted);
+}
