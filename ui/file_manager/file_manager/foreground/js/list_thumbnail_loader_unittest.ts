@@ -374,7 +374,7 @@ export function testDirectoryScanIsRunning() {
   // Scan completed after adding the last item.
   fileListModel.push(entry3);
   isScanningForTest = false;
-  directoryModel.dispatchEvent(new Event('scan-completed'));
+  directoryModel.dispatchEvent(new CustomEvent('cur-dir-scan-completed'));
 
   assertEquals(2, Object.keys(getCallbacks).length);
 }

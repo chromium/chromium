@@ -12,6 +12,7 @@ import {createDOMError} from '../../common/js/dom_utils.js';
 import {isDriveRootType, isFakeEntry, isTrashEntry, readEntriesRecursively} from '../../common/js/entry_utils.js';
 import {isType} from '../../common/js/file_type.js';
 import type {EntryList, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders, TRASH_CONFIG} from '../../common/js/trash.js';
@@ -40,7 +41,7 @@ type ScanErrorCallback = (error: DOMError) => void;
  * Scanner of the entries.
  */
 export abstract class ContentScanner {
-  protected cancelled_: boolean = false;
+  protected canceled_: boolean = false;
 
   /**
    * Starts to scan the entries. Any entries discovered during the scanning
@@ -60,7 +61,7 @@ export abstract class ContentScanner {
    * an error will be reported from errorCallback passed to scan().
    */
   cancel() {
-    this.cancelled_ = true;
+    this.canceled_ = true;
   }
 }
 
@@ -109,7 +110,7 @@ export class DirectoryContentScanner extends ContentScanner {
     const reader = this.entry_.createReader();
     const readEntries = () => {
       reader.readEntries(entries => {
-        if (this.cancelled_) {
+        if (this.canceled_) {
           errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
           return;
         }
@@ -275,7 +276,7 @@ export class SearchV2ContentScanner extends ContentScanner {
       startInterval(`Search.${metricVariant}.Latency`);
       chrome.fileManagerPrivate.searchFiles(
           params, (entries: UniversalEntry[]) => {
-            if (this.cancelled_) {
+            if (this.canceled_) {
               reject(createDOMError(FileErrorToDomError.ABORT_ERR));
             } else if (chrome.runtime.lastError) {
               reject(createDOMError(
@@ -363,7 +364,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           },
           // Error callback.
           () => {
-            if (!this.cancelled_ && collectedEntries.length >= maxResults) {
+            if (!this.canceled_ && collectedEntries.length >= maxResults) {
               recordInterval(`Search.${metricVariant}.Latency`);
               resolve(collectedEntries);
             } else {
@@ -372,7 +373,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           },
           // Should stop callback.
           () => {
-            return collectedEntries.length >= maxResults || this.cancelled_;
+            return collectedEntries.length >= maxResults || this.canceled_;
           });
     });
   }
@@ -504,7 +505,7 @@ export class SearchV2ContentScanner extends ContentScanner {
               reject(createDOMError(
                   FileErrorToDomError.NOT_READABLE_ERR,
                   chrome.runtime.lastError.message));
-            } else if (this.cancelled_) {
+            } else if (this.canceled_) {
               reject(createDOMError(FileErrorToDomError.ABORT_ERR));
             } else if (!results) {
               reject(
@@ -638,7 +639,7 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
           }
-          if (this.cancelled_) {
+          if (this.canceled_) {
             errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
             return;
           }
@@ -832,7 +833,7 @@ export class TrashContentScanner extends ContentScanner {
         return;
       }
       this.readers_[idx]!.readEntries(entries => {
-        if (this.cancelled_) {
+        if (this.canceled_) {
           errorCallback(createDOMError(FileErrorToDomError.ABORT_ERR));
           return;
         }
@@ -1022,18 +1023,32 @@ export class FileListContext {
   }
 }
 
+export type DirContentsScanUpdatedEvent = CustomEvent<{
+  /** Whether the content scanner was based in the store. */
+  isStoreBased: boolean,
+}>;
+export type DirContentsScanFailedEvent = CustomEvent<{error: DOMError}>;
+export type DirContentsScanCanceled = CustomEvent<undefined>;
+export type DirContentsScanCompleted = CustomEvent<undefined>;
+
+interface DirectoryContentsEventMap extends CustomEventMap {
+  'dir-contents-scan-updated': DirContentsScanUpdatedEvent;
+  'dir-contents-scan-failed': DirContentsScanFailedEvent;
+  'dir-contents-scan-canceled': DirContentsScanCanceled;
+  'dir-contents-scan-completed': DirContentsScanCompleted;
+}
+
 /**
- * This class is responsible for scanning directory (or search results),
- * and filling the fileList. Different descendants handle various types of
- * directory contents shown: basic directory, drive search results, local search
- * results.
- * TODO(hidehiko): Remove EventTarget from this.
+ * This class is responsible for scanning directory (or search results), and
+ * filling the fileList. Different descendants handle various types of directory
+ * contents shown: basic directory, drive search results, local search results.
  */
-export class DirectoryContents extends EventTarget {
+export class DirectoryContents extends
+    FilesEventTarget<DirectoryContentsEventMap> {
   private fileList_: FileListModel;
   private scanner_: ContentScanner|null = null;
   private processNewEntriesQueue_: AsyncQueue = new AsyncQueue();
-  private scanCancelled_: boolean = false;
+  private scanCanceled_: boolean = false;
   /**
    * Metadata snapshot which is used to know which file is actually changed.
    */
@@ -1176,14 +1191,13 @@ export class DirectoryContents extends EventTarget {
   }
 
   /**
-   * Start directory scan/search operation. Either 'scan-completed' or
-   * 'scan-failed' event will be fired upon completion.
+   * Start directory scan/search operation. Either 'dir-contents-scan-completed'
+   * or 'dir-contents-scan-failed' event will be fired upon completion.
    *
-   * @param refresh True to refresh metadata, or false to use cached
-   *     one.
-   * @param invalidateCache True to invalidate the backend scanning
-   *     result cache. This param only works if the corresponding backend
-   *     scanning supports cache.
+   * @param refresh True to refresh metadata, or false to use cached one.
+   * @param invalidateCache True to invalidate the backend scanning result
+   *     cache. This param only works if the corresponding backend scanning
+   *     supports cache.
    */
   scan(refresh: boolean, invalidateCache: boolean) {
     /**
@@ -1277,10 +1291,10 @@ export class DirectoryContents extends EventTarget {
    * Cancels the running scan.
    */
   cancelScan() {
-    if (this.scanCancelled_) {
+    if (this.scanCanceled_) {
       return;
     }
-    this.scanCancelled_ = true;
+    this.scanCanceled_ = true;
     if (this.scanner_) {
       this.scanner_.cancel();
     }
@@ -1288,7 +1302,7 @@ export class DirectoryContents extends EventTarget {
     this.onScanFinished_();
 
     this.processNewEntriesQueue_.cancel();
-    dispatchSimpleEvent(this, 'scan-cancelled');
+    this.dispatchEvent(new CustomEvent('dir-contents-scan-canceled'));
   }
 
   /**
@@ -1304,7 +1318,7 @@ export class DirectoryContents extends EventTarget {
    * Called when the scanning by scanner_ is succeeded.
    */
   private onScanCompleted_() {
-    if (this.scanCancelled_) {
+    if (this.scanCanceled_) {
       return;
     }
 
@@ -1312,7 +1326,7 @@ export class DirectoryContents extends EventTarget {
       // Call callback first, so isScanning() returns false in the event
       // handlers.
       callback();
-      dispatchSimpleEvent(this, 'scan-completed');
+      this.dispatchEvent(new CustomEvent('dir-contents-scan-completed'));
     });
   }
 
@@ -1321,7 +1335,7 @@ export class DirectoryContents extends EventTarget {
    * @param error error.
    */
   private onScanError_(error: DOMError) {
-    if (this.scanCancelled_) {
+    if (this.scanCanceled_) {
       return;
     }
 
@@ -1329,8 +1343,8 @@ export class DirectoryContents extends EventTarget {
       // Call callback first, so isScanning() returns false in the event
       // handlers.
       callback();
-      const event = new CustomEvent('scan-failed', {detail: {error}});
-      this.dispatchEvent(event);
+      this.dispatchEvent(
+          new CustomEvent('dir-contents-scan-failed', {detail: {error}}));
     });
   }
 
@@ -1342,7 +1356,7 @@ export class DirectoryContents extends EventTarget {
    * @param entries The list of the scanned entries.
    */
   private onNewEntries_(refresh: boolean, entries: UniversalEntry[]) {
-    if (this.scanCancelled_) {
+    if (this.scanCanceled_) {
       return;
     }
 
@@ -1352,7 +1366,7 @@ export class DirectoryContents extends EventTarget {
 
     this.processNewEntriesQueue_.run(callbackOuter => {
       const finish = () => {
-        if (!this.scanCancelled_) {
+        if (!this.scanCanceled_) {
           // From new entries remove all entries that are rejected by the
           // filters or are already present in the current file list.
           const currentURLs = new Set<string>();
@@ -1365,17 +1379,23 @@ export class DirectoryContents extends EventTarget {
 
           // Update the filelist without waiting the metadata.
           this.fileList_.push.apply(this.fileList_, entriesFiltered);
-          dispatchSimpleEvent(this, 'scan-updated');
+          const event = new CustomEvent('dir-contents-scan-updated', {
+            detail: {
+              isStoreBased: false,
+            },
+          });
+          this.dispatchEvent(event);
         }
         callbackOuter();
       };
+
       // Because the prefetchMetadata can be slow, throttling by splitting
       // entries into smaller chunks to reduce UI latency.
       // TODO(hidehiko,mtomasz): This should be handled in MetadataCache.
       const MAX_CHUNK_SIZE = 25;
       const prefetchMetadataQueue = new ConcurrentQueue(4);
       for (let i = 0; i < entries.length; i += MAX_CHUNK_SIZE) {
-        if (prefetchMetadataQueue.isCancelled()) {
+        if (prefetchMetadataQueue.isCanceled()) {
           break;
         }
 
@@ -1383,8 +1403,8 @@ export class DirectoryContents extends EventTarget {
         prefetchMetadataQueue.run(
             ((chunk: UniversalEntry[], callbackInner: VoidCallback) => {
               this.prefetchMetadata(chunk, refresh, () => {
-                if (!prefetchMetadataQueue.isCancelled()) {
-                  if (this.scanCancelled_) {
+                if (!prefetchMetadataQueue.isCanceled()) {
+                  if (this.scanCanceled_) {
                     prefetchMetadataQueue.cancel();
                   }
                 }

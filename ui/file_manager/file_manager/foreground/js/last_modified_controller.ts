@@ -14,7 +14,7 @@ export class LastModifiedController {
   constructor(
       private fileTable_: FileTable, private directoryModel_: DirectoryModel) {
     this.directoryModel_.addEventListener(
-        'scan-started', this.onScanStarted_.bind(this));
+        'cur-dir-scan-started', this.onScanStarted_.bind(this));
   }
 
   /**

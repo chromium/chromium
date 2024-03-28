@@ -36,17 +36,17 @@ export class ScanController {
       private readonly selectionHandler_: FileSelectionHandler) {
     this.store_ = getStore();
     this.directoryModel_.addEventListener(
-        'scan-started', this.onScanStarted_.bind(this));
+        'cur-dir-scan-started', this.onScanStarted_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-completed', this.onScanCompleted_.bind(this));
+        'cur-dir-scan-completed', this.onScanCompleted_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-failed', this.onScanCancelled_.bind(this));
+        'cur-dir-scan-failed', this.onScanCancelled_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-cancelled', this.onScanCancelled_.bind(this));
+        'cur-dir-scan-canceled', this.onScanCancelled_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-updated', this.onScanUpdated_.bind(this));
+        'cur-dir-scan-updated', this.onScanUpdated_.bind(this));
     this.directoryModel_.addEventListener(
-        'rescan-completed', this.onRescanCompleted_.bind(this));
+        'cur-dir-rescan-completed', this.onRescanCompleted_.bind(this));
   }
 
   private onScanStarted_() {
@@ -55,7 +55,7 @@ export class ScanController {
     }
 
     if (window.IN_TEST) {
-      this.listContainer_.element.removeAttribute('scan-completed');
+      this.listContainer_.element.removeAttribute('cur-dir-scan-completed');
       this.listContainer_.element.setAttribute(
           'scan-started', this.directoryModel_.getCurrentDirName());
     }
@@ -181,7 +181,7 @@ export class ScanController {
   }
 
   /**
-   * Handle the 'rescan-completed' from the DirectoryModel.
+   * Handle the 'cur-dir-rescan-completed' from the DirectoryModel.
    */
   private onRescanCompleted_() {
     this.updateStore_();

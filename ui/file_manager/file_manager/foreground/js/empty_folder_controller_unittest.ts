@@ -253,7 +253,7 @@ export async function testShownForODFS(done: VoidCallback) {
   // Pass a NO_MODIFICATION_ALLOWED_ERR error (triggers a call to
   // getCustomActions to which is stubbed out to return reauthentication
   // required as true).
-  const event = new CustomEvent('scan-failed', {
+  const event = new CustomEvent('cur-dir-scan-failed', {
     detail: {
       error: {
         name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR,

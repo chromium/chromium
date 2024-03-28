@@ -25,7 +25,7 @@ import {PropStatus, SearchLocation, type SearchOptions, type State, type Volume,
 import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
-import type {ContentScanner, FileFilter} from './directory_contents.js';
+import type {ContentScanner, DirContentsScanFailedEvent, DirContentsScanUpdatedEvent, FileFilter} from './directory_contents.js';
 import {CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
@@ -105,12 +105,29 @@ export type DirectoryChangeEvent = CustomEvent<{
   volumeChanged: boolean,
 }>;
 
+export type CurDirScanFailedEvent = CustomEvent<{error: DOMError}>;
+export type CurDirScanUpdatedEvent = CustomEvent<{
+  /** Whether the content scanner was based in the store. */
+  isStoreBased: boolean,
+}>;
+export type EmptyEvent = CustomEvent<undefined>;
+
 interface DirectoryModelEventMap extends CustomEventMap {
   'directory-changed': DirectoryChangeEvent;
+  'cur-dir-rescan-completed': EmptyEvent;
+  'cur-dir-scan-completed': EmptyEvent;
+  'cur-dir-scan-started': EmptyEvent;
+
+  'cur-dir-scan-failed': CurDirScanFailedEvent;
+  'cur-dir-scan-canceled': EmptyEvent;
+  'cur-dir-scan-updated': CurDirScanUpdatedEvent;
 }
 
 /**
- * Data model of the file manager.
+ * Data model for the current directory for Files app.
+ *
+ * It encapsulates the current directory, the file selection, directory scanner,
+ * etc.
  */
 export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   private fileListSelection_: FileListSingleSelectionModel|
@@ -733,7 +750,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     const successCallback = () => {
       if (sequence === this.changeDirectorySequence_) {
         this.replaceDirectoryContents_(dirContents);
-        dispatchSimpleEvent(this, 'rescan-completed');
+        this.dispatchEvent(new CustomEvent('cur-dir-rescan-completed'));
       }
     };
 
@@ -749,7 +766,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * This should be used when changing directory or initiating a new search.
    *
    * @param newDirContents New DirectoryContents instance to replace
-   *     currentDirContents_.
+   *     `currentDirContents_`.
    * @param callback Callback with result. True if the scan is completed
    *     successfully, false if the scan is failed.
    */
@@ -780,7 +797,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         return;
       }
 
-      dispatchSimpleEvent(this, 'scan-completed');
+      this.dispatchEvent(new CustomEvent('cur-dir-scan-completed'));
       callback(true);
     };
 
@@ -789,24 +806,29 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         return;
       }
 
-      const event = new CustomEvent('scan-failed', {detail: {error}});
-      this.dispatchEvent(event);
+      this.dispatchEvent(
+          new CustomEvent('cur-dir-scan-failed', {detail: {error}}));
       callback(false);
     };
 
-    const onUpdated = () => {
+    const onUpdated = (event: DirContentsScanUpdatedEvent) => {
       if (cancelled) {
         return;
       }
 
       if (this.changeDirectorySequence_ !== sequence) {
         cancelled = true;
-        dispatchSimpleEvent(this, 'scan-cancelled');
+        this.dispatchEvent(new CustomEvent('cur-dir-scan-canceled'));
         callback(false);
         return;
       }
 
-      dispatchSimpleEvent(this, 'scan-updated');
+      const newEvent = new CustomEvent('cur-dir-scan-updated', {
+        detail: {
+          isStoreBased: event.detail.isStoreBased,
+        },
+      });
+      this.dispatchEvent(newEvent);
     };
 
     const onCancelled = () => {
@@ -815,7 +837,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       }
 
       cancelled = true;
-      dispatchSimpleEvent(this, 'scan-cancelled');
+      this.dispatchEvent(new CustomEvent('cur-dir-scan-canceled'));
       callback(false);
     };
 
@@ -849,7 +871,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
 
     // Clear the table, and start scanning.
     fileList.splice(0, fileList.length);
-    dispatchSimpleEvent(this, 'scan-started');
+    this.dispatchEvent(new CustomEvent('cur-dir-scan-started'));
     this.scan_(
         this.currentDirContents_, false, true, onDone, onFailed, onUpdated,
         onCancelled);
@@ -890,13 +912,14 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       const previousScan = this.runningScan_;
       const onPreviousScanCompleted = () => {
         previousScan.removeEventListener(
-            'scan-completed', onPreviousScanCompleted);
+            'dir-contents-scan-completed', onPreviousScanCompleted);
         // Run the update asynchronously.
         Promise.resolve().then(() => {
           this.partialUpdate_(changedEntries, removedUrls);
         });
       };
-      previousScan.addEventListener('scan-completed', onPreviousScanCompleted);
+      previousScan.addEventListener(
+          'dir-contents-scan-completed', onPreviousScanCompleted);
       return;
     }
 
@@ -904,15 +927,16 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       this.runningScan_ = null;
 
       this.currentDirContents_.removeEventListener(
-          'scan-completed', onCompleted);
-      this.currentDirContents_.removeEventListener('scan-failed', onFailure);
+          'dir-contents-scan-completed', onCompleted);
       this.currentDirContents_.removeEventListener(
-          'scan-cancelled', onCancelled);
+          'dir-contents-scan-failed', onFailure);
+      this.currentDirContents_.removeEventListener(
+          'dir-contents-scan-canceled', onCancelled);
     };
 
     const onCompleted = () => {
       onFinish();
-      dispatchSimpleEvent(this, 'rescan-completed');
+      this.dispatchEvent(new CustomEvent('cur-dir-rescan-completed'));
     };
 
     const onFailure = () => {
@@ -924,9 +948,12 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     };
 
     this.runningScan_ = this.currentDirContents_;
-    this.currentDirContents_.addEventListener('scan-completed', onCompleted);
-    this.currentDirContents_.addEventListener('scan-failed', onFailure);
-    this.currentDirContents_.addEventListener('scan-cancelled', onCancelled);
+    this.currentDirContents_.addEventListener(
+        'dir-contents-scan-completed', onCompleted);
+    this.currentDirContents_.addEventListener(
+        'dir-contents-scan-failed', onFailure);
+    this.currentDirContents_.addEventListener(
+        'dir-contents-scan-canceled', onCancelled);
     this.currentDirContents_.update(changedEntries, removedUrls);
   }
 
@@ -941,17 +968,17 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @param successCallback Callback on success.
    * @param failureCallback Callback on failure.
    * @param updatedCallback Callback on update. Only on the last update,
-   *     successCallback is called instead of this.
+   *     `successCallback` is called instead of this.
    * @param cancelledCallback Callback on cancel.
    */
   private scan_(
       dirContents: DirectoryContents, refresh: boolean,
       invalidateCache: boolean, successCallback: VoidCallback,
-      failureCallback: (error: DOMError) => void, updatedCallback: VoidCallback,
+      failureCallback: (error: DOMError) => void,
+      updatedCallback: (event: DirContentsScanUpdatedEvent) => void,
       cancelledCallback: VoidCallback) {
     /**
      * Runs pending scan if there is one.
-     *
      * @return Did pending scan exist.
      */
     const maybeRunPendingRescan = (): boolean => {
@@ -964,10 +991,12 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     };
 
     const onFinished = () => {
-      dirContents.removeEventListener('scan-completed', onSuccess);
-      dirContents.removeEventListener('scan-updated', updatedCallback);
-      dirContents.removeEventListener('scan-failed', onFailure);
-      dirContents.removeEventListener('scan-cancelled', cancelledCallback);
+      dirContents.removeEventListener('dir-contents-scan-completed', onSuccess);
+      dirContents.removeEventListener(
+          'dir-contents-scan-updated', updatedCallback);
+      dirContents.removeEventListener('dir-contents-scan-failed', onFailure);
+      dirContents.removeEventListener(
+          'dir-contents-scan-canceled', cancelledCallback);
     };
 
     const onSuccess = () => {
@@ -991,30 +1020,28 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       maybeRunPendingRescan();
     };
 
-    const onFailure = ((event: CustomEvent<{error: DOMError}>) => {
-                        onFinished();
+    const onFailure = (event: DirContentsScanFailedEvent) => {
+      onFinished();
 
-                        this.runningScan_ = null;
-                        this.scanFailures_++;
-                        failureCallback(event.detail.error);
+      this.runningScan_ = null;
+      this.scanFailures_++;
+      failureCallback(event.detail.error);
 
-                        if (maybeRunPendingRescan()) {
-                          return;
-                        }
+      if (maybeRunPendingRescan()) {
+        return;
+      }
 
-                        // Do not rescan for Guest OS (including Crostini)
-                        // errors.
-                        // TODO(crbug/1293229): Guest OS currently reuses the
-                        // Crostini error string, but once it gets its own
-                        // strings this needs to include both.
-                        if (event.detail.error.name === CROSTINI_CONNECT_ERR) {
-                          return;
-                        }
+      // Do not rescan for Guest OS (including Crostini) errors.
+      // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
+      // string, but once it gets its own strings this needs to include both.
+      if (event.detail.error.name === CROSTINI_CONNECT_ERR) {
+        return;
+      }
 
-                        if (this.scanFailures_ <= 1) {
-                          this.rescanLater(refresh);
-                        }
-                      }) as EventListenerOrEventListenerObject;
+      if (this.scanFailures_ <= 1) {
+        this.rescanLater(refresh);
+      }
+    };
 
     const onCancelled = () => {
       onFinished();
@@ -1023,10 +1050,10 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
 
     this.runningScan_ = dirContents;
 
-    dirContents.addEventListener('scan-completed', onSuccess);
-    dirContents.addEventListener('scan-updated', updatedCallback);
-    dirContents.addEventListener('scan-failed', onFailure);
-    dirContents.addEventListener('scan-cancelled', onCancelled);
+    dirContents.addEventListener('dir-contents-scan-completed', onSuccess);
+    dirContents.addEventListener('dir-contents-scan-updated', updatedCallback);
+    dirContents.addEventListener('dir-contents-scan-failed', onFailure);
+    dirContents.addEventListener('dir-contents-scan-canceled', onCancelled);
     dirContents.scan(refresh, invalidateCache);
   }
 
@@ -1093,8 +1120,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       Promise<void> {
     return new Promise(resolve => {
       this.currentDirContents_.prefetchMetadata([newEntry], true, () => {
-        // If the current directory is the old entry, then quietly change to the
-        // new one.
+        // If the current directory is the old entry, then quietly change to
+        // the new one.
         if (isSameEntry(oldEntry, this.getCurrentDirEntry())) {
           this.changeDirectoryEntry(
               newEntry as DirectoryEntry | FilesAppDirEntry);
@@ -1277,7 +1304,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * Activates the given directory.
    * This method:
    *  - Changes the current directory, if the given directory is not the current
-   *    directory.
+   * directory.
    *  - Clears the selection, if the given directory is the current directory.
    *
    * @param dirEntry The entry of the new directory to be opened.
@@ -1696,7 +1723,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
           options: undefined,
         }));
       };
-      this.addEventListener('scan-completed', this.onSearchCompleted_);
+      this.addEventListener('cur-dir-scan-completed', this.onSearchCompleted_);
       this.clearAndScan_(newDirContents, callback);
     });
   }
@@ -1711,7 +1738,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     }
 
     if (this.onSearchCompleted_) {
-      this.removeEventListener('scan-completed', this.onSearchCompleted_);
+      this.removeEventListener(
+          'cur-dir-scan-completed', this.onSearchCompleted_);
       this.onSearchCompleted_ = null;
     }
   }

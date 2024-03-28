@@ -61,16 +61,15 @@ export class EmptyFolderController {
     this.image_ = queryRequiredElement('.image', this.emptyFolder_);
 
     this.directoryModel_.addEventListener(
-        'scan-started', this.onScanStarted_.bind(this));
+        'cur-dir-scan-started', this.onScanStarted_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-failed',
-        this.onScanFailed_.bind(this) as EventListenerOrEventListenerObject);
+        'cur-dir-scan-failed', this.onScanFailed_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-cancelled', this.onScanFinished.bind(this));
+        'cur-dir-scan-canceled', this.onScanFinished.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-completed', this.onScanFinished.bind(this));
+        'cur-dir-scan-completed', this.onScanFinished.bind(this));
     this.directoryModel_.addEventListener(
-        'rescan-completed', this.onScanFinished.bind(this));
+        'cur-dir-rescan-completed', this.onScanFinished.bind(this));
   }
 
   /**

@@ -94,7 +94,7 @@ export class ListThumbnailLoader extends
 
 
     this.directoryModel_.addEventListener(
-        'scan-completed', this.onScanCompleted_.bind(this));
+        'cur-dir-scan-completed', this.onScanCompleted_.bind(this));
     this.dataModel_.addEventListener(
         'splice', this.onSplice_.bind(this) as EventListener);
     this.dataModel_.addEventListener('sorted', this.onSorted_.bind(this));

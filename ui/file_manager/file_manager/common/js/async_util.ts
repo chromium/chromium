@@ -58,7 +58,7 @@ export class ConcurrentQueue {
   }
 
   /** @return whether the queue is cancelling or is already cancelled. */
-  isCancelled(): boolean {
+  isCanceled(): boolean {
     return this.cancelled_;
   }
 
@@ -122,7 +122,7 @@ export class ConcurrentQueue {
     return 'ConcurrentQueue\n' +
         '- WaitingTasksCount: ' + this.getWaitingTasksCount() + '\n' +
         '- RunningTasksCount: ' + this.getRunningTasksCount() + '\n' +
-        '- isCancelled: ' + this.isCancelled();
+        '- isCanceled: ' + this.isCanceled();
   }
 }
 
