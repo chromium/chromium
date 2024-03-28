@@ -417,30 +417,84 @@ PrefetchContainer::PrefetchContainer(
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     base::WeakPtr<PreloadingAttempt> attempt)
-    : referring_render_frame_host_id_(
-          referring_render_frame_host.GetGlobalId()),
-      referring_origin_(referring_render_frame_host.GetLastCommittedOrigin()),
-      referring_url_hash_(base::FastHash(
-          referring_render_frame_host.GetLastCommittedURL().spec())),
-      key_(referring_document_token, url),
+    : PrefetchContainer(
+          referring_render_frame_host.GetGlobalId(),
+          referring_render_frame_host.GetLastCommittedOrigin(),
+          base::FastHash(
+              referring_render_frame_host.GetLastCommittedURL().spec()),
+          PrefetchContainer::Key(referring_document_token, url),
+          prefetch_type,
+          referrer,
+          std::move(no_vary_search_hint),
+          prefetch_document_manager,
+          referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
+          GetUkmSourceId(referring_render_frame_host),
+          std::move(attempt),
+          referring_render_frame_host.GetDevToolsNavigationToken(),
+          WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host)
+              ->GetOrCreateWebPreferences()
+              .javascript_enabled) {
+  CHECK(prefetch_type_.IsRendererInitiated());
+}
+
+PrefetchContainer::PrefetchContainer(
+    WebContents& referring_web_contents,
+    const GURL& url,
+    const PrefetchType& prefetch_type,
+    const blink::mojom::Referrer& referrer,
+    const std::optional<url::Origin>& referring_origin,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    base::WeakPtr<PreloadingAttempt> attempt)
+    : PrefetchContainer(
+          GlobalRenderFrameHostId(),
+          referring_origin.value_or(url::Origin()),
+          /*referring_url_hash=*/std::nullopt,
+          PrefetchContainer::Key(
+              std::optional<blink::DocumentToken>(std::nullopt),
+              url),
+          prefetch_type,
+          referrer,
+          std::move(no_vary_search_hint),
+          /*prefetch_document_manager=*/nullptr,
+          referring_web_contents.GetBrowserContext()->GetWeakPtr(),
+          ukm::kInvalidSourceId,
+          std::move(attempt),
+          /*initiator_devtools_navigation_token=*/std::nullopt,
+          referring_web_contents.GetOrCreateWebPreferences()
+              .javascript_enabled) {
+  CHECK(!prefetch_type_.IsRendererInitiated());
+  CHECK(PrefetchBrowserInitiatedTriggersEnabled());
+}
+
+PrefetchContainer::PrefetchContainer(
+    const GlobalRenderFrameHostId& referring_render_frame_host_id,
+    const url::Origin& referring_origin,
+    const std::optional<size_t>& referring_url_hash,
+    const PrefetchContainer::Key& key,
+    const PrefetchType& prefetch_type,
+    const blink::mojom::Referrer& referrer,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+    base::WeakPtr<BrowserContext> browser_context,
+    ukm::SourceId ukm_source_id,
+    base::WeakPtr<PreloadingAttempt> attempt,
+    std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
+    bool is_javascript_enabed)
+    : referring_render_frame_host_id_(referring_render_frame_host_id),
+      referring_origin_(referring_origin),
+      referring_url_hash_(referring_url_hash),
+      key_(key),
       prefetch_type_(prefetch_type),
       referrer_(referrer),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
-      prefetch_document_manager_(prefetch_document_manager),
-      browser_context_(
-          referring_render_frame_host.GetBrowserContext()->GetWeakPtr()),
-      ukm_source_id_(GetUkmSourceId(referring_render_frame_host)),
+      prefetch_document_manager_(std::move(prefetch_document_manager)),
+      browser_context_(std::move(browser_context)),
+      ukm_source_id_(ukm_source_id),
       request_id_(base::UnguessableToken::Create().ToString()),
       attempt_(std::move(attempt)),
       initiator_devtools_navigation_token_(
-          referring_render_frame_host.GetDevToolsNavigationToken()) {
-  CHECK(prefetch_type_.IsRendererInitiated());
-
-  auto* web_contents =
-      WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host);
-  is_javascript_enabled_ =
-      web_contents->GetOrCreateWebPreferences().javascript_enabled;
-
+          std::move(initiator_devtools_navigation_token)),
+      is_javascript_enabled_(is_javascript_enabed) {
   redirect_chain_.push_back(
       std::make_unique<SinglePrefetch>(GetURL(), referring_origin_));
 }
@@ -523,17 +577,22 @@ PrefetchContainer::Reader PrefetchContainer::CreateReader() {
 void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
     PrefetchStatus prefetch_status) {
   prefetch_status_ = prefetch_status;
-  FrameTreeNode* ftn = FrameTreeNode::From(
-      RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
 
-  std::optional<PreloadingTriggeringOutcome> preloading_trigger_outcome =
-      TriggeringOutcomeFromStatus(prefetch_status);
+  // Currently DevTools only supports when the prefetch is initiated by
+  // renderer.
+  if (IsRendererInitiated()) {
+    FrameTreeNode* ftn = FrameTreeNode::From(
+        RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
 
-  if (initiator_devtools_navigation_token_.has_value() &&
-      preloading_trigger_outcome.has_value()) {
-    devtools_instrumentation::DidUpdatePrefetchStatus(
-        ftn, initiator_devtools_navigation_token_.value(), GetURL(),
-        preloading_trigger_outcome.value(), prefetch_status, RequestId());
+    std::optional<PreloadingTriggeringOutcome> preloading_trigger_outcome =
+        TriggeringOutcomeFromStatus(prefetch_status);
+
+    if (initiator_devtools_navigation_token_.has_value() &&
+        preloading_trigger_outcome.has_value()) {
+      devtools_instrumentation::DidUpdatePrefetchStatus(
+          ftn, initiator_devtools_navigation_token_.value(), GetURL(),
+          preloading_trigger_outcome.value(), prefetch_status, RequestId());
+    }
   }
 }
 
@@ -654,8 +713,13 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       attempt_->SetEligibility(eligibility);
     }
 
-    if (prefetch_document_manager_) {
-      prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+    // Recording an eligiblity for PrefetchReferringPageMetrics.
+    // TODO(crbug.com/40946257): Current code doesn't support
+    // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
+    if (IsRendererInitiated()) {
+      if (prefetch_document_manager_) {
+        prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+      }
     }
   } else {
     // This case is for any URLs from redirects.
@@ -943,7 +1007,9 @@ void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
 }
 
 void PrefetchContainer::OnReceivedHead() {
-  if (prefetch_document_manager_ &&
+  // TODO(crbug.com/40946257): Current code doesn't support NVS for
+  // browser-initated triggers.
+  if (IsRendererInitiated() && prefetch_document_manager_ &&
       prefetch_document_manager_->NoVarySearchSupportEnabled()) {
     auto* rfhi_can_be_null =
         RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
@@ -1024,8 +1090,12 @@ void PrefetchContainer::OnPrefetchComplete(
   }
 
   if (GetPrefetchStatus() == PrefetchStatus::kPrefetchSuccessful) {
-    if (prefetch_document_manager_) {
-      prefetch_document_manager_->OnPrefetchSuccessful(this);
+    // TODO(crbug.com/40946257): Current code doesn't support
+    // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
+    if (IsRendererInitiated()) {
+      if (prefetch_document_manager_) {
+        prefetch_document_manager_->OnPrefetchSuccessful(this);
+      }
     }
   }
 }
@@ -1228,7 +1298,9 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
 
 bool PrefetchContainer::HasSameReferringURLForMetrics(
     const PrefetchContainer& other) const {
-  return referring_url_hash_ == other.referring_url_hash_;
+  return referring_url_hash_.has_value() &&
+         other.referring_url_hash_.has_value() &&
+         referring_url_hash_ == other.referring_url_hash_;
 }
 
 GURL PrefetchContainer::GetCurrentURL() const {

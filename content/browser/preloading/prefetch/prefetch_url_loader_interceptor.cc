@@ -13,6 +13,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
@@ -146,10 +147,15 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   }
 
   if (!initiator_document_token_.has_value()) {
-    // TODO(crbug.com/1500135): Construct PrefetchContainer::Key for browser
-    // triggered navigations.
-    std::move(get_prefetch_callback).Run({});
-    return;
+    if (!PrefetchBrowserInitiatedTriggersEnabled()) {
+      std::move(get_prefetch_callback).Run({});
+      return;
+    }
+
+    // TODO(crbug.com/1500135): Currently PrefetchServingPageMetricsContainer is
+    // created only when the navigation is renderer-initiated and its initiator
+    // document has PrefetchDocumentManager.
+    CHECK(!serving_page_metrics_container_);
   }
 
   prefetch_match_resolver.SetOnPrefetchToServeReadyCallback(base::BindOnce(

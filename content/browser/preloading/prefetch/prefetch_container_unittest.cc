@@ -75,6 +75,17 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness {
         /*no_vary_search_expected=*/std::nullopt, prefetch_document_manager);
   }
 
+  std::unique_ptr<PrefetchContainer> CreateEmbedderPrefetchContainer(
+      const GURL& prefetch_url,
+      const std::optional<url::Origin> referring_origin = std::nullopt) {
+    return std::make_unique<PrefetchContainer>(
+        *web_contents(), prefetch_url,
+        PrefetchType(PreloadingTriggerType::kEmbedder,
+                     /*use_prefetch_proxy=*/true),
+        blink::mojom::Referrer(), std::move(referring_origin),
+        /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
+  }
+
   bool SetCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
         url, value, base::Time::Now(), /*server_time=*/std::nullopt,
@@ -183,6 +194,30 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
 
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
             PrefetchContainer::Key(document_token, GURL("https://test.com")));
+  EXPECT_FALSE(prefetch_container.GetHead());
+}
+
+TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+  PrefetchContainer prefetch_container(
+      *web_contents(), GURL("https://test.com"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/true),
+      blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
+      /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
+
+  EXPECT_EQ(prefetch_container.GetReferringRenderFrameHostId(),
+            GlobalRenderFrameHostId());
+  EXPECT_EQ(prefetch_container.GetURL(), GURL("https://test.com"));
+  EXPECT_EQ(prefetch_container.GetPrefetchType(),
+            PrefetchType(PreloadingTriggerType::kEmbedder,
+                         /*use_prefetch_proxy=*/true));
+  EXPECT_TRUE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+
+  EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
+            PrefetchContainer::Key(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetHead());
 }
 
@@ -813,6 +848,49 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
 }
 
 TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://test.com/referrer"));
+  auto prefetch_container_same_origin = CreateSpeculationRulesPrefetchContainer(
+      GURL("https://test.com/prefetch"));
+  prefetch_container_same_origin->MakeResourceRequest({});
+  EXPECT_FALSE(prefetch_container_same_origin
+                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://other.com/referrer"));
+  auto prefetch_container_cross_origin =
+      CreateSpeculationRulesPrefetchContainer(
+          GURL("https://test.com/prefetch"));
+  prefetch_container_cross_origin->MakeResourceRequest({});
+  EXPECT_TRUE(prefetch_container_cross_origin
+                  ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+}
+
+TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+  auto prefetch_container_default = CreateEmbedderPrefetchContainer(
+      GURL("https://test.com/prefetch"), std::nullopt);
+  prefetch_container_default->MakeResourceRequest({});
+  EXPECT_TRUE(prefetch_container_default
+                  ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+
+  auto prefetch_container_same_origin = CreateEmbedderPrefetchContainer(
+      GURL("https://test.com/prefetch"),
+      url::Origin::Create(GURL("https://test.com/referrer")));
+  prefetch_container_same_origin->MakeResourceRequest({});
+  EXPECT_FALSE(prefetch_container_same_origin
+                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+
+  auto prefetch_container_cross_origin = CreateEmbedderPrefetchContainer(
+      GURL("https://test.com/prefetch"),
+      url::Origin::Create(GURL("https://other.com/referrer")));
+  prefetch_container_cross_origin->MakeResourceRequest({});
+  EXPECT_TRUE(prefetch_container_cross_origin
+                  ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+}
+
+TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequiredWithRedirect) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
 

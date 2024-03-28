@@ -448,13 +448,14 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
 
   std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
       const GURL& prefetch_url,
-      PrefetchType prefetch_type) {
+      PrefetchType prefetch_type,
+      const blink::DocumentToken& referring_document_token) {
     auto* preloading_data =
         PreloadingData::GetOrCreateForWebContents(web_contents());
     PreloadingURLMatchCallback matcher =
         PreloadingDataImpl::GetPrefetchServiceMatcher(
             GetPrefetchService(),
-            PrefetchContainer::Key(MainDocumentToken(), prefetch_url));
+            PrefetchContainer::Key(referring_document_token, prefetch_url));
 
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
         preloading_data->AddPreloadingAttempt(
@@ -465,10 +466,27 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());
 
     return std::make_unique<PrefetchContainer>(
-        *main_rfhi(), MainDocumentToken(), prefetch_url,
+        *main_rfhi(), referring_document_token, prefetch_url,
         std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_expected=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr, attempt->GetWeakPtr());
+  }
+
+  std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(
+      const GURL& prefetch_url,
+      PrefetchType prefetch_type) {
+    return CreateSpeculationRulesPrefetchContainer(prefetch_url, prefetch_type,
+                                                   MainDocumentToken());
+  }
+
+  std::unique_ptr<PrefetchContainer> CreateEmbedderPrefetchContainer(
+      const GURL& prefetch_url,
+      PrefetchType prefetch_type,
+      const std::optional<url::Origin> referring_origin = std::nullopt) {
+    return std::make_unique<PrefetchContainer>(
+        *web_contents(), prefetch_url, std::move(prefetch_type),
+        blink::mojom::Referrer(), std::move(referring_origin),
+        /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
   }
 
   void SimulateCookieCopyProcess(PrefetchContainer& prefetch_container) {
@@ -705,6 +723,69 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
+       DISABLE_ASAN(InterceptNavigation_Embedder)) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+
+  const GURL kTestUrl("https://example.com");
+
+  EXPECT_CALL(
+      *test_content_browser_client(),
+      WillCreateURLLoaderFactory(
+          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
+          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+          testing::ResultOf(
+              [](const url::Origin& request_initiator) {
+                return request_initiator.opaque();
+              },
+              true),
+          testing::Optional(navigation_request()->GetNavigationId()),
+          ukm::SourceIdObj::FromInt64(
+              navigation_request()->GetNextPageUkmSourceId()),
+          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
+
+  // Creates a same-origin embedder prefetch, which means cookie copy is not
+  // needed.
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      CreateEmbedderPrefetchContainer(
+          kTestUrl,
+          PrefetchType(PreloadingTriggerType::kEmbedder,
+                       /*use_prefetch_proxy=*/false),
+          url::Origin::Create(kTestUrl));
+  prefetch_container->SimulateAttemptAtInterceptorForTest();
+
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
+
+  auto weak_prefetch_container = prefetch_container->GetWeakPtr();
+  AddPrefetch(std::move(prefetch_container));
+
+  GetPrefetchService()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
+  // Creates PrefetchURLLoaderInterceptor where initiator_document_token is
+  // empty (i.e., this will be the case of normal browser-initiated
+  // navigations)
+  CreateInterceptor(/*initiator_document_token=*/std::nullopt);
+  MaybeCreateLoaderAndWait(kTestUrl);
+
+  EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
+  EXPECT_TRUE(was_intercepted(kTestUrl).value());
+
+  histogram_tester().ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", base::TimeDelta(),
+      1);
+
+  EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
+  EXPECT_EQ(weak_prefetch_container->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchResponseUsed);
+}
+
+TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(DoNotInterceptNavigationNoPrefetch)) {
   const GURL kTestUrl("https://example.com");
 
@@ -733,6 +814,82 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       ukm::builders::Preloading_Attempt::kEntryName,
       test::kPreloadingAttemptUkmMetrics);
   EXPECT_EQ(actual.size(), 0u);
+}
+
+// Tests that the navigation shouldn't be intercepted if there is no matching
+// prefetch. Currently, a referring DocumentToken (note that thiswill be nullopt
+// when browser-initiated prefetch) and a prefetch url (which compose
+// PrefetchContainer::Key) will be taken into account when matching.
+TEST_P(PrefetchURLLoaderInterceptorTest,
+       DISABLE_ASAN(DoNotInterceptNavigationNoMatching)) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+
+  const GURL kTestUrl("https://example.com");
+
+  EXPECT_CALL(*test_content_browser_client(), WillCreateURLLoaderFactory)
+      .Times(0);
+
+  // Creates speculation rules prefetch that has different prefetch url from
+  // kTestUrl.
+  std::unique_ptr<PrefetchContainer>
+      prefetch_container_speculation_rules_diff_url =
+          CreateSpeculationRulesPrefetchContainer(
+              GURL("https://example.com/different"),
+              PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                           /*use_prefetch_proxy=*/false,
+                           blink::mojom::SpeculationEagerness::kEager));
+  prefetch_container_speculation_rules_diff_url
+      ->SimulateAttemptAtInterceptorForTest();
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container_speculation_rules_diff_url.get(),
+      network::mojom::URLResponseHead::New(), "test body");
+  AddPrefetch(
+      std::move(std::move(prefetch_container_speculation_rules_diff_url)));
+
+  // Creates a speculation rules prefetch that has a different DocumentToken
+  // from the current main document's.
+  std::unique_ptr<PrefetchContainer>
+      prefetch_container_speculation_rules_diff_token =
+          CreateSpeculationRulesPrefetchContainer(
+              kTestUrl,
+              PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                           /*use_prefetch_proxy=*/false,
+                           blink::mojom::SpeculationEagerness::kEager),
+              blink::DocumentToken());
+  prefetch_container_speculation_rules_diff_token
+      ->SimulateAttemptAtInterceptorForTest();
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container_speculation_rules_diff_token.get(),
+      network::mojom::URLResponseHead::New(), "test body");
+  AddPrefetch(
+      std::move(std::move(prefetch_container_speculation_rules_diff_token)));
+
+  // Creates an embedder prefetch, whose DocumentToken will be nullopt.
+  std::unique_ptr<PrefetchContainer> prefetch_container_embedder =
+      CreateEmbedderPrefetchContainer(
+          kTestUrl,
+          PrefetchType(PreloadingTriggerType::kEmbedder,
+                       /*use_prefetch_proxy=*/false),
+          url::Origin::Create(kTestUrl));
+  prefetch_container_embedder->SimulateAttemptAtInterceptorForTest();
+  MakeServableStreamingURLLoaderForTest(prefetch_container_embedder.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
+  AddPrefetch(std::move(prefetch_container_embedder));
+
+  GetPrefetchService()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
+  // Neither of above three prefetches will not be served and the navigation
+  // will not be intercepted, because their referring DocumentToken or/and
+  // prefetch url aren't align with navigation's params.
+  CreateInterceptor(MainDocumentToken());
+  MaybeCreateLoaderAndWait(kTestUrl);
+  EXPECT_TRUE(was_intercepted(kTestUrl).has_value());
+  EXPECT_FALSE(was_intercepted(kTestUrl).value());
 }
 
 TEST_P(PrefetchURLLoaderInterceptorTest,

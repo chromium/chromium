@@ -93,8 +93,7 @@ struct PrefetchResponseSizes {
 // `PrefetchService::MakePrefetchRequest()`.
 class CONTENT_EXPORT PrefetchContainer {
  public:
-  // When `matcher` is null (only in unit tests),
-  // `PreloadingData::GetSameURLMatcher` is used.
+  // Ctor used for renderer-initiated prefetch.
   PrefetchContainer(
       RenderFrameHostImpl& referring_render_frame_host,
       const blink::DocumentToken& referring_document_token,
@@ -104,6 +103,20 @@ class CONTENT_EXPORT PrefetchContainer {
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+
+  // Ctor used for browser-initiated prefetch.
+  // We can pass the referring origin of prefetches via `referring_origin` if
+  // necessary. When `std::nullopt` is passed, the referring origin will be
+  // opaque.
+  PrefetchContainer(
+      WebContents& referring_web_contents,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
+      const std::optional<url::Origin>& referring_origin,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr);
+
   ~PrefetchContainer();
 
   PrefetchContainer(const PrefetchContainer&) = delete;
@@ -161,7 +174,7 @@ class CONTENT_EXPORT PrefetchContainer {
   const Key& GetPrefetchContainerKey() const { return key_; }
 
   // The ID of the RenderFrameHost that triggered the prefetch.
-  GlobalRenderFrameHostId GetReferringRenderFrameHostId() const {
+  const GlobalRenderFrameHostId& GetReferringRenderFrameHostId() const {
     return referring_render_frame_host_id_;
   }
   bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
@@ -561,6 +574,21 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead* head);
 
  private:
+  PrefetchContainer(
+      const GlobalRenderFrameHostId& referring_render_frame_host_id,
+      const url::Origin& referring_origin,
+      const std::optional<size_t>& referring_url_hash,
+      const PrefetchContainer::Key& key,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+      base::WeakPtr<BrowserContext> browser_context,
+      ukm::SourceId ukm_source_id,
+      base::WeakPtr<PreloadingAttempt> attempt,
+      std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
+      bool is_javascript_enabed);
+
   // Update |prefetch_status_| and report prefetch status to
   // DevTools without updating TriggeringOutcome.
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
@@ -582,14 +610,17 @@ class CONTENT_EXPORT PrefetchContainer {
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
+  // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
 
   // The origin and URL that initiates the prefetch request.
-  // In regards to referring_url_hash_, it is stored as a hash and used by
-  // metrics for equality checks. For renderer-initiated prefetch, these are
-  // calculated by referring RenderFrameHost's LastCommitted(Origin|URL).
+  // For renderer-initiated prefetch, this is calculated by referring
+  // RenderFrameHost's LastCommittedOrigin. For browser-initiated prefetch, this
+  // is sometimes explicitly passed via ctor, otherwise opaque origin.
   const url::Origin referring_origin_;
-  const size_t referring_url_hash_;
+  // Used by metrics for equality checks, only works for renderer-initiated
+  // triggers.
+  const std::optional<size_t> referring_url_hash_;
 
   // The key used to match this PrefetchContainer, including the URL that was
   // requested to prefetch.
@@ -621,6 +652,7 @@ class CONTENT_EXPORT PrefetchContainer {
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
   // The |PrefetchDocumentManager| that requested |this|.
+  // This will be nullptr when the prefetch is initiated by browser.
   base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager_;
 
   // The |BrowserContext| in which this is being run.

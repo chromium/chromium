@@ -309,6 +309,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
       bool enable_no_vary_search_header = false,
       network::mojom::NoVarySearchPtr&& no_vary_search_hint =
           network::mojom::NoVarySearchPtr()) {
+    CHECK(prefetch_type.IsRendererInitiated());
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
     if (enable_no_vary_search_header)
@@ -316,6 +317,20 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type, referrer, no_vary_search_hint, nullptr);
+  }
+
+  void MakePrefetchFromEmbedder(
+      const GURL& prefetch_url,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referrer = blink::mojom::Referrer(),
+      const std::optional<url::Origin> referring_origin = std::nullopt) {
+    CHECK(!prefetch_type.IsRendererInitiated());
+
+    auto prefetch_container = std::make_unique<PrefetchContainer>(
+        *web_contents(), prefetch_url, prefetch_type, referrer,
+        std::move(referring_origin), /*no_vary_search_expected=*/std::nullopt,
+        /*attempt=*/nullptr);
+    prefetch_service_->AddPrefetchContainer(std::move(prefetch_container));
   }
 
   int RequestCount() { return test_url_loader_factory_.NumPending(); }
@@ -587,6 +602,11 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   void NavigateInitiatedByRenderer(const GURL& url) {
     Navigate(url, main_rfh()->GetProcess()->GetID(),
              main_rfh()->GetFrameToken(), MainDocumentToken());
+  }
+
+  void NavigateInitiatedByBrowser(const GURL& url) {
+    Navigate(url, ChildProcessHost::kInvalidUniqueID, std::nullopt,
+             std::nullopt);
   }
 
   std::optional<PrefetchServingPageMetrics>
@@ -1113,6 +1133,55 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
               blink::mojom::SpeculationEagerness::kEager)
               .c_str()),
       false, 1);
+}
+
+TEST_F(PrefetchServiceTest, SuccessCase_Embedder) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchBrowserInitiatedTriggers);
+
+  base::HistogramTester histogram_tester;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  MakePrefetchFromEmbedder(GURL("https://example.com"),
+                           PrefetchType(PreloadingTriggerType::kEmbedder,
+                                        /*use_prefetch_proxy=*/true));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  // Verify that the prefetch request was successful.
+  // TODO(crbug.com/1448731): Revise current helper functions (ExpectPrefetch*)
+  // for browser-initiated prefetch.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  NavigateInitiatedByBrowser(GURL("https://example.com"));
+
+  // No servable PrefetchContainer is returned for different DocumentToken.
+  EXPECT_FALSE(
+      GetPrefetchToServe(GURL("https://example.com"), MainDocumentToken()));
+
+  ExpectServingReaderSuccess(
+      GetPrefetchToServe(GURL("https://example.com"), std::nullopt));
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
