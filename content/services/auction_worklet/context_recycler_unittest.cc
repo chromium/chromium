@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -22,6 +23,7 @@
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -113,6 +115,26 @@ class ContextRecyclerTest : public testing::Test {
         scope.GetContext(),
         /*debug_id=*/nullptr, helper_->FormatScriptName(script), function_name,
         args, time_limit_.get(), error_msgs);
+  }
+
+  std::string RunExpectString(
+      ContextRecyclerScope& scope,
+      v8::Local<v8::UnboundScript> script,
+      const std::string& function_name,
+      v8::Local<v8::Value> maybe_arg = v8::Local<v8::Value>()) {
+    std::vector<std::string> error_msgs;
+    v8::Local<v8::Value> r;
+    v8::MaybeLocal<v8::Value> maybe_r =
+        Run(scope, script, function_name, error_msgs, maybe_arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+    if (!maybe_r.ToLocal(&r)) {
+      return "no return value";
+    }
+    std::string r_s;
+    if (!gin::ConvertFromV8(helper_->isolate(), r, &r_s)) {
+      return "return not convertible to string";
+    }
+    return r_s;
   }
 
   // Runs a script twice, using a new ContextRecyclerScope each time, testing
@@ -1682,6 +1704,295 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
                 ElementsAre("https://example.test/script.js:15 Uncaught "
                             "TypeError: The \"shared-storage\" Permissions "
                             "Policy denied the method on sharedStorage."));
+  }
+}
+
+TEST_F(ContextRecyclerTest, AuctionConfigLazyFiller) {
+  blink::AuctionConfig::NonSharedParams params;
+  params.interest_group_buyers.emplace();
+  params.interest_group_buyers->push_back(
+      url::Origin::Create(GURL("https://example.org")));
+
+  blink::AuctionConfig::NonSharedParams params2;
+  params2.interest_group_buyers.emplace();
+  params2.interest_group_buyers->push_back(
+      url::Origin::Create(GURL("https://a.com")));
+  params2.interest_group_buyers->push_back(
+      url::Origin::Create(GURL("https://b.com")));
+
+  const char kScript[] = R"(
+    function test(auctionConfig) {
+      if (!auctionConfig.interestGroupBuyers)
+        return typeof auctionConfig.interestGroupBuyers;
+      return JSON.stringify(auctionConfig.interestGroupBuyers);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  v8::Isolate* isolate = helper_->isolate();
+  v8::Local<v8::Object> o1;
+  v8::Local<v8::Object> o2;
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    // Fill in o1 and o2 based on a run with 2 auctions.
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    o1 = v8::Object::New(isolate);
+    o2 = v8::Object::New(isolate);
+
+    context_recycler.EnsureAuctionConfigLazyFillers(2);
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+        params, o1));
+
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
+        params2, o2));
+
+    EXPECT_EQ(R"(["https://example.org"])",
+              RunExpectString(scope, script, "test", o1));
+    EXPECT_EQ(R"(["https://a.com","https://b.com"])",
+              RunExpectString(scope, script, "test", o2));
+  }
+
+  {
+    // Make new o1 and o2, fill them in, but do not access their fields;
+    // they'll get accessed next time.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+    o2 = v8::Object::New(isolate);
+
+    context_recycler.EnsureAuctionConfigLazyFillers(2);
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+        params, o1));
+
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
+        params2, o2));
+  }
+
+  {
+    // Do run with one lazy filler; access both old objects.
+    ContextRecyclerScope scope(context_recycler);
+
+    context_recycler.EnsureAuctionConfigLazyFillers(1);
+    // Now using params2 to fill it in.
+    v8::Local<v8::Object> o3 = v8::Object::New(isolate);
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+        params2, o3));
+
+    // What the current filler for that slot happens to point to.
+    EXPECT_EQ(R"(["https://a.com","https://b.com"])",
+              RunExpectString(scope, script, "test", o1));
+
+    // Out-of-range; undefined returned.
+    EXPECT_EQ(R"(undefined)", RunExpectString(scope, script, "test", o2));
+
+    // Actual value.
+    EXPECT_EQ(R"(["https://a.com","https://b.com"])",
+              RunExpectString(scope, script, "test", o3));
+  }
+
+  {
+    // Make new o1, fill it in, but do not access its fields; they'll get
+    // accessed next time.
+    ContextRecyclerScope scope(context_recycler);
+    o1 = v8::Object::New(isolate);
+
+    context_recycler.EnsureAuctionConfigLazyFillers(1);
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+        params, o1));
+  }
+
+  {
+    // Go from 1 -> 2; also make the first one does not have any values.
+    ContextRecyclerScope scope(context_recycler);
+    params.interest_group_buyers = std::nullopt;
+
+    v8::Local<v8::Object> o3 = v8::Object::New(isolate);
+    o2 = v8::Object::New(isolate);
+
+    context_recycler.EnsureAuctionConfigLazyFillers(2);
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+        params, o3));
+
+    EXPECT_TRUE(context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
+        params2, o2));
+
+    EXPECT_EQ(R"(undefined)", RunExpectString(scope, script, "test", o1));
+    EXPECT_EQ(R"(["https://a.com","https://b.com"])",
+              RunExpectString(scope, script, "test", o2));
+    EXPECT_EQ(R"(undefined)", RunExpectString(scope, script, "test", o3));
+  }
+}
+
+// Test for error-handling when lazy-filling various field in AuctionConfig
+// (except interestGroupBuyers, which is covered by the above test).
+// An initial value is also serialized to make sure we're not always just
+// accessing a typo.
+TEST_F(ContextRecyclerTest, AuctionConfigLazyFillerErrorHandling) {
+  const char kScriptTemplate[] = R"(
+    function test(auctionConfig) {
+      const fieldName = '%s';
+      if (!auctionConfig[fieldName])
+        return typeof auctionConfig[fieldName];
+      return JSON.stringify(auctionConfig[fieldName]);
+    }
+  )";
+
+  const struct TestCase {
+    const char* field;
+    const char* expected_val;
+  } kTests[] = {
+      {"deprecatedRenderURLReplacements", R"({"a":"1","b":"2"})"},
+      {"perBuyerSignals", R"({"https://a.com":1,"https://b.com":2})"},
+      {"perBuyerTimeouts",
+       R"({"https://a.com":100,"https://b.com":200,"*":50})"},
+      {"perBuyerCumulativeTimeouts",
+       R"({"https://a.com":1000,"https://b.com":2000,"*":500})"},
+      {"perBuyerCurrencies",
+       R"({"https://a.com":"EUR","https://b.com":"CAD","*":"USD"})"},
+      {"perBuyerPrioritySignals", R"({"*":{"a":0.5}})"},
+      {"requestedSize", R"({"width":"100px","height":"50px"})"},
+      {"allSlotsRequestedSizes", R"([{"width":"200px","height":"75px"}])"}};
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.field);
+
+    blink::AuctionConfig::NonSharedParams params;
+    std::vector<blink::AuctionConfig::AdKeywordReplacement> replacements = {
+        {"a", "1"}, {"b", "2"}};
+    params.deprecated_render_url_replacements =
+        blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
+            FromValue(std::move(replacements));
+
+    params.per_buyer_signals =
+        blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
+            {{{url::Origin::Create(GURL("https://a.com")), "1"},
+              {url::Origin::Create(GURL("https://b.com")), "2"}}});
+
+    params.buyer_timeouts =
+        blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+            {base::Milliseconds(50),
+             {{{url::Origin::Create(GURL("https://a.com")),
+                base::Milliseconds(100)},
+               {url::Origin::Create(GURL("https://b.com")),
+                base::Milliseconds(200)}}}});
+
+    params.buyer_cumulative_timeouts =
+        blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
+            {base::Milliseconds(500),
+             {{{url::Origin::Create(GURL("https://a.com")),
+                base::Milliseconds(1000)},
+               {url::Origin::Create(GURL("https://b.com")),
+                base::Milliseconds(2000)}}}});
+
+    params.buyer_currencies =
+        blink::AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
+            {blink::AdCurrency::From("USD"),
+             {{{url::Origin::Create(GURL("https://a.com")),
+                blink::AdCurrency::From("EUR")},
+               {url::Origin::Create(GURL("https://b.com")),
+                blink::AdCurrency::From("CAD")}}}});
+
+    params.all_buyers_priority_signals = {{{"a", 0.5}}};
+
+    params.requested_size =
+        blink::AdSize(100.0, blink::AdSize::LengthUnit::kPixels, 50.0,
+                      blink::AdSize::LengthUnit::kPixels);
+
+    params.all_slots_requested_sizes = {
+        {blink::AdSize(200.0, blink::AdSize::LengthUnit::kPixels, 75.0,
+                       blink::AdSize::LengthUnit::kPixels)}};
+
+    v8::Local<v8::UnboundScript> script =
+        Compile(base::StringPrintf(kScriptTemplate, test.field));
+    ASSERT_FALSE(script.IsEmpty());
+
+    v8::Isolate* isolate = helper_->isolate();
+    v8::Local<v8::Object> o1;
+    v8::Local<v8::Object> o2;
+
+    ContextRecycler context_recycler(helper_.get());
+    {
+      // Make new o1 and o2, fill them in, and check that accessing the fields
+      // works, so we're setting them up and reading them correctly.
+      ContextRecyclerScope scope(context_recycler);
+      o1 = v8::Object::New(isolate);
+      o2 = v8::Object::New(isolate);
+
+      context_recycler.EnsureAuctionConfigLazyFillers(2);
+      EXPECT_TRUE(
+          context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+              params, o1));
+
+      EXPECT_TRUE(
+          context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
+              params, o2));
+
+      EXPECT_EQ(test.expected_val, RunExpectString(scope, script, "test", o1));
+      EXPECT_EQ(test.expected_val, RunExpectString(scope, script, "test", o2));
+    }
+
+    {
+      // Make new o1 and o2, fill them in, but do not access their fields;
+      // they'll get accessed next time. (If they got accessed, v8 would
+      // cache the value, so we won't be able to cache trying to fill it in
+      // under strange conditions).
+      ContextRecyclerScope scope(context_recycler);
+      o1 = v8::Object::New(isolate);
+      o2 = v8::Object::New(isolate);
+
+      context_recycler.EnsureAuctionConfigLazyFillers(2);
+      EXPECT_TRUE(
+          context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+              params, o1));
+
+      EXPECT_TRUE(
+          context_recycler.auction_config_lazy_fillers()[1]->FillInObject(
+              params, o2));
+    }
+
+    {
+      // Exercise the field getter with both null non-shared-params pointer and
+      // missing field. To hit the latter conditional, we need a new object
+      // filled so that the lazy filler it shares with the old one gets a
+      // non-null params pointer.
+      ContextRecyclerScope scope(context_recycler);
+      context_recycler.EnsureAuctionConfigLazyFillers(1);
+      v8::Local<v8::Object> o3 = v8::Object::New(isolate);
+      params.deprecated_render_url_replacements.mutable_value_for_testing()
+          .clear();
+      params.per_buyer_signals.mutable_value_for_testing() = std::nullopt;
+      params.buyer_timeouts.mutable_value_for_testing().all_buyers_timeout =
+          std::nullopt;
+      params.buyer_timeouts.mutable_value_for_testing().per_buyer_timeouts =
+          std::nullopt;
+      params.buyer_cumulative_timeouts.mutable_value_for_testing()
+          .all_buyers_timeout = std::nullopt;
+      params.buyer_cumulative_timeouts.mutable_value_for_testing()
+          .per_buyer_timeouts = std::nullopt;
+      params.buyer_currencies.mutable_value_for_testing().all_buyers_currency =
+          std::nullopt;
+      params.buyer_currencies.mutable_value_for_testing().per_buyer_currencies =
+          std::nullopt;
+      params.all_buyers_priority_signals = std::nullopt;
+      params.requested_size->width = -5;
+      params.all_slots_requested_sizes = std::nullopt;
+      EXPECT_TRUE(
+          context_recycler.auction_config_lazy_fillers()[0]->FillInObject(
+              params, o3));
+
+      // New config doesn't have a value.
+      EXPECT_EQ("undefined", RunExpectString(scope, script, "test", o3));
+
+      // New config doesn't have a value.
+      EXPECT_EQ("undefined", RunExpectString(scope, script, "test", o1));
+
+      // Out-of-range; undefined returned.
+      EXPECT_EQ("undefined", RunExpectString(scope, script, "test", o2));
+    }
   }
 }
 

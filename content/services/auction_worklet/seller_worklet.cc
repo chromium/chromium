@@ -38,6 +38,7 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/webidl_compat.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
-#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -88,181 +88,6 @@ v8::Local<v8::Value> GetDirectFromSellerSignals(
   return subresource_bundle_result.GetSignals(v8_helper, context, errors);
 }
 
-// TODO(crbug.com/1441988): Remove this code after rename. These functions allow
-// having multiple dictionary keys (e.g. renderUrl and renderURL) share the same
-// V8 value.
-bool SetDictMember(v8::Isolate* isolate,
-                   v8::Local<v8::Object> object,
-                   const std::string& key,
-                   v8::Local<v8::Value> v8_value) {
-  v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
-                                       gin::StringToV8(isolate, key), v8_value);
-  return !result.IsNothing() && result.FromJust();
-}
-
-bool CanSetRequestedAdSize(
-    const std::optional<blink::AdSize>& requested_ad_size) {
-  return requested_ad_size.has_value() &&
-         blink::IsValidAdSize(requested_ad_size.value());
-}
-
-// Creates an AdSize object with a "width" and a "height" from a blink::AdSize.
-// Returns false on failure.
-bool CreateAdSizeObject(v8::Isolate* isolate,
-                        const blink::AdSize& ad_size,
-                        v8::Local<v8::Object>& ad_size_out) {
-  DCHECK(blink::IsValidAdSize(ad_size));
-
-  v8::Local<v8::Value> v8_width;
-  if (!gin::TryConvertToV8(
-          isolate,
-          base::StrCat({base::NumberToString(ad_size.width),
-                        blink::ConvertAdSizeUnitToString(ad_size.width_units)}),
-          &v8_width)) {
-    return false;
-  }
-
-  v8::Local<v8::Value> v8_height;
-  if (!gin::TryConvertToV8(isolate,
-                           base::StrCat({base::NumberToString(ad_size.height),
-                                         blink::ConvertAdSizeUnitToString(
-                                             ad_size.height_units)}),
-                           &v8_height)) {
-    return false;
-  }
-
-  ad_size_out = v8::Object::New(isolate);
-
-  return SetDictMember(isolate, ad_size_out, "width", v8_width) &&
-         SetDictMember(isolate, ad_size_out, "height", v8_height);
-}
-
-// Must only be called after CanSetRequestedAdSize(). The requested_ad_size is
-// optional for the auction, so if it's invalid, it just won't be passed to the
-// auction config.
-bool SetRequestedAdSize(v8::Isolate* isolate,
-                        v8::Local<v8::Object> top_level_object,
-                        const blink::AdSize& requested_ad_size) {
-  v8::Local<v8::Object> size_object;
-  return CreateAdSizeObject(isolate, requested_ad_size, size_object) &&
-         SetDictMember(isolate, top_level_object, "requestedSize", size_object);
-}
-
-bool SetAllSlotsRequestedSizes(
-    v8::Isolate* isolate,
-    v8::Local<v8::Object> top_level_object,
-    const std::vector<blink::AdSize>& all_slots_requested_sizes) {
-  v8::LocalVector<v8::Value> size_vector(isolate);
-  for (const auto& slot_size : all_slots_requested_sizes) {
-    v8::Local<v8::Object> size_object;
-    if (!CreateAdSizeObject(isolate, slot_size, size_object)) {
-      return false;
-    }
-    size_vector.push_back(std::move(size_object));
-  }
-
-  return SetDictMember(
-      isolate, top_level_object, "allSlotsRequestedSizes",
-      v8::Array::New(isolate, size_vector.data(), size_vector.size()));
-}
-
-bool InsertPrioritySignals(
-    AuctionV8Helper* v8_helper,
-    base::StringPiece key,
-    const base::flat_map<std::string, double>& priority_signals,
-    v8::Local<v8::Object> object) {
-  v8::Isolate* isolate = v8_helper->isolate();
-  v8::Local<v8::Object> v8_priority_signals = v8::Object::New(isolate);
-  for (const auto& signal : priority_signals) {
-    if (!v8_helper->InsertValue(signal.first,
-                                v8::Number::New(isolate, signal.second),
-                                v8_priority_signals)) {
-      return false;
-    }
-  }
-  return v8_helper->InsertValue(key, v8_priority_signals, object);
-}
-
-// Attempts to create an v8 Object from `maybe_promise_buyer_timeouts`. On fatal
-// error, returns false. Otherwise, writes the result to
-// `out_per_buyer_timeouts`, which will be left unchanged if there are no times
-// to write to it.
-bool CreatePerBuyerTimeoutsObject(
-    v8::Isolate* isolate,
-    const blink::AuctionConfig::MaybePromiseBuyerTimeouts&
-        maybe_promise_buyer_timeouts,
-    v8::Local<v8::Object>& out_per_buyer_timeouts) {
-  DCHECK(!maybe_promise_buyer_timeouts.is_promise());
-
-  const blink::AuctionConfig::BuyerTimeouts& buyer_timeouts =
-      maybe_promise_buyer_timeouts.value();
-  // If there are no times, leave `out_per_buyer_timeouts` empty, and indicate
-  // success.
-  if (!buyer_timeouts.per_buyer_timeouts.has_value() &&
-      !buyer_timeouts.all_buyers_timeout.has_value()) {
-    return true;
-  }
-
-  out_per_buyer_timeouts = v8::Object::New(isolate);
-  gin::Dictionary per_buyer_timeouts_dict(isolate, out_per_buyer_timeouts);
-
-  if (buyer_timeouts.per_buyer_timeouts.has_value()) {
-    for (const auto& kv : buyer_timeouts.per_buyer_timeouts.value()) {
-      if (!per_buyer_timeouts_dict.Set(kv.first.Serialize(),
-                                       kv.second.InMilliseconds())) {
-        return false;
-      }
-    }
-  }
-  if (buyer_timeouts.all_buyers_timeout.has_value()) {
-    if (!per_buyer_timeouts_dict.Set(
-            "*", buyer_timeouts.all_buyers_timeout.value().InMilliseconds())) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// Attempts to create an v8 Object from `maybe_promise_buyer_currencies`. On
-//  fatal error, returns false. Otherwise, writes the result to
-// `out_per_buyer_currencies`, which will be left unchanged if there are no
-// currencies to write to it.
-bool CreatePerBuyerCurrenciesObject(
-    v8::Isolate* isolate,
-    const blink::AuctionConfig::MaybePromiseBuyerCurrencies&
-        maybe_promise_buyer_currencies,
-    v8::Local<v8::Object>& out_per_buyer_currencies) {
-  DCHECK(!maybe_promise_buyer_currencies.is_promise());
-
-  const blink::AuctionConfig::BuyerCurrencies& buyer_currencies =
-      maybe_promise_buyer_currencies.value();
-  // If there is nothing specified, leave `out_per_buyer_currencies` empty, and
-  // indicate success.
-  if (!buyer_currencies.per_buyer_currencies.has_value() &&
-      !buyer_currencies.all_buyers_currency.has_value()) {
-    return true;
-  }
-
-  out_per_buyer_currencies = v8::Object::New(isolate);
-  gin::Dictionary per_buyer_currencies_dict(isolate, out_per_buyer_currencies);
-
-  if (buyer_currencies.per_buyer_currencies.has_value()) {
-    for (const auto& kv : buyer_currencies.per_buyer_currencies.value()) {
-      if (!per_buyer_currencies_dict.Set(kv.first.Serialize(),
-                                         kv.second.currency_code())) {
-        return false;
-      }
-    }
-  }
-  if (buyer_currencies.all_buyers_currency.has_value()) {
-    if (!per_buyer_currencies_dict.Set(
-            "*", buyer_currencies.all_buyers_currency->currency_code())) {
-      return false;
-    }
-  }
-  return true;
-}
-
 // ### some duplication with same in interest_group_auction.cc
 bool IsValidBid(double bid) {
   return std::isfinite(bid) && (bid > 0.0);
@@ -270,6 +95,15 @@ bool IsValidBid(double bid) {
 
 // Converts `auction_config` back to JSON format, and appends to args.
 // Returns true if conversion succeeded.
+//
+// `auction_config_lazy_fillers` is incoming, and is organized as follows:
+//   [0] corresponds to the top-level auction.
+//   [1] corresponds to the 0th component auction.
+//   [2] corresponds to the 1th component auction.
+//   ... and so on.
+// where `auction_config_lazy_filler_pos` describes the position the current
+// invocation is expected to use; e.g. it's 0 for top-level, and i + 1 for
+// i'th component auction.
 //
 // On return, `deprecated_url_lazy_fillers` will hold helpers to log console
 // warnings when fields with deprecated URLs are accessed. `v8_helper` and
@@ -299,6 +133,8 @@ bool IsValidBid(double bid) {
 //                              '*': {...},
 //                              ...},
 // }
+//
+// (With many fields filled in on-demand by an AuctionConfigLazyFiller).
 bool AppendAuctionConfig(
     AuctionV8Helper* v8_helper,
     AuctionV8Logger* v8_logger,
@@ -309,11 +145,18 @@ bool AppendAuctionConfig(
     const std::optional<uint16_t> experiment_group_id,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    const std::vector<std::unique_ptr<AuctionConfigLazyFiller>>&
+        auction_config_lazy_fillers,
+    size_t auction_config_lazy_filler_pos,
     std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>&
         deprecated_url_lazy_fillers,
     v8::LocalVector<v8::Value>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
+
+  auction_config_lazy_fillers[auction_config_lazy_filler_pos]->FillInObject(
+      auction_ad_config_non_shared_params, auction_config_value);
+
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
   if (!auction_config_dict.Set("seller", seller.Serialize())) {
     return false;
@@ -346,40 +189,12 @@ bool AppendAuctionConfig(
     }
   }
 
-  if (auction_ad_config_non_shared_params.interest_group_buyers) {
-    v8::LocalVector<v8::Value> interest_group_buyers(isolate);
-    for (const url::Origin& buyer :
-         *auction_ad_config_non_shared_params.interest_group_buyers) {
-      v8::Local<v8::String> v8_buyer;
-      if (!v8_helper->CreateUtf8String(buyer.Serialize()).ToLocal(&v8_buyer)) {
-        return false;
-      }
-      interest_group_buyers.push_back(v8_buyer);
-    }
-    auction_config_dict.Set("interestGroupBuyers", interest_group_buyers);
-  }
-
   DCHECK(!auction_ad_config_non_shared_params.auction_signals.is_promise());
   if (auction_ad_config_non_shared_params.auction_signals.value() &&
       !v8_helper->InsertJsonValue(
           context, "auctionSignals",
           *auction_ad_config_non_shared_params.auction_signals.value(),
           auction_config_value)) {
-    return false;
-  }
-
-  if (CanSetRequestedAdSize(
-          auction_ad_config_non_shared_params.requested_size) &&
-      !SetRequestedAdSize(
-          isolate, auction_config_value,
-          auction_ad_config_non_shared_params.requested_size.value())) {
-    return false;
-  }
-
-  if (auction_ad_config_non_shared_params.all_slots_requested_sizes &&
-      !SetAllSlotsRequestedSizes(
-          isolate, auction_config_value,
-          *auction_ad_config_non_shared_params.all_slots_requested_sizes)) {
     return false;
   }
 
@@ -392,75 +207,12 @@ bool AppendAuctionConfig(
     return false;
   }
 
-  DCHECK(!auction_ad_config_non_shared_params.deprecated_render_url_replacements
-              .is_promise());
-
-  if (!auction_ad_config_non_shared_params.deprecated_render_url_replacements
-           .value()
-           .empty()) {
-    v8::Local<v8::Object> deprecated_render_url_replacements =
-        v8::Object::New(isolate);
-    for (const auto& kv : auction_ad_config_non_shared_params
-                              .deprecated_render_url_replacements.value()) {
-      v8::Local<v8::String> v8_replacement;
-      if (!v8_helper->CreateUtf8String(kv.replacement)
-               .ToLocal(&v8_replacement)) {
-        return false;
-      }
-      if (!v8_helper->InsertValue(kv.match, v8_replacement,
-                                  deprecated_render_url_replacements)) {
-        return false;
-      }
-    }
-    auction_config_dict.Set("deprecatedRenderURLReplacements",
-                            deprecated_render_url_replacements);
-  }
-
   if (auction_ad_config_non_shared_params.seller_timeout.has_value() &&
-      !v8_helper->InsertJsonValue(
-          context, "sellerTimeout",
-          base::NumberToString(
-              auction_ad_config_non_shared_params.seller_timeout.value()
-                  .InMilliseconds()),
-          auction_config_value)) {
+      !auction_config_dict.Set(
+          "sellerTimeout",
+          auction_ad_config_non_shared_params.seller_timeout.value()
+              .InMilliseconds())) {
     return false;
-  }
-
-  DCHECK(!auction_ad_config_non_shared_params.per_buyer_signals.is_promise());
-  if (auction_ad_config_non_shared_params.per_buyer_signals.value()
-          .has_value()) {
-    v8::Local<v8::Object> per_buyer_value = v8::Object::New(isolate);
-    for (const auto& kv :
-         auction_ad_config_non_shared_params.per_buyer_signals.value()
-             .value()) {
-      if (!v8_helper->InsertJsonValue(context, kv.first.Serialize(), kv.second,
-                                      per_buyer_value)) {
-        return false;
-      }
-    }
-    auction_config_dict.Set("perBuyerSignals", per_buyer_value);
-  }
-
-  v8::Local<v8::Object> per_buyer_timeouts;
-  if (!CreatePerBuyerTimeoutsObject(
-          isolate, auction_ad_config_non_shared_params.buyer_timeouts,
-          per_buyer_timeouts)) {
-    return false;
-  }
-  if (!per_buyer_timeouts.IsEmpty()) {
-    auction_config_dict.Set("perBuyerTimeouts", per_buyer_timeouts);
-  }
-
-  v8::Local<v8::Object> per_buyer_cumulative_timeouts;
-  if (!CreatePerBuyerTimeoutsObject(
-          isolate,
-          auction_ad_config_non_shared_params.buyer_cumulative_timeouts,
-          per_buyer_cumulative_timeouts)) {
-    return false;
-  }
-  if (!per_buyer_cumulative_timeouts.IsEmpty()) {
-    auction_config_dict.Set("perBuyerCumulativeTimeouts",
-                            per_buyer_cumulative_timeouts);
   }
 
   base::TimeDelta reporting_timeout =
@@ -469,22 +221,9 @@ bool AppendAuctionConfig(
           : AuctionV8Helper::kScriptTimeout;
 
   if (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
-      !v8_helper->InsertJsonValue(
-          context, "reportingTimeout",
-          base::NumberToString(reporting_timeout.InMilliseconds()),
-          auction_config_value)) {
+      !auction_config_dict.Set("reportingTimeout",
+                               reporting_timeout.InMilliseconds())) {
     return false;
-  }
-
-  v8::Local<v8::Object> per_buyer_currencies;
-  if (!CreatePerBuyerCurrenciesObject(
-          isolate, auction_ad_config_non_shared_params.buyer_currencies,
-          per_buyer_currencies)) {
-    return false;
-  }
-
-  if (!per_buyer_currencies.IsEmpty()) {
-    auction_config_dict.Set("perBuyerCurrencies", per_buyer_currencies);
   }
 
   if (auction_ad_config_non_shared_params.seller_currency.has_value()) {
@@ -493,41 +232,20 @@ bool AppendAuctionConfig(
         auction_ad_config_non_shared_params.seller_currency->currency_code());
   }
 
-  if (auction_ad_config_non_shared_params.per_buyer_priority_signals ||
-      auction_ad_config_non_shared_params.all_buyers_priority_signals) {
-    v8::Local<v8::Object> per_buyer_priority_signals = v8::Object::New(isolate);
-    if (auction_ad_config_non_shared_params.per_buyer_priority_signals) {
-      for (const auto& kv :
-           *auction_ad_config_non_shared_params.per_buyer_priority_signals) {
-        if (!InsertPrioritySignals(v8_helper, kv.first.Serialize(), kv.second,
-                                   per_buyer_priority_signals)) {
-          return false;
-        }
-      }
-    }
-    if (auction_ad_config_non_shared_params.all_buyers_priority_signals) {
-      if (!InsertPrioritySignals(
-              v8_helper, "*",
-              *auction_ad_config_non_shared_params.all_buyers_priority_signals,
-              per_buyer_priority_signals)) {
-        return false;
-      }
-    }
-    auction_config_dict.Set("perBuyerPrioritySignals",
-                            per_buyer_priority_signals);
-  }
-
   const auto& component_auctions =
       auction_ad_config_non_shared_params.component_auctions;
   if (!component_auctions.empty()) {
     v8::LocalVector<v8::Value> component_auction_vector(isolate);
-    for (const auto& component_auction : component_auctions) {
+
+    for (size_t pos = 0; pos < component_auctions.size(); ++pos) {
+      const auto& component_auction = component_auctions[pos];
       if (!AppendAuctionConfig(
               v8_helper, v8_logger, context, component_auction.seller,
               component_auction.decision_logic_url,
               component_auction.trusted_scoring_signals_url,
               experiment_group_id, component_auction.non_shared_params,
-              deprecated_url_lazy_fillers, &component_auction_vector)) {
+              auction_config_lazy_fillers, pos + 1, deprecated_url_lazy_fillers,
+              &component_auction_vector)) {
         return false;
       }
     }
@@ -1048,6 +766,9 @@ void SellerWorklet::V8State::ScoreAd(
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
+  context_recycler->EnsureAuctionConfigLazyFillers(
+      1 + auction_ad_config_non_shared_params.component_auctions.size());
+
   std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>
       deprecated_url_lazy_fillers;
   if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
@@ -1055,6 +776,8 @@ void SellerWorklet::V8State::ScoreAd(
                            decision_logic_url_, trusted_scoring_signals_url_,
                            experiment_group_id_,
                            auction_ad_config_non_shared_params,
+                           context_recycler->auction_config_lazy_fillers(),
+                           /*auction_config_lazy_filler_pos=*/0,
                            deprecated_url_lazy_fillers, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
@@ -1538,11 +1261,16 @@ void SellerWorklet::V8State::ReportResult(
   v8::LocalVector<v8::Value> args(isolate);
   std::vector<std::unique_ptr<DeprecatedUrlLazyFiller>>
       deprecated_url_lazy_fillers;
+
+  context_recycler.EnsureAuctionConfigLazyFillers(
+      1 + auction_ad_config_non_shared_params.component_auctions.size());
   if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
                            url::Origin::Create(decision_logic_url_),
                            decision_logic_url_, trusted_scoring_signals_url_,
                            experiment_group_id_,
                            auction_ad_config_non_shared_params,
+                           context_recycler.auction_config_lazy_fillers(),
+                           /*auction_config_lazy_filler_pos=*/0,
                            deprecated_url_lazy_fillers, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/std::nullopt,

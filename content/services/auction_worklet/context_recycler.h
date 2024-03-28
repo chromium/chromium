@@ -32,6 +32,7 @@ class ReportBindings;
 class SetBidBindings;
 class SetPriorityBindings;
 class SetPrioritySignalsOverrideBindings;
+class AuctionConfigLazyFiller;
 class BiddingBrowserSignalsLazyFiller;
 class InterestGroupLazyFiller;
 
@@ -138,6 +139,12 @@ class CONTENT_EXPORT ContextRecycler {
     return bidding_browser_signals_lazy_filler_.get();
   }
 
+  void EnsureAuctionConfigLazyFillers(size_t required);
+  std::vector<std::unique_ptr<AuctionConfigLazyFiller>>&
+  auction_config_lazy_fillers() {
+    return auction_config_lazy_fillers_;
+  }
+
  private:
   friend class ContextRecyclerScope;
 
@@ -175,6 +182,9 @@ class CONTENT_EXPORT ContextRecycler {
   std::unique_ptr<InterestGroupLazyFiller> interest_group_lazy_filler_;
   std::unique_ptr<BiddingBrowserSignalsLazyFiller>
       bidding_browser_signals_lazy_filler_;
+  // Pointer stability is needed for these since V8 keeps pointers to them.
+  std::vector<std::unique_ptr<AuctionConfigLazyFiller>>
+      auction_config_lazy_fillers_;
 };
 
 // Helper to enter a context scope on creation and reset all bindings
