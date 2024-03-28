@@ -1188,6 +1188,14 @@ void LoginAuthUserView::OnOnlineSignInMessageTap() {
     return;
   }
 
+  if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+    // TODO(b/330738798): We should prevent starting a
+    // new authentication process if one is already running.
+    LOG(WARNING) << "LoginAuthUserView::OnOnlineSignInMessageTap called during "
+                    "Authentication.";
+    return;
+  }
+
   user_manager::KnownUser known_user(Shell::Get()->local_state());
   int reauth_reason =
       known_user.FindReauthReason(current_user().basic_user_info.account_id)
