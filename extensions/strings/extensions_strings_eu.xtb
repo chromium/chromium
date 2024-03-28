@@ -22,7 +22,7 @@
 <translation id="3369521687965833290">Ezin da despaketatu luzapena. Luzapena segurtasunez despaketatzeko, zure profilaren direktoriorako bide bat egon behar du, bideak unitate baten letrarekin hasi behar du eta ezin du elkargunerik, instalazio-punturik edo esteka sinbolikorik eduki. Ez duzu halako biderik profilean.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /> (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
-<translation id="3561217442734750519">Gako pribatuak baliozko bide-izena izan behar du.</translation>
+<translation id="3561217442734750519">Gako pribatuak balio duen bide-izen bat izan behar du.</translation>
 <translation id="388442998277590542">Ezin izan da "<ph name="OPTIONS_PAGE" />" aukera-orria kargatu.</translation>
 <translation id="3984413272403535372">Errore bat gertatu da luzapena sinatzean.</translation>
 <translation id="4115165561519362854"><ph name="EXTENSION_NAME" /> luzapenaren bertsioak gutxienez <ph name="EXTENSION_VERSION" /> izatea behar du makinaren administratzaileak. Ezin da gaitu eguneratzen ez den arte (bertsio horretara edo berriago batera).</translation>

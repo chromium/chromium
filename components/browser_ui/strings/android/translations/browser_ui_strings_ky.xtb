@@ -261,7 +261,7 @@
 <translation id="5389626883706033615">Сайттарга сиз жөнүндө сакталган маалыматты колдонууга уруксат суроого тыюу алынды</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ дагы 1)}other{(+ дагы #)}}</translation>
 <translation id="5403592356182871684">Ысымдар</translation>
-<translation id="5438097262470833822">Ушуну менен <ph name="WEBSITE" /> сайтынын уруксаттары баштапкы абалга келтирилет</translation>
+<translation id="5438097262470833822">Ушуну менен <ph name="WEBSITE" /> сайтынын уруксаттары баштапкы абалга келет</translation>
 <translation id="5459413148890178711">Бул параметр күйүп турганда, сайттар жайгашкан жериңизди колдонууга уруксат сурашы мүмкүн. Бул параметр өчүп турганда, сайттар жайгашкан жериңизди көрө алышпайт.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ичинен <ph name="ELAPSED_TIME" /> өттү.</translation>
 <translation id="5502860503640766021">Уруксат берилген: <ph name="PERMISSION_1" />. Бөгөттөлгөн: <ph name="PERMISSION_2" />.</translation>

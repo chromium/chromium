@@ -2957,7 +2957,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3237871032310650497">Websitedaten für <ph name="SITE_NAME" /> löschen, die auf <ph name="PARTITION_SITE_NAME" /> partitioniert sind?</translation>
 <translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
 <translation id="3239373508713281971">Zeitlimit entfernt für <ph name="APP_NAME" /></translation>
-<translation id="3240299564104448052">Offenbar bist du offline.</translation>
+<translation id="3240299564104448052">Du bis anscheinend offline.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3241638166094654466">Zellen in jeder Zeile:</translation>
 <translation id="3241680850019875542">Wähle das Stammverzeichnis der Erweiterung, die gepackt werden soll. Zur Aktualisierung einer Erweiterung wähle außerdem den privaten Schlüssel zur Wiederverwendung.</translation>
@@ -8317,7 +8317,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7458933488302148148">Du kannst deine gespeicherten Passwörter prüfen lassen, um die Sicherheit deines Kontos zu verbessern und beim Surfen besser geschützt zu sein</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass deine ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde. Andere Daten zur App-Diagnose und ‑Nutzung, auch für Android- und Web-Apps, werden erhoben, wenn die App-Synchronisierung ebenfalls aktiviert ist.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen deines Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Derzeit installiertes Design</translation>
+<translation id="7460045493116006516">Derzeit genutztes Design</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
 <translation id="746216226901520237">Das nächste Mal wird dein <ph name="DEVICE_TYPE" /> von deinem Smartphone entsperrt. Du kannst Smart Lock in den Einstellungen deaktivieren.</translation>
 <translation id="7464153996453281700">Die Komponente ist bereits auf dem neuesten Stand</translation>
@@ -8777,7 +8777,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7797571222998226653">Aus</translation>
 <translation id="7798504574384119986">Webberechtigungen ansehen</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatisch blockiert</translation>
-<translation id="7799650166313181433">Nur Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, können etwas mit diesem Gerät teilen. Du musst das Teilen von deinen Geräten nicht genehmigen.</translation>
+<translation id="7799650166313181433">Nur Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, können Inhalte mit diesem Gerät teilen. Du musst das Teilen von deinen Geräten nicht genehmigen.</translation>
 <translation id="7800485561443537737">Hierfür wird die mobile Datenverbindung deines Geräts (<ph name="DEVICE_TYPE" />) verwendet und dein Mobilfunkanbieter berechnet möglicherweise zusätzliche Gebühren. Kann auch den Akkuverbrauch erhöhen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">&amp;Gegen den Uhrzeigersinn drehen</translation>
 <translation id="780301667611848630">Nein, danke</translation>
@@ -9578,7 +9578,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8405046151008197676">Wichtiges zum letzten Update ansehen</translation>
 <translation id="8407199357649073301">Protokollebene:</translation>
 <translation id="8408270600235826886">Du legst selbst fest, auf welche Daten Google zugreifen kann. In den Einstellungen kannst du dies jederzeit ändern. Die Daten werden gemäß der <ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> von Google genutzt.</translation>
-<translation id="84098433273647700">Derzeit installiertes Design.</translation>
+<translation id="84098433273647700">Derzeit genutztes Design.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">Vollbild</translation>
 <translation id="8412136526970428322"><ph name="PERMISSION" /> und <ph name="COUNT" /> weitere zugelassen</translation>

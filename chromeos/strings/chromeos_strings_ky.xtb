@@ -67,7 +67,7 @@
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Менде жуп ачкыч бар</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> баскычы басылган жок</translation>
-<translation id="1435763214710588005">Трафиктин колдонулушу жөнүндө маалымат ар бир айдын тандалган күнү автоматтык түрдө баштапкы абалга келтирилет</translation>
+<translation id="1435763214710588005">Трафиктин колдонулушу жөнүндө маалымат ар бир айдын тандалган күнү автоматтык түрдө баштапкы абалга келет</translation>
 <translation id="1442433966118452622">Сүрөттүн булагы</translation>
 <translation id="1449035143498573192">Google Издөө кызматында ачуу</translation>
 <translation id="1451536289672181509">Түзмөк — баскычтоп.</translation>
@@ -401,7 +401,7 @@
 <translation id="3969602104473960991">ChromeOS сырсөзү өзгөрдү</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
-<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңыртылды</translation>
+<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңырды</translation>
 <translation id="3998976413398910035">Принтерлерди тескөө</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="4021031199988160623">Сынап көрүү үчүн ноутбук режимине которулуңуз</translation>
@@ -485,7 +485,7 @@
 <translation id="4536864596629708641">IP конфигурациясы</translation>
 <translation id="4546131424594385779">Видео илмекти түзүү</translation>
 <translation id="4548483925627140043">Сигнал жок</translation>
-<translation id="4556753742174065117">Орнотулган программанын баары жаңыртылды</translation>
+<translation id="4556753742174065117">Орнотулган программанын баары жаңырды</translation>
 <translation id="455835558791489930">Батареянын кубатынын көлөмү – <ph name="CHARGE_VALUE" />мА/с.</translation>
 <translation id="4561801978359312462">SIM картанын кулпусу ачылды</translation>
 <translation id="4562494484721939086">Тейленбейт</translation>
@@ -546,7 +546,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4930320165497208503">Туташууну тууралоо же жаңыртуу үчүн <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4932733599132424254">Күнү</translation>
-<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> түзмөгүнө орнотулган программа <ph name="VERSION" /> версиясына жаңыртылды</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> түзмөгүнө орнотулган программа <ph name="VERSION" /> версиясына жаңырды</translation>
 <translation id="4969079779290789265">Бөлүү</translation>
 <translation id="4972592110715526173">режимди өзгөртүү</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
