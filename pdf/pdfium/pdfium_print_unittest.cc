@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
@@ -47,7 +47,7 @@ std::string GenerateRendererSpecificFileName(const std::string& file_name,
                             use_skia_renderer ? "_skia" : "");
 }
 
-base::FilePath GetReferenceFilePath(base::StringPiece test_filename) {
+base::FilePath GetReferenceFilePath(std::string_view test_filename) {
   return base::FilePath(FILE_PATH_LITERAL("pdfium_print"))
       .AppendASCII(test_filename);
 }
@@ -79,7 +79,7 @@ void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
 void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
                        int page_number,
                        const gfx::SizeF& size_in_points,
-                       base::StringPiece expected_png_filename) {
+                       std::string_view expected_png_filename) {
   int width_in_pixels =
       printing::ConvertUnit(size_in_points.width(), printing::kPointsPerInch,
                             printing::kDefaultPdfDpi);

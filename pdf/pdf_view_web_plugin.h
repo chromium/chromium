@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -17,7 +18,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -466,7 +466,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void UpdateScroll(const gfx::PointF& scroll_position);
 
   // Loads `url`, invoking `callback` on receiving the initial response.
-  void LoadUrl(base::StringPiece url, LoadUrlCallback callback);
+  void LoadUrl(std::string_view url, LoadUrlCallback callback);
 
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);

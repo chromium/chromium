@@ -4,7 +4,8 @@
 
 #include "pdf/pdf_utils/dates.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,7 +13,7 @@ namespace chrome_pdf {
 
 namespace {
 
-bool IsInvalidPdfDate(base::StringPiece input) {
+bool IsInvalidPdfDate(std::string_view input) {
   return ParsePdfDate(input).is_null();
 }
 

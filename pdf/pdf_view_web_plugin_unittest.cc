@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -151,7 +151,7 @@ MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
          event.unmodified_text == expected_text;
 }
 
-base::Value::Dict ParseMessage(base::StringPiece json) {
+base::Value::Dict ParseMessage(std::string_view json) {
   return std::move(base::test::ParseJson(json).GetDict());
 }
 
@@ -348,14 +348,14 @@ class PdfViewWebPluginWithoutInitializeTest
     void operator()(PdfViewWebPlugin* ptr) { ptr->Destroy(); }
   };
 
-  static void AddToPluginParams(base::StringPiece name,
-                                base::StringPiece value,
+  static void AddToPluginParams(std::string_view name,
+                                std::string_view value,
                                 blink::WebPluginParams& params) {
     params.attribute_names.push_back(blink::WebString::FromUTF8(name));
     params.attribute_values.push_back(blink::WebString::FromUTF8(value));
   }
 
-  void SetUpPlugin(base::StringPiece document_url,
+  void SetUpPlugin(std::string_view document_url,
                    const blink::WebPluginParams& params) {
     auto client = std::make_unique<NiceMock<FakePdfViewWebPluginClient>>();
     client_ptr_ = client.get();
@@ -1452,7 +1452,7 @@ class PdfViewWebPluginImeTest : public PdfViewWebPluginTest {
     std::u16string expected_text16 = expected_text.Utf16();
     if (expected_text16.size()) {
       for (const auto& c : expected_text16) {
-        base::StringPiece16 expected_key(&c, 1);
+        std::u16string_view expected_key(&c, 1);
         EXPECT_CALL(*engine_ptr_,
                     HandleInputEvent(IsExpectedImeKeyEvent(expected_key)))
             .WillOnce(Return(true));
@@ -1468,7 +1468,7 @@ class PdfViewWebPluginImeTest : public PdfViewWebPluginTest {
     std::u16string expected_text16 = text.Utf16();
     if (expected_text16.size()) {
       for (const auto& c : expected_text16) {
-        base::StringPiece16 event(&c, 1);
+        std::u16string_view event(&c, 1);
         EXPECT_CALL(*engine_ptr_,
                     HandleInputEvent(IsExpectedImeKeyEvent(event)))
             .WillOnce(Return(true));
@@ -2084,8 +2084,7 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
 class PdfViewWebPluginSubmitFormTest
     : public PdfViewWebPluginWithoutInitializeTest {
  protected:
-  void SubmitForm(const std::string& url,
-                  base::StringPiece form_data = "data") {
+  void SubmitForm(const std::string& url, std::string_view form_data = "data") {
     EXPECT_TRUE(plugin_->InitializeForTesting());
 
     EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader).WillOnce([this]() {
@@ -2111,7 +2110,7 @@ class PdfViewWebPluginSubmitFormTest
 
     EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader).Times(0);
 
-    constexpr base::StringPiece kFormData = "form data";
+    constexpr std::string_view kFormData = "form data";
     plugin_->SubmitForm(url, kFormData.data(), kFormData.size());
   }
 
@@ -2129,7 +2128,7 @@ TEST_F(PdfViewWebPluginSubmitFormTest, RequestMethod) {
 TEST_F(PdfViewWebPluginSubmitFormTest, RequestBody) {
   SetUpPluginWithUrl("https://www.example.com/path/to/the.pdf");
 
-  constexpr base::StringPiece kFormData = "form data";
+  constexpr std::string_view kFormData = "form data";
   SubmitForm(/*url=*/"", kFormData);
 
   blink::WebHTTPBody::Element element;

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -131,14 +131,14 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
-constexpr base::StringPiece kChromeExtensionHost =
+constexpr std::string_view kChromeExtensionHost =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
 
 // Print Preview base URL.
-constexpr base::StringPiece kChromePrintHost = "chrome://print/";
+constexpr std::string_view kChromePrintHost = "chrome://print/";
 
 // Untrusted Print Preview base URL.
-constexpr base::StringPiece kChromeUntrustedPrintHost =
+constexpr std::string_view kChromeUntrustedPrintHost =
     "chrome-untrusted://print/";
 
 // Same value as `printing::COMPLETE_PREVIEW_DOCUMENT_INDEX`.
@@ -219,14 +219,14 @@ base::Value::Dict DictFromRect(const gfx::Rect& rect) {
   return dict;
 }
 
-bool IsPrintPreviewUrl(base::StringPiece url) {
+bool IsPrintPreviewUrl(std::string_view url) {
   return base::StartsWith(url, kChromeUntrustedPrintHost);
 }
 
-int ExtractPrintPreviewPageIndex(base::StringPiece src_url) {
+int ExtractPrintPreviewPageIndex(std::string_view src_url) {
   // Sample `src_url` format: chrome-untrusted://print/id/page_index/print.pdf
   // The page_index is zero-based, but can be negative with special meanings.
-  std::vector<base::StringPiece> url_substr =
+  std::vector<std::string_view> url_substr =
       base::SplitStringPiece(src_url.substr(kChromeUntrustedPrintHost.size()),
                              "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (url_substr.size() != 3)
@@ -249,7 +249,7 @@ bool IsPreviewingPDF(int print_preview_page_count) {
 // If the "type" value of `message` is "foo", then the `reply_type` must be
 // "fooReply". The `message` from the embedder must have a "messageId" value
 // that will be copied to the reply message.
-base::Value::Dict PrepareReplyMessage(base::StringPiece reply_type,
+base::Value::Dict PrepareReplyMessage(std::string_view reply_type,
                                       const base::Value::Dict& message) {
   DCHECK_EQ(reply_type, *message.FindString("type") + "Reply");
 
@@ -964,8 +964,7 @@ std::string PdfViewWebPlugin::GetURL() {
   return url_;
 }
 
-void PdfViewWebPlugin::LoadUrl(base::StringPiece url,
-                               LoadUrlCallback callback) {
+void PdfViewWebPlugin::LoadUrl(std::string_view url, LoadUrlCallback callback) {
   UrlRequest request;
   request.url = std::string(url);
   request.method = "GET";
@@ -1302,7 +1301,7 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
 
   static constexpr auto kMessageHandlers =
-      base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+      base::MakeFixedFlatMap<std::string_view, MessageHandler>({
           {"displayAnnotations",
            &PdfViewWebPlugin::HandleDisplayAnnotationsMessage},
           {"getNamedDestination",

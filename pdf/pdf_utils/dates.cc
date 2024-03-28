@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 
@@ -21,7 +21,7 @@ class DateDeserializer final {
  public:
   // `parsing` must outlive `this` because `base::StringPiece` has reference
   // semantics.
-  explicit DateDeserializer(base::StringPiece parsing)
+  explicit DateDeserializer(std::string_view parsing)
       : deserializing_(parsing) {}
   ~DateDeserializer() = default;
 
@@ -65,7 +65,7 @@ class DateDeserializer final {
   void unstop() { stopped_ = false; }
 
  private:
-  base::StringPiece deserializing_;
+  std::string_view deserializing_;
   bool stopped_ = false;
 };
 
@@ -100,7 +100,7 @@ base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
 
 }  // namespace
 
-base::Time ParsePdfDate(base::StringPiece date) {
+base::Time ParsePdfDate(std::string_view date) {
   // The prefix "D:" is required according to the spec, but don't require it as
   // earlier versions of the spec weren't strict about it.
   if (date.substr(0, 2) == "D:")
