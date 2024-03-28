@@ -367,7 +367,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
                              scale:UIImageSymbolScaleLarge];
     UIImage* image =
         DefaultSymbolWithConfiguration(kCircleSymbol, configuration);
-    image = [image imageWithTintColor:[UIColor colorNamed:kGrey900Color]
+    image = [image imageWithTintColor:[UIColor colorNamed:kGrey100Color]
                         renderingMode:UIImageRenderingModeAlwaysOriginal];
     UIImage* emptyImage = [[UIImage alloc] init];
 
