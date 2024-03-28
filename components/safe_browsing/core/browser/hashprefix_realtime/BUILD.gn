@@ -13,7 +13,6 @@ static_library("hash_realtime_service") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":hash_realtime_utils",
     "//base:base",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -22,6 +21,7 @@ static_library("hash_realtime_service") {
     "//components/safe_browsing/core/browser/utils",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//google_apis:google_apis",
     "//services/network/public/cpp",
@@ -38,29 +38,9 @@ static_library("hash_realtime_cache") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":hash_realtime_utils",
     "//base:base",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
-  ]
-}
-
-static_library("hash_realtime_utils") {
-  sources = [
-    "hash_realtime_utils.cc",
-    "hash_realtime_utils.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    "//base:base",
-    "//build:branding_buildflags",
-    "//components/prefs",
-    "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
-    "//components/variations/service",
-    "//services/network/public/cpp",
   ]
 }
 
@@ -69,20 +49,18 @@ source_set("unit_tests") {
   sources = [
     "hash_realtime_cache_unittest.cc",
     "hash_realtime_service_unittest.cc",
-    "hash_realtime_utils_unittest.cc",
   ]
   deps = [
     ":hash_realtime_cache",
     ":hash_realtime_service",
-    ":hash_realtime_utils",
     "//base/test:test_support",
-    "//build:branding_buildflags",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/sync_preferences:test_support",
     "//google_apis:google_apis",

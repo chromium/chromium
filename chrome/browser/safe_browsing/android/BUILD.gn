@@ -22,8 +22,8 @@ source_set("android") {
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/common",
     "//components/prefs",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/signin/public/identity_manager",
 
     # NOTE: This target cannot depend on //chrome/browser as the latter

@@ -5263,8 +5263,8 @@ if (!is_android) {
         "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
         "//components/safe_browsing/content/common:file_type_policies_test_support",
         "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
-        "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
         "//components/safe_browsing/core/common/fbs:client_model",
+        "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
       ]
 
       if (is_win || is_linux) {
@@ -9586,7 +9586,7 @@ test("unit_tests") {
       "//components/file_access:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
-      "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
+      "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
       "//ipc:protobuf_support",
     ]
   } else if (safe_browsing_mode == 2 && is_android) {

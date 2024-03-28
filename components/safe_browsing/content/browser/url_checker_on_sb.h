@@ -10,8 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
