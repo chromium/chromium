@@ -1,6 +1,6 @@
 Name: wayland-protocols
 URL: http://wayland.freedesktop.org/
-Version: 1.32
+Version: 1.34
 License: MIT
 License File: src/COPYING
 Security Critical: yes

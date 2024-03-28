@@ -1819,7 +1819,7 @@ deps = {
 
   # Wayland protocols that add functionality not available in the core protocol.
   'src/third_party/wayland-protocols/src': {
-      'url': Var('chromium_git') + '/external/anongit.freedesktop.org/git/wayland/wayland-protocols.git' + '@' + '681c33c8547d6aefe24455ba2bffe1c5ae11fee5',
+      'url': Var('chromium_git') + '/external/anongit.freedesktop.org/git/wayland/wayland-protocols.git' + '@' + 'c7e9c4f5d396cda4051e49b15d7d0e4f91e4efac',
       'condition': 'checkout_linux',
   },
 
