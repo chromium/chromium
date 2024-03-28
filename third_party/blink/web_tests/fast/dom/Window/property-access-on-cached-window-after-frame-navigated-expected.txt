@@ -314,6 +314,7 @@ PASS oldChildWindow.visualViewport.offsetLeft is newChildWindow.visualViewport.o
 PASS oldChildWindow.visualViewport.offsetTop is newChildWindow.visualViewport.offsetTop
 PASS oldChildWindow.visualViewport.onresize is newChildWindow.visualViewport.onresize
 PASS oldChildWindow.visualViewport.onscroll is newChildWindow.visualViewport.onscroll
+PASS oldChildWindow.visualViewport.onscrollend is newChildWindow.visualViewport.onscrollend
 PASS oldChildWindow.visualViewport.pageLeft is newChildWindow.visualViewport.pageLeft
 PASS oldChildWindow.visualViewport.pageTop is newChildWindow.visualViewport.pageTop
 PASS oldChildWindow.visualViewport.scale is newChildWindow.visualViewport.scale
