@@ -288,6 +288,7 @@ chromium-metrics-reviews@google.com.
     Logs whether or not bookmark node IDs were reassigned when loading the
     {BookmarksFileType}. Recorded on profile load.
   </summary>
+  <token key="BookmarksFileType" variants="BookmarksFileType"/>
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
