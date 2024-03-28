@@ -75,36 +75,12 @@ ash::PickerSearchResult CreateSearchResultForRecentFile(
   return ash::PickerSearchResult::LocalFile(u"file", file.url().path());
 }
 
-int GetAutocompleteProviderTypes(ash::PickerCategory category) {
-  switch (category) {
-    case ash::PickerCategory::kEmojis:
-    case ash::PickerCategory::kSymbols:
-    case ash::PickerCategory::kEmoticons:
-    case ash::PickerCategory::kGifs:
-    case ash::PickerCategory::kLocalFiles:
-    case ash::PickerCategory::kDriveFiles:
-    case ash::PickerCategory::kEditor:
-    case ash::PickerCategory::kDatesTimes:
-    case ash::PickerCategory::kUnitsMaths:
-    case ash::PickerCategory::kClipboard:
-      DLOG(FATAL) << "Unexpected category for autocomplete: "
-                  << static_cast<int>(category);
-      return 0;
-    case ash::PickerCategory::kBookmarks:
-      return AutocompleteProvider::TYPE_BOOKMARK;
-    case ash::PickerCategory::kBrowsingHistory:
-      return AutocompleteProvider::TYPE_HISTORY_QUICK |
-             AutocompleteProvider::TYPE_HISTORY_URL |
-             AutocompleteProvider::TYPE_HISTORY_FUZZY;
-    case ash::PickerCategory::kOpenTabs:
-      return AutocompleteProvider::TYPE_OPEN_TAB;
-  }
-}
-
 int GetAllAutocompleteProviderTypes() {
-  return GetAutocompleteProviderTypes(ash::PickerCategory::kBookmarks) |
-         GetAutocompleteProviderTypes(ash::PickerCategory::kBrowsingHistory) |
-         GetAutocompleteProviderTypes(ash::PickerCategory::kOpenTabs);
+  return AutocompleteProvider::TYPE_BOOKMARK |
+         AutocompleteProvider::TYPE_HISTORY_QUICK |
+         AutocompleteProvider::TYPE_HISTORY_URL |
+         AutocompleteProvider::TYPE_HISTORY_FUZZY |
+         AutocompleteProvider::TYPE_OPEN_TAB;
 }
 
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
@@ -209,20 +185,15 @@ void PickerClientImpl::StartCrosSearch(
   }
 
   switch (*category) {
-    case ash::PickerCategory::kEmojis:
-    case ash::PickerCategory::kSymbols:
-    case ash::PickerCategory::kEmoticons:
-    case ash::PickerCategory::kGifs:
     case ash::PickerCategory::kEditor:
+    case ash::PickerCategory::kExpressions:
+    case ash::PickerCategory::kClipboard:
     case ash::PickerCategory::kDatesTimes:
     case ash::PickerCategory::kUnitsMaths:
-    case ash::PickerCategory::kClipboard:
       DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
                   << static_cast<int>(*category);
       break;
-    case ash::PickerCategory::kBookmarks:
-    case ash::PickerCategory::kBrowsingHistory:
-    case ash::PickerCategory::kOpenTabs:
+    case ash::PickerCategory::kLinks:
     case ash::PickerCategory::kDriveFiles:
     case ash::PickerCategory::kLocalFiles: {
       if (filtered_search_engine_ == nullptr ||
@@ -393,25 +364,20 @@ std::unique_ptr<app_list::SearchProvider>
 PickerClientImpl::CreateSearchProviderForCategory(
     ash::PickerCategory category) {
   switch (category) {
-    case ash::PickerCategory::kEmojis:
-    case ash::PickerCategory::kSymbols:
-    case ash::PickerCategory::kEmoticons:
-    case ash::PickerCategory::kGifs:
     case ash::PickerCategory::kEditor:
+    case ash::PickerCategory::kExpressions:
+    case ash::PickerCategory::kClipboard:
     case ash::PickerCategory::kDatesTimes:
     case ash::PickerCategory::kUnitsMaths:
-    case ash::PickerCategory::kClipboard:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return nullptr;
-    case ash::PickerCategory::kBookmarks:
-    case ash::PickerCategory::kBrowsingHistory:
-    case ash::PickerCategory::kOpenTabs:
-      return CreateOmniboxProvider(GetAutocompleteProviderTypes(category));
-    case ash::PickerCategory::kLocalFiles:
-      return CreateFileSearchProvider(profile_);
+    case ash::PickerCategory::kLinks:
+      return CreateOmniboxProvider(GetAllAutocompleteProviderTypes());
     case ash::PickerCategory::kDriveFiles:
       return CreateDriveSearchProvider(profile_);
+    case ash::PickerCategory::kLocalFiles:
+      return CreateFileSearchProvider(profile_);
   }
 }
 

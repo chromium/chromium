@@ -7040,32 +7040,17 @@ New install
 
       <!-- Picker -->
       <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
-      <message name="IDS_PICKER_EMOJIS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show emoji results.">
-        Emojis
+      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show expression results.">
+        Emojis, GIFs, and more
       </message>
-      <message name="IDS_PICKER_SYMBOLS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show symbol results.">
-        Symbols
-      </message>
-      <message name="IDS_PICKER_EMOTICONS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show emoticon results.">
-        Emoticons
-      </message>
-      <message name="IDS_PICKER_GIFS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show gif results.">
-        Gifs
-      </message>
-      <message name="IDS_PICKER_OPEN_TABS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show open tab results.">
-        Open tabs
-      </message>
-      <message name="IDS_PICKER_BROWSING_HISTORY_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show browsing history results.">
+      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show browsing history results.">
         Browsing history
-      </message>
-      <message name="IDS_PICKER_BOOKMARKS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show bookmark results.">
-        Bookmarks
       </message>
       <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show Drive results.">
         Drive Files
       </message>
       <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
-        Files from Chromebook
+        My Files
       </message>
       <message name="IDS_PICKER_EDITOR_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show editor results.">
         Editor
@@ -7082,26 +7067,8 @@ New install
       <message name="IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
       </message>
-      <message name="IDS_PICKER_EMOJIS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the emojis category is selected.">
-        Search Emojis
-      </message>
-      <message name="IDS_PICKER_SYMBOLS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the symbols category is selected.">
-        Search Symbols
-      </message>
-      <message name="IDS_PICKER_EMOTICONS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the emoticons category is selected.">
-        Search Emoticons
-      </message>
-      <message name="IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the gifs category is selected.">
-        Search Gifs
-      </message>
-      <message name="IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the open tabs category is selected.">
-        Search Open Tabs
-      </message>
-      <message name="IDS_PICKER_BROWSING_HISTORY_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
+      <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
         Search Browsing History
-      </message>
-      <message name="IDS_PICKER_BOOKMARKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the bookmarks category is selected.">
-        Search Bookmarks
       </message>
       <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the drive files category is selected.">
         Search Drive
@@ -7118,14 +7085,8 @@ New install
       <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the clipboard category is selected.">
         Search Clipboard
       </message>
-      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains expression categories, i.e. emojis, symbols, emoticons and gifs.">
-        Expressions
-      </message>
-      <message name="IDS_PICKER_LINKS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains link categories, e.g. browsing history, open tabs, bookmarks.">
-        Links
-      </message>
-      <message name="IDS_PICKER_FILES_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains files categories, e.g. Drive files and local files">
-        Files
+      <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains general categories, i.e. expressions, browsing history, files.">
+        Search
       </message>
       <message name="IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains editor categories">
         Editor

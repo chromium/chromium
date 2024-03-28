@@ -14,38 +14,28 @@ namespace {
 
 const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
   switch (category) {
-    case PickerCategory::kEmojis:
+    case PickerCategory::kEditor:
+      // TODO: b/322926823 - Use correct icons.
+      return kPencilIcon;
+    case PickerCategory::kExpressions:
       return kPickerEmojiIcon;
-    case PickerCategory::kSymbols:
-      return kPickerSymbolIcon;
-    case PickerCategory::kEmoticons:
-      return kPickerEmoticonIcon;
-    case PickerCategory::kGifs:
-      return kPickerGifIcon;
-    case PickerCategory::kOpenTabs:
-      return kPickerOpenTabIcon;
-    case PickerCategory::kBrowsingHistory:
+    case PickerCategory::kLinks:
       return kPickerBrowsingHistoryIcon;
-    case PickerCategory::kBookmarks:
-      return kPickerBookmarkIcon;
+    case PickerCategory::kClipboard:
+      // TODO: b/322926823 - Use correct icons.
+      return kClipboardIcon;
     case PickerCategory::kDriveFiles:
       // TODO: b/322926823 - Use correct icons.
       return kFolderIcon;
     case PickerCategory::kLocalFiles:
       // TODO: b/322926823 - Use correct icons.
       return kFolderIcon;
-    case PickerCategory::kEditor:
-      // TODO: b/322926823 - Use correct icons.
-      return kPencilIcon;
     case PickerCategory::kDatesTimes:
       // TODO: b/322926823 - Use correct icons.
       return kCalendarEventIcon;
     case PickerCategory::kUnitsMaths:
       // TODO: b/322926823 - Use correct icons.
       return kKsCalculatorIcon;
-    case PickerCategory::kClipboard:
-      // TODO: b/322926823 - Use correct icons.
-      return kClipboardIcon;
   }
 }
 

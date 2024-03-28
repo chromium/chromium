@@ -248,14 +248,9 @@ void PickerController::GetResultsForCategory(PickerCategory category,
   // TODO: b/325977099 - Get actual results for each category.
   std::vector<ash::PickerSearchResult> recent_results;
   switch (category) {
-    case PickerCategory::kEmojis:
-    case PickerCategory::kSymbols:
-    case PickerCategory::kEmoticons:
-    case PickerCategory::kGifs:
-      break;
-    case PickerCategory::kOpenTabs:
-    case PickerCategory::kBrowsingHistory:
-    case PickerCategory::kBookmarks:
+    case PickerCategory::kEditor:
+      NOTREACHED_NORETURN();
+    case PickerCategory::kLinks:
       recent_results.push_back(PickerSearchResult::BrowsingHistory(
           GURL("http://crbug.com"), u"Crbug",
           GetIconForPickerCategory(category)));
@@ -263,6 +258,9 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           GetIconForPickerCategory(category)));
       break;
+    case PickerCategory::kExpressions:
+      NOTREACHED_NORETURN();
+    case PickerCategory::kClipboard:
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
       client_->GetRecentFileResults(base::BindOnce(
@@ -275,10 +273,8 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           },
           std::move(callback)));
       return;
-    case PickerCategory::kEditor:
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
-    case PickerCategory::kClipboard:
       break;
   }
   callback.Run({

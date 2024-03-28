@@ -34,13 +34,10 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   }
 
   return std::vector<PickerCategory>{
-      PickerCategory::kEmojis,     PickerCategory::kSymbols,
-      PickerCategory::kEmoticons,  PickerCategory::kGifs,
-      PickerCategory::kOpenTabs,   PickerCategory::kBrowsingHistory,
-      PickerCategory::kBookmarks,  PickerCategory::kDriveFiles,
-      PickerCategory::kLocalFiles, PickerCategory::kEditor,
-      PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths,
-      PickerCategory::kClipboard,
+      PickerCategory::kEditor,      PickerCategory::kLinks,
+      PickerCategory::kExpressions, PickerCategory::kClipboard,
+      PickerCategory::kDriveFiles,  PickerCategory::kLocalFiles,
+      PickerCategory::kDatesTimes,  PickerCategory::kUnitsMaths,
   };
 }
 

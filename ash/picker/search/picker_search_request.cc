@@ -60,9 +60,7 @@ PickerSearchRequest::PickerSearchRequest(
 
   // TODO: b/326166751 - Use `available_categories_` to decide what searches to
   // do.
-  if (!category.has_value() || (category == PickerCategory::kBrowsingHistory ||
-                                category == PickerCategory::kBookmarks ||
-                                category == PickerCategory::kOpenTabs ||
+  if (!category.has_value() || (category == PickerCategory::kLinks ||
                                 category == PickerCategory::kLocalFiles ||
                                 category == PickerCategory::kDriveFiles)) {
     cros_search_start_ = base::TimeTicks::Now();

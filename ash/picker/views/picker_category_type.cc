@@ -10,26 +10,17 @@ namespace ash {
 
 ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
   switch (category) {
-    case PickerCategory::kEmojis:
-    case PickerCategory::kSymbols:
-    case PickerCategory::kEmoticons:
-    case PickerCategory::kGifs:
-      return PickerCategoryType::kExpressions;
-    case PickerCategory::kOpenTabs:
-    case PickerCategory::kBrowsingHistory:
-    case PickerCategory::kBookmarks:
-      return PickerCategoryType::kLinks;
-    case PickerCategory::kDriveFiles:
-    case PickerCategory::kLocalFiles:
-      return PickerCategoryType::kFiles;
     case PickerCategory::kEditor:
       return PickerCategoryType::kEditors;
+    case PickerCategory::kLinks:
+    case PickerCategory::kExpressions:
+    case PickerCategory::kClipboard:
+    case PickerCategory::kDriveFiles:
+    case PickerCategory::kLocalFiles:
+      return PickerCategoryType::kGeneral;
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
       return PickerCategoryType::kCalculations;
-    case PickerCategory::kClipboard:
-      // TODO: b/328682610: This is incorrect.
-      return PickerCategoryType::kLinks;
   }
 }
 

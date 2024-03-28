@@ -200,60 +200,6 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   ASSERT_TRUE(test_done.Wait());
 }
 
-TEST_F(PickerClientImplTest, StartCrosSearchFilteredByBrowsingHistory) {
-  ash::PickerController controller;
-  PickerClientImpl client(&controller, user_manager());
-  AddSearchToHistory(profile(), GURL("http://foo.com/history"));
-  AddBookmarks(profile(), u"Foobaz", GURL("http://foo.com/bookmarks"));
-  base::test::TestFuture<void> test_done;
-
-  NiceMock<MockSearchResultsCallback> mock_search_callback;
-  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_search_callback,
-      Call(ash::AppListSearchResultType::kOmnibox,
-           Not(Contains(Property(
-               "data", &ash::PickerSearchResult::data,
-               VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
-                   "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
-                   GURL("http://foo.com/bookmarks"))))))))
-      .WillOnce([&]() { test_done.SetValue(); });
-
-  client.StartCrosSearch(
-      u"foo", /*category=*/ash::PickerCategory::kBrowsingHistory,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&mock_search_callback)));
-
-  ASSERT_TRUE(test_done.Wait());
-}
-
-TEST_F(PickerClientImplTest, StartCrosSearchFilteredByBookmarks) {
-  ash::PickerController controller;
-  PickerClientImpl client(&controller, user_manager());
-  AddSearchToHistory(profile(), GURL("http://foo.com/history"));
-  AddBookmarks(profile(), u"Foobaz", GURL("http://foo.com/bookmarks"));
-  base::test::TestFuture<void> test_done;
-
-  NiceMock<MockSearchResultsCallback> mock_search_callback;
-  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_search_callback,
-      Call(ash::AppListSearchResultType::kOmnibox,
-           Not(Contains(Property(
-               "data", &ash::PickerSearchResult::data,
-               VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
-                   "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
-                   GURL("http://foo.com/history"))))))))
-      .WillOnce([&]() { test_done.SetValue(); });
-
-  client.StartCrosSearch(
-      u"foo", /*category=*/ash::PickerCategory::kBookmarks,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&mock_search_callback)));
-
-  ASSERT_TRUE(test_done.Wait());
-}
-
 TEST_F(PickerClientImplTest, GetRecentFilesWithNoFiles) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());

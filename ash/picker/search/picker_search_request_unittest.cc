@@ -50,13 +50,14 @@ using ::testing::VariantWith;
 constexpr base::TimeDelta kMetricMetricTime = base::Milliseconds(300);
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
-    PickerCategory::kEmojis,
-    PickerCategory::kSymbols,
-    PickerCategory::kEmoticons,
-    PickerCategory::kGifs,
-    PickerCategory::kOpenTabs,
-    PickerCategory::kBrowsingHistory,
-    PickerCategory::kBookmarks,
+    PickerCategory::kEditor,
+    PickerCategory::kLinks,
+    PickerCategory::kExpressions,
+    PickerCategory::kClipboard,
+    PickerCategory::kDriveFiles,
+    PickerCategory::kLocalFiles,
+    PickerCategory::kDatesTimes,
+    PickerCategory::kUnitsMaths,
 }};
 
 // TODO: b/329756078 - Deduplicate this with the `MockSearchPickerClient` in
@@ -763,29 +764,28 @@ TEST_F(PickerSearchRequestTest, RecordsDateMetricsOnlyOnce) {
 
 TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kBookmarks), _))
-      .Times(1);
-  EXPECT_CALL(
-      client(),
-      StartCrosSearch(Eq(u"bat"), Eq(PickerCategory::kBrowsingHistory), _))
+              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
       .Times(1);
   EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kOpenTabs), _))
+              StartCrosSearch(Eq(u"bat"), Eq(PickerCategory::kDriveFiles), _))
+      .Times(1);
+  EXPECT_CALL(client(),
+              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kLocalFiles), _))
       .Times(1);
   EXPECT_CALL(client(), FetchGifSearch(_, _)).Times(0);
 
   {
-    PickerSearchRequest request(u"ant", PickerCategory::kBookmarks,
+    PickerSearchRequest request(u"ant", PickerCategory::kLinks,
                                 base::DoNothing(), &client(), &emoji_search(),
                                 kAllCategories);
   }
   {
-    PickerSearchRequest request(u"bat", PickerCategory::kBrowsingHistory,
+    PickerSearchRequest request(u"bat", PickerCategory::kDriveFiles,
                                 base::DoNothing(), &client(), &emoji_search(),
                                 kAllCategories);
   }
   {
-    PickerSearchRequest request(u"cat", PickerCategory::kOpenTabs,
+    PickerSearchRequest request(u"cat", PickerCategory::kLocalFiles,
                                 base::DoNothing(), &client(), &emoji_search(),
                                 kAllCategories);
   }

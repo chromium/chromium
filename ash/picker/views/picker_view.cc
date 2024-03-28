@@ -123,22 +123,6 @@ gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
   return picker_view_bounds;
 }
 
-std::optional<ui::EmojiPickerCategory> PickerCategoryToEmojiPickerCategory(
-    PickerCategory category) {
-  switch (category) {
-    case PickerCategory::kEmojis:
-      return ui::EmojiPickerCategory::kEmojis;
-    case PickerCategory::kSymbols:
-      return ui::EmojiPickerCategory::kSymbols;
-    case PickerCategory::kEmoticons:
-      return ui::EmojiPickerCategory::kEmoticons;
-    case PickerCategory::kGifs:
-      return ui::EmojiPickerCategory::kGifs;
-    default:
-      return std::nullopt;
-  }
-}
-
 }  // namespace
 
 PickerView::PickerView(PickerViewDelegate* delegate,
@@ -251,16 +235,14 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 void PickerView::SelectCategory(PickerCategory category) {
   selected_category_ = category;
 
-  if (std::optional<ui::EmojiPickerCategory> emoji_picker_category =
-          PickerCategoryToEmojiPickerCategory(category);
-      emoji_picker_category.has_value()) {
+  if (category == PickerCategory::kExpressions) {
     if (auto* widget = GetWidget()) {
       // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
       // best to wait for the IME on focus event, or save some coordinates and
       // open emoji picker in the correct location in some other way.
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
-    delegate_->ShowEmojiPicker(*emoji_picker_category);
+    delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis);
     return;
   }
 

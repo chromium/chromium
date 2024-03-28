@@ -19,13 +19,10 @@ TEST(PickerModel, AvailableCategoriesWithNoFocus) {
   PickerModel model(nullptr);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kEmojis, PickerCategory::kSymbols,
-                  PickerCategory::kEmoticons, PickerCategory::kGifs,
-                  PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
-                  PickerCategory::kBookmarks, PickerCategory::kDriveFiles,
-                  PickerCategory::kLocalFiles, PickerCategory::kEditor,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths,
-                  PickerCategory::kClipboard));
+      ElementsAre(PickerCategory::kEditor, PickerCategory::kLinks,
+                  PickerCategory::kExpressions, PickerCategory::kClipboard,
+                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
+                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithNoSelectedText) {
@@ -35,13 +32,10 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedText) {
   PickerModel model(&client);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kEmojis, PickerCategory::kSymbols,
-                  PickerCategory::kEmoticons, PickerCategory::kGifs,
-                  PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
-                  PickerCategory::kBookmarks, PickerCategory::kDriveFiles,
-                  PickerCategory::kLocalFiles, PickerCategory::kEditor,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths,
-                  PickerCategory::kClipboard));
+      ElementsAre(PickerCategory::kEditor, PickerCategory::kLinks,
+                  PickerCategory::kExpressions, PickerCategory::kClipboard,
+                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
+                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithSelectedText) {

@@ -60,13 +60,14 @@ constexpr base::TimeDelta kAfterBurnIn = base::Milliseconds(700);
 static_assert(kBurnInPeriod < kAfterBurnIn);
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
-    PickerCategory::kEmojis,
-    PickerCategory::kSymbols,
-    PickerCategory::kEmoticons,
-    PickerCategory::kGifs,
-    PickerCategory::kOpenTabs,
-    PickerCategory::kBrowsingHistory,
-    PickerCategory::kBookmarks,
+    PickerCategory::kEditor,
+    PickerCategory::kLinks,
+    PickerCategory::kExpressions,
+    PickerCategory::kClipboard,
+    PickerCategory::kDriveFiles,
+    PickerCategory::kLocalFiles,
+    PickerCategory::kDatesTimes,
+    PickerCategory::kUnitsMaths,
 }};
 
 // Matcher for the last element of a collection.
@@ -1105,23 +1106,22 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
 
 TEST_F(PickerSearchControllerTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kBookmarks), _))
-      .Times(1);
-  EXPECT_CALL(
-      client(),
-      StartCrosSearch(Eq(u"bat"), Eq(PickerCategory::kBrowsingHistory), _))
+              StartCrosSearch(Eq(u"ant"), Eq(PickerCategory::kLinks), _))
       .Times(1);
   EXPECT_CALL(client(),
-              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kOpenTabs), _))
+              StartCrosSearch(Eq(u"bat"), Eq(PickerCategory::kDriveFiles), _))
+      .Times(1);
+  EXPECT_CALL(client(),
+              StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kLocalFiles), _))
       .Times(1);
   EXPECT_CALL(client(), FetchGifSearch(_, _)).Times(0);
   PickerSearchController controller(&client(), kBurnInPeriod);
 
-  controller.StartSearch(u"ant", PickerCategory::kBookmarks, kAllCategories,
+  controller.StartSearch(u"ant", PickerCategory::kLinks, kAllCategories,
                          base::DoNothing());
-  controller.StartSearch(u"bat", PickerCategory::kBrowsingHistory,
-                         kAllCategories, base::DoNothing());
-  controller.StartSearch(u"cat", PickerCategory::kOpenTabs, kAllCategories,
+  controller.StartSearch(u"bat", PickerCategory::kDriveFiles, kAllCategories,
+                         base::DoNothing());
+  controller.StartSearch(u"cat", PickerCategory::kLocalFiles, kAllCategories,
                          base::DoNothing());
 }
 

@@ -42,16 +42,14 @@ using ::testing::Property;
 constexpr int kPickerWidth = 320;
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
-    PickerCategory::kEmojis,
-    PickerCategory::kSymbols,
-    PickerCategory::kEmoticons,
-    PickerCategory::kGifs,
-    PickerCategory::kOpenTabs,
-    PickerCategory::kBrowsingHistory,
-    PickerCategory::kBookmarks,
+    PickerCategory::kEditor,
+    PickerCategory::kLinks,
+    PickerCategory::kExpressions,
+    PickerCategory::kClipboard,
     PickerCategory::kDriveFiles,
     PickerCategory::kLocalFiles,
-    PickerCategory::kEditor,
+    PickerCategory::kDatesTimes,
+    PickerCategory::kUnitsMaths,
 }};
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {
@@ -64,10 +62,9 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
                            base::DoNothing());
 
   EXPECT_THAT(view.section_views_for_testing(),
-              ElementsAre(Key(PickerCategoryType::kExpressions),
-                          Key(PickerCategoryType::kLinks),
-                          Key(PickerCategoryType::kFiles),
-                          Key(PickerCategoryType::kEditors)));
+              ElementsAre(Key(PickerCategoryType::kEditors),
+                          Key(PickerCategoryType::kGeneral),
+                          Key(PickerCategoryType::kCalculations)));
   EXPECT_THAT(view.SuggestedSectionForTesting(), IsNull());
 }
 
@@ -76,23 +73,23 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kAllCategories, kPickerWidth, future.GetRepeatingCallback(),
-      base::DoNothing()));
+      std::vector<PickerCategory>{PickerCategory::kExpressions}, kPickerWidth,
+      future.GetRepeatingCallback(), base::DoNothing()));
   widget->Show();
   ASSERT_THAT(view->section_views_for_testing(),
-              Contains(Key(PickerCategoryType::kExpressions)));
+              Contains(Key(PickerCategoryType::kGeneral)));
   ASSERT_THAT(view->section_views_for_testing()
-                  .find(PickerCategoryType::kExpressions)
+                  .find(PickerCategoryType::kGeneral)
                   ->second->item_views_for_testing(),
               Not(IsEmpty()));
 
   PickerItemView* category_view = view->section_views_for_testing()
-                                      .find(PickerCategoryType::kExpressions)
+                                      .find(PickerCategoryType::kGeneral)
                                       ->second->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(category_view);
   LeftClickOn(*category_view);
 
-  EXPECT_EQ(future.Get(), PickerCategory::kEmojis);
+  EXPECT_EQ(future.Get(), PickerCategory::kExpressions);
 }
 
 TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {

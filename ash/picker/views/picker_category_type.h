@@ -12,10 +12,8 @@ namespace ash {
 
 // Used to group related categories together.
 enum class ASH_EXPORT PickerCategoryType {
-  kExpressions,
-  kLinks,
-  kFiles,
   kEditors,
+  kGeneral,
   kCalculations,
 };
 

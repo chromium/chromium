@@ -52,44 +52,44 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         // Exact match
         TestCase{
-            .available_categories = {PickerCategory::kEmojis},
-            .query = u"Emojis",
-            .expected_categories = {PickerCategory::kEmojis},
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"My Files",
+            .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Case-insensitive match
         TestCase{
-            .available_categories = {PickerCategory::kEmojis},
-            .query = u"eMoJiS",
-            .expected_categories = {PickerCategory::kEmojis},
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"mY fIlEs",
+            .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Prefix match
         TestCase{
-            .available_categories = {PickerCategory::kEmojis},
-            .query = u"e",
-            .expected_categories = {PickerCategory::kEmojis},
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"m",
+            .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Prefix match in second word
         TestCase{
-            .available_categories = {PickerCategory::kOpenTabs},
-            .query = u"ta",
-            .expected_categories = {PickerCategory::kOpenTabs},
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"fi",
+            .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Substring match
         TestCase{
-            .available_categories = {PickerCategory::kEmojis},
-            .query = u"moj",
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"iles",
             .expected_categories = {},
         },
         // Category unavailable
         TestCase{
-            .available_categories = {PickerCategory::kBrowsingHistory},
-            .query = u"Emojis",
+            .available_categories = {PickerCategory::kLinks},
+            .query = u"My Files",
             .expected_categories = {},
         },
         // Not matched
         TestCase{
-            .available_categories = {PickerCategory::kEmojis},
-            .query = u"emoji1",
+            .available_categories = {PickerCategory::kLocalFiles},
+            .query = u"My Files1",
             .expected_categories = {},
         }));
 

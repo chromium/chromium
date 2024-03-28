@@ -127,7 +127,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kEmojis)}}));
+      {{PickerSearchResult::Category(PickerCategory::kExpressions)}}));
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
   EXPECT_THAT(view.section_views_for_testing(),
@@ -233,13 +233,13 @@ TEST_F(PickerSearchResultsViewTest, MovesPseudoFocusDown) {
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kEmojis),
-        PickerSearchResult::Category(PickerCategory::kEmoticons)}}));
+      {{PickerSearchResult::Category(PickerCategory::kExpressions),
+        PickerSearchResult::Category(PickerCategory::kClipboard)}}));
 
   EXPECT_TRUE(view.MovePseudoFocusDown());
   EXPECT_TRUE(view.DoPseudoFocusedAction());
   EXPECT_EQ(future.Get(),
-            PickerSearchResult::Category(PickerCategory::kEmoticons));
+            PickerSearchResult::Category(PickerCategory::kClipboard));
 }
 
 TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
@@ -252,9 +252,9 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
           kPickerWidth, future.GetCallback(), &asset_fetcher));
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kEmojis),
-        PickerSearchResult::Category(PickerCategory::kSymbols),
-        PickerSearchResult::Category(PickerCategory::kEmoticons)}}));
+      {{PickerSearchResult::Category(PickerCategory::kExpressions),
+        PickerSearchResult::Category(PickerCategory::kClipboard),
+        PickerSearchResult::Category(PickerCategory::kDriveFiles)}}));
   ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
 
   view->AdvancePseudoFocus(
@@ -262,7 +262,7 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusForward) {
   ASSERT_TRUE(view->DoPseudoFocusedAction());
 
   EXPECT_EQ(future.Get(),
-            PickerSearchResult::Category(PickerCategory::kSymbols));
+            PickerSearchResult::Category(PickerCategory::kClipboard));
 }
 
 TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
@@ -275,9 +275,9 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
           kPickerWidth, future.GetCallback(), &asset_fetcher));
   view->AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kEmojis),
-        PickerSearchResult::Category(PickerCategory::kSymbols),
-        PickerSearchResult::Category(PickerCategory::kEmoticons)}}));
+      {{PickerSearchResult::Category(PickerCategory::kExpressions),
+        PickerSearchResult::Category(PickerCategory::kClipboard),
+        PickerSearchResult::Category(PickerCategory::kDriveFiles)}}));
   ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
 
   view->AdvancePseudoFocus(
@@ -287,7 +287,7 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
   ASSERT_TRUE(view->DoPseudoFocusedAction());
 
   EXPECT_EQ(future.Get(),
-            PickerSearchResult::Category(PickerCategory::kEmojis));
+            PickerSearchResult::Category(PickerCategory::kExpressions));
 }
 
 struct PickerSearchResultTestCase {
@@ -357,7 +357,8 @@ INSTANTIATE_TEST_SUITE_P(
                                         /*full_url=*/GURL(),
                                         gfx::Size(20, 20),
                                         u"cat gif")},
-        {"Category", PickerSearchResult::Category(PickerCategory::kEmojis)},
+        {"Category",
+         PickerSearchResult::Category(PickerCategory::kExpressions)},
         {"LocalFile",
          PickerSearchResult::LocalFile(u"local", base::FilePath())},
         {"DriveFile", PickerSearchResult::DriveFile(u"drive", GURL())},

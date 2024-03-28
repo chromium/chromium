@@ -237,7 +237,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
 
 TEST_F(PickerViewTest, SwitchesToCategoryView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kBrowsingHistory},
+      .available_categories = {PickerCategory::kLinks},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -257,15 +257,14 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
 TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kBrowsingHistory},
+      .available_categories = {PickerCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
                     PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Category(
-                        PickerCategory::kBrowsingHistory)}}),
+                    {{PickerSearchResult::Category(PickerCategory::kLinks)}}),
             });
           }),
   });
@@ -289,7 +288,7 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
 
 TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kOpenTabs},
+      .available_categories = {PickerCategory::kLinks},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -305,12 +304,12 @@ TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
                 .textfield_for_testing()
                 .GetPlaceholderText(),
             l10n_util::GetStringUTF16(
-                IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT));
+                IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT));
 }
 
 TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kBrowsingHistory},
+      .available_categories = {PickerCategory::kLinks},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -332,7 +331,7 @@ TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
 
 TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kBrowsingHistory},
+      .available_categories = {PickerCategory::kLinks},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -688,9 +687,9 @@ TEST_F(PickerViewTest, ResultsAboveSearchFieldNearBottomOfScreen) {
             view->search_field_view_for_testing().GetBoundsInScreen().y());
 }
 
-TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnEmoji) {
+TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnExpressions) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojis},
+      .available_categories = {PickerCategory::kExpressions},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
