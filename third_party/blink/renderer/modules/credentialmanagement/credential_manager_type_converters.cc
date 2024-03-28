@@ -936,15 +936,6 @@ TypeConverter<DigitalCredentialProviderPtr, blink::DigitalCredentialProvider>::
       mojo_provider->selector->fields = std::move(fields);
     }
   }
-  if (provider.hasProtocol()) {
-    mojo_provider->protocol = provider.protocol();
-  }
-  if (provider.hasRequest()) {
-    mojo_provider->request = provider.request();
-  }
-  if (provider.hasPublicKey()) {
-    mojo_provider->publicKey = provider.publicKey();
-  }
   return mojo_provider;
 }
 

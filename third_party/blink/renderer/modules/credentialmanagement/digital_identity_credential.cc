@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
@@ -179,15 +180,23 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  const DigitalCredentialProvider& digital_provider =
-      options.hasIdentity() ? *options.identity()->providers()[0]->holder()
-                            : *options.digital()->providers()[0];
-  auto digital_credential_provider =
-      blink::mojom::blink::DigitalCredentialProvider::From(digital_provider);
-
   WTF::String protocol;
-  if (options.hasDigital()) {
-    protocol = options.digital()->providers()[0]->getProtocolOr("");
+  blink::mojom::blink::DigitalCredentialProviderPtr digital_credential_provider;
+  if (options.hasIdentity()) {
+    digital_credential_provider =
+        blink::mojom::blink::DigitalCredentialProvider::From(
+            *options.identity()->providers()[0]->holder());
+  } else if (options.hasDigital()) {
+    digital_credential_provider =
+        blink::mojom::blink::DigitalCredentialProvider::New();
+    auto provider = options.digital()->providers()[0];
+    if (provider->hasProtocol()) {
+      digital_credential_provider->protocol = provider->protocol();
+    }
+    if (provider->hasRequest()) {
+      digital_credential_provider->request = provider->request();
+    }
+    protocol = provider->protocol();
   }
 
   auto* request =

@@ -630,6 +630,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_resolve_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_resolve_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_identity_standard_claims.cc",

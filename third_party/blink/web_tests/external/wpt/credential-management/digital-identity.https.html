@@ -89,7 +89,7 @@ promise_test(async t => {
 promise_test(async t => {
   let request = buildValidNavigatorIdentityRequest();
   let credential = await navigator.identity.get(request);
-  assert_equals("protocol", credential.protocol);
+  assert_equals("urn:openid.net:oid4vp", credential.protocol);
   assert_equals("fake_test_token", credential.data);
 }, "navigator.identity.get() API works in toplevel frame.");
 

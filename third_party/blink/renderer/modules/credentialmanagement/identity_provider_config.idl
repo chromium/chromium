@@ -35,12 +35,6 @@ dictionary DigitalCredentialProvider  {
 
   // An opaque map of parameters sent to wallets upon selection.
   record<USVString, USVString> params;
-
-  // Alternatively, a provider can also be specified by a protocol and a
-  // request.
-  DOMString protocol;
-  DOMString request;
-  DOMString publicKey;
 };
 
 dictionary DigitalCredentialSelector {

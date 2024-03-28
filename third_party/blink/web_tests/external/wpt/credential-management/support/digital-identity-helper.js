@@ -3,20 +3,16 @@ export function buildValidNavigatorIdentityRequest() {
   return {
       digital: {
         providers: [{
-          protocol: "protocol",
-          selector: {
-            format: ['mdoc'],
-            doctype: 'org.iso.18013.5.1.mDL',
-            fields: [
-              'org.iso.18013.5.1.family_name',
-              'org.iso.18013.5.1.portrait',
-            ]
-          },
-          params: {
-            nonce: '1234',
-            readerPublicKey: 'test_reader_public_key',
-            extraParamAsNeededByDigitalCredentials: true,
-          },
+          protocol: "urn:openid.net:oid4vp",
+          request: JSON.stringify({
+            // Based on https://github.com/openid/OpenID4VP/issues/125
+            client_id: "client.example.org",
+            client_id_scheme: "web-origin",
+            nonce: "n-0S6_WzA2Mj",
+            presentation_definition: {
+              // Presentation Exchange request, omitted for brevity
+            }
+          }),
         }],
       },
   };
