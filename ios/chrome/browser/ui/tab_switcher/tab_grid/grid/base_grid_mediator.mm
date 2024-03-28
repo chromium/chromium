@@ -885,59 +885,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
-    (const std::set<web::WebStateID>&)itemIDs {
-  if (!self.browser) {
-    return nil;
-  }
-
-  NSMutableArray<UIMenuElement*>* actions = [[NSMutableArray alloc] init];
-
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:kMenuScenarioHistogramTabGridAddTo];
-
-  __weak BaseGridMediator* weakSelf = self;
-
-  // Copy the set of items, so that the following block can use it.
-  std::set<web::WebStateID> itemIDsCopy = itemIDs;
-  UIAction* bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
-    [weakSelf addItemsWithIDsToBookmarks:itemIDsCopy];
-  }];
-  // Bookmarking can be disabled from prefs (from an enterprise policy),
-  // if that's the case grey out the option in the menu.
-  BOOL isEditBookmarksEnabled =
-      self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-          bookmarks::prefs::kEditBookmarksEnabled);
-  if (!isEditBookmarksEnabled) {
-    bookmarkAction.attributes = UIMenuElementAttributesDisabled;
-  }
-
-  if (IsTabGroupInGridEnabled()) {
-    ProceduralBlock createTabGroupActionBlock = ^{
-      BOOL incognito = [weakSelf isIncognitoBrowser];
-      [weakSelf.delegate showTabGroupCreationWithWithIdentifiers:itemIDsCopy
-                                                       incognito:incognito];
-    };
-    UIAction* addToNewTabGroupAction = [actionFactory
-        actionToAddTabsToNewGroupWithTabsNumber:itemIDs.size()
-                                      inSubmenu:NO
-                                          block:createTabGroupActionBlock];
-    [actions addObject:[UIMenu menuWithTitle:@""
-                                       image:nil
-                                  identifier:nil
-                                     options:UIMenuOptionsDisplayInline
-                                    children:@[ addToNewTabGroupAction ]]];
-  }
-
-  [actions addObject:[actionFactory actionToAddToReadingListWithBlock:^{
-             [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
-           }]];
-
-  [actions addObject:bookmarkAction];
-
-  return actions;
-}
-
 - (void)searchItemsWithText:(NSString*)searchText {
   TabsSearchService* searchService =
       TabsSearchServiceFactory::GetForBrowserState(self.browserState);
@@ -1358,6 +1305,60 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
 - (BOOL)isIncognitoBrowser {
   return static_cast<BOOL>(self.browserState->IsOffTheRecord());
+}
+
+// Returns the menu to display when the Add To button is selected for `items`.
+- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
+    (const std::set<web::WebStateID>&)itemIDs {
+  if (!self.browser) {
+    return nil;
+  }
+
+  NSMutableArray<UIMenuElement*>* actions = [[NSMutableArray alloc] init];
+
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:kMenuScenarioHistogramTabGridAddTo];
+
+  __weak BaseGridMediator* weakSelf = self;
+
+  // Copy the set of items, so that the following block can use it.
+  std::set<web::WebStateID> itemIDsCopy = itemIDs;
+  UIAction* bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
+    [weakSelf addItemsWithIDsToBookmarks:itemIDsCopy];
+  }];
+  // Bookmarking can be disabled from prefs (from an enterprise policy),
+  // if that's the case grey out the option in the menu.
+  BOOL isEditBookmarksEnabled =
+      self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+          bookmarks::prefs::kEditBookmarksEnabled);
+  if (!isEditBookmarksEnabled) {
+    bookmarkAction.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  if (IsTabGroupInGridEnabled()) {
+    ProceduralBlock createTabGroupActionBlock = ^{
+      BOOL incognito = [weakSelf isIncognitoBrowser];
+      [weakSelf.delegate showTabGroupCreationWithWithIdentifiers:itemIDsCopy
+                                                       incognito:incognito];
+    };
+    UIAction* addToNewTabGroupAction = [actionFactory
+        actionToAddTabsToNewGroupWithTabsNumber:itemIDs.size()
+                                      inSubmenu:NO
+                                          block:createTabGroupActionBlock];
+    [actions addObject:[UIMenu menuWithTitle:@""
+                                       image:nil
+                                  identifier:nil
+                                     options:UIMenuOptionsDisplayInline
+                                    children:@[ addToNewTabGroupAction ]]];
+  }
+
+  [actions addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+             [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
+           }]];
+
+  [actions addObject:bookmarkAction];
+
+  return actions;
 }
 
 #pragma mark - TabGridPageMutator

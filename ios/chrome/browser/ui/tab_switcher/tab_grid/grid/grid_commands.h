@@ -44,9 +44,6 @@ class WebStateID;
 // Tells the receiver to discard saved closed items. If the consumer has saved
 // closed items, it will discard them. Otherwise, this is a no-op.
 - (void)discardSavedClosedItems;
-// Returns the menu to display when the Add To button is selected for `items`.
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
-    (const std::set<web::WebStateID>&)itemIDs;
 
 // Tells the receiver to perform a search using `searchText` and update the list
 // of visible items based on the result.

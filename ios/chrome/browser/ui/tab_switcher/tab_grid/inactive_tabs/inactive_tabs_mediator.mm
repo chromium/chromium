@@ -399,11 +399,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
-    (const std::set<web::WebStateID>&)itemIDs {
-  NOTREACHED_NORETURN();
-}
-
 - (void)searchItemsWithText:(NSString*)searchText {
   NOTREACHED_NORETURN();
 }
