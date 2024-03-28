@@ -15,7 +15,7 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import type {Crostini} from '../../background/js/crostini.js';
 import type {FileManagerBase} from '../../background/js/file_manager_base.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
-import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
+import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getMaterializedViews, getPreferences} from '../../common/js/api.js';
 import type {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
@@ -24,7 +24,7 @@ import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/f
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isGuestOsEnabled, isMaterializedViewsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
@@ -38,6 +38,7 @@ import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateDeviceConnectionState} from '../../state/ducks/device.js';
 import {updateDriveConnectionStatus} from '../../state/ducks/drive.js';
 import {setLaunchParameters} from '../../state/ducks/launch_params.js';
+import {updateMaterializedViews} from '../../state/ducks/materialized_views.js';
 import {updatePreferences} from '../../state/ducks/preferences.js';
 import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
@@ -785,12 +786,12 @@ export class FileManager {
         this.onTabletModeChanged_.bind(this));
 
     this.initEssentialUi_();
-    this.initAdditionalUi_();
-    await this.initSettingsPromise_;
-    const fileSystemUIPromise = this.initFileSystemUi_();
     // Initialize the Store for the whole app.
     const store = getStore();
     store.init(getEmptyState());
+    this.initAdditionalUi_();
+    await this.initSettingsPromise_;
+    const fileSystemUIPromise = this.initFileSystemUi_();
     this.initUiFocus_();
     recordInterval('Load.InitUI');
 
@@ -1217,6 +1218,11 @@ export class FileManager {
     }
   }
 
+  private async initMaterializedViews_() {
+    const views = await getMaterializedViews();
+    this.store_.dispatch(updateMaterializedViews({materializedViews: views}));
+  }
+
   /**
    * Sets up the current directory during initialization.
    */
@@ -1227,6 +1233,9 @@ export class FileManager {
     assert(this.volumeManager_);
     assert(this.metadataModel_);
     assert(this.directoryModel_);
+    const initMaterializedViewsPromise = isMaterializedViewsEnabled() ?
+        this.initMaterializedViews_() :
+        Promise.resolve();
     const tracker = this.directoryModel_.createDirectoryChangeTracker();
     tracker.start();
 
@@ -1427,6 +1436,9 @@ export class FileManager {
             this.ui.directoryTree.dataModel.myFilesModel.entry;
       }
     }
+
+    // The next directory might be a materialized view.
+    await initMaterializedViewsPromise;
 
     // TODO(b/328031885): Handle !nextCurrentDirEntry case here - it means some
     // error occurred and we should show the appropriate UI.

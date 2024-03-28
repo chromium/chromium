@@ -14,6 +14,7 @@ import {deviceSlice} from './ducks/device.js';
 import {driveSlice} from './ducks/drive.js';
 import {folderShortcutsSlice} from './ducks/folder_shortcuts.js';
 import {launchParamsSlice} from './ducks/launch_params.js';
+import {materializedViewsSlice} from './ducks/materialized_views.js';
 import {navigationSlice} from './ducks/navigation.js';
 import {preferencesSlice} from './ducks/preferences.js';
 import {searchSlice} from './ducks/search.js';
@@ -60,6 +61,7 @@ export function getStore(): Store {
       currentDirectorySlice,
       allEntriesSlice,
       launchParamsSlice,
+      materializedViewsSlice,
     ]);
   }
 

@@ -150,6 +150,11 @@ export function setUpFileManagerOnWindow() {
     taskController: {} as unknown as TaskController,
     dialogType: DialogType.FULL_PAGE,
     directoryModel: createFakeDirectoryModel(),
+    fileFilter: {
+      filter() {
+        return true;
+      },
+    },
     directoryTreeNamingController: {} as unknown as
         DirectoryTreeNamingController,
     getLastVisitedUrl() {

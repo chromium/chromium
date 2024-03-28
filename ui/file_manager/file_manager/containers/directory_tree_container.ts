@@ -127,6 +127,7 @@ export class DirectoryTreeContainer {
   private uiEntries_: State['uiEntries']|null = null;
   /** Android apps data from the store. */
   private androidApps_: State['androidApps']|null = null;
+  private materializedViews_: State['materializedViews'] = [];
 
   constructor(container: HTMLElement, private directoryModel_: DirectoryModel) {
     this.tree.id = 'directory-tree';
@@ -1030,11 +1031,13 @@ export class DirectoryTreeContainer {
     const {volumes, folderShortcuts, uiEntries, androidApps} = state;
     if (this.volumes_ !== volumes ||
         this.folderShortcuts_ !== folderShortcuts ||
-        this.uiEntries_ !== uiEntries || this.androidApps_ !== androidApps) {
+        this.uiEntries_ !== uiEntries || this.androidApps_ !== androidApps ||
+        this.materializedViews_ !== state.materializedViews) {
       this.volumes_ = volumes;
       this.folderShortcuts_ = folderShortcuts;
       this.uiEntries_ = uiEntries;
       this.androidApps_ = androidApps;
+      this.materializedViews_ = state.materializedViews;
       return true;
     }
 

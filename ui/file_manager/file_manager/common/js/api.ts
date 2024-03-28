@@ -293,3 +293,14 @@ export async function getEntryProperties(
       chrome.fileManagerPrivate.getEntryProperties, entries.map(unwrapEntry),
       properties);
 }
+
+export async function getMaterializedViews():
+    Promise<chrome.fileManagerPrivate.MaterializedView[]> {
+  try {
+    const views = await chrome.fileManagerPrivate.getMaterializedViews();
+    return views;
+  } catch (error: any) {
+    console.warn(error);
+    return [];
+  }
+}

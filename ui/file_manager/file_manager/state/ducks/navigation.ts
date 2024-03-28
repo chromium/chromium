@@ -71,6 +71,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
     navigation: {roots: previousRoots},
     folderShortcuts,
     androidApps,
+    materializedViews,
   } = currentState;
 
   /** Roots in the desired order. */
@@ -78,7 +79,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
   /** Set to avoid adding the same entry multiple times. */
   const processedEntryKeys = new Set<NavigationKey>();
 
-  // 1. Add the Recent/Materialized view root.
+  // Add the Recent/Materialized view root.
   const recentRoot = previousRoots.find(root => root.key === recentRootKey);
   if (recentRoot) {
     roots.push(recentRoot);
@@ -97,7 +98,19 @@ function refreshNavigationRootsReducer(currentState: State): State {
     }
   }
 
-  // 2. Add the Shortcuts.
+  // Add Starred files.
+  for (const view of materializedViews) {
+    if (view.label === 'Starred files') {
+      roots.push({
+        key: view.key,
+        section: NavigationSection.TOP,
+        separator: false,
+        type: NavigationType.MATERIALIZED_VIEW,
+      });
+    }
+  }
+
+  // Add the Shortcuts.
   // TODO: Since Shortcuts are only for Drive, do we need to remove shortcuts
   // if Drive isn't available anymore?
   folderShortcuts.forEach(shortcutKey => {
@@ -114,7 +127,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
     }
   });
 
-  // 3. MyFiles
+  // MyFiles.
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
   if (myFilesEntry) {
     roots.push({
@@ -126,7 +139,8 @@ function refreshNavigationRootsReducer(currentState: State): State {
     });
     processedEntryKeys.add(myFilesEntry.toURL());
   }
-  // 4. Add Google Drive - the only Drive.
+
+  // Add Google Drive - the only Drive.
   // When drive pref changes from enabled to disabled, we remove the drive root
   // key from the `state.uiEntries` immediately, but the drive root entry itself
   // is removed asynchronously, so here we need to check both, if the key
@@ -147,7 +161,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
   }
 
 
-  // 5/6/7/8 Other volumes.
+  // Other volumes.
   const volumesOrder: Partial<Record<VolumeType, number>> = {
     // ODFS is a PROVIDED volume type but is a special case to be directly
     // below Drive.
@@ -217,7 +231,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
     }
   }
 
-  // 9. Android Apps.
+  // Android Apps.
   Object.values(androidApps as Record<string, AndroidApp>)
       .forEach((app, index) => {
         roots.push({
@@ -229,7 +243,7 @@ function refreshNavigationRootsReducer(currentState: State): State {
         processedEntryKeys.add(app.packageName);
       });
 
-  // 10. Trash
+  // Trash.
   // Trash should only show when Files app is open as a standalone app. The ARC
   // file selector, however, opens Files app as a standalone app but passes a
   // query parameter to indicate the mode. As Trash is a fake volume, it is

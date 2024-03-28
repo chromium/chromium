@@ -188,9 +188,8 @@ export function sortEntries(
   if (entries.length === 0) {
     return [];
   }
-  // TODO: proper way to get directory model and volume manager.
-  const {directoryModel, volumeManager} = window.fileManager;
-  const fileFilter = directoryModel.getFileFilter();
+  // TODO: proper way to get file filter and volume manager.
+  const {fileFilter, volumeManager} = window.fileManager;
   // For entries under My Files we need to use a different sorting logic
   // because we need to make sure curtain files are always at the bottom.
   if (isMyFilesEntry(parentEntry)) {
