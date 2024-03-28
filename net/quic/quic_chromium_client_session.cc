@@ -34,9 +34,11 @@
 #include "net/base/network_activity_monitor.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/session_usage.h"
 #include "net/base/url_util.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/dns/public/host_resolver_results.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -331,14 +333,24 @@ base::Value::Dict NetLogQuicClientSessionParams(
       base::Value::Dict()
           .Set("host", session_key->server_id().host())
           .Set("port", session_key->server_id().port())
-          .Set("privacy_mode",
-               PrivacyModeToDebugString(session_key->privacy_mode()))
-          .Set("network_anonymization_key",
-               session_key->network_anonymization_key().ToDebugString())
+          .Set("connection_id", connection_id.ToString())
+          .Set("versions", ParsedQuicVersionVectorToString(supported_versions))
           .Set("require_confirmation", require_confirmation)
           .Set("cert_verify_flags", cert_verify_flags)
-          .Set("connection_id", connection_id.ToString())
-          .Set("versions", ParsedQuicVersionVectorToString(supported_versions));
+          .Set("server_id_privacy_mode",
+               session_key->server_id().privacy_mode_enabled())
+          .Set("privacy_mode",
+               PrivacyModeToDebugString(session_key->privacy_mode()))
+          .Set("proxy_chain", session_key->proxy_chain().ToDebugString())
+          .Set("session_usage",
+               session_key->session_usage() == SessionUsage::kDestination
+                   ? "destination"
+                   : "proxy")
+          .Set("network_anonymization_key",
+               session_key->network_anonymization_key().ToDebugString())
+          .Set("secure_dns_policy",
+               SecureDnsPolicyToDebugString(session_key->secure_dns_policy()))
+          .Set("require_dns_https_alpn", session_key->require_dns_https_alpn());
   if (!client_connection_id.IsEmpty()) {
     dict.Set("client_connection_id", client_connection_id.ToString());
   }
