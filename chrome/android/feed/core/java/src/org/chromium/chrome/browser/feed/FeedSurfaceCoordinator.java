@@ -1136,26 +1136,6 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public int getHeaderCount() {
-        return mHeaderCount;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mRecyclerView.getLayoutManager().getItemCount();
-    }
-
-    @Override
-    public int getFirstVisiblePosition() {
-        return mHybridListRenderer.getListLayoutHelper().findFirstVisibleItemPosition();
-    }
-
-    @Override
-    public int getLastVisiblePosition() {
-        return mHybridListRenderer.getListLayoutHelper().findLastVisibleItemPosition();
-    }
-
-    @Override
     public void addObserver(SurfaceCoordinator.Observer observer) {
         mObservers.addObserver(observer);
     }

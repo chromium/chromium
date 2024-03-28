@@ -217,26 +217,6 @@ public final class HeaderIphScrollListenerTest {
                     public boolean canScrollUp() {
                         return false;
                     }
-
-                    @Override
-                    public int getHeaderCount() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getItemCount() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getFirstVisiblePosition() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getLastVisiblePosition() {
-                        return 0;
-                    }
                 };
 
         ScrollableContainerDelegate scrollableContainerDelegate =
@@ -331,26 +311,6 @@ public final class HeaderIphScrollListenerTest {
                     @Override
                     public boolean canScrollUp() {
                         return false;
-                    }
-
-                    @Override
-                    public int getHeaderCount() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getItemCount() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getFirstVisiblePosition() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getLastVisiblePosition() {
-                        return 0;
                     }
                 };
 
