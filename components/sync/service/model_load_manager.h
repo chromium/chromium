@@ -121,9 +121,6 @@ class ModelLoadManager {
   // Data types that are enabled.
   ModelTypeSet preferred_types_without_errors_;
 
-  // Data types that are loaded.
-  ModelTypeSet loaded_types_;
-
   // Timer to track LoadDesiredTypes() timeout. All types not loaded by now are
   // treated as having errors.
   base::OneShotTimer load_models_timeout_timer_;

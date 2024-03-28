@@ -18,8 +18,26 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/sync_error.h"
+#include "components/sync/service/model_type_controller.h"
 
 namespace syncer {
+
+namespace {
+
+bool ModelIsLoadedOrFailed(const ModelTypeController& mtc) {
+  switch (mtc.state()) {
+    case ModelTypeController::NOT_RUNNING:
+    case ModelTypeController::MODEL_STARTING:
+    case ModelTypeController::STOPPING:
+      return false;
+    case ModelTypeController::MODEL_LOADED:
+    case ModelTypeController::RUNNING:
+    case ModelTypeController::FAILED:
+      return true;
+  }
+}
+
+}  // namespace
 
 const base::TimeDelta kSyncLoadModelsTimeoutDuration = base::Seconds(30);
 
@@ -133,8 +151,6 @@ void ModelLoadManager::StopDatatypeImpl(
   // crbug.com/1456872.
   base::debug::Alias(&model_type);
 
-  loaded_types_.Remove(model_type);
-
   delegate_->OnSingleDataTypeWillStop(model_type, error);
 
   // Note: Depending on |metadata_fate|, data types will clear their metadata
@@ -191,7 +207,6 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   }
 
   preferred_types_without_errors_.Clear();
-  loaded_types_.Clear();
 }
 
 void ModelLoadManager::ModelLoadCallback(ModelType type,
@@ -215,8 +230,6 @@ void ModelLoadManager::ModelLoadCallback(ModelType type,
     return;
   }
 
-  DCHECK(!loaded_types_.Has(type));
-  loaded_types_.Put(type);
   NotifyDelegateIfReadyForConfigure();
 }
 
@@ -225,9 +238,11 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
     return;
   }
 
-  if (!loaded_types_.HasAll(preferred_types_without_errors_)) {
-    // At least one type is not ready.
-    return;
+  // Check (and early-return) if any type is not ready.
+  for (ModelType type : preferred_types_without_errors_) {
+    if (!ModelIsLoadedOrFailed(*controllers_->find(type)->second)) {
+      return;
+    }
   }
 
   // It may be possible that `load_models_elapsed_timer_` was never set, e.g.
@@ -248,12 +263,9 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
 }
 
 void ModelLoadManager::OnLoadModelsTimeout() {
-  // TODO(crbug.com/1420553): Investigate why the following DCHECK fails.
-  // DCHECK(!loaded_types_.HasAll(preferred_types_without_errors_));
-
   const ModelTypeSet types = preferred_types_without_errors_;
   for (ModelType type : types) {
-    if (!loaded_types_.Has(type)) {
+    if (!ModelIsLoadedOrFailed(*controllers_->find(type)->second)) {
       base::UmaHistogramEnumeration("Sync.ModelLoadManager.LoadModelsTimeout",
                                     ModelTypeHistogramValue(type));
       // All the types which have not loaded yet are removed from
@@ -281,7 +293,6 @@ void ModelLoadManager::LoadModelsForType(ModelTypeController* dtc) {
     return;
   }
 
-  CHECK(!loaded_types_.Has(dtc->type()));
   // TODO(crbug.com/1519487): Avoid calling LoadModelsForType() multiple times
   // upon stop, and re-introduce a CHECK for state to be NOT_RUNNING only.
   if (dtc->state() == ModelTypeController::NOT_RUNNING) {
