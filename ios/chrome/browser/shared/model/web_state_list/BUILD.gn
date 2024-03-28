@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "order_controller_source_from_web_state_list_unittest.mm",
     "order_controller_unittest.mm",
     "removing_indexes_unittest.mm",
+    "tab_group_unittest.mm",
     "tab_group_utils_unittest.mm",
     "web_state_list_unittest.mm",
     "web_state_opener_unittest.mm",

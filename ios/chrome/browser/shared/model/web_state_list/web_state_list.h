@@ -617,7 +617,7 @@ class WebStateList {
   std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
 
   // The current set of groups.
-  std::map<std::unique_ptr<TabGroup>, Range, base::UniquePtrComparator> groups_;
+  std::set<std::unique_ptr<TabGroup>, base::UniquePtrComparator> groups_;
 
   // List of observers notified of changes to the model.
   base::ObserverList<WebStateListObserver, true> observers_;

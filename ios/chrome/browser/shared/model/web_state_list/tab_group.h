@@ -9,7 +9,9 @@
 
 #import <memory>
 
+#import "base/sequence_checker.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class WebStateList;
 
@@ -20,8 +22,10 @@ class WebStateList;
 // state change, as well as any group state change.
 class TabGroup {
  public:
-  TabGroup(const tab_groups::TabGroupVisualData& visual_data)
-      : visual_data_(visual_data) {}
+  TabGroup(
+      const tab_groups::TabGroupVisualData& visual_data,
+      const WebStateList::Range& range = WebStateList::Range::InvalidRange())
+      : visual_data_(visual_data), range_(range) {}
 
   TabGroup(const TabGroup&) = delete;
   TabGroup& operator=(const TabGroup&) = delete;
@@ -36,10 +40,22 @@ class TabGroup {
 
   // The underlying visual data specific to the group.
   const tab_groups::TabGroupVisualData& visual_data() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return visual_data_;
   }
   void SetVisualData(const tab_groups::TabGroupVisualData& visual_data) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     visual_data_ = visual_data;
+  }
+
+  // The range of this group within its owning WebStateList.
+  const WebStateList::Range& range() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return range_;
+  }
+  WebStateList::Range& range() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return range_;
   }
 
   // Returns all the colors a TabGroup can have.
@@ -56,7 +72,9 @@ class TabGroup {
       WebStateList* web_state_list);
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
   tab_groups::TabGroupVisualData visual_data_;
+  WebStateList::Range range_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TAB_GROUP_H_

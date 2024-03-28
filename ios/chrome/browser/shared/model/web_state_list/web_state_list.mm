@@ -370,14 +370,14 @@ WebStateList::Range WebStateList::GetGroupRange(const TabGroup* group) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(group);
   DCHECK(ContainsGroup(group));
-  return groups_.find(group)->second;
+  return group->range();
 }
 
 std::set<const TabGroup*> WebStateList::GetGroups() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::set<const TabGroup*> groups;
   for (const auto& group : groups_) {
-    groups.insert(group.first.get());
+    groups.insert(group.get());
   }
   return groups;
 }
@@ -540,12 +540,12 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
 
   // Shift groups on the right of `index` towards the right.
   web_state_wrappers_[index]->SetGroup(group);
-  for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
-    Range& group_range = group_it->second;
-    if (group_it->first.get() == group) {
-      group_range.ExpandRight();
-    } else if (group_range.range_begin() >= index) {
-      group_range.MoveRight();
+  for (const auto& current_group : groups_) {
+    Range& current_range = current_group->range();
+    if (current_group.get() == group) {
+      current_range.ExpandRight();
+    } else if (current_range.range_begin() >= index) {
+      current_range.MoveRight();
     }
   }
 
@@ -674,12 +674,12 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
 
   // Update the span of the group containing the detached WebState and the
   // starting index of all groups located after the detached WebState.
-  for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
-    Range& group_range = group_it->second;
-    if (group_it->first.get() == group) {
-      group_range.ContractRight();
-    } else if (group_range.range_begin() > index) {
-      group_range.MoveLeft();
+  for (const auto& current_group : groups_) {
+    Range& current_range = current_group->range();
+    if (current_group.get() == group) {
+      current_range.ContractRight();
+    } else if (current_range.range_begin() >= index) {
+      current_range.MoveLeft();
     }
   }
 
@@ -826,9 +826,9 @@ const TabGroup* WebStateList::CreateGroupImpl(
   DCHECK_NE(pivot_index, kInvalidIndex);
 
   // Create the group.
-  std::unique_ptr<TabGroup> group = std::make_unique<TabGroup>(visual_data);
+  auto group = std::make_unique<TabGroup>(visual_data, Range(pivot_index, 0));
   const TabGroup* new_group = group.get();
-  groups_.emplace(std::move(group), Range(pivot_index, 0));
+  groups_.insert(std::move(group));
 
   // Notify the observers of the group creation.
   // The creation didn't change the active WebState.
@@ -864,7 +864,7 @@ void WebStateList::UpdateGroupVisualDataImpl(
   // Update the visual data on the group. Find it in `groups_`, to get a
   // non-const pointer.
   const auto old_visual_data = group->visual_data();
-  groups_.find(group)->first->SetVisualData(visual_data);
+  groups_.find(group)->get()->SetVisualData(visual_data);
 
   // Notify the observers.
   // The update didn't change the active WebState.
@@ -887,7 +887,7 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
   DCHECK(ContainsGroup(group));
   DCHECK(!indices.empty());
 
-  Range group_range = GetGroupRange(group);
+  const Range group_range = GetGroupRange(group);
 
   // Split indices between WebStates left of the group moving to their right and
   // WebStates right of the group moving to their left. This is to keep indices
@@ -984,7 +984,8 @@ void WebStateList::MoveGroupImpl(const TabGroup* group, int to_index) {
 
   // Update the groups ranges.
   const int group_count = prior_range.count();
-  for (auto& [some_group, some_group_range] : groups_) {
+  for (auto& some_group : groups_) {
+    Range& some_group_range = some_group->range();
     if (some_group.get() == group) {
       // Update the moved group range.
       some_group_range.Move(stride);
@@ -1118,7 +1119,8 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   web_state_wrappers_[from_index]->SetGroup(new_group);
 
   // Update the groups ranges.
-  for (auto& [group, group_range] : groups_) {
+  for (auto& group : groups_) {
+    Range& group_range = group->range();
     // Remove the item from the old group.
     if (group.get() == old_group) {
       group_range.ContractRight();
@@ -1186,7 +1188,7 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
   DCHECK(locked_);
 
   const auto iter = groups_.find(group);
-  if (iter != groups_.end() && iter->second.count() == 0) {
+  if (iter != groups_.end() && group->range().count() == 0) {
     // Notify observers of the imminent deletion of the group.
     // The deletion doesn't change the active WebState.
     web::WebState* const active_web_state = GetActiveWebState();
