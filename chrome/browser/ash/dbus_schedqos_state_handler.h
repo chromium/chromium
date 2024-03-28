@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_priority_delegate.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/dbus_result.h"
@@ -55,8 +56,21 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
       base::ProcessId process_id) override;
 
  private:
+  struct ProcessState {
+    base::Process::Priority priority;
+    bool need_retry = false;
+
+    explicit ProcessState(base::Process::Priority priority);
+    ProcessState() = delete;
+    ~ProcessState();
+    ProcessState(ProcessState&&);
+    ProcessState(ProcessState&) = delete;
+  };
+
   explicit DBusSchedQOSStateHandler(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+
+  void OnServiceConnected(bool success);
 
   void SetProcessPriorityOnThread(base::ProcessId process_id,
                                   base::Process::Priority priority);
@@ -65,10 +79,16 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
                                   base::Process::Priority priority,
                                   dbus::DBusResult result);
 
-  base::Lock process_priority_map_lock_;
+  void MarkProcessToRetry(base::ProcessId process_id);
 
-  std::map<base::ProcessId, base::Process::Priority> process_priority_map_
-      GUARDED_BY(process_priority_map_lock_);
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  bool is_connected_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  base::Lock process_state_map_lock_;
+
+  std::map<base::ProcessId, ProcessState> process_state_map_
+      GUARDED_BY(process_state_map_lock_);
 
   // ResourcedClient need to be called on the main thread.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

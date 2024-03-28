@@ -10,12 +10,14 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "dbus/dbus_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
 
 using ::testing::ElementsAre;
 using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 namespace ash {
 
@@ -48,6 +50,8 @@ TEST_F(DBusSchedQOSStateHandlerTest, CanSetProcessPriority) {
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, InitializeProcessPriority) {
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 0ul);
 
   process_.InitializePriority();
@@ -59,6 +63,8 @@ TEST_F(DBusSchedQOSStateHandlerTest, InitializeProcessPriority) {
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriority) {
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
   process_.InitializePriority();
   base::Process dummy_process = base::Process::Open(1);
   dummy_process.InitializePriority();
@@ -82,7 +88,42 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriority) {
           Pair(dummy_process.Pid(), resource_manager::ProcessState::kNormal)));
 }
 
+TEST_F(DBusSchedQOSStateHandlerTest,
+       SetProcessPriorityBeforeResourcedAvailable) {
+  process_.InitializePriority();
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kUserBlocking));
+  base::Process dummy_process1 = base::Process::Open(1);
+  dummy_process1.InitializePriority();
+  ASSERT_TRUE(dummy_process1.SetPriority(base::Process::Priority::kBestEffort));
+  // A process with InitializePriority() without SetPriority().
+  base::Process dummy_process2 = base::Process::Open(2);
+  dummy_process2.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 0ul);
+
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(
+      resourced_client_->GetProcessStateHistory(),
+      UnorderedElementsAre(
+          Pair(process_.Pid(), resource_manager::ProcessState::kNormal),
+          Pair(dummy_process1.Pid(),
+               resource_manager::ProcessState::kBackground),
+          Pair(dummy_process2.Pid(), resource_manager::ProcessState::kNormal)));
+
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kBestEffort));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 4ul);
+  EXPECT_THAT(
+      resourced_client_->GetProcessStateHistory()[3],
+      Pair(process_.Pid(), resource_manager::ProcessState::kBackground));
+}
+
 TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityBeforeInitialize) {
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 0ul);
 
   EXPECT_FALSE(process_.SetPriority(base::Process::Priority::kUserBlocking));
@@ -94,7 +135,7 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityBeforeInitialize) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 1ul);
 
-  EXPECT_TRUE(process_.SetPriority(base::Process::Priority::kBestEffort));
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kBestEffort));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 2ul);
@@ -105,6 +146,8 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityBeforeInitialize) {
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityAfterForgetPriority) {
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
   process_.InitializePriority();
   task_environment_.RunUntilIdle();
 
@@ -122,6 +165,54 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityAfterForgetPriority) {
   EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 2ul);
 }
 
+TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityRetryOnDisconnect) {
+  process_.InitializePriority();
+  base::Process dummy_process1 = base::Process::Open(1);
+  dummy_process1.InitializePriority();
+  base::Process dummy_process2 = base::Process::Open(2);
+  dummy_process2.InitializePriority();
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 3ul);
+
+  resourced_client_->SetProcessStateResult(
+      dbus::DBusResult::kErrorServiceUnknown);
+
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kBestEffort));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 4ul);
+  EXPECT_THAT(
+      resourced_client_->GetProcessStateHistory()[3],
+      Pair(process_.Pid(), resource_manager::ProcessState::kBackground));
+  EXPECT_EQ(process_.GetPriority(), base::Process::Priority::kBestEffort);
+
+  EXPECT_TRUE(dummy_process1.SetPriority(base::Process::Priority::kBestEffort));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(dummy_process1.GetPriority(), base::Process::Priority::kBestEffort);
+
+  EXPECT_TRUE(
+      dummy_process1.SetPriority(base::Process::Priority::kUserBlocking));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(dummy_process1.GetPriority(),
+            base::Process::Priority::kUserBlocking);
+
+  // DBus request is not sent until it reconnects to resourced.
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 4ul);
+
+  resourced_client_->SetProcessStateResult(dbus::DBusResult::kSuccess);
+
+  // When resourced is reconnected, retry the request.
+  EXPECT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 6ul);
+  EXPECT_THAT(
+      absl::MakeSpan(resourced_client_->GetProcessStateHistory()).last(2),
+      UnorderedElementsAre(
+          Pair(process_.Pid(), resource_manager::ProcessState::kBackground),
+          Pair(dummy_process1.Pid(), resource_manager::ProcessState::kNormal)));
+}
+
 TEST_F(DBusSchedQOSStateHandlerTest, GetProcessPriority) {
   // Without initializing the priority, the default priority is returned.
   EXPECT_EQ(process_.GetPriority(), base::Process::Priority::kUserBlocking);
@@ -131,8 +222,12 @@ TEST_F(DBusSchedQOSStateHandlerTest, GetProcessPriority) {
   EXPECT_EQ(process_.GetPriority(), base::Process::Priority::kUserBlocking);
 
   ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kBestEffort));
+  // Even before the D-Bus request is sent, the cached priority is updated.
   EXPECT_EQ(process_.GetPriority(), base::Process::Priority::kBestEffort);
   ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 0ul);
+
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
 
   base::Process dummy_process = base::Process::Open(1);
   dummy_process.InitializePriority();
