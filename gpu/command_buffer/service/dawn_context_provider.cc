@@ -316,7 +316,9 @@ bool DawnContextProvider::Initialize(
   }
 
   dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid;
-  if (GetANGLED3D11DeviceLUID(&adapter_options_luid.adapterLUID)) {
+  if ((adapter_options.backendType == wgpu::BackendType::D3D11 ||
+       adapter_options.backendType == wgpu::BackendType::D3D12) &&
+      GetANGLED3D11DeviceLUID(&adapter_options_luid.adapterLUID)) {
     // Request the GPU that ANGLE is using if possible.
     adapter_options_luid.nextInChain = adapter_options.nextInChain;
     adapter_options.nextInChain = &adapter_options_luid;
