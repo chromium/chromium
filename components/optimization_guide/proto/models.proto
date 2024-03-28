@@ -212,6 +212,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER = 41;
   // Target to support running Compose On-Device.
   OPTIMIZATION_TARGET_COMPOSE = 42;
+  // Target for generating passage embeddings.
+  OPTIMIZATION_TARGET_PASSAGE_EMBEDDER = 43;
 }
 
 // The model engine versions that can be used to do model inference.

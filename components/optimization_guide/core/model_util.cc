@@ -123,6 +123,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationAndroidHomeModuleRanker";
     case proto::OPTIMIZATION_TARGET_COMPOSE:
       return "Compose";
+    case proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER:
+      return "PassageEmbedder";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
