@@ -419,7 +419,7 @@ suite('OfficialBuild', function() {
 
   // <if expr="chromeos_ash">
   test(
-      'Metrics toggle links to OS sync page with deprecate sync metrics off',
+      'Metrics row links to OS sync page with deprecate sync metrics off',
       function() {
         let targetUrl: string = '';
         testElement['navigateTo_'] = (url: string) => {
@@ -438,7 +438,8 @@ suite('OfficialBuild', function() {
       });
 
   test(
-      'Metrics toggle links to OS privacy page with deprecate sync metrics on',
+      'Metrics row links to OS Settings Privacy Hub subpage with deprecate ' +
+          'sync metrics on',
       function() {
         let targetUrl: string = '';
         testElement['navigateTo_'] = (url: string) => {
@@ -449,11 +450,10 @@ suite('OfficialBuild', function() {
           osDeprecateSyncMetricsToggle: true,
         });
 
-        const privacyUrl = loadTimeData.getString('osPrivacySettingsUrl');
-
         testElement.$.metricsReportingLink.click();
-
-        assertEquals(privacyUrl, targetUrl);
+        const expectedUrl =
+            loadTimeData.getString('osSettingsPrivacyHubSubpageUrl');
+        assertEquals(expectedUrl, targetUrl);
       });
   // </if>
 });

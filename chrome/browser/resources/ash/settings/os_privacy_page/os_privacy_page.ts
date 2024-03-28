@@ -94,7 +94,6 @@ export class OsSettingsPrivacyPageElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kVerifiedAccess,
-          Setting.kUsageStatsAndCrashReports,
         ]),
       },
 
