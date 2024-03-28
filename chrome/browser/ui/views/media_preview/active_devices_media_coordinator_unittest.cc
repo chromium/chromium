@@ -53,6 +53,18 @@ std::string ViewTypeToNumDevicesHistogramName(
   }
 }
 
+std::string ViewTypeToDurationHistogramName(
+    MediaCoordinator::ViewType view_type) {
+  switch (view_type) {
+    case MediaCoordinator::ViewType::kCameraOnly:
+      return "MediaPreviews.UI.PageInfo.Camera.Duration";
+    case MediaCoordinator::ViewType::kMicOnly:
+      return "MediaPreviews.UI.PageInfo.Mic.Duration";
+    default:
+      return "UnmappedViewType";
+  }
+}
+
 }  // namespace
 
 class ActiveDevicesMediaCoordinatorTestParameterized
@@ -121,10 +133,23 @@ class ActiveDevicesMediaCoordinatorTestParameterized
     ResetHistogramTester();
   }
 
+  void ExpectDurationHistogramUpdate(int expected_bucket_min_value) {
+    auto duration_histogram_name = ViewTypeToDurationHistogramName(GetParam());
+    histogram_tester_->ExpectUniqueSample(duration_histogram_name,
+                                          expected_bucket_min_value,
+                                          /*expected_bucket_count=*/1);
+    ResetHistogramTester();
+  }
+
   void ResetHistogramTester() { histogram_tester_.emplace(); }
 
+  void AdvanceClock(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   ChromeLayoutProvider layout_provider_;
   std::unique_ptr<content::BackgroundTracingManager>
@@ -251,4 +276,12 @@ TEST_P(ActiveDevicesMediaCoordinatorTestParameterized,
   EXPECT_THAT(coordinator_->GetMediaCoordinatorKeys(),
               testing::ElementsAre(kDevice2Id));
   ExpectNoNumDevicesHistogramUpdate();
+}
+
+TEST_P(ActiveDevicesMediaCoordinatorTestParameterized,
+       DurationMetricLoggedOnDestruction) {
+  auto duration = base::Seconds(2.5);
+  AdvanceClock(duration);
+  coordinator_.reset();
+  ExpectDurationHistogramUpdate(/*expected_bucket_min_value=*/2);
 }
