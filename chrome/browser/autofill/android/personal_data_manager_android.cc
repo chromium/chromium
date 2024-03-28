@@ -183,29 +183,22 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
         Java_CreditCard_getCvc(env, jcard)));
 }
 
-jboolean PersonalDataManagerAndroid::IsDataLoaded(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) const {
+jboolean PersonalDataManagerAndroid::IsDataLoaded(JNIEnv* env) const {
   return personal_data_manager_->IsDataLoaded();
 }
 
 ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetProfileGUIDsForSettings(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj) {
+PersonalDataManagerAndroid::GetProfileGUIDsForSettings(JNIEnv* env) {
   return GetProfileGUIDs(env, personal_data_manager_->GetProfilesForSettings());
 }
 
 ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetProfileGUIDsToSuggest(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj) {
+PersonalDataManagerAndroid::GetProfileGUIDsToSuggest(JNIEnv* env) {
   return GetProfileGUIDs(env, personal_data_manager_->GetProfilesToSuggest());
 }
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
   AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -216,22 +209,19 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
 }
 
 jboolean PersonalDataManagerAndroid::IsEligibleForAddressAccountStorage(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) {
+    JNIEnv* env) {
   return personal_data_manager_->IsEligibleForAddressAccountStorage();
 }
 
 base::android::ScopedJavaLocalRef<jstring>
 PersonalDataManagerAndroid::GetDefaultCountryCodeForNewAddress(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) const {
+    JNIEnv* env) const {
   return ConvertUTF8ToJavaString(
       env, personal_data_manager_->GetDefaultCountryCodeForNewAddress());
 }
 
 bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& country_code) const {
   return personal_data_manager_->IsCountryEligibleForAccountStorage(
       ConvertJavaStringToUTF8(env, country_code));
@@ -239,7 +229,6 @@ bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
 
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jstring>& jguid) {
   std::string guid = ConvertJavaStringToUTF8(env, jguid);
@@ -259,7 +248,6 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
 
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jstring>& jguid) {
   const AutofillProfile* target_profile =
@@ -278,9 +266,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
 }
 
 ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetProfileLabelsForSettings(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj) {
+PersonalDataManagerAndroid::GetProfileLabelsForSettings(JNIEnv* env) {
   return GetProfileLabels(env, false /* address_only */,
                           false /* include_name_in_label */,
                           true /* include_organization_in_label */,
@@ -291,7 +277,6 @@ PersonalDataManagerAndroid::GetProfileLabelsForSettings(
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetProfileLabelsToSuggest(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     jboolean include_name_in_label,
     jboolean include_organization_in_label,
     jboolean include_country_in_label) {
@@ -304,7 +289,6 @@ PersonalDataManagerAndroid::GetProfileLabelsToSuggest(
 base::android::ScopedJavaLocalRef<jstring>
 PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jstring>& jguid,
     bool include_country_in_label) {
@@ -334,23 +318,18 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) {
+PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings(JNIEnv* env) {
   return GetCreditCardGUIDs(env, personal_data_manager_->GetCreditCards());
 }
 
 base::android::ScopedJavaLocalRef<jobjectArray>
-PersonalDataManagerAndroid::GetCreditCardGUIDsToSuggest(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) {
+PersonalDataManagerAndroid::GetCreditCardGUIDsToSuggest(JNIEnv* env) {
   return GetCreditCardGUIDs(env,
                             personal_data_manager_->GetCreditCardsToSuggest());
 }
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardByGUID(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
   CreditCard* card = personal_data_manager_->GetCreditCardByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -362,7 +341,6 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardByGUID(
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardForNumber(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jcard_number) {
   // A local card with empty GUID.
   CreditCard card("", "");
@@ -372,7 +350,6 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardForNumber(
 
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetCreditCard(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jobject>& jcard) {
   std::string guid =
       ConvertJavaStringToUTF8(env, Java_CreditCard_getGUID(env, jcard).obj());
@@ -391,7 +368,6 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetCreditCard(
 
 void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jobject>& jcard) {
   CreditCard card;
   PopulateNativeCreditCardFromJava(jcard, env, &card);
@@ -401,7 +377,6 @@ void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
 
 void PersonalDataManagerAndroid::AddServerCreditCardForTest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jobject>& jcard) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PopulateNativeCreditCardFromJava(jcard, env, card.get());
@@ -412,7 +387,6 @@ void PersonalDataManagerAndroid::AddServerCreditCardForTest(
 
 void PersonalDataManagerAndroid::AddServerCreditCardForTestWithAdditionalFields(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jobject>& jcard,
     const base::android::JavaParamRef<jstring>& jnickname,
     jint jcard_issuer) {
@@ -427,7 +401,6 @@ void PersonalDataManagerAndroid::AddServerCreditCardForTestWithAdditionalFields(
 
 void PersonalDataManagerAndroid::RemoveByGUID(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
   personal_data_manager_->RemoveByGUID(ConvertJavaStringToUTF8(env, jguid));
 }
@@ -447,7 +420,6 @@ void PersonalDataManagerAndroid::OnPersonalDataChanged() {
 
 void PersonalDataManagerAndroid::RecordAndLogProfileUse(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
   AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -457,7 +429,6 @@ void PersonalDataManagerAndroid::RecordAndLogProfileUse(
 
 void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid,
     jint count,
     jint days_since_last_used) {
@@ -474,7 +445,6 @@ void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
 
 jint PersonalDataManagerAndroid::GetProfileUseCountForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jguid) {
   AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -483,7 +453,6 @@ jint PersonalDataManagerAndroid::GetProfileUseCountForTesting(
 
 jlong PersonalDataManagerAndroid::GetProfileUseDateForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jguid) {
   AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -492,7 +461,6 @@ jlong PersonalDataManagerAndroid::GetProfileUseDateForTesting(
 
 void PersonalDataManagerAndroid::RecordAndLogCreditCardUse(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
   CreditCard* card = personal_data_manager_->GetCreditCardByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -502,7 +470,6 @@ void PersonalDataManagerAndroid::RecordAndLogCreditCardUse(
 
 void PersonalDataManagerAndroid::SetCreditCardUseStatsForTesting(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid,
     jint count,
     jint days_since_last_used) {
@@ -518,7 +485,6 @@ void PersonalDataManagerAndroid::SetCreditCardUseStatsForTesting(
 
 jint PersonalDataManagerAndroid::GetCreditCardUseCountForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jguid) {
   CreditCard* card = personal_data_manager_->GetCreditCardByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -527,7 +493,6 @@ jint PersonalDataManagerAndroid::GetCreditCardUseCountForTesting(
 
 jlong PersonalDataManagerAndroid::GetCreditCardUseDateForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jguid) {
   CreditCard* card = personal_data_manager_->GetCreditCardByGUID(
       ConvertJavaStringToUTF8(env, jguid));
@@ -535,22 +500,17 @@ jlong PersonalDataManagerAndroid::GetCreditCardUseDateForTesting(
 }
 
 // TODO(crbug.com/629507): Use a mock clock for testing.
-jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) {
+jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(JNIEnv* env) {
   return base::Time::Now().ToTimeT();
 }
 
 jlong PersonalDataManagerAndroid::GetDateNDaysAgoForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
     jint days) {
   return (AutofillClock::Now() - base::Days(days)).ToTimeT();
 }
 
-void PersonalDataManagerAndroid::ClearServerDataForTesting(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj) {
+void PersonalDataManagerAndroid::ClearServerDataForTesting(JNIEnv* env) {
   personal_data_manager_->ClearAllServerDataForTesting();  // IN-TEST
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -773,7 +733,6 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jguid) {
   const Iban* iban =
       personal_data_manager_->payments_data_manager().GetIbanByGUID(
@@ -787,7 +746,6 @@ ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
 
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jobject>& jiban) {
   std::string guid =
       ConvertJavaStringToUTF8(env, Java_Iban_getGuid(env, jiban).obj());
@@ -805,7 +763,6 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
 
 jboolean PersonalDataManagerAndroid::IsValidIban(
     JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jiban_value) {
   return Iban::IsValid(ConvertJavaStringToUTF16(env, jiban_value));
 }
