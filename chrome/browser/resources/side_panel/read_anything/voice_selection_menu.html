@@ -16,7 +16,7 @@
   }
   #voiceSelectionMenu::part(dialog) {
     min-width: 304px;
-    width: 100%;
+    width: fit-content;
     margin-left: var(--sp-body-padding);
     max-height: 95%;
   }
@@ -57,11 +57,12 @@
     color: var(--color-sys-on-surface-subtle);
   }
   .voice-name {
-    max-width: 220px;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 13px;
     font-weight: 500;
+    padding-inline-end: 16px;
   }
   .item-invisible-true {
     visibility: hidden;
