@@ -361,8 +361,7 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
 
   with FileWriter(swift_file_list_path) as stream:
     for filename in sorted(args.sources):
-      stream.write(filename)
-      stream.write('\n')
+      stream.write(f'"{filename}"\n')
 
   header_path = args.header_path
   if args.fix_generated_header:
@@ -491,7 +490,9 @@ def generate_depfile(args, output_file_map):
           output, inputs = line.split(' : ', 2)
           output = os.path.relpath(output, out_dir)
 
-          for path in inputs.split():
+          # The depfile format uses '\' to quote space in filename. Split the
+          # list of file while respecting this convention.
+          for path in re.split(r'(?<!\\) ', inputs):
             for xcode_path in xcode_paths:
               if path.startswith(xcode_path):
                 path = xcode_paths[xcode_path] + path[len(xcode_path):]
