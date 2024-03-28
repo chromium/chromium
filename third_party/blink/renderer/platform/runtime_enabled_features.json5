@@ -1454,7 +1454,7 @@
     // of any issues.
     {
       name: "DOMParserUsesHTMLFastPathParser",
-      status: "test"
+      status: "stable"
     },
     {
       name: "DOMPartsAPI",

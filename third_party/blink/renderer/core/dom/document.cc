@@ -1700,6 +1700,11 @@ void Document::SetContentFromDOMParser(const String& content) {
     if (declarative_shadow_root_allow_state_ == AllowState::kAllow) {
       parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
     }
+    // The default for html parsing is quirks mode. This is normally set during
+    // parsing, but not for the fast path, so it needs to be set here. If the
+    // fast-path parser fails, the full parser will adjust the mode
+    // appropriately.
+    SetCompatibilityMode(kQuirksMode);
     const bool success = TryParsingHTMLFragment(content, *this, *body, *body,
                                                 kAllowScriptingContent,
                                                 parser_behavior, nullptr);
