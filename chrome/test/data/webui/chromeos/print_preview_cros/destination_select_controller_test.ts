@@ -4,28 +4,40 @@
 
 import 'chrome://os-print/js/destination_select_controller.js';
 
-import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DESTINATION_MANAGER_STATE_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
+import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
+import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('DestinationSelectController', () => {
   let controller: DestinationSelectController;
   let destinationManager: DestinationManager;
+  let destinationProvider: FakeDestinationProvider;
   let mockController: MockController;
+  let eventTracker: EventTracker;
 
   setup(() => {
     DestinationManager.resetInstanceForTesting();
+    destinationProvider = new FakeDestinationProvider();
+    setDestinationProviderForTesting(destinationProvider);
     destinationManager = DestinationManager.getInstance();
-    mockController = new MockController();
 
-    controller = new DestinationSelectController();
+    mockController = new MockController();
+    eventTracker = new EventTracker();
+
+    controller = new DestinationSelectController(eventTracker);
     assertTrue(!!controller);
   });
 
   teardown(() => {
     mockController.reset();
     DestinationManager.resetInstanceForTesting();
+    eventTracker.removeAll();
   });
 
   // Verify controller is event target.
@@ -62,5 +74,25 @@ suite('DestinationSelectController', () => {
         hasDestinationsFn.returnValue = true;
 
         assertFalse(controller.shouldShowLoading(), 'Has fetched destinations');
+      });
+
+
+  // Verify controller is listening to DESTINATION_MANAGER_STATE_CHANGED event.
+  test(
+      'onDestinationManagerStateChanged called on ' +
+          DESTINATION_MANAGER_STATE_CHANGED,
+      async () => {
+        const onStateChangedFn = mockController.createFunctionMock(
+            controller, 'onDestinationManagerStateChanged');
+        const testEvent = createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED);
+        const stateChanged = eventToPromise(
+            DESTINATION_MANAGER_STATE_CHANGED, destinationManager);
+        onStateChangedFn.addExpectation(testEvent);
+
+        // Simulate event being fired.
+        destinationManager.dispatchEvent(testEvent);
+        await stateChanged;
+
+        mockController.verifyMocks();
       });
 });

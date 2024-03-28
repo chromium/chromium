@@ -4,6 +4,7 @@
 
 import 'chrome://os-print/js/destination_select.js';
 
+import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DestinationSelectElement} from 'chrome://os-print/js/destination_select.js';
 import {DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
@@ -14,6 +15,7 @@ import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 suite('DestinationSelect', () => {
   let element: DestinationSelectElement;
   let controller: DestinationSelectController;
+  let destinationManager: DestinationManager;
   let mockController: MockController;
 
   const loadingSelector = '#loading';
@@ -22,6 +24,9 @@ suite('DestinationSelect', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     mockController = new MockController();
+
+    DestinationManager.resetInstanceForTesting();
+    destinationManager = DestinationManager.getInstance();
 
     element = document.createElement(DestinationSelectElement.is) as
         DestinationSelectElement;
@@ -33,6 +38,7 @@ suite('DestinationSelect', () => {
 
   teardown(() => {
     element.remove();
+    DestinationManager.resetInstanceForTesting();
     mockController.reset();
   });
 
@@ -52,9 +58,9 @@ suite('DestinationSelect', () => {
   // Verify expected elements display while `controller.shouldShowLoading` is
   // true.
   test('displays expected elements when showLoading is true', () => {
-    const isLoadingFn =
-        mockController.createFunctionMock(controller, 'shouldShowLoading');
-    isLoadingFn.returnValue = true;
+    const hasInitialDestinationsFn = mockController.createFunctionMock(
+        destinationManager, 'hasLoadedAnInitialDestination');
+    hasInitialDestinationsFn.returnValue = false;
 
     // Remove and re-add element to page to trigger 'connectedCallback'.
     element.remove();
@@ -71,9 +77,9 @@ suite('DestinationSelect', () => {
   // Verify expected elements display while `controller.shouldShowLoading` is
   // false.
   test('displays expected loading UX', () => {
-    const loadingFn =
-        mockController.createFunctionMock(controller, 'shouldShowLoading');
-    loadingFn.returnValue = false;
+    const hasInitialDestinationsFn = mockController.createFunctionMock(
+        destinationManager, 'hasLoadedAnInitialDestination');
+    hasInitialDestinationsFn.returnValue = true;
 
     // Remove and re-add element to page to trigger 'connectedCallback'.
     element.remove();

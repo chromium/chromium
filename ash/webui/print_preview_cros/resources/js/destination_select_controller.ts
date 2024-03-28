@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DestinationManager} from './data/destination_manager.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+
+import {DESTINATION_MANAGER_STATE_CHANGED, DestinationManager} from './data/destination_manager.js';
 
 /**
  * @fileoverview
@@ -16,8 +18,23 @@ import {DestinationManager} from './data/destination_manager.js';
 export class DestinationSelectController extends EventTarget {
   private destinationManager = DestinationManager.getInstance();
 
+  /**
+   * @param eventTracker Passed in by owning element to ensure event handlers
+   * lifetime is aligned with element.
+   */
+  constructor(eventTracker: EventTracker) {
+    super();
+    eventTracker.add(
+        this.destinationManager, DESTINATION_MANAGER_STATE_CHANGED,
+        (e: Event): void => this.onDestinationManagerStateChanged(e));
+  }
+
   // Returns whether destination manager has fetched initial destinations.
   shouldShowLoading(): boolean {
     return !this.destinationManager.hasLoadedAnInitialDestination();
   }
+
+  // TODO(b/323421684): Handle notifying UI to update when destination manager
+  // state changes.
+  private onDestinationManagerStateChanged(_event: Event): void {}
 }

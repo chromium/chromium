@@ -4,6 +4,7 @@
 
 import './destination_dropdown.js';
 
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_select.html.js';
@@ -30,14 +31,22 @@ export class DestinationSelectElement extends PolymerElement {
     };
   }
 
-  private controller = new DestinationSelectController();
+  private controller: DestinationSelectController;
+  private eventTracker = new EventTracker();
   private showLoading: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
+    this.controller = new DestinationSelectController(this.eventTracker);
+
     // Initialize properties using the controller.
     this.showLoading = this.controller.shouldShowLoading();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
   }
 
   getControllerForTesting(): DestinationSelectController {
