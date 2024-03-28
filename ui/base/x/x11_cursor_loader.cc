@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -538,7 +539,8 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
   auto ReadU32s = [&](base::span<uint8_t> dest) {
     CHECK_EQ(dest.size() % 4u, 0u);
     auto src = base::span(*file);
-    if (dest.size() > src.size() - offset) {
+    if (auto end = base::CheckAdd(offset, dest.size());
+        !end.IsValid() || end.ValueOrDie() > src.size()) {
       return false;
     }
     for (size_t i = 0; i < dest.size(); i += 4u) {
@@ -552,7 +554,8 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
   // Reads a single 32-bit value from `file` and writes it to `dest`.
   auto ReadU32 = [&](uint32_t& dest) {
     auto src = base::span(*file);
-    if (sizeof(dest) > src.size() - offset) {
+    if (auto end = base::CheckAdd(offset, sizeof(dest));
+        !end.IsValid() || end.ValueOrDie() > src.size()) {
       return false;
     }
     dest = base::numerics::U32FromLittleEndian(
