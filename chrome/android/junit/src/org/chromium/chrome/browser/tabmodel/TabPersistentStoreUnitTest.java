@@ -18,9 +18,10 @@ import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import java.util.List;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.TaskRunner;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -63,7 +62,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for the tab persistent store logic. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class TabPersistentStoreUnitTest {
     private static final Integer RESTORE_TAB_ID_1 = 31;
@@ -95,8 +94,6 @@ public class TabPersistentStoreUnitTest {
 
     @Before
     public void setUp() {
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
@@ -122,13 +119,12 @@ public class TabPersistentStoreUnitTest {
         final AtomicBoolean flushed = new AtomicBoolean(false);
         if (mPersistentStore != null) {
             mPersistentStore.getTaskRunnerForTests().postTask(() -> flushed.set(true));
-            CriteriaHelper.pollUiThread(() -> flushed.get());
+            CriteriaHelper.pollUiThreadForJUnit(() -> flushed.get());
         }
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testNtpSaveBehavior() {
         when(mNormalTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
@@ -334,7 +330,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testSerializeTabModelSelector() throws IOException {
         setupSerializationTestMocks();
@@ -381,7 +376,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testWithoutSkipNonActiveNtps() throws IOException {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
@@ -409,7 +403,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testSkipNonActiveNtpsWithSkippedNtpComeBeforeActiveTab() throws IOException {
         setupSerializationTestMocksWithSkippedNtpComeBeforeActiveTab();
@@ -433,7 +426,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testSkipNonActiveNtpsWithSkippedNtpComeAfterActiveTab() throws IOException {
         setupSerializationTestMocks();
@@ -457,7 +449,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
     public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsDisabled()
@@ -483,7 +474,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
     public void testSkipNonActiveNtpsWithGroupedAndNavigableNtps_TabGroupStableIdsEnabled()
@@ -517,7 +507,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testSerializeTabModelSelector_tabsBeingRestored() throws IOException {
         setupSerializationTestMocks();
@@ -527,7 +516,7 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(RESTORE_TAB_ID_2, 3, true, RESTORE_TAB_STRING_2, false);
         TabRestoreDetails unknownTabRestoreDetails =
                 new TabRestoreDetails(RESTORE_TAB_ID_3, 4, null, RESTORE_TAB_STRING_3, false);
-        ArrayList<TabRestoreDetails> tabRestoreDetails = new ArrayList<>() {};
+        List<TabRestoreDetails> tabRestoreDetails = new ArrayList<>();
         tabRestoreDetails.add(regularTabRestoreDetails);
         tabRestoreDetails.add(incognitoTabRestoreDetails);
         tabRestoreDetails.add(unknownTabRestoreDetails);
@@ -573,7 +562,6 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testSerializeTabModelSelector_closingTabsSkipped() throws IOException {
         when(mNormalTabModel.getCount()).thenReturn(2);
