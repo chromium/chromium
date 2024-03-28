@@ -151,6 +151,22 @@ static CalculationResultCategory UnitCategory(
   }
 }
 
+CSSMathOperator CSSValueIDToCSSMathOperator(CSSValueID id) {
+  switch (id) {
+#define CONVERSION_CASE(value_id) \
+  case CSSValueID::value_id:      \
+    return CSSMathOperator::value_id;
+
+    CONVERSION_CASE(kProgress)
+    CONVERSION_CASE(kMediaProgress)
+    CONVERSION_CASE(kContainerProgress)
+
+#undef CONVERSION_CASE
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
   switch (type) {
     case CSSPrimitiveValue::UnitType::kNumber:
@@ -270,6 +286,12 @@ bool IsAllowedMediaFeature(const CSSValueID& id) {
   return id == CSSValueID::kWidth || id == CSSValueID::kHeight;
 }
 
+// TODO(crbug.com/40944203): For now we only support width and height
+// size features.
+bool IsAllowedContainerFeature(const CSSValueID& id) {
+  return id == CSSValueID::kWidth || id == CSSValueID::kHeight;
+}
+
 bool CheckProgressFunctionTypes(
     CSSValueID function_id,
     const CSSMathExpressionOperation::Operands& nodes) {
@@ -288,6 +310,17 @@ bool CheckProgressFunctionTypes(
     case CSSValueID::kMediaProgress: {
       if (!IsAllowedMediaFeature(
               To<CSSMathExpressionKeywordLiteral>(*nodes[0]).GetValue())) {
+        return false;
+      }
+      if (nodes[1]->Category() != CalculationResultCategory::kCalcLength ||
+          nodes[2]->Category() != CalculationResultCategory::kCalcLength) {
+        return false;
+      }
+      break;
+    }
+    case CSSValueID::kContainerProgress: {
+      if (!IsAllowedContainerFeature(
+              To<CSSMathExpressionContainerFeature>(*nodes[0]).GetValue())) {
         return false;
       }
       if (nodes[1]->Category() != CalculationResultCategory::kCalcLength ||
@@ -1599,6 +1632,12 @@ inline const CSSMathExpressionOperation* DynamicToCalcSize(
   return operation;
 }
 
+inline bool CanArithmeticOperationBeSimplified(
+    const CSSMathExpressionNode* left_side,
+    const CSSMathExpressionNode* right_side) {
+  return !left_side->IsOperation() && !right_side->IsOperation();
+}
+
 // static
 CSSMathExpressionNode*
 CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
@@ -1613,7 +1652,7 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     return result;
   }
 
-  if (left_side->IsOperation() || right_side->IsOperation()) {
+  if (!CanArithmeticOperationBeSimplified(left_side, right_side)) {
     return CreateArithmeticOperation(left_side, right_side, op);
   }
 
@@ -1933,6 +1972,7 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kSign:
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kMediaProgress:
+    case CSSMathOperator::kContainerProgress:
       return std::nullopt;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2006,6 +2046,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kSign:
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kMediaProgress:
+    case CSSMathOperator::kContainerProgress:
     case CSSMathOperator::kCalcSize: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
@@ -2035,6 +2076,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kProgress;
       } else if (operator_ == CSSMathOperator::kMediaProgress) {
         op = CalculationOperator::kMediaProgress;
+      } else if (operator_ == CSSMathOperator::kContainerProgress) {
+        op = CalculationOperator::kContainerProgress;
       } else {
         CHECK(operator_ == CSSMathOperator::kCalcSize);
         op = CalculationOperator::kCalcSize;
@@ -2158,6 +2201,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kCalcSize:
     case CSSMathOperator::kMediaProgress:
+    case CSSMathOperator::kContainerProgress:
       return false;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2279,7 +2323,8 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       return result.ReleaseString();
     }
     case CSSMathOperator::kProgress:
-    case CSSMathOperator::kMediaProgress: {
+    case CSSMathOperator::kMediaProgress:
+    case CSSMathOperator::kContainerProgress: {
       CHECK_EQ(operands_.size(), 3u);
       StringBuilder result;
       result.Append(ToString(operator_));
@@ -2374,6 +2419,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         case CSSMathOperator::kSign:
         case CSSMathOperator::kProgress:
         case CSSMathOperator::kMediaProgress:
+        case CSSMathOperator::kContainerProgress:
           return CSSPrimitiveValue::UnitType::kNumber;
         case CSSMathOperator::kCalcSize: {
           DCHECK_EQ(operands_.size(), 2u);
@@ -2507,7 +2553,8 @@ double CSSMathExpressionOperation::EvaluateOperator(
       return signum;
     }
     case CSSMathOperator::kProgress:
-    case CSSMathOperator::kMediaProgress: {
+    case CSSMathOperator::kMediaProgress:
+    case CSSMathOperator::kContainerProgress: {
       CHECK_EQ(operands.size(), 3u);
       return (operands[0] - operands[1]) / (operands[2] - operands[1]);
     }
@@ -2568,6 +2615,81 @@ bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
 #endif
 
 // ------ End of CSSMathExpressionOperation member functions ------
+
+// ------ Start of CSSMathExpressionContainerProgress member functions ----
+
+namespace {
+
+double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
+                             const CSSCustomIdentValue* container_name,
+                             const CSSLengthResolver& length_resolver) {
+  if (container_name) {
+    ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
+        container_name->Value(), container_name->GetTreeScope());
+    switch (size_feature->GetValueID()) {
+      case CSSValueID::kWidth:
+        return length_resolver.ContainerWidth(*name);
+      case CSSValueID::kHeight:
+        return length_resolver.ContainerHeight(*name);
+      default:
+        NOTREACHED_NORETURN();
+    }
+  } else {
+    switch (size_feature->GetValueID()) {
+      case CSSValueID::kWidth:
+        return length_resolver.ContainerWidth();
+      case CSSValueID::kHeight:
+        return length_resolver.ContainerHeight();
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+}
+
+}  // namespace
+
+CSSMathExpressionContainerFeature::CSSMathExpressionContainerFeature(
+    const CSSIdentifierValue* size_feature,
+    const CSSCustomIdentValue* container_name)
+    : CSSMathExpressionNode(CalculationResultCategory::kCalcLength,
+                            /*has_comparisons =*/false,
+                            /*needs_tree_scope_population =*/true),
+      size_feature_(size_feature),
+      container_name_(container_name) {
+  CHECK(size_feature);
+}
+
+String CSSMathExpressionContainerFeature::CustomCSSText() const {
+  StringBuilder builder;
+  builder.Append(size_feature_->CustomCSSText());
+  if (container_name_ && !container_name_->Value().empty()) {
+    builder.Append(" of ");
+    builder.Append(container_name_->CustomCSSText());
+  }
+  return builder.ToString();
+}
+
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionContainerFeature::ToCalculationExpression(
+    const CSSLengthResolver& length_resolver) const {
+  double progress =
+      EvaluateContainerSize(size_feature_, container_name_, length_resolver);
+  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+      PixelsAndPercent(progress));
+}
+
+std::optional<PixelsAndPercent>
+CSSMathExpressionContainerFeature::ToPixelsAndPercent(
+    const CSSLengthResolver& length_resolver) const {
+  return PixelsAndPercent(ComputeDouble(length_resolver));
+}
+
+double CSSMathExpressionContainerFeature::ComputeDouble(
+    const CSSLengthResolver& length_resolver) const {
+  return EvaluateContainerSize(size_feature_, container_name_, length_resolver);
+}
+
+// ------ End of CSSMathExpressionContainerProgress member functions ------
 
 // ------ Start of CSSMathExpressionAnchorQuery member functions ------
 
@@ -2979,6 +3101,7 @@ class CSSMathExpressionNodeParser {
         return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
       case CSSValueID::kProgress:
       case CSSValueID::kMediaProgress:
+      case CSSValueID::kContainerProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
       case CSSValueID::kCalcSize:
         return RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled();
@@ -3080,11 +3203,13 @@ class CSSMathExpressionNodeParser {
 
   // https://drafts.csswg.org/css-values-5/#progress-func
   // https://drafts.csswg.org/css-values-5/#media-progress-func
+  // https://drafts.csswg.org/css-values-5/#container-progress-func
   CSSMathExpressionNode* ParseProgressNotation(CSSValueID function_id,
                                                CSSParserTokenRange& tokens,
                                                State state) {
     if (function_id != CSSValueID::kProgress &&
-        function_id != CSSValueID::kMediaProgress) {
+        function_id != CSSValueID::kMediaProgress &&
+        function_id != CSSValueID::kContainerProgress) {
       return nullptr;
     }
     // <media-progress()> = media-progress(<media-feature> from <calc-sum> to
@@ -3095,6 +3220,27 @@ class CSSMathExpressionNodeParser {
       if (CSSMathExpressionKeywordLiteral* node =
               ParseKeywordLiteral(tokens, CSSMathOperator::kMediaProgress)) {
         nodes.push_back(node);
+      }
+    } else if (function_id == CSSValueID::kContainerProgress) {
+      // <container-progress()> = container-progress(<size-feature> [ of
+      // <container-name> ]? from <calc-sum> to <calc-sum>)
+      const CSSIdentifierValue* size_feature =
+          css_parsing_utils::ConsumeIdent(tokens);
+      if (!size_feature) {
+        return nullptr;
+      }
+      if (tokens.Peek().Id() == CSSValueID::kOf) {
+        tokens.ConsumeIncludingWhitespace();
+        const CSSCustomIdentValue* container_name =
+            css_parsing_utils::ConsumeCustomIdent(tokens, context_);
+        if (!container_name) {
+          return nullptr;
+        }
+        nodes.push_back(MakeGarbageCollected<CSSMathExpressionContainerFeature>(
+            size_feature, container_name));
+      } else {
+        nodes.push_back(MakeGarbageCollected<CSSMathExpressionContainerFeature>(
+            size_feature, nullptr));
       }
     } else if (CSSMathExpressionNode* node =
                    ParseValueExpression(tokens, state)) {
@@ -3137,8 +3283,7 @@ class CSSMathExpressionNodeParser {
     }
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         CalculationResultCategory::kCalcNumber, std::move(nodes),
-        function_id == CSSValueID::kProgress ? CSSMathOperator::kProgress
-                                             : CSSMathOperator::kMediaProgress);
+        CSSValueIDToCSSMathOperator(function_id));
   }
 
   CSSMathExpressionNode* ParseCalcSize(CSSValueID function_id,
@@ -3813,7 +3958,8 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
           std::move(operands), op);
     }
     case CalculationOperator::kProgress:
-    case CalculationOperator::kMediaProgress: {
+    case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kContainerProgress: {
       CHECK_EQ(children.size(), 3u);
       CSSMathExpressionOperation::Operands operands;
       operands.push_back(Create(*children.front()));

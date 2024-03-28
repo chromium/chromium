@@ -326,7 +326,8 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       }
     }
     case CalculationOperator::kProgress:
-    case CalculationOperator::kMediaProgress: {
+    case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kContainerProgress: {
       DCHECK_EQ(children.size(), 3u);
       Vector<float, 3> operand_pixels;
       bool can_simplify = true;
@@ -490,7 +491,8 @@ float CalculationExpressionOperationNode::Evaluate(
       return children_[1]->Evaluate(max_value, calculation_input);
     }
     case CalculationOperator::kProgress:
-    case CalculationOperator::kMediaProgress: {
+    case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kContainerProgress: {
       DCHECK(!children_.empty());
       float progress = children_[0]->Evaluate(max_value, input);
       float from = children_[1]->Evaluate(max_value, input);
@@ -553,7 +555,8 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kAbs:
     case CalculationOperator::kSign:
     case CalculationOperator::kProgress:
-    case CalculationOperator::kMediaProgress: {
+    case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kContainerProgress: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());
@@ -631,6 +634,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
       return first_child_type;
     }
     case CalculationOperator::kSign:
+    case CalculationOperator::kContainerProgress:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
       return ResultType::kNumber;

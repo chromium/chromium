@@ -38,12 +38,15 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -118,6 +121,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsAnchorQuery() const { return false; }
   virtual bool IsIdentifierLiteral() const { return false; }
   virtual bool IsKeywordLiteral() const { return false; }
+  virtual bool IsContainerFeature() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -600,7 +604,8 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool IsCalcSize() const { return operator_ == CSSMathOperator::kCalcSize; }
   bool IsProgressNotation() const {
     return operator_ == CSSMathOperator::kProgress ||
-           operator_ == CSSMathOperator::kMediaProgress;
+           operator_ == CSSMathOperator::kMediaProgress ||
+           operator_ == CSSMathOperator::kContainerProgress;
   }
 
   // TODO(crbug.com/1284199): Check other math functions too.
@@ -673,6 +678,96 @@ template <>
 struct DowncastTraits<CSSMathExpressionOperation> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
     return node.IsOperation();
+  }
+};
+
+class CORE_EXPORT CSSMathExpressionContainerFeature final
+    : public CSSMathExpressionNode {
+ public:
+  CSSMathExpressionContainerFeature(const CSSIdentifierValue* size_feature,
+                                    const CSSCustomIdentValue* container_name);
+
+  CSSMathExpressionNode* Copy() const final {
+    return MakeGarbageCollected<CSSMathExpressionContainerFeature>(
+        size_feature_, container_name_);
+  }
+
+  bool IsContainerFeature() const final { return true; }
+
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope* tree_scope) const final {
+    const CSSCustomIdentValue* container_name =
+        container_name_ ? &container_name_->PopulateWithTreeScope(tree_scope)
+                        : nullptr;
+    return *MakeGarbageCollected<CSSMathExpressionContainerFeature>(
+        size_feature_, container_name);
+  }
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis axis,
+      const TryTacticTransform& transform,
+      const WritingDirectionMode& mode) const final {
+    return this;
+  }
+
+  CSSValueID GetValue() const { return size_feature_->GetValueID(); }
+
+  bool IsZero() const final { return false; }
+  String CustomCSSText() const final;
+  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+      const CSSLengthResolver&) const final;
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSLengthResolver&) const final;
+  double DoubleValue() const final {
+    NOTREACHED();
+    return 0;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    return std::nullopt;
+  }
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+    return 0;
+  }
+  bool AccumulateLengthArray(CSSLengthArray& length_array,
+                             double multiplier) const final {
+    return false;
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const final {}
+  bool IsComputationallyIndependent() const final { return true; }
+  bool operator==(const CSSMathExpressionNode& other) const final {
+    auto* other_progress = DynamicTo<CSSMathExpressionContainerFeature>(other);
+    return other_progress &&
+           base::ValuesEquivalent(other_progress->size_feature_,
+                                  size_feature_) &&
+           base::ValuesEquivalent(other_progress->container_name_,
+                                  container_name_);
+  }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
+    return CSSPrimitiveValue::UnitType::kNumber;
+  }
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(size_feature_);
+    visitor->Trace(container_name_);
+    CSSMathExpressionNode::Trace(visitor);
+  }
+
+#if DCHECK_IS_ON()
+  bool InvolvesPercentageComparisons() const final { return false; }
+#endif
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
+
+ private:
+  Member<const CSSIdentifierValue> size_feature_;
+  Member<const CSSCustomIdentValue> container_name_;
+};
+
+template <>
+struct DowncastTraits<CSSMathExpressionContainerFeature> {
+  static bool AllowFrom(const CSSMathExpressionNode& node) {
+    return node.IsContainerFeature();
   }
 };
 

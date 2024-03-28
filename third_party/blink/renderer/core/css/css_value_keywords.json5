@@ -1875,5 +1875,9 @@
 
     // media-progress()
     "media-progress",
+
+    // container-progress()
+    "container-progress",
+    "of",
   ],
 }
