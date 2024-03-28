@@ -127,7 +127,7 @@ OutputSurfaceProviderWebView::~OutputSurfaceProviderWebView() {
   // have a current context at this point, so ensure that it is current here (if
   // not using ANGLE, RenderThreadManager::DestroyHardwareRendererOnRT() ensures
   // that there is a current context via its creation of a
-  // ScopedAppGLStateRestoreImpl instance, which creates a dummy context).
+  // ScopedAppGLStateRestoreImpl instance, which creates a placeholder context).
   // NOTE: |shared_context_state_| holds a ref to surface, but it explicitly
   // drops it before releasing the context.
   if (gl_surface_->is_angle()) {

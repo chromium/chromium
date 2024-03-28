@@ -55,7 +55,7 @@ android_library("boundary_interface_java") {
 android_apk("boundary_interface_example_apk") {
   apk_name = "BoundaryInterfaceExample"
 
-  # Use a dummy android manifest since this code is copied to androidx.
+  # Use a placeholder android manifest since this code is copied to androidx.
   android_manifest = "//build/android/AndroidManifest.xml"
 
   # This is to verify that the boundary interfaces compile and lint correctly

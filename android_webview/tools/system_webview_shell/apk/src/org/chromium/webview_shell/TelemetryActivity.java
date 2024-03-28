@@ -25,8 +25,8 @@ public class TelemetryActivity extends Activity {
     static final String DEFAULT_START_UP_AND_LOAD_URL_TRACE_TAG =
             "WebViewStartupAndLoadBlankUrlInterval";
 
-    static final String DUMMY_TRACE_TAG_NAME = "WebViewDummyTraceTag";
-    static final String DEFAULT_DUMMY_TRACE_TAG = "WebViewDummyInterval";
+    static final String PLACEHOLDER_TRACE_TAG_NAME = "WebViewDummyTraceTag";
+    static final String DEFAULT_PLACEHOLDER_TRACE_TAG = "WebViewDummyInterval";
 
     private Intent mIntent;
 
@@ -50,7 +50,8 @@ public class TelemetryActivity extends Activity {
                 getTraceTag(
                         START_UP_AND_LOAD_URL_TRACE_TAG_NAME,
                         DEFAULT_START_UP_AND_LOAD_URL_TRACE_TAG);
-        final String dummyTraceTag = getTraceTag(DUMMY_TRACE_TAG_NAME, DEFAULT_DUMMY_TRACE_TAG);
+        final String placeholderTraceTag =
+                getTraceTag(PLACEHOLDER_TRACE_TAG_NAME, DEFAULT_PLACEHOLDER_TRACE_TAG);
 
         Trace.beginSection(startUpAndLoadUrlTraceTag);
         Trace.beginSection(startUpTraceTag);
@@ -83,11 +84,11 @@ public class TelemetryActivity extends Activity {
                     @Override
                     public void onPageFinished(WebView view, String url) {
                         super.onPageFinished(view, url);
-                        // dummyTraceTag was ended by code in Android intended to end
+                        // placeholderTraceTag was ended by code in Android intended to end
                         // activityStart before onPageFinished was called, so the time
                         // reported as the activityStart will be longer than actual.
                         // The actual duration of activityStart will be from the
-                        // beginning of the activityStart to the end of the dummyTraceTag
+                        // beginning of the activityStart to the end of the placeholderTraceTag
 
                         // Ends loadUrlTraceTag
                         Trace.endSection();
@@ -105,9 +106,9 @@ public class TelemetryActivity extends Activity {
         webView.loadUrl("about:blank");
 
         // TODO(aluo): Use async tracing to avoid having to do this
-        // dummyTraceTag is needed here to prevent code in Android intended to
+        // placeholderTraceTag is needed here to prevent code in Android intended to
         // end activityStart from ending loadUrlTraceTag prematurely,
         // see crbug/919221
-        Trace.beginSection(dummyTraceTag);
+        Trace.beginSection(placeholderTraceTag);
     }
 }

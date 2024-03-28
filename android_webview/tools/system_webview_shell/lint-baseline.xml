@@ -125,7 +125,7 @@
     <issue
         id="UnclosedTrace"
         message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
-        errorLine1="        Trace.beginSection(dummyTraceTag);"
+        errorLine1="        Trace.beginSection(placeholderTraceTag);"
         errorLine2="              ~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"

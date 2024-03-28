@@ -162,9 +162,9 @@ public class WebKitHitTestTest extends AwParameterizedTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Handler dummyHandler = new Handler();
-                    Message focusNodeHrefMsg = dummyHandler.obtainMessage();
-                    Message imageRefMsg = dummyHandler.obtainMessage();
+                    Handler placeholderHandler = new Handler();
+                    Message focusNodeHrefMsg = placeholderHandler.obtainMessage();
+                    Message imageRefMsg = placeholderHandler.obtainMessage();
 
                     mAwContents.requestFocusNodeHref(focusNodeHrefMsg);
                     mAwContents.requestImageRef(imageRefMsg);
@@ -476,9 +476,9 @@ public class WebKitHitTestTest extends AwParameterizedTest {
         String html =
                 CommonResources.makeHtmlPageFrom(
                         "<meta name=\"viewport\""
-                                + " content=\"width=device-width,height=device-height\" /><style"
-                                + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
-                                + "</style>",
+                            + " content=\"width=device-width,height=device-height\" /><style"
+                            + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
+                            + "</style>",
                         "<form><input class=\"full_width\" style=\"height:25%;\" "
                                 + "type=\"text\" name=\"test\"></form>"
                                 + "<img class=\"full_width\" style=\"height:50%;top:25%;\" "

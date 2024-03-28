@@ -24,7 +24,7 @@
 namespace tracing {
 namespace {
 
-const char kDummyTrace[] = "Trace bytes as serialized proto";
+const char kPlaceholderTrace[] = "Trace bytes as serialized proto";
 
 class TestBackgroundTracingHelper
     : public content::BackgroundTracingManager::EnabledStateTestObserver {
@@ -80,7 +80,8 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
+      kPlaceholderTrace, "test_scenario", "test_rule",
+      base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
   EXPECT_TRUE(provider.HasIndependentMetrics());
@@ -103,7 +104,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   ASSERT_EQ(1, uma_proto.trace_log_size());
   EXPECT_EQ(metrics::TraceLog::COMPRESSION_TYPE_ZLIB,
             uma_proto.trace_log(0).compression_type());
-  EXPECT_NE(kDummyTrace, uma_proto.trace_log(0).raw_data());
+  EXPECT_NE(kPlaceholderTrace, uma_proto.trace_log(0).raw_data());
 
   EXPECT_FALSE(provider.HasIndependentMetrics());
 }
@@ -155,7 +156,8 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, ClearsAppPackageName) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
+      kPlaceholderTrace, "test_scenario", "test_rule",
+      base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
   EXPECT_TRUE(provider.HasIndependentMetrics());
@@ -176,7 +178,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, ClearsAppPackageName) {
   ASSERT_EQ(1, uma_proto.trace_log_size());
   EXPECT_EQ(metrics::TraceLog::COMPRESSION_TYPE_ZLIB,
             uma_proto.trace_log(0).compression_type());
-  EXPECT_NE(kDummyTrace, uma_proto.trace_log(0).raw_data());
+  EXPECT_NE(kPlaceholderTrace, uma_proto.trace_log(0).raw_data());
 
   EXPECT_FALSE(provider.HasIndependentMetrics());
 }

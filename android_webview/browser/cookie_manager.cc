@@ -238,10 +238,11 @@ void CookieManager::MigrateCookieStorePath() {
 //
 // To execute a CookieTask synchronously you must arrange for Signal to be
 // called on the waitable event at some point. You can call the bool or int
-// versions of ExecCookieTaskSync, these will supply the caller with a dummy
-// callback which takes an int/bool, throws it away and calls Signal.
-// Alternatively you can call the version which supplies a Closure in which
-// case you must call Run on it when you want the unblock the calling code.
+// versions of ExecCookieTaskSync, these will supply the caller with a
+// placeholder callback which takes an int/bool, throws it away and calls
+// Signal. Alternatively you can call the version which supplies a Closure in
+// which case you must call Run on it when you want the unblock the calling
+// code.
 //
 // Ignore a bool callback.
 void CookieManager::ExecCookieTaskSync(
