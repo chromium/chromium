@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_MANAGER_H_
 
 #include <map>
+#include <string>
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -28,6 +29,17 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
       delete;
 
   static DefaultBrowserPromptManager* GetInstance();
+
+  // Enrolls this client with a synthetic field trial based on the Finch params.
+  // Should be called when the default browser prompt is potentially shown, then
+  // the client needs to register again on each process startup by calling
+  // `EnsureStickToDefaultBrowserPromptCohort()`.
+  static void MaybeJoinDefaultBrowserPromptCohort();
+
+  // Ensures that the user's experiment group is appropriately reported to track
+  // the effect of the default browser prompt over time. Should be called once
+  // per browser process startup.
+  static void EnsureStickToDefaultBrowserPromptCohort();
 
   DefaultBrowserPromptManager();
   ~DefaultBrowserPromptManager() override;
@@ -54,6 +66,9 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   void OnDismiss() override;
 
  private:
+  // Reports to the launch study for the default browser prompt synthetic trial.
+  static void RegisterSyntheticFieldTrial(const std::string& group_name);
+
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;

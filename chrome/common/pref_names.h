@@ -1964,6 +1964,11 @@ inline constexpr char kStabilitySystemUncleanShutdownCount[] =
 inline constexpr char kBrowserSuppressDefaultBrowserPrompt[] =
     "browser.suppress_default_browser_prompt_for_version";
 
+// String that refers to the study group in which this install was enrolled.
+// Used to implement the sticky experiment tracking.
+inline constexpr char kDefaultBrowserPromptRefreshStudyGroup[] =
+    "browser.default_browser_prompt_refresh_study_group";
+
 // A collection of position, size, and other data relating to the browser
 // window to restore on startup.
 inline constexpr char kBrowserWindowPlacement[] = "browser.window_placement";
