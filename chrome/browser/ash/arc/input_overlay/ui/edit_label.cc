@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_utils.h"
+#include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -265,6 +267,10 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
     SetNameTagState(
         /*is_error=*/true,
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS));
+    ash::Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(
+            l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS));
     return false;
   }
 
