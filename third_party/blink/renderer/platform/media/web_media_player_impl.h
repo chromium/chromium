@@ -899,7 +899,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   std::unique_ptr<media::CdmContextRef> pending_cdm_context_ref_;
 
   // True when encryption is detected, either by demuxer or by presence of a
-  // ContentDecyprtionModule (CDM).
+  // ContentDecryptionModule (CDM).
   bool is_encrypted_ = false;
 
   // Captured once the cdm is provided to SetCdmInternal(). Used in creation of
