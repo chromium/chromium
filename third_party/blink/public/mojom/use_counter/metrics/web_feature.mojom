@@ -4311,6 +4311,8 @@ enum WebFeature {
   // Uses of base URL in sandboxed srcdoc frames:
   kSandboxedSrcdocFrameResolvesRelativeURL = 4934,
 
+  kV8Ink_RequestPresenter_Method = 4935,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

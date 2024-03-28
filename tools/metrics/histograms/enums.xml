@@ -11416,6 +11416,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4932" label="CSSColor_SpaceOkLxx"/>
   <int value="4933" label="CSSColor_SpaceOkLxx_outOfRec2020"/>
   <int value="4934" label="SandboxedSrcdocFrameResolvesRelativeURL"/>
+  <int value="4935" label="V8Ink_RequestPresenter_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
