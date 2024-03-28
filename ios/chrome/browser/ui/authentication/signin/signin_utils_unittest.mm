@@ -381,7 +381,7 @@ TEST_F(SigninUtilsTest,
           chrome_browser_state_.get());
   authentication_service->SignIn(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
-  authentication_service->GrantSyncConsentForTesting(
+  authentication_service->GrantSyncConsent(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   chrome_browser_state_->GetPrefs()->SetBoolean(
       syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);

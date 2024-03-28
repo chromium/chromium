@@ -107,7 +107,7 @@ class BookmarkMediatorUnitTest
   // Signs in and enable sync, using the same identity than `SignInOnly()`.
   void SignInAndSync() {
     FakeSystemIdentity* fake_identity = SignInOnly();
-    authentication_service_->GrantSyncConsentForTesting(
+    authentication_service_->GrantSyncConsent(
         fake_identity,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
   }

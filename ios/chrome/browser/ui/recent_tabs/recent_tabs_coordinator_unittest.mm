@@ -225,7 +225,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
 
       authentication_service->SignIn(
           identity, signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
-      authentication_service->GrantSyncConsentForTesting(
+      authentication_service->GrantSyncConsent(
           identity, signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
     }
 

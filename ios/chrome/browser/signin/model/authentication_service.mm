@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 #import "base/auto_reset.h"
-#import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
@@ -233,43 +232,6 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
   }
 }
 
-void AuthenticationService::GrantSyncConsentForTesting(
-    id<SystemIdentity> identity,
-    signin_metrics::AccessPoint access_point) {
-  CHECK_IS_TEST();
-  DCHECK(account_manager_service_->IsValidIdentity(identity));
-  DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      base::SysNSStringToUTF8(identity.gaiaID),
-      base::SysNSStringToUTF8(identity.userEmail));
-  const AccountInfo account_info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
-  CHECK(!account_info.IsEmpty());
-  CHECK(!account_info.hosted_domain.empty());
-
-  // When sync is disabled by enterprise, sync consent is not removed.
-  // Consent can be skipped.
-  // TODO(crbug.com/1259054): Remove this if once the sync consent is removed
-  // when enteprise disable sync.
-  if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
-    const signin::PrimaryAccountMutator::PrimaryAccountError error =
-        identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-            account_id, signin::ConsentLevel::kSync, access_point);
-    CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
-             error)
-        << "SetPrimaryAccount error: " << static_cast<int>(error);
-  }
-  CHECK_EQ(account_id,
-           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
-
-  // Kick-off sync: The authentication error UI (sign in infobar and warning
-  // badge in settings screen) check the sync auth error state. Sync
-  // needs to be kicked off so that it resets the auth error quickly once
-  // `identity` is reauthenticated.
-  sync_service_->SetSyncFeatureRequested();
-}
-
 void AuthenticationService::SetReauthPromptForSignInAndSync() {
   pref_service_->SetBoolean(prefs::kSigninShouldPromptForSigninAgain, true);
 }
@@ -350,6 +312,9 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   // mismatch between the old and the new authenticated accounts.
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     DCHECK(identity_manager_->GetPrimaryAccountMutator());
+    // Initial sign-in to Chrome does not automatically turn on Sync features.
+    // The Sync service will be enabled in a separate request to
+    // `GrantSyncConsent`.
     signin::PrimaryAccountMutator::PrimaryAccountError error =
         identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
             account_id, signin::ConsentLevel::kSignin, access_point);
@@ -367,6 +332,50 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   CHECK_EQ(account_id, primary_account);
   pref_service_->SetTime(prefs::kLastSigninTimestamp, base::Time::Now());
   crash_keys::SetCurrentlySignedIn(true);
+}
+
+void AuthenticationService::GrantSyncConsent(
+    id<SystemIdentity> identity,
+    signin_metrics::AccessPoint access_point) {
+  // TODO(crbug.com/40067025): Turn sync on was deprecated. Remove
+  // `GrantSyncConsent()` as it is obsolete.
+  DUMP_WILL_BE_CHECK(access_point !=
+                     signin_metrics::AccessPoint::
+                         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO)
+      << "Turn sync on should not be available as sync promos are deprecated "
+         "[access point = "
+      << int(access_point) << "]";
+  DCHECK(account_manager_service_->IsValidIdentity(identity));
+  DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
+      base::SysNSStringToUTF8(identity.gaiaID),
+      base::SysNSStringToUTF8(identity.userEmail));
+  const AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
+  CHECK(!account_info.IsEmpty());
+  CHECK(!account_info.hosted_domain.empty());
+
+  // When sync is disabled by enterprise, sync consent is not removed.
+  // Consent can be skipped.
+  // TODO(crbug.com/1259054): Remove this if once the sync consent is removed
+  // when enteprise disable sync.
+  if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    const signin::PrimaryAccountMutator::PrimaryAccountError error =
+        identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
+            account_id, signin::ConsentLevel::kSync, access_point);
+    CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+             error)
+        << "SetPrimaryAccount error: " << static_cast<int>(error);
+  }
+  CHECK_EQ(account_id,
+           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
+
+  // Kick-off sync: The authentication error UI (sign in infobar and warning
+  // badge in settings screen) check the sync auth error state. Sync
+  // needs to be kicked off so that it resets the auth error quickly once
+  // `identity` is reauthenticated.
+  sync_service_->SetSyncFeatureRequested();
 }
 
 void AuthenticationService::SignOut(
