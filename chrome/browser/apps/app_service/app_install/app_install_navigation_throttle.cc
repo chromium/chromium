@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -50,15 +51,42 @@ AppInstallSurface SourceParamToAppInstallSurface(std::string_view source) {
   return AppInstallSurface::kAppInstallUriUnknown;
 }
 
+bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
+  switch (handle->GetNavigationInitiatorActivationAndAdStatus()) {
+    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kDidNotStartWithTransientActivation:
+      return false;
+    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kStartedWithTransientActivationFromNonAd:
+    case blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kStartedWithTransientActivationFromAd:
+      return true;
+  }
+}
+
 }  // namespace
+
+// static
+base::OnceCallback<void(bool created)>&
+AppInstallNavigationThrottle::MaybeCreateCallbackForTesting() {
+  static base::NoDestructor<base::OnceCallback<void(bool created)>> callback;
+  return *callback;
+}
 
 // static
 std::unique_ptr<content::NavigationThrottle>
 AppInstallNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  if (chromeos::features::IsAppInstallServiceUriEnabled()) {
-    return std::make_unique<apps::AppInstallNavigationThrottle>(handle);
+  std::unique_ptr<content::NavigationThrottle> throttle;
+  if (chromeos::features::IsAppInstallServiceUriEnabled() &&
+      IsNavigationUserInitiated(handle)) {
+    throttle = std::make_unique<apps::AppInstallNavigationThrottle>(handle);
   }
-  return nullptr;
+
+  if (MaybeCreateCallbackForTesting()) {
+    std::move(MaybeCreateCallbackForTesting()).Run(static_cast<bool>(throttle));
+  }
+
+  return throttle;
 }
 
 AppInstallNavigationThrottle::QueryParams::QueryParams() = default;

@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
+
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/chromeos/crosapi/test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -174,5 +177,28 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AppInstallNavigationThottleBrowserTest,
                          testing::Values(true, false),
                          AppInstallNavigationThottleBrowserTest::ParamToString);
+
+class AppInstallNavigationThrottleUserGestureBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  base::AutoReset<bool> feature_scope_ =
+      chromeos::features::SetAppInstallServiceUriEnabledForTesting();
+};
+
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleUserGestureBrowserTest,
+                       IgnoresNonUserGesture) {
+  base::test::TestFuture<bool> future;
+  AppInstallNavigationThrottle::MaybeCreateCallbackForTesting() =
+      future.GetCallback();
+
+  content::ExecuteScriptAsyncWithoutUserGesture(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "location.href = 'almanac://install-app?package_id=web:test';");
+
+  EXPECT_FALSE(future.Get());
+
+  // window.open() is another method of opening the almanac:// URI however it is
+  // already blocked if there is no user gesture.
+}
 
 }  // namespace apps
