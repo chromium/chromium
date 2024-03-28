@@ -183,6 +183,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteText);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteHtml);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteSvg);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteBitmap);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest, WriteCustomData);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
                            PerformPasteIfAllowed_EmptyData);

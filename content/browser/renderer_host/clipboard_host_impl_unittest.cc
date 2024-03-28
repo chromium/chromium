@@ -569,6 +569,18 @@ TEST_F(ClipboardHostImplScanTest, WriteSvg) {
   EXPECT_EQ(kSvg, future.Take());
 }
 
+TEST_F(ClipboardHostImplScanTest, WriteBitmap) {
+  const SkBitmap kBitmap = gfx::test::CreateBitmap(3, 2);
+  clipboard_host_impl()->WriteImage(kBitmap);
+  clipboard_host_impl()->CommitWrite();
+
+  std::vector<uint8_t> png =
+      ui::clipboard_test_util::ReadPng(system_clipboard());
+  SkBitmap actual;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &actual);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, actual));
+}
+
 TEST_F(ClipboardHostImplScanTest, WriteCustomData) {
   base::flat_map<std::u16string, std::u16string> custom_data;
   custom_data[u"text/type1"] = u"data1";

@@ -666,7 +666,18 @@ void ClipboardHostImpl::WriteBookmark(const std::string& url,
 }
 
 void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
-  clipboard_writer_->WriteImage(bitmap);
+  ClipboardPasteData data;
+  data.bitmap = bitmap;
+
+  GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
+      CreateClipboardEndpoint(),
+      {
+          .size = bitmap.computeByteSize(),
+          .format_type = ui::ClipboardFormatType::BitmapType(),
+      },
+      std::move(data),
+      base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ClipboardHostImpl::CommitWrite() {
@@ -863,6 +874,9 @@ void ClipboardHostImpl::OnCopyAllowedResult(
   } else if (!data.svg.empty()) {
     // This branch should be reached only after `WriteSvg()` is called.
     clipboard_writer_->WriteSvg(data.svg);
+  } else if (!data.bitmap.empty()) {
+    // This branch should be reached only after `WriteImage()` is called.
+    clipboard_writer_->WriteImage(data.bitmap);
   } else if (!data.custom_data.empty()) {
     // This branch should be reached only after `WriteCustomData()` is called.
     base::Pickle pickle;
