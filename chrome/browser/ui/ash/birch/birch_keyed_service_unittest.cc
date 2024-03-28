@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
+
 #include <memory>
 #include <optional>
 
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
@@ -34,6 +36,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -88,13 +91,20 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
               GetOpenTabsUIDelegate,
               (),
               (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              SubscribeToForeignSessionsChanged,
-              (const base::RepeatingClosure& cb),
-              (override));
+  base::CallbackListSubscription SubscribeToForeignSessionsChanged(
+      const base::RepeatingClosure& cb) override {
+    return subscriber_list_.Add(cb);
+  }
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetControllerDelegate,
               ());
+
+  void NotifyMockForeignSessionsChanged() { subscriber_list_.Notify(); }
+
+  bool IsSubscribersEmpty() { return subscriber_list_.empty(); }
+
+ private:
+  base::RepeatingClosureList subscriber_list_;
 };
 
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
@@ -184,6 +194,11 @@ std::unique_ptr<KeyedService> BuildMockSessionSyncService(
   return std::make_unique<testing::NiceMock<MockSessionSyncService>>();
 }
 
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
 }  // namespace
 
 // TODO(https://crbug.com/1370774): move `ScopedTestMountPoint` out of holding
@@ -223,9 +238,16 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
     session_sync_service_ = static_cast<MockSessionSyncService*>(
         SessionSyncServiceFactory::GetInstance()->GetForProfile(GetProfile()));
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
 
+    SetSessionServiceToReturnOpenTabsDelegate(true);
+  }
+
+  void SetSessionServiceToReturnOpenTabsDelegate(bool return_delegate) {
     EXPECT_CALL(*session_sync_service_, GetOpenTabsUIDelegate())
-        .WillRepeatedly(testing::Return(&open_tabs_delegate_));
+        .WillRepeatedly(
+            testing::Return(return_delegate ? &open_tabs_delegate_ : nullptr));
   }
 
   void TearDown() override {
@@ -233,6 +255,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     birch_keyed_service_ = nullptr;
     file_suggest_service_ = nullptr;
     session_sync_service_ = nullptr;
+    sync_service_ = nullptr;
     release_notes_storage_ = nullptr;
     fake_user_manager_.Reset();
     BrowserWithTestWindowTest::TearDown();
@@ -291,12 +314,20 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     return file_suggest_service_;
   }
 
+  MockSessionSyncService* session_sync_service() {
+    return session_sync_service_;
+  }
+
+  syncer::TestSyncService* sync_service() { return sync_service_; }
+
   BirchKeyedService* birch_keyed_service() { return birch_keyed_service_; }
 
   ScopedTestMountPoint* mount_point() { return mount_point_.get(); }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     return {
+        {SyncServiceFactory::GetInstance(),
+         base::BindRepeating(&BuildTestSyncService)},
         {FileSuggestKeyedServiceFactory::GetInstance(),
          base::BindRepeating(
              &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
@@ -319,6 +350,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   raw_ptr<BirchKeyedService> birch_keyed_service_ = nullptr;
 
   raw_ptr<MockSessionSyncService> session_sync_service_;
+
+  raw_ptr<syncer::TestSyncService> sync_service_;
 
   MockOpenTabsUIDelegate open_tabs_delegate_;
 
@@ -402,6 +435,13 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   EXPECT_EQ(tabs[1].url(), GURL(kExampleURL2));
   EXPECT_EQ(tabs[1].session_name(), kSessionName2);
   EXPECT_EQ(tabs[1].form_factor(), BirchTabItem::DeviceFormFactor::kPhone);
+
+  // Disable tab sync, then try fetching again and expect an empty list of tabs.
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything = */ false, /*types=*/{});
+  birch_keyed_service()->GetRecentTabsProvider()->RequestBirchDataFetch();
+  EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 0u);
+  EXPECT_TRUE(session_sync_service()->IsSubscribersEmpty());
 }
 
 TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
@@ -464,6 +504,25 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
           ->GetPrefs()
           ->FindPreference(prefs::kReleaseNotesSuggestionChipTimesLeftToShow)
           ->IsDefaultValue());
+}
+
+TEST_F(BirchKeyedServiceTest, BirchRecentTabsWaitForForeignSessionsChange) {
+  task_environment()->RunUntilIdle();
+  SetSessionServiceToReturnOpenTabsDelegate(false);
+
+  // Request tab data, and check that no tabs are set when no open tabs delegate
+  // is available.
+  birch_keyed_service()->GetRecentTabsProvider()->RequestBirchDataFetch();
+  EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 0u);
+  EXPECT_FALSE(session_sync_service()->IsSubscribersEmpty());
+
+  SetSessionServiceToReturnOpenTabsDelegate(true);
+
+  // Notify session service of foreign session change, and check that tabs have
+  // been set by the recent tabs provider.
+  session_sync_service()->NotifyMockForeignSessionsChanged();
+  EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 2u);
+  EXPECT_TRUE(session_sync_service()->IsSubscribersEmpty());
 }
 
 }  // namespace ash
