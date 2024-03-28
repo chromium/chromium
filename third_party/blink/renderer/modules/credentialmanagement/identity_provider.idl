@@ -27,7 +27,7 @@ dictionary IdentityResolveOptions {
     static void close();
 
     [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=registerIdentityProvider]
-    static Promise<undefined> register(USVString configURL);
+    static Promise<boolean> register(USVString configURL);
     [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=unregisterIdentityProvider]
     static Promise<undefined> unregister(USVString configURL);
 
