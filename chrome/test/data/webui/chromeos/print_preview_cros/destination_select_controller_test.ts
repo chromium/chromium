@@ -5,7 +5,7 @@
 import 'chrome://os-print/js/destination_select_controller.js';
 
 import {DESTINATION_MANAGER_STATE_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
-import {DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
+import {DESTINATION_SELECT_SHOW_LOADING_CHANGED, DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
@@ -94,5 +94,20 @@ suite('DestinationSelectController', () => {
         await stateChanged;
 
         mockController.verifyMocks();
+      });
+
+  // Verify DESTINATION_SELECT_SHOW_LOADING_CHANGED emits when destination
+  // manager state changes.
+  test(
+      `emit ${DESTINATION_SELECT_SHOW_LOADING_CHANGED} ` +
+          'on destination manager state changed',
+      async () => {
+        const testEvent = createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED);
+        const showLoadingChanged =
+            eventToPromise(DESTINATION_SELECT_SHOW_LOADING_CHANGED, controller);
+
+        // Simulate event being fired.
+        destinationManager.dispatchEvent(testEvent);
+        await showLoadingChanged;
       });
 });

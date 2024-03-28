@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_select.html.js';
-import {DestinationSelectController} from './destination_select_controller.js';
+import {DESTINATION_SELECT_SHOW_LOADING_CHANGED, DestinationSelectController} from './destination_select_controller.js';
 
 /**
  * @fileoverview
@@ -40,6 +40,10 @@ export class DestinationSelectElement extends PolymerElement {
 
     this.controller = new DestinationSelectController(this.eventTracker);
 
+    this.eventTracker.add(
+        this.controller, DESTINATION_SELECT_SHOW_LOADING_CHANGED,
+        (e: Event): void => this.onDestinationSelectShowDropdownChanged(e));
+
     // Initialize properties using the controller.
     this.showLoading = this.controller.shouldShowLoading();
   }
@@ -51,6 +55,11 @@ export class DestinationSelectElement extends PolymerElement {
 
   getControllerForTesting(): DestinationSelectController {
     return this.controller;
+  }
+
+  // Updates UI on controller DESTINATION_SELECT_SHOW_LOADING_CHANGED event.
+  private onDestinationSelectShowDropdownChanged(_event: Event): void {
+    this.showLoading = this.controller.shouldShowLoading();
   }
 }
 

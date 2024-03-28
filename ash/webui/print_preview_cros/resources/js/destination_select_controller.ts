@@ -5,6 +5,7 @@
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {DESTINATION_MANAGER_STATE_CHANGED, DestinationManager} from './data/destination_manager.js';
+import {createCustomEvent} from './utils/event_utils.js';
 
 /**
  * @fileoverview
@@ -12,6 +13,9 @@ import {DESTINATION_MANAGER_STATE_CHANGED, DestinationManager} from './data/dest
  * correctly consume changes from mojo providers and inform the
  * `destination-select` element to update.
  */
+
+export const DESTINATION_SELECT_SHOW_LOADING_CHANGED =
+    'destination-select.show-loading-changed';
 
 // DestinationSelectController defines functionality used to update the
 // `destination-select` element.
@@ -34,7 +38,16 @@ export class DestinationSelectController extends EventTarget {
     return !this.destinationManager.hasLoadedAnInitialDestination();
   }
 
-  // TODO(b/323421684): Handle notifying UI to update when destination manager
+  // Handles notifying UI to update when destination manager
   // state changes.
-  private onDestinationManagerStateChanged(_event: Event): void {}
+  private onDestinationManagerStateChanged(_event: Event): void {
+    this.dispatchEvent(
+        createCustomEvent(DESTINATION_SELECT_SHOW_LOADING_CHANGED));
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    [DESTINATION_SELECT_SHOW_LOADING_CHANGED]: CustomEvent<void>;
+  }
 }
