@@ -92,6 +92,12 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextSmall.Primary" />
         </view>
         <ViewStub
+            android:id="@+id/branding_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/custom_tabs_toolbar_branding_layout"
+            android:inflatedId="@+id/branding_layout" />
+        <ViewStub
             android:id="@+id/maximize_button_stub"
             android:inflatedId="@+id/custom_tabs_sidepanel_maximize"
             android:layout_width="@dimen/location_bar_action_icon_width"
