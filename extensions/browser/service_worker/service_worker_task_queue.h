@@ -204,6 +204,8 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 
+  static base::AutoReset<bool> AllowMultipleWorkersPerExtensionForTesting();
+
  private:
   struct SequencedContextId {
     ExtensionId extension_id;

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
@@ -60,6 +61,9 @@ const char kPrefServiceWorkerRegistrationInfo[] =
 const char kServiceWorkerVersion[] = "version";
 
 ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
+
+// Prevent check on multiple workers per extension for testing purposes.
+bool g_allow_multiple_workers_per_extension = false;
 
 // ServiceWorkerRegistration state of an activated extension.
 enum class RegistrationState {
@@ -125,7 +129,12 @@ class ServiceWorkerTaskQueue::WorkerState {
   void SetWorkerId(const WorkerId& worker_id, ProcessManager* process_manager) {
     if (worker_id_ && *worker_id_ != worker_id) {
       // Sanity check that the old worker is gone.
-      DCHECK(!process_manager->HasServiceWorker(*worker_id_));
+      // TODO(crbug.com/40936639): remove
+      // `g_allow_multiple_workers_per_extension` once bug is fixed so that this
+      // DCHECK() will be default behavior everywhere. Also upgrade to a CHECK
+      // once the bug is completely fixed.
+      DCHECK(!process_manager->HasServiceWorker(*worker_id_) ||
+             g_allow_multiple_workers_per_extension);
       // Clear stale renderer state if there's any.
       renderer_state_ = RendererState::kInitial;
     }
@@ -852,6 +861,12 @@ size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
                                          *activation_token};
   WorkerState* worker_state = GetWorkerState(context_id);
   return worker_state ? worker_state->pending_tasks_.size() : 0;
+}
+
+// static
+base::AutoReset<bool>
+ServiceWorkerTaskQueue::AllowMultipleWorkersPerExtensionForTesting() {
+  return base::AutoReset<bool>(&g_allow_multiple_workers_per_extension, true);
 }
 
 const ServiceWorkerTaskQueue::WorkerState*
