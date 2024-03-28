@@ -695,7 +695,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 int PrivacySection::GetSectionNameMessageId() const {
-  return IDS_SETTINGS_PRIVACY_V2;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? IDS_OS_SETTINGS_REVAMP_PRIVACY_TITLE
+             : IDS_OS_SETTINGS_PRIVACY_TITLE;
 }
 
 mojom::Section PrivacySection::GetSection() const {
