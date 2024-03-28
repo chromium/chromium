@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   constexpr char kHasSaveDiscardButtons[] = R"(
     (async function hasSaveDiscardButtons() {
-      const discardButton = await getNode('ea-button[label="Discard edits"]',
+      const discardButton = await getNode('#DiscardEdits',
           ['backlight-app-bar', 'backlight-app']);
       const saveButton = await getNode('backlight-split-button[label="Save"]',
           ['backlight-app-bar', 'backlight-app']);
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
           ['backlight-crop-panel', 'backlight-image-handler']);
       rotateAntiClockwiseButton.click();
       const doneButton = await waitForNode(
-          'ea-button[label="Done"]', ['backlight-app-bar', 'backlight-app']);
+          '#Done', ['backlight-app-bar', 'backlight-app']);
       doneButton.click();
       await waitForNode('backlight-split-button[label="Save"]',
           ['backlight-app-bar', 'backlight-app']);

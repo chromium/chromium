@@ -1980,7 +1980,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': '9Ckg11deus4HYQNIWFgWJfaiz29GnikUbRuf7nYHT20C',
+        'version': 'k1WDApOAJXlhxbF8hqJfBbF8Vx4bbm32LYM-9lDTgfYC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
