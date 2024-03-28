@@ -1042,9 +1042,6 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.VISIBLE, shouldBeVisible);
         if (shouldBeVisible && !wasVisible) {
             mIgnoreOmniboxItemSelection = true; // Reset to default value.
-            if (!mAnimateSuggestionsListAppearance) {
-                TraceEvent.instant("SuggestionsListShown");
-            }
         }
     }
 

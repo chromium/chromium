@@ -34,8 +34,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     protected final ObserverList<WindowInsetObserver> mObservers;
     private final KeyboardInsetObservableSupplier mKeyboardInsetSupplier;
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
-    private final List<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
-            new ArrayList<>();
+    private final ObserverList<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
+            new ObserverList<>();
     private final List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
     private final View mRootView;
     // Insets to be added to the current safe area.
@@ -192,13 +192,13 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     /** Add a listener for inset animations. */
     public void addWindowInsetsAnimationListener(@NonNull WindowInsetsAnimationListener listener) {
-        mWindowInsetsAnimationListeners.add(listener);
+        mWindowInsetsAnimationListeners.addObserver(listener);
     }
 
     /** Remove a listener for inset animations. */
     public void removeWindowInsetsAnimationListener(
             @NonNull WindowInsetsAnimationListener listener) {
-        mWindowInsetsAnimationListeners.remove(listener);
+        mWindowInsetsAnimationListeners.removeObserver(listener);
     }
 
     /** Add an observer to be notified when the window insets have changed. */
