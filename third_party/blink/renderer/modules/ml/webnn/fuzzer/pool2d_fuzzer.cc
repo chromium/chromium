@@ -75,6 +75,7 @@ DEFINE_PROTO_FUZZER(const webnn_proto::pool2d& pool2d) {
 
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());
+  ScriptState::Scope script_state_scope(script_state);
 
   DummyExceptionStateForTesting exception_state;
   auto* builder = CreateMLGraphBuilder(
