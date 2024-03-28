@@ -2887,6 +2887,9 @@ std::string SerializeContentAnalysisRequest(
   request_dict.Set("tags", std::move(tags));
   request_dict.Set("request_token", request.request_token());
   request_dict.Set("access_token", access_token_truncated);
+  request_dict.Set(
+      "is_chrome_os_managed_guest_session",
+      request.client_metadata().is_chrome_os_managed_guest_session());
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);

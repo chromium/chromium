@@ -891,7 +891,7 @@ void CloudBinaryUploadService::IsAuthorized(
       // differently, as it cannot rely on the GAIA ID to determine whether or
       // not the user has the BCE license.
       enterprise_connectors::ClientMetadata client_metadata;
-      client_metadata.mutable_profile()->set_is_chrome_os_managed_guest_session(
+      client_metadata.set_is_chrome_os_managed_guest_session(
           chromeos::IsManagedGuestSession());
       request->set_client_metadata(std::move(client_metadata));
 #endif
