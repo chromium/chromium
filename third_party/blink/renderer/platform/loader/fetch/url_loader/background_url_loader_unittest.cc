@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -163,7 +164,7 @@ class DummyBackgroundResponseProcessor final
   mojo::ScopedDataPipeConsumerHandle body_;
   std::optional<mojo_base::BigBuffer> cached_metadata_buffer_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  Client* client_;
+  raw_ptr<Client> client_;
   std::atomic<bool> response_received_;
   std::atomic<bool> cancelled_;
 };
