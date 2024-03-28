@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/snapshot_manager.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_manager.h"
 
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/web/public/thread/web_thread.h"
 
-@implementation SnapshotManager {
+@implementation LegacySnapshotManager {
   // The unique ID for WebState's snapshot.
   SnapshotID _snapshotID;
 }
@@ -38,7 +38,7 @@
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback {
   DCHECK(callback);
 
-  __weak SnapshotManager* weakSelf = self;
+  __weak LegacySnapshotManager* weakSelf = self;
   __weak LegacySnapshotGenerator* weakGenerator = _snapshotGenerator;
   void (^wrappedCallback)(UIImage*) = ^(UIImage* image) {
     if (!image) {
@@ -62,7 +62,7 @@
 - (void)updateSnapshotWithCompletion:(void (^)(UIImage*))completion {
   DCHECK(_snapshotGenerator);
 
-  __weak SnapshotManager* weakSelf = self;
+  __weak LegacySnapshotManager* weakSelf = self;
   void (^wrappedCompletion)(UIImage*) = ^(UIImage* image) {
     // Update the snapshot storage with the latest snapshot. The old image is
     // deleted if `image` is nil.

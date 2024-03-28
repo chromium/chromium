@@ -9,8 +9,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_manager.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -87,7 +87,7 @@ SnapshotID SnapshotTabHelper::GetSnapshotID() const {
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
-  snapshot_manager_ = [[SnapshotManager alloc]
+  snapshot_manager_ = [[LegacySnapshotManager alloc]
       initWithGenerator:[[LegacySnapshotGenerator alloc]
                             initWithWebState:web_state_]
              snapshotID:GenerateSnapshotID(web_state_)];
