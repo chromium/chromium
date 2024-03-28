@@ -13,10 +13,10 @@
 
 #include <string_view>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -161,16 +161,19 @@ bool ExpandUrlVarName(std::wstring* arg, const std::wstring& url_spec) {
 
 void ExpandEnvironmentVariables(std::wstring* arg) {
   DWORD expanded_size = 0;
-  expanded_size = ::ExpandEnvironmentStrings(arg->c_str(), NULL, expanded_size);
-  if (expanded_size == 0)
+  expanded_size =
+      ::ExpandEnvironmentStrings(arg->c_str(), nullptr, expanded_size);
+  if (expanded_size == 0) {
     return;
+  }
 
   // The expected buffer length as defined in MSDN is chars + null + 1.
-  std::unique_ptr<wchar_t[]> out(new wchar_t[expanded_size + 2]);
+  auto out = base::HeapArray<wchar_t>::WithSize(expanded_size + 2);
   expanded_size =
-      ::ExpandEnvironmentStrings(arg->c_str(), out.get(), expanded_size);
-  if (expanded_size != 0)
-    *arg = out.get();
+      ::ExpandEnvironmentStrings(arg->c_str(), out.data(), expanded_size);
+  if (expanded_size != 0) {
+    *arg = out.data();
+  }
 }
 
 void AppendCommandLineArguments(base::CommandLine* cmd_line,
