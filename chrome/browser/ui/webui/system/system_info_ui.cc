@@ -183,7 +183,8 @@ void SystemInfoUIHandler::HandleRequestFeedbackSystemInfo(
   callback_id_ = args[0].GetString();
 
   system_logs::SystemLogsFetcher* fetcher =
-      system_logs::BuildChromeSystemLogsFetcher(/*scrub_data=*/true);
+      system_logs::BuildChromeSystemLogsFetcher(Profile::FromWebUI(web_ui()),
+                                                /*scrub_data=*/true);
   fetcher->Fetch(base::BindOnce(&SystemInfoUIHandler::OnSystemInfo,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

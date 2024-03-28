@@ -91,7 +91,7 @@ void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
   if (GetBoolOrFalse(options, "systemLogs")) {
     bool scrub_data = GetBoolOrFalse(options, "filterPII");
     system_logs_writer::WriteSystemLogs(
-        out_dir_, scrub_data,
+        Profile::FromWebUI(web_ui()), out_dir_, scrub_data,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteSystemLogs,
                        weak_factory_.GetWeakPtr(), callback_id,
                        options.Clone()));
