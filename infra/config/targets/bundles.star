@@ -27,6 +27,44 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "linux_force_accessibility_gtests",
+    targets = [
+        "browser_tests",
+        "content_browsertests",
+        "interactive_ui_tests",
+    ],
+    per_test_modifications = {
+        "browser_tests": targets.mixin(
+            args = [
+                "--force-renderer-accessibility",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.browser_tests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+        "content_browsertests": targets.mixin(
+            args = [
+                "--force-renderer-accessibility",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.content_browsertests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+        "interactive_ui_tests": targets.mixin(
+            args = [
+                "--force-renderer-accessibility",
+                "--test-launcher-filter-file=../../testing/buildbot/filters/accessibility-linux.interactive_ui_tests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+    },
+)
+
 # TODO(dpranke): These are run on the p/chromium waterfall; they should
 # probably be run on other builders, and we should get rid of the p/chromium
 # waterfall.

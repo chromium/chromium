@@ -8,6 +8,19 @@ load("@stdlib//internal/graph.star", "graph")
 load("../common.star", _targets_common = "common")
 load("../nodes.star", _targets_nodes = "nodes")
 
+def _isolated_script_test_spec_init(node):
+    return _targets_common.spec_init(node)
+
+def _isolated_script_test_spec_finalize(name, spec_value):
+    default_merge_script = "standard_isolated_script_merge"
+    return "isolated_scripts", name, _targets_common.spec_finalize(spec_value, default_merge_script)
+
+_isolated_script_test_spec_handler = _targets_common.spec_handler(
+    type_name = "isolated script",
+    init = _isolated_script_test_spec_init,
+    finalize = _isolated_script_test_spec_finalize,
+)
+
 def isolated_script_test(*, name, binary = None, mixins = None, args = None):
     """Define an isolated script test.
 
@@ -25,7 +38,7 @@ def isolated_script_test(*, name, binary = None, mixins = None, args = None):
         mixins: Mixins to apply when expanding the test.
         args: Arguments to be passed to the test binary.
     """
-    key = _targets_common.create_legacy_test(
+    legacy_test_key = _targets_common.create_legacy_test(
         name = name,
         basic_suite_test_config = _targets_common.basic_suite_test_config(
             binary = binary,
@@ -34,10 +47,15 @@ def isolated_script_test(*, name, binary = None, mixins = None, args = None):
         mixins = mixins,
     )
 
-    # Make sure that the binary actually exists
-    graph.add_edge(key, _targets_nodes.BINARY.key(binary or name))
-
-    _targets_common.create_test(
+    test_key = _targets_common.create_test(
         name = name,
-        spec_handler = _targets_common.spec_handler_for_unimplemented_target_type("isolated_script_test"),
+        spec_handler = _isolated_script_test_spec_handler,
+        details = struct(
+            args = args,
+        ),
+        mixins = mixins,
     )
+
+    binary_key = _targets_nodes.BINARY.key(binary or name)
+    graph.add_edge(legacy_test_key, binary_key)
+    graph.add_edge(test_key, binary_key)

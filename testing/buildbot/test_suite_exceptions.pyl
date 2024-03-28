@@ -478,14 +478,6 @@
           'hard_timeout': 2400,
         },
       },
-      'linux-blink-web-tests-force-accessibility-rel': {
-        'args': [
-          '--flag-specific=force-renderer-accessibility',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'linux-blink-wpt-reset-rel': {
         'args': [
           '--additional-driver-flag=--force-browsing-instance-reset-between-tests',
@@ -766,11 +758,6 @@
         'swarming': {
           'hard_timeout': 2400,
         },
-      },
-      'linux-blink-web-tests-force-accessibility-rel': {
-        'args': [
-          '--flag-specific=force-renderer-accessibility',
-        ],
       },
       'linux-blink-wpt-reset-rel': {
         'args': [

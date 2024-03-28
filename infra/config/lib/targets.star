@@ -16,26 +16,6 @@ load("./targets-internal/test-types/isolated_script_test.star", "isolated_script
 load("./targets-internal/test-types/junit_test.star", "junit_test")
 load("./targets-internal/test-types/script_test.star", "script_test")
 
-def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
-    """The details for a test provided by the test's binary.
-
-    When test_suites.pyl is generated, tests that are using the binary
-    will have these values written into the test's entry in the basic suite.
-
-    Args:
-        results_handler: The name of the results handler to use for the
-            test.
-        merge: A targets.merge describing the invocation to merge the
-            results from the test's tasks.
-        resultdb: A targets.resultdb describing the ResultDB integration
-            for the test.
-    """
-    return struct(
-        results_handler = results_handler,
-        merge = merge,
-        resultdb = resultdb,
-    )
-
 def _create_binary(
         *,
         name,
@@ -186,7 +166,7 @@ def _generated_script(
         label = label,
         skip_usage_check = skip_usage_check,
         args = args,
-        test_config = _binary_test_config(
+        test_config = _targets_common.binary_test_config(
             results_handler = results_handler,
             merge = merge,
             resultdb = resultdb,
@@ -229,7 +209,7 @@ def _script(
         script = script,
         skip_usage_check = skip_usage_check,
         args = args,
-        test_config = _binary_test_config(
+        test_config = _targets_common.binary_test_config(
             merge = merge,
             resultdb = resultdb,
         ),
@@ -610,8 +590,14 @@ def _legacy_basic_suite(*, name, tests):
             the test, which must be an instance returned from
             targets.legacy_test_config.
     """
-    key = _targets_nodes.LEGACY_BASIC_SUITE.add(name)
-    graph.add_edge(keys.project(), key)
+    basic_suite_key = _targets_nodes.LEGACY_BASIC_SUITE.add(name)
+    graph.add_edge(keys.project(), basic_suite_key)
+
+    bundle_key = _targets_common.create_bundle(
+        name = name,
+        targets = tests.keys(),
+    )
+
     for t, config in tests.items():
         if not config:
             fail("The value for test {} in basic suite {} must be an object returned from targets.legacy_test_config"
@@ -619,13 +605,23 @@ def _legacy_basic_suite(*, name, tests):
         d = {a: getattr(config, a) for a in dir(config)}
         mixins = d.pop("mixins") or []
         remove_mixins = d.pop("remove_mixins") or []
+
         config_key = _targets_nodes.LEGACY_BASIC_SUITE_CONFIG.add(name, t, props = dict(
             config = struct(**d),
         ))
-        graph.add_edge(key, config_key)
+        graph.add_edge(basic_suite_key, config_key)
         graph.add_edge(config_key, _targets_nodes.LEGACY_TEST.key(t))
+
+        modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(name, t)
+        graph.add_edge(bundle_key, modification_key)
+
+        basic_config_mixin = _mixin(**(config.mixin_values or {}))
+        graph.add_edge(modification_key, _targets_nodes.MIXIN.key(basic_config_mixin))
+
         for m in mixins:
-            graph.add_edge(config_key, _targets_nodes.MIXIN.key(m))
+            mixin_key = _targets_nodes.MIXIN.key(m)
+            graph.add_edge(config_key, mixin_key)
+            graph.add_edge(modification_key, mixin_key)
         for r in remove_mixins:
             _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.link(config_key, _targets_nodes.MIXIN.key(r))
 
@@ -873,6 +869,15 @@ def _get_bundle_resolver():
                 spec_handler = test.props.spec_handler
                 spec_value = spec_handler.init(test)
                 spec = struct(handler = spec_handler, value = spec_value)
+
+                # The order that mixins are declared is significant,
+                # DEFINITION_ORDER preserves the order that the edges were added
+                # from the parent to the child
+                for m in graph.children(test.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
+                    spec, error = _apply_mixin(spec, m.props.mixin_values)
+                    if error:
+                        fail("modifying {} {} with {} failed: {}"
+                            .format(spec.spec_handler.type_name, test.key.id, mixin, error))
                 test_spec_and_source_by_name[test.key.id] = spec, n.key
 
             for child in graph.children(n.key, kind = _targets_nodes.BUNDLE.kind):
@@ -902,7 +907,10 @@ def _get_bundle_resolver():
                     )
                 test_spec_and_source_by_name[test_name] = new_spec, n.key
 
-            for mixin in graph.children(n.key, kind = _targets_nodes.MIXIN.kind):
+            # The order that mixins are declared is significant,
+            # DEFINITION_ORDER preserves the order that the edges were added
+            # from the parent to the child
+            for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
                 for name, (spec, _) in test_spec_and_source_by_name.items():
                     update_spec_with_mixin(name, spec, mixin)
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
@@ -913,7 +921,11 @@ def _get_bundle_resolver():
                             .format(name),
                         trace = n.props.stacktrace,
                     )
-                for mixin in graph.children(per_test_modification.key, kind = _targets_nodes.MIXIN.kind):
+
+                # The order that mixins are declared is significant,
+                # DEFINITION_ORDER preserves the order that the edges were added
+                # from the parent to the child
+                for mixin in graph.children(per_test_modification.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
                     update_spec_with_mixin(name, test_spec_and_source_by_name[name][0], mixin)
 
             resolved_bundle_by_bundle_node[n] = resolved_bundle(
@@ -1298,7 +1310,7 @@ def _generate_test_suites_pyl(ctx):
             binary_test_config = None
             if binary_nodes:
                 binary_test_config = binary_nodes[0].props.test_config
-            binary_test_config = binary_test_config or _binary_test_config()
+            binary_test_config = binary_test_config or _targets_common.binary_test_config()
 
             test_formatter = _formatter(indent_level = 0)
 

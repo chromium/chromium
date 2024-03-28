@@ -9,30 +9,11 @@ load("../common.star", _targets_common = "common")
 load("../nodes.star", _targets_nodes = "nodes")
 
 def _gtest_test_spec_init(node):
-    binary_node = _targets_common.get_test_binary_node(node)
-    return dict(
-        name = node.key.id,
-        test = binary_node.key.id,
-        test_id_prefix = binary_node.props.test_id_prefix,
-        args = node.props.details.args,
-        # Tests will be swarmed by default, builders that don't want tests
-        # swarmed will use a mixin to disable it
-        swarming = _targets_common.swarming(enable = True),
-        merge = None,
-        use_isolated_scripts_api = None,
-    )
+    return _targets_common.spec_init(node, use_isolated_scripts_api = None)
 
 def _gtest_test_spec_finalize(name, spec_value):
-    spec_value = dict(spec_value)
-    swarming = _targets_common.finalize_swarming(spec_value["swarming"])
-    spec_value["swarming"] = swarming
-    if swarming and not spec_value["merge"]:
-        script = "standard_isolated_script_merge" if spec_value["use_isolated_scripts_api"] else "standard_gtest_merge"
-        spec_value["merge"] = _targets_common.merge(
-            script = "//testing/merge_scripts/{}.py".format(script),
-        )
-    spec_value["merge"] = _targets_common.finalize_merge(spec_value["merge"])
-    return "gtest_tests", name, spec_value
+    default_merge_script = "standard_isolated_script_merge" if spec_value["use_isolated_scripts_api"] else "standard_gtest_merge"
+    return "gtest_tests", name, _targets_common.spec_finalize(spec_value, default_merge_script)
 
 _gtest_test_spec_handler = _targets_common.spec_handler(
     type_name = "gtest",
@@ -72,6 +53,7 @@ def gtest_test(*, name, binary = None, mixins = None, args = None):
         details = struct(
             args = args,
         ),
+        mixins = mixins,
     )
 
     binary_key = _targets_nodes.BINARY.key(binary or name)

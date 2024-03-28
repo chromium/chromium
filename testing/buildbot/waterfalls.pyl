@@ -12,6 +12,7 @@
   # The following builder groups have been migrated to set their targets in the
   # builders' declarations in //infra/config/subprojects/ci/<builder-group>.star
   #   chromium
+  #   chromium.accessibility
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -407,27 +408,6 @@
         },
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
-        },
-      },
-    },
-  },
-  {
-    'name': 'chromium.accessibility',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      # The following builders have been migrated to set their targets in the
-      # builders' declarations in //infra/config/subprojects/ci/chromium.accessibility.star
-      #   fuchsia-x64-accessibility-rel
-      'linux-blink-web-tests-force-accessibility-rel': {
-        'additional_compile_targets': [
-          'blink_tests',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_force_accessibility_gtests',
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
     },

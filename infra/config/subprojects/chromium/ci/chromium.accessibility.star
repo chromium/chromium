@@ -110,6 +110,33 @@ ci.builder(
             "dcheck_always_on",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "linux_force_accessibility_gtests",
+            "chromium_webkit_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "blink_tests",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--flag-specific=force-renderer-accessibility",
+                ],
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--flag-specific=force-renderer-accessibility",
+                ],
+            ),
+        },
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "rel",
         short_name = "x64",

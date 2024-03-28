@@ -6,7 +6,7 @@
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
-load("//lib/args.star", "args")
+load("//lib/args.star", args_lib = "args")
 load("./nodes.star", _targets_nodes = "nodes")
 
 def _create_compile_target(*, name):
@@ -34,6 +34,26 @@ def _create_label_mapping(
         args = args,
     ))
     graph.add_edge(keys.project(), mapping_key)
+
+def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
+    """The details for a test provided by the test's binary.
+
+    When test_suites.pyl is generated, tests that are using the binary
+    will have these values written into the test's entry in the basic suite.
+
+    Args:
+        results_handler: The name of the results handler to use for the
+            test.
+        merge: A targets.merge describing the invocation to merge the
+            results from the test's tasks.
+        resultdb: A targets.resultdb describing the ResultDB integration
+            for the test.
+    """
+    return struct(
+        results_handler = results_handler,
+        merge = merge,
+        resultdb = resultdb,
+    )
 
 def _basic_suite_test_config(
         *,
@@ -66,7 +86,7 @@ def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
     test_key = _targets_nodes.LEGACY_TEST.add(name, props = dict(
         basic_suite_test_config = basic_suite_test_config,
     ))
-    for m in args.listify(mixins):
+    for m in args_lib.listify(mixins):
         graph.add_edge(test_key, _targets_nodes.MIXIN.key(m))
     return test_key
 
@@ -97,11 +117,11 @@ def _create_bundle(
         # have None for name
         modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(bundle_key.id, test_name)
         graph.add_edge(bundle_key, modification_key)
-        for m in args.listify(mods):
+        for m in args_lib.listify(mods):
             graph.add_edge(modification_key, _targets_nodes.MIXIN.key(m))
     return bundle_key
 
-def _create_test(*, name, spec_handler, details = None):
+def _create_test(*, name, spec_handler, details = None, mixins = None):
     test_key = _targets_nodes.TEST.add(name, props = dict(
         spec_handler = spec_handler,
         details = details,
@@ -110,6 +130,8 @@ def _create_test(*, name, spec_handler, details = None):
         name = name,
     )
     graph.add_edge(bundle_key, test_key)
+    for m in args_lib.listify(mixins):
+        graph.add_edge(test_key, _targets_nodes.MIXIN.key(m))
     return test_key
 
 def _get_test_binary_node(node):
@@ -267,6 +289,42 @@ def _finalize_swarming(swarming):
     d = {a: getattr(swarming, a) for a in dir(swarming) if a != "enable"}
     return {k: v for k, v in d.items() if v != None}
 
+def _finalize_resultdb(resultdb):
+    if not resultdb:
+        return None
+    d = {a: getattr(resultdb, a) for a in dir(resultdb)}
+    return {k: v for k, v in d.items() if v != None}
+
+def _spec_init(node, **kwargs):
+    """Init for gtest and isolated script test specs."""
+    binary_node = _get_test_binary_node(node)
+    binary_test_config = binary_node.props.test_config or _binary_test_config()
+    return dict(
+        name = node.key.id,
+        test = binary_node.key.id,
+        test_id_prefix = binary_node.props.test_id_prefix,
+        args = node.props.details.args,
+        # Tests will be swarmed by default, builders that don't want tests
+        # swarmed will use a mixin to disable it
+        swarming = _swarming(enable = True),
+        merge = binary_test_config.merge,
+        resultdb = binary_test_config.resultdb,
+        results_handler = binary_test_config.results_handler,
+        **kwargs
+    )
+
+def _spec_finalize(spec_value, default_merge_script):
+    spec_value = dict(spec_value)
+    swarming = _finalize_swarming(spec_value["swarming"])
+    spec_value["swarming"] = swarming
+    if swarming and not spec_value["merge"]:
+        spec_value["merge"] = _merge(
+            script = "//testing/merge_scripts/{}.py".format(default_merge_script),
+        )
+    spec_value["merge"] = _finalize_merge(spec_value["merge"])
+    spec_value["resultdb"] = _finalize_resultdb(spec_value["resultdb"])
+    return spec_value
+
 common = struct(
     # Functions used for creating objects that are part of the public API that
     # need to be used internally as well
@@ -274,6 +332,7 @@ common = struct(
     swarming = _swarming,
 
     # Functions used for creating nodes by functions that define targets
+    binary_test_config = _binary_test_config,
     create_compile_target = _create_compile_target,
     create_label_mapping = _create_label_mapping,
     basic_suite_test_config = _basic_suite_test_config,
@@ -286,7 +345,6 @@ common = struct(
     spec_handler_for_unimplemented_target_type = _spec_handler_for_unimplemented_target_type,
 
     # Functions for implementing spec handlers
-    get_test_binary_node = _get_test_binary_node,
-    finalize_merge = _finalize_merge,
-    finalize_swarming = _finalize_swarming,
+    spec_init = _spec_init,
+    spec_finalize = _spec_finalize,
 )
