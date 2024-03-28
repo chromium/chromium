@@ -4,11 +4,12 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -32,12 +33,12 @@ namespace {
 constexpr size_t kReadFileChunkSize = 4096;
 
 std::string GetFileMimeType(const base::FilePath& path,
-                            base::StringPiece first_bytes) {
+                            std::string_view first_bytes) {
   std::string sniffed_mime_type;
   bool sniff_found = net::SniffMimeType(
-      base::StringPiece(first_bytes.data(),
-                        std::min(first_bytes.size(),
-                                 static_cast<size_t>(net::kMaxBytesToSniff))),
+      std::string_view(first_bytes.data(),
+                       std::min(first_bytes.size(),
+                                static_cast<size_t>(net::kMaxBytesToSniff))),
       net::FilePathToFileURL(path),
       /*type_hint*/ std::string(), net::ForceSniffFileUrlsForHtml::kDisabled,
       &sniffed_mime_type);
@@ -109,7 +110,7 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
     // Use the first read chunk to get the mimetype as necessary.
     if (detect_mime_type && (bytes_read == 0)) {
       file_data.mime_type = GetFileMimeType(
-          path, base::StringPiece(buf.data(), bytes_currently_read));
+          path, std::string_view(buf.data(), bytes_currently_read));
     }
 
     secure_hash->Update(buf.data(), bytes_currently_read);

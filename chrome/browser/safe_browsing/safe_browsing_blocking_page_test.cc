@@ -6,12 +6,11 @@
 // threat urls.  It then uses a real browser to go to these urls, and sends
 // "goback" or "proceed" commands and verifies they work.
 
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
-
 #include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -77,6 +76,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -806,8 +806,8 @@ class SafeBrowsingBlockingPageBrowserTest
   // Adds a safebrowsing threat results to the fake safebrowsing service,
   // navigates to a page with a subresource containing the threat site, and
   // returns the url of the parent page.
-  GURL SetupThreatOnSubresourceAndNavigate(base::StringPiece main_frame_url,
-                                           base::StringPiece subresource_url) {
+  GURL SetupThreatOnSubresourceAndNavigate(std::string_view main_frame_url,
+                                           std::string_view subresource_url) {
     GURL url = embedded_test_server()->GetURL(main_frame_url);
     GURL embedded_url = embedded_test_server()->GetURL(subresource_url);
     SetURLThreatType(embedded_url, GetThreatType());
