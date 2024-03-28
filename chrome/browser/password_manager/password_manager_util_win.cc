@@ -4,6 +4,7 @@
 
 // windows.h must be first otherwise Win8 SDK breaks.
 #include <windows.h>
+
 #include <LM.h>
 #include <ntsecapi.h>
 #include <stddef.h>
@@ -16,6 +17,9 @@
 #include <security.h>
 #undef SECURITY_WIN32
 
+#include <optional>
+
+#include "base/containers/heap_array.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
@@ -37,13 +41,11 @@ namespace {
 const unsigned kMaxPasswordRetries = 3;
 
 struct PasswordCheckPrefs {
-  PasswordCheckPrefs() : pref_last_changed_(0), blank_password_(false) {}
-
   void Read(PrefService* local_state);
   void Write(PrefService* local_state);
 
-  int64_t pref_last_changed_;
-  bool blank_password_;
+  int64_t pref_last_changed = 0;
+  bool blank_password = false;
 };
 
 // Validates whether a credential buffer contains the credentials for the
@@ -64,7 +66,7 @@ class CredentialBufferValidator {
   DWORD IsValid(ULONG auth_package, void* cred_buffer, ULONG cred_length);
 
  private:
-  std::unique_ptr<char[]> GetTokenInformation(HANDLE token);
+  std::optional<base::HeapArray<uint8_t>> GetTokenInformation(HANDLE token);
 
   // Name of app calling LsaLogonUser().  In this case, "chrome".
   LSA_STRING name_;
@@ -73,7 +75,7 @@ class CredentialBufferValidator {
   HANDLE lsa_ = INVALID_HANDLE_VALUE;
 
   // Buffer holding information about the current process token.
-  std::unique_ptr<char[]> cur_token_info_;
+  std::optional<base::HeapArray<uint8_t>> cur_token_info_;
 };
 
 CredentialBufferValidator::CredentialBufferValidator() {
@@ -104,15 +106,17 @@ CredentialBufferValidator::CredentialBufferValidator() {
 }
 
 CredentialBufferValidator::~CredentialBufferValidator() {
-  if (lsa_ != INVALID_HANDLE_VALUE)
+  if (lsa_ != INVALID_HANDLE_VALUE) {
     LsaDeregisterLogonProcess(lsa_);
+  }
 }
 
 DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
                                          void* auth_buffer,
                                          ULONG auth_length) {
-  if (lsa_ == INVALID_HANDLE_VALUE)
+  if (lsa_ == INVALID_HANDLE_VALUE) {
     return ERROR_LOGON_FAILURE;
+  }
 
   NTSTATUS sts;
   NTSTATUS substs;
@@ -124,54 +128,61 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   HANDLE token = INVALID_HANDLE_VALUE;
 
   strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome");
-  if (!AllocateLocallyUniqueId(&source.SourceIdentifier))
+  if (!AllocateLocallyUniqueId(&source.SourceIdentifier)) {
     return GetLastError();
+  }
 
   sts = LsaLogonUser(lsa_, &name_, Interactive, auth_package, auth_buffer,
                      auth_length, nullptr, &source, &profile_buffer,
                      &profile_buffer_length, &luid, &token, &limits, &substs);
   LsaFreeReturnBuffer(profile_buffer);
-  std::unique_ptr<char[]> logon_token_info = GetTokenInformation(token);
+  std::optional<base::HeapArray<uint8_t>> logon_token_info =
+      GetTokenInformation(token);
   CloseHandle(token);
-  if (sts != S_OK)
+  if (sts != S_OK) {
     return LsaNtStatusToWinError(sts);
-  if (!logon_token_info)
+  }
+  if (!logon_token_info) {
     return ERROR_NOT_ENOUGH_MEMORY;
+  }
 
-  PSID cur_sid = reinterpret_cast<TOKEN_USER*>(cur_token_info_.get())->User.Sid;
+  PSID cur_sid =
+      reinterpret_cast<TOKEN_USER*>(cur_token_info_->data())->User.Sid;
   PSID logon_sid =
-      reinterpret_cast<TOKEN_USER*>(logon_token_info.get())->User.Sid;
+      reinterpret_cast<TOKEN_USER*>(logon_token_info->data())->User.Sid;
   return EqualSid(cur_sid, logon_sid) ? ERROR_SUCCESS : ERROR_LOGON_FAILURE;
 }
 
-std::unique_ptr<char[]> CredentialBufferValidator::GetTokenInformation(
-    HANDLE token) {
+std::optional<base::HeapArray<uint8_t>>
+CredentialBufferValidator::GetTokenInformation(HANDLE token) {
   DWORD token_info_length = 0;
   ::GetTokenInformation(token, TokenUser, nullptr, 0, &token_info_length);
-  if (ERROR_INSUFFICIENT_BUFFER != GetLastError())
-    return nullptr;
+  if (ERROR_INSUFFICIENT_BUFFER != GetLastError()) {
+    return std::nullopt;
+  }
 
-  std::unique_ptr<char[]> token_info_buffer(new char[token_info_length]);
-  if (!::GetTokenInformation(token, TokenUser, token_info_buffer.get(),
+  auto token_info_buffer =
+      base::HeapArray<uint8_t>::WithSize(token_info_length);
+  if (!::GetTokenInformation(token, TokenUser, token_info_buffer.data(),
                              token_info_length, &token_info_length)) {
-    return nullptr;
+    return std::nullopt;
   }
 
   return token_info_buffer;
 }
 
 void PasswordCheckPrefs::Read(PrefService* local_state) {
-  blank_password_ =
+  blank_password =
       local_state->GetBoolean(password_manager::prefs::kOsPasswordBlank);
-  pref_last_changed_ =
+  pref_last_changed =
       local_state->GetInt64(password_manager::prefs::kOsPasswordLastChanged);
 }
 
 void PasswordCheckPrefs::Write(PrefService* local_state) {
   local_state->SetBoolean(password_manager::prefs::kOsPasswordBlank,
-                          blank_password_);
+                          blank_password);
   local_state->SetInt64(password_manager::prefs::kOsPasswordLastChanged,
-                        pref_last_changed_);
+                        pref_last_changed);
 }
 
 int64_t GetPasswordLastChanged(const WCHAR* username) {
@@ -179,10 +190,10 @@ int64_t GetPasswordLastChanged(const WCHAR* username) {
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
-  LPUSER_INFO_1 user_info = NULL;
+  LPUSER_INFO_1 user_info = nullptr;
   DWORD age = 0;
 
-  NET_API_STATUS ret = NetUserGetInfo(NULL, username, 1,
+  NET_API_STATUS ret = NetUserGetInfo(nullptr, username, 1,
                                       reinterpret_cast<LPBYTE*>(&user_info));
 
   if (ret == NERR_Success) {
@@ -204,20 +215,22 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
   // NetUserGetInfo() (called from GetPasswordLastChanged()) as well as
   // LogonUser() below only wants the username portion.
   LPCWSTR backslash = wcschr(username, L'\\');
-  if (backslash)
+  if (backslash) {
     username = backslash + 1;
+  }
 
   int64_t last_changed = GetPasswordLastChanged(username);
 
   // If we cannot determine when the password was last changed
   // then assume the password is not blank
-  if (last_changed == -1)
+  if (last_changed == -1) {
     return false;
+  }
 
-  bool blank_password = prefs->blank_password_;
+  bool blank_password = prefs->blank_password;
   bool need_recheck = true;
-  if (prefs->pref_last_changed_ > 0 &&
-      last_changed <= prefs->pref_last_changed_) {
+  if (prefs->pref_last_changed > 0 &&
+      last_changed <= prefs->pref_last_changed) {
     need_recheck = false;
   }
 
@@ -229,24 +242,21 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
     HANDLE handle = INVALID_HANDLE_VALUE;
 
     // Attempt to login using blank password.
-    DWORD logon_result = LogonUser(username,
-                                   L".",
-                                   L"",
-                                   LOGON32_LOGON_INTERACTIVE,
-                                   LOGON32_PROVIDER_DEFAULT,
-                                   &handle);
+    DWORD logon_result =
+        LogonUser(username, L".", L"", LOGON32_LOGON_INTERACTIVE,
+                  LOGON32_PROVIDER_DEFAULT, &handle);
 
     auto last_error = GetLastError();
     // Win XP and later return ERROR_ACCOUNT_RESTRICTION for blank password.
-    if (logon_result)
+    if (logon_result) {
       CloseHandle(handle);
+    }
 
     // In the case the password is blank, then LogonUser returns a failure,
     // handle is INVALID_HANDLE_VALUE, and GetLastError() is
     // ERROR_ACCOUNT_RESTRICTION.
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ms681385
-    blank_password = (logon_result ||
-                      last_error == ERROR_ACCOUNT_RESTRICTION);
+    blank_password = (logon_result || last_error == ERROR_ACCOUNT_RESTRICTION);
   }
 
   // Account for clock skew between pulling the password age and
@@ -254,8 +264,8 @@ bool CheckBlankPasswordWithPrefs(const WCHAR* username,
   last_changed += base::Time::kMicrosecondsPerSecond;
 
   // Update the preferences with new values.
-  prefs->pref_last_changed_ = last_changed;
-  prefs->blank_password_ = blank_password;
+  prefs->pref_last_changed = last_changed;
+  prefs->blank_password = blank_password;
   return blank_password;
 }
 
@@ -331,8 +341,9 @@ bool AuthenticateUser(gfx::NativeWindow window,
     err = CredUIPromptForWindowsCredentials(
         &cui, err, &auth_package, nullptr, 0, &cred_buffer, &cred_buffer_size,
         nullptr, CREDUIWIN_ENUMERATE_CURRENT_USER);
-    if (err != ERROR_SUCCESS)
+    if (err != ERROR_SUCCESS) {
       break;
+    }
 
     // While CredUIPromptForWindowsCredentials() shows the currently logged
     // on user by default, it can be changed at runtime.  This is important,
