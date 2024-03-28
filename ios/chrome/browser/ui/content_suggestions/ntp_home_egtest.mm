@@ -1405,7 +1405,7 @@ id<GREYMatcher> mostlyNotVisible() {
   }
 
   // Sign in to enable Following.
-  [self signInThroughSettingsMenu];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Scrolls down a bit, not fully into the feed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
@@ -1442,7 +1442,7 @@ id<GREYMatcher> mostlyNotVisible() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Sign in to enable Following feed.
-  [self signInThroughSettingsMenu];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Check that Following header is now visible, and not regular feed header.
   [[EarlGrey
@@ -1748,21 +1748,6 @@ id<GREYMatcher> mostlyNotVisible() {
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
-}
-
-// Opens the settings menu, signs in using a fake identity, and closes the menu.
-- (void)signInThroughSettingsMenu {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::PrimarySignInButton()]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      performAction:grey_tap()];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
-  [ChromeEarlGrey waitForMatcher:chrome_test_util::SettingsAccountButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
 }
 
 #pragma mark - Matchers

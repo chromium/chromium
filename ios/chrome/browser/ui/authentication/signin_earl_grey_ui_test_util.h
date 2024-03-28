@@ -35,10 +35,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // that sync is replaced by sign-in.
 + (void)signOut;
 
-// Taps the sign in confirmation page, scrolls first to make the OK button
-// visible on short devices (e.g. iPhone 5s).
-+ (void)tapSigninConfirmationDialog;
-
 // Opens the confirmation dialog to remove an account from the device, without
 // confirming it.
 + (void)openRemoveAccountConfirmationDialogWithFakeIdentity:

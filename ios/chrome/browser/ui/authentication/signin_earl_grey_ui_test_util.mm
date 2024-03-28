@@ -184,26 +184,6 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
   [SigninEarlGrey verifySignedOut];
 }
 
-+ (void)tapSigninConfirmationDialog {
-  // To confirm the dialog, the scroll view content has to be scrolled to the
-  // bottom to transform "MORE" button into the validation button.
-  // EarlGrey fails to scroll to the bottom, using grey_scrollToContentEdge(),
-  // if the scroll view doesn't bounce and by default a scroll view doesn't
-  // bounce when the content fits into the scroll view (the scroll never ends).
-  // To test if the content fits into the scroll view,
-  // ContentViewSmallerThanScrollView() matcher is used on the signin scroll
-  // view.
-  // If the matcher fails, then the scroll view should be scrolled to the
-  // bottom.
-  // Once to the bottom, the consent can be confirmed.
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // TODO(crbug.com/330333634): Update the helper, see below.
-  GREYAssertTrue(false,
-                 @"This helper was relying on deleted UI "
-                 @"(kUnifiedConsentScrollViewIdentifier). All tests calling it "
-                 @"are disabled. Update the helper and re-enable the tests.");
-}
-
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode {
   [self verifySigninPromoVisibleWithMode:mode closeButton:YES];
 }
