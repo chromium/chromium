@@ -190,7 +190,7 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   if (channel_handle_.is_valid()) {
     // If a channel has been pre-established and cached,
     //   1) if callback is valid, return it right away.
-    //   2) if callback is empty, it's PreEstablishGpyChannel() being called
+    //   2) if callback is empty, it's PreEstablishGpuChannel() being called
     //      more than once, no need to do anything.
     if (callback) {
       std::move(callback).Run(client_id_, std::move(channel_handle_), gpu_info_,
