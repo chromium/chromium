@@ -1280,16 +1280,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ErrorMessageDismissalReason"
+<histogram
+    name="PasswordManager.ErrorMessageDismissalReason.{ErrorMessageType}"
     enum="MessageDismissReason" expires_after="2024-09-01">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
-    Records the reason that caused the Password Manager error message on Android
-    to be dismissed. It's recorded when the user dismisses the message by
-    clicking the Sign in button or when the message is autodismissed because of
-    the timeout.
+    Records the reason that caused the {ErrorMessageType} on Android to be
+    dismissed. It's recorded when the user dismisses the message by clicking the
+    button or when the message is autodismissed because of the timeout.
   </summary>
+  <token key="ErrorMessageType">
+    <variant name="AuthErrorResolvable" summary="resolvable auth error"/>
+    <variant name="AuthErrorUnresolvable" summary="unresolvable auth error"/>
+    <variant name="GMSCoreOutdatedSavingDisabled"
+        summary="error that nudges to update GMSCore because password saving
+                 is disabled"/>
+    <variant name="GMSCoreOutdatedSavingPossible"
+        summary="error that nudges to update GMSCore because only account
+                 passwords can be saved"/>
+    <variant name="KeyRetrievalRequired"
+        summary="error shown because key retrieval is required"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.ErrorMessageDisplayReason"

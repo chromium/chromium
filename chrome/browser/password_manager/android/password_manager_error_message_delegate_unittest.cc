@@ -24,8 +24,8 @@
 using testing::Return;
 
 namespace {
-constexpr char kErrorMessageDismissalReasonHistogramName[] =
-    "PasswordManager.ErrorMessageDismissalReason";
+const std::string kErrorMessageDismissalReasonHistogramName =
+    "PasswordManager.ErrorMessageDismissalReason.";
 constexpr char kErrorMessageDisplayReasonHistogramName[] =
     "PasswordManager.ErrorMessageDisplayReason";
 }
@@ -231,7 +231,8 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 
 // Tests that the sign in flow starts when the user clicks the "Sign in" button
 // and that the metrics are recorded correctly.
-TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       SignInOnActionClickToSavePasswords) {
   base::HistogramTester histogram_tester;
 
   DisplayMessageAndExpectEnqueued(
@@ -246,9 +247,32 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
   // The message needs to be dismissed manually in tests. In production code
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
-  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
-                                      messages::DismissReason::PRIMARY_ACTION,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDismissalReasonHistogramName + "AuthErrorResolvable",
+      messages::DismissReason::PRIMARY_ACTION, 1);
+}
+
+// Tests that the sign in flow starts when the user clicks the "Sign in" button
+// and that the metrics are recorded correctly.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       SignInOnActionClickToUsePasswords) {
+  base::HistogramTester histogram_tester;
+
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartUpdateAccountCredentialsFlow(web_contents()));
+  // Trigger the click action on the "Sign in" button and dismiss the message.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDismissalReasonHistogramName + "AuthErrorUnresolvable",
+      messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
 // Tests that the Google Play page where GMSCore can be updated opens when the
@@ -270,9 +294,10 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
 
-  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
-                                      messages::DismissReason::PRIMARY_ACTION,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDismissalReasonHistogramName +
+          "GMSCoreOutdatedSavingPossible",
+      messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
 // Tests that the Google Play page where GMSCore can be updated opens when the
@@ -294,9 +319,10 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
 
-  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
-                                      messages::DismissReason::PRIMARY_ACTION,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDismissalReasonHistogramName +
+          "GMSCoreOutdatedSavingDisabled",
+      messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
 // Tests that the metrics are recorded correctly when the message is
@@ -311,8 +337,9 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
 
   DismissMessageAndExpectDismissed(messages::DismissReason::TIMER);
 
-  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
-                                      messages::DismissReason::TIMER, 1);
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDismissalReasonHistogramName + "AuthErrorResolvable",
+      messages::DismissReason::TIMER, 1);
 }
 
 TEST_F(PasswordManagerErrorMessageDelegateTest,
@@ -367,7 +394,7 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   // The message needs to be dismissed manually in tests. In production code
   // this happens automatically, but on the java side.
   DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
-  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
-                                      messages::DismissReason::PRIMARY_ACTION,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kErrorMessageDismissalReasonHistogramName + "KeyRetrievalRequired",
+      messages::DismissReason::PRIMARY_ACTION, 1);
 }

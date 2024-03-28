@@ -23,8 +23,29 @@ namespace {
 using PasswordStoreBackendErrorType =
     password_manager::PasswordStoreBackendErrorType;
 
-void RecordDismissalReasonMetrics(messages::DismissReason dismiss_reason) {
-  base::UmaHistogramEnumeration("PasswordManager.ErrorMessageDismissalReason",
+std::string GetErrorMessageName(PasswordStoreBackendErrorType error_type) {
+  switch (error_type) {
+    case PasswordStoreBackendErrorType::kAuthErrorResolvable:
+      return "AuthErrorResolvable";
+    case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
+      return "AuthErrorUnresolvable";
+    case PasswordStoreBackendErrorType::kKeyRetrievalRequired:
+      return "KeyRetrievalRequired";
+    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingPossible:
+      return "GMSCoreOutdatedSavingPossible";
+    case PasswordStoreBackendErrorType::kGMSCoreOutdatedSavingDisabled:
+      return "GMSCoreOutdatedSavingDisabled";
+    case PasswordStoreBackendErrorType::kUncategorized:
+    case PasswordStoreBackendErrorType::kKeychainError:
+      // Other error types aren't supported.
+      NOTREACHED_NORETURN();
+  }
+}
+
+void RecordDismissalReasonMetrics(PasswordStoreBackendErrorType error_type,
+                                  messages::DismissReason dismiss_reason) {
+  base::UmaHistogramEnumeration("PasswordManager.ErrorMessageDismissalReason." +
+                                    GetErrorMessageName(error_type),
                                 dismiss_reason, messages::DismissReason::COUNT);
 }
 
@@ -115,6 +136,7 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
   DCHECK(!message_);
   message_ =
       CreateMessage(web_contents, error_type, std::move(dismissal_callback));
+  error_type_ = error_type;
   switch (error_type) {
     case PasswordStoreBackendErrorType::kAuthErrorResolvable:
     case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
@@ -164,7 +186,7 @@ PasswordManagerErrorMessageDelegate::CreateMessage(
 
 void PasswordManagerErrorMessageDelegate::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
-  RecordDismissalReasonMetrics(dismiss_reason);
+  RecordDismissalReasonMetrics(error_type_, dismiss_reason);
   message_.reset();
 }
 

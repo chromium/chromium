@@ -58,6 +58,8 @@ class PasswordManagerErrorMessageDelegate {
 
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PasswordManagerErrorMessageHelperBridge> helper_bridge_;
+  password_manager::PasswordStoreBackendErrorType error_type_ =
+      password_manager::PasswordStoreBackendErrorType::kUncategorized;
 
   base::WeakPtrFactory<PasswordManagerErrorMessageDelegate> weak_ptr_factory_{
       this};
