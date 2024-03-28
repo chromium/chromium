@@ -378,7 +378,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Determine subclass type.
   virtual bool IsImageMapLink() const;
   virtual bool IsAXNodeObject() const;
-  virtual bool IsAXLayoutObject() const;
   virtual bool IsAXInlineTextBox() const;
   virtual bool IsList() const;
   virtual bool IsAXListBox() const;
@@ -955,7 +954,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return nullptr;
   }
   // Called on the AX object after the layout tree determines which is the right
-  // AXLayoutObject.
+  // AXObject.
   AXObject* ElementAccessibilityHitTest(const gfx::Point&) const;
 
   //

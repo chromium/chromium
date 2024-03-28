@@ -38,7 +38,7 @@ namespace blink {
 
 AXSlider::AXSlider(LayoutObject* layout_object,
                    AXObjectCacheImpl& ax_object_cache)
-    : AXLayoutObject(layout_object, ax_object_cache) {}
+    : AXNodeObject(layout_object, ax_object_cache) {}
 
 ax::mojom::blink::Role AXSlider::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kSlider;
@@ -46,10 +46,11 @@ ax::mojom::blink::Role AXSlider::NativeRoleIgnoringAria() const {
 
 AccessibilityOrientation AXSlider::Orientation() const {
   // Default to horizontal in the unknown case.
-  if (!layout_object_)
+  if (!GetLayoutObject()) {
     return kAccessibilityOrientationHorizontal;
+  }
 
-  const ComputedStyle* style = layout_object_->Style();
+  const ComputedStyle* style = GetLayoutObject()->Style();
   if (!style)
     return kAccessibilityOrientationHorizontal;
 
@@ -105,7 +106,7 @@ bool AXSlider::OnNativeSetValueAction(const String& value) {
 }
 
 HTMLInputElement* AXSlider::GetInputElement() const {
-  return To<HTMLInputElement>(layout_object_->GetNode());
+  return To<HTMLInputElement>(GetNode());
 }
 
 }  // namespace blink

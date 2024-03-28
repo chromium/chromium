@@ -30,14 +30,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_LIST_BOX_OPTION_H_
 
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
 class HTMLSelectElement;
 
-class AXListBoxOption final : public AXLayoutObject {
+class AXListBoxOption final : public AXNodeObject {
  public:
   AXListBoxOption(LayoutObject*, AXObjectCacheImpl&);
 

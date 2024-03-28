@@ -73,11 +73,10 @@ class AbstractInlineTextBox;
 class HTMLAreaElement;
 class WebLocalFrameClient;
 
-// Describes a decision on whether to create an AXNodeObject, an AXLayoutObject,
-// or nothing (which will cause the AX subtree to be pruned at that point).
-// Not that AXLayoutObjects may be backed by a node, if it has one, and most do.
-// Only pseudo element descendants are missing DOM nodes.
-enum AXObjectType { kPruneSubtree = 0, kAXNodeObject, kAXLayoutObject };
+// Describes a decision on whether to create an AXNodeObject with or without a
+// LayoutObject, or to prune the AX subtree at that point. Only pseudo element
+// descendants are missing DOM nodes.
+enum AXObjectType { kPruneSubtree = 0, kCreateFromNode, kCreateFromLayout };
 
 struct TextChangedOperation {
   TextChangedOperation()

@@ -45,7 +45,10 @@ class Node;
 
 class MODULES_EXPORT AXNodeObject : public AXObject {
  public:
+  // Note: when constructed with a Node, the LayoutObject will be ignored
+  // in property computations.
   AXNodeObject(Node*, AXObjectCacheImpl&);
+  AXNodeObject(LayoutObject*, AXObjectCacheImpl&);
 
   AXNodeObject(const AXNodeObject&) = delete;
   AXNodeObject& operator=(const AXNodeObject&) = delete;
@@ -70,10 +73,10 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 #endif
 
   // The accessibility role, not taking the ARIA role into account.
-  ax::mojom::blink::Role native_role_;
+  ax::mojom::blink::Role native_role_ = ax::mojom::blink::Role::kUnknown;
 
   // The ARIA role, not taking the native role into account.
-  ax::mojom::blink::Role aria_role_;
+  ax::mojom::blink::Role aria_role_ = ax::mojom::blink::Role::kUnknown;
 
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
       IgnoredReasons* = nullptr) const;
@@ -283,6 +286,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Element* AnchorElement() const override;
   Document* GetDocument() const override;
   Node* GetNode() const final;
+  LayoutObject* GetLayoutObject() const final;
 
   // DOM and layout tree access.
   AtomicString Language() const override;
@@ -422,6 +426,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 #endif
 
   Member<Node> node_;
+  Member<LayoutObject> layout_object_;
 };
 
 }  // namespace blink

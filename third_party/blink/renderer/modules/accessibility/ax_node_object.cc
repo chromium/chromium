@@ -141,9 +141,9 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
@@ -473,14 +473,26 @@ using mojom::blink::FormControlType;
 // In ARIA 1.1, default value of aria-level was changed to 2.
 const int kDefaultHeadingLevel = 2;
 
+// When an AXNodeObject is created with a Node instead of a LayoutObject it
+// means that the LayoutObject is purposely being set to null, as it is not
+// relevant for this object in the AX tree.
 AXNodeObject::AXNodeObject(Node* node, AXObjectCacheImpl& ax_object_cache)
     : AXObject(ax_object_cache),
-      native_role_(ax::mojom::blink::Role::kUnknown),
-      aria_role_(ax::mojom::blink::Role::kUnknown),
       node_(node) {}
+
+AXNodeObject::AXNodeObject(LayoutObject* layout_object,
+                           AXObjectCacheImpl& ax_object_cache)
+    : AXObject(ax_object_cache),
+      node_(layout_object->GetNode()),
+      layout_object_(layout_object) {
+#if DCHECK_IS_ON()
+  layout_object_->SetHasAXObject(true);
+#endif
+}
 
 AXNodeObject::~AXNodeObject() {
   DCHECK(!node_);
+  DCHECK(!layout_object_);
 }
 
 void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
@@ -730,8 +742,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   // Anything with CSS alt should be included.
   // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
-  // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
-  // to both Elements and pseudo-elements.
   std::optional<String> alt_text = GetCSSAltText(GetElement());
   if (alt_text && !alt_text->empty())
     return kIncludeObject;
@@ -1054,11 +1064,6 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
       }
     }
     return false;
-  }
-
-  std::optional<String> alt_text = GetCSSAltText(GetElement());
-  if (alt_text) {
-    return alt_text->empty();
   }
 
   if (GetLayoutObject()->IsListMarker()) {
@@ -2364,6 +2369,12 @@ void AXNodeObject::Detach() {
 #endif
   AXObject::Detach();
   node_ = nullptr;
+#if DCHECK_IS_ON()
+  if (layout_object_) {
+    layout_object_->SetHasAXObject(false);
+  }
+#endif
+  layout_object_ = nullptr;
 }
 
 bool AXNodeObject::IsAXNodeObject() const {
@@ -4957,7 +4968,7 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   // line of text, so that it's clear the object is a child of the parent.
   for (AXObject* position_provider = ParentObject(); position_provider;
        position_provider = position_provider->ParentObject()) {
-    if (IsA<AXLayoutObject>(position_provider)) {
+    if (position_provider->GetLayoutObject()) {
       position_provider->GetRelativeBounds(
           out_container, out_bounds_in_container, out_container_transform,
           clips_children);
@@ -5749,9 +5760,13 @@ Element* AXNodeObject::AnchorElement() const {
 }
 
 Document* AXNodeObject::GetDocument() const {
-  if (!GetNode())
-    return nullptr;
-  return &GetNode()->GetDocument();
+  if (GetNode()) {
+    return &GetNode()->GetDocument();
+  }
+  if (GetLayoutObject()) {
+    return &GetLayoutObject()->GetDocument();
+  }
+  return nullptr;
 }
 
 Node* AXNodeObject::GetNode() const {
@@ -5765,6 +5780,10 @@ Node* AXNodeObject::GetNode() const {
          "associated node of this accessibility object.\n"
       << ToString(true, true);
   return node_.Get();
+}
+
+LayoutObject* AXNodeObject::GetLayoutObject() const {
+  return layout_object_;
 }
 
 // TODO(chrishall): consider merging this with AXObject::Language in followup.
@@ -7398,7 +7417,7 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
 
 AXObject* AXNodeObject::NextOnLine() const {
   // If this is the last object on the line, nullptr is returned. Otherwise, all
-  // AXLayoutObjects, regardless of role and tree depth, are connected to the
+  // AXNodeObjects, regardless of role and tree depth, are connected to the
   // next inline text box on the same line. If there is no inline text box, they
   // are connected to the next leaf AXObject.
   DCHECK(!IsDetached());
@@ -7507,7 +7526,7 @@ AXObject* AXNodeObject::NextOnLine() const {
 
 AXObject* AXNodeObject::PreviousOnLine() const {
   // If this is the first object on the line, nullptr is returned. Otherwise,
-  // all AXLayoutObjects, regardless of role and tree depth, are connected to
+  // all AXNodeObjects, regardless of role and tree depth, are connected to
   // the previous inline text box on the same line. If there is no inline text
   // box, they are connected to the previous leaf AXObject.
   DCHECK(!IsDetached());
@@ -7652,6 +7671,7 @@ void AXNodeObject::GetWordBoundaries(Vector<int>& word_starts,
 
 void AXNodeObject::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
+  visitor->Trace(layout_object_);
   AXObject::Trace(visitor);
 }
 

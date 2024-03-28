@@ -996,8 +996,9 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
 
 void WebAXObject::HandleAutofillSuggestionAvailabilityChanged(
     blink::WebAXAutofillSuggestionAvailability suggestion_availability) const {
-  if (IsDetached() || !private_->IsAXLayoutObject())
+  if (IsDetached() || !private_->GetLayoutObject()) {
     return;
+  }
 
   private_->HandleAutofillSuggestionAvailabilityChanged(
       suggestion_availability);

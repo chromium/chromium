@@ -155,7 +155,7 @@ int AXInlineTextBox::TextOffsetInContainer(int offset) const {
 
   // If the parent object in the accessibility tree exists, then it is either
   // a static text object or a line break. In the static text case, it is an
-  // AXLayoutObject associated with an inline text object. Hence the container
+  // AXNodeObject associated with an inline text object. Hence the container
   // is another inline object, not a layout block flow. We need to subtract the
   // text start offset of the static text parent from the text start offset of
   // this inline text box.

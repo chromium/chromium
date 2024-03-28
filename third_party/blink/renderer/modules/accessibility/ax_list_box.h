@@ -29,13 +29,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_LIST_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_LIST_BOX_H_
 
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
 
-class AXListBox final : public AXLayoutObject {
+class AXListBox final : public AXNodeObject {
  public:
   AXListBox(LayoutObject*, AXObjectCacheImpl&);
 

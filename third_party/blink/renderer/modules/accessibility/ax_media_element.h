@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MEDIA_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
 
-class AccessibilityMediaElement : public AXLayoutObject {
+class AccessibilityMediaElement : public AXNodeObject {
  public:
   static AXObject* Create(LayoutObject*, AXObjectCacheImpl&);
 
@@ -24,15 +24,13 @@ class AccessibilityMediaElement : public AXLayoutObject {
 
   ~AccessibilityMediaElement() override = default;
 
-  // AXLayoutObject overrides.
+  // AXNodeObject overrides.
   String TextAlternative(bool recursive,
                          const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
-
-  // AXNodeObject overrides.
   bool CanHaveChildren() const override;
   AXRestriction Restriction() const override;
 

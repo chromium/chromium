@@ -37,7 +37,7 @@ namespace blink {
 
 AXListBox::AXListBox(LayoutObject* layout_object,
                      AXObjectCacheImpl& ax_object_cache)
-    : AXLayoutObject(layout_object, ax_object_cache), active_index_(-1) {
+    : AXNodeObject(layout_object, ax_object_cache), active_index_(-1) {
   ActiveIndexChanged();
 }
 

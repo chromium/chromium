@@ -26,14 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_H_
 
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class AXObjectCacheImpl;
 
-class AXMenuList final : public AXLayoutObject {
+class AXMenuList final : public AXNodeObject {
  public:
   AXMenuList(LayoutObject*, AXObjectCacheImpl&);
 

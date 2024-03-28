@@ -101,7 +101,6 @@
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_list_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_list_box_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_control.h"
@@ -109,6 +108,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_progress_indicator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_slider.h"
@@ -340,7 +340,7 @@ bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
   // Use previous decision for this whitespace. This is helpful for performance,
   // consistency (flake reduction) and code simplicity, as we do not need to
   // recompute block subtrees when inline nodes change. It also helps ensure
-  // that whitespace nodes do not change between AXNodeObject/AXLayoutObject
+  // that whitespace nodes do not change whether they store a layout object
   // at inopportune times.
   // TODO(accessibility) Convert this method and callers of it to member
   // methods so we can access whitespace_ignored_map_ directly.
@@ -541,15 +541,13 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (layout_object.IsText())
     return IsLayoutTextRelevantForAccessibility(To<LayoutText>(layout_object));
 
-  // An AXMenuListOption will be created, which is a subclass of AXNodeObject,
-  // not of AXLayoutObject.
+  // An AXMenuListOption will be created, which does not store the LayoutObject.
   if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(
           layout_object.GetNode())) {
     return false;
   }
 
-  // An AXImageMapLink will be created, which is a subclass of AXNodeObject, not
-  // of AXLayoutObject.
+  // An AXImageMapLink will be created, which does not store the LayoutObject.
   if (IsA<HTMLAreaElement>(layout_object.GetNode()))
     return false;
 
@@ -657,8 +655,8 @@ bool IsInPrunableHiddenContainerInclusive(const Node& node,
 // return kPruneSubtree, which will cause no AXObject to be created, and
 // result in the entire subtree being pruned at that point.
 // * If the node is part of a forbidden subtree, then kPruneSubtree is used.
-// * If both the node and layout are relevant, kAXLayoutObject is preferred,
-// otherwise: kAXNodeObject for relevant nodes, kLayoutObject for layout.
+// * If both the node and layout are relevant, kCreateFromLayout is preferred,
+// otherwise: kCreateFromNode for relevant nodes, kCreateFromLayout for layout.
 // -----------------------------------------------------------------------------
 AXObjectType DetermineAXObjectType(const Node* node,
                                    const LayoutObject* layout_object,
@@ -684,7 +682,7 @@ AXObjectType DetermineAXObjectType(const Node* node,
 
     if (!IsA<Element>(node) && !IsA<Text>(node)) {
       // All remaining types, such as the document node, doctype node.
-      return layout_object ? kAXLayoutObject : kPruneSubtree;
+      return layout_object ? kCreateFromLayout : kPruneSubtree;
     }
 
     if (const Element* element = DynamicTo<Element>(node)) {
@@ -695,11 +693,11 @@ AXObjectType DetermineAXObjectType(const Node* node,
     } else {  // Text is the only remaining type.
       if (layout_object) {
         // If there's layout for this text, it will either be pruned or an
-        // AXLayoutObject will be created for it. The logic of whether to return
-        // kAXLayoutObject or kPruneSubtree will come purely from
+        // AXNodeObject with layout will be created for it. The logic of whether
+        // to return kCreateFromLayout or kPruneSubtree will come purely from
         // is_layout_relevant further down.
         return IsLayoutObjectRelevantForAccessibility(*layout_object)
-                   ? kAXLayoutObject
+                   ? kCreateFromLayout
                    : kPruneSubtree;
       } else {
         // Otherwise, base the decision on the best info we have on the node.
@@ -723,7 +721,7 @@ AXObjectType DetermineAXObjectType(const Node* node,
     return kPruneSubtree;
   }
 
-  return is_layout_relevant ? kAXLayoutObject : kAXNodeObject;
+  return is_layout_relevant ? kCreateFromLayout : kCreateFromNode;
 }
 
 const int kSizeMb = 1000000;
@@ -1153,7 +1151,7 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
     return MakeGarbageCollected<AXProgressIndicator>(layout_object, *this);
   }
 
-  return MakeGarbageCollected<AXLayoutObject>(layout_object, *this);
+  return MakeGarbageCollected<AXNodeObject>(layout_object, *this);
 }
 
 // Returns true if |node| is an <option> element and its parent <select>
@@ -1535,7 +1533,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 
 #if DCHECK_IS_ON()
   if (node) {
-    DCHECK(layout_object || ax_type != kAXLayoutObject);
+    DCHECK(layout_object || ax_type != kCreateFromLayout);
     DCHECK(node->isConnected());
     DCHECK(node->GetDocument().GetFrame())
         << "Creating AXObject in a dead document: " << node;
@@ -1545,10 +1543,10 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
            "node types: document, element and text."
         << "\n* Node is: " << node;
   } else {
-    // No node, therefore the only possibility is to create an AXLayoutObject.
+    // No node: will create an AXNodeObject using the LayoutObject.
     DCHECK(layout_object->GetDocument().GetFrame())
         << "Creating AXObject in a dead document: " << layout_object;
-    DCHECK_EQ(ax_type, kAXLayoutObject);
+    DCHECK_EQ(ax_type, kCreateFromLayout);
     DCHECK(!IsA<LayoutView>(layout_object))
         << "AXObject for document is always created with a node.";
   }
@@ -1570,7 +1568,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
     // return it. If not, that means the entire subtree is not viable, and
     // therefore we ensure it is removed, and null is returned.
     CHECK(node)
-        << "AXLayoutObjects without a node are pseudo element descendants, and "
+        << "AXNodeObjects without a node are pseudo element descendants, and "
            "they must be created with a passed-in |parent_if_known|: "
         << layout_object;
 
@@ -1608,7 +1606,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 
   // Create the new AXObject.
   AXObject* new_obj = nullptr;
-  if (ax_type == kAXLayoutObject) {
+  if (ax_type == kCreateFromLayout) {
     // Prefer to create from renderer if there is a layout object because
     // AXLayoutObjects can provide information about bounding boxes.
     if (!node) {
@@ -2614,7 +2612,10 @@ void AXObjectCacheImpl::UpdateAriaOwnsWithCleanLayout(Node* node) {
 void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
   // If the node is the root of a display locked subtree, or was previously
   // display:none, the entire AXObject subtree needs to be destroyed and rebuilt
-  // using AXLayoutObjects.
+  // using AXNodeObjects with LayoutObjects.
+  // TODO(accessibility): try to improve performance by keeping the existing
+  // subtree but setting the LayoutObject and recomputing relevant values,
+  // including the role and the ignored state.
   AXObject* obj = Get(node);
   if (!obj) {
     if (!node->GetLayoutObject() && !node->IsFinishedParsingChildren() &&
@@ -2692,8 +2693,8 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
 
   // Handle subtree that was previously display:none gaining layout.
   if (node->GetLayoutObject()) {
-    if (AXObject* obj = Get(node); obj && !IsA<AXLayoutObject>(obj)) {
-      // Had a previous AXObject, but wasn't an AXLayoutObject, even though
+    if (AXObject* obj = Get(node); obj && !obj->GetLayoutObject()) {
+      // Had a previous AXObject, but didn't contain a LayoutObject, even though
       // there is a layout object available.
       RemoveSubtreeWithFlatTraversal(node);
       return;
@@ -2911,12 +2912,11 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
     TRACE_EVENT0("accessibility",
                  "AXObjectCacheImpl::ChildrenChanged(LayoutObject)");
   }
-
   if (!layout_object)
     return;
 
   // Ensure that this object is touched, so that Get() can Invalidate() it if
-  // necessary, e.g. to change whether it's an AXNodeObject <--> AXLayoutObject.
+  // necessary, e.g. to change whether it contains a LayoutObject.
   Get(layout_object);
 
   // Update using nearest node (walking ancestors if necessary).

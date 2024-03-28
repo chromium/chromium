@@ -23,7 +23,7 @@ AXObject* AccessibilityMediaElement::Create(
 AccessibilityMediaElement::AccessibilityMediaElement(
     LayoutObject* layout_object,
     AXObjectCacheImpl& ax_object_cache)
-    : AXLayoutObject(layout_object, ax_object_cache) {}
+    : AXNodeObject(layout_object, ax_object_cache) {}
 
 String AccessibilityMediaElement::TextAlternative(
     bool recursive,
@@ -36,10 +36,10 @@ String AccessibilityMediaElement::TextAlternative(
     return String();
 
   if (IsUnplayable()) {
-    auto* element = To<HTMLMediaElement>(layout_object_->GetNode());
+    auto* element = To<HTMLMediaElement>(GetNode());
     return element->GetLocale().QueryString(IDS_MEDIA_PLAYBACK_ERROR);
   }
-  return AXLayoutObject::TextAlternative(
+  return AXNodeObject::TextAlternative(
       recursive, aria_label_or_description_root, visited, name_from,
       related_objects, name_sources);
 }
@@ -58,7 +58,7 @@ AXRestriction AccessibilityMediaElement::Restriction() const {
 bool AccessibilityMediaElement::IsUnplayable() const {
   if (IsDetached())
     return true;
-  auto* element = To<HTMLMediaElement>(layout_object_->GetNode());
+  auto* element = To<HTMLMediaElement>(GetNode());
   HTMLMediaElement::NetworkState network_state = element->getNetworkState();
   return (element->error() ||
           network_state == HTMLMediaElement::kNetworkEmpty ||

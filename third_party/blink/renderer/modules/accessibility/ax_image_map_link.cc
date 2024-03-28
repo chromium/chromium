@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "ui/gfx/geometry/transform.h"
@@ -108,12 +108,10 @@ void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
   if (!area || !map)
     return;
 
-  LayoutObject* layout_object;
-  if (auto* ax_object = DynamicTo<AXLayoutObject>(parent_.Get()))
-    layout_object = ax_object->GetLayoutObject();
-  else
+  LayoutObject* layout_object = parent_->GetLayoutObject();
+  if (!layout_object) {
     layout_object = map->GetLayoutObject();
-
+  }
   if (!layout_object)
     return;
 

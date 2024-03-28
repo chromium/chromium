@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
-
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 
 namespace blink {
@@ -36,13 +35,13 @@ TEST_F(AXLayoutObjectTest, IsNotEditableInsideListmarker) {
 
   const AXObject* ax_list_item = GetAXObject(&list_item);
   ASSERT_NE(nullptr, ax_list_item);
-  EXPECT_TRUE(IsA<AXLayoutObject>(ax_list_item));
+  EXPECT_TRUE(ax_list_item->GetLayoutObject() != nullptr);
   EXPECT_TRUE(ax_list_item->IsEditable());
   EXPECT_TRUE(ax_list_item->IsRichlyEditable());
 
   const AXObject* ax_list_marker = GetAXObject(&list_marker);
   ASSERT_NE(nullptr, ax_list_marker);
-  EXPECT_TRUE(IsA<AXLayoutObject>(ax_list_item));
+  EXPECT_TRUE(ax_list_item->GetLayoutObject() != nullptr);
   EXPECT_FALSE(ax_list_marker->IsEditable());
   EXPECT_FALSE(ax_list_marker->IsRichlyEditable());
 }
@@ -62,13 +61,13 @@ TEST_F(AXLayoutObjectTest, IsNotEditableOutsideListmarker) {
 
   const AXObject* ax_list_item = GetAXObject(&list_item);
   ASSERT_NE(nullptr, ax_list_item);
-  EXPECT_TRUE(IsA<AXLayoutObject>(ax_list_item));
+  EXPECT_TRUE(ax_list_item->GetLayoutObject() != nullptr);
   EXPECT_TRUE(ax_list_item->IsEditable());
   EXPECT_TRUE(ax_list_item->IsRichlyEditable());
 
   const AXObject* ax_list_marker = GetAXObject(&list_marker);
   ASSERT_NE(nullptr, ax_list_marker);
-  EXPECT_TRUE(IsA<AXLayoutObject>(ax_list_item));
+  EXPECT_TRUE(ax_list_marker->GetLayoutObject() != nullptr);
   EXPECT_FALSE(ax_list_marker->IsEditable());
   EXPECT_FALSE(ax_list_marker->IsRichlyEditable());
 }
@@ -79,7 +78,7 @@ TEST_F(AXLayoutObjectTest, GetValueForControlWithTextTransform) {
       "<option>abc</select>");
   const AXObject* ax_select = GetAXObjectByElementId("t");
   ASSERT_NE(nullptr, ax_select);
-  EXPECT_TRUE(IsA<AXLayoutObject>(ax_select));
+  EXPECT_TRUE(ax_select->GetLayoutObject() != nullptr);
   EXPECT_EQ("ABC", ax_select->GetValueForControl());
 }
 
@@ -89,7 +88,7 @@ TEST_F(AXLayoutObjectTest, GetValueForControlWithTextSecurity) {
       "<option>abc</select>");
   const AXObject* ax_select = GetAXObjectByElementId("t");
   ASSERT_NE(nullptr, ax_select);
-  EXPECT_TRUE(IsA<AXLayoutObject>(ax_select));
+  EXPECT_TRUE(ax_select->GetLayoutObject() != nullptr);
   // U+2022 -> \xE2\x80\xA2 in UTF-8
   EXPECT_EQ("\xE2\x80\xA2\xE2\x80\xA2\xE2\x80\xA2",
             ax_select->GetValueForControl().Utf8());

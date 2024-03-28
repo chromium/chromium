@@ -2621,10 +2621,6 @@ bool AXObject::IsAXNodeObject() const {
   return false;
 }
 
-bool AXObject::IsAXLayoutObject() const {
-  return false;
-}
-
 bool AXObject::IsAXInlineTextBox() const {
   return false;
 }
@@ -2681,7 +2677,7 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // An SVG with no accessible children should be exposed as an image rather
   // than a document. See https://github.com/w3c/svg-aam/issues/12.
   // We do this check here for performance purposes: When
-  // AXLayoutObject::RoleFromLayoutObjectOrNode is called, that node's
+  // AXNodeObject::RoleFromLayoutObjectOrNode is called, that node's
   // accessible children have not been calculated. Rather than force calculation
   // there, wait until we have the full tree.
   if (role_ == ax::mojom::blink::Role::kSvgRoot && !UnignoredChildCount()) {
@@ -6408,8 +6404,8 @@ AtomicString AXObject::Language() const {
   // Only fallback for the root node, propagating this value down the tree is
   // handled browser side within AXNode::GetLanguage.
   //
-  // TODO(chrishall): Consider moving this to AXNodeObject or AXLayoutObject as
-  // the web area node is currently an AXLayoutObject.
+  // TODO(chrishall): Consider moving this to AXNodeObject as
+  // the web area node is currently an AXNodeObject.
   if (IsWebArea()) {
     const Document* document = GetDocument();
     if (document) {
@@ -6962,7 +6958,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   cache.UpdateAXForAllDocuments();
 
   // Updating style and layout for the node can cause it to gain layout,
-  // detaching an AXNodeObject to make room for an AXLayoutObject.
+  // detaching the original AXNodeObject to make room for a new one with layout.
   if (IsDetached()) {
     AXObject* new_object = cache.Get(node);
     return new_object ? new_object->PerformAction(action_data) : false;
@@ -7162,7 +7158,7 @@ bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
       DocumentUpdateReason::kAccessibility);
 
   // Updating style and layout for the node can cause it to gain layout,
-  // detaching an AXNodeObject to make room for an AXLayoutObject.
+  // detaching the original AXNodeObject to make room for a new one with layout.
   if (IsDetached()) {
     AXObject* new_object = cache.Get(node);
     return new_object
