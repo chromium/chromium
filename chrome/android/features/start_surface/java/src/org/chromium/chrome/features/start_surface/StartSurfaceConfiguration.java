@@ -136,8 +136,7 @@ public class StartSurfaceConfiguration {
     public static boolean isNtpAsHomeSurfaceEnabled(boolean isTablet) {
         // ReturnToChromeUtil#isStartSurfaceEnabled() will return false when
         // ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID is enabled.
-        return (isTablet && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled())
-                || !isTablet && ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled();
+        return isTablet || !isTablet && ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled();
     }
 
     /** Returns whether a magic stack is enabled on Start surface. */

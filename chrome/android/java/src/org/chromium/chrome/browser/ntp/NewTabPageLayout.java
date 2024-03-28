@@ -126,7 +126,6 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mSnapshotTileGridChanged;
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
-    private boolean mIsNtpAsHomeSurfaceOnTablet;
 
     /**
      * Vertical inset to add to the top and bottom of the search box bounds. May be 0 if no inset
@@ -216,8 +215,6 @@ public class NewTabPageLayout extends LinearLayout {
      * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isIncognito Whether the new tab page is in incognito mode.
      * @param windowAndroid An instance of a {@link WindowAndroid}
-     * @param isNtpAsHomeSurfaceOnTablet {@code true} if the NTP is showing as the home surface on
-     *     tablets.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      * @param isSurfacePolishOmniboxColorEnabled {@code true} if the NTP surface is polished and the
      *     omnibox should be colorful.
@@ -240,7 +237,6 @@ public class NewTabPageLayout extends LinearLayout {
             NewTabPageUma uma,
             boolean isIncognito,
             WindowAndroid windowAndroid,
-            boolean isNtpAsHomeSurfaceOnTablet,
             boolean isSurfacePolishEnabled,
             boolean isSurfacePolishOmniboxColorEnabled,
             boolean isSurfacePolishLessBrandSpaceEnabled,
@@ -256,7 +252,6 @@ public class NewTabPageLayout extends LinearLayout {
         mNewTabPageUma = uma;
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
-        mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
         mIsSurfacePolishLessBrandSpaceEnabled = isSurfacePolishLessBrandSpaceEnabled;
@@ -303,7 +298,7 @@ public class NewTabPageLayout extends LinearLayout {
                                         R.dimen.ntp_search_box_transition_length_polish_offset)
                         : 0;
 
-        if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
+        if (mIsTablet && !mIsSurfacePolishEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
             // shown. There is only one exception that we don't shorten the width of the fake search
             // box: one row of MV tiles in portrait mode.
@@ -487,7 +482,7 @@ public class NewTabPageLayout extends LinearLayout {
                     mIsInMultiWindowModeOnTablet
                             ? LogoSizeForLogoPolish.SMALL
                             : mLogoSizeForLogoPolish);
-        } else if (mIsNtpAsHomeSurfaceOnTablet) {
+        } else if (mIsTablet) {
             mLogoView.getLayoutParams().height =
                     mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
         }
@@ -627,7 +622,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mIsNtpAsHomeSurfaceOnTablet && isScrollableMvtEnabled()) {
+        if (mIsTablet && isScrollableMvtEnabled()) {
             if (mIsSurfacePolishEnabled) {
                 calculateTabletMvtWidth(MeasureSpec.getSize(widthMeasureSpec));
             } else {
@@ -767,7 +762,7 @@ public class NewTabPageLayout extends LinearLayout {
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
 
         if (mIsSurfacePolishEnabled) {
-            if (mIsNtpAsHomeSurfaceOnTablet) {
+            if (mIsTablet) {
                 marginLayoutParams.topMargin =
                         getResources()
                                 .getDimensionPixelSize(
@@ -781,7 +776,7 @@ public class NewTabPageLayout extends LinearLayout {
         if (isScrollableMvtEnabled()) {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
             setClipToPadding(false);
-            if (mIsNtpAsHomeSurfaceOnTablet) {
+            if (mIsTablet) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
                 int lateralPaddingsForNtp =
@@ -807,7 +802,7 @@ public class NewTabPageLayout extends LinearLayout {
             marginLayoutParams.bottomMargin = getGridMvtBottomMargin();
         }
 
-        if (mIsNtpAsHomeSurfaceOnTablet) {
+        if (mIsTablet) {
             marginLayoutParams.bottomMargin =
                     getResources()
                             .getDimensionPixelSize(R.dimen.mvt_container_bottom_margin_tablet);
@@ -1154,7 +1149,7 @@ public class NewTabPageLayout extends LinearLayout {
             updateLogoOnTabletForLogoPolish();
             updateMvtOnTabletForPolish();
             updateSearchBoxWidthForPolish();
-        } else if (mIsNtpAsHomeSurfaceOnTablet && isScrollableMvtEnabled()) {
+        } else if (isScrollableMvtEnabled()) {
             MarginLayoutParams marginLayoutParams =
                     (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
             updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
@@ -1255,7 +1250,7 @@ public class NewTabPageLayout extends LinearLayout {
             } else {
                 mIsHalfMvtPortrait = null;
             }
-        } else if (mIsNtpAsHomeSurfaceOnTablet) {
+        } else if (mIsTablet) {
             mSearchBoxTwoSideMargin =
                     getResources()
                                     .getDimensionPixelSize(

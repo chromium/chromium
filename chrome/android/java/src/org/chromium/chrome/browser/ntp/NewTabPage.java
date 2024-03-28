@@ -567,7 +567,6 @@ public class NewTabPage
                 uma,
                 mTab.isIncognito(),
                 windowAndroid,
-                isNtpAsHomeSurfaceOnTablet(),
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
                 mIsSurfacePolishLessBrandSpaceEnabled,
@@ -1171,7 +1170,7 @@ public class NewTabPage
             }
         }
 
-        if (isNtpAsHomeSurfaceOnTablet() && mSearchProviderHasLogo) {
+        if (mIsTablet && mSearchProviderHasLogo) {
             return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
         }
 
@@ -1193,7 +1192,7 @@ public class NewTabPage
             }
         }
 
-        if (isNtpAsHomeSurfaceOnTablet() && mSearchProviderHasLogo) {
+        if (mIsTablet && mSearchProviderHasLogo) {
             return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
         }
 
@@ -1369,14 +1368,6 @@ public class NewTabPage
 
     public boolean getSnapshotSingleTabCardChangedForTesting() {
         return mSnapshotSingleTabCardChanged;
-    }
-
-    /**
-     * Returns whether Chrome is running on tablet with NTP as home surface enabled. Returns false
-     * if Chrome is running on phone.
-     */
-    private boolean isNtpAsHomeSurfaceOnTablet() {
-        return mIsNtpAsHomeSurfaceEnabled && mIsTablet;
     }
 
     @Override

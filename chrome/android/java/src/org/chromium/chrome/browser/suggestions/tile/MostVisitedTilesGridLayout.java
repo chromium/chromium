@@ -22,9 +22,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** A layout that arranges tiles in a grid. */
-public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisitedTilesLayout {
+public class MostVisitedTilesGridLayout extends FrameLayout {
     private final int mMinHorizontalSpacing;
     private final int mMaxHorizontalSpacing;
     private final int mMaxWidth;
@@ -33,7 +34,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     private int mMaxRows;
     private int mMaxColumns;
     private boolean mSearchProviderHasLogo = true;
-    private boolean mIsNtpAsHomeSurfaceOnTablet;
+    private boolean mIsTablet;
     private final int mMvtContainer2SidesMarginTablet;
     private final int mTileViewLandscapeEdgePaddingTablet;
     private final int mTileViewPortraitEdgePaddingTablet;
@@ -47,6 +48,8 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
      */
     public MostVisitedTilesGridLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
         Resources res = getResources();
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
@@ -89,7 +92,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int totalWidth = Math.min(MeasureSpec.getSize(widthMeasureSpec), mMaxWidth);
-        if (mIsNtpAsHomeSurfaceOnTablet) {
+        if (mIsTablet) {
             totalWidth = totalWidth - mMvtContainer2SidesMarginTablet;
         }
         int childCount = getChildCount();
@@ -166,7 +169,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     Pair<Integer, Integer> computeHorizontalDimensions(int availableWidth, int numColumns) {
         int gridStart;
         float horizontalSpacing;
-        if (mIsNtpAsHomeSurfaceOnTablet) {
+        if (mIsTablet) {
             gridStart =
                     getResources().getConfiguration().orientation
                                     == Configuration.ORIENTATION_LANDSCAPE
@@ -233,11 +236,6 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         mSearchProviderHasLogo = searchProviderHasLogo;
         mVerticalSpacing =
                 getResources().getDimensionPixelOffset(getGridMVTVerticalSpacingResourcesId());
-    }
-
-    @Override
-    public void setIsNtpAsHomeSurfaceOnTablet(boolean isNtpAsHomeSurfaceOnTablet) {
-        mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
     }
 
     public int getMinHorizontalSpacingForTesting() {

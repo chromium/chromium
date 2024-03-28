@@ -17528,7 +17528,6 @@ from previous Chrome versions.
   <int value="-1532035450" label="DragTabsInTabletMode:disabled"/>
   <int value="-1532014193" label="disable-encryption-migration"/>
   <int value="-1530711962" label="PrivacyElevatedAndroid:disabled"/>
-  <int value="-1530133175" label="StartSurfaceOnTablet:disabled"/>
   <int value="-1529907580" label="ImeServiceConnectable:disabled"/>
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
@@ -19970,7 +19969,6 @@ from previous Chrome versions.
   <int value="-430360431" label="disable-password-generation"/>
   <int value="-429915830" label="AccessibilityMouseKeys:enabled"/>
   <int value="-429580313" label="OmniboxActionsInSuggest:disabled"/>
-  <int value="-429425707" label="StartSurfaceOnTablet:enabled"/>
   <int value="-429419276"
       label="OptimizationPersonalizedHintsFetching:disabled"/>
   <int value="-428599163" label="NTPDownloadSuggestions:enabled"/>

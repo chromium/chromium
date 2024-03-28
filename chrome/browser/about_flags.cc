@@ -7111,11 +7111,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFeedPositionAndroidVariations,
                                     "FeedPositionAndroid")},
 
-    {"enable-start-surface-on-tablet",
-     flag_descriptions::kStartSurfaceOnTabletName,
-     flag_descriptions::kStartSurfaceOnTabletDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceOnTablet)},
-
     {"enable-surface-polish", flag_descriptions::kSurfacePolishName,
      flag_descriptions::kSurfacePolishDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSurfacePolish,

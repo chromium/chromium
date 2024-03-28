@@ -670,7 +670,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShouldShowNtpAsHomeSurfaceAtStartupOnTablet() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -732,7 +731,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithExistingNtp() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -810,7 +808,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithoutAnyExistingNtp() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -856,7 +853,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testShowNtpAsHomeSurfaceAtResumeOnTabletWithMixedNtps() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -921,7 +917,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testNoAnyTabCase() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -940,7 +935,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testColdStartupWithOnlyLastActiveTabUrl() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
@@ -970,11 +964,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_ON_TABLET,
-        ChromeFeatureList.SURFACE_POLISH,
-        ChromeFeatureList.MAGIC_STACK_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH, ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testColdStartupWithOnlyLastActiveTabUrl_MagicStack() {
         assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
         assertTrue(StartSurfaceConfiguration.useMagicStack());
@@ -1108,10 +1098,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    @EnableFeatures({
-        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-        ChromeFeatureList.START_SURFACE_ON_TABLET
-    })
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testIsScrollableMvtEnabled_SurfacePolishDisabled_ScrollableMvtEnabled_tablets() {
         StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
 
@@ -1125,7 +1112,7 @@ public class ReturnToChromeUtilUnitTest {
 
         // Verifies if feature ChromeFeatureList.SURFACE_POLISH is disabled on tablets, the
         // scrollable MV tiles is only shown when both features
-        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID and START_SURFACE_ON_TABLET are enabled.
+        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID is enabled.
         assertTrue(ReturnToChromeUtil.isScrollableMvtEnabled(mContext));
     }
 
@@ -1134,7 +1121,6 @@ public class ReturnToChromeUtilUnitTest {
         ChromeFeatureList.SURFACE_POLISH,
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID
     })
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     public void testIsScrollableMvtEnabled_SurfacePolishDisabled_ScrollableMvtDisabled_tablets() {
         StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
 

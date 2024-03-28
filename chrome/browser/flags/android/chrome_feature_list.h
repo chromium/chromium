@@ -170,7 +170,6 @@ BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
 BASE_DECLARE_FEATURE(kTotallyEdgeToEdge);
 BASE_DECLARE_FEATURE(kSafetyHub);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
-BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kAccountReauthenticationRecentTimeWindow);
 BASE_DECLARE_FEATURE(kSurfacePolish);

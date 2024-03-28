@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesGridLayout;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -77,7 +76,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({
-    ChromeFeatureList.START_SURFACE_ON_TABLET,
     ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID,
     ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study"
 })
@@ -92,25 +90,6 @@ public class ShowNtpAtStartupTest {
 
     private static final String TAB_URL = "https://foo.com/";
     private static final String TAB_URL_1 = "https://bar.com/";
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
-    public void testShowNtpAtStartupDisabled_tablets() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
-
-        verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(),
-                1,
-                TAB_URL,
-                /* expectHomeSurfaceUiShown= */ null,
-                /* magicStackEnabled= */ false);
-    }
 
     @Test
     @MediumTest
@@ -412,10 +391,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    @EnableFeatures({
-        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-        ChromeFeatureList.START_SURFACE_ON_TABLET
-    })
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testFakeSearchBoxWidthShortenedWith1RowMvTitles() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
@@ -449,7 +425,6 @@ public class ShowNtpAtStartupTest {
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
         ChromeFeatureList.SURFACE_POLISH
     })
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     public void testFakeSearchBoxWidthShortenedWith2RowMvTitles() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -475,7 +450,6 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     public void testLogoSizeShrink() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         Resources res = mActivityTestRule.getActivity().getResources();
@@ -489,29 +463,6 @@ public class ShowNtpAtStartupTest {
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
-    public void testDefaultLogoSize() {
-        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-        Resources res = mActivityTestRule.getActivity().getResources();
-        int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
-        int expectedMarginTop = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-        int expectedMarginBottom = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
-                expectedLogoHeight = LogoUtils.getLogoHeightPolished(res);
-                expectedMarginTop = LogoUtils.getTopMarginPolished(res);
-                expectedMarginBottom = LogoUtils.getBottomMarginPolished(res);
-            }
-        }
-
-        // Verifies logo has its original size and margins.
-        testLogoSizeImpl(expectedLogoHeight, expectedMarginTop, expectedMarginBottom);
     }
 
     @Test
@@ -566,10 +517,7 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    @EnableFeatures({
-        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-        ChromeFeatureList.START_SURFACE_ON_TABLET
-    })
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     // When feature flag Surface polish is enabled, a different approach is used to calculate
     // margins of MV tiles.
     @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
@@ -623,10 +571,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    @EnableFeatures({
-        ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-        ChromeFeatureList.START_SURFACE_ON_TABLET
-    })
+    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void test1RowMvtMarginOnEmptyNtp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -685,7 +630,6 @@ public class ShowNtpAtStartupTest {
     @Feature({"StartSurface"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     @DisableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
         ChromeFeatureList.SURFACE_POLISH
@@ -854,7 +798,6 @@ public class ShowNtpAtStartupTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-        ChromeFeatureList.START_SURFACE_ON_TABLET,
         ChromeFeatureList.SURFACE_POLISH
     })
     public void testFakeSearchBoxWidthWith1RowMvTitlesForSurfacePolish() {
@@ -883,7 +826,6 @@ public class ShowNtpAtStartupTest {
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     @EnableFeatures({
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
-        ChromeFeatureList.START_SURFACE_ON_TABLET,
         ChromeFeatureList.SURFACE_POLISH
     })
     public void test1RowMvtMarginOnNtpHomePageForSurfacePolish() {

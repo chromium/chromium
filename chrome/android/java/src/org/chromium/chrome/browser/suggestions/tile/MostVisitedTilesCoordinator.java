@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -119,18 +118,17 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                         isScrollableMVTEnabled,
                         isTablet,
                         snapshotTileGridChangedRunnable,
-                        tileCountChangedRunnable,
-                        StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet));
+                        tileCountChangedRunnable);
     }
 
     /**
-     * Called before the TasksSurface is showing to initialize MV tiles.
-     * {@link MostVisitedTilesCoordinator#destroyMvtiles()} is called after the TasksSurface hides.
+     * Called before the TasksSurface is showing to initialize MV tiles. {@link
+     * MostVisitedTilesCoordinator#destroyMvtiles()} is called after the TasksSurface hides.
      *
      * @param suggestionsUiDelegate The UI delegate of suggestion surface.
      * @param tileGroupDelegate The delegate of tile group.
      * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
-     *                             events are allowed.
+     *     events are allowed.
      */
     public void initWithNative(
             SuggestionsUiDelegate suggestionsUiDelegate,

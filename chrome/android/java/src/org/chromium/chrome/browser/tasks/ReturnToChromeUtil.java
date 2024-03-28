@@ -930,6 +930,8 @@ public final class ReturnToChromeUtil {
     }
 
     public static boolean isScrollableMvtEnabled(Context context) {
+        // TODO(b/331667743): Clean up the flag for scrollable mvt while cleaning up surface polish
+        // code.
         boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             // On phones, parameter SURFACE_POLISH_SCROLLABLE_MVT is checked when feature flag
@@ -944,8 +946,7 @@ public final class ReturnToChromeUtil {
         // enabled.
         return isSurfacePolishEnabled
                 ? true
-                : ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
-                        && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
+                : ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
     }
 
     /**

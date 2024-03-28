@@ -15,9 +15,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.browser_ui.widget.tile.TileView;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** The most visited tiles carousel layout. */
-public class MostVisitedTilesCarouselLayout extends LinearLayout implements MostVisitedTilesLayout {
+public class MostVisitedTilesCarouselLayout extends LinearLayout {
     // There's a minimum limit of 4.
 
     private int mTileViewWidth;
@@ -26,7 +27,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     private Integer mInitialTileNum;
     private Integer mIntervalPaddingsLandscapeTablet;
     private Integer mIntervalPaddingsPortraitTablet;
-    private boolean mIsNtpAsHomeSurfaceOnTablet;
+    private boolean mIsTablet;
     private boolean mIsSurfacePolishEnabled;
     private Integer mIntervalPaddingsTabletForPolish;
     private Integer mEdgePaddingsTabletForPolish;
@@ -34,6 +35,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     /** Constructor for inflating from XML. */
     public MostVisitedTilesCarouselLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
         mTileViewWidth =
                 getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
@@ -179,7 +181,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
         if (mInitialTileNum == null) {
             mInitialTileNum = getChildCount();
         }
-        if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
+        if (mIsTablet && !mIsSurfacePolishEnabled) {
             int currentOrientation = getResources().getConfiguration().orientation;
             if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
                             && mIntervalPaddingsLandscapeTablet == null)
@@ -200,23 +202,14 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
             }
         }
 
-        if (mIsNtpAsHomeSurfaceOnTablet && mIsSurfacePolishEnabled) {
+        if (mIsTablet && mIsSurfacePolishEnabled) {
             updateEdgeMarginTablet(widthMeasureSpec);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    @Override
-    public void setIsNtpAsHomeSurfaceOnTablet(boolean isNtpAsHomeSurfaceOnTablet) {
-        mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
-    }
-
     public void setIsSurfacePolishEnabled(boolean isSurfacePolishEnabled) {
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
-    }
-
-    boolean getIsNtpAsHomeSurfaceOnTabletForTesting() {
-        return mIsNtpAsHomeSurfaceOnTablet;
     }
 
     public void setInitialTileNumForTesting(int initialTileNum) {

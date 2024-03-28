@@ -284,7 +284,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTotallyEdgeToEdge,
     &kSafetyHub,
     &kStartSurfaceAndroid,
-    &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
     &kSurfacePolish,
@@ -933,10 +932,6 @@ BASE_FEATURE(kFeedPositionAndroid,
 BASE_FEATURE(kSearchResumptionModuleAndroid,
              "SearchResumptionModuleAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStartSurfaceOnTablet,
-             "StartSurfaceOnTablet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",
