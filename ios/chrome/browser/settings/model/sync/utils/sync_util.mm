@@ -4,13 +4,11 @@
 
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 
-#import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"

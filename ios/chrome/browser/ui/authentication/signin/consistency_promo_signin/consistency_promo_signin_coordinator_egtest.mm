@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"

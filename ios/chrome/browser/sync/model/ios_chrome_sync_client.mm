@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
@@ -30,7 +29,6 @@
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/supervised_user/core/common/buildflags.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_api_component_factory.h"

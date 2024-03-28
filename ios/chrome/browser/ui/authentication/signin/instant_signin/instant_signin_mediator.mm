@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

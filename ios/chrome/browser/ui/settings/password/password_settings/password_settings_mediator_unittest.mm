@@ -12,7 +12,6 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
