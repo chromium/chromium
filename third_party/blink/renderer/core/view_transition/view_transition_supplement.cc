@@ -162,13 +162,17 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     return nullptr;
   }
 
-  if (document.hidden()) {
-    return ViewTransition::CreateSkipped(&document, callback)
-        ->GetScriptDelegate();
-  }
-
   transition_ =
       ViewTransition::CreateFromScript(&document, callback, types, this);
+
+  if (document.hidden()) {
+    auto skipped_transition = transition_;
+    skipped_transition->SkipTransition(
+        ViewTransition::PromiseResponse::kRejectInvalidState);
+
+    DCHECK(!transition_);
+    return skipped_transition->GetScriptDelegate();
+  }
 
   // If there is a transition in a parent frame, give that precedence over a
   // transition in a child frame.
@@ -190,7 +194,8 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
 
 void ViewTransitionSupplement::DidChangeVisibilityState() {
   if (GetSupplementable()->hidden() && transition_) {
-    transition_->SkipTransition();
+    transition_->SkipTransition(
+        ViewTransition::PromiseResponse::kRejectInvalidState);
   }
   SendOptInStatusToHost();
 }
