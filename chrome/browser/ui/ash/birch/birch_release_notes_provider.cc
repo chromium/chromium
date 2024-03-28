@@ -9,8 +9,10 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/common/pref_names.h"
@@ -36,11 +38,16 @@ void BirchReleaseNotesProvider::RequestBirchDataFetch() {
 
   std::vector<BirchReleaseNotesItem> items;
 
+  const bool force_show_release_notes =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchReleaseNotes);
+
   // Control now falls onto ShouldShowSuggestionChip() and elapsed time because
   // number of times user has seen release notes surfaces and timer logic
   // outranks ShouldNotify() after first login.
-  if (!release_notes_storage_.ShouldShowSuggestionChip() ||
-      IsTimeframeToShowBirchEnded()) {
+  if (!force_show_release_notes &&
+      (!release_notes_storage_.ShouldShowSuggestionChip() ||
+       IsTimeframeToShowBirchEnded())) {
     Shell::Get()->birch_model()->SetReleaseNotesItems(std::move(items));
     return;
   }

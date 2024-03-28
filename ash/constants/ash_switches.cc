@@ -646,6 +646,10 @@ const char kFirstExecAfterBoot[] = "first-exec-after-boot";
 // Forces a fetch of Birch data whenever a Pine session starts.
 const char kForceBirchFetch[] = "force-birch-fetch";
 
+// If set, skips the logic in birch release notes provider and always sets
+// release notes item.
+const char kForceBirchReleaseNotes[] = "force-birch-release-notes";
+
 // Forces fetching tokens for Cryptohome Recovery.
 const char kForceCryptohomeRecoveryForTesting[] =
     "force-cryptohome-recovery-for-testing";
