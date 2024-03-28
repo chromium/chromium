@@ -168,6 +168,7 @@ source_set("infobar_delegates") {
   deps = [
     ":public",
     "//base",
+    "//components/autofill/ios/common",
     "//components/infobars/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
@@ -253,6 +254,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/infobars/core",

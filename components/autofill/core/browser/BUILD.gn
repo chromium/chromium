@@ -794,6 +794,10 @@ static_library("browser") {
       "//ui/native_theme:native_theme_browser",
     ]
   }
+
+  if (is_ios) {
+    deps += [ "//components/autofill/ios/common" ]
+  }
 }
 
 static_library("legal_message_line") {
@@ -1354,6 +1358,10 @@ source_set("unit_tests") {
       "//content/test:test_support",
       "//third_party/blink/public/common",
     ]
+  }
+
+  if (is_ios) {
+    deps += [ "//components/autofill/ios/common" ]
   }
 }
 

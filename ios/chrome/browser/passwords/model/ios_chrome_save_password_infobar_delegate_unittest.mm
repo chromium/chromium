@@ -9,7 +9,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -105,7 +107,8 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
       .did_replace_entry = false,
       .is_reload = true,
       .is_redirect = false,
-      .is_form_submission = false};
+      .is_form_submission = false,
+      .has_user_gesture = true};
   // Infobar delegate to test.
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
   // Pointer to the infobar's form manager.
@@ -129,6 +132,8 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetAccountToStorePassword) {
   EXPECT_EQ(kAccountToStorePassword, *delegate_->GetAccountToStorePassword());
 }
 
+// Tests that the infobar expires when reloading the page and other conditions
+// are true.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, ShouldExpire_True_WhenReload) {
   nav_details_that_expire_.is_reload = true;
   nav_details_that_expire_.entry_id = kNavEntryId;
@@ -136,6 +141,8 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, ShouldExpire_True_WhenReload) {
   EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
 
+// Tests that the infobar expires when new navigation ID and other conditions
+// are true.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_True_WhenDifferentNavEntryId) {
   nav_details_that_expire_.is_reload = false;
@@ -146,24 +153,50 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
 
+// Tests that when the sticky infobar is disabled, having a user gesture isn't
+// used as a condition to expire the infobar, hence setting the user gesture bit
+// to false shouldn't change the returned value.
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       ShouldExpire_True_WhenNoStickyInfobarAndNoUserGesture) {
+  nav_details_that_expire_.has_user_gesture = false;
+
+  EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
+}
+
+// Tests that when the sticky infobar is enabled, having a user gesture is
+// used as a condition to expire the infobar, hence setting the user gesture bit
+// to true should return true.
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       ShouldExpire_True_WhenStickyInfobarAndUserGesture) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillStickyInfobarIos);
+  nav_details_that_expire_.has_user_gesture = true;
+  EXPECT_TRUE(delegate_->ShouldExpire(nav_details_that_expire_));
+}
+
+// Tests that the infobar doesn't expire when the page is the same.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_False_WhenNoDifferentPage) {
   nav_details_that_expire_.is_navigation_to_different_page = false;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
 
+// Tests that the infobar doesn't expire when the page is the same.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_False_WhenDidReplaceEntry) {
   nav_details_that_expire_.did_replace_entry = true;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
 
+// Tests that the infobar doesn't expire when form submission.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_False_WhenRedirect) {
   nav_details_that_expire_.is_redirect = true;
   EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
 
+// Tests that the infobar expires when no reload and the navigation entry ID
+// didn't change.
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        ShouldExpire_False_WhenFormSubmission) {
   nav_details_that_expire_.is_form_submission = true;
@@ -175,6 +208,18 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   nav_details_that_expire_.is_reload = false;
   nav_details_that_expire_.entry_id = kNavEntryId;
   delegate_->set_nav_entry_id(kNavEntryId);
+  EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
+}
+
+// Tests that when the sticky infobar is enabled, having a user gesture is
+// used as a condition to expire the infobar, hence setting the user gesture bit
+// to false should return false.
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       ShouldExpire_False_WhenStickyInfobar) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kAutofillStickyInfobarIos);
+  nav_details_that_expire_.has_user_gesture = false;
+  EXPECT_FALSE(delegate_->ShouldExpire(nav_details_that_expire_));
 }
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetMessageText_WhenSave) {

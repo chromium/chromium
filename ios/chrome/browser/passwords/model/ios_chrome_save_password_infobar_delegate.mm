@@ -12,6 +12,7 @@
 #import "base/notreached.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -224,8 +225,12 @@ IOSChromeSavePasswordInfoBarDelegate::GetAccountToStorePassword() const {
 
 bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
+  const bool from_user_gesture =
+      !base::FeatureList::IsEnabled(kAutofillStickyInfobarIos) ||
+      details.has_user_gesture;
+
   return !details.is_form_submission && !details.is_redirect &&
-         ConfirmInfoBarDelegate::ShouldExpire(details);
+         from_user_gesture && ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
 std::u16string IOSChromeSavePasswordInfoBarDelegate::GetMessageText() const {
