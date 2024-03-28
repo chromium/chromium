@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/browser/banners/app_banner_manager.h"
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -14,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -26,9 +29,9 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/browser/features.h"
@@ -66,6 +69,7 @@ using State = AppBannerManager::State;
 // to changes in SW code.
 // TODO(http://crbug.com/329145718): Use AppBannerManagerNoFakeBrowserTest style
 // instead of overriding like this.
+// TODO(http://crbug.com/322342499): Completely remove this class.
 class AppBannerManagerTest : public AppBannerManager {
  public:
   explicit AppBannerManagerTest(content::WebContents* web_contents)
@@ -113,6 +117,45 @@ class AppBannerManagerTest : public AppBannerManager {
                              std::string result_label) override {}
 
  protected:
+  bool CanRequestAppBanner() const override { return true; }
+
+  InstallableParams ParamsToPerformInstallableWebAppCheck() override {
+    InstallableParams params;
+    params.valid_primary_icon = true;
+    params.installable_criteria =
+        base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
+            ? InstallableCriteria::kImplicitManifestFieldsHTML
+            : InstallableCriteria::kValidManifestWithIcons;
+    params.fetch_screenshots = true;
+    return params;
+  }
+
+  bool ShouldDoNativeAppCheck(
+      const blink::mojom::Manifest& manifest) const override {
+    return false;
+  }
+
+  void DoNativeAppInstallableCheck(content::WebContents* web_contents,
+                                   const GURL& validated_url,
+                                   const blink::mojom::Manifest& manifest,
+                                   NativeCheckCallback callback) override {
+    NOTREACHED_NORETURN();
+  }
+
+  void OnWebAppInstallableCheckedNoErrors(
+      const ManifestId& manifest_id) const override {}
+
+  base::expected<void, InstallableStatusCode> CanRunWebAppInstallableChecks(
+      const blink::mojom::Manifest& manifest) override {
+    return base::ok();
+  }
+
+  void MaybeShowAmbientBadge(const InstallBannerConfig& config) override {
+    return;
+  }
+
+  void ResetCurrentPageData() override {}
+
   // The overridden RequestAppBanner() can filter out about:blank calls
   // to force Stop() to be called, however, the newly introduced
   // AppBannerManagerBrowserTestWithChromeBFCache starts a server and navigates
@@ -139,12 +182,11 @@ class AppBannerManagerTest : public AppBannerManager {
           FROM_HERE, std::move(on_done_));
   }
 
-  void ShowBannerUi(WebappInstallSource install_source) override {
+  void ShowBannerUi(WebappInstallSource install_source,
+                    const InstallBannerConfig& config) override {
     // Fake the call to ReportStatus here - this is usually called in
     // platform-specific code which is not exposed here.
     ReportStatus(InstallableStatusCode::SHOWING_WEB_APP_BANNER);
-    RecordDidShowBanner();
-
     ASSERT_FALSE(banner_shown_.get());
     banner_shown_ = std::make_unique<bool>(true);
     install_source_ = std::make_unique<WebappInstallSource>(install_source);
@@ -164,9 +206,11 @@ class AppBannerManagerTest : public AppBannerManager {
   }
 
   void OnBannerPromptReply(
+      const InstallBannerConfig& install_config,
       mojo::Remote<blink::mojom::AppBannerController> controller,
       blink::mojom::AppBannerPromptReply reply) override {
-    AppBannerManager::OnBannerPromptReply(std::move(controller), reply);
+    AppBannerManager::OnBannerPromptReply(install_config, std::move(controller),
+                                          reply);
     if (on_banner_prompt_reply_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(on_banner_prompt_reply_));
@@ -716,8 +760,10 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerTerminated) {
                                   false /* expected_will_show */,
                                   State::INACTIVE);
 
-  // Expect the manifest to be reset to an empty manifest.
-  EXPECT_EQ(manager->manifest(), *blink::mojom::Manifest::New());
+  // Expect the installation config to be empty, as the page is not eligible
+  // for installation.
+  EXPECT_EQ(manager->GetCurrentWebAppBannerData(), std::nullopt);
+  EXPECT_EQ(manager->GetCurrentBannerConfig(), std::nullopt);
 
   // Expect RENDERER_CANCELLED to be called when an existing call is terminated.
   histograms.ExpectUniqueSample(kInstallableStatusCodeHistogram,
@@ -1011,7 +1057,9 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, PendingServiceWorker) {
   EXPECT_EQ(manager->GetInstallableWebAppCheckResult(),
             InstallableWebAppCheckResult::kYes_Promotable);
 
-  EXPECT_EQ(manager->GetAppName(), u"Manifest test app");
+  ASSERT_TRUE(manager->GetCurrentBannerConfig());
+  EXPECT_EQ(manager->GetCurrentBannerConfig()->GetWebOrNativeAppName(),
+            u"Manifest test app");
 }
 
 enum class InstallableCriteriaType {
@@ -1103,8 +1151,10 @@ IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest, ImplicitName) {
                 expected_histogram_code);
 
   CheckBannerResult(manager.get());
+  ASSERT_TRUE(manager->GetCurrentBannerConfig());
   if (GetParam() != InstallableCriteriaType::kValidManifestWithIcons) {
-    EXPECT_EQ(manager->GetAppName(), u"TestApp");
+    EXPECT_EQ(manager->GetCurrentBannerConfig()->GetWebOrNativeAppName(),
+              u"TestApp");
   }
 }
 
@@ -1125,8 +1175,10 @@ IN_PROC_BROWSER_TEST_P(AppBannerInstallCriteriaTest,
                 expected_histogram_code);
 
   CheckBannerResult(manager.get());
+  ASSERT_TRUE(manager->GetCurrentBannerConfig());
   if (GetParam() != InstallableCriteriaType::kValidManifestWithIcons) {
-    EXPECT_EQ(manager->GetAppName(), u"Web app banner test page");
+    EXPECT_EQ(manager->GetCurrentBannerConfig()->GetWebOrNativeAppName(),
+              u"Web app banner test page");
   }
 }
 

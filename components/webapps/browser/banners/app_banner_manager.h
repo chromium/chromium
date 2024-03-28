@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
@@ -43,7 +44,7 @@ class InstallableManager;
 class MLInstallabilityPromoter;
 enum class WebappInstallSource;
 struct InstallableData;
-struct Screenshot;
+struct NativeAppBannerData;
 
 namespace test {
 extern bool g_disable_banner_triggering_for_testing;
@@ -60,7 +61,10 @@ extern bool g_disable_banner_triggering_for_testing;
 // native app banner if requested). The second call completes the checking for a
 // web app banner (checking manifest validity, service worker, and icon).
 //
-// TODO(https://crbug.com/930612): Refactor this into several simpler classes.
+// TODO(https://crbug.com/930612): Refactor this into several simpler classes,
+// and remove all inheritance. Until refactor is complete, all 'virtual' methods
+// that sub-classes implement must be as stateless as possible, and all state
+// should be tracked in this class instead.
 class AppBannerManager : public content::WebContentsObserver,
                          public blink::mojom::AppBannerService,
                          public site_engagement::SiteEngagementObserver {
@@ -145,7 +149,9 @@ class AppBannerManager : public content::WebContentsObserver,
   static std::string GetInstallableWebAppManifestId(
       content::WebContents* web_contents);
 
-  InstallableWebAppCheckResult GetInstallableWebAppCheckResult();
+  std::optional<GURL> validated_url() const;
+
+  InstallableWebAppCheckResult GetInstallableWebAppCheckResult() const;
 
   // Constructs and returns data about the web app on this page. This is not
   // guaranteed to have all data, and its presence does not mean the current
@@ -157,6 +163,9 @@ class AppBannerManager : public content::WebContentsObserver,
   // - This page is not eligible for installing (not https, incognito profile,
   //   etc).
   // - There were parsing errors or network errors fetching the manifest.
+  std::optional<InstallBannerConfig> GetCurrentBannerConfig() const;
+  // Same as above, but only returns the web app data. Will return std::nullopt
+  // if the app mode is native.
   std::optional<WebAppBannerData> GetCurrentWebAppBannerData() const;
 
   // Returns whether installability checks satisfy promotion requirements
@@ -170,27 +179,18 @@ class AppBannerManager : public content::WebContentsObserver,
   // (e.g. having a service worker fetch event).
   bool IsPromotableWebApp() const;
 
-  // Returns the page's web app start URL if available, otherwise return an
-  // empty or invalid GURL.
-  const GURL& GetManifestStartUrl() const;
-
-  // Returns the page's web app |DisplayMode| if available, otherwise it will be
-  // DisplayMode::kUndefined.
-  blink::mojom::DisplayMode GetManifestDisplayMode() const;
-
   // Each successful installability check gets to show one animation prompt,
   // this returns and consumes the animation prompt if it is available.
   bool MaybeConsumeInstallAnimation();
-
-  // Requests an app banner.
-  virtual void RequestAppBanner();
 
   // Informs the page that it has been installed with appinstalled event and
   // performs logging related to the app installation. Appinstalled event is
   // redundant for the beforeinstallprompt event's promise being resolved, but
   // is required by the install event spec.
   // This is virtual for testing.
-  virtual void OnInstall(blink::mojom::DisplayMode display);
+  // TODO(http://crbug.com/322342499): Remove virtual.
+  virtual void OnInstall(blink::mojom::DisplayMode display,
+                         bool set_current_web_app_not_installable);
 
   // Sends a message to the renderer that the user accepted the banner.
   void SendBannerAccepted();
@@ -200,10 +200,6 @@ class AppBannerManager : public content::WebContentsObserver,
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // This weak pointer should be valid for a given navigation, and will be
-  // invalidated when `InvalidateWeakPtrsForThisNavigation` is called.
-  virtual base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() = 0;
 
   // This weak pointer is NOT invalidated when
   // `InvalidateWeakPtrsForThisNavigation` is called.
@@ -220,17 +216,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // install the site.
   bool IsPromptAvailableForTesting() const;
 
-  // Return the name of the app for this page.
-  virtual std::u16string GetAppName() const;
-
-  // Simple accessors:
-  const blink::mojom::Manifest& manifest() const;
-  const mojom::WebPageMetadata& web_page_metadata() const;
-  const SkBitmap& primary_icon() const { return primary_icon_; }
-  bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
-  const GURL& validated_url() { return validated_url_; }
-  const std::vector<Screenshot>& screenshots() { return screenshots_; }
-
   // This is called by the MLInstallabilityPromoter when, for this current web
   // contents:
   // - There is no existing install (tracked by the MlInstallOperationTracker).
@@ -245,47 +230,35 @@ class AppBannerManager : public content::WebContentsObserver,
   explicit AppBannerManager(content::WebContents* web_contents);
   ~AppBannerManager() override;
 
-  enum class UrlType {
-    // This url & page should be considered for installability & promotability.
-    kValidForBanner,
-    // The load from the render frame host was not for the current/primary page
-    // so it can be ignored.
-    kNotPrimaryFrame,
-    // The primary url that was loaded can never be elibible for installability.
-    kInvalidPrimaryFrameUrl,
-  };
-  // Returns the URL type, allowing the banner logic to ignore urls that aren't
-  // the primary frame or aren't a valid URL.
-  UrlType GetUrlType(content::RenderFrameHost* render_frame_host,
-                     const GURL& url);
+  virtual bool CanRequestAppBanner() const = 0;
 
-  // Returns true if the banner should be shown. Returns false if the banner has
-  // been shown too recently, or if the app has already been installed.
-  // GetAppIdentifier() must return a valid value for this method to work.
-  bool CheckIfShouldShowBanner();
+  // Returns an InstallableParams object that requests all checks
+  // necessary for a web app banner.
+  virtual InstallableParams ParamsToPerformInstallableWebAppCheck() = 0;
 
-  // Returns whether the site would prefer a related non-web app be installed
-  // instead of the PWA or a related non-web app is already installed.
-  bool ShouldDeferToRelatedNonWebApp() const;
+  // Returns if `DoNativeAppInstallableCheck` should be called given the
+  // manifest. Only can return `true` on Android.
+  virtual bool ShouldDoNativeAppCheck(
+      const blink::mojom::Manifest& manifest) const = 0;
 
-  // Return a string identifying this app for metrics.
-  virtual std::string GetAppIdentifier();
+  using NativeCheckCallback = base::OnceCallback<void(
+      base::expected<NativeAppBannerData, InstallableStatusCode>)>;
+  // Allows the delegate to present a native app instead of the web app for
+  // installation on this web contents. Only implemented on Android, but part
+  // of the public interface to keep all control flow in this class.
+  // Note: the `callback` can be called synchronously on errors and in
+  // tests.
+  virtual void DoNativeAppInstallableCheck(
+      content::WebContents* web_contents,
+      const GURL& validated_url,
+      const blink::mojom::Manifest& manifest,
+      NativeCheckCallback callback) = 0;
 
-  // Returns the app name from web page metadata.
-  std::u16string GetNameFromMetadata() const;
+  virtual void OnWebAppInstallableCheckedNoErrors(
+      const ManifestId& manifest_id) const = 0;
 
-  // Return a string describing what type of banner is being created. Used when
-  // alerting websites that a banner is about to be created.
-  virtual std::string GetBannerType();
-
-  virtual void InvalidateWeakPtrsForThisNavigation() = 0;
-
-  // Returns true if |has_sufficient_engagement_| is true or
-  // ShouldBypassEngagementChecks() returns true.
-  bool HasSufficientEngagement() const;
-
-  // Returns true if the kBypassAppBannerEngagementChecks flag is set.
-  bool ShouldBypassEngagementChecks() const;
+  virtual base::expected<void, InstallableStatusCode>
+  CanRunWebAppInstallableChecks(const blink::mojom::Manifest& manifest) = 0;
 
   // Returns whether installation of apps from |platform| is supported on the
   // current device and the platform delivers apps considered replacements for
@@ -298,46 +271,129 @@ class AppBannerManager : public content::WebContentsObserver,
   virtual bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const = 0;
 
+  // Shows the ambient badge if the current page advertises a native app or is
+  // a web app. By default this shows nothing, but platform-specific code
+  // might override this to show UI (e.g. on Android).
+  virtual void MaybeShowAmbientBadge(const InstallBannerConfig& config) = 0;
+
+  // Creates the app banner UI. Overridden by subclasses as the infobar is
+  // platform-specific.
+  // TODO(http://crbug.com/322342499): Remove virtual.
+  virtual void ShowBannerUi(WebappInstallSource install_source,
+                            const InstallBannerConfig& config) = 0;
+
+  virtual base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() = 0;
+
+  // Called when the pipeline is complete - data can be saved, but pending
+  // operations should stop.
+  virtual void InvalidateWeakPtrsForThisNavigation() = 0;
+
+  // Called when the page state needs to be reset as a new navigation has
+  // begun.
+  virtual void ResetCurrentPageData() = 0;
+
+  // Virtual so the TestAppBannerManagerDesktop can reset its installability
+  // state when called.
+  virtual void RecheckInstallabilityForLoadedPage();
+
   // Callback invoked by the InstallableManager once it has fetched the page's
-  // manifest.
+  // manifest. Virtual for testing.
+  // TODO(http://crbug.com/322342499): Remove virtual & make private.
   virtual void OnDidGetManifest(const InstallableData& data);
 
-  // Returns an InstallableParams object that requests all checks
-  // necessary for a web app banner.
-  virtual InstallableParams ParamsToPerformInstallableWebAppCheck();
+  // Callback invoked by the InstallableManager once it has finished checking
+  // all other installable properties. Virtual for testing.
+  // TODO(http://crbug.com/322342499): Remove virtual and make private.
+  virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
+
+  // TODO(http://crbug.com/322342499): Make this private.
+  enum class UrlType {
+    // This url & page should be considered for installability & promotability.
+    kValidForBanner,
+    // The load from the render frame host was not for the current/primary page
+    // so it can be ignored.
+    kNotPrimaryFrame,
+    // The primary url that was loaded can never be elibible for installability.
+    kInvalidPrimaryFrameUrl,
+  };
+
+  // Returns the URL type, allowing the banner logic to ignore urls that aren't
+  // the primary frame or aren't a valid URL.
+  // TODO(http://crbug.com/322342499): Make this private.
+  UrlType GetUrlType(content::RenderFrameHost* render_frame_host,
+                     const GURL& url);
+
+  // Updates the current state to |state|. Virtual to allow overriding in tests.
+  // TODO(http://crbug.com/322342499): Remove virtual & make this private.
+  virtual void UpdateState(State state);
+
+  // content::WebContentsObserver override:
+  // TODO(http://crbug.com/322342499): Make this private with the rest of the
+  // web contents observer overrides.
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+
+  // TODO(http://crbug.com/322342499): Make this private.
+  State state() const { return state_; }
+
+  // Voids all outstanding service pointers.
+  // TODO(http://crbug.com/322342499): Make this private.
+  void ResetBindings();
+
+  // TODO(http://crbug.com/322342499): Make this private.
+  bool IsRunning() const;
+
+  // Reports |code| via a UMA histogram or logs it to the console.
+  void ReportStatus(InstallableStatusCode code);
+
+ private:
+  // Requests an app banner. Virtual for testing.
+  // TODO(http://crbug.com/322342499): Remove virtual.
+  virtual void RequestAppBanner();
+
+  void RecordDidShowBanner(const std::string& identifier) const;
+
+  // Returns whether the site would prefer a related non-web app be installed
+  // instead of the PWA or a related non-web app is already installed.
+  bool ShouldDeferToRelatedNonWebApp(
+      const blink::mojom::Manifest& manifest) const;
+
+  // Return a string identifying this app for metrics. If no page data is
+  // available then std::nullopt is returned.
+  std::optional<std::string> GetWebOrNativeAppIdentifier() const;
+
+  // Return a string describing what type of banner is being created. Used when
+  // alerting websites that a banner is about to be created.
+  std::string GetBannerType() const;
+
+  // Returns true if |has_sufficient_engagement_| is true or
+  // ShouldBypassEngagementChecks() returns true.
+  bool HasSufficientEngagement() const;
+
+  // Returns true if the kBypassAppBannerEngagementChecks flag is set.
+  bool ShouldBypassEngagementChecks() const;
 
   // Run at the conclusion of OnDidGetManifest. For web app banners, this calls
   // back to the InstallableManager to continue checking criteria. For native
   // app banners, this checks whether native apps are preferred in the manifest,
   // and calls to Java to verify native app details. If a native banner isn't or
   // can't be requested, it continues with the web app banner checks.
-  virtual void PerformInstallableChecks();
+  void PerformInstallableChecks();
 
-  virtual void PerformInstallableWebAppCheck();
+  void OnNativeAppInstallableCheckComplete(
+      base::expected<NativeAppBannerData, InstallableStatusCode> result);
 
-  // Callback invoked by the InstallableManager once it has finished checking
-  // all other installable properties.
-  virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
+  void PerformInstallableWebAppCheck();
 
-  // Records that a banner was shown.
-  void RecordDidShowBanner();
-
-  // Reports |code| via a UMA histogram or logs it to the console.
-  void ReportStatus(InstallableStatusCode code);
-
-  // Voids all outstanding service pointers.
-  void ResetBindings();
-
-  // Resets all fetched data for the current page. Should only be called once
-  // per navigation, at the beginning of the navigation.
-  virtual void ResetCurrentPageData();
+  void ResetCurrentPageDataInternal();
 
   // Stops the banner pipeline early.
   void Terminate(InstallableStatusCode code);
 
   // Stops the banner pipeline, preventing any outstanding callbacks from
   // running and resetting the manager state. This method is virtual to allow
-  // tests to intercept it and verify correct behaviour.
+  // tests to intercept it and verify correct behaviour. Virtual for testing.
+  // TODO(http://crbug.com/322342499): Remove virtual.
   virtual void Stop(InstallableStatusCode code);
 
   // Sends a message to the renderer that the page has met the requirements to
@@ -345,18 +401,8 @@ class AppBannerManager : public content::WebContentsObserver,
   // display it later), or otherwise allow it to be shown.
   void SendBannerPromptRequest();
 
-  // Shows the ambient badge if the current page advertises a native app or is
-  // a web app. By default this shows nothing, but platform-specific code might
-  // override this to show UI (e.g. on Android).
-  virtual void MaybeShowAmbientBadge();
-
-  // Updates the current state to |state|. Virtual to allow overriding in tests.
-  virtual void UpdateState(State state);
-
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(content::NavigationHandle* handle) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
   void DidUpdateWebManifestURL(content::RenderFrameHost* target_frame,
                                const GURL& manifest_url) override;
   void MediaStartedPlaying(const MediaPlayerInfo& media_info,
@@ -376,61 +422,27 @@ class AppBannerManager : public content::WebContentsObserver,
   // Subclass accessors for private fields which should not be changed outside
   // this class.
   InstallableManager* manager() const { return manager_; }
-  State state() const { return state_; }
-  bool IsRunning() const;
 
   void SetInstallableWebAppCheckResult(InstallableWebAppCheckResult result);
-  // Virtual so the TestAppBannerManagerDesktop can reset its installability
-  // state when called.
-  virtual void RecheckInstallabilityForLoadedPage();
 
-  // The URL for which the banner check is being conducted.
-  GURL validated_url_;
-
-  // The URL of the manifest.
-  GURL manifest_url_;
-
-  GURL manifest_id_;
-
-  // The URL of the primary icon.
-  GURL primary_icon_url_;
-
-  // The primary icon object.
-  SkBitmap primary_icon_;
-
-  // Whether or not the primary icon is maskable.
-  bool has_maskable_primary_icon_ = false;
-
-  // The current banner pipeline state for this page load.
-  State state_ = State::INACTIVE;
-
-  // The screenshots to show in the install UI.
-  std::vector<Screenshot> screenshots_;
-
- private:
   friend class AppBannerManagerTest;
 
   // Checks whether the web page has sufficient engagement and continue with
   // the pipeline.
   void CheckSufficientEngagement();
 
-  // Record that the banner could be shown at this point, if the triggering
-  // heuristic allowed.
-  void RecordCouldShowBanner();
-
-  // Creates the app banner UI. Overridden by subclasses as the infobar is
-  // platform-specific.
-  virtual void ShowBannerUi(WebappInstallSource install_source) = 0;
-
   // Called after the manager sends a message to the renderer regarding its
   // intention to show a prompt. The renderer will send a message back with the
   // opportunity to cancel.
+  // Virtual for testing.
+  // TODO(http://crbug.com/322342499): Remove virtual.
   virtual void OnBannerPromptReply(
+      const InstallBannerConfig& install_config,
       mojo::Remote<blink::mojom::AppBannerController> controller,
       blink::mojom::AppBannerPromptReply reply);
 
   // Does the non-platform specific parts of showing the app banner.
-  void ShowBanner();
+  void ShowBannerForCurrentPageState();
 
   // blink::mojom::AppBannerService overrides.
   // Called when Blink has prevented a banner from being shown, and is now
@@ -456,29 +468,46 @@ class AppBannerManager : public content::WebContentsObserver,
   // background will appear when the tab is reactivated.
   std::vector<content::MediaPlayerId> active_media_players_;
 
-  mojo::Receiver<blink::mojom::AppBannerService> receiver_{this};
-  mojo::Remote<blink::mojom::AppBannerEvent> event_;
+  // The URL for which the banner check is being conducted.
+  GURL validated_url_;
+
+  // The current banner pipeline state for this page load.
+  State state_ = State::INACTIVE;
+
+  AppBannerMode mode_ = AppBannerMode::kWebApp;
+  std::optional<WebAppBannerData> web_app_data_;
+  std::optional<NativeAppBannerData> native_app_data_;
 
   // If a banner is requested before the page has finished loading, defer
   // triggering the pipeline until the load is complete.
   bool has_sufficient_engagement_ = false;
   bool load_finished_ = false;
 
+  // beforeinstallprompt
+  mojo::Receiver<blink::mojom::AppBannerService> receiver_{this};
+  mojo::Remote<blink::mojom::AppBannerEvent> event_;
+
   std::unique_ptr<StatusReporter> status_reporter_;
   bool install_animation_pending_ = false;
   InstallableWebAppCheckResult installable_web_app_check_result_ =
       InstallableWebAppCheckResult::kUnknown;
 
-  // The scope of the most recent installability check that passes promotability
-  // requirements, otherwise invalid.
-  GURL last_promotable_web_app_scope_;
-  // The scope of the most recent installability check that was non-promotable
-  // due to being already installed, otherwise invalid.
-  GURL last_already_installed_web_app_scope_;
+  // This stores the last result calculated by this AppBannerManager pipeline,
+  // which allows some classes (like WebAppMetrics) continue to use the result
+  // after the page has been navigated. This is likely an anti-pattern, and
+  // would be good to remove.
+  std::optional<std::pair<std::unique_ptr<WebAppBannerData>,
+                          InstallableWebAppCheckResult>>
+      last_known_result_;
 
   base::ObserverList<Observer, true> observer_list_;
 
   base::WeakPtrFactory<AppBannerManager> weak_factory_{this};
+
+  // This weak pointer should be valid for a given navigation, and will be
+  // invalidated when `InvalidateWeakPtrsForThisNavigation` is called.
+  base::WeakPtrFactory<AppBannerManager> weak_factory_for_this_navigation_{
+      this};
 };
 
 }  // namespace webapps

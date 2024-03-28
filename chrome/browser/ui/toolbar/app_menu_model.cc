@@ -99,6 +99,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "components/webapps/common/web_app_id.h"
@@ -226,11 +227,12 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
     return std::u16string();
   }
 
-  std::optional<webapps::WebAppBannerData> install_config =
-      banner->GetCurrentWebAppBannerData();
+  std::optional<webapps::InstallBannerConfig> install_config =
+      banner->GetCurrentBannerConfig();
   if (!install_config) {
     return std::u16string();
   }
+  CHECK_EQ(install_config->mode, webapps::AppBannerMode::kWebApp);
   webapps::InstallableWebAppCheckResult installable =
       banner->GetInstallableWebAppCheckResult();
   std::u16string app_name;
@@ -245,7 +247,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
       return std::u16string();
     case webapps::InstallableWebAppCheckResult::kYes_ByUserRequest:
     case webapps::InstallableWebAppCheckResult::kYes_Promotable:
-      app_name = install_config->GetAppName();
+      app_name = install_config->GetWebOrNativeAppName();
       break;
   }
   if (app_name.empty()) {

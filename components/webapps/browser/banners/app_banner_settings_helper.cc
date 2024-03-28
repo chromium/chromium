@@ -23,6 +23,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/common/switches.h"
 #include "content/public/browser/browser_context.h"
@@ -271,6 +272,15 @@ void AppBannerSettingsHelper::RecordBannerEvent(
       event_key, base::Value(static_cast<double>(time.ToInternalValue())));
 
   app_prefs.Save();
+}
+
+void AppBannerSettingsHelper::RecordBannerEvent(
+    content::WebContents* web_contents,
+    const InstallBannerConfig& install_config,
+    AppBannerEvent event,
+    base::Time time) {
+  RecordBannerEvent(web_contents, install_config.validated_url,
+                    install_config.GetWebOrNativeAppIdentifier(), event, time);
 }
 
 bool AppBannerSettingsHelper::WasBannerRecentlyBlocked(
