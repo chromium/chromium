@@ -4,28 +4,20 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
-#include "base/values.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/writeable_pref_store.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -35,11 +27,6 @@
 namespace enterprise_data_protection {
 
 namespace {
-
-const char* kSkippedUrls[] = {
-    "chrome://version",
-    "chrome-extension://abcdefghijklmnop",
-};
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
     std::string watermark_text,
@@ -87,18 +74,7 @@ class FakeRealTimeUrlLookupService
         base::BindOnce(std::move(response_callback),
                        /*is_rt_lookup_successful=*/true,
                        /*is_cached_response=*/true, std::move(response)));
-
-    if (!on_start_lookup_complete_.is_null()) {
-      std::move(on_start_lookup_complete_).Run();
-    }
   }
-
-  void set_on_start_lookup_complete(base::OnceClosure closure) {
-    on_start_lookup_complete_ = std::move(closure);
-  }
-
- private:
-  base::OnceClosure on_start_lookup_complete_;
 };
 
 class DataProtectionNavigationObserverTest
@@ -108,6 +84,7 @@ class DataProtectionNavigationObserverTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    web_contents_ = CreateTestWebContents();
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -142,15 +119,6 @@ class DataProtectionNavigationObserverTest
 
     enterprise_connectors::test::SetOnSecurityEventReporting(
         profile()->GetPrefs(), true);
-
-    // Enable real-time URL checks.
-    Profile* profile = Profile::FromBrowserContext(browser_context());
-    profile->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-        safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
-    profile->GetPrefs()->SetInteger(
-        prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
-        policy::POLICY_SCOPE_MACHINE);
   }
 
   void TearDown() override {
@@ -158,6 +126,8 @@ class DataProtectionNavigationObserverTest
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile())
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
+
+    web_contents_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
@@ -167,6 +137,8 @@ class DataProtectionNavigationObserverTest
 
  protected:
   FakeRealTimeUrlLookupService lookup_service_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  const GURL kTestURL = GURL("https://test");
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   signin::IdentityTestEnvironment identity_test_environment_;
@@ -184,7 +156,7 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
       /*rt_lookup_response*/ CreateWatermarkResponse());
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://test"), web_contents()->GetPrimaryMainFrame());
+      kTestURL, web_contents()->GetPrimaryMainFrame());
 
   // DataProtectionNavigationObserver does not implement DidStartNavigation(),
   // this is called by BrowserView. So we simply call Start() and manually
@@ -195,10 +167,6 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
       simulator->GetNavigationHandle();
   base::test::TestFuture<const std::string&> future;
 
-  base::test::TestFuture<void> future_lookup_complete;
-  lookup_service_.set_on_start_lookup_complete(
-      future_lookup_complete.GetCallback());
-
   // The DataProtectionNavigationObserver needs to be constructed using
   // CreateForNavigationHandle to allow for proper lifetime management of the
   // object, since we call DeleteForNavigationHandle() in our
@@ -207,53 +175,12 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
       CreateForNavigationHandle(*navigation_handle, &lookup_service_,
                                 navigation_handle->GetWebContents(),
                                 future.GetCallback());
-  EXPECT_TRUE(future_lookup_complete.Wait());
 
   // Call DidFinishNavigation() navigation, which should invoke our callback.
   simulator->Commit();
 
   std::string watermark_text = future.Get();
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  auto* connectors_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
-  EXPECT_EQ(watermark_text,
-            "custom_message\n" +
-                connectors_service->GetRealTimeUrlCheckIdentifier() +
-                "\n2024-02-29T04:36:04.000Z");
-}
-
-TEST_F(DataProtectionNavigationObserverTest,
-       SkipSpecialURLs_CreateForNavigationIfNeeded) {
-  SetContents(CreateTestWebContents());
-
-  for (const auto* url : kSkippedUrls) {
-    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-        GURL(url), web_contents());
-    simulator->Start();
-    content::NavigationHandle* navigation_handle =
-        simulator->GetNavigationHandle();
-
-    base::test::TestFuture<const std::string&> future;
-    DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
-        Profile::FromBrowserContext(browser_context()), navigation_handle,
-        future.GetCallback());
-    ASSERT_EQ(future.Get(), std::string());
-  }
-}
-
-TEST_F(DataProtectionNavigationObserverTest,
-       SkipSpecialURLs_GetDataProtectionSettings) {
-  SetContents(CreateTestWebContents());
-
-  for (const auto* url : kSkippedUrls) {
-    NavigateAndCommit(GURL(url));
-    base::test::TestFuture<const std::string&> future;
-    DataProtectionNavigationObserver::GetDataProtectionSettings(
-        Profile::FromBrowserContext(browser_context()), web_contents(),
-        future.GetCallback());
-    ASSERT_EQ(future.Get(), std::string());
-  }
+  ASSERT_EQ(watermark_text, "custom_message\n\n2024-02-29T04:36:04.000Z");
 }
 
 namespace {
@@ -274,14 +201,14 @@ struct WatermarkStringParams {
   std::string expected;
 };
 
-class DataProtectionWatermarkStringTest
+class WatermarkStringTest
     : public testing::TestWithParam<WatermarkStringParams> {};
 
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(
-    DataProtectionWatermarkStringTest,
-    DataProtectionWatermarkStringTest,
+    WatermarkStringTest,
+    WatermarkStringTest,
     testing::Values(
         WatermarkStringParams(
             "example@email.com",
@@ -298,8 +225,7 @@ INSTANTIATE_TEST_SUITE_P(
                               1709181364,
                               "example@email.com\n2024-02-29T04:36:04.000Z")));
 
-TEST_P(DataProtectionWatermarkStringTest,
-       TestGetWatermarkStringFromThreatInfo) {
+TEST_P(WatermarkStringTest, TestGetWatermarkStringFromThreatInfo) {
   safe_browsing::RTLookupResponse::ThreatInfo threat_info = GetTestThreatInfo(
       GetParam().custom_message, GetParam().timestamp_seconds);
   EXPECT_EQ(enterprise_data_protection::GetWatermarkString(

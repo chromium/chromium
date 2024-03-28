@@ -2065,10 +2065,6 @@ if (!is_android) {
       "//v8",
     ]
 
-    if (enterprise_watermark) {
-      deps += [ "//components/safe_browsing/core/browser/realtime:url_lookup_service_base" ]
-    }
-
     if (is_chromeos) {
       deps += [
         "//chromeos/dbus/dlp:dlp",
@@ -4291,10 +4287,6 @@ if (!is_android) {
       ]
       if (use_aura) {
         deps += [ "//ui/aura:test_support" ]
-      }
-      if (enterprise_watermark) {
-        deps +=
-            [ "//components/safe_browsing/core/browser/realtime:test_support" ]
       }
     }
 

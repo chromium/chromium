@@ -446,6 +446,12 @@ class BrowserView : public BrowserWindow,
 
   void UpdateWebAppStatusIconsVisiblity();
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  // Sets the watermark string to the value specified in text if the view is
+  // not null.
+  void SetWatermarkString(const std::string& text);
+#endif
+
   // Getter for the `window.setResizable(bool)` state.
   std::optional<bool> GetCanResizeFromWebAPI() const;
 
@@ -723,11 +729,6 @@ class BrowserView : public BrowserWindow,
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
-
-  // TODO: b/330960313 - DocumentOnLoad is not the best signal to use for
-  // determining when a data protections should be enabled, FCP is a better
-  // signal.
-  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 #endif
 
   // views::ClientView:
@@ -831,16 +832,6 @@ class BrowserView : public BrowserWindow,
 
   WebAppFrameToolbarView* web_app_frame_toolbar_for_testing() {
     return web_app_frame_toolbar();
-  }
-
-  enterprise_watermark::WatermarkView* get_watermark_view_for_testing() {
-    return watermark_view_;
-  }
-
-  void set_on_delay_apply_data_protection_settings_if_empty_called_for_testing(
-      base::OnceClosure closure) {
-    on_delay_apply_data_protection_settings_if_empty_called_for_testing_ =
-        std::move(closure);
   }
 
   // This value is used in a common calculation in NonClientFrameView
@@ -1073,24 +1064,9 @@ class BrowserView : public BrowserWindow,
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
 
-  // Applies data protection settings based on the verdict received by
-  // safe-browsing's realtime to `watermark_view_`.
-  void ApplyDataProtectionSettings(content::WebContents* expected_web_contents,
-                                   const std::string& watermark_text);
-
-  // Applies data protection settings if there are any to apply, otherwise
-  // delay clearing the data protection settings until the page loads.
-  //
-  // This is called from a finish navigation event to handle the case where the
-  // browser view is switching from a tab with data protections enabled to one
-  // without.  At the end of the navigation, the existing page is still visible
-  // to the user since the UI has not yet refreshed.  In this case the
-  // protections should remain in place.  Once the document finishes loading,
-  // `ApplyDataProtectionSettings()` will be called.  See
-  // `DocumentOnLoadCompletedInPrimaryMainFrame()`.
-  void DelayApplyDataProtectionSettingsIfEmpty(
-      content::WebContents* expected_web_contents,
-      const std::string& watermark_text);
+  // Apply data protection settings based on the verdict received by
+  // safe-browsing's realtime lookup service.
+  void ApplyDataProtectionSettings(const std::string& watermark_text);
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;
@@ -1214,9 +1190,6 @@ class BrowserView : public BrowserWindow,
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView, AcrossTasksDanglingUntriaged> devtools_web_view_ =
       nullptr;
-
-  // Clear watermark text once the page loads.
-  bool clear_watermark_text_on_page_load_ = false;
 
   // The view that overlays a watermark on the contents container.
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
@@ -1372,9 +1345,6 @@ class BrowserView : public BrowserWindow,
   PrefChangeRegistrar registrar_;
 
   ui::OmniboxPopupCloser omnibox_popup_closer_{this};
-
-  base::OnceClosure
-      on_delay_apply_data_protection_settings_if_empty_called_for_testing_;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };
