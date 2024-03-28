@@ -293,6 +293,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.Draw.Quads" units="quads"
+    expires_after="2024-09-25">
+  <owner>vmiura@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    This is logged once per frame, when the frame is drawn. The total number of
+    quads in all render passes in the CompositorFrame that is produced by
+    surface aggregation. Histogram was previously expired from 2019-06 to
+    2024-03.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
     expires_after="2024-09-01">
   <owner>jonross@chromium.org</owner>
@@ -873,6 +886,22 @@ chromium-metrics-reviews@google.com.
     limit that the tile assignment was breaching.
   </summary>
   <token key="ProcessType" variants="TileManagerProcessType"/>
+</histogram>
+
+<histogram name="Compositing.{Process}.CompositorFrame.Quads" units="quads"
+    expires_after="2024-09-25">
+  <owner>vmiura@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The total number of quads in all render passes in a CompositorFrame. This is
+    logged as the CompositorFrame is submitted to its surface. Histogram was
+    previously expired from 2019-06 to 2024-03.
+  </summary>
+  <token key="Process">
+    <variant name="Browser"/>
+    <variant name="Renderer"/>
+  </token>
 </histogram>
 
 <histogram

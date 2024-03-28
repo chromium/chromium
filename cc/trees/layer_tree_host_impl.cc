@@ -2863,6 +2863,17 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   last_draw_local_surface_id_ =
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+
+  if (const char* client_name = GetClientNameForMetrics()) {
+    size_t total_quad_count = 0;
+    for (const auto& pass : compositor_frame.render_pass_list) {
+      total_quad_count += pass->quad_list.size();
+    }
+    UMA_HISTOGRAM_COUNTS_1000(
+        base::StringPrintf("Compositing.%s.CompositorFrame.Quads", client_name),
+        total_quad_count);
+  }
+
   return compositor_frame;
 }
 
