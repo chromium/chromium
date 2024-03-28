@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/browser_state/model/browser_state_keyed_service_factories.h"
 
 #import "base/feature_list.h"
+#import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
@@ -53,6 +54,7 @@
 #import "ios/chrome/browser/metrics/model/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/page_content_annotations/model/page_content_annotations_service_factory.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -224,6 +226,11 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   // All factories that are only conditionally added go below here.
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     drive::DriveServiceFactory::GetInstance();
+  }
+
+  if (page_content_annotations::features::
+          ShouldEnablePageContentAnnotations()) {
+    PageContentAnnotationsServiceFactory::GetInstance();
   }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)

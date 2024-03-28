@@ -654,7 +654,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   const bool search_result_extractor_enabled =
       render_frame->IsMainFrame() &&
-      page_content_annotations::features::IsPageContentAnnotationEnabled();
+      page_content_annotations::features::ShouldExtractRelatedSearches();
   if (search_result_extractor_enabled) {
     continuous_search::SearchResultExtractorImpl::Create(render_frame);
   }

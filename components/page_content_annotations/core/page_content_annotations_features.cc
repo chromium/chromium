@@ -155,8 +155,14 @@ base::TimeDelta PCAServiceWaitForTitleDelayDuration() {
       "pca_service_wait_for_title_delay_in_milliseconds", 5000));
 }
 
-bool IsPageContentAnnotationEnabled() {
-  return base::FeatureList::IsEnabled(kPageContentAnnotations);
+bool ShouldEnablePageContentAnnotations() {
+  // Allow for the validation experiment or remote page metadata to enable the
+  // PCAService without need to enable both features.
+  return base::FeatureList::IsEnabled(kPageContentAnnotations) ||
+         base::FeatureList::IsEnabled(page_content_annotations::features::
+                                          kPageContentAnnotationsValidation) ||
+         base::FeatureList::IsEnabled(
+             page_content_annotations::features::kRemotePageMetadata);
 }
 
 bool ShouldQueryEmbeddings() {

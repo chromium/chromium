@@ -68,14 +68,8 @@ bool ShouldEnablePageContentAnnotations(Profile* profile) {
     // ephemeral, so we can skip.
     return false;
   }
-
-  // Allow for the validation experiment or remote page metadata to enable the
-  // PCAService without need to enable both features.
-  return page_content_annotations::features::IsPageContentAnnotationEnabled() ||
-         base::FeatureList::IsEnabled(
-             page_content_annotations::features::kPageContentAnnotationsValidation) ||
-         base::FeatureList::IsEnabled(
-             page_content_annotations::features::kRemotePageMetadata);
+  return page_content_annotations::features::
+      ShouldEnablePageContentAnnotations();
 }
 
 }  // namespace

@@ -38,9 +38,9 @@ COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(
     kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations);
 
-// Returns whether the feature to annotate page content is enabled.
+// Returns whether page content annotations should be enabled.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool IsPageContentAnnotationEnabled();
+bool ShouldEnablePageContentAnnotations();
 
 // Whether we should write content annotations to History Service.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
