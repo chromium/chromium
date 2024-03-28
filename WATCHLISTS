@@ -1376,6 +1376,26 @@
                   '|services/network/ip_protection/' \
                   '|services/network/network_service_proxy_delegate',
     },
+    'isolated_web_apps_apis': {
+      'filepath': 'content/browser/direct_sockets/'\
+                  '|chrome/browser/direct_sockets/'\
+                  '|third_party/blink/renderer/modules/direct_sockets/'\
+                  '|chrome/browser/printing/web_api/'\
+                  '|third_party/blink/renderer/modules/printing/'\
+                  '|chrome/browser/media/webrtc/'\
+                  '|chrome/browser/chromeos/policy/multi_screen_capture/'\
+                  '|chrome/browser/web_applications/web_app_run_on_os_login'\
+                  '|chrome/browser/ui/web_applications/sub_apps'\
+                  '|third_party/blink/renderer/modules/subapps/',
+    },
+    'isolated_web_apps_core': {
+      'filepath': 'chrome/browser/web_applications/isolated_web_apps/'\
+                  '|components/web_package/',
+    },
+    'isolated_web_apps_unmanaged_install': {
+      'filepath': 'chrome/browser/ui/views/web_apps/isolated_web_apps/'\
+                  '|chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task',
+    },
     'kiosk': {
       'filepath': 'chrome/browser/chromeos/app_mode/'\
                   '|chrome/browser/ash/app_mode/'\
@@ -2892,8 +2912,7 @@
              'iwells+watch@chromium.org'],
     'fileapi': ['kinuko+fileapi@chromium.org'],
     'filebrowse': ['rginda+watch@chromium.org'],
-    'filesapp': ['filesapp-reviews@chromium.org',
-                 'greengrape+watch@google.com'],
+    'filesapp': ['filesapp-reviews@chromium.org'],
     'firmware_update': ['zentaro+firmware-watch@chromium.org',
                         'jimmyxgong+firmware-watch@chromium.org',
                         'michaelcheco+firmware-watch@google.com'],
@@ -2957,6 +2976,9 @@
     'ip_protection': ['djmitche@chromium.org',
                       'awillia@chromium.org',
                       'brgoldstein@google.com'],
+    'isolated_web_apps_apis': ['greengrape@google.com'],
+    'isolated_web_apps_core': ['greengrape@google.com'],
+    'isolated_web_apps_unmanaged_install': ['greengrape@google.com'],
     'kiosk': ['chromeos-kiosk-eng+watch@google.com'],
     'language': ['language-reviews@chromium.org'],
     'libaom': ['fgalligan@chromium.org',
