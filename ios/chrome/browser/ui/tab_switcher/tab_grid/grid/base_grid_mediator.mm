@@ -307,6 +307,14 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
+- (void)populateConsumerItems {
+  if (!self.webStateList) {
+    return;
+  }
+  [self.consumer populateItems:CreateItems(self.webStateList)
+        selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)willChangeWebStateList:(WebStateList*)webStateList
@@ -1141,15 +1149,6 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 }
 
 #pragma mark - Private
-
-// Calls `-populateItems:selectedItemID:` on the consumer.
-- (void)populateConsumerItems {
-  if (!self.webStateList) {
-    return;
-  }
-  [self.consumer populateItems:CreateItems(self.webStateList)
-        selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
-}
 
 // Adds an observations to every non-pinned WebState.
 - (void)addWebStateObservations {

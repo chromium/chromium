@@ -80,6 +80,9 @@ class WebStateList;
 // subclass.
 - (void)displayActiveTab;
 
+// Calls `-populateItems:selectedItemID:` on the consumer.
+- (void)populateConsumerItems;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_H_

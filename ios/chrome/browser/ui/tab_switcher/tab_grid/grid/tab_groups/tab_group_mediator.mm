@@ -51,19 +51,7 @@
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
-    GridItemIdentifier* identifier = nil;
-    int webStateIndex = self.webStateList->active_index();
-    if (webStateIndex != WebStateList::kInvalidIndex) {
-      web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
-      TabSwitcherItem* selectedItem =
-          [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-      identifier = [GridItemIdentifier tabIdentifier:selectedItem];
-    }
-
-    [self.consumer populateItems:CreateTabItems(
-                                     self.webStateList,
-                                     self.webStateList->GetGroupRange(tabGroup))
-          selectedItemIdentifier:identifier];
+    [self populateConsumerItems];
   }
   return self;
 }
@@ -99,6 +87,27 @@
 
 - (void)configureToolbarsButtons {
   // No-op
+}
+
+- (void)populateConsumerItems {
+  if (!self.webStateList || !_tabGroup) {
+    return;
+  }
+
+  GridItemIdentifier* identifier = nil;
+  int webStateIndex = self.webStateList->active_index();
+  if (webStateIndex != WebStateList::kInvalidIndex &&
+      self.webStateList->GetGroupOfWebStateAt(webStateIndex) == _tabGroup) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
+    TabSwitcherItem* selectedItem =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+    identifier = [GridItemIdentifier tabIdentifier:selectedItem];
+  }
+
+  [self.consumer populateItems:CreateTabItems(
+                                   self.webStateList,
+                                   self.webStateList->GetGroupRange(_tabGroup))
+        selectedItemIdentifier:identifier];
 }
 
 @end
