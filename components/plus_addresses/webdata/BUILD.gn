@@ -6,6 +6,8 @@ import("//build/buildflag_header.gni")
 
 source_set("webdata") {
   sources = [
+    "plus_address_model_type_controller.cc",
+    "plus_address_model_type_controller.h",
     "plus_address_sync_bridge.cc",
     "plus_address_sync_bridge.h",
     "plus_address_sync_util.cc",
@@ -15,6 +17,7 @@ source_set("webdata") {
     "plus_address_webdata_service.cc",
     "plus_address_webdata_service.h",
   ]
+  deps = [ "//components/plus_addresses:features" ]
   public_deps = [
     "//base",
     "//components/plus_addresses:types",

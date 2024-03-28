@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
+#include "components/plus_addresses/webdata/plus_address_model_type_controller.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
@@ -438,12 +439,12 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
       plus_address_webdata_service_ &&
       base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::PLUS_ADDRESS,
-        /*delegate_for_full_sync_mode=*/
-        plus_address_webdata_service_->GetSyncControllerDelegate(),
-        /*delegate_for_transport_mode=*/
-        plus_address_webdata_service_->GetSyncControllerDelegate()));
+    controllers.push_back(
+        std::make_unique<plus_addresses::PlusAddressModelTypeController>(
+            /*delegate_for_full_sync_mode=*/
+            plus_address_webdata_service_->GetSyncControllerDelegate(),
+            /*delegate_for_transport_mode=*/
+            plus_address_webdata_service_->GetSyncControllerDelegate()));
   }
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {
