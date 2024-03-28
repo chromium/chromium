@@ -232,6 +232,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
+#include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 #include "chromeos/ash/services/cros_healthd/private/cpp/data_collector.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
@@ -533,6 +534,9 @@ class DBusServices {
 
     disks::DiskMountManager::Initialize();
 
+    if (ash::features::IsWifiDirectEnabled()) {
+      WifiP2PController::Initialize();
+    }
     NetworkHandler::Initialize();
 
     chromeos::sensors::SensorHalDispatcher::Initialize();
@@ -564,6 +568,9 @@ class DBusServices {
     rollback_network_config::Shutdown();
     chromeos::sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
+    if (ash::features::IsWifiDirectEnabled()) {
+      WifiP2PController::Shutdown();
+    }
     disks::DiskMountManager::Shutdown();
     LoginState::Shutdown();
     NetworkCertLoader::Shutdown();

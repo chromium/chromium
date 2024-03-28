@@ -853,6 +853,7 @@
                   'chrome/test/data/webui/cr_components/chromeos/network/|'\
                   'chromeos/ash/components/dbus/shill/|'\
                   'chromeos/ash/components/network/|'\
+                  'chromeos/ash/components/wifi_p2p/|'\
                   'chromeos/ash/services/network_config/|'\
                   'chromeos/services/network_config/|'\
                   'components/onc/|'\
