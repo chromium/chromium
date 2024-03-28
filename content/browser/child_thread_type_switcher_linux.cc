@@ -29,9 +29,10 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
     return;
   }
 
-  if (peer_tid == peer_pid && thread_type != base::ThreadType::kCompositing) {
+  if (peer_tid == peer_pid && thread_type != base::ThreadType::kDefault &&
+      thread_type != base::ThreadType::kCompositing) {
     DLOG(WARNING) << "Changing main thread type to another value than "
-                  << "kCompositing isn't allowed";
+                  << "kDefault or kCompositing isn't allowed";
     return;
   }
 

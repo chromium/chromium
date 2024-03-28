@@ -14,6 +14,9 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/cross_process_platform_thread_delegate.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread_type_delegate.h"
 #include "dbus/dbus_result.h"
 
 namespace ash {
@@ -30,7 +33,10 @@ namespace ash {
 // `base::Process::SetPriority()`. Otherwise `base::Process::SetPriority()`
 // fails. Also the processes must call `base::Process::ForgetPriority()` when
 // they terminate. Otherwise the cache in this class leaks.
-class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
+class DBusSchedQOSStateHandler
+    : public base::ProcessPriorityDelegate,
+      public base::ThreadTypeDelegate,
+      public base::CrossProcessPlatformThreadDelegate {
  public:
   DBusSchedQOSStateHandler(const DBusSchedQOSStateHandler&) = delete;
   DBusSchedQOSStateHandler& operator=(const DBusSchedQOSStateHandler&) = delete;
@@ -55,13 +61,22 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
   base::Process::Priority GetProcessPriority(
       base::ProcessId process_id) override;
 
+  bool HandleThreadTypeChange(base::ProcessId process_id,
+                              base::PlatformThreadId thread_id,
+                              base::ThreadType thread_type) override;
+  bool HandleThreadTypeChange(base::PlatformThreadId thread_id,
+                              base::ThreadType thread_type) override;
+
  private:
   struct ProcessState {
     base::Process::Priority priority;
-    bool need_retry = false;
+    bool need_retry;
+    std::map<base::PlatformThreadId, base::ThreadType>
+        preconnected_thread_types;
 
     explicit ProcessState(base::Process::Priority priority);
     ProcessState() = delete;
+    ProcessState(base::Process::Priority priority, bool need_retry);
     ~ProcessState();
     ProcessState(ProcessState&&);
     ProcessState(ProcessState&) = delete;
@@ -69,6 +84,8 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
 
   explicit DBusSchedQOSStateHandler(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner);
+
+  void CheckResourcedDisconnected(dbus::DBusResult result);
 
   void OnServiceConnected(bool success);
 
@@ -80,6 +97,19 @@ class DBusSchedQOSStateHandler : public base::ProcessPriorityDelegate {
                                   dbus::DBusResult result);
 
   void MarkProcessToRetry(base::ProcessId process_id);
+
+  void SetThreadTypeOnThread(base::ProcessId process_id,
+                             base::PlatformThreadId thread_id,
+                             base::ThreadType thread_type);
+
+  void OnSetThreadTypeFinish(base::ProcessId process_id,
+                             base::PlatformThreadId thread_id,
+                             base::ThreadType thread_type,
+                             dbus::DBusResult result);
+
+  void AddThreadRetryEntry(base::ProcessId process_id,
+                           base::PlatformThreadId thread_id,
+                           base::ThreadType thread_type);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

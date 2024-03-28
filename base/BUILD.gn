@@ -1037,6 +1037,7 @@ component("base") {
   if (is_chromeos) {
     sources += [
       "process/process_priority_delegate.h",
+      "threading/cross_process_platform_thread_delegate.h",
       "threading/platform_thread_cros.cc",
     ]
   }

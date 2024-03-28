@@ -153,14 +153,7 @@ bool CanSetThreadTypeToRealtimeAudio() {
 
 bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
                                      MessagePumpType pump_type_hint) {
-  const PlatformThreadId tid = PlatformThread::CurrentId();
-
-  if (g_thread_type_delegate &&
-      g_thread_type_delegate->HandleThreadTypeChange(tid, thread_type)) {
-    return true;
-  }
-
-  PlatformThread::SetThreadType(getpid(), tid, thread_type, IsViaIPC(false));
+  PlatformThreadLinux::SetThreadType(PlatformThread::CurrentId(), thread_type);
   return true;
 }
 
@@ -276,6 +269,24 @@ void PlatformThreadLinux::SetThreadType(ProcessId process_id,
                                         PlatformThreadId thread_id,
                                         ThreadType thread_type,
                                         IsViaIPC via_ipc) {
+  SetThreadTypeInternal(process_id, thread_id, thread_type, via_ipc);
+}
+
+// static
+void PlatformThreadLinux::SetThreadType(PlatformThreadId thread_id,
+                                        ThreadType thread_type) {
+  if (g_thread_type_delegate &&
+      g_thread_type_delegate->HandleThreadTypeChange(thread_id, thread_type)) {
+    return;
+  }
+  SetThreadTypeInternal(getpid(), thread_id, thread_type, IsViaIPC(false));
+}
+
+// static
+void PlatformThreadLinux::SetThreadTypeInternal(ProcessId process_id,
+                                                PlatformThreadId thread_id,
+                                                ThreadType thread_type,
+                                                IsViaIPC via_ipc) {
   SetThreadCgroupsForThreadType(thread_id, thread_type);
 
   // Some scheduler syscalls require thread ID of 0 for current thread.

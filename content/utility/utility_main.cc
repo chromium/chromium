@@ -23,6 +23,7 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/utility/content_utility_client.h"
@@ -254,12 +255,13 @@ int UtilityMain(MainFunctionParams parameters) {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Thread type delegate of the process should be registered before
-  // first thread type change in ChildProcess constructor.
-  // It also needs to be registered before the process has multiple threads,
-  // which may race with application of the sandbox.
+  // Thread type delegate of the process should be registered before first
+  // thread type change in ChildProcess constructor. It also needs to be
+  // registered before the process has multiple threads, which may race with
+  // application of the sandbox.
   if (base::FeatureList::IsEnabled(
-          features::kHandleChildThreadTypeChangesInBrowser)) {
+          features::kHandleChildThreadTypeChangesInBrowser) ||
+      base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
     SandboxedProcessThreadTypeHandler::Create();
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

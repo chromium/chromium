@@ -40,6 +40,7 @@
 #include "content/common/skia_utils.h"
 #include "content/gpu/gpu_child_thread.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -313,7 +314,20 @@ int GpuMain(MainFunctionParams parameters) {
 
   base::PlatformThread::SetName("CrGpuMain");
 
-  // Set thread priority before sandbox initialization.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Thread type delegate of the process should be registered before
+  // thread type change below for the main thread and for thread pool in
+  // ChildProcess constructor.
+  // It also needs to be registered before the process has multiple threads,
+  // which may race with application of the sandbox. InitializeAndStartSandbox()
+  // sandboxes the process and starts threads so this has to happen first.
+  if (base::FeatureList::IsEnabled(
+          features::kHandleChildThreadTypeChangesInBrowser) ||
+      base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
+    SandboxedProcessThreadTypeHandler::Create();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
@@ -327,18 +341,6 @@ int GpuMain(MainFunctionParams parameters) {
   // Since GPU initialization calls into skia, it's important to initialize skia
   // before it.
   InitializeSkia();
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Thread type delegate of the process should be registered before
-  // first thread type change in ChildProcess constructor.
-  // It also needs to be registered before the process has multiple threads,
-  // which may race with application of the sandbox. InitializeAndStartSandbox()
-  // sandboxes the process and starts threads so this has to happen first.
-  if (base::FeatureList::IsEnabled(
-          features::kHandleChildThreadTypeChangesInBrowser)) {
-    SandboxedProcessThreadTypeHandler::Create();
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // The ThreadPool must have been created before invoking |gpu_init| as it
   // needs the ThreadPool (in angle::InitializePlatform()). Do not start it
