@@ -29,7 +29,9 @@ enum class RequestOutcome {
   kGrantedByUser = 2,
   // The request was denied because the requesting site and the top level site
   // were not in the same First-Party Set.
-  kDeniedByFirstPartySet = 3,
+  // This variant is no longer used.
+  // kDeniedByFirstPartySet = 3,
+
   // The request was denied by the user.
   kDeniedByUser = 4,
   // The request was denied because it lacked user gesture, or one of the

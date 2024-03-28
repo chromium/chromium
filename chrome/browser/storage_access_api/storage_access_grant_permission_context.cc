@@ -57,26 +57,26 @@ static int implicit_grant_limit = 0;
 constexpr base::TimeDelta kStorageAccessAPITopLevelUserInteractionBound =
     base::Days(30);
 
-// Returns true if the request wasn't answered by the user explicitly.
+// Returns true if the request wasn't answered by the user explicitly. Note that
+// this is only called when persisting a permission grant.
 bool IsImplicitOutcome(RequestOutcome outcome) {
   switch (outcome) {
-    case RequestOutcome::kAllowedByCookieSettings:
-    case RequestOutcome::kAllowedBySameSite:
-    case RequestOutcome::kDeniedByCookieSettings:
-    case RequestOutcome::kDeniedByFirstPartySet:
-    case RequestOutcome::kDeniedByPrerequisites:
-    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
-    case RequestOutcome::kDismissedByUser:
-    case RequestOutcome::kGrantedByAllowance:
     case RequestOutcome::kGrantedByFirstPartySet:
-    case RequestOutcome::kReusedImplicitGrant:
+    case RequestOutcome::kGrantedByAllowance:
+    case RequestOutcome::kDismissedByUser:
     case RequestOutcome::kReusedPreviousDecision:
-    case RequestOutcome::kDeniedAborted:
+    case RequestOutcome::kReusedImplicitGrant:
       return true;
-    case RequestOutcome::kDeniedByUser:
     case RequestOutcome::kGrantedByUser:
+    case RequestOutcome::kDeniedByUser:
       return false;
 
+    case RequestOutcome::kDeniedByPrerequisites:
+    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
+    case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByCookieSettings:
+    case RequestOutcome::kAllowedBySameSite:
+    case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
       NOTREACHED_NORETURN();
   }
@@ -85,23 +85,22 @@ bool IsImplicitOutcome(RequestOutcome outcome) {
 // Returns true if the request outcome should be displayed in the omnibox.
 bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
   switch (outcome) {
+    case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
     case RequestOutcome::kDismissedByUser:
-    case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kReusedPreviousDecision:
       return true;
-    case RequestOutcome::kAllowedByCookieSettings:
-    case RequestOutcome::kAllowedBySameSite:
-    case RequestOutcome::kDeniedByCookieSettings:
-    case RequestOutcome::kDeniedByFirstPartySet:
-    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
-    case RequestOutcome::kGrantedByAllowance:
     case RequestOutcome::kGrantedByFirstPartySet:
+    case RequestOutcome::kGrantedByAllowance:
+    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
     case RequestOutcome::kReusedImplicitGrant:
-    case RequestOutcome::kDeniedByPrerequisites:
-    case RequestOutcome::kDeniedAborted:
       return false;
 
+    case RequestOutcome::kDeniedByPrerequisites:
+    case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kDeniedByCookieSettings:
+    case RequestOutcome::kAllowedBySameSite:
+    case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
       NOTREACHED_NORETURN();
   }
@@ -140,24 +139,14 @@ content_settings::ContentSettingConstraints ComputeConstraints(
       constraints.set_session_model(
           content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
       return constraints;
+
     case RequestOutcome::kGrantedByAllowance:
       constraints.set_lifetime(
           permissions::kStorageAccessAPIImplicitPermissionLifetime);
       constraints.set_session_model(
           content_settings::mojom::SessionModel::USER_SESSION);
       return constraints;
-    case RequestOutcome::kDismissedByUser:
-    case RequestOutcome::kDeniedByFirstPartySet:
-    case RequestOutcome::kDeniedByPrerequisites:
-    case RequestOutcome::kReusedPreviousDecision:
-    case RequestOutcome::kReusedImplicitGrant:
-    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
-    case RequestOutcome::kAllowedByCookieSettings:
-    case RequestOutcome::kDeniedByCookieSettings:
-    case RequestOutcome::kAllowedBySameSite:
-    case RequestOutcome::kDeniedAborted:
-    case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
       constraints.set_lifetime(
@@ -165,6 +154,18 @@ content_settings::ContentSettingConstraints ComputeConstraints(
       constraints.set_session_model(
           content_settings::mojom::SessionModel::DURABLE);
       return constraints;
+
+    case RequestOutcome::kDeniedByPrerequisites:
+    case RequestOutcome::kDismissedByUser:
+    case RequestOutcome::kReusedPreviousDecision:
+    case RequestOutcome::kDeniedByTopLevelInteractionHeuristic:
+    case RequestOutcome::kAllowedByCookieSettings:
+    case RequestOutcome::kReusedImplicitGrant:
+    case RequestOutcome::kDeniedByCookieSettings:
+    case RequestOutcome::kAllowedBySameSite:
+    case RequestOutcome::kDeniedAborted:
+    case RequestOutcome::kAllowedByFedCM:
+      NOTREACHED_NORETURN();
   }
 }
 
