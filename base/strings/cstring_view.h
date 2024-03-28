@@ -492,6 +492,9 @@ class basic_cstring_view final {
   static constexpr Char kEmpty[] = {Char{0}};
 
   // An always-valid pointer (never null) to a NUL-terminated string.
+  //
+  // RAW_PTR_EXCLUSION: cstring_view is typically used on the stack as a local
+  // variable/function parameter, so no raw_ptr is used here.
   RAW_PTR_EXCLUSION const Char* ptr_;
   // The number of characters between `ptr_` and the NUL terminator.
   //
