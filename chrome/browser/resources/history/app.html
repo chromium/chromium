@@ -23,6 +23,15 @@
         height: 100%;
       }
 
+      #historyEmbeddingsDisclaimer {
+        margin: 0 auto;
+        max-width: var(--cluster-max-width);
+        padding: 6px 8px 8px;
+        color: var(--cr-secondary-text-color);
+        font-size: 11px;
+        font-weight: 400;
+      }
+
       cr-history-embeddings-filter-chips {
         margin: 0 auto;
         max-width: var(--cluster-max-width);
@@ -101,6 +110,10 @@
           items="{{items}}">
         <div id="tabs-container" path="history">
           <template is="dom-if" if="[[enableHistoryEmbeddings_]]">
+            <div id="historyEmbeddingsDisclaimer">
+              $i18n{historyEmbeddingsDisclaimer}
+              <a href="#" target="_blank">$i18n{learnMore}</a>
+            </div>
             <cr-history-embeddings-filter-chips
                 show-results-by-group="[[
                     getShowResultsByGroup_(selectedPage_)]]"

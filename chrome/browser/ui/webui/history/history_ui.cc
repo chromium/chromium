@@ -166,19 +166,18 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   bool enable_history_embeddings =
       base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings);
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
-  if (enable_history_embeddings) {
-    static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
-        {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
-        {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
-        {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
-        {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
-        {"historyEmbeddingsFooter", IDS_HISTORY_EMBEDDINGS_FOOTER},
-        {"learnMore", IDS_LEARN_MORE},
-        {"thumbsUp", IDS_HISTORY_EMBEDDINGS_THUMBS_UP},
-        {"thumbsDown", IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN},
-    };
-    source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
-  }
+  static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
+      {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
+      {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
+      {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
+      {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
+      {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
+      {"historyEmbeddingsFooter", IDS_HISTORY_EMBEDDINGS_FOOTER},
+      {"learnMore", IDS_LEARN_MORE},
+      {"thumbsUp", IDS_HISTORY_EMBEDDINGS_THUMBS_UP},
+      {"thumbsDown", IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN},
+  };
+  source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
