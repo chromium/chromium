@@ -406,19 +406,20 @@ chromium-metrics-reviews@google.com.
   <owner>khmel@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
-    The number of ARC {AppType}s that are managed by Chrome (Ash). Collected
-    once every time when ARC starts.
+    The number of Ash Chrome managed ARC {AppType} Collected once every time
+    when ARC starts.
   </summary>
   <token key="AppType">
     <variant name="DefaultApp"
-        summary="'Default' ARC app. Either PAI or one in system/vendor image.
-                 Can be 1+ even for opt-out users."/>
+        summary="default apps. Either PAI or one in system/vendor image. Can
+                 be 1+ even for opt-out users."/>
     <variant name="InstalledApp"
-        summary="ARC app which the user has manually installed. This includes
+        summary="apps which the user has manually installed. This includes
                  the one installed via Chrome app sync. 0 for opt-out users."/>
     <variant name="StickyApp"
-        summary="'Sticky' ARC app in a system/vendor image. This is always 0
-                 for opt-out users."/>
+        summary="sticky apps in a system/vendor image. This is always 0 for
+                 opt-out users."/>
+    <variant name="VpnApp" summary="apps that provide vpn."/>
   </token>
 </histogram>
 
