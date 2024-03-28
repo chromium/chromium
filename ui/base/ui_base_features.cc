@@ -254,11 +254,6 @@ BASE_FEATURE(kFocusFollowsCursor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-// Enables InputPane API for controlling on screen keyboard.
-BASE_FEATURE(kInputPaneOnScreenKeyboard,
-             "InputPaneOnScreenKeyboard",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables using WM_POINTER instead of WM_TOUCH for touch events.
 BASE_FEATURE(kPointerEventsForTouch,
              "PointerEventsForTouch",

@@ -37,8 +37,7 @@ constexpr size_t kExtraNumberOfChars = 20;
 
 std::unique_ptr<VirtualKeyboardController> CreateKeyboardController(
     HWND attached_window_handle) {
-  if (base::FeatureList::IsEnabled(features::kInputPaneOnScreenKeyboard) &&
-      base::win::GetVersion() >= base::win::Version::WIN10_RS4) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10_RS4) {
     return std::make_unique<OnScreenKeyboardDisplayManagerInputPane>(
         attached_window_handle);
   } else {
