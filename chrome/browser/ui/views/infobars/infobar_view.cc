@@ -74,6 +74,9 @@ gfx::Insets GetCloseButtonSpacing() {
 
 // InfoBarView ----------------------------------------------------------------
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kInfoBarElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InfoBarView, kDismissButtonElementId);
+
 InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     : infobars::InfoBar(std::move(delegate)),
       views::ExternalFocusTracker(this, nullptr) {
@@ -119,6 +122,8 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         gfx::Insets::TLBR(close_button_spacing.top(), 0,
                           close_button_spacing.bottom(), 0));
     close_button_ = AddChildView(std::move(close_button));
+    close_button_->SetProperty(views::kElementIdentifierKey,
+                               kDismissButtonElementId);
 
     if (features::IsChromeRefresh2023()) {
       InstallCircleHighlightPathGenerator(close_button_);
