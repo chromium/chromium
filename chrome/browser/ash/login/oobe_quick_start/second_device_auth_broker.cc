@@ -115,6 +115,12 @@ constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     {"account_not_supported_kid",
      SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kUnicornAccountNotEnabled},
+    {"account_lookup_account_not_found",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kAccountNotFound},
+    {"account_lookup_captcha_required",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kCaptchaRequired},
 });
 
 // Network annotations.
@@ -367,7 +373,8 @@ void RunAuthCodeCallbackWithRejectionResponse(
   if (!kRejectionReasonErrorMap.contains(rejection_reason_lowercase)) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
-           "with unknown reason";
+           "with unknown reason - "
+        << rejection_reason_lowercase;
     HandleGaiaAuthenticationRejectionError(
         metrics, std::move(auth_code_callback), rejection_response);
     return;
