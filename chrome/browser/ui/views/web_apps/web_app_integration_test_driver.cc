@@ -6,6 +6,7 @@
 
 #include <codecvt>
 #include <cstddef>
+#include <cstring>
 #include <map>
 #include <optional>
 #include <ostream>
@@ -4039,7 +4040,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 }
 
 bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
-  CHECK(base::StartsWith(function, "Check"));
+  CHECK(strstr(function, "Check") != nullptr) << function;
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
     return false;
   }
