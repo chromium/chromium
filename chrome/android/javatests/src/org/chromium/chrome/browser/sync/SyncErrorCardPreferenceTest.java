@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.sync;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -18,6 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -25,10 +31,11 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -72,6 +79,10 @@ public class SyncErrorCardPreferenceTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
+
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
@@ -87,6 +98,9 @@ public class SyncErrorCardPreferenceTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+
         // Start main activity before because native side needs to be initialized before overriding
         // SyncService.
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -321,11 +335,8 @@ public class SyncErrorCardPreferenceTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSyncErrorCardForUpmBackendOutdated(boolean nightModeEnabled) throws Exception {
-        FakePasswordManagerBackendSupportHelper helper =
-                new FakePasswordManagerBackendSupportHelper();
-        helper.setBackendPresent(true);
-        helper.setUpdateNeeded(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), eq(true)))
+                .thenReturn(true);
 
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         assertSyncError(SyncSettingsUtils.SyncError.UPM_BACKEND_OUTDATED);

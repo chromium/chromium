@@ -31,8 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -43,6 +42,8 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -140,11 +141,9 @@ public class SyncSettingsUtils {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
 
-        if (PasswordManagerHelper.getForProfile(profile).canUseUpm()
-                // TODO(crbug.com/327623232): Use
-                // PasswordManagerUtilBridge.isGmsCoreUpdateRequired()
-                // instead.
-                && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+        if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
+                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                        UserPrefs.get(profile), /* isPwdSyncEnabled= */ true)) {
             return SyncError.UPM_BACKEND_OUTDATED;
         }
 
@@ -296,8 +295,9 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_needs_verification_title);
         }
 
-        if (PasswordManagerHelper.getForProfile(profile).canUseUpm()
-                && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+        if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
+                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                        UserPrefs.get(profile), /* isPwdSyncEnabled= */ true)) {
             return context.getString(R.string.sync_error_outdated_gms);
         }
 

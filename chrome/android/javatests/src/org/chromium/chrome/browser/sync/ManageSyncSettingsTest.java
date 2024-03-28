@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,8 +70,8 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
-import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -156,6 +157,7 @@ public class ManageSyncSettingsTest {
     @Mock private UnifiedConsentServiceBridge.Natives mUnifiedConsentServiceBridgeMock;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private GoogleActivityController mGoogleActivityController;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Before
     public void setUp() {
@@ -195,6 +197,8 @@ public class ManageSyncSettingsTest {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
             mUiDataTypes.put(UserSelectableType.APPS, ManageSyncSettings.PREF_SYNC_APPS);
         }
+
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
     }
 
     @After
@@ -1166,11 +1170,8 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     public void testSyncErrorCardActionForUpmBackendOutdatedError() {
-        FakePasswordManagerBackendSupportHelper helper =
-                new FakePasswordManagerBackendSupportHelper();
-        helper.setBackendPresent(true);
-        helper.setUpdateNeeded(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), anyBoolean()))
+                .thenReturn(true);
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
@@ -1197,11 +1198,8 @@ public class ManageSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     public void testSyncErrorCardForUpmBackendOutdatedUpdatedDynamically() {
-        FakePasswordManagerBackendSupportHelper helper =
-                new FakePasswordManagerBackendSupportHelper();
-        helper.setBackendPresent(true);
-        helper.setUpdateNeeded(true);
-        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), anyBoolean()))
+                .thenReturn(true);
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
@@ -1216,8 +1214,9 @@ public class ManageSyncSettingsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // Simulate the user updating the upm backend.
-                    helper.setUpdateNeeded(false);
+                    when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(
+                                    any(), anyBoolean()))
+                            .thenReturn(false);
                     // TODO(crbug.com/327623232): Observe such changes instead.
                     preference.syncStateChanged();
                 });
