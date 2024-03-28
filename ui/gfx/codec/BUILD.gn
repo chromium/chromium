@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("codec") {
   sources = [
@@ -42,4 +43,14 @@ component("codec") {
   }
 
   defines = [ "CODEC_IMPLEMENTATION" ]
+}
+
+fuzzer_test("gfx_jpeg_decoder_fuzzer") {
+  sources = [ "jpeg_decoder_fuzzer.cc" ]
+  deps = [
+    ":codec",
+    "//skia",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
