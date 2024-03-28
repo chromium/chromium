@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -30,6 +31,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/app/theme/google_chrome/chromeos/strings/grit/chromeos_chrome_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace chromeos::mahi {
 
 namespace {
@@ -40,6 +45,15 @@ constexpr int kButtonIconSize = 16;
 constexpr int kButtonIconLabelSpacing = 8;
 constexpr auto kButtonBorderInsets = gfx::Insets::VH(4, 16);
 
+// TODO(b/331127382): Finalize the Mahi condensed menu button text.
+std::u16string GetMahiCondensedMenuButtonText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAHI_CONDENSED_MENU_BUTTON_LABEL);
+#else
+  return l10n_util::GetStringUTF16(IDS_MAHI_CONDENSED_MENU_BUTTON_LABEL_SHORT);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 // View for the button which makes up most of the condensed Mahi menu.
 class MahiCondensedMenuButton : public views::LabelButton {
   METADATA_HEADER(MahiCondensedMenuButton, views::LabelButton)
@@ -48,8 +62,7 @@ class MahiCondensedMenuButton : public views::LabelButton {
   MahiCondensedMenuButton() {
     SetCallback(base::BindRepeating(&MahiCondensedMenuButton::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
-    // TODO(b/319264190): Use correct string here.
-    SetText(l10n_util::GetStringUTF16(IDS_MAHI_CONDENSED_MENU_LABEL));
+    SetText(GetMahiCondensedMenuButtonText());
     SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
     SetImageModel(views::Button::ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(

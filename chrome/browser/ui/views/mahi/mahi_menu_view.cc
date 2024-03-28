@@ -98,7 +98,7 @@ std::u16string GetMahiMenuTitle() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(IDS_MAHI_MENU_TITLE);
 #else
-  return u"Mahi Menu";
+  return l10n_util::GetStringUTF16(IDS_MAHI_MENU_TITLE_SHORT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

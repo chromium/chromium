@@ -389,7 +389,10 @@
       <message name="IDS_MAHI_MENU_INPUT_TEXTHOLDER" desc="The textholder for the input textfield inside the Mahi menu" translateable="false">
         Ask question
       </message>
-      <message name="IDS_MAHI_CONDENSED_MENU_LABEL" desc="The text that appears on the condensed Mahi menu button" translateable="false">
+      <message name="IDS_MAHI_MENU_TITLE_SHORT" desc="A short version of the title text of the Mahi menu" translateable="false">
+        Mahi Menu
+      </message>
+      <message name="IDS_MAHI_CONDENSED_MENU_BUTTON_LABEL_SHORT" desc="A short version of the label that appears on the condensed Mahi menu button" translateable="false">
         Open panel
       </message>
       <message name="IDS_MAHI_PANEL_SUMMARY_SECTION_NAME" desc="The name for the summary section that lies within the Mahi panel">
