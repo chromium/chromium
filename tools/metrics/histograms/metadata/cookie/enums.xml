@@ -155,6 +155,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="First-Party-Only, Secure"/>
   <int value="6" label="HttpOnly, Secure"/>
   <int value="7" label="First-Party-Only, HttpOnly, Secure"/>
+  <int value="8" label="Persistent"/>
+  <int value="9" label="First-Party-Only, Persistent"/>
+  <int value="10" label="HttpOnly, Persistent"/>
+  <int value="11" label="First-Party-Only, HttpOnly, Persistent"/>
+  <int value="12" label="Secure, Persistent"/>
+  <int value="13" label="First-Party-Only, Secure, Persistent"/>
+  <int value="14" label="HttpOnly, Secure, Persistent"/>
+  <int value="15" label="First-Party-Only, HttpOnly, Secure, Persistent"/>
 </enum>
 
 <enum name="HttpMethods">

@@ -1601,7 +1601,8 @@ void CookieMonster::LogCookieTypeToUMA(
           : 0;
   type_sample |= cc->IsHttpOnly() ? 1 << COOKIE_TYPE_HTTPONLY : 0;
   type_sample |= cc->SecureAttribute() ? 1 << COOKIE_TYPE_SECURE : 0;
-  UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type", type_sample,
+  type_sample |= cc->IsPersistent() ? 1 << COOKIE_TYPE_PERSISTENT : 0;
+  UMA_HISTOGRAM_EXACT_LINEAR("Cookie.Type2", type_sample,
                              (1 << COOKIE_TYPE_LAST_ENTRY));
 }
 
