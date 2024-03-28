@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
@@ -35,8 +35,8 @@
 }
 
 // Returns the delegate attached to the config.
-- (autofill::AutofillSaveCardInfoBarDelegateMobile*)saveCardDelegate {
-  return static_cast<autofill::AutofillSaveCardInfoBarDelegateMobile*>(
+- (autofill::AutofillSaveCardInfoBarDelegateIOS*)saveCardDelegate {
+  return static_cast<autofill::AutofillSaveCardInfoBarDelegateIOS*>(
       self.config->delegate());
 }
 
@@ -49,7 +49,7 @@
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
 
   // Display the modal (thus the ToS) if the card will be uploaded, this is a
@@ -76,7 +76,7 @@
   if (!self.consumer || !config)
     return;
 
-  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   if (!delegate) {
     return;

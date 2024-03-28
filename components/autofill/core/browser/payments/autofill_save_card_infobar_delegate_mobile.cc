@@ -66,16 +66,10 @@ AutofillSaveCardInfoBarDelegateMobile::GetIdentifier() const {
 
 bool AutofillSaveCardInfoBarDelegateMobile::ShouldExpire(
     const NavigationDetails& details) const {
-#if BUILDFLAG(IS_IOS)
-  // Expire the Infobar unless the navigation was triggered by the form that
-  // presented the Infobar, or the navigation is a redirect.
-  return !details.is_form_submission && !details.is_redirect;
-#else   // BUILDFLAG(IS_IOS)
   // The user has submitted a form, causing the page to navigate elsewhere. We
   // don't want the infobar to be expired at this point, because the user won't
   // get a chance to answer the question.
   return false;
-#endif  // BUILDFLAG(IS_IOS)
 }
 
 void AutofillSaveCardInfoBarDelegateMobile::InfoBarDismissed() {
@@ -116,20 +110,6 @@ bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
   return true;
 #endif
 }
-
-#if BUILDFLAG(IS_IOS)
-bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
-    std::u16string cardholder_name,
-    std::u16string expiration_date_month,
-    std::u16string expiration_date_year) {
-  AutofillClient::UserProvidedCardDetails user_provided_details;
-  user_provided_details.cardholder_name = cardholder_name;
-  user_provided_details.expiration_date_month = expiration_date_month;
-  user_provided_details.expiration_date_year = expiration_date_year;
-  delegate_->OnUiUpdatedAndAccepted(user_provided_details);
-  return true;
-}
-#endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 void AutofillSaveCardInfoBarDelegateMobile::RemoveInfobar() {

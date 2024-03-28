@@ -22,7 +22,7 @@ MockAutofillSaveCardInfoBarDelegateMobile::
             callback,
         const autofill::LegalMessageLines& legal_message_lines,
         const AccountInfo& displayed_target_account)
-    : AutofillSaveCardInfoBarDelegateMobile(
+    : AutofillSaveCardInfoBarDelegateIOS(
           absl::holds_alternative<
               autofill::AutofillClient::UploadSaveCardPromptCallback>(callback)
               ? autofill::AutofillSaveCardUiInfo::CreateForUploadSave(

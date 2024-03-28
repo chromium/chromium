@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#include "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -18,7 +18,7 @@
 class GURL;
 
 class MockAutofillSaveCardInfoBarDelegateMobile
-    : public autofill::AutofillSaveCardInfoBarDelegateMobile {
+    : public autofill::AutofillSaveCardInfoBarDelegateIOS {
  public:
   MockAutofillSaveCardInfoBarDelegateMobile(
       autofill::AutofillClient::SaveCreditCardOptions options,

@@ -16,6 +16,7 @@ source_set("save_card") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model/credit_card:infobar_delegate",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/infobars/model/overlays:util",
     "//ios/chrome/browser/overlays/model",

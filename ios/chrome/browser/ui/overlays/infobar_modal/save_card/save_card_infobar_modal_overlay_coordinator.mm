@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_coordinator.h"
 
 #import "base/check.h"
-#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
@@ -72,8 +72,8 @@
   DCHECK(self.modalMediator);
   DCHECK(self.modalViewController);
   if (!self.pendingURLToLoad.is_empty() && self.request) {
-    autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
-        static_cast<autofill::AutofillSaveCardInfoBarDelegateMobile*>(
+    autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
+        static_cast<autofill::AutofillSaveCardInfoBarDelegateIOS*>(
             self.config->delegate());
     if (delegate) {
       delegate->OnLegalMessageLinkClicked(self.pendingURLToLoad);

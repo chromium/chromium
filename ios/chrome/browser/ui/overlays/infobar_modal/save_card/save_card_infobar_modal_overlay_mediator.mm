@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
@@ -34,8 +35,8 @@
 }
 
 // Returns the delegate attached to the config.
-- (autofill::AutofillSaveCardInfoBarDelegateMobile*)saveCardDelegate {
-  return static_cast<autofill::AutofillSaveCardInfoBarDelegateMobile*>(
+- (autofill::AutofillSaveCardInfoBarDelegateIOS*)saveCardDelegate {
+  return static_cast<autofill::AutofillSaveCardInfoBarDelegateIOS*>(
       self.config->delegate());
 }
 
@@ -48,7 +49,7 @@
   if (!_consumer || !config)
     return;
 
-  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   if (!delegate) {
     return;
@@ -99,7 +100,7 @@
 - (void)saveCardWithCardholderName:(NSString*)cardholderName
                    expirationMonth:(NSString*)month
                     expirationYear:(NSString*)year {
-  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
   infobar->set_accepted(delegate->UpdateAndAccept(
@@ -118,7 +119,7 @@
 
 // Returns an array of UI SaveCardMessageWithLinks model objects.
 - (NSMutableArray<SaveCardMessageWithLinks*>*)legalMessages {
-  autofill::AutofillSaveCardInfoBarDelegateMobile* delegate =
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
   // Only display legal Messages if the card is being uploaded and there are
   // any.
