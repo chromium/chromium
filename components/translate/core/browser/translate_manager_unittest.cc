@@ -52,7 +52,6 @@ using testing::SetArgPointee;
 namespace translate {
 namespace {
 
-const char kInitiationStatusName[] = "Translate.InitiationStatus.v2";
 const char kMenuTranslationIsAvailableName[] =
     "Translate.MenuTranslation.IsAvailable";
 
@@ -1239,8 +1238,6 @@ TEST_F(TranslateManagerTest, ShowTranslateUI_NoTranslation) {
   network_notifier_.SimulateOnline();
 
   translate_manager_->ShowTranslateUI();
-
-  histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
 }
 
 TEST_F(TranslateManagerTest, ShowTranslateUI_Translation) {
