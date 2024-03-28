@@ -322,19 +322,15 @@ PerUserTopicSubscriptionRequest::Builder::BuildURLFetcher(
     const HttpRequestHeaders& headers,
     const std::string& body,
     const GURL& url) const {
-  // TODO(crbug.com/1404927): Chrome Sync does not use topics anymore, update
-  // the description.
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("per_user_topic_registration_request",
                                           R"(
         semantics {
           sender:
-            "Subscribe the Sync client for listening to the specific topic"
+            "Subscribe for listening to the specific user topic"
           description:
-            "Chromium can receive Sync invalidations via FCM messages."
-            "This request subscribes the client for receiving messages for the"
-            "concrete topic. In case of Chrome Sync topic is a ModelType,"
-            "e.g. BOOKMARK"
+            "This request subscribes the client for receiving FCM messages for"
+            "the concrete user topic."
           trigger:
             "Subscription takes place only once per profile per topic. "
           data:
@@ -345,12 +341,9 @@ PerUserTopicSubscriptionRequest::Builder::BuildURLFetcher(
           cookies_allowed: NO
           setting:
             "This feature can not be disabled by settings now"
-          chrome_policy: {
-             SyncDisabled {
-               policy_options {mode: MANDATORY}
-               SyncDisabled: false
-             }
-          }
+          policy_exception_justification:
+            "This feature is required to deliver core user experiences and "
+            "cannot be disabled by policy."
         })");
 
   auto request = std::make_unique<network::ResourceRequest>();
