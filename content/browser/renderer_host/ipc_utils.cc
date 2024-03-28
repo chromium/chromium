@@ -64,7 +64,7 @@ bool VerifyInitiatorOrigin(
     return true;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(process_id, initiator_origin)) {
+  if (!policy->HostsOrigin(process_id, initiator_origin)) {
     if (navigation_url) {
       static auto* const navigation_url_key =
           base::debug::AllocateCrashKeyString(

@@ -45,9 +45,12 @@ void NoStatePrefetchProcessorImpl::Create(
 
 void NoStatePrefetchProcessorImpl::Start(
     blink::mojom::PrerenderAttributesPtr attributes) {
+  // TODO(crbug.com/1029092): Remove the exception for opaque origins below and
+  // allow HostsOrigin() to also verify them, including checking their
+  // precursor.
   if (!initiator_origin_.opaque() &&
-      !content::ChildProcessSecurityPolicy::GetInstance()
-           ->CanAccessDataForOrigin(render_process_id_, initiator_origin_)) {
+      !content::ChildProcessSecurityPolicy::GetInstance()->HostsOrigin(
+          render_process_id_, initiator_origin_)) {
     receiver_.ReportBadMessage("NSPPI_INVALID_INITIATOR_ORIGIN");
     // The above ReportBadMessage() closes |receiver_| but does not trigger its
     // disconnect handler, so we need to call the handler explicitly

@@ -176,6 +176,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantSendMidiMessage(int child_id) override;
   void GrantSendMidiSysExMessage(int child_id) override;
   bool CanAccessDataForOrigin(int child_id, const url::Origin& origin) override;
+  bool HostsOrigin(int child_id, const url::Origin& origin) override;
   void AddFutureIsolatedOrigins(
       base::StringPiece origins_list,
       IsolatedOriginSource source,
@@ -191,6 +192,39 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool IsIsolatedSiteFromSource(const url::Origin& origin,
                                 IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
+
+  // Centralized internal implementation of site isolation enforcements,
+  // including CanAccessDataForOrigin and HostsOrigin. It supports the following
+  // types of access checks, in order of increasing strictness:
+  enum class AccessType {
+    // Whether the process can commit a navigation to an origin, allowing a
+    // document with that origin to be hosted in this process. This is
+    // specifically about whether a particular new origin may be introduced
+    // into a given process.
+    kCanCommitNewOrigin,
+    // Whether the process has previously committed a document or instantiated a
+    // worker with the particular origin. This can be used to verify whether a
+    // particular origin can be used as an initiator or source origin, e.g. in
+    // postMessage or other IPCs sent from this process. Unlike
+    // kCanCommitNewOrigin, this check assumes that the origin must already
+    // exist in the process. Because a document/worker destruction may race with
+    // processing legitimate IPCs on behalf of `origin`, this check also allows
+    // the case where an origin has been hosted by the process in the past, but
+    // not necessarily now.
+    kHostsOrigin,
+    // Whether the process can access data belonging to an origin already
+    // committed in the process, such as passwords, localStorage, or cookies.
+    // Similarly to kHostsOrigin, this check assumes that the origin must
+    // already
+    // exist in the process, but it is more strict for certain kinds of
+    // processes that aren't supposed to access any data. For example, sandboxed
+    // frame processes (which contain only opaque origins) or PDF processes
+    // cannot access data for any origin.
+    kCanAccessDataForCommittedOrigin,
+  };
+  bool CanAccessOrigin(int child_id,
+                       const url::Origin& origin,
+                       AccessType access_type);
 
   // Determines if the combination of origin, url and web_exposed_isolation_info
   // bundled in `url_info` are safe to commit to the process associated with
@@ -795,11 +829,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   static std::string GetKilledProcessOriginLock(
       const SecurityState* security_state);
 
-  // Helper for public CanAccessDataForOrigin overloads.
-  bool CanAccessDataForMaybeOpaqueOrigin(
-      int child_id,
-      const GURL& url,
-      bool url_is_precursor_of_opaque_origin);
+  // Helper for public CanAccessOrigin overloads.
+  bool CanAccessMaybeOpaqueOrigin(int child_id,
+                                  const GURL& url,
+                                  bool url_is_precursor_of_opaque_origin,
+                                  AccessType access_type);
 
   // Utility function to simplify lookups for OriginAgentClusterOptInEntry
   // values by origin.

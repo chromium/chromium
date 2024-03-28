@@ -209,20 +209,46 @@ class ChildProcessSecurityPolicy {
   // devices.
   virtual void GrantSendMidiSysExMessage(int child_id) = 0;
 
-  // Returns true if the process is permitted to read and modify the data for
-  // the given `origin`. This is used to protect data such as cookies,
-  // passwords, and local storage. Does not affect cookies attached to or set by
-  // network requests.
+  // This function checks whether a process is allowed to read and/or modify
+  // `origin`'s data such as passwords, cookies, or localStorage. Generally,
+  // this implies that an instance of `origin` must have previously been
+  // committed in this process (e.g., via a navigation or worker instantiation).
   //
-  // This function performs two kinds of security checks:
-  // - "Jail" check: ensures that a process locked to a particular site can
-  //   only access data belonging to that site.
+  // Internally, this function performs two kinds of security checks:
+  // - "Jail" check: ensures that a process locked to a particular site can only
+  //   access data belonging to that site.
   // - "Citadel" check: ensures that a process that is *not* locked to a
   //   particular site does not access data belonging to a site that requires a
   //   dedicated process. This check is mainly relevant on Android, where only
   //   some sites require site isolation.
+  //
+  // This is one of two core ways of enforcing Site Isolation (see
+  // docs/process_model_and_site_isolation.md), the other being `HostsOrigin()`
+  // below. Compared to `HostsOrigin()`, this check is more strict.  In
+  // particular, it may block access for renderer processes that should never
+  // need to access any origin's data, such as processes containing only
+  // documents with opaque origins (e.g., from sandboxed frames), or processes
+  // containing more restricted content types like PDF.
   virtual bool CanAccessDataForOrigin(int child_id,
                                       const url::Origin& origin) = 0;
+
+  // This function checks whether a process has an instance of a particular
+  // `origin`, either because it has committed a document or has instantiated a
+  // worker with that origin. This can be used to validate initiator or source
+  // origins that are included in messages or IPCs received from the renderer,
+  // such as the source origin for postMessage. Generally, this function
+  // performs similar enforcements to `CanAccessDataForOrigin()` above,
+  // including both jail and citadel checks. In contrast to
+  // `CanAccessDataForOrigin()`, this function permits access from opaque
+  // origins, making it more suitable to use for APIs that are allowed in such
+  // origins (such as postMessage).
+  //
+  // Subtle note: due to shutdown races, where a document/worker destruction may
+  // race with processing legitimate IPCs on behalf of `origin` from the
+  // renderer, this function actually checks for the process either *currently*
+  // having an origin, or having hosted it in the *past* (but not necessarily
+  // now).
+  virtual bool HostsOrigin(int child_id, const url::Origin& origin) = 0;
 
   // Defines available sources of isolated origins.  This should be specified
   // when adding isolated origins with the AddFutureIsolatedOrigins() call

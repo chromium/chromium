@@ -256,7 +256,7 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
     return false;
   }
 
-  // Verify `source_url` via CanAccessDataForOrigin.
+  // Verify `source_url` via ChildProcessSecurityPolicy::HostsOrigin.
   //
   // TODO(https://crbug.com/1449796): Stop partially/not-100%-correctly
   // replicating checks from `RenderFrameHostImpl::CanCommitOriginAndUrl`.
@@ -265,7 +265,7 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
   // here;  MHTML divergence is avoided via GetLastCommittedURL() check above).
   url::Origin source_url_origin = url::Origin::Resolve(source_url, base_origin);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  if (!policy->CanAccessDataForOrigin(process.GetID(), source_url_origin)) {
+  if (!policy->HostsOrigin(process.GetID(), source_url_origin)) {
     SCOPED_CRASH_KEY_STRING256(
         "EMF_INVALID_SOURCE_URL", "base_origin",
         base_origin.GetDebugString(false /* include_nonce */));

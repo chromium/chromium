@@ -1334,9 +1334,11 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
   // With site isolation, a URL from a site may only be committed in a process
   // dedicated to that site.  This check will ensure that |url| can't commit if
   // the process is locked to a different site.
-  if (!CanAccessDataForMaybeOpaqueOrigin(
-          child_id, url, false /* url_is_precursor_of_opaque_origin */))
+  if (!CanAccessMaybeOpaqueOrigin(child_id, url,
+                                  false /* url_is_precursor_of_opaque_origin */,
+                                  AccessType::kCanCommitNewOrigin)) {
     return false;
+  }
 
   {
     base::AutoLock lock(lock_);
@@ -1629,7 +1631,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   DCHECK(url_info.origin.has_value());
   const url::Origin url_origin =
       url::Origin::Resolve(url_info.url, *url_info.origin);
-  if (!CanAccessDataForOrigin(child_id, url_origin)) {
+  if (!CanAccessOrigin(child_id, url_origin, AccessType::kCanCommitNewOrigin)) {
     // Check for special cases, like blob:null/ and data: URLs, where the
     // origin does not contain information to match against the process lock,
     // but using the whole URL can result in a process lock match.  Note that
@@ -1646,8 +1648,10 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   }
 
   // Finally check the origin on its own.
-  if (!CanAccessDataForOrigin(child_id, *url_info.origin))
+  if (!CanAccessOrigin(child_id, *url_info.origin,
+                       AccessType::kCanCommitNewOrigin)) {
     return CanCommitStatus::CANNOT_COMMIT_ORIGIN;
+  }
 
   // Ensure that the origin derived from |url| is consistent with |origin|.
   // Note: We can't use origin.IsSameOriginWith() here because opaque origins
@@ -1679,6 +1683,18 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
 bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
     int child_id,
     const url::Origin& origin) {
+  return CanAccessOrigin(child_id, origin,
+                         AccessType::kCanAccessDataForCommittedOrigin);
+}
+
+bool ChildProcessSecurityPolicyImpl::HostsOrigin(int child_id,
+                                                 const url::Origin& origin) {
+  return CanAccessOrigin(child_id, origin, AccessType::kHostsOrigin);
+}
+
+bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
+                                                     const url::Origin& origin,
+                                                     AccessType access_type) {
   if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
     // Ensure this is only called on the UI thread, which is the only thread
     // with sufficient information to do the full set of checks.
@@ -1706,8 +1722,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   } else {
     url_to_check = origin.GetURL();
   }
-  bool success = CanAccessDataForMaybeOpaqueOrigin(child_id, url_to_check,
-                                                   origin.opaque());
+  bool success = CanAccessMaybeOpaqueOrigin(child_id, url_to_check,
+                                            origin.opaque(), access_type);
   if (success)
     return true;
 
@@ -1720,10 +1736,14 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   return false;
 }
 
-bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
+bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     int child_id,
     const GURL& url,
-    bool url_is_precursor_of_opaque_origin) {
+    bool url_is_precursor_of_opaque_origin,
+    AccessType access_type) {
+  // TODO(crbug.com/325410297): Use `access_type` to perform stricter
+  // enforcements.
+
   if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
     // Ensure this is only called on the UI thread, which is the only thread
     // with sufficient information to do the full set of checks.

@@ -344,7 +344,9 @@ void PepperRendererConnection::OpenChannelToPepperPlugin(
     const std::optional<url::Origin>& origin_lock,
     mojom::PepperHost::OpenChannelToPepperPluginCallback callback) {
   // Enforce that the sender of the IPC (i.e. |render_process_id_|) is actually
-  // able/allowed to host a frame with |embedder_origin|.
+  // allowed to host a frame with |embedder_origin|. Note that sandboxed frames
+  // or PDFs cannot host plugins, so it's safe to use the stricter
+  // CanAccessDataForOrigin() instead of HostsOrigin().
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (!policy->CanAccessDataForOrigin(render_process_id_, embedder_origin)) {
     bad_message::ReceivedBadMessage(

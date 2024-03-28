@@ -8066,8 +8066,9 @@ NavigationRequest::GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo() {
       !IsForMhtmlSubframe()) {
     int process_id = GetRenderFrameHost()->GetProcess()->GetID();
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-    CHECK(policy->CanAccessDataForOrigin(process_id,
-                                         origin_with_debug_info.first));
+    CHECK(policy->CanAccessOrigin(
+        process_id, origin_with_debug_info.first,
+        ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin));
   }
 
   return origin_with_debug_info;

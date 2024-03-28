@@ -10545,8 +10545,9 @@ void RenderFrameHostImpl::CommitNavigation(
   auto browser_calc_origin_to_commit =
       navigation_request->GetOriginToCommitWithDebugInfo();
   if (!process_lock.is_error_page() && !is_mhtml_subframe &&
-      !policy->CanAccessDataForOrigin(
-          GetProcess()->GetID(), browser_calc_origin_to_commit.first.value())) {
+      !policy->CanAccessOrigin(
+          GetProcess()->GetID(), browser_calc_origin_to_commit.first.value(),
+          ChildProcessSecurityPolicyImpl::AccessType::kCanCommitNewOrigin)) {
     SCOPED_CRASH_KEY_STRING64("CommitNavigation", "lock_url",
                               process_lock.ToString());
     SCOPED_CRASH_KEY_STRING64(

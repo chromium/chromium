@@ -420,7 +420,7 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
   url::Origin extension_origin =
       Extension::CreateOriginFromExtensionId(extension_id);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
+  return policy->HostsOrigin(render_process_id, extension_origin);
 }
 
 bool IsChromeApp(const ExtensionId& extension_id,
