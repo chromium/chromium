@@ -18,7 +18,9 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
@@ -119,8 +121,11 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
     input.pbData = const_cast<BYTE*>(
         reinterpret_cast<const BYTE*>(data_to_encrypt.data()));
 
-    if (!::CryptProtectData(&input, L"", nullptr, nullptr, nullptr, 0,
-                            &intermediate)) {
+    if (!::CryptProtectData(
+            &input, /*szDataDescr=*/
+            base::SysUTF8ToWide(version_info::GetProductName()).c_str(),
+            nullptr, nullptr, nullptr, /*dwFlags=*/CRYPTPROTECT_AUDIT,
+            &intermediate)) {
       *last_error = ::GetLastError();
       return kErrorCouldNotEncryptWithUserContext;
     }
@@ -129,8 +134,12 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
   {
     base::win::ScopedLocalAlloc intermediate_freer(intermediate.pbData);
 
-    if (!::CryptProtectData(&intermediate, L"", nullptr, nullptr, nullptr, 0,
-                            &output)) {
+    if (!::CryptProtectData(
+            &intermediate,
+            /*szDataDescr=*/
+            base::SysUTF8ToWide(version_info::GetProductName()).c_str(),
+            nullptr, nullptr, nullptr, /*dwFlags=*/CRYPTPROTECT_AUDIT,
+            &output)) {
       *last_error = ::GetLastError();
       return kErrorCouldNotEncryptWithSystemContext;
     }
