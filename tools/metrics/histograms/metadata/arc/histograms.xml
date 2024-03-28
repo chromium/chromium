@@ -2635,6 +2635,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmmSwappedOut" enum="VmmSwapOutState"
+    expires_after="2024-12-31">
+  <owner>sstan@chromium.org</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Records the ARCVM vmm swap status (ARCVM not swapped / ARCVM has been vmm
+    swapped). &quot;vmm swap&quot; means a part of the ARCVM memory lives in
+    ChromeOS side disk and will be automatically swap back when vCPU access it.
+    The recorded &quot;Swapped Out&quot; state means the ARCVM is in the swapped
+    out state at the end of the recording interval. Collected during every
+    metrics recording interval if ARCVM is running. Caveat: The metric will be
+    logged in every UMA record, except the data about the previous session.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VpnServiceBuilderCompatApisCounter"
     enum="VpnServiceBuilderCompatApisList" expires_after="2024-09-11">
   <owner>mhasank@google.com</owner>

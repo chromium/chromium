@@ -910,6 +910,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="User"/>
 </enum>
 
+<enum name="VmmSwapOutState">
+  <int value="0" label="Not Swapped Out"/>
+  <int value="1" label="Swapped Out"/>
+</enum>
+
 <enum name="VpnServiceBuilderCompatApisList">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 

@@ -157,6 +157,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/arc/vmm/vmm_metrics_provider.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/printing/printer_metrics_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -959,6 +960,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<ash::settings::OsSettingsMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<WallpaperMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<arc::VmmMetricsProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
