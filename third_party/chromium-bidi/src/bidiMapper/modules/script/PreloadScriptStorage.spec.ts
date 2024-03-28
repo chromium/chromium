@@ -17,7 +17,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import {CdpTarget} from '../context/CdpTarget.js';
+import {CdpTarget} from '../cdp/CdpTarget.js';
 
 import {PreloadScript} from './PreloadScript.js';
 import {PreloadScriptStorage} from './PreloadScriptStorage.js';

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {CdpTarget} from '../context/CdpTarget.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 
 import type {PreloadScript} from './PreloadScript.js';
 

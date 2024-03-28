@@ -21,7 +21,7 @@ import type {Protocol} from 'devtools-protocol';
 import type {BrowsingContext, Script} from '../../../protocol/protocol.js';
 import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {CdpTarget} from '../context/CdpTarget.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 
 import {ChannelProxy} from './ChannelProxy.js';
 

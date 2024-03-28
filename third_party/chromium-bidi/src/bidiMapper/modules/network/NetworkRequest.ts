@@ -31,7 +31,7 @@ import {
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {CdpTarget} from '../context/CdpTarget.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';

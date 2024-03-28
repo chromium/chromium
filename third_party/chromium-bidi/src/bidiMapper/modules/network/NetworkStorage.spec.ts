@@ -21,9 +21,9 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {ChromiumBidi, Network} from '../../../protocol/protocol.js';
 import {ProcessingQueue} from '../../../utils/ProcessingQueue.js';
 import type {OutgoingMessage} from '../../OutgoingMessage.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import type {CdpTarget} from '../context/CdpTarget.js';
 import {EventManager, EventManagerEvents} from '../session/EventManager.js';
 
 import {

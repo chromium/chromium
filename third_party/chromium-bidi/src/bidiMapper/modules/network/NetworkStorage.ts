@@ -24,7 +24,7 @@ import {
 import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
-import type {CdpTarget} from '../context/CdpTarget.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';

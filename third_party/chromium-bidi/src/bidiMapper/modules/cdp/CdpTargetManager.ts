@@ -25,13 +25,14 @@ import {
   serializeOrigin,
 } from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
-import {CdpTarget} from '../context/CdpTarget.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import {WorkerRealm, type WorkerRealmType} from '../script/WorkerRealm.js';
 import type {EventManager} from '../session/EventManager.js';
+
+import {CdpTarget} from './CdpTarget.js';
 
 const cdpToBidiTargetTypes = {
   service_worker: 'service-worker',

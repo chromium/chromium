@@ -18,7 +18,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import {ChromiumBidi, Log, Script} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {CdpTarget} from '../context/CdpTarget.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
 import type {EventManager} from '../session/EventManager.js';

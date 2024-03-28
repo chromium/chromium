@@ -19,15 +19,15 @@ import {
   type EmptyResult,
   type Script,
   NoSuchScriptException,
-} from '../../../protocol/protocol';
-import type {LoggerFn} from '../../../utils/log';
-import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
-import type {CdpTarget} from '../context/CdpTarget';
+} from '../../../protocol/protocol.js';
+import type {LoggerFn} from '../../../utils/log.js';
+import type {CdpTarget} from '../cdp/CdpTarget.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
-import {PreloadScript} from './PreloadScript';
-import type {PreloadScriptStorage} from './PreloadScriptStorage';
-import type {Realm} from './Realm';
-import type {RealmStorage} from './RealmStorage';
+import {PreloadScript} from './PreloadScript.js';
+import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
+import type {Realm} from './Realm.js';
+import type {RealmStorage} from './RealmStorage.js';
 
 export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
