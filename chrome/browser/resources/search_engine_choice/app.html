@@ -213,9 +213,19 @@
     line-height: var(--search-engine-name-line-height);
   }
 
+  .info-dialog-illustration {
+    content: url(images/info_dialog_illustration.svg);
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
       --background-color: var(--md-background-color);
+    }
+
+    .info-dialog-illustration {
+      content: url(images/info_dialog_illustration_dark.svg);
     }
 
     .tangible-sync-style-left-banner {
@@ -298,7 +308,8 @@
 
 <cr-dialog id="infoDialog">
   <div slot="title">
-    $i18n{infoDialogTitle}
+    <img class="info-dialog-illustration" alt="">
+    <div>$i18n{infoDialogTitle}</div>
   </div>
   <div slot="body">
     <p>$i18n{infoDialogFirstParagraph}</p>

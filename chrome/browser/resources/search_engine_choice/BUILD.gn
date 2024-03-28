@@ -10,6 +10,8 @@ build_webui("build") {
   static_files = [
     "search_engine_choice.html",
     "images/arrow_downward.svg",
+    "images/info_dialog_illustration.svg",
+    "images/info_dialog_illustration_dark.svg",
   ]
 
   web_component_files = [ "app.ts" ]

@@ -101,6 +101,7 @@ struct TestParam {
   bool use_right_to_left_language = false;
   bool select_first_search_engine = false;
   bool first_snippet_text_larger = false;
+  bool display_info_dialog = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -126,6 +127,10 @@ const TestParam kTestParams[] = {
     {.test_suffix = "FirstEngineSelectedWithLargerSnippet",
      .select_first_search_engine = true,
      .first_snippet_text_larger = true},
+    {.test_suffix = "InfoDialog", .display_info_dialog = true},
+    {.test_suffix = "InfoDialogDarkTheme",
+     .use_dark_theme = true,
+     .display_info_dialog = true},
 #endif
     // We enable the test on platforms other than Windows with the smallest
     // height due to a small maximum window height set by the operating system.
@@ -166,6 +171,13 @@ const char kMakeFirstSnippetLargerJsString[] =
     "app.shadowRoot.querySelectorAll('.marketing-snippet');"
     "marketingSnippet[0].textContent = "
     "marketingSnippet[0].textContent.repeat(2);"
+    "return true;"
+    "})();";
+
+const char kDisplayInfoDialogJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "app.shadowRoot.querySelector('#infoLink').click();"
     "return true;"
     "})();";
 }  // namespace
@@ -247,6 +259,12 @@ class SearchEngineChoiceUIPixelTest
       EXPECT_EQ(true,
                 content::EvalJs(web_contents, kMakeFirstSnippetLargerJsString));
     }
+
+    if (GetParam().display_info_dialog) {
+      EXPECT_EQ(true,
+                content::EvalJs(web_contents, kDisplayInfoDialogJsString));
+    }
+
     observer.Wait();
   }
 
