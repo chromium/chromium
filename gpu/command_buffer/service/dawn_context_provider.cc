@@ -32,6 +32,7 @@
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11_4.h>
@@ -277,6 +278,15 @@ bool DawnContextProvider::Initialize(
     enabled_toggles.push_back("clear_color_with_draw");
   }
 #endif
+
+  // Skip expensive swiftshader vkCmdDraw* for tests.
+  // TODO(penghuang): rename kDisableGLDrawingForTests to
+  // kDisableGpuDrawingForTests
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (backend_type == wgpu::BackendType::Vulkan && force_fallback_adapter &&
+      command_line->HasSwitch(switches::kDisableGLDrawingForTests)) {
+    enabled_toggles.push_back("vulkan_skip_draw");
+  }
 
   wgpu::DawnTogglesDescriptor toggles_desc;
   toggles_desc.enabledToggles = enabled_toggles.data();
