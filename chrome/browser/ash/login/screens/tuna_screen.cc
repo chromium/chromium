@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ash/login/screens/tuna_screen.h"
 
+#include "ai_intro_screen.h"
+#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/tuna_screen_handler.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace {
@@ -31,6 +35,20 @@ std::string TunaScreen::GetResultString(Result result) {
   }
 }
 
+// static
+bool TunaScreen::ShouldBeSkipped() {
+  if (!features::IsOobeTunaEnabled()) {
+    return true;
+  }
+
+  auto* user_manager = user_manager::UserManager::Get();
+  if (user_manager->IsLoggedInAsChildUser()) {
+    return true;
+  }
+
+  return false;
+}
+
 TunaScreen::TunaScreen(base::WeakPtr<TunaScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(TunaScreenView::kScreenId, OobeScreenPriority::DEFAULT),
@@ -40,7 +58,17 @@ TunaScreen::TunaScreen(base::WeakPtr<TunaScreenView> view,
 TunaScreen::~TunaScreen() = default;
 
 bool TunaScreen::MaybeSkip(WizardContext& context) {
-  return true;
+  if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  if (TunaScreen::ShouldBeSkipped()) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  return false;
 }
 
 void TunaScreen::ShowImpl() {
@@ -48,7 +76,9 @@ void TunaScreen::ShowImpl() {
     return;
   }
 
-  view_->Show();
+  base::Value::Dict params = base::Value::Dict()
+    .Set("backButtonVisible", !AiIntroScreen::ShouldBeSkipped());
+  view_->Show(std::move(params));
 }
 
 void TunaScreen::HideImpl() {}

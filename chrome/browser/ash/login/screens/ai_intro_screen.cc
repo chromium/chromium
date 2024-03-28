@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 
+#include "ai_intro_screen.h"
+#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace {
@@ -28,6 +31,20 @@ std::string AiIntroScreen::GetResultString(Result result) {
   }
 }
 
+// static
+bool AiIntroScreen::ShouldBeSkipped() {
+  if (!features::IsOobeAiIntroEnabled()) {
+    return true;
+  }
+
+  auto* user_manager = user_manager::UserManager::Get();
+  if (user_manager->IsLoggedInAsChildUser()) {
+    return true;
+  }
+
+  return false;
+}
+
 AiIntroScreen::AiIntroScreen(base::WeakPtr<AiIntroScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(AiIntroScreenView::kScreenId, OobeScreenPriority::DEFAULT),
@@ -37,7 +54,17 @@ AiIntroScreen::AiIntroScreen(base::WeakPtr<AiIntroScreenView> view,
 AiIntroScreen::~AiIntroScreen() = default;
 
 bool AiIntroScreen::MaybeSkip(WizardContext& context) {
-  return true;
+  if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  if (AiIntroScreen::ShouldBeSkipped()) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  return false;
 }
 
 void AiIntroScreen::ShowImpl() {

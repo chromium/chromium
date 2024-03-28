@@ -46,6 +46,7 @@ class AiIntroScreen : public BaseScreen {
   }
 
   static std::string GetResultString(Result result);
+  static bool ShouldBeSkipped();
 
  private:
   // BaseScreen:

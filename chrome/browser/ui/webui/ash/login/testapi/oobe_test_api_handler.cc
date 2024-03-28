@@ -97,6 +97,10 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_isFingerprintSupported",
             quick_unlock::IsFingerprintSupported());
 
+  dict->Set("testapi_shouldSkipAiIntro", AiIntroScreen::ShouldBeSkipped());
+
+  dict->Set("testapi_shouldSkipTuna", TunaScreen::ShouldBeSkipped());
+
   dict->Set("testapi_shouldSkipAssistant",
             features::IsOobeSkipAssistantEnabled() ||
                 !BUILDFLAG(ENABLE_CROS_LIBASSISTANT));

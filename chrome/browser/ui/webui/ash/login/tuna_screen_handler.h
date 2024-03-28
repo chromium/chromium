@@ -24,7 +24,7 @@ class TunaScreenView {
   virtual ~TunaScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(base::Value::Dict data) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<TunaScreenView> AsWeakPtr() = 0;
@@ -47,7 +47,7 @@ class TunaScreenHandler final : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // TunaScreenView:
-  void Show() override;
+  void Show(base::Value::Dict data) override;
   base::WeakPtr<TunaScreenView> AsWeakPtr() override;
 
  private:

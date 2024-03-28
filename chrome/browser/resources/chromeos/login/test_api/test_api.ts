@@ -349,6 +349,24 @@ class FingerprintScreenTester extends ScreenElementApi {
   }
 }
 
+class AiIntroScreenTester extends ScreenElementApi {
+  constructor() {
+    super('ai-intro');
+  }
+  override shouldSkip(): boolean {
+    return loadTimeData.getBoolean('testapi_shouldSkipAiIntro');
+  }
+}
+
+class TunaScreenTester extends ScreenElementApi {
+  constructor() {
+    super('tuna');
+  }
+  override shouldSkip(): boolean {
+    return loadTimeData.getBoolean('testapi_shouldSkipTuna');
+  }
+}
+
 class AssistantScreenTester extends ScreenElementApi {
   private mainElement: PolymerElementApi;
   private valueProp: PolymerElementApi;
@@ -1412,6 +1430,8 @@ export class OobeApiProvider {
       SyncScreen: new SyncScreenTester(),
       PasswordSelectionScreen: new PasswordSelectionScreenTester(),
       FingerprintScreen: new FingerprintScreenTester(),
+      AiIntroScreen: new AiIntroScreenTester(),
+      TunaScreen: new TunaScreenTester(),
       AssistantScreen: new AssistantScreenTester(),
       MarketingOptInScreen: new MarketingOptInScreenTester(),
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),

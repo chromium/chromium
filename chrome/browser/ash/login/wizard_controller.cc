@@ -2588,7 +2588,13 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kSkipped:
     case RecommendAppsScreen::Result::kNotApplicable:
     case RecommendAppsScreen::Result::kLoadError:
-      ShowAssistantOptInFlowScreen();
+      if (features::IsOobeAiIntroEnabled()){
+        ShowAiIntroScreen();
+      } else if (features::IsOobeTunaEnabled()) {
+        ShowTunaScreen();
+      } else {
+        ShowAssistantOptInFlowScreen();
+      }
       break;
   }
 }
@@ -2613,15 +2619,35 @@ void WizardController::OnRemoteActivityNotificationScreenExit() {
 void WizardController::OnAppDownloadingScreenExit() {
   OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
 
-  ShowAssistantOptInFlowScreen();
+  if (features::IsOobeAiIntroEnabled()) {
+    ShowAiIntroScreen();
+  } else if (features::IsOobeTunaEnabled()) {
+    ShowTunaScreen();
+  } else {
+    ShowAssistantOptInFlowScreen();
+  }
 }
 
 void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
+  OnScreenExit(AiIntroScreenView::kScreenId, kDefaultExitReason);
 
+  if (features::IsOobeTunaEnabled()) {
+    ShowTunaScreen();
+  } else {
+    ShowAssistantOptInFlowScreen();
+  }
 }
 
 void WizardController::OnTunaScreenExit(TunaScreen::Result result) {
+  OnScreenExit(TunaScreenView::kScreenId, TunaScreen::GetResultString(result));
 
+  if (result == TunaScreen::Result::kBack) {
+    CHECK(!AiIntroScreen::ShouldBeSkipped());
+    ShowAiIntroScreen();
+    return;
+  }
+
+  ShowAssistantOptInFlowScreen();
 }
 
 void WizardController::OnAssistantOptInFlowScreenExit(

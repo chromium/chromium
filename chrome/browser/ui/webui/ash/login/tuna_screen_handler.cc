@@ -19,8 +19,8 @@ void TunaScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
 }
 
-void TunaScreenHandler::Show() {
-  ShowInWebUI();
+void TunaScreenHandler::Show(base::Value::Dict data) {
+  ShowInWebUI(std::move(data));
 }
 
 base::WeakPtr<TunaScreenView> TunaScreenHandler::AsWeakPtr() {
