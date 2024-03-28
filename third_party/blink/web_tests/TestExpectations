@@ -6589,6 +6589,7 @@ crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history
 external/wpt/cookies/third-party-cookies/third-party-cookies.tentative.https.html [ Failure ]
 crbug.com/326123298 external/wpt/cookies/third-party-cookies/third-party-cookie-heuristics.tentative.https.html [ Failure Timeout ]
 http/tests/inspector-protocol/issues/third-party-cookie-phaseout-exclusion.js [ Failure ]
+http/tests/inspector-protocol/network/response-received-extra-info-exempted-cookie.js [ Failure ]
 
 # Gardener 2023-09-29
 crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [ Failure Pass ]
