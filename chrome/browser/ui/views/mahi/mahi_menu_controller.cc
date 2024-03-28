@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
+#include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
@@ -47,9 +48,8 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
 
   // If there is selected text, we will show the condensed Mahi view alongside
   // quick answers.
-  // TODO(b/324647147): Use condensed view here instead of `MahiMenuView`.
   read_write_cards_ui_controller_->SetMahiView(
-      std::make_unique<MahiMenuView>());
+      std::make_unique<MahiCondensedMenuView>());
 }
 
 void MahiMenuController::OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) {

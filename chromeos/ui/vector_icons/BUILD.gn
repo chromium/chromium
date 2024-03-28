@@ -44,6 +44,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "game_dashboard_gamepad.icon",
     "keyboard_shortcuts.icon",
     "mahi_outlines.icon",
+    "mahi_spark.icon",
     "mahi_summarize.icon",
     "notification_assistant.icon",
     "notification_supervised_user.icon",

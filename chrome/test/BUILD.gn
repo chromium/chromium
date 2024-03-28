@@ -8563,6 +8563,7 @@ test("unit_tests") {
       "../browser/ui/views/crostini/crostini_app_restart_dialog_unittest.cc",
       "../browser/ui/views/editor_menu/editor_menu_view_unittest.cc",
       "../browser/ui/views/editor_menu/utils/utils_unittest.cc",
+      "../browser/ui/views/mahi/mahi_condensed_menu_view_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_controller_unittest.cc",
       "../browser/ui/views/mahi/mahi_menu_view_unittest.cc",
       "../browser/ui/webui/ash/add_supervision/add_supervision_handler_utils_unittest.cc",

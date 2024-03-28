@@ -14,12 +14,15 @@
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -86,6 +89,8 @@ TEST_F(MahiMenuControllerTest, TextNotSelected) {
 
   EXPECT_TRUE(menu_controller()->menu_widget_for_test());
   EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
+  EXPECT_TRUE(views::IsViewClass<MahiMenuView>(
+      menu_controller()->menu_widget_for_test()->GetContentsView()));
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
@@ -138,6 +143,8 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
   EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test());
   EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test()->IsVisible());
   EXPECT_TRUE(read_write_cards_ui_controller_.GetMahiViewForTest());
+  EXPECT_TRUE(views::IsViewClass<MahiCondensedMenuView>(
+      read_write_cards_ui_controller_.GetMahiViewForTest()));
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
