@@ -33,6 +33,27 @@
 namespace partition_alloc {
 
 using BucketDistribution = PartitionRoot::BucketDistribution;
+using PartitionFreelistEncoding = internal::PartitionFreelistEncoding;
+
+struct ThreadCacheTestParam {
+  BucketDistribution bucket_distribution;
+  PartitionFreelistEncoding freelist_encoding;
+};
+
+const std::vector<ThreadCacheTestParam> params = {
+    {ThreadCacheTestParam{
+        BucketDistribution::kNeutral,
+        internal::PartitionFreelistEncoding::kPoolOffsetFreeList}},
+    {ThreadCacheTestParam{
+        BucketDistribution::kDenser,
+        internal::PartitionFreelistEncoding::kEncodedFreeList}},
+    {ThreadCacheTestParam{
+        BucketDistribution::kNeutral,
+        internal::PartitionFreelistEncoding::kPoolOffsetFreeList}},
+    {ThreadCacheTestParam{
+        BucketDistribution::kDenser,
+        internal::PartitionFreelistEncoding::kEncodedFreeList}}};
+
 namespace {
 
 constexpr size_t kSmallSize = 33;  // Must be large enough to fit extras.
@@ -61,26 +82,32 @@ class DeltaCounter {
 };
 
 // Forbid extras, since they make finding out which bucket is used harder.
-std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
+std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator(
+    internal::PartitionFreelistEncoding encoding =
+        internal::PartitionFreelistEncoding::kEncodedFreeList) {
   PartitionOptions opts;
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   opts.thread_cache = PartitionOptions::kEnabled;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   opts.star_scan_quarantine = PartitionOptions::kAllowed;
+  opts.use_pool_offset_freelists =
+      (encoding == internal::PartitionFreelistEncoding::kPoolOffsetFreeList)
+          ? PartitionOptions::kEnabled
+          : PartitionOptions::kDisabled;
   std::unique_ptr<PartitionAllocatorForTesting> allocator =
       std::make_unique<PartitionAllocatorForTesting>(opts);
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
   return allocator;
 }
-
 }  // namespace
 
 class PartitionAllocThreadCacheTest
-    : public ::testing::TestWithParam<PartitionRoot::BucketDistribution> {
+    : public ::testing::TestWithParam<ThreadCacheTestParam> {
  public:
   PartitionAllocThreadCacheTest()
-      : allocator_(CreateAllocator()), scope_(allocator_->root()) {}
+      : allocator_(CreateAllocator(GetParam().freelist_encoding)),
+        scope_(allocator_->root()) {}
 
   ~PartitionAllocThreadCacheTest() override {
     ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
@@ -90,11 +117,10 @@ class PartitionAllocThreadCacheTest
       ThreadCache::RemoveTombstoneForTesting();
     }
   }
-
  protected:
   void SetUp() override {
     PartitionRoot* root = allocator_->root();
-    switch (GetParam()) {
+    switch (GetParam().bucket_distribution) {
       case BucketDistribution::kNeutral:
         root->ResetBucketDistributionForTesting();
         break;
@@ -144,7 +170,8 @@ class PartitionAllocThreadCacheTest
   }
 
   static size_t SizeToIndex(size_t size) {
-    return PartitionRoot::SizeToBucketIndex(size, GetParam());
+    return PartitionRoot::SizeToBucketIndex(size,
+                                            GetParam().bucket_distribution);
   }
 
   size_t FillThreadCacheAndReturnIndex(size_t raw_size, size_t count = 1) {
@@ -181,10 +208,9 @@ class PartitionAllocThreadCacheTest
   internal::ThreadCacheProcessScopeForTesting scope_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
+INSTANTIATE_TEST_SUITE_P(AlternateBucketDistributionAndPartitionFreeList,
                          PartitionAllocThreadCacheTest,
-                         ::testing::Values(BucketDistribution::kNeutral,
-                                           BucketDistribution::kDenser));
+                         testing::ValuesIn(params));
 
 TEST_P(PartitionAllocThreadCacheTest, Simple) {
   // There is a cache.
@@ -411,8 +437,8 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCaches) {
   auto* parent_thread_tcache = root()->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
-  ThreadDelegateForMultipleThreadCaches delegate(parent_thread_tcache, root(),
-                                                 GetParam());
+  ThreadDelegateForMultipleThreadCaches delegate(
+      parent_thread_tcache, root(), GetParam().bucket_distribution);
 
   internal::base::PlatformThreadHandle thread_handle;
   internal::base::PlatformThreadForTesting::Create(0, &delegate,
@@ -532,7 +558,7 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
 #endif
 
   ThreadDelegateForThreadCacheRegistry delegate(parent_thread_tcache, root(),
-                                                GetParam());
+                                                GetParam().bucket_distribution);
 
   internal::base::PlatformThreadHandle thread_handle;
   internal::base::PlatformThreadForTesting::Create(0, &delegate,
@@ -678,7 +704,7 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
       root()->thread_cache_for_testing()->stats_for_testing().alloc_count;
 
   ThreadDelegateForMultipleThreadCachesAccounting delegate(
-      root(), wqthread_stats, alloc_count, GetParam());
+      root(), wqthread_stats, alloc_count, GetParam().bucket_distribution);
 
   internal::base::PlatformThreadHandle thread_handle;
   internal::base::PlatformThreadForTesting::Create(0, &delegate,
@@ -755,9 +781,9 @@ PA_NO_THREAD_SAFETY_ANALYSIS {
   ThreadCache* this_thread_tcache = root()->thread_cache_for_testing();
   ThreadCache* other_thread_tcache = nullptr;
 
-  ThreadDelegateForPurgeAll delegate(root(), other_thread_tcache,
-                                     other_thread_started, purge_called,
-                                     bucket_index, GetParam());
+  ThreadDelegateForPurgeAll delegate(
+      root(), other_thread_tcache, other_thread_started, purge_called,
+      bucket_index, GetParam().bucket_distribution);
   internal::base::PlatformThreadHandle thread_handle;
   internal::base::PlatformThreadForTesting::Create(0, &delegate,
                                                    &thread_handle);
@@ -917,7 +943,7 @@ TEST_P(PartitionAllocThreadCacheTest,
   std::atomic<int> allocations_done{0};
   std::atomic<bool> can_finish{false};
   ThreadDelegateForPeriodicPurgeSumsOverAllThreads delegate(
-      root(), allocations_done, can_finish, GetParam());
+      root(), allocations_done, can_finish, GetParam().bucket_distribution);
 
   internal::base::PlatformThreadHandle thread_handle;
   internal::base::PlatformThreadForTesting::Create(0, &delegate,
@@ -1087,7 +1113,7 @@ TEST_P(PartitionAllocThreadCacheTest,
 
   ThreadDelegateForDynamicCountPerBucketMultipleThreads delegate(
       root(), other_thread_started, threshold_changed, bucket_index,
-      GetParam());
+      GetParam().bucket_distribution);
 
   internal::base::PlatformThreadHandle thread_handle;
   internal::base::PlatformThreadForTesting::Create(0, &delegate,
