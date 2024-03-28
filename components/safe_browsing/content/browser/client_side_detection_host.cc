@@ -289,6 +289,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
           base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
+          host_ && host_->delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs())) {
         ClientSideDetectionFeatureCache::CreateForWebContents(web_contents_);
         ClientSideDetectionFeatureCache* feature_cache_map =
@@ -399,6 +400,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
           base::FeatureList::IsEnabled(
               kClientSideDetectionDebuggingMetadataCache) &&
+          host_ && host_->delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs())) {
         ClientSideDetectionFeatureCache::CreateForWebContents(web_contents_);
         ClientSideDetectionFeatureCache* feature_cache_map =
