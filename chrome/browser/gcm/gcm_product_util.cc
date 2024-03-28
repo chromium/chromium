@@ -4,7 +4,8 @@
 
 #include "chrome/browser/gcm/gcm_product_util.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
@@ -17,7 +18,7 @@ namespace gcm {
 
 namespace {
 
-std::string ToLowerAlphaNum(base::StringPiece in) {
+std::string ToLowerAlphaNum(std::string_view in) {
   std::string out;
   out.reserve(in.size());
   for (char ch : in) {
