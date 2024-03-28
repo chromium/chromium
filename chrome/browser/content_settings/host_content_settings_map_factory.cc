@@ -140,15 +140,12 @@ scoped_refptr<RefcountedKeyedService>
 #if BUILDFLAG(IS_ANDROID)
   if (!profile->IsOffTheRecord()) {
     auto channels_provider =
-        std::make_unique<NotificationChannelsProviderAndroid>();
+        std::make_unique<NotificationChannelsProviderAndroid>(
+            profile->GetPrefs());
 
-    channels_provider->MigrateToChannelsIfNecessary(
-        profile->GetPrefs(), settings_map->GetPrefProvider());
-
-    // Clear blocked channels *after* migrating in case the pref provider
-    // contained any erroneously-created channels that need deleting.
-    channels_provider->ClearBlockedChannelsIfNecessary(
-        profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile));
+    channels_provider->Initialize(
+        settings_map->GetPrefProvider(),
+        TemplateURLServiceFactory::GetForProfile(profile));
 
     settings_map->RegisterUserModifiableProvider(
         HostContentSettingsMap::NOTIFICATION_ANDROID_PROVIDER,

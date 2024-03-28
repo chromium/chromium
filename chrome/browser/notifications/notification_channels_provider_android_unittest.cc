@@ -43,9 +43,7 @@ const char kTestOrigin[] = "https://example.com";
 class FakeNotificationChannelsBridge
     : public NotificationChannelsProviderAndroid::NotificationChannelsBridge {
  public:
-  explicit FakeNotificationChannelsBridge(bool should_use_channels) {
-    should_use_channels_ = should_use_channels;
-  }
+  FakeNotificationChannelsBridge() = default;
 
   FakeNotificationChannelsBridge(const FakeNotificationChannelsBridge&) =
       delete;
@@ -65,9 +63,6 @@ class FakeNotificationChannelsBridge
   }
 
   // NotificationChannelsBridge methods.
-
-  bool ShouldUseChannelSettings() override { return should_use_channels_; }
-
   NotificationChannel CreateChannel(const std::string& origin,
                                     const base::Time& timestamp,
                                     bool enabled) override {
@@ -105,8 +100,6 @@ class FakeNotificationChannelsBridge
  private:
   using Channels = std::map<std::string, NotificationChannel>;
 
-  bool should_use_channels_;
-
   // Map from channel_id - channel.
   Channels channels_;
 };
@@ -131,14 +124,24 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
     channels_provider_->ShutdownOnUIThread();
   }
 
+  void MigrateToChannelsIfNecessary(
+      content_settings::ProviderInterface* pref_provider) {
+    channels_provider_->MigrateToChannelsIfNecessary(pref_provider);
+  }
+
+  void ClearBlockedChannelsIfNecessary(
+      TemplateURLService* template_url_service) {
+    channels_provider_->ClearBlockedChannelsIfNecessary(template_url_service);
+  }
+
  protected:
-  void InitChannelsProvider(bool should_use_channels) {
-    fake_bridge_ = new FakeNotificationChannelsBridge(should_use_channels);
+  void InitChannelsProvider() {
+    fake_bridge_ = new FakeNotificationChannelsBridge();
 
     // Can't use std::make_unique because the provider's constructor is private.
     channels_provider_ =
         base::WrapUnique(new NotificationChannelsProviderAndroid(
-            base::WrapUnique(fake_bridge_.get())));
+            profile_->GetPrefs(), base::WrapUnique(fake_bridge_.get())));
   }
 
   ContentSettingsPattern GetTestPattern() {
@@ -156,20 +159,8 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
 };
 
 TEST_F(NotificationChannelsProviderAndroidTest,
-       SetWebsiteSettingWhenChannelsShouldNotBeUsed_ReturnsFalse) {
-  this->InitChannelsProvider(false /* should_use_channels */);
-  bool result = channels_provider_->SetWebsiteSetting(
-      GetTestPattern(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-
-  EXPECT_FALSE(result);
-}
-
-TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingAllowedCreatesOneAllowedRule) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
@@ -192,7 +183,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingBlockedCreatesOneBlockedRule) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
@@ -215,7 +206,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingAllowedTwiceForSameOriginCreatesOneAllowedRule) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
@@ -243,7 +234,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingBlockedTwiceForSameOriginCreatesOneBlockedRule) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
@@ -271,7 +262,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingDefault_DeletesRule) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
@@ -290,16 +281,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
-TEST_F(NotificationChannelsProviderAndroidTest,
-       NoRulesWhenChannelsShouldNotBeUsed) {
-  InitChannelsProvider(false /* should_use_channels */);
-  EXPECT_FALSE(channels_provider_->GetRuleIterator(
-      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
-      content_settings::PartitionKey::GetDefaultForTesting()));
-}
-
 TEST_F(NotificationChannelsProviderAndroidTest, NoRulesInIncognito) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
@@ -312,7 +295,7 @@ TEST_F(NotificationChannelsProviderAndroidTest, NoRulesInIncognito) {
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        NoRulesWhenNoWebsiteSettingsSet) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
       ContentSettingsType::NOTIFICATIONS, false /* incognito */,
       content_settings::PartitionKey::GetDefaultForTesting()));
@@ -320,7 +303,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        SetWebsiteSettingForMultipleOriginsCreatesMultipleRules) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   ContentSettingsPattern abc_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
   ContentSettingsPattern xyz_pattern =
@@ -355,7 +338,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        NotifiesObserversOnChannelStatusChanges) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   content_settings::MockObserver mock_observer;
   channels_provider_->AddObserver(&mock_observer);
 
@@ -391,7 +374,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        ClearAllContentSettingsRulesClearsRulesAndNotifiesObservers) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   content_settings::MockObserver mock_observer;
   channels_provider_->AddObserver(&mock_observer);
 
@@ -439,7 +422,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        ClearAllContentSettingsRulesNoopsForUnrelatedContentSettings) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   // Set up some channels.
   ContentSettingsPattern abc_pattern =
@@ -481,7 +464,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        GetWebsiteSettingLastModifiedReturnsNullIfNoModifications) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   auto result = content_settings::TestUtils::GetLastModified(
       channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
@@ -492,7 +475,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        GetWebsiteSettingLastModifiedForOtherSettingsReturnsNull) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern::Wildcard(),
@@ -518,7 +501,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   base::SimpleTestClock clock;
   base::Time t1 = base::Time::Now();
   clock.SetNow(t1);
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   channels_provider_->SetClockForTesting(&clock);
 
   // Create channel and check last-modified time is the creation time.
@@ -575,7 +558,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        MigrateToChannels_NoopWhenNoNotificationSettingsToMigrate) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   auto old_provider = std::make_unique<content_settings::MockProvider>();
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
@@ -583,36 +566,13 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
-  channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
-                                                   old_provider.get());
-  EXPECT_EQ(fake_bridge_->GetChannels().size(), 0u);
-}
-
-TEST_F(NotificationChannelsProviderAndroidTest,
-       MigrateToChannels_NoopWhenChannelsShouldNotBeUsed) {
-  InitChannelsProvider(false /* should_use_channels */);
-  auto old_provider = std::make_unique<content_settings::MockProvider>();
-
-  // Give the old provider some notification settings to provide.
-  old_provider->SetWebsiteSetting(
-      ContentSettingsPattern::FromString("https://blocked.com"),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-  old_provider->SetWebsiteSetting(
-      ContentSettingsPattern::FromString("https://allowed.com"),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-
-  channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
-                                                   old_provider.get());
+  MigrateToChannelsIfNecessary(old_provider.get());
   EXPECT_EQ(fake_bridge_->GetChannels().size(), 0u);
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        MigrateToChannels_CreatesChannelsForProvidedSettings) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   auto old_provider = std::make_unique<content_settings::MockProvider>();
 
   // Give the old provider some notification settings to provide.
@@ -627,8 +587,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
-  channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
-                                                   old_provider.get());
+  MigrateToChannelsIfNecessary(old_provider.get());
 
   auto channels = fake_bridge_->GetChannels();
   ASSERT_EQ(channels.size(), 2u);
@@ -656,7 +615,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        MigrateToChannels_DoesNotMigrateIfAlreadyMigrated) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   auto old_provider = std::make_unique<content_settings::MockProvider>();
   profile_->GetPrefs()->SetBoolean(prefs::kMigratedToSiteNotificationChannels,
                                    true);
@@ -666,14 +625,13 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
-  channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
-                                                   old_provider.get());
+  MigrateToChannelsIfNecessary(old_provider.get());
   EXPECT_EQ(fake_bridge_->GetChannels().size(), 0u);
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        ClearBlockedChannels_ZeroBlockedChannels) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
   fake_bridge_->CreateChannel("https://example.com", base::Time::Now(),
                               true /* enabled */);
 
@@ -681,8 +639,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       prefs::kClearedBlockedSiteNotificationChannels));
   ASSERT_EQ(fake_bridge_->GetChannels().size(), 1u);
 
-  channels_provider_->ClearBlockedChannelsIfNecessary(
-      profile_->GetPrefs(), nullptr /* template_url_service */);
+  ClearBlockedChannelsIfNecessary(nullptr /* template_url_service */);
 
   EXPECT_EQ(fake_bridge_->GetChannels().size(), 1u);
 
@@ -692,7 +649,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        ClearBlockedChannels_MultipleBlockedChannels) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   fake_bridge_->CreateChannel("https://example.com", base::Time::Now(),
                               false /* enabled */);
@@ -705,8 +662,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       prefs::kClearedBlockedSiteNotificationChannels));
   ASSERT_EQ(fake_bridge_->GetChannels().size(), 3u);
 
-  channels_provider_->ClearBlockedChannelsIfNecessary(
-      profile_->GetPrefs(), nullptr /* template_url_service */);
+  ClearBlockedChannelsIfNecessary(nullptr /* template_url_service */);
 
   EXPECT_EQ(fake_bridge_->GetChannels().size(), 1u);
   EXPECT_EQ(fake_bridge_->GetChannels()[0].origin, "https://foo.com");
@@ -721,15 +677,14 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   ASSERT_EQ(fake_bridge_->GetChannels().size(), 2u);
 
-  channels_provider_->ClearBlockedChannelsIfNecessary(
-      profile_->GetPrefs(), nullptr /* template_url_service */);
+  ClearBlockedChannelsIfNecessary(nullptr /* template_url_service */);
 
   EXPECT_EQ(fake_bridge_->GetChannels().size(), 2u);
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        ClearBlockedChannels_DefaultSearchEngineIsNotCleared) {
-  InitChannelsProvider(true /* should_use_channels */);
+  InitChannelsProvider();
 
   // Set up TemplateURLService with a default search engine.
   TemplateURLService* template_url_service = new TemplateURLService(
@@ -750,8 +705,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       prefs::kClearedBlockedSiteNotificationChannels));
   ASSERT_EQ(fake_bridge_->GetChannels().size(), 2u);
 
-  channels_provider_->ClearBlockedChannelsIfNecessary(profile_->GetPrefs(),
-                                                      template_url_service);
+  ClearBlockedChannelsIfNecessary(template_url_service);
 
   // DSE channel should still exist and be blocked..
   EXPECT_EQ(fake_bridge_->GetChannels().size(), 1u);

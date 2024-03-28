@@ -59,7 +59,6 @@ class NotificationChannelsProviderAndroid
   class NotificationChannelsBridge {
    public:
     virtual ~NotificationChannelsBridge() = default;
-    virtual bool ShouldUseChannelSettings() = 0;
     virtual NotificationChannel CreateChannel(const std::string& origin,
                                               const base::Time& timestamp,
                                               bool enabled) = 0;
@@ -71,24 +70,17 @@ class NotificationChannelsProviderAndroid
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  NotificationChannelsProviderAndroid();
+  explicit NotificationChannelsProviderAndroid(PrefService* pref_service);
   NotificationChannelsProviderAndroid(
       const NotificationChannelsProviderAndroid&) = delete;
   NotificationChannelsProviderAndroid& operator=(
       const NotificationChannelsProviderAndroid&) = delete;
   ~NotificationChannelsProviderAndroid() override;
 
-  // Migrates any notification settings from the passed-in provider to
-  // channels, unless they were already migrated or channels should not be used.
-  void MigrateToChannelsIfNecessary(
-      PrefService* prefs,
-      content_settings::ProviderInterface* pref_provider);
-
-  // Deletes any existing blocked site channels, unless this one-off deletion
-  // already occurred. See https://crbug.com/835232.
-  void ClearBlockedChannelsIfNecessary(
-      PrefService* prefs,
-      TemplateURLService* template_url_service);
+  // Initialize cached channels, do migration and clear blocked channels if
+  // necessary.
+  void Initialize(content_settings::ProviderInterface* pref_provider,
+                  TemplateURLService* template_url_service);
 
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
@@ -130,8 +122,20 @@ class NotificationChannelsProviderAndroid
       const content_settings::PartitionKey& partition_key) override;
   void SetClockForTesting(base::Clock* clock) override;
 
+ protected:
+  // Migrates any notification settings from the passed-in provider to
+  // channels, unless they were already migrated or channels should not be used.
+  void MigrateToChannelsIfNecessary(
+      content_settings::ProviderInterface* pref_provider);
+
+  // Deletes any existing blocked site channels, unless this one-off deletion
+  // already occurred. See https://crbug.com/835232.
+  void ClearBlockedChannelsIfNecessary(
+      TemplateURLService* template_url_service);
+
  private:
-  explicit NotificationChannelsProviderAndroid(
+  NotificationChannelsProviderAndroid(
+      PrefService* pref_service,
       std::unique_ptr<NotificationChannelsBridge> bridge);
   friend class NotificationChannelsProviderAndroidTest;
 
@@ -145,8 +149,6 @@ class NotificationChannelsProviderAndroid
   void InitCachedChannels();
 
   std::unique_ptr<NotificationChannelsBridge> bridge_;
-
-  bool platform_supports_channels_;
 
   raw_ptr<base::Clock> clock_;
 
@@ -167,6 +169,9 @@ class NotificationChannelsProviderAndroid
   //    detect channels getting blocked/enabled by the user, in the absence of a
   //    callback for this event.
   std::map<std::string, NotificationChannel> cached_channels_;
+
+  // PrefService associated with this instance.
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<NotificationChannelsProviderAndroid> weak_factory_{this};
 };
