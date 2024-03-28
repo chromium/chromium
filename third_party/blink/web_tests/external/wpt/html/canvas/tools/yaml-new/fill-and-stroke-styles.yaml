@@ -2108,3 +2108,16 @@
     @assert ctx.strokeStyle === 'color(srgb 0.5 0 0.5)';
     ctx.strokeStyle = "color-mix(in srgb, red, color(srgb 1 0 0))";
     @assert ctx.strokeStyle === 'color(srgb 1 0 0)';
+
+- name: 2d.gradient.colormix
+  desc: color-mix works as CanvasGradient color input
+  canvasType: ['HtmlCanvas']
+  code: |
+    var g = ctx.createLinearGradient(0, 0, 100, 0);
+    g.addColorStop(0, '#f00');
+    g.addColorStop(1, 'color-mix(in srgb, #0f0, #00f)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 100, 50);
+    @assert pixel 25,25 ==~ 212,81,61,255 +/- 3;
+    @assert pixel 50,25 ==~ 167,106,88,255 +/- 3;
+    @assert pixel 75,25 ==~ 113,120,109,255 +/- 3;

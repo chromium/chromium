@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -56,6 +57,10 @@ static ColorParseResult ParseColor(Color& parsed_color,
           DynamicTo<cssvalue::CSSColorMixValue>(CSSParser::ParseSingleValue(
               CSSPropertyID::kColor, color_string,
               StrictCSSParserContext(SecureContextMode::kInsecureContext)))) {
+    static const TextLinkColors kDefaultTextLinkColors{};
+    const StyleColor style_color = ResolveColorValue(
+        *color_mix_value, kDefaultTextLinkColors, color_scheme, color_provider);
+    parsed_color = style_color.Resolve(Color::kBlack, color_scheme);
     return ColorParseResult::kColorMix;
   }
   return ColorParseResult::kParseFailed;
