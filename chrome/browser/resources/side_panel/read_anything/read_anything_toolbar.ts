@@ -151,11 +151,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       ReadAnythingToolbarElement.showElement(btn as HTMLElement);
     });
 
-    const parentWidth = toolbar.offsetParent?.clientWidth;
-    assert(parentWidth, 'parent width is undefined');
+    if (!toolbar.offsetParent) {
+      return;
+    }
 
     // When the toolbar's width exceeds the parent width, then the content has
     // overflowed.
+    const parentWidth = toolbar.offsetParent.clientWidth;
     if (toolbar.clientWidth > parentWidth) {
       ReadAnythingToolbarElement.showElement(moreOptionsButton);
       // Hide all the buttons on the toolbar that are in the more options menu

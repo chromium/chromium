@@ -8,6 +8,7 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('ReadAloud_UpdateContentSelection', () => {
@@ -78,26 +79,6 @@ suite('ReadAloud_UpdateContentSelection', () => {
       is_backward: false,
     },
   };
-
-  /**
-   * Suppresses harmless ResizeObserver errors due to a browser bug.
-   * yaqs/2300708289911980032
-   */
-  function suppressInnocuousErrors() {
-    const onerror = window.onerror;
-    window.onerror = (message, url, lineNumber, column, error) => {
-      if ([
-            'ResizeObserver loop limit exceeded',
-            'ResizeObserver loop completed with undelivered notifications.',
-          ].includes(message.toString())) {
-        console.info('Suppressed ResizeObserver error: ', message);
-        return;
-      }
-      if (onerror) {
-        onerror.apply(window, [message, url, lineNumber, column, error]);
-      }
-    };
-  }
 
   setup(() => {
     suppressInnocuousErrors();
