@@ -13,7 +13,6 @@ namespace blink {
 class Document;
 class Page;
 class Settings;
-class WebThemeEngine;
 
 // ColorSchemeHelper is used to update the following values and eventually reset
 // the values back to their default upon deconstruction for testing.
@@ -37,7 +36,6 @@ class ColorSchemeHelper {
   void SetEmulatedForcedColors(Document& document, bool is_dark_theme);
 
  private:
-  WebThemeEngine* web_theme_engine_ = nullptr;
   Settings& settings_;
   mojom::PreferredColorScheme default_browser_preferred_color_scheme_ =
       mojom::PreferredColorScheme::kLight;
