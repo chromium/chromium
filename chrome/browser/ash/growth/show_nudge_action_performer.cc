@@ -8,10 +8,18 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "base/check_is_test.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -25,6 +33,8 @@ constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
 constexpr char kActionPath[] = "action";
 constexpr char kArrowPath[] = "arrow";
+constexpr char kActiveAppWindowAnchorType[] =
+    "anchor.activeAppWindowAnchorType";
 
 // Nudge ID.
 constexpr char kGrowthNudgeId[] = "growth_campaign_nudge";
@@ -106,6 +116,12 @@ const std::string* GetNudgeBody(const NudgePayload* nudge_payload) {
   return nudge_payload->FindString(kNudgeBodyPath);
 }
 
+const std::optional<int> GetActiveAppWindowAnchorType(
+    const NudgePayload* nudge_payload) {
+  CHECK(nudge_payload);
+  return nudge_payload->FindIntByDottedPath(kActiveAppWindowAnchorType);
+}
+
 void MaybeSetImageData(const base::Value::Dict* image_value,
                        ash::AnchoredNudgeData& nudge_data) {
   if (!image_value) {
@@ -120,6 +136,39 @@ void MaybeSetImageData(const base::Value::Dict* image_value,
   }
 
   nudge_data.image_model = image_model.value();
+}
+
+views::View* GetWindowCaptionButtonContainer() {
+  auto* session = CampaignsManagerSession::Get();
+  if (!session) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
+
+  auto* window = session->GetOpenedWindow();
+  if (!window) {
+    // TODO: b/331212624 - Log error metric.
+    LOG(ERROR) << "Error: No app window";
+    return nullptr;
+  }
+
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(window->GetToplevelWindow());
+  if (!widget) {
+    // TODO: b/331212624 - Log error metric.
+    LOG(ERROR) << "Error: widget not found";
+    return nullptr;
+  }
+
+  auto* root_view = widget->GetRootView();
+  if (!root_view) {
+    // TODO: b/331212624 - Log error metric.
+    LOG(ERROR) << "Error: root view not found";
+    return nullptr;
+  }
+
+  return root_view->GetViewByID(
+      chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
 }
 
 }  // namespace
@@ -159,10 +208,23 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   std::u16string nudge_body = base::UTF8ToUTF16(*body_text);
 
-  // TODO: b/329701489 - Getting nudge anchor view.
+  views::View* nudge_anchor = nullptr;
+
+  // TODO: b/329701489 - Next: Add Shelf Id anchor.
+  auto anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
+  if (anchor_type &&
+      static_cast<growth::WindowAnchorType>(anchor_type.value()) ==
+          growth::WindowAnchorType::kCaptionButtonContainer) {
+    nudge_anchor = GetWindowCaptionButtonContainer();
+    if (!nudge_anchor) {
+      // TODO: b/331212624 - Log error metric.
+      return false;
+    }
+  }
+
   auto nudge_data = ash::AnchoredNudgeData(
       kGrowthNudgeId, ash::NudgeCatalogName::kGrowthCampaignNudge, nudge_body,
-      /*anchor_view=*/nullptr);
+      /*anchor_view=*/nudge_anchor);
 
   auto* title = GetNudgeTitle(nudge_payload);
   if (title && !title->empty()) {

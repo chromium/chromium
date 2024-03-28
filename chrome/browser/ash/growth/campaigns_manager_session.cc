@@ -56,7 +56,6 @@ void MaybeTriggerCampaignsWhenAppOpened() {
 
 // static
 CampaignsManagerSession* CampaignsManagerSession::Get() {
-  DCHECK(g_instance);
   return g_instance;
 }
 
