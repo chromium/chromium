@@ -19,3 +19,13 @@ imageset("notifications_opt_in_banner") {
     "notifications_opt_in_banner.imageset/notifications_opt_in_banner_ipad@2x.png",
   ]
 }
+
+imageset("notifications_opt_in_banner_landscape") {
+  sources = [
+    "notifications_opt_in_banner_landscape.imageset/Contents.json",
+    "notifications_opt_in_banner_landscape.imageset/notifications_opt_in_banner_landscape.png",
+    "notifications_opt_in_banner_landscape.imageset/notifications_opt_in_banner_landscape@2x.png",
+    "notifications_opt_in_banner_landscape.imageset/notifications_opt_in_banner_landscape_dark.png",
+    "notifications_opt_in_banner_landscape.imageset/notifications_opt_in_banner_landscape_dark@2x.png",
+  ]
+}

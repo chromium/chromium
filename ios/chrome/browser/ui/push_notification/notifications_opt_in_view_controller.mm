@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -27,6 +28,8 @@ struct CellConfig {
 CGFloat const kTableViewCornerRadius = 10;
 // Name of the banner image above the title.
 NSString* const kBanner = @"notifications_opt_in_banner";
+// Name of the banner image above the title in landscape.
+NSString* const kBannerLandscape = @"notifications_opt_in_banner_landscape";
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
 // Space above the title.
@@ -65,9 +68,10 @@ CGFloat const kTitleHorizontalMargin = 25.0;
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
-  self.bannerName = kBanner;
+  self.bannerName = IsLandscape(self.view.window) ? kBannerLandscape : kBanner;
   self.bannerSize = BannerImageSizeType::kShort;
   self.shouldBannerFillTopSpace = YES;
+  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   self.view.accessibilityIdentifier = kNotificationsOptInScreenAxId;
   _tableView = [self createTableView];
   [self.specificContentView addSubview:_tableView];
@@ -100,6 +104,12 @@ CGFloat const kTitleHorizontalMargin = 25.0;
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   [self updateTableViewHeightConstraint];
+  self.bannerName = IsLandscape(self.view.window) ? kBannerLandscape : kBanner;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
 }
 
 #pragma mark - PromoStyleViewController
