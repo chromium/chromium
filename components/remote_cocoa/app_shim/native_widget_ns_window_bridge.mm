@@ -1816,7 +1816,10 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
               if (!window.delegate) {
                 return;
               }
-
+              // Make sure to mark ourselves as not wanting to be visible.
+              // Otherwise if during the orderOut call our parent becomes the
+              // key window, it would try to show us as a new modal sheet.
+              wants_to_be_visible_ = false;
               [window orderOut:nil];
               OnWindowWillClose();
             }];
