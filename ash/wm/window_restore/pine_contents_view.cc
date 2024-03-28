@@ -37,6 +37,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -50,13 +51,18 @@ namespace {
 // `ash::TypographyProvider`.
 
 constexpr int kButtonContainerChildSpacing = 10;
+// The margins for the container view which houses the cancel and restore
+// buttons. The distance between this container and its siblings will be the
+// margin plus `kLeftContentsChildSpacing`.
+constexpr gfx::Insets kButtonContainerChildMargins = gfx::Insets::VH(14, 0);
 constexpr int kContentsChildSpacing = 16;
-constexpr gfx::Insets kContentsInsets = gfx::Insets(20);
+constexpr gfx::Insets kContentsInsets(20);
 constexpr int kContentsRounding = 20;
 constexpr int kContentsTitleFontSize = 22;
 constexpr int kContentsDescriptionFontSize = 14;
-constexpr int kLeftContentsChildSpacing = 20;
+constexpr int kLeftContentsChildSpacing = 6;
 constexpr int kSettingsIconSize = 24;
+
 constexpr int kContextMenuMaxWidth = 285;
 constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
 
@@ -112,6 +118,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
               // "Restore" pill buttons.
               views::Builder<views::BoxLayoutView>()
                   .SetBetweenChildSpacing(kButtonContainerChildSpacing)
+                  .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
                   .AddChildren(
                       views::Builder<PillButton>()
