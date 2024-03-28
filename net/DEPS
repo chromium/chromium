@@ -68,6 +68,7 @@ specific_include_rules = {
   ".*fuzz.*": [
     "+third_party/fuzztest",
     "+third_party/libprotobuf-mutator",  # This is needed for LPM-based fuzzers.
+    "+third_party/icu/fuzzers/fuzzer_utils.h"
   ]
 }
 

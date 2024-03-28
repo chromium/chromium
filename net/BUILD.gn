@@ -3497,6 +3497,15 @@ fuzzer_test("net_http_stream_parser_fuzzer") {
   dict = "data/fuzzer_dictionaries/net_http_stream_parser_fuzzer.dict"
 }
 
+fuzzer_test("canonicalize_host_fuzzer") {
+  sources = [ "base/canonicalize_host_fuzzer.cc" ]
+  deps = [
+    "//net",
+    "//third_party/icu/fuzzers:fuzzer_support",
+  ]
+  dict = "base/canonicalize_host_fuzzer.dict"
+}
+
 if (!is_win) {
   fuzzer_test("net_ntlm_ntlm_client_fuzzer") {
     sources = [
