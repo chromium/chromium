@@ -116,7 +116,7 @@ def cmd(board: str) -> int:
                 to_output_files.remove(path)
 
     if to_output_files:
-        logging.warn(
+        logging.warning(
             f"Some files are not covered by route: {to_output_files}.")
 
     return 0
