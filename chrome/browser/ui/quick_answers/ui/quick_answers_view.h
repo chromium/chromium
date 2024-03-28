@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
@@ -124,8 +125,9 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
   raw_ptr<views::ImageView> result_type_icon_ = nullptr;
 
-  // Invisible web view to play phonetics audio for definition results.
-  raw_ptr<views::WebView> phonetics_audio_web_view_ = nullptr;
+  // Invisible WebView to play phonetics audio for definition results. WebView
+  // is lazy created to improve performance.
+  views::ViewTracker phonetics_audio_web_view_;
 
   std::unique_ptr<chromeos::editor_menu::PreTargetHandler>
       quick_answers_view_handler_;

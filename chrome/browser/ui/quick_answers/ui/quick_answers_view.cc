@@ -50,6 +50,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -527,11 +528,6 @@ void QuickAnswersView::AddPhoneticsAudioButton(
   auto* phonetics_audio_view =
       container->AddChildView(std::make_unique<views::View>());
 
-  // Setup an invisible web view to play phonetics audio.
-  phonetics_audio_web_view_ = container->AddChildView(
-      std::make_unique<views::WebView>(ProfileManager::GetActiveUserProfile()));
-  phonetics_audio_web_view_->SetVisible(false);
-
   auto* layout = phonetics_audio_view->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical)
@@ -766,13 +762,25 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
 
 void QuickAnswersView::OnPhoneticsAudioButtonPressed(
     const PhoneticsInfo& phonetics_info) {
+  if (!phonetics_audio_web_view_) {
+    // Setup an invisible WebView to play phonetics audio.
+    std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
+        ProfileManager::GetActiveUserProfile());
+    web_view->SetVisible(false);
+    phonetics_audio_web_view_.SetView(AddChildView(std::move(web_view)));
+  }
+
+  views::WebView* phonetics_audio_web_view =
+      views::AsViewClass<views::WebView>(phonetics_audio_web_view_.view());
+  CHECK(phonetics_audio_web_view);
+
   // Use the phonetics audio URL if provided.
   if (!phonetics_info.phonetics_audio.is_empty()) {
-    phonetics_audio_web_view_->LoadInitialURL(phonetics_info.phonetics_audio);
+    phonetics_audio_web_view->LoadInitialURL(phonetics_info.phonetics_audio);
     return;
   }
 
-  GenerateTTSAudio(phonetics_audio_web_view_->GetBrowserContext(),
+  GenerateTTSAudio(phonetics_audio_web_view->GetBrowserContext(),
                    phonetics_info.query_text, phonetics_info.locale);
 }
 
