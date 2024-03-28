@@ -3471,7 +3471,6 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 
 # CSSDisplayAnimation makes display animateable changing the expectation that it's not.
 crbug.com/1395394 external/wpt/css/css-display/animations/display-interpolation.html [ Failure ]
-crbug.com/1395394 external/wpt/web-animations/interfaces/KeyframeEffect/processing-a-keyframes-argument-001.html [ Failure ]
 crbug.com/1395394 fast/css-generated-content/pseudo-animation-display.html [ Failure ]
 
 crbug.com/664450 http/tests/devtools/console/console-on-animation-worklet.js [ Failure Pass Timeout ]
