@@ -93,9 +93,6 @@ class TrackingProtectionNoticeService
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
 
-    // contents::WebContentsObserver:
-    void PrimaryPageChanged(content::Page& page) override;
-
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
@@ -201,13 +198,6 @@ class TrackingProtectionNoticeService
 
   // TrackingProtectionOnboarding::Observer
   void OnShouldShowNoticeUpdated() override;
-
-  // Runs the Hats Logic, which means could either Register the profile for a
-  // group if eligible, or trigger a survey.
-  void RunHatsLogic();
-
-  // Whether or not the Hats logic is required for the current client/profile.
-  bool IsHatsLogicRequired();
 
   raw_ptr<Profile> profile_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
