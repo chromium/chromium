@@ -52,6 +52,7 @@ constexpr gfx::Insets kButtonsContainerInteriorMargin =
 
 constexpr int kIconSize = 20;
 constexpr int kTitleMaxLines = 2;
+constexpr int kSubtitleMaxLines = 2;
 constexpr int kSubtitleLineHeight = 18;
 
 views::Label* GetTitleLabel(views::View* notification_view) {
@@ -153,6 +154,8 @@ PinnedNotificationView::PinnedNotificationView(
       views::Builder<views::Label>()
           .SetID(VIEW_ID_PINNED_NOTIFICATION_SUBTITLE_LABEL)
           .SetVisible(!notification.message().empty())
+          .SetMultiLine(true)
+          .SetMaxLines(kSubtitleMaxLines)
           .SetText(notification.message())
           .SetTooltipText(notification.message())
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
