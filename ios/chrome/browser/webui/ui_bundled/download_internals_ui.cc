@@ -34,7 +34,11 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
   DownloadInternalsUIMessageHandler(const DownloadInternalsUIMessageHandler&) =
       delete;
   void operator=(const DownloadInternalsUIMessageHandler&) = delete;
-  ~DownloadInternalsUIMessageHandler() override = default;
+  ~DownloadInternalsUIMessageHandler() override {
+    if (download_service_) {
+      download_service_->GetLogger()->RemoveObserver(this);
+    }
+  }
 
  private:
   // WebUIIOSMessageHandler implementation.
