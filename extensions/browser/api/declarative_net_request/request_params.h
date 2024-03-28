@@ -68,9 +68,9 @@ struct RequestParams {
       embedder_conditions_matcher;
 
   // A map from an extension ID to the priority of its CompositeMatcher's
-  // highest priority matching allow or allowAllRequests rule if there is one,
-  // or std::nullopt otherwise. Used as a cache to prevent additional calls to
-  // GetBeforeRequestAction.
+  // highest priority matching allow or allowAllRequests rule (for the request
+  // associated with this instance) if there is one, or std::nullopt otherwise.
+  // Used as a cache to prevent additional calls to GetAction.
   mutable base::flat_map<ExtensionId, std::optional<uint64_t>>
       allow_rule_max_priority;
 

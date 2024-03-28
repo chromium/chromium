@@ -184,7 +184,11 @@ RequestParams::RequestParams(
       parent_routing_id(info.parent_routing_id),
       embedder_conditions_matcher(base::BindRepeating(DoEmbedderConditionsMatch,
                                                       info.frame_data.tab_id,
-                                                      response_headers)) {
+                                                      response_headers)),
+      // Allow/allowAllRequest rules matched in earlier rule matching stages can
+      // influence rule matches for later matching stages. Hence this
+      // information is needed from `info`.
+      allow_rule_max_priority(info.allow_rule_max_priority) {
   is_third_party = IsThirdPartyRequest(*url, first_party_origin);
 }
 

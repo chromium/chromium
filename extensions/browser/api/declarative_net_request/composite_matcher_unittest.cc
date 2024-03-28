@@ -371,6 +371,9 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
   google_url = GURL("http://google.com/2");
   google_params.url = &google_url;
 
+  // Reset the max allow rule priority cache since a new request is being made.
+  google_params.allow_rule_max_priority.clear();
+
   // Call GetBeforeRequestAction first to ensure that test and production code
   // paths are consistent.
   composite_matcher->GetAction(google_params,

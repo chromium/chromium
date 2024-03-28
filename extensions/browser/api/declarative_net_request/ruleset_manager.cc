@@ -399,6 +399,11 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
     rulesets_to_evaluate.emplace_back(&ruleset, host_permission_access);
   }
 
+  // Check that the allow rule priority cache from `request` is empty if the
+  // request has not been evaluated yet in the kOnBeforeRequest stage.
+  CHECK(stage != RulesetMatchingStage::kOnBeforeRequest ||
+        request.allow_rule_max_priority.empty());
+
   const RequestParams params(request, response_headers);
   std::optional<RequestAction> action =
       GetAction(rulesets_to_evaluate, request, params, stage);
@@ -417,6 +422,13 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
   // matching allow/allowAllRequests rules.
   std::vector<RequestAction> modify_headers_actions =
       GetModifyHeadersActions(rulesets_to_evaluate, request, params);
+
+  // Pass the allow rule priority cache to `request` so its current value can be
+  // reused in later rule matching stages.
+  if (stage == RulesetMatchingStage::kOnBeforeRequest) {
+    request.allow_rule_max_priority = params.allow_rule_max_priority;
+  }
+
   if (!modify_headers_actions.empty())
     return modify_headers_actions;
 
