@@ -12,9 +12,11 @@
 #include <string>
 
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "components/error_page/common/error_page_switches.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 
@@ -864,7 +866,9 @@ const base::FeatureParam<std::string> kNetErrorAltGameModeKey{
     &kNetErrorAltGameMode, "Key", ""};
 
 bool EnableAltGameMode() {
-  return base::FeatureList::IsEnabled(kNetErrorAltGameMode);
+  return base::FeatureList::IsEnabled(kNetErrorAltGameMode) &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             error_page::switches::kEnableDinosaurEasterEggAltGameImages);
 }
 
 std::string GetAltGameImage(int image_id, int scale) {

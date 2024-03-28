@@ -2567,6 +2567,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
   static const char* const kDinosaurEasterEggSwitches[] = {
       error_page::switches::kDisableDinosaurEasterEgg,
+      error_page::switches::kEnableDinosaurEasterEggAltGameImages,
   };
   command_line->CopySwitchesFrom(browser_command_line,
                                  kDinosaurEasterEggSwitches);
@@ -2655,6 +2656,17 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
           !prefs->GetBoolean(prefs::kAllowDinosaurEasterEgg)) {
         command_line->AppendSwitch(
             error_page::switches::kDisableDinosaurEasterEgg);
+      }
+
+      auto* management_service_factory =
+          policy::ManagementServiceFactory::GetInstance();
+      auto* browser_managment_service =
+          management_service_factory->GetForProfile(profile);
+      if ((browser_managment_service &&
+           browser_managment_service->IsManaged()) ||
+          management_service_factory->GetForPlatform()->IsManaged()) {
+        command_line->AppendSwitch(
+            error_page::switches::kEnableDinosaurEasterEggAltGameImages);
       }
 
       MaybeAppendSecureOriginsAllowlistSwitch(command_line);
