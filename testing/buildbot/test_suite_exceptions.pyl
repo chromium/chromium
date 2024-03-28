@@ -882,6 +882,7 @@
       'mac13-arm64-rel-tests', # https://crbug.com/1406364
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-exp-tsan-fyi-rel',  # https://crbug.com/368525
+      'linux-chromeos-chrome-preuprev', # http://b/331706144
       'Win10 Tests x64 (dbg)',
       'win11-arm64-dbg-tests',
     ],
@@ -1076,14 +1077,6 @@
       'linux-chromeos-chrome': {
         # TODO(https://crbug.com/932269): Promote out of experiment when the
         # tests are green.
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'linux-chromeos-chrome-preuprev': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
         ],
@@ -1747,6 +1740,7 @@
       'fuchsia-fyi-x64-dbg',
       'ToTFuchsia x64',
       'ToTFuchsiaOfficial arm64',
+      'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
