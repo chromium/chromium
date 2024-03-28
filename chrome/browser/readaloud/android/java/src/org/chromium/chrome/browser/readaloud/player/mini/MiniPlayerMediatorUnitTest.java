@@ -40,6 +40,7 @@ public class MiniPlayerMediatorUnitTest {
     private MiniPlayerMediator mMediator;
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private MiniPlayerCoordinator mCoordinator;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
@@ -49,6 +50,7 @@ public class MiniPlayerMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
         doReturn(0).when(mBrowserControlsSizer).getBottomControlsHeight();
         mMediator = new MiniPlayerMediator(mBrowserControlsSizer);
+        mMediator.setCoordinator(mCoordinator);
         verify(mBrowserControlsSizer).addObserver(mBrowserControlsObserverCaptor.capture());
         mModel = mMediator.getModel();
     }
@@ -359,27 +361,6 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     @Test
-    public void testShowWithHeightAlreadyKnown() {
-        // Show once.
-        mMediator.show(/* animate= */ true);
-        mMediator.onHeightKnown(HEIGHT_PX);
-        onControlsOffsetChanged(0, HEIGHT_PX, true);
-        mMediator.onFullOpacityReached();
-
-        // Dismiss.
-        mMediator.dismiss(true);
-        mMediator.onZeroOpacityReached();
-        onControlsOffsetChanged(-HEIGHT_PX, 0, true);
-
-        reset(mBrowserControlsSizer);
-
-        // Show again.
-        mMediator.show(/* animate= */ false);
-        // Bottom controls should grow without a call to onHeightKnown().
-        verify(mBrowserControlsSizer).setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX));
-    }
-
-    @Test
     public void testShowWithOtherBottomControls() {
         final int otherBottomControlsHeight = 134;
         final int totalHeight = otherBottomControlsHeight + HEIGHT_PX;
@@ -398,6 +379,16 @@ public class MiniPlayerMediatorUnitTest {
         onControlsOffsetChanged(-HEIGHT_PX / 3, 2 * HEIGHT_PX / 3, true);
         onControlsOffsetChanged(0, HEIGHT_PX, true);
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
+    }
+
+    @Test
+    public void testNotifyShown() {
+        // Show once to store height.
+        mMediator.show(/* animate= */ true);
+        mMediator.onHeightKnown(HEIGHT_PX);
+        onControlsOffsetChanged(0, HEIGHT_PX, false);
+        mMediator.onFullOpacityReached();
+        verify(mCoordinator).onShown();
     }
 
     // TODO hide during show, show during hide

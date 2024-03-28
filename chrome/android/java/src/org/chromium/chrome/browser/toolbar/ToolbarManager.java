@@ -329,7 +329,7 @@ public class ToolbarManager
 
     private final boolean mIsCustomTab;
 
-    private ReadAloudController mReadAloudController;
+    private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
@@ -1303,9 +1303,9 @@ public class ToolbarManager
                     }
                 };
         profileSupplier.addObserver(profileObserver);
-        readAloudControllerSupplier.addObserver(
+        mReadAloudControllerSupplier = readAloudControllerSupplier;
+        mReadAloudControllerSupplier.addObserver(
                 readAloudController -> {
-                    mReadAloudController = readAloudController;
                     if (readAloudController != null) {
                         readAloudController.addReadabilityUpdateListener(
                                 this::onReadAloudReadabilityUpdated);
@@ -1662,7 +1662,11 @@ public class ToolbarManager
                         mTabGroupUi,
                         mTabObscuringHandler,
                         mOverlayPanelVisibilitySupplier,
-                        mConstraintsProxy);
+                        mConstraintsProxy,
+                        /* readAloudRestoringSupplier= */ () -> {
+                            final var readAloud = mReadAloudControllerSupplier.get();
+                            return readAloud != null && readAloud.isRestoringPlayer();
+                        });
         mBottomControlsCoordinatorSupplier.set(bottomControlsCoordinator);
         if (mBackPressManager != null) {
             mBackPressManager.addHandler(
@@ -2001,10 +2005,10 @@ public class ToolbarManager
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
-        if (mReadAloudController != null) {
-            mReadAloudController.removeReadabilityUpdateListener(
-                    this::onReadAloudReadabilityUpdated);
-            mReadAloudController = null;
+        if (mReadAloudControllerSupplier.get() != null) {
+            mReadAloudControllerSupplier
+                    .get()
+                    .removeReadabilityUpdateListener(this::onReadAloudReadabilityUpdated);
         }
 
         mTabObscuringHandler.removeObserver(this);
@@ -2186,16 +2190,24 @@ public class ToolbarManager
     }
 
     /**
-     * We use getTopControlOffset to position the top controls. However, the toolbar's height may
-     * be less than the total top controls height. If that's the case, this method will return the
+     * We use getTopControlOffset to position the top controls. However, the toolbar's height may be
+     * less than the total top controls height. If that's the case, this method will return the
      * extra offset needed to align the toolbar at the bottom of the top controls.
+     *
      * @return The extra Y offset for the toolbar in pixels.
      */
     private int getToolbarExtraYOffset() {
         int toolbarHairlineHeight = mToolbarHairline.getHeight();
+        final int controlContainerHeight = mControlContainer.getHeight();
+
+        // Offset can't be calculated if control container height isn't known yet.
+        if (controlContainerHeight == 0) {
+            return 0;
+        }
+
         int extraYOffset =
                 mBrowserControlsSizer.getTopControlsHeight()
-                        - (mControlContainer.getHeight() - toolbarHairlineHeight);
+                        - (controlContainerHeight - toolbarHairlineHeight);
         // There are cases where extraYOffset can be negative e.g. during tab strip transitioning
         // from invisible -> visible.
         return Math.max(0, extraYOffset);

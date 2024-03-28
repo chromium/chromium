@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -67,6 +68,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
      * @param constraintsSupplier Used to access current constraints of the browser controls.
+     * @param readAloudRestoringSupplier Supplier that returns true if Read Aloud is currently
+     *     restoring its player, e.g. after theme change.
      */
     @SuppressLint("CutPasteId") // Not actually cut and paste since it's View vs ViewGroup.
     public BottomControlsCoordinator(
@@ -81,7 +84,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
             BottomControlsContentDelegate contentDelegate,
             TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
-            ObservableSupplier<Integer> constraintsSupplier) {
+            ObservableSupplier<Integer> constraintsSupplier,
+            Supplier<Boolean> readAloudRestoringSupplier) {
         mRootFrameLayout = root;
         root.setConstraintsSupplier(constraintsSupplier);
         PropertyModel model = new PropertyModel(BottomControlsProperties.ALL_KEYS);
@@ -109,7 +113,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         tabObscuringHandler,
                         bottomControlsHeightRes,
                         overlayPanelVisibilitySupplier,
-                        edgeToEdgeControllerSupplier);
+                        edgeToEdgeControllerSupplier,
+                        readAloudRestoringSupplier);
         resourceManager
                 .getDynamicResourceLoader()
                 .registerResource(root.getId(), root.getResourceAdapter());
