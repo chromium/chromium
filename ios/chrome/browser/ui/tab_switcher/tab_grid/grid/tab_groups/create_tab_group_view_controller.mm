@@ -62,10 +62,8 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   tab_groups::TabGroupColorId _defaultColor;
   // StackView which contains all bottom views.
   UIStackView* _bottomStackView;
-  // List of snapshots.
-  NSArray<UIImage*>* _snapshots;
-  // List of favicons.
-  NSArray<UIImage*>* _favicons;
+  // List of tab group pictures.
+  NSArray<GroupTabInfo*>* _tabGroupInfos;
   // Snapshots views container.
   UIView* _snapshotsContainer;
   // Tab group to edit.
@@ -593,17 +591,8 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   snapshotsBackground.layer.cornerRadius = kSnapshotViewCornerRadius;
   snapshotsBackground.opaque = NO;
 
-    // TODO(crbug.com/1501837): Remove the creation of tab group infos once the
-    // appropriate method is implemented.
-  NSMutableArray<GroupTabInfo*>* tabGroupInfos = [[NSMutableArray alloc] init];
-  for (NSUInteger i = 0; i < MIN([_snapshots count], [_favicons count]); ++i) {
-    GroupTabInfo* tabGroupInfo = [[GroupTabInfo alloc] init];
-    tabGroupInfo.snapshot = _snapshots[i];
-    tabGroupInfo.favicon = _favicons[i];
-    [tabGroupInfos addObject:tabGroupInfo];
-  }
   _snapshotsView = [[TabGroupSnapshotsView alloc]
-      initWithTabGroupInfos:tabGroupInfos
+      initWithTabGroupInfos:_tabGroupInfos
                        size:_numberOfSelectedItems
                       light:self.traitCollection.userInterfaceStyle ==
                             UIUserInterfaceStyleLight
@@ -656,19 +645,9 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   _defaultColor = color;
 }
 
-- (void)setSnapshots:(NSArray<UIImage*>*)snapshots
-                 favicons:(NSArray<UIImage*>*)favicons
+- (void)setTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
     numberOfSelectedItems:(NSInteger)numberOfSelectedItems {
-  // TODO(crbug.com/1501837): Pass an array of Group Tab Info.
-  NSMutableArray<GroupTabInfo*>* tabGroupInfos = [[NSMutableArray alloc] init];
-  for (NSUInteger i = 0; i < MIN([snapshots count], [favicons count]); ++i) {
-    GroupTabInfo* info = [[GroupTabInfo alloc] init];
-    info.snapshot = snapshots[i];
-    info.favicon = favicons[i];
-    [tabGroupInfos addObject:info];
-  }
-  _snapshots = snapshots;
-  _favicons = favicons;
+  _tabGroupInfos = tabGroupInfos;
   _numberOfSelectedItems = numberOfSelectedItems;
   [_snapshotsView
       configureTabGroupSnapshotsViewWithTabGroupInfos:tabGroupInfos

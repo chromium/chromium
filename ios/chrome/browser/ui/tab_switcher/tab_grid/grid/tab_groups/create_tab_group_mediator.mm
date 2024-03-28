@@ -10,7 +10,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -29,6 +31,8 @@
   NSMutableArray* _favicons;
   // Tab group to edit.
   const TabGroup* _tabGroup;
+  // Array of all pictures of the group.
+  NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
 }
 
 - (instancetype)
@@ -50,8 +54,11 @@
     _identifiers = identifiers;
     _webStateList = webStateList;
 
+    // TODO(crbug.com/1501837): Replace this manual fetch with the one from
+    // TabGroupItem.
     _snapshots = [[NSMutableArray alloc] init];
     _favicons = [[NSMutableArray alloc] init];
+    _tabGroupInfos = [[NSMutableArray alloc] init];
 
     NSUInteger numberOfRequestedImages = 0;
 
@@ -68,8 +75,7 @@
 
       [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
         [innerItem fetchFavicon:^(TabSwitcherItem* faviconItem, UIImage* icon) {
-          [weakSelf saveSnapshots:snapshot];
-          [weakSelf saveFavicons:icon];
+          [weakSelf addSnapshot:snapshot favicon:icon];
           [weakSelf updateConsumer];
         }];
       }];
@@ -93,8 +99,16 @@
     CHECK(tabGroup);
     _consumer = consumer;
     _tabGroup = tabGroup;
-    // TODO(crbug.com/1501837): Get list of web states from the group, and fetch
-    // snapshots and favicons and send it to the consumer.
+    _webStateList = webStateList;
+    TabGroupItem* groupItem =
+        [[TabGroupItem alloc] initWithTabGroup:_tabGroup
+                                  webStateList:_webStateList];
+    __weak CreateTabGroupMediator* weakSelf = self;
+    [groupItem fetchGroupTabInfos:^(TabGroupItem* item,
+                                    NSArray<GroupTabInfo*>* groupTabInfos) {
+      [weakSelf setGroupTabInfos:groupTabInfos];
+      [weakSelf updateConsumer];
+    }];
     [_consumer setDefaultGroupColor:_tabGroup->visual_data().color()];
     // TODO(crbug.com/1501837): Set title with current value.
   }
@@ -126,30 +140,31 @@
 
 #pragma mark - Private helpers
 
-// Saves the given snapshot in the snapshot list. If the image is nil, add a
-// null object so snapshot[i] and favicons[i] does not missmatch.
-- (void)saveSnapshots:(UIImage*)snapshot {
-  if (snapshot) {
-    [_snapshots addObject:snapshot];
-  } else {
-    [_snapshots addObject:[[UIImage alloc] init]];
-  }
+// Adds the given picture to the GroupTabInfo array.
+// TODO(crbug.com/1501837): Remove this once the manual fetch is removed.
+- (void)addSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
+  GroupTabInfo* info = [[GroupTabInfo alloc] init];
+  info.snapshot = snapshot;
+  info.favicon = favicon;
+
+  [_tabGroupInfos addObject:info];
 }
 
-// Saves the given favicon in the favicon list. If the image is nil, add a null
-// object so snapshot[i] and favicons[i] does not missmatch.
-- (void)saveFavicons:(UIImage*)favicon {
-  if (favicon) {
-    [_favicons addObject:favicon];
-  } else {
-    [_favicons addObject:[[UIImage alloc] init]];
-  }
+// Sets the GroupTabInfo array with `tabGroupInfos`.
+- (void)setGroupTabInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos {
+  // TODO(crbug.com/1501837): Replace the mutable array with an array once the
+  // manual fetch is removed.
+  _tabGroupInfos = [[NSMutableArray alloc] initWithArray:tabGroupInfos];
 }
 
+// Sends to the consumer the needed pictures and the number of items to display
+// it properly.
 - (void)updateConsumer {
-  [_consumer setSnapshots:_snapshots
-                   favicons:_favicons
-      numberOfSelectedItems:_identifiers.size()];
+  NSInteger numberOfItem = _tabGroup
+                               ? _webStateList->GetGroupRange(_tabGroup).count()
+                               : _identifiers.size();
+  [_consumer setTabGroupInfos:_tabGroupInfos
+        numberOfSelectedItems:numberOfItem];
 }
 
 @end

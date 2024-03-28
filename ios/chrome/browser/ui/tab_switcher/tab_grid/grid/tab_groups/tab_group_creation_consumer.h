@@ -7,6 +7,8 @@
 
 #import "components/tab_groups/tab_group_color.h"
 
+@class GroupTabInfo;
+
 // Consumer to allow the tab group model to send information to the tab group
 // UI when creating a tab group.
 @protocol TabGroupCreationConsumer
@@ -14,8 +16,7 @@
 // Sets the default group color.
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color;
 // Sets snapshots, favicons and the total number of selected items.
-- (void)setSnapshots:(NSArray*)snapshots
-                 favicons:(NSArray*)favicons
+- (void)setTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
     numberOfSelectedItems:(NSInteger)numberOfSelectedItems;
 
 @end
