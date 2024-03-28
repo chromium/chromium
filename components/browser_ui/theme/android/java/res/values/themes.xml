@@ -67,7 +67,8 @@ found in the LICENSE file.
         <item name="android:elegantTextHeight">false</item>
     </style>
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
-    <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
+    <style name="Base.V35.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
+    <style name="Base.Theme.BrowserUI" parent="Base.V35.Theme.BrowserUI" />
     <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI">
         <!-- Control styles -->
         <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
@@ -164,8 +165,9 @@ found in the LICENSE file.
 
         <item name="android:elegantTextHeight">false</item>
     </style>
+    <style name="Theme.BrowserUI.DialogWhenLarge.V35" parent="Theme.BrowserUI.DialogWhenLarge" />
     <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
+    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge.V35"/>
 
     <!-- Unlike |ThemeOverlay.BrowserUI.AlertDialog|, this is a complete theme that can be used as
          an activity theme on its own. In addition to mirroring |Base.V21.Theme.BrowserUI|, this
@@ -245,8 +247,9 @@ found in the LICENSE file.
 
         <item name="android:elegantTextHeight">false</item>
     </style>
+    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.V35" parent="Theme.BrowserUI.AlertDialog.NoActionBar" />
     <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar"/>
+    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar.V35"/>
 
     <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
         attributes in case the context ends up being used to inflate views. -->
