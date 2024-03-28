@@ -772,20 +772,9 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
   }
 
   // Saving a new local card (may include CVC) via a bottom sheet.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
-    if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
-      bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
-    }
-    return;
+  if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+    bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
   }
-
-  // Saving a new local card (may include CVC) via an infobar when the bottom
-  // sheet feature is disabled.
-  infobars::ContentInfoBarManager::FromWebContents(web_contents())
-      ->AddInfoBar(CreateSaveCardInfoBarMobile(
-          std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
-              std::move(ui_info), std::move(save_card_delegate))));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -820,19 +809,10 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       return;
   }
 
-  // For new cards, the save card prompt is shown either in a bottom sheet or in
-  // an infobar.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsAndroidBottomSheet)) {
-    if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
-      bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
-    }
-    return;
+  // For new cards, the save card prompt is shown in a bottom sheet.
+  if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+    bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
   }
-  infobars::ContentInfoBarManager::FromWebContents(web_contents())
-      ->AddInfoBar(CreateSaveCardInfoBarMobile(
-          std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
-              std::move(ui_info), std::move(save_card_delegate))));
 #else
   // Hide virtual card confirmation bubble showing for a different card.
   HideVirtualCardEnrollBubbleAndIconIfVisible();

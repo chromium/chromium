@@ -115,11 +115,8 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // local-card-only-save bottom sheet.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyAttributesForCardSaveOnlyBottomSheet) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePaymentsAndroidBottomSheet,
-                            features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
 
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type =
@@ -140,11 +137,8 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // local-card-save-with-CVC bottom sheet.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyAttributesForCardSaveWithCvcBottomSheet) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePaymentsAndroidBottomSheet,
-                            features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
 
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type =
@@ -275,11 +269,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-card-only-save bottom sheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveOnlyBottomSheet) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePaymentsAndroidBottomSheet,
-                            features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type =
@@ -306,11 +297,8 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-card-save-with-CVC bottom sheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnablePaymentsAndroidBottomSheet,
-                            features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type =

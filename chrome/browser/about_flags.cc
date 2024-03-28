@@ -10445,14 +10445,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMouseAndTrackpadDropdownMenu)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-payments-android-bottom-sheet",
-     flag_descriptions::kAutofillEnablePaymentsAndroidBottomSheetName,
-     flag_descriptions::kAutofillEnablePaymentsAndroidBottomSheetDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePaymentsAndroidBottomSheet)},
-#endif
 
     {"autofill-enable-prefetching-risk-data-for-retrieval",
      flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,

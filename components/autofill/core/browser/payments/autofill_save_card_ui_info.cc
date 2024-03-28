@@ -121,8 +121,6 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
       if (base::FeatureList::IsEnabled(
-              features::kAutofillEnablePaymentsAndroidBottomSheet) &&
-          base::FeatureList::IsEnabled(
               features::kAutofillEnableCvcStorageAndFilling)) {
         description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
@@ -133,8 +131,6 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
       if (base::FeatureList::IsEnabled(
-              features::kAutofillEnablePaymentsAndroidBottomSheet) &&
-          base::FeatureList::IsEnabled(
               features::kAutofillEnableCvcStorageAndFilling)) {
         description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL);
@@ -210,10 +206,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
         save_card_prompt_title_id =
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
         description_text = l10n_util::GetStringUTF16(
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnablePaymentsAndroidBottomSheet)
-                ? IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD
-                : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+            IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
       } else {
         save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
         save_card_prompt_title_id =

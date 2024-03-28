@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -69,13 +68,7 @@ class ControllerTestSupport {
 class VirtualCardEnrollBubbleControllerImplBottomSheetTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  VirtualCardEnrollBubbleControllerImplBottomSheetTest() {
-    features_.InitAndEnableFeature(
-        features::kAutofillEnablePaymentsAndroidBottomSheet);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
+  VirtualCardEnrollBubbleControllerImplBottomSheetTest() = default;
 };
 
 TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest,
@@ -101,30 +94,6 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest, ShowBubble) {
       /*decline_virtual_card_callback=*/base::DoNothing());
 
   EXPECT_TRUE(test_api(test_support.controller()).DidShowBottomSheet());
-}
-
-class VirtualCardEnrollBubbleControllerImplInfoBarTest
-    : public ChromeRenderViewHostTestHarness {
- public:
-  VirtualCardEnrollBubbleControllerImplInfoBarTest() {
-    features_.InitAndDisableFeature(
-        features::kAutofillEnablePaymentsAndroidBottomSheet);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_F(VirtualCardEnrollBubbleControllerImplInfoBarTest, ShowBubble) {
-  infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
-  ControllerTestSupport test_support(web_contents());
-
-  test_support.controller()->ShowBubble(
-      test_support.virtual_card_enrollment_fields(),
-      /*accept_virtual_card_callback=*/base::DoNothing(),
-      /*decline_virtual_card_callback=*/base::DoNothing());
-
-  EXPECT_FALSE(test_api(test_support.controller()).DidShowBottomSheet());
 }
 #endif
 

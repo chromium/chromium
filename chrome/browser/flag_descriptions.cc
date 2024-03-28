@@ -529,12 +529,6 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
-const char kAutofillEnablePaymentsAndroidBottomSheetName[] =
-    "Autofill save card and VCN enrollment Bottom Sheets";
-const char kAutofillEnablePaymentsAndroidBottomSheetDescription[] =
-    "Displays save card and VCN enrollment in bottom sheets instead of info "
-    "bars on Android.";
-
 const char kAutofillEnablePaymentsMandatoryReauthName[] =
     "Enable mandatory re-auth for payments autofill";
 const char kAutofillEnablePaymentsMandatoryReauthDescription[] =

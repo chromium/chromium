@@ -26,10 +26,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -49,7 +47,6 @@ import java.util.Collections;
 @LargeTest
 @Batch(Batch.UNIT_TESTS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_PAYMENTS_ANDROID_BOTTOM_SHEET})
 public class AutofillSaveCardBottomSheetRenderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

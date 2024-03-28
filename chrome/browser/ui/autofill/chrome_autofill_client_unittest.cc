@@ -279,18 +279,10 @@ TEST_F(ChromeAutofillClientTest, GetPaymentsWindowManager) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-class ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature
-    : public ChromeAutofillClientTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillEnablePaymentsAndroidBottomSheet};
-};
-
-// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
-// enabled, the prompt to upload save a user's card without CVC is shown in a
+// Verify that the prompt to upload save a user's card without CVC is shown in a
 // bottom sheet.
 TEST_F(
-    ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+    ChromeAutofillClientTest,
     ConfirmSaveCreditCardToCloud_CardSaveTypeIsOnlyCard_RequestsBottomSheet) {
   TestChromeAutofillClient* autofill_client = client();
   auto* bottom_sheet_bridge =
@@ -320,10 +312,9 @@ TEST_F(
       base::DoNothing());
 }
 
-// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
-// enabled, the prompt to upload save a user's card with CVC is shown in a
+// Verify that the prompt to upload save a user's card with CVC is shown in a
 // bottom sheet.
-TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+TEST_F(ChromeAutofillClientTest,
        ConfirmSaveCreditCardToCloud_CardSaveTypeIsWithCvc_RequestsBottomSheet) {
   TestChromeAutofillClient* autofill_client = client();
   auto* bottom_sheet_bridge =
@@ -353,7 +344,7 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       base::DoNothing());
 }
 
-TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+TEST_F(ChromeAutofillClientTest,
        ConfirmSaveCreditCardToCloud_DoesNotFailWithoutAWindow) {
   TestChromeAutofillClient* autofill_client = client();
 
@@ -363,10 +354,10 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       base::DoNothing()));
 }
 
-// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
-// enabled, the prompt to local save a user's card is shown in a bottom sheet.
+// Verify that the prompt to local save a user's card is shown in a bottom
+// sheet.
 TEST_F(
-    ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+    ChromeAutofillClientTest,
     ConfirmSaveCreditCardLocally_CardSaveTypeIsOnlyCard_RequestsBottomSheet) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableCvcStorageAndFilling};
@@ -394,9 +385,9 @@ TEST_F(
       base::DoNothing());
 }
 
-// Verify that when `AutofillEnablePaymentsAndroidBottomSheet` feature is
-// enabled, the prompt to local save a user's card is shown in a bottom sheet.
-TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+// Verify that the prompt to local save a user's card and CVC is shown in a
+// bottom sheet.
+TEST_F(ChromeAutofillClientTest,
        ConfirmSaveCreditCardLocally_CardSaveTypeIsWithCvc_RequestsBottomSheet) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableCvcStorageAndFilling};
@@ -423,7 +414,7 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       base::DoNothing());
 }
 
-TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
+TEST_F(ChromeAutofillClientTest,
        ConfirmSaveCreditCardLocally_DoesNotFailWithoutAWindow) {
   TestChromeAutofillClient* autofill_client = client();
 
