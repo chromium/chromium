@@ -73,6 +73,20 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // used.
   virtual bool GetClientMask(const gfx::Size& size, SkPath* mask) const;
 
+  // Returns whether NonClientFrameView has a custom title.
+  // By default this returns false.
+  // IMPORTANT: When a subclass of NonClientFrameView has a custom title,
+  // HasWindowTitle() and IsWindowTitleVisible() need to be implemented to
+  // ensure synchronization of title visibility when Widget::UpdateWindowTitle()
+  // is called.
+  virtual bool HasWindowTitle() const;
+
+  // Returns whether the NonClientFrameView's window title is visible.
+  // By default this returns false.
+  // TODO(crbug.com/330198011): Implemented in subclasses of NonClientFrameView
+  // when needed.
+  virtual bool IsWindowTitleVisible() const;
+
 #if BUILDFLAG(IS_WIN)
   // Returns the point in screen physical coordinates at which the system menu
   // should be opened.
@@ -206,6 +220,12 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
 
   // Called when the size constraints of the window change.
   void SizeConstraintsChanged();
+
+  // Returns whether NonClientFrameView has a custom title.
+  bool HasWindowTitle() const;
+
+  // Returns whether the NonClientFrameView's window title is visible.
+  bool IsWindowTitleVisible() const;
 
   // Get/Set client_view property.
   ClientView* client_view() const { return client_view_; }

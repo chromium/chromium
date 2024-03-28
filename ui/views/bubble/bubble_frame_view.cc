@@ -367,6 +367,14 @@ void BubbleFrameView::UpdateWindowRoundedCorners() {
   GetWidget()->client_view()->UpdateWindowRoundedCorners(GetCornerRadius());
 }
 
+bool BubbleFrameView::HasWindowTitle() const {
+  return title();
+}
+
+bool BubbleFrameView::IsWindowTitleVisible() const {
+  return title()->GetVisible();
+}
+
 void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   DCHECK(title_view);
   if (default_title_) {

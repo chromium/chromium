@@ -1171,18 +1171,25 @@ void* Widget::GetNativeWindowProperty(const char* name) const {
 }
 
 void Widget::UpdateWindowTitle() {
-  if (!native_widget_)
+  if (!native_widget_ || !non_client_view_) {
     return;
-
-  if (!non_client_view_)
-    return;
+  }
 
   // Update the native frame's text. We do this regardless of whether or not
   // the native frame is being used, since this also updates the taskbar, etc.
   std::u16string window_title = widget_delegate_->GetWindowTitle();
   base::i18n::AdjustStringForLocaleDirection(&window_title);
-  if (!native_widget_->SetWindowTitle(window_title))
-    return;
+  bool title_changed = native_widget_->SetWindowTitle(window_title);
+
+  // Continue UpdateWindowTitle() only if the title or title visibility changes.
+  if (!title_changed) {
+    bool has_title = non_client_view()->HasWindowTitle();
+    bool title_visibility_changed = non_client_view()->IsWindowTitleVisible() !=
+                                    widget_delegate_->ShouldShowWindowTitle();
+    if (!has_title || !title_visibility_changed) {
+      return;
+    }
+  }
 
   non_client_view_->UpdateWindowTitle();
 }

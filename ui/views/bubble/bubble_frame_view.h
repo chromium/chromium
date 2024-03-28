@@ -95,6 +95,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void SizeConstraintsChanged() override;
   void InsertClientView(ClientView* client_view) override;
   void UpdateWindowRoundedCorners() override;
+  bool HasWindowTitle() const override;
+  bool IsWindowTitleVisible() const override;
 
   // Sets a custom view to be the dialog title instead of the |default_title_|
   // label. If there is an existing title view it will be deleted.

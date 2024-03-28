@@ -93,6 +93,14 @@ bool NonClientFrameView::GetClientMask(const gfx::Size& size,
   return false;
 }
 
+bool NonClientFrameView::HasWindowTitle() const {
+  return false;
+}
+
+bool NonClientFrameView::IsWindowTitleVisible() const {
+  return false;
+}
+
 #if BUILDFLAG(IS_WIN)
 gfx::Point NonClientFrameView::GetSystemMenuScreenPixelLocation() const {
   gfx::Point point(GetMirroredXInView(GetBoundsForClientView().x()),
@@ -242,6 +250,14 @@ void NonClientView::UpdateWindowTitle() {
 
 void NonClientView::SizeConstraintsChanged() {
   frame_view_->SizeConstraintsChanged();
+}
+
+bool NonClientView::HasWindowTitle() const {
+  return frame_view_->HasWindowTitle();
+}
+
+bool NonClientView::IsWindowTitleVisible() const {
+  return frame_view_->IsWindowTitleVisible();
 }
 
 gfx::Size NonClientView::CalculatePreferredSize() const {
