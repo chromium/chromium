@@ -67,6 +67,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         result => this.searchResult_ = result);
   }
 
+  private onMoreActionsClick_(e: DomRepeatEvent<MockHistoryEntry>) {
+    this.dispatchEvent(
+        new CustomEvent('more-actions-click', {detail: e.model.item}));
+  }
+
   private onResultClick_(e: DomRepeatEvent<MockHistoryEntry>) {
     this.dispatchEvent(new CustomEvent('result-click', {detail: e.model.item}));
   }

@@ -73,4 +73,20 @@ suite('cr-history-embeddings', () => {
     const resultClickEvent = await resultClickEventPromise;
     assertEquals(element.results[0], resultClickEvent.detail);
   });
+
+  test('FiresClickOnMoreActions', async () => {
+    element.results = [
+      {domain: 'google.com', title: 'Google', url: 'http://google.com'},
+      {domain: 'youtube.com', title: 'Youtube', url: 'http://youtube.com'},
+    ];
+    await flushTasks();
+    const moreActionsIconButtons =
+        element.shadowRoot!.querySelectorAll<HTMLElement>(
+            'cr-url-list-item cr-icon-button');
+    const moreActionsClickEventPromise =
+        eventToPromise('more-actions-click', element);
+    moreActionsIconButtons[0]!.click();
+    const moreActionsClickEvent = await moreActionsClickEventPromise;
+    assertEquals(element.results[0], moreActionsClickEvent.detail);
+  });
 });

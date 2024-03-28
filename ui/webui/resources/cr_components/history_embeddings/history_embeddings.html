@@ -28,7 +28,7 @@ h2 iron-icon {
 hr {
   border: 0;
   height: 1px;
-  background: rgba(211, 227, 253, 1);
+  background: var(--cr-fallback-color-divider);
   margin: 8px 24px;
 }
 
@@ -61,7 +61,11 @@ a {
     <template is="dom-repeat" items="[[results]]">
       <cr-url-list-item url="[[item.url]]" title="[[item.title]]"
           description="[[item.domain]]"
-          on-click="onResultClick_">
+          on-click="onResultClick_" as-anchor always-show-suffix>
+        <span slot="suffix">[[item.readableTimestamp]]</span>
+        <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
+            on-click="onMoreActionsClick_">
+        </cr-icon-button>
       </cr-url-list-item>
       <hr>
     </template>
