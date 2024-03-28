@@ -33,7 +33,7 @@ namespace {
 BASE_FEATURE(kSkipConditionVariableWakeupHack,
              "SkipConditionVariableWakeupHack",
              base::FEATURE_ENABLED_BY_DEFAULT);
-std::atomic_bool g_skip_wakeup_hack = false;
+std::atomic_bool g_skip_wakeup_hack = true;
 #endif
 }  // namespace
 
