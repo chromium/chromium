@@ -4892,7 +4892,12 @@ TEST_P(PartitionAllocTest, GetReservationStart) {
   allocator.root()->Free(ptr);
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO: https://crbug.com/331366007 - re-enable on Fuchsia once bug is fixed.
+TEST_P(PartitionAllocTest, DISABLED_CheckReservationType) {
+#else
 TEST_P(PartitionAllocTest, CheckReservationType) {
+#endif  // BUILDFLAG(IS_FUCHSIA)
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t address = UntagPtr(ptr);
