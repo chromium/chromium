@@ -13,9 +13,8 @@
 
 #include <windows.h>
 
+#include <delayimp.h>
 #include <stdint.h>
-
-#include <DelayIMP.h>
 
 namespace base {
 namespace win {
