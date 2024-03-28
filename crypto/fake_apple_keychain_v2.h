@@ -5,14 +5,15 @@
 #ifndef CRYPTO_FAKE_APPLE_KEYCHAIN_V2_H_
 #define CRYPTO_FAKE_APPLE_KEYCHAIN_V2_H_
 
+#import <Foundation/Foundation.h>
+
 #include <string>
 #include <vector>
-
-#import <Foundation/Foundation.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "crypto/apple_keychain_v2.h"
 #include "crypto/crypto_export.h"
+#include "crypto/scoped_fake_apple_keychain_v2.h"
 
 namespace crypto {
 
@@ -22,13 +23,7 @@ namespace crypto {
 // entitled builds.
 class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
  public:
-  // Supported types of user verification, reported by
-  // LAContextCanEvaluatePolicy.
-  enum class UVMethod {
-    kNone,
-    kPasswordOnly,
-    kBiometrics,
-  };
+  using UVMethod = ScopedFakeAppleKeychainV2::UVMethod;
 
   explicit FakeAppleKeychainV2(const std::string& keychain_access_group);
   FakeAppleKeychainV2(const FakeAppleKeychainV2&) = delete;

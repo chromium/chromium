@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/scoped_lacontext.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/widget/widget.h"
@@ -23,8 +24,7 @@ struct API_AVAILABLE(macos(12.0)) MacAuthenticationView::ObjCStorage {
   LAAuthenticationView* __strong auth_view;
 };
 
-MacAuthenticationView::MacAuthenticationView(
-    base::OnceCallback<void(bool)> callback)
+MacAuthenticationView::MacAuthenticationView(Callback callback)
     : callback_(std::move(callback)),
       storage_(std::make_unique<ObjCStorage>()) {
   storage_->context = [[LAContext alloc] init];
@@ -125,8 +125,12 @@ void MacAuthenticationView::VisibilityChanged(views::View* from,
 
 void MacAuthenticationView::OnAuthenticationComplete(bool success) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  std::optional<crypto::ScopedLAContext> lacontext;
+  if (success) {
+    lacontext.emplace(storage_->context);
+  }
   storage_->context = nil;
-  std::move(callback_).Run(success);
+  std::move(callback_).Run(std::move(lacontext));
 }
 
 BEGIN_METADATA(MacAuthenticationView)

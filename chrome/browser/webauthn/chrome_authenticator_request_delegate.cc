@@ -1443,9 +1443,7 @@ void ChromeAuthenticatorRequestDelegate::SetAccountStateReady() {
       break;
 
     case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
-      // TODO(enclave): wire this up with a Touch ID UI in a bubble.
-      NOTIMPLEMENTED();
-      account_state = AccountState::kReady;
+      account_state = AccountState::kReadyWithBiometrics;
       break;
 
     case EnclaveUserVerificationMethod::kUnsatisfiable:
@@ -1549,11 +1547,16 @@ void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(
       break;
 
     case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
-    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI: {
+      EnclaveManager::UVKeyOptions uv_options;
+#if BUILDFLAG(IS_MAC)
+      uv_options.lacontext = dialog_controller_->TakeLAContext();
+#endif  // BUILDFLAG(IS_MAC)
       request->signing_callback =
-          enclave_manager_->UserVerifyingKeySigningCallback();
+          enclave_manager_->UserVerifyingKeySigningCallback(
+              std::move(uv_options));
       break;
-
+    }
     case EnclaveUserVerificationMethod::kUnsatisfiable:
       NOTREACHED_NORETURN();
   }

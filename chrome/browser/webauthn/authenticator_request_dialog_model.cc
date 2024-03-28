@@ -67,6 +67,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "crypto/scoped_lacontext.h"
 #include "device/fido/mac/util.h"
 #endif
 
@@ -1494,6 +1495,10 @@ void AuthenticatorRequestDialogController::OnAccountPreselected(
         PromptForGPMPin();
         break;
 
+      case AccountState::kReadyWithBiometrics:
+        SetCurrentStep(Step::kGPMTouchID);
+        break;
+
       case AccountState::kRecoverable:
         if (model_->priority_phone_index) {
           SetCurrentStep(Step::kTrustThisComputer);
@@ -1708,6 +1713,17 @@ void AuthenticatorRequestDialogController::set_should_create_in_icloud_keychain(
 }
 
 #if BUILDFLAG(IS_MAC)
+
+void AuthenticatorRequestDialogController::OnTouchIDComplete(bool success) {
+  // On error no LAContext will be provided and macOS will show the system UI
+  // for user verification.
+  SetCurrentStep(Step::kWaitingForEnclave);
+}
+
+std::optional<crypto::ScopedLAContext>
+AuthenticatorRequestDialogController::TakeLAContext() {
+  return std::move(model_->lacontext);
+}
 
 // This enum is used in a histogram. Never change assigned values and only add
 // new entries at the end.
@@ -1937,6 +1953,10 @@ void AuthenticatorRequestDialogController::StartEnclave() {
     case AccountState::kReady:
     case AccountState::kReadyWithPIN:
       SetCurrentStep(Step::kGPMCreatePasskey);
+      break;
+
+    case AccountState::kReadyWithBiometrics:
+      SetCurrentStep(Step::kGPMTouchID);
       break;
 
     case AccountState::kRecoverable:

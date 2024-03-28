@@ -115,6 +115,7 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/icloud_keychain.h"
@@ -8691,9 +8692,14 @@ TEST_F(TouchIdAuthenticatorImplTest, OptionalUv) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
+  // Disable biometrics to verify that requests without uv required do not
+  // prompt the user for their macOS password.
+  touch_id_test_environment_.keychain()->SetUVMethod(
+      crypto::ScopedFakeAppleKeychainV2::UVMethod::kPasswordOnly);
   for (const auto uv : {device::UserVerificationRequirement::kDiscouraged,
                         device::UserVerificationRequirement::kPreferred,
                         device::UserVerificationRequirement::kRequired}) {
+    SCOPED_TRACE(static_cast<int>(uv));
     auto options = GetTestPublicKeyCredentialCreationOptions();
     options->authenticator_selection->authenticator_attachment =
         device::AuthenticatorAttachment::kPlatform;

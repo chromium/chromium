@@ -4,11 +4,12 @@
 
 #include "device/fido/mac/util.h"
 
+#import <Foundation/Foundation.h>
+#import <LocalAuthentication/LocalAuthentication.h>
+
 #include <array>
 #include <set>
 #include <string>
-
-#import <Foundation/Foundation.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -173,11 +174,8 @@ CodeSigningState ProcessIsSigned() {
 }
 
 bool DeviceHasBiometricsAvailable() {
-  LAContext* context = [[LAContext alloc] init];
-  NSError* nserr;
-  return
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                           error:&nserr];
+  return crypto::AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+      LAPolicyDeviceOwnerAuthenticationWithBiometrics, /*error=*/nil);
 }
 
 }  // namespace device::fido::mac

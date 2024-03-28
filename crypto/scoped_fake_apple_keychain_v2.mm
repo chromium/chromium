@@ -20,4 +20,8 @@ ScopedFakeAppleKeychainV2::~ScopedFakeAppleKeychainV2() {
   AppleKeychainV2::ClearInstanceOverride();
 }
 
+void ScopedFakeAppleKeychainV2::SetUVMethod(UVMethod uv_method) {
+  keychain_->set_uv_method(uv_method);
+}
+
 }  // namespace crypto

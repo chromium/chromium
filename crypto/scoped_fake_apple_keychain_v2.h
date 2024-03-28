@@ -18,10 +18,20 @@ class FakeAppleKeychainV2;
 // `AppleKeychainV2::GetInstance()`.
 class CRYPTO_EXPORT ScopedFakeAppleKeychainV2 {
  public:
+  // Supported types of user verification, reported by
+  // LAContextCanEvaluatePolicy.
+  enum class UVMethod {
+    kNone,
+    kPasswordOnly,
+    kBiometrics,
+  };
+
   explicit ScopedFakeAppleKeychainV2(const std::string& keychain_access_group);
   ~ScopedFakeAppleKeychainV2();
 
   FakeAppleKeychainV2* keychain() { return keychain_.get(); }
+
+  void SetUVMethod(UVMethod uv_method);
 
  private:
   std::unique_ptr<FakeAppleKeychainV2> keychain_;

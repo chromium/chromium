@@ -64,6 +64,11 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "crypto/scoped_lacontext.h"
+#include "device/fido/mac/util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace enclave = device::enclave;
 using webauthn_pb::EnclaveLocalState;
 
@@ -275,10 +280,15 @@ std::optional<int> CheckInvariants(const EnclaveLocalState::User& user) {
 // wrapped asymmetric key which will be used to join the security domain.
 cbor::Value BuildRegistrationMessage(
     const std::string& device_id,
-    const crypto::UnexportableSigningKey& hardware_key) {
+    const crypto::UnexportableSigningKey& hardware_key,
+    scoped_refptr<crypto::RefCountedUserVerifyingSigningKey> uv_key) {
   cbor::Value::MapValue pub_keys;
   pub_keys.emplace(enclave::kHardwareKey,
                    hardware_key.GetSubjectPublicKeyInfo());
+  if (uv_key) {
+    pub_keys.emplace(enclave::kUserVerificationKey,
+                     uv_key->key().GetPublicKey());
+  }
 
   cbor::Value::MapValue request1;
   request1.emplace(enclave::kRequestCommandKey, enclave::kRegisterCommandName);
@@ -712,10 +722,12 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
   return new_secrets;
 }
 
-crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig() {
+crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
+    EnclaveManager::UVKeyOptions options) {
   crypto::UserVerifyingKeyProvider::Config config;
 #if BUILDFLAG(IS_MAC)
   config.keychain_access_group = kUserVerifyingKeyKeychainAccessGroup;
+  config.lacontext = std::move(options.lacontext);
 #endif  // BUILDFLAG(IS_MAC)
   return config;
 }
@@ -1101,7 +1113,7 @@ class EnclaveManager::StateMachine {
     manager_->user_verifying_key_.reset();
 
     crypto::AreUserVerifyingKeysSupported(
-        MakeUserVerifyingKeyConfig(),
+        MakeUserVerifyingKeyConfig(/*options=*/{}),
         base::BindOnce(
             [](base::WeakPtr<StateMachine> state_machine,
                bool is_uv_key_supported) {
@@ -1109,7 +1121,7 @@ class EnclaveManager::StateMachine {
                 return;
               }
               auto key_provider = crypto::GetUserVerifyingKeyProvider(
-                  MakeUserVerifyingKeyConfig());
+                  MakeUserVerifyingKeyConfig(/*options=*/{}));
               if (!is_uv_key_supported || !key_provider) {
                 // UV keys are not available, so skip to generating a hardware
                 // key.
@@ -1250,7 +1262,8 @@ class EnclaveManager::StateMachine {
     enclave::Transact(manager_->network_context_, enclave::GetEnclaveIdentity(),
                       std::move(token),
                       BuildRegistrationMessage(user_->device_id(),
-                                               manager_->hardware_key_->key()),
+                                               manager_->hardware_key_->key(),
+                                               manager_->user_verifying_key_),
                       enclave::SigningCallback(),
                       base::BindOnce(&StateMachine::OnEnclaveResponse,
                                      weak_ptr_factory_.GetWeakPtr()));
@@ -1758,6 +1771,12 @@ class EnclaveManager::StateMachine {
   base::WeakPtrFactory<StateMachine> weak_ptr_factory_{this};
 };
 
+EnclaveManager::UVKeyOptions::UVKeyOptions() = default;
+EnclaveManager::UVKeyOptions::~UVKeyOptions() = default;
+EnclaveManager::UVKeyOptions::UVKeyOptions(UVKeyOptions&&) = default;
+EnclaveManager::UVKeyOptions& EnclaveManager::UVKeyOptions::operator=(
+    EnclaveManager::UVKeyOptions&& other) = default;
+
 EnclaveManager::EnclaveManager(
     const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
@@ -2007,6 +2026,7 @@ enclave::SigningCallback EnclaveManager::HardwareKeySigningCallback() {
 }
 
 void EnclaveManager::GetUserVerifyingKeyForSignature(
+    UVKeyOptions options,
     base::OnceCallback<void(
         scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2015,13 +2035,18 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  // On Windows, retrieving the UV key is slow so we cache it. On Mac, we avoid
+  // caching the key as we need to use a fresh LAContext every time we retrieve
+  // the key.
   if (user_verifying_key_) {
     std::move(callback).Run(user_verifying_key_);
     return;
   }
+#endif  // BUILDFLAG(IS_WIN)
 
-  auto user_verifying_key_provider =
-      crypto::GetUserVerifyingKeyProvider(MakeUserVerifyingKeyConfig());
+  auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider(
+      MakeUserVerifyingKeyConfig(std::move(options)));
   if (!user_verifying_key_provider) {
     // This indicates the platform key provider was available, but now is not.
     ClearRegistration();
@@ -2062,13 +2087,14 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
       std::move(*key_label), std::move(key_callback));
 }
 
-enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
+enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback(
+    UVKeyOptions options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!user_->wrapped_uv_private_key().empty());
   CHECK(user_->registered());
 
   return base::BindOnce(
-      [](base::WeakPtr<EnclaveManager> enclave_manager,
+      [](UVKeyOptions options, base::WeakPtr<EnclaveManager> enclave_manager,
          enclave::SignedMessage message_to_be_signed,
          base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
              result_callback) {
@@ -2115,9 +2141,9 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
             std::move(message_to_be_signed), std::move(result_callback));
 
         enclave_manager->GetUserVerifyingKeyForSignature(
-            std::move(signing_callback));
+            std::move(options), std::move(signing_callback));
       },
-      weak_ptr_factory_.GetWeakPtr());
+      std::move(options), weak_ptr_factory_.GetWeakPtr());
 }
 
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
@@ -2177,12 +2203,17 @@ EnclaveManager::GetWrappedPIN() {
 
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
   CHECK(is_ready());
-  // TODO(enclave): EnclaveManager does not know about biometric availability
-  // on the platform, but might need to know that on Mac.
   if (user_->wrapped_uv_private_key().empty()) {
     return UvKeyState::kNone;
   }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
+  if (device::fido::mac::DeviceHasBiometricsAvailable()) {
+    // Chrome will display an LAAuthenticationView with a Touch ID prompt.
+    return UvKeyState::kUsesChromeUI;
+  }
+  // Delegate prompting the user for their screen lock to macOS.
+  return UvKeyState::kUsesSystemUI;
+#elif BUILDFLAG(IS_WIN)
   return UvKeyState::kUsesSystemUI;
 #else
   return UvKeyState::kNone;

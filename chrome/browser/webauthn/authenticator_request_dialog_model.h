@@ -39,6 +39,10 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "crypto/scoped_lacontext.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -164,6 +168,11 @@ class AuthenticatorRequestDialogController;
   AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinOptionChanged, bool)                  \
   /* OnHavePIN is called when the user enters a PIN in the UI. */             \
   AUTHENTICATOR_REQUEST_EVENT_1(OnHavePIN, std::u16string)                    \
+  /* Called when a local Touch ID prompt finishes. The first parameter is */  \
+  /* true for success, false for failure. */                                  \
+  /* On success, the emitter must set the model's |lacontext| to an */        \
+  /* authenticated LAContext. */                                              \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnTouchIDComplete, bool)                      \
   /* Called just before the model is destructed. */                           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
                                 AuthenticatorRequestDialogModel*)
@@ -270,6 +279,9 @@ struct AuthenticatorRequestDialogModel {
     kGPMCreateArbitraryPin,
     kGPMEnterArbitraryPin,
 
+    // User verification prompt for GPM.
+    kGPMTouchID,
+
     // GPM passkey creation.
     kGPMOnboarding,
     kGPMCreatePasskey,
@@ -283,10 +295,6 @@ struct AuthenticatorRequestDialogModel {
 
     // Changing GPM PIN.
     kGPMReauthAccount,
-
-    // User verification prompt for GPM for demo purposes.
-    // TODO(nsatragno): integrate with create / get passkey instead.
-    kGPMTouchID,
   };
 
   // Views and controllers implement this interface to receive events, which
@@ -471,6 +479,12 @@ struct AuthenticatorRequestDialogModel {
   // Records the error during GPM pin entry / creation, if any.
   GpmPinError gpm_pin_error = GpmPinError::kNone;
 
+#if BUILDFLAG(IS_MAC)
+  // lacontext contains an authenticated LAContext after a successful Touch ID
+  // prompt.
+  std::optional<crypto::ScopedLAContext> lacontext;
+#endif  // BUILDFLAG(IS_MAC)
+
  private:
   Step step_ = Step::kNotStarted;
 };
@@ -507,6 +521,9 @@ class AuthenticatorRequestDialogController
     // The enclave is ready to use, but the UI needs to collect a PIN before
     // making a transaction.
     kReadyWithPIN,
+    // The enclave is ready to use, but the UI needs to collect biometrics
+    // before making a transaction.
+    kReadyWithBiometrics,
   };
 
   explicit AuthenticatorRequestDialogController(Model* model);
@@ -834,6 +851,11 @@ class AuthenticatorRequestDialogController
   void set_should_create_in_icloud_keychain(bool);
 
 #if BUILDFLAG(IS_MAC)
+  void OnTouchIDComplete(bool success) override;
+
+  // Returns the authenticated LAContext, if any.
+  std::optional<crypto::ScopedLAContext> TakeLAContext();
+
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
                                    device::AuthenticatorType);

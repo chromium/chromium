@@ -22,6 +22,10 @@
 #include "device/fido/enclave/types.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "crypto/scoped_lacontext.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
@@ -72,6 +76,20 @@ class EnclaveManager : public KeyedService {
     // OnKeyStores is called when MagicArch provides keys to the EnclaveManager
     // by calling `StoreKeys`.
     virtual void OnKeysStored() = 0;
+  };
+
+  struct UVKeyOptions {
+    UVKeyOptions();
+    UVKeyOptions(const UVKeyOptions&) = delete;
+    UVKeyOptions& operator=(const UVKeyOptions&) = delete;
+    UVKeyOptions(UVKeyOptions&&);
+    UVKeyOptions& operator=(UVKeyOptions&&);
+    ~UVKeyOptions();
+
+#if BUILDFLAG(IS_MAC)
+    // An optional LAcontext to pass to apple keychain operations.
+    std::optional<crypto::ScopedLAContext> lacontext;
+#endif  // BUILDFLAG(IS_MAC)
   };
 
   EnclaveManager(
@@ -126,7 +144,8 @@ class EnclaveManager : public KeyedService {
   device::enclave::SigningCallback HardwareKeySigningCallback();
   // Get a callback to sign with the registered "uv" key. Only valid to call if
   // `is_ready`.
-  device::enclave::SigningCallback UserVerifyingKeySigningCallback();
+  device::enclave::SigningCallback UserVerifyingKeySigningCallback(
+      UVKeyOptions options);
   // Fetch a wrapped security domain secret for the given epoch. Only valid to
   // call if `is_ready`.
   std::optional<std::vector<uint8_t>> GetWrappedSecret(int32_t version);
@@ -238,6 +257,7 @@ class EnclaveManager : public KeyedService {
           scoped_refptr<unexportable_keys::RefCountedUnexportableSigningKey>)>
           callback);
   void GetUserVerifyingKeyForSignature(
+      UVKeyOptions options,
       base::OnceCallback<void(
           scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)> callback);
 

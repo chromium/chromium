@@ -96,6 +96,7 @@ const char kRegisterPubKeysKey[] = "pub_keys";
 const char kRegisterDeviceIdKey[] = "device_id";
 
 const char kHardwareKey[] = "hw";
+const char kUserVerificationKey[] = "uv";
 
 const char kWrappingPurpose[] = "purpose";
 const char kWrappingKeyToWrap[] = "key";

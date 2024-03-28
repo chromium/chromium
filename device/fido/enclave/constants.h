@@ -25,7 +25,7 @@ EnclaveIdentity GetEnclaveIdentity();
 // enclave to be overridden for testing. These objects can be nested.
 class COMPONENT_EXPORT(DEVICE_FIDO) ScopedEnclaveOverride {
  public:
-  ScopedEnclaveOverride(EnclaveIdentity identity);
+  explicit ScopedEnclaveOverride(EnclaveIdentity identity);
   ~ScopedEnclaveOverride();
 
  private:
@@ -59,6 +59,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterDeviceIdKey[];
 
 // Device key types
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kHardwareKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kUserVerificationKey[];
 
 // Wrapping request keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingPurpose[];

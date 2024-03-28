@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "crypto/scoped_lacontext.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -20,10 +21,13 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
   METADATA_HEADER(MacAuthenticationView, views::View)
 
  public:
-  explicit MacAuthenticationView(
-      // This callback is called when Touch ID is complete with a boolean that
-      // indicates whether the operation was successful.
-      base::OnceCallback<void(bool)> callback);
+  using Callback =
+      base::OnceCallback<void(std::optional<crypto::ScopedLAContext>)>;
+
+  // This callback is called when Touch ID is complete with a boolean that
+  // indicates whether the operation was successful and if successful, the
+  // authenticated LAContext.
+  explicit MacAuthenticationView(Callback callback);
   ~MacAuthenticationView() override;
 
   // views::View:
@@ -39,7 +43,7 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
 
   void OnAuthenticationComplete(bool success);
 
-  base::OnceCallback<void(bool)> callback_;
+  Callback callback_;
   std::unique_ptr<ObjCStorage> storage_;
   bool evaluation_requested_ = false;
 
