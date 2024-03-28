@@ -771,6 +771,19 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
         object_host->CreateCompleteObjectInfoToSend();
   }
 
+  // TODO(crbug.com/331279951): Remove these crash keys after investigation.
+  SCOPED_CRASH_KEY_NUMBER("SWCH_SC", "client_type",
+                          static_cast<int32_t>(GetClientType()));
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_bound", container_.is_bound());
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_connected",
+                        container_.is_bound() && container_.is_connected());
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "notify_controllerchange",
+                        notify_controllerchange);
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "IsContainerForClient",
+                        IsContainerForClient());
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_execution_ready", is_execution_ready());
+  SCOPED_CRASH_KEY_BOOL("SWCH_SC", "is_container_ready", is_container_ready_);
+
   container_->SetController(std::move(controller_info),
                             notify_controllerchange);
 }
