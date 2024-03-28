@@ -6,20 +6,25 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 
-// Shows a top-level window containing some WebAuthn-related UI.
+// Shows a pop-up window containing some WebAuthn-related UI. This object
+// owns itself.
 class AuthenticatorRequestWindow
-    : public views::DialogDelegateView,
+    : public content::WebContentsObserver,
       public AuthenticatorRequestDialogModel::Observer {
  public:
-  explicit AuthenticatorRequestWindow(AuthenticatorRequestDialogModel* model)
+  explicit AuthenticatorRequestWindow(content::WebContents* caller_web_contents,
+                                      AuthenticatorRequestDialogModel* model)
       : step_(model->step()), model_(model) {
     // Only one UI step involves showing a top-level window:
     CHECK_EQ(step_,
@@ -27,26 +32,40 @@ class AuthenticatorRequestWindow
 
     model_->observers.AddObserver(this);
 
-    SetHasWindowSizeControls(true);
-    SetCanResize(true);
-    SetButtons(ui::DIALOG_BUTTON_NONE);
-    set_use_custom_frame(false);
-    SetUseDefaultFillLayout(true);
-    SetShowCloseButton(true);
-    SetShowTitle(true);
-    SetTitle(u"Unlock Google Password Manager (UNTRANSLATED)");
-    SetModalType(ui::MODAL_TYPE_NONE);
+    Profile* const profile =
+        Profile::FromBrowserContext(caller_web_contents->GetBrowserContext());
+    // If the profile is shutting down, don't attempt to create a pop-up.
+    if (Browser::GetCreationStatusForProfile(profile) !=
+        Browser::CreationStatus::kOk) {
+      return;
+    }
 
-    SetCloseCallback(base::BindOnce(&AuthenticatorRequestWindow::OnClose,
-                                    weak_ptr_factory_.GetWeakPtr()));
+    // The pop-up window will be centered on top of the Browser doing the
+    // WebAuthn operation.
+    Browser* const caller_browser =
+        chrome::FindBrowserWithTab(caller_web_contents);
+    const gfx::Rect caller_bounds = caller_browser->window()->GetBounds();
+    const gfx::Point caller_center = caller_bounds.CenterPoint();
 
-    auto web_view = std::make_unique<views::WebView>(
-        model->GetRenderFrameHost()->GetBrowserContext());
+    Browser::CreateParams browser_params(Browser::TYPE_POPUP, profile,
+                                         /*user_gesture=*/true);
+    browser_params.omit_from_session_restore = true;
+    browser_params.should_trigger_session_restore = false;
+    // This is empirically a good size for the MagicArch UI.
+    constexpr int kWidth = 400;
+    constexpr int kHeight = 700;
+    browser_params.initial_bounds =
+        gfx::Rect(caller_center.x() - kWidth / 2,
+                  caller_center.y() - kHeight / 2, kWidth, kHeight);
+    browser_params.initial_origin_specified =
+        Browser::ValueSpecified::kSpecified;
+    auto* browser = Browser::Create(browser_params);
 
-    TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
-        web_view->GetWebContents());
-    web_view->RequestFocus();
-    web_view->SetPreferredSize(gfx::Size(400, 700));
+    content::WebContents::CreateParams webcontents_params(profile);
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContents::Create(webcontents_params);
+    WebContentsObserver::Observe(web_contents.get());
+
     // The kdi parameter here was generated from the following protobuf:
     //
     // {
@@ -63,12 +82,17 @@ class AuthenticatorRequestWindow
     //
     // Then the contents of `/tmp/out.pb` need to be base64url-encoded to
     // produce the "kdi" parameter's value.
-    web_view->LoadInitialURL(
-        GURL("https://accounts.google.com/encryption/unlock/"
-             "desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk"));
+    GURL url = GaiaUrls::GetInstance()->gaia_url().Resolve(
+        "/encryption/unlock/desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk");
+    content::NavigationController::LoadURLParams load_params(url);
+    web_contents->GetController().LoadURLWithParams(load_params);
+    web_contents_weak_ptr_ = web_contents->GetWeakPtr();
 
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(std::move(web_view));
+    browser->tab_strip_model()->AddWebContents(
+        std::move(web_contents), /*index=*/0,
+        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+        AddTabTypes::ADD_ACTIVE);
+    browser->window()->Show();
   }
 
   ~AuthenticatorRequestWindow() override {
@@ -78,34 +102,43 @@ class AuthenticatorRequestWindow
   }
 
  protected:
-  void OnClose() { model_->OnRecoverSecurityDomainClosed(); }
+  void WebContentsDestroyed() override {
+    WebContentsObserver::Observe(nullptr);
+    if (model_ && model_->step() == step_) {
+      model_->OnRecoverSecurityDomainClosed();
+    }
+  }
 
   // AuthenticatorRequestDialogModel::Observer:
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
-    model_ = nullptr;
+    CloseWindowAndDeleteSelf();
   }
 
   void OnStepTransition() override {
     if (model_->step() != step_) {
       // Only one UI step involves a window so far. So any transition of the
       // model must be to a step that doesn't have one.
-      GetWidget()->Close();
+      CloseWindowAndDeleteSelf();
     }
   }
 
  private:
+  void CloseWindowAndDeleteSelf() {
+    if (web_contents_weak_ptr_) {
+      web_contents_weak_ptr_->Close();
+    }
+    delete this;
+  }
+
   const AuthenticatorRequestDialogModel::Step step_;
   raw_ptr<AuthenticatorRequestDialogModel> model_;
-  base::WeakPtrFactory<AuthenticatorRequestWindow> weak_ptr_factory_{this};
+  base::WeakPtr<content::WebContents> web_contents_weak_ptr_;
 };
 
 }  // namespace
 
-void ShowAuthenticatorRequestWindow(AuthenticatorRequestDialogModel* model) {
-  auto delegate = std::make_unique<AuthenticatorRequestWindow>(model);
-  auto* delegate_ptr = delegate.get();
-  views::DialogDelegate::CreateDialogWidget(std::move(delegate),
-                                            /*context=*/nullptr,
-                                            /*parent=*/nullptr);
-  delegate_ptr->GetWidget()->Show();
+void ShowAuthenticatorRequestWindow(content::WebContents* web_contents,
+                                    AuthenticatorRequestDialogModel* model) {
+  // This object owns itself.
+  new AuthenticatorRequestWindow(web_contents, model);
 }

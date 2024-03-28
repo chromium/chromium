@@ -464,7 +464,7 @@ void AuthenticatorRequestDialogModel::SetStep(Step step) {
         break;
 
       case StepUIType::WINDOW:
-        ShowAuthenticatorRequestWindow(this);
+        ShowAuthenticatorRequestWindow(web_contents, this);
         break;
     }
   }
