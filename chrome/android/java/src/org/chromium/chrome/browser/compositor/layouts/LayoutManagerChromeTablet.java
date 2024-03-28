@@ -212,20 +212,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
-    public void initLayoutTabFromHost(final int tabId) {
-        if (mLayerTitleCache != null) {
-            mLayerTitleCache.removeTabTitle(tabId);
-        }
-        super.initLayoutTabFromHost(tabId);
-    }
-
-    @Override
-    public void releaseTabLayout(int id) {
-        mLayerTitleCache.removeTabTitle(id);
-        super.releaseTabLayout(id);
-    }
-
-    @Override
     public void releaseResourcesForTab(int tabId) {
         super.releaseResourcesForTab(tabId);
         mLayerTitleCache.removeTabTitle(tabId);
