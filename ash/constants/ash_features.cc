@@ -475,6 +475,12 @@ BASE_FEATURE(kContinuousOverviewScrollAnimation,
 // Controls enabling/disabling the coral feature.
 BASE_FEATURE(kCoralFeature, "CoralFeature", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables execution of routine for copying client keys and certs from NSS DB to
+// software backed Chaps slot.
+BASE_FEATURE(kCopyClientKeysCertsToChaps,
+             "CopyClientKeysCertsToChaps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Adds location access control to Privacy Hub.
 BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
@@ -3336,6 +3342,10 @@ bool IsDnsOverHttpsWithIdentifiersEnabled() {
 
 bool IsConsumerAutoUpdateToggleAllowed() {
   return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
+}
+
+bool IsCopyClientKeysCertsToChapsEnabled() {
+  return base::FeatureList::IsEnabled(kCopyClientKeysCertsToChaps);
 }
 
 bool IsCrosPrivacyHubAppPermissionsEnabled() {
