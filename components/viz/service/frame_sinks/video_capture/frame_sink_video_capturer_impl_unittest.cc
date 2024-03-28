@@ -30,6 +30,7 @@
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
+#include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "media/base/limits.h"
@@ -757,7 +758,8 @@ class TestVideoCaptureOverlay : public VideoCaptureOverlay {
 class TestGmbVideoFramePoolContext
     : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
-  TestGmbVideoFramePoolContext() {}
+  TestGmbVideoFramePoolContext()
+      : context_provider_(TestContextProvider::Create()) {}
   ~TestGmbVideoFramePoolContext() override = default;
 
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
@@ -775,12 +777,10 @@ class TestGmbVideoFramePoolContext
       SkAlphaType alpha_type,
       uint32_t usage,
       gpu::SyncToken& sync_token) override {
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(),
-        gpu::SharedImageMetadata(si_format, gpu_memory_buffer->GetSize(),
-                                 color_space, surface_origin, alpha_type,
-                                 usage),
-        sync_token, nullptr, gpu_memory_buffer->GetType());
+    return context_provider_->SharedImageInterface()->CreateSharedImage(
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "FrameSinkVideoCapturerImplUnittest"},
+        gpu_memory_buffer->CloneHandle());
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -791,19 +791,21 @@ class TestGmbVideoFramePoolContext
       SkAlphaType alpha_type,
       uint32_t usage,
       gpu::SyncToken& sync_token) override {
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(),
-        gpu::SharedImageMetadata(
-            GetSinglePlaneSharedImageFormat(gpu::GetPlaneBufferFormat(
-                plane, gpu_memory_buffer->GetFormat())),
-            gpu_memory_buffer->GetSize(), color_space, surface_origin,
-            alpha_type, usage),
-        sync_token, nullptr, gpu_memory_buffer->GetType());
+    return context_provider_->SharedImageInterface()->CreateSharedImage(
+        gpu_memory_buffer, /*gpu_memory_buffer_manager=*/nullptr, plane,
+        {color_space, surface_origin, alpha_type, usage,
+         "FrameSinkVideoCapturerImplUnittest"});
   }
 
   void DestroySharedImage(
       const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image) override {}
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
+    context_provider_->SharedImageInterface()->DestroySharedImage(
+        sync_token, std::move(shared_image));
+  }
+
+ private:
+  scoped_refptr<TestContextProvider> context_provider_;
 };
 
 class TestGmbVideoFramePoolContextProvider
