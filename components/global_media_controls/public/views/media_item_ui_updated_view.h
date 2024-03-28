@@ -6,6 +6,7 @@
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_UPDATED_VIEW_H_
 
 #include "components/global_media_controls/public/media_item_ui.h"
+#include "components/global_media_controls/views/media_action_button.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,8 +27,8 @@ class Label;
 
 namespace global_media_controls {
 
-class MediaActionButton;
 class MediaItemUIObserver;
+class MediaProgressView;
 
 // MediaItemUIUpdatedView holds the media information and playback controls for
 // a media session or cast session. This will be displayed within
@@ -50,6 +51,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // MediaItemUI:
   void AddObserver(MediaItemUIObserver* observer) override;
@@ -83,6 +85,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   views::Label* GetSourceLabelForTesting();
   views::Label* GetTitleLabelForTesting();
   views::Label* GetArtistLabelForTesting();
+  MediaActionButton* GetMediaActionButtonForTesting(
+      media_session::mojom::MediaSessionAction action);
+  MediaProgressView* GetProgressViewForTesting();
 
  private:
   MediaActionButton* CreateMediaActionButton(views::View* parent,
@@ -93,8 +98,26 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // Callback for a media action button being pressed.
   void MediaActionButtonPressed(views::Button* button);
 
+  // Update the visibility of media action buttons based on which media session
+  // actions are enabled.
+  void UpdateMediaActionButtonsVisibility();
+
+  // Callback for the user dragging the progress view. A playing media should be
+  // temporarily paused when the user is dragging the progress line.
+  void OnProgressDragging(bool pause);
+
+  // Callback for when the media progress view wants to update the progress
+  // position.
+  void SeekTo(double seek_progress);
+
   // Whether the media is currently in picture-in-picture.
   bool in_picture_in_picture_ = false;
+
+  // Set of enabled media session actions that are used to decide media action
+  // button visibilities.
+  base::flat_set<media_session::mojom::MediaSessionAction> media_actions_;
+
+  media_session::MediaPosition position_;
 
   base::ObserverList<MediaItemUIObserver> observers_;
 
@@ -103,6 +126,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;
 
+  raw_ptr<MediaProgressView> progress_view_ = nullptr;
   std::vector<MediaActionButton*> media_action_buttons_;
   raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;
   raw_ptr<MediaActionButton> play_pause_button_ = nullptr;

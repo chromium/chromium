@@ -5,15 +5,20 @@
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
 #include "components/global_media_controls/public/test/mock_media_item_ui_observer.h"
+#include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace global_media_controls {
 
 using ::global_media_controls::test::MockMediaItemUIObserver;
 using ::media_message_center::test::MockMediaNotificationItem;
+using ::media_session::mojom::MediaSessionAction;
 using ::testing::NiceMock;
 
 namespace {
@@ -50,16 +55,106 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::TearDown();
   }
 
+  void EnableAllMediaActions() {
+    actions_.insert(MediaSessionAction::kPlay);
+    actions_.insert(MediaSessionAction::kPause);
+    actions_.insert(MediaSessionAction::kPreviousTrack);
+    actions_.insert(MediaSessionAction::kNextTrack);
+    actions_.insert(MediaSessionAction::kSeekForward);
+    actions_.insert(MediaSessionAction::kSeekBackward);
+    actions_.insert(MediaSessionAction::kEnterPictureInPicture);
+    actions_.insert(MediaSessionAction::kExitPictureInPicture);
+    view_->UpdateWithMediaActions(actions_);
+  }
+
+  bool IsMediaActionButtonVisible(MediaSessionAction action) const {
+    auto* button = view_->GetMediaActionButtonForTesting(action);
+    return button && button->GetVisible();
+  }
+
+  void SimulateButtonClick(MediaSessionAction action) {
+    auto* button = view_->GetMediaActionButtonForTesting(action);
+    EXPECT_TRUE(button && button->GetVisible());
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), 0, 0));
+  }
+
   MediaItemUIUpdatedView* view() { return view_; }
   MockMediaNotificationItem& item() { return *item_; }
   MockMediaItemUIObserver& observer() { return *observer_; }
 
  private:
+  base::flat_set<MediaSessionAction> actions_;
   raw_ptr<MediaItemUIUpdatedView> view_;
   std::unique_ptr<MockMediaNotificationItem> item_;
   std::unique_ptr<MockMediaItemUIObserver> observer_;
   std::unique_ptr<views::Widget> widget_;
 };
+
+TEST_F(MediaItemUIUpdatedViewTest, ProgressViewCheck) {
+  // Check that progress position can be updated.
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+  EXPECT_NEAR(view()->GetProgressViewForTesting()->current_value_for_testing(),
+              0.5f, 0.01f);
+
+  // Check that key event on the view can seek the progress.
+  ui::KeyEvent key_event{ui::ET_KEY_PRESSED,       ui::VKEY_RIGHT,
+                         ui::DomCode::ARROW_RIGHT, ui::EF_NONE,
+                         ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  view()->OnKeyPressed(key_event);
+}
+
+TEST_F(MediaItemUIUpdatedViewTest,
+       UpdateWithMediaSessionInfoForPlayPauseButton) {
+  EnableAllMediaActions();
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPlaying;
+  view()->UpdateWithMediaSessionInfo(session_info.Clone());
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPause));
+
+  EXPECT_CALL(item(),
+              OnMediaSessionActionButtonPressed(MediaSessionAction::kPause));
+  SimulateButtonClick(MediaSessionAction::kPause);
+
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPaused;
+  view()->UpdateWithMediaSessionInfo(session_info.Clone());
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPlay));
+
+  EXPECT_CALL(item(),
+              OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay));
+  SimulateButtonClick(MediaSessionAction::kPlay);
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaSessionInfoForPiPButton) {
+  EnableAllMediaActions();
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
+  session_info->picture_in_picture_state =
+      media_session::mojom::MediaPictureInPictureState::kInPictureInPicture;
+  view()->UpdateWithMediaSessionInfo(session_info.Clone());
+  EXPECT_TRUE(
+      IsMediaActionButtonVisible(MediaSessionAction::kExitPictureInPicture));
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kExitPictureInPicture));
+  SimulateButtonClick(MediaSessionAction::kExitPictureInPicture);
+
+  session_info->picture_in_picture_state =
+      media_session::mojom::MediaPictureInPictureState::kNotInPictureInPicture;
+  view()->UpdateWithMediaSessionInfo(session_info.Clone());
+  EXPECT_TRUE(
+      IsMediaActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kEnterPictureInPicture));
+  SimulateButtonClick(MediaSessionAction::kEnterPictureInPicture);
+}
 
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaMetadata) {
   EXPECT_EQ(view()->GetSourceLabelForTesting()->GetText(), u"");
@@ -80,6 +175,19 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaMetadata) {
   EXPECT_EQ(view()->GetTitleLabelForTesting()->GetText(), metadata.title);
 }
 
+TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaActions) {
+  EXPECT_CALL(observer(), OnMediaItemUIActionsChanged());
+  EnableAllMediaActions();
+
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPlay));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+  EXPECT_TRUE(
+      IsMediaActionButtonVisible(MediaSessionAction::kEnterPictureInPicture));
+}
+
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaArtwork) {
   EXPECT_FALSE(view()->GetArtworkViewForTesting()->GetVisible());
 
@@ -90,6 +198,26 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaArtwork) {
 
   view()->UpdateWithMediaArtwork(gfx::ImageSkia());
   EXPECT_FALSE(view()->GetArtworkViewForTesting()->GetVisible());
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, MediaActionButtonPressed) {
+  EnableAllMediaActions();
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  SimulateButtonClick(MediaSessionAction::kSeekForward);
+  EXPECT_CALL(item(), SeekTo(testing::_));
+  SimulateButtonClick(MediaSessionAction::kSeekBackward);
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kPreviousTrack));
+  SimulateButtonClick(MediaSessionAction::kPreviousTrack);
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kNextTrack));
+  SimulateButtonClick(MediaSessionAction::kNextTrack);
 }
 
 }  // namespace global_media_controls
