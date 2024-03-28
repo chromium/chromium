@@ -4,6 +4,8 @@
 
 #include "chrome/browser/headless/headless_mode_protocol_browsertest.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -51,7 +53,7 @@ base::Value::Dict HeadlessModeProtocolBrowserTest::GetPageUrlExtraParams() {
 }
 
 void HeadlessModeProtocolBrowserTest::RunTestScript(
-    base::StringPiece script_name) {
+    std::string_view script_name) {
   test_folder_ = "/protocol/";
   script_name_ = script_name;
   RunTest();
