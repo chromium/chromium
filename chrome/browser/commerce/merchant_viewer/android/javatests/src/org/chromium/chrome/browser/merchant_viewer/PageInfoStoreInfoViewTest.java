@@ -88,7 +88,7 @@ public class PageInfoStoreInfoViewTest {
     @Mock private ShoppingService mMockShoppingService;
 
     private final MerchantInfo mFakeMerchantTrustSignals =
-            new MerchantInfo(4.5f, 100, new GURL("http://dummy/url"), false, 0f, false, false);
+            new MerchantInfo(4.5f, 100, new GURL("http://fake/url"), false, 0f, false, false);
 
     @Before
     public void setUp() {
@@ -149,7 +149,7 @@ public class PageInfoStoreInfoViewTest {
     @Feature({"RenderTest"})
     public void testStoreInfoRowVisibleWithData_WithoutReviews() throws IOException {
         MerchantInfo fakeMerchantTrustSignals =
-                new MerchantInfo(4.5f, 0, new GURL("http://dummy/url"), false, 0f, false, false);
+                new MerchantInfo(4.5f, 0, new GURL("http://fake/url"), false, 0f, false, false);
         mockShoppingServiceResponse(fakeMerchantTrustSignals);
 
         openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
@@ -162,7 +162,7 @@ public class PageInfoStoreInfoViewTest {
     @Feature({"RenderTest"})
     public void testStoreInfoRowVisibleWithData_WithoutRating() throws IOException {
         MerchantInfo fakeMerchantTrustSignals =
-                new MerchantInfo(0f, 0, new GURL("http://dummy/url"), true, 0f, false, false);
+                new MerchantInfo(0f, 0, new GURL("http://fake/url"), true, 0f, false, false);
         mockShoppingServiceResponse(fakeMerchantTrustSignals);
 
         openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
