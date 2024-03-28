@@ -413,6 +413,7 @@ VkResult CreateGraphicsPipelinesHook(
             base::Microseconds(50000), 50);
       },
       base::Time::Now()));
+  TRACE_EVENT0("gpu", "VulkanCreateGraphicsPipelines");
   return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,
                                    pCreateInfos, pAllocator, pPipelines);
 }
