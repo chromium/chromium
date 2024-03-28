@@ -3747,7 +3747,7 @@ test("base_unittests") {
   }
 
   if (enable_base_tracing) {
-    sources += [ "test/test_trace_processor_unittest.cc" ]
+    sources += [ "test/test_trace_processor_example_unittest.cc" ]
   }
 
   if (is_posix) {

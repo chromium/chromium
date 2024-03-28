@@ -58,6 +58,9 @@ class TestTraceProcessor {
   TestTraceProcessor();
   ~TestTraceProcessor();
 
+  // Privacy filtering removes high entropy and high information fields and
+  // only allows categories, event names, and arguments listed in
+  // `services/tracing/perfetto/privacy_filtered_fields-inl.h`
   void StartTrace(std::string_view category_filter_string,
                   bool privacy_filtering = false);
   void StartTrace(
