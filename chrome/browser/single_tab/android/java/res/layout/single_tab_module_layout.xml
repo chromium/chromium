@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.features.tasks.SingleTabView
+<org.chromium.chrome.browser.single_tab.SingleTabView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -118,4 +118,4 @@ found in the LICENSE file.
       </LinearLayout>
 
   </LinearLayout>
-</org.chromium.chrome.features.tasks.SingleTabView>
+</org.chromium.chrome.browser.single_tab.SingleTabView>

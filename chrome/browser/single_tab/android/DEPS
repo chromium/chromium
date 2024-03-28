@@ -1,0 +1,5 @@
+include_rules = [
+     # This file is part of the start surface public API.
+    "+chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
+    "+chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceUserData.java",
+]

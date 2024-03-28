@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.tasks;
+package org.chromium.chrome.browser.single_tab;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.start_surface.R;
 
 /** View of the tab on the single tab tab switcher. */
 class SingleTabView extends LinearLayout {

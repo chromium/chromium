@@ -12,14 +12,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/favicon_background.xml",
     "java/res/drawable/home_surface_ui_background.xml",
-    "java/res/drawable/single_tab_background.xml",
-    "java/res/drawable/single_tab_card_ripple.xml",
-    "java/res/drawable/single_tab_thumbnail_background.xml",
     "java/res/layout/query_tiles_layout.xml",
-    "java/res/layout/single_tab_module_layout.xml",
-    "java/res/layout/single_tab_view_layout.xml",
     "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
     "java/res/layout/tasks_view_layout_polish.xml",

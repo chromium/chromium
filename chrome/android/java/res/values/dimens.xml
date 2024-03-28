@@ -137,7 +137,6 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_top_margin_push_down_large">54dp</dimen>
     <dimen name="tile_grid_layout_top_margin_pull_up">16dp</dimen>
     <dimen name="tile_grid_layout_no_logo_top_margin">20dp</dimen>
-    <dimen name="tile_grid_layout_bleed">8dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing">6dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing_push_down_small">24dp</dimen>
     <dimen name="tile_grid_layout_vertical_spacing_push_down_large">36dp</dimen>
@@ -149,7 +148,6 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
     <dimen name="mvt_container_lateral_margin_polish">@dimen/signin_promo_lateral_paddings</dimen>
-    <dimen name="search_box_lateral_margin_polish">16dp</dimen>
     <dimen name="mvt_container_top_padding_polish">17dp</dimen>
     <dimen name="mvt_container_bottom_padding_polish">22dp</dimen>
     <dimen name="tile_view_title_margin_top_modern_polish">63dp</dimen>

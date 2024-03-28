@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.tasks;
+package org.chromium.chrome.browser.single_tab;
 
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TAB_THUMBNAIL;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.CLICK_LISTENER;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.FAVICON;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TAB_THUMBNAIL;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,7 +26,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;

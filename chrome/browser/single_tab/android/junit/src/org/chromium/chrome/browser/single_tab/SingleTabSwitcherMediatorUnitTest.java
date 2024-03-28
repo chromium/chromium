@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.tasks;
+package org.chromium.chrome.browser.single_tab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,12 +18,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.FAVICON;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.IS_VISIBLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TAB_THUMBNAIL;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.TITLE;
-import static org.chromium.chrome.features.tasks.SingleTabViewProperties.URL;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.CLICK_LISTENER;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.FAVICON;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TAB_THUMBNAIL;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TITLE;
+import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;

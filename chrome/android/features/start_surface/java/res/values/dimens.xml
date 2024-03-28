@@ -8,30 +8,8 @@ found in the LICENSE file.
     <dimen name="tasks_surface_body_top_margin">24dp</dimen>
     <dimen name="mv_tiles_container_top_margin">17dp</dimen>
 
-    <!-- Single Tab card on tablets -->
-    <dimen name="single_tab_card_lateral_margin_landscape_tablet">62dp</dimen>
-    <dimen name="single_tab_card_lateral_margin_portrait_tablet">14dp</dimen>
-    <dimen name="single_tab_card_lateral_margin">16dp</dimen>
-
     <!-- Surface Polish -->
     <dimen name="home_surface_ui_background_color_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="home_surface_ui_background_radius">24dp</dimen>
     <dimen name="home_surface_search_box_background_radius">100dp</dimen>
-
-    <!-- Single Tab module on phones -->
-    <dimen name="single_tab_module_lateral_margin">@dimen/mvt_container_lateral_margin_polish</dimen>
-    <dimen name="single_tab_module_padding_top">16dp</dimen>
-    <dimen name="single_tab_module_padding_bottom">20dp</dimen>
-    <dimen name="single_tab_module_title_margin_bottom">12dp</dimen>
-    <dimen name="single_tab_module_tab_thumbnail_size_big">114dp</dimen>
-    <dimen name="single_tab_module_tab_thumbnail_size">106dp</dimen>
-    <dimen name="single_tab_thumbnail_margin">1dp</dimen>
-    <dimen name="single_tab_thumbnail_radius">12dp</dimen>
-    <dimen name="favicon_padding">4dp</dimen>
-    <dimen name="favicon_background_radius">4dp</dimen>
-    <dimen name="favicon_corner_radius_polished">1dp</dimen>
-    <dimen name="favicon_background_color_elevation">@dimen/default_elevation_0</dimen>
-
-    <!-- Tab Resumption Module -->
-    <dimen name="tab_resumption_module_icon_background_color_elevation">@dimen/default_elevation_1</dimen>
 </resources>
