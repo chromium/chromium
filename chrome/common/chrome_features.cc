@@ -238,12 +238,6 @@ BASE_FEATURE(kEnableWatermarkView,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables migration of apps that are loaded erroneously but installed
-// correctly by policy in the web app system.
-BASE_FEATURE(kMigrateErrorLoadedPolicyApps,
-             "MigrateErrorLoadedPolicyApps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to allow installed-by-default web apps to be installed or not.
 BASE_FEATURE(kPreinstalledWebAppInstallation,
              "DefaultWebAppInstallation",

@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -120,20 +119,6 @@ class WebAppPolicyManagerBrowserTest : public WebAppControllerBrowserTest {
         base::JSONReader::Read(
             base::ReplaceStringPlaceholders(json, replacements, nullptr))
             .value());
-  }
-
-  GURL GetDefaultUrl() {
-    return https_server()->GetURL("/banners/manifest_test_page.html");
-  }
-
-  base::Value::Dict GetPolicyItem() {
-    base::Value::Dict item;
-    item.Set(kUrlKey,
-             https_server()
-                 ->GetURL("/banners/manifest_test_page.html?usp=chrome_policy")
-                 .spec());
-    item.Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue);
-    return item;
   }
 };
 
@@ -278,132 +263,6 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
             manifest->name.value_or(std::u16string()));
   EXPECT_EQ(1u, manifest->icons.size());
   EXPECT_EQ(GURL(kDefaultCustomIconUrl), manifest->icons[0].src);
-}
-
-// This tests the clean up logic for crbug.com/1440946, which verifies the
-// following use-case:
-// 1. A default app A is installed with an install_url.
-// 2. A policy app B is installed with a similar install_url that should map to
-// the same app_id as A if everything loads fine. The app Ids of A and B are
-// different and B is not a placeholder, and the start_url matches that of the
-// install_url.
-// 3. On refreshing the policy, there will just be one app being installed from
-// both install_urls, having a single app id A (since B is erroneous).
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
-                       ErrorLoadedPolicyAppsMigratedProperly) {
-  // Wait till synchronization has completed for all sources before executing
-  // tests, to prevent startup steps from overlapping with test steps.
-  test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
-  // Install default app, with the default start_url.
-  const GURL default_install_url = https_server()->GetURL(
-      "/banners/manifest_test_page.html?usp=chrome_default");
-  const GURL policy_install_url = https_server()->GetURL(
-      "/banners/manifest_test_page.html?usp=chrome_policy");
-
-  auto web_app_info_default = std::make_unique<WebAppInstallInfo>();
-  web_app_info_default->start_url = GetDefaultUrl();
-  web_app_info_default->scope = GetDefaultUrl();
-  web_app_info_default->title = u"Example Default App";
-  web_app_info_default->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  web_app_info_default->install_url = default_install_url;
-  const webapps::AppId& app_id_default =
-      test::InstallWebApp(profile(), std::move(web_app_info_default), true,
-                          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-
-  // Install policy app with a different start_url. This is to create the
-  // erroneous behavior, and install apps with a separate app_id.
-  auto web_app_info_policy = std::make_unique<WebAppInstallInfo>();
-  web_app_info_policy->start_url = policy_install_url;
-  web_app_info_policy->scope = GetDefaultUrl();
-  web_app_info_policy->title = u"Example Policy App";
-  web_app_info_policy->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  web_app_info_policy->install_url = policy_install_url;
-
-  const webapps::AppId& app_id_policy =
-      test::InstallWebApp(profile(), std::move(web_app_info_policy), true,
-                          webapps::WebappInstallSource::EXTERNAL_POLICY);
-  EXPECT_NE(app_id_default, app_id_policy);
-
-  // The pref should have been set when the WebAppProvider system starts and
-  // the policy manager finishes running. Reset the
-  // kErrorLoadedPolicyAppMigrationCompleted field to ensure a clean slate for
-  // testing.
-  profile()->GetPrefs()->SetBoolean(
-      prefs::kErrorLoadedPolicyAppMigrationCompleted, false);
-
-  // Load the policy app to trigger a refresh of the policy. Wait for
-  // synchronization to finish.
-  base::Value::List app_list;
-  app_list.Append(GetPolicyItem());
-  base::test::TestFuture<void> future;
-  provider().policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
-      future.GetCallback());
-  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
-                                 std::move(app_list));
-  EXPECT_TRUE(future.Wait());
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
-
-  // Verify after deduping the apps, both the default and the policy apps are
-  // deduped into the same app, and that the old policy app has been removed.
-  EXPECT_EQ(provider().registrar_unsafe().LookUpAppByInstallSourceInstallUrl(
-                WebAppManagement::kDefault, default_install_url),
-            provider().registrar_unsafe().LookUpAppByInstallSourceInstallUrl(
-                WebAppManagement::kPolicy, policy_install_url));
-  EXPECT_EQ(provider().registrar_unsafe().GetAppById(app_id_policy), nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
-                       PrefSetDoesNotMigrateErrorLoadedPolicyApp) {
-  // Wait till synchronization has completed for all sources before executing
-  // tests, to prevent startup steps from overlapping with test steps.
-  test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
-  const GURL default_install_url = https_server()->GetURL(
-      "/banners/manifest_test_page.html?usp=chrome_default");
-  const GURL policy_install_url = https_server()->GetURL(
-      "/banners/manifest_test_page.html?usp=chrome_policy");
-
-  auto web_app_info_default = std::make_unique<WebAppInstallInfo>();
-  web_app_info_default->start_url = GetDefaultUrl();
-  web_app_info_default->scope = GetDefaultUrl();
-  web_app_info_default->title = u"Example Default App";
-  web_app_info_default->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  web_app_info_default->install_url = default_install_url;
-  const webapps::AppId& app_id_default =
-      test::InstallWebApp(profile(), std::move(web_app_info_default), true,
-                          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-
-  auto web_app_info_policy = std::make_unique<WebAppInstallInfo>();
-  web_app_info_policy->start_url = policy_install_url;
-  web_app_info_policy->scope = GetDefaultUrl();
-  web_app_info_policy->title = u"Example Policy App";
-  web_app_info_policy->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  web_app_info_policy->install_url = policy_install_url;
-
-  const webapps::AppId& app_id_policy =
-      test::InstallWebApp(profile(), std::move(web_app_info_policy), true,
-                          webapps::WebappInstallSource::EXTERNAL_POLICY);
-  EXPECT_NE(app_id_default, app_id_policy);
-
-  // The pref should have been set when the WebAppProvider system starts and the
-  // policy manager finishes running.
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
-      prefs::kErrorLoadedPolicyAppMigrationCompleted));
-
-  base::Value::List app_list;
-  app_list.Append(GetPolicyItem());
-  base::test::TestFuture<void> future;
-  provider().policy_manager().SetOnAppsSynchronizedCompletedCallbackForTesting(
-      future.GetCallback());
-  profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
-                                 std::move(app_list));
-  EXPECT_TRUE(future.Wait());
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
-
-  EXPECT_NE(provider().registrar_unsafe().LookUpAppByInstallSourceInstallUrl(
-                WebAppManagement::kDefault, default_install_url),
-            provider().registrar_unsafe().LookUpAppByInstallSourceInstallUrl(
-                WebAppManagement::kPolicy, policy_install_url));
-  EXPECT_NE(provider().registrar_unsafe().GetAppById(app_id_policy), nullptr);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

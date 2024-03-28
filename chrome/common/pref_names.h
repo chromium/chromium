@@ -2394,11 +2394,6 @@ inline constexpr char kWebAppsAppAgnosticMlState[] =
 inline constexpr char kWebAppsAppAgnosticIPHLinkCapturingState[] =
     "web_apps.app_agnostic_iph_link_capturing_state";
 
-// A boolean value that stores information about whether error loaded policy
-// apps have been migrated for this profile.
-inline constexpr char kErrorLoadedPolicyAppMigrationCompleted[] =
-    "web_apps.error_loaded_policy_apps_migrated";
-
 // A string representing the last version of Chrome preinstalled web apps were
 // synchronised for.
 inline constexpr char kWebAppsLastPreinstallSynchronizeVersion[] =

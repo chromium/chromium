@@ -78,8 +78,6 @@ constexpr char kWebAppMlPreferences[] = "WebAppMlPreferences";
 constexpr char kWebAppIphLcPreferences[] = "WebAppIPHLinkCapturingPreferences";
 constexpr char kShouldGarbageCollectStoragePartitions[] =
     "ShouldGarbageCollectStoragePartitions";
-constexpr char kErrorLoadedPolicyAppsMigrated[] =
-    "ErrorLoadedPolicyAppsMigrated";
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
@@ -116,7 +114,6 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kWebAppMlPreferences);
   index.Append(kWebAppIphLcPreferences);
   index.Append(kShouldGarbageCollectStoragePartitions);
-  index.Append(kErrorLoadedPolicyAppsMigrated);
   index.Append(kLockManager);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
@@ -266,14 +263,6 @@ base::Value::Dict BuildShouldGarbageCollectStoragePartitionsPrefsJson(
   root.Set(kShouldGarbageCollectStoragePartitions,
            profile->GetPrefs()->GetBoolean(
                prefs::kShouldGarbageCollectStoragePartitions));
-  return root;
-}
-
-base::Value::Dict BuildErrorLoadedPolicyAppMigratedPrefsJson(Profile* profile) {
-  base::Value::Dict root;
-  root.Set(kErrorLoadedPolicyAppsMigrated,
-           profile->GetPrefs()->GetBoolean(
-               prefs::kErrorLoadedPolicyAppMigrationCompleted));
   return root;
 }
 
@@ -491,7 +480,6 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildWebAppMlPrefsJson(profile));
   root.Append(BuildWebAppLinkCapturingIphPrefsJson(profile));
   root.Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile));
-  root.Append(BuildErrorLoadedPolicyAppMigratedPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));

@@ -90,16 +90,6 @@ bool AreForceInstalledAppsAllowed(Profile* profile) {
   return allowed;
 }
 
-bool HasPreviouslyMigratedErrorLoadedPolicyApp(PrefService* pref_service) {
-  return pref_service->GetBoolean(
-      prefs::kErrorLoadedPolicyAppMigrationCompleted);
-}
-
-void RecordErrorLoadedPolicyAppsMigrated(PrefService* pref_service) {
-  pref_service->SetBoolean(prefs::kErrorLoadedPolicyAppMigrationCompleted,
-                           true);
-}
-
 bool IsForceUnregistrationPolicyEnabled() {
   return base::FeatureList::IsEnabled(
       web_app::kDesktopPWAsForceUnregisterOSIntegration);
@@ -211,8 +201,6 @@ void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
   registry->RegisterListPref(prefs::kWebAppSettings);
-  registry->RegisterBooleanPref(prefs::kErrorLoadedPolicyAppMigrationCompleted,
-                                false);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kIsolatedWebAppInstallForceList);
 #endif
@@ -375,19 +363,9 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
               install_options.override_icon_url.value())) {
         install_options.force_reinstall = true;
       }
-
-      // TODO(crbug.com/1440946): Remove code in M121.
-      if (IsMaybeErrorLoadedPolicyApp(app_id.value(),
-                                      install_options.install_url)) {
-        install_options.force_reinstall = true;
-      }
     }
     install_options_list.push_back(std::move(install_options));
   }
-  // We only need to record the error loaded policy app migrations once, since
-  // it is guaranteed to be fixed post M115, and a one time migration should
-  // effectively fix the erroneous use-cases.
-  RecordErrorLoadedPolicyAppsMigrated(profile_->GetPrefs());
 
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list), ExternalInstallSource::kExternalPolicy,
@@ -904,29 +882,6 @@ void WebAppPolicyManager::OnWebAppForceInstallPolicyParsed() {
   if (policy_settings_and_force_installs_applied_) {
     std::move(policy_settings_and_force_installs_applied_).Run();
   }
-}
-
-bool WebAppPolicyManager::IsMaybeErrorLoadedPolicyApp(
-    const webapps::AppId& app_id,
-    const GURL& policy_install_url) {
-  if (!base::FeatureList::IsEnabled(features::kMigrateErrorLoadedPolicyApps)) {
-    return false;
-  }
-
-  // We want to only run the migration once, since there can be non-installable
-  // sites without manifests that can be force installed, and this fix would
-  // cause them to be reinstalled over and over again.
-  if (HasPreviouslyMigratedErrorLoadedPolicyApp(profile_->GetPrefs())) {
-    return false;
-  }
-
-  const WebApp* existing_policy_app =
-      provider_->registrar_unsafe().GetAppById(app_id);
-  CHECK(existing_policy_app);
-  return existing_policy_app->start_url() == policy_install_url &&
-         !provider_->registrar_unsafe().IsPlaceholderApp(
-             app_id, WebAppManagement::kPolicy) &&
-         existing_policy_app->manifest_url().is_empty();
 }
 
 }  // namespace web_app
