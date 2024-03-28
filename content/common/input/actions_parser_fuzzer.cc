@@ -7,11 +7,11 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -22,7 +22,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   std::optional<base::Value> value = base::JSONReader::Read(
-      base::StringPiece(reinterpret_cast<const char*>(data), size));
+      std::string_view(reinterpret_cast<const char*>(data), size));
   if (!value)
     return 0;
   content::ActionsParser parser(std::move(*value));

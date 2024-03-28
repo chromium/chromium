@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_WEBID_IDENTITY_URL_LOADER_THROTTLE_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -54,8 +55,8 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
       const network::mojom::URLResponseHead& response_head);
 
   static bool HeaderHasToken(const net::HttpResponseHeaders& headers,
-                             base::StringPiece header_name,
-                             base::StringPiece token);
+                             std::string_view header_name,
+                             std::string_view token);
 
   GURL request_url_;
   SetIdpStatusCallback set_idp_status_cb_;

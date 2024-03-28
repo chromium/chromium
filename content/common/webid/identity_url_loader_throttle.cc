@@ -4,6 +4,8 @@
 
 #include "content/common/webid/identity_url_loader_throttle.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -118,8 +120,8 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
 // static
 bool IdentityUrlLoaderThrottle::HeaderHasToken(
     const net::HttpResponseHeaders& headers,
-    base::StringPiece header_name,
-    base::StringPiece token) {
+    std::string_view header_name,
+    std::string_view token) {
   if (!headers.HasHeader(header_name)) {
     return false;
   }
@@ -127,7 +129,7 @@ bool IdentityUrlLoaderThrottle::HeaderHasToken(
   std::string value;
   headers.GetNormalizedHeader(header_name, &value);
 
-  std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
       value, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return base::Contains(tokens, token);
 }
