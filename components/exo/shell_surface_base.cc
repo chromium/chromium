@@ -1363,6 +1363,9 @@ void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
     return;
   }
 
+  if (!HasHitTestRegion()) {
+    return;
+  }
   GetHitTestMask(mask);
 
   const float scale = GetScale();
