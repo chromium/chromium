@@ -396,8 +396,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
               views::Builder<views::ScrollView>(
                   std::make_unique<ContentScrollView>())
                   .SetContents(
-                      views::Builder<views::View>()
-                          .SetUseDefaultFillLayout(true)
+                      views::Builder<views::BoxLayoutView>()
+                          .SetID(mahi_constants::ViewId::kScrollViewContents)
                           .AddChildren(
                               views::Builder<SummaryOutlinesSection>(
                                   std::make_unique<SummaryOutlinesSection>(

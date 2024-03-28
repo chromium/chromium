@@ -23,6 +23,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
@@ -548,6 +549,57 @@ TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
   EXPECT_FALSE(question_answer_view->GetVisible());
   EXPECT_FALSE(back_button->GetVisible());
   EXPECT_TRUE(send_button->GetVisible());
+}
+
+TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
+  auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* const scroll_view_contents =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kScrollViewContents);
+
+  // Make sure the views have different size and their heights exceed the
+  // visible rect's height of the scroll view.
+  summary_outlines_section->SetPreferredSize(gfx::Size(80, 300));
+  question_answer_view->SetPreferredSize(gfx::Size(80, 600));
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_EQ(summary_outlines_section->height(),
+            scroll_view_contents->GetPreferredSize().height());
+
+  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+  question_textfield->SetText(u"input");
+
+  // Transition to Q&A view. Scroll view should change its preferred height (the
+  // height that the view will take when it is not constrained by `ScrollView`).
+  LeftClickOn(panel_view()->GetViewByID(
+      mahi_constants::ViewId::kAskQuestionSendButton));
+
+  // Run layout so the views update their size.
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+
+  EXPECT_EQ(question_answer_view->height(),
+            scroll_view_contents->GetPreferredSize().height());
+
+  // Transition back to summary outlines view. Scroll view should change its
+  // preferred height.(the height that the view will take when it is not
+  // constrained by `ScrollView`).
+  LeftClickOn(panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton));
+
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+
+  EXPECT_EQ(summary_outlines_section->height(),
+            scroll_view_contents->GetPreferredSize().height());
 }
 
 // Tests that the question textfield accepts user input and creates a text

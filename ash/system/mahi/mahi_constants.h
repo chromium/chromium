@@ -14,6 +14,7 @@ enum ViewId {
   kCloseButton = 1,
   kContentTitle,
   kContentIcon,
+  kScrollViewContents,
   kSummaryLabel,
   kThumbsUpButton,
   kThumbsDownButton,
