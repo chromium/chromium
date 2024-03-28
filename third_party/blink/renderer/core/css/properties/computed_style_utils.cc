@@ -266,7 +266,7 @@ const blink::Color ComputedStyleUtils::BorderSideColor(
                        is_current_color);
 }
 
-const CSSValue* ComputedStyleUtils::BackgroundImageOrWebkitMaskImage(
+const CSSValue* ComputedStyleUtils::BackgroundImageOrMaskImage(
     const ComputedStyle& style,
     bool allow_visited_style,
     const FillLayer& fill_layer,
@@ -305,7 +305,7 @@ const CSSValue* ComputedStyleUtils::ValueForFillSize(
       CSSValuePair::kKeepIdenticalValues);
 }
 
-const CSSValue* ComputedStyleUtils::BackgroundImageOrWebkitMaskSize(
+const CSSValue* ComputedStyleUtils::BackgroundImageOrMaskSize(
     const ComputedStyle& style,
     const FillLayer& fill_layer) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
@@ -507,7 +507,7 @@ const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
   return result;
 }
 
-const CSSValue* ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
+const CSSValue* ComputedStyleUtils::BackgroundPositionOrMaskPosition(
     const CSSProperty& resolved_property,
     const ComputedStyle& style,
     const FillLayer* curr_layer) {

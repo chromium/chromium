@@ -561,7 +561,7 @@ const CSSValue* BackgroundPosition::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
+  return ComputedStyleUtils::BackgroundPositionOrMaskPosition(
       *this, style, &style.BackgroundLayers());
 }
 
@@ -3942,7 +3942,7 @@ const CSSValue* MaskPosition::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
+  return ComputedStyleUtils::BackgroundPositionOrMaskPosition(
       *this, style, &style.MaskLayers());
 }
 

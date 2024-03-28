@@ -60,15 +60,14 @@ class CORE_EXPORT ComputedStyleUtils {
                                             bool* is_current_color);
   static CSSValue* ZoomAdjustedPixelValueForLength(const Length&,
                                                    const ComputedStyle&);
-  static const CSSValue* BackgroundImageOrWebkitMaskImage(
-      const ComputedStyle&,
-      bool allow_visited_style,
-      const FillLayer&,
-      CSSValuePhase value_phase);
+  static const CSSValue* BackgroundImageOrMaskImage(const ComputedStyle&,
+                                                    bool allow_visited_style,
+                                                    const FillLayer&,
+                                                    CSSValuePhase value_phase);
   static const CSSValue* ValueForFillSize(const FillSize&,
                                           const ComputedStyle&);
-  static const CSSValue* BackgroundImageOrWebkitMaskSize(const ComputedStyle&,
-                                                         const FillLayer&);
+  static const CSSValue* BackgroundImageOrMaskSize(const ComputedStyle&,
+                                                   const FillLayer&);
   static const CSSValueList* CreatePositionListForLayer(const CSSProperty&,
                                                         const FillLayer&,
                                                         const ComputedStyle&);
@@ -86,10 +85,9 @@ class CORE_EXPORT ComputedStyleUtils {
       const LayoutObject*,
       bool allow_visited_style,
       CSSValuePhase value_phase);
-  static const CSSValue* BackgroundPositionOrWebkitMaskPosition(
-      const CSSProperty&,
-      const ComputedStyle&,
-      const FillLayer*);
+  static const CSSValue* BackgroundPositionOrMaskPosition(const CSSProperty&,
+                                                          const ComputedStyle&,
+                                                          const FillLayer*);
   static const CSSValue* BackgroundPositionXOrWebkitMaskPositionX(
       const ComputedStyle&,
       const FillLayer*);
