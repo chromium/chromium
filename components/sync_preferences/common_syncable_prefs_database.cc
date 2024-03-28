@@ -34,9 +34,9 @@ namespace syncable_prefs_ids {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When adding a new entry, append the
 // enumerator to the end and add it to the `SyncablePref` enum in
-// tools/metrics/histograms/enums.xml. When removing an unused enumerator,
-// comment it out here, making it clear the value was previously used, and
-// add "(obsolete)" to the corresponding entry in enums.xml.
+// tools/metrics/histograms/metadata/sync/enums.xml. When removing an unused
+// enumerator, comment it out here, making it clear the value was previously
+// used, and add "(obsolete)" to the corresponding entry in enums.xml.
 enum {
   kSyncablePrefForTesting = 0,  // For tests.
   kAutofillCreditCardEnabled = 1,
@@ -49,7 +49,7 @@ enum {
   kShowAppsShortcutInBookmarkBar = 8,
   kShowBookmarkBar = 9,
   kShowManagedBookmarksInBookmarkBar = 10,
-  kClearBrowsingDataHistoryNoticeShownTimes = 11,
+  // kClearBrowsingDataHistoryNoticeShownTimes = 11, (was never actually synced)
   // kDeleteBrowsingHistory = 12, (no longer synced)
   // kDeleteBrowsingHistoryBasic = 13, (no longer synced)
   // kDeleteCache = 14, (no longer synced)
@@ -145,9 +145,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
          {syncable_prefs_ids::kShowManagedBookmarksInBookmarkBar,
-          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kClearBrowsingDataHistoryNoticeShownTimes,
-         {syncable_prefs_ids::kClearBrowsingDataHistoryNoticeShownTimes,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {browsing_data::prefs::kLastClearBrowsingDataTime,
          {syncable_prefs_ids::kLastClearBrowsingDataTime, syncer::PREFERENCES,

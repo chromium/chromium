@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="ShowAppsShortcutInBookmarkBar"/>
   <int value="9" label="ShowBookmarkBar"/>
   <int value="10" label="ShowManagedBookmarksInBookmarkBar"/>
-  <int value="11" label="ClearBrowsingDataHistoryNoticeShownTimes"/>
+  <int value="11" label="(obsolete) ClearBrowsingDataHistoryNoticeShownTimes"/>
   <int value="12" label="(obsolete) DeleteBrowsingHistory"/>
   <int value="13" label="(obsolete) DeleteBrowsingHistoryBasic"/>
   <int value="14" label="(obsolete) DeleteCache"/>
