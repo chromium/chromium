@@ -292,13 +292,6 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
                  HTML_FILENAME, [test_args])
           break
 
-  def GetExpectationsForTest(self):
-    if self._os_name == 'android':
-      # Temporarily expect all tests to fail
-      # TODO(crbug.com/1363409): remove this after failures suppressed
-      return (set([gpu_integration_test.ResultType.Failure]), False)
-    return super().GetExpectationsForTest()
-
   def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
     # Instances of WebGpuMessageTimeoutError:
     # https://luci-analysis.appspot.com/p/chromium/rules/b9130da14f0fcab5d6ee415d209bf71b
