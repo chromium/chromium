@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -23,17 +25,23 @@ std::vector<ash::AppCollection> GetAppCollections() {
 std::u16string GetAppCollectionName(ash::AppCollection collection) {
   switch (collection) {
     case ash::AppCollection::kEssentials:
-      return u"Essentials";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_ESSENTIALS_NAME);
     case ash::AppCollection::kProductivity:
-      return u"Productivity";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_PRODUCTIVITY_NAME);
     case ash::AppCollection::kCreativity:
-      return u"Creativity";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_CREATIVITY_NAME);
     case ash::AppCollection::kEntertainment:
-      return u"Entertainment";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_ENTERTAINMENT_NAME);
     case ash::AppCollection::kUtilities:
-      return u"Utilities";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_UTILITIES_NAME);
     case ash::AppCollection::kUnknown:
-      return u"Downloaded by you";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_YOUR_APPS_NAME);
     case ash::AppCollection::kOem:
       NOTREACHED();
       return u"";

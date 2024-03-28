@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/view_shadow.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -16,6 +17,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -68,7 +70,9 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   // Add dialog title.
-  title_ = AddChildView(std::make_unique<views::Label>(u"Exit Tutorial View?"));
+  title_ =
+      AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_TITLE)));
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1, *title_);
   title_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -78,9 +82,9 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   title_->layer()->SetFillsBoundsOpaquely(false);
 
   // Add dialog body.
-  auto* body = AddChildView(
-      std::make_unique<views::Label>(u"You can start customizing your apps "
-                                     u"view once you exit Tutorial View."));
+  auto* body =
+      AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_SUBTITLE)));
   body->SetProperty(views::kMarginsKey,
                     gfx::Insets::TLBR(kMarginBetweenTitleAndBody, 0,
                                       kMarginBetweenBodyAndButtons, 0));
@@ -118,11 +122,15 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
   cancel_button_ = button_row->AddChildView(std::make_unique<ash::PillButton>(
       views::Button::PressedCallback(
           base::BindRepeating(run_callback, base::Unretained(this), false)),
-      u"Cancel", PillButton::Type::kDefaultWithoutIcon, nullptr));
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_CANCEL),
+      PillButton::Type::kDefaultWithoutIcon, nullptr));
   accept_button_ = button_row->AddChildView(std::make_unique<ash::PillButton>(
       views::Button::PressedCallback(
           base::BindRepeating(run_callback, base::Unretained(this), true)),
-      u"Exit", PillButton::Type::kPrimaryWithoutIcon, nullptr));
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_EXIT),
+      PillButton::Type::kPrimaryWithoutIcon, nullptr));
 }
 
 AppsCollectionsDismissDialog::~AppsCollectionsDismissDialog() {}

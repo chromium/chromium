@@ -6674,6 +6674,46 @@ Here are some things you can try to get started.
       <message name="IDS_AUTH_FACTOR_LABEL_SIGNED_IN" desc="Label on user's login screen when a Chromebook is successfully logged in.">
         Signing in...
       </message>
+      <!-- Launcher: Apps Collections -->
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_ESSENTIALS_NAME" desc="Label for the 'Essentials' collection in the Launcher Apps Collections Tutorial View, which shows a subset of default apps that were categorized as belonging to the Essential apps.">
+        Essentials
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_PRODUCTIVITY_NAME" desc="Label for the 'Productivity' collection in the Launcher Apps Collections Tutorial View, which shows a subset of default apps that were categorized as belonging to the Productivity apps.">
+        Productivity
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_CREATIVITY_NAME" desc="Label for the 'Creativity' collection in the Launcher Apps Collections Tutorial View, which shows a subset of default apps that were categorized as belonging to the Creativity apps.">
+        Creativity
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_ENTERTAINMENT_NAME" desc="Label for the 'Entertainment' collection in the Launcher Apps Collections Tutorial View, which shows a subset of default apps that were categorized as belonging to the Entertainment apps section.">
+        Entertainment
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_UTILITIES_NAME" desc="Label for the 'Utilities' collection in the Launcher Apps Collections Tutorial View, which shows a subset of default apps that were categorized as belonging to the Utilities apps section.">
+        Utilities
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_YOUR_APPS_NAME" desc="Label for the 'Your apps' collection in the Launcher Apps Collections Tutorial View, which shows a subset of apps that were downloaded by the user.">
+        Your apps
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_TITLE" desc="Text for the Apps Collections Tutorial View nudge that is shown on top of the Apps Collections in the Launcher. The tutorial view displays apps categorized in different subsets.">
+        Get to know your built-in apps
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_SUBTITLE" desc="Subtext for the Apps Collections Tutorial View nudge that is shown on top of the Apps Collections in the Launcher. The tutorial view displays apps categorized in different subsets.">
+        Apps are organized by category temporarily
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON" desc="Label for the Apps Collections Tutorial View nudge button that show on top of the Apps Collections in the Launcher. The tutorial view displays apps categorized in different subsets. Clicking the button will return users to the default launcher with apps displayed in a grid.">
+        Exit
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_TITLE" desc="Text for the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View">
+        Exit view?
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_SUBTITLE" desc="Subtext for the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View">
+        You can start customizing your app layout once you exit this view.
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_CANCEL" desc="The label for the cancel button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog asks for confirmation to exit the Apps Collections Tutorial View and pressing the cancel buton will close the dialog and keep the Tutorial View">
+        Cancel
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_EXIT" desc="The label for the exit button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View and pressing the exit buton will close the dialog and exit the Tutorial View">
+        Exit
+      </message>
 
       <!-- Launcher: Continue Section -->
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL" desc="Label for the continue section of the launcher, which shows recent files and apps that the user can continue using. [CHAR_LIMIT=70]">

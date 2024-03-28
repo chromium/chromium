@@ -196,15 +196,18 @@ void AppListToastContainerView::CreateTutorialNudgeView() {
     return;
   }
 
-  AppListToastView::Builder toast_view_builder(u"Tutorial view is on");
+  AppListToastView::Builder toast_view_builder(
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_TITLE));
 
   toast_view_builder
       .SetButton(
-          u"Dismiss view",
+          l10n_util::GetStringUTF16(
+              IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON),
           base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
                               base::Unretained(this)))
       .SetStyleForTabletMode(tablet_mode_)
-      .SetSubtitle(u"Apps are grouped by category")
+      .SetSubtitle(l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_SUBTITLE))
       .SetIconBackground(true);
 
   toast_view_ = AddChildView(toast_view_builder.Build());
