@@ -1244,7 +1244,7 @@ gfx::Size WebMediaPlayerImpl::VisibleSize() const {
 
 bool WebMediaPlayerImpl::Paused() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  return pipeline_controller_->GetPlaybackRate() == 0.0f;
+  return paused_;
 }
 
 bool WebMediaPlayerImpl::PausedWhenHidden() const {
