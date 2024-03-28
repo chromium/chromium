@@ -101,6 +101,8 @@ const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
     &kDevToolsConsoleInsights, "aida_model_id", /*default*/ ""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
     &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
+const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn{
+    &kDevToolsConsoleInsights, "opt_in", /*default*/ true};
 
 // Separate dogfood feature for DevTools console insights,
 // not restricted by enterprise policy or location.

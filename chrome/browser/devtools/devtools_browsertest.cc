@@ -3932,8 +3932,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_disabledByDefault=true"));
 #else
   EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_disabledByDefault=true"));
 #endif
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));

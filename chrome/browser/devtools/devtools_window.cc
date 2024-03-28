@@ -1297,6 +1297,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                "&aidaTemperature=" +
                base::NumberToString(
                    features::kDevToolsConsoleInsightsTemperature.Get());
+        if (features::kDevToolsConsoleInsightsOptIn.Get()) {
+          url += "&ci_disabledByDefault=true";
+        }
       }
       if (blocked_reason.blocked_by_age) {
         url += "&ci_blockedByAge=true";

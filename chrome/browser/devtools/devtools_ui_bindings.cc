@@ -404,6 +404,10 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
+  if (key == "ci_disabledByDefault" && value == "true") {
+    return value;
+  }
+
   return std::string();
 }
 
