@@ -162,8 +162,10 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
+#include "chrome/browser/ash/dbus_schedqos_state_handler.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
 #include "chromeos/ash/components/memory/mglru.h"
+#include "content/public/common/content_features.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 
@@ -977,6 +979,16 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   chrome_feature_list_creator->CreateFeatureList();
 
   content::InitializeMojoCore();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
+    ash::DBusSchedQOSStateHandler::Create(
+        base::SequencedTaskRunner::GetCurrentDefault());
+    // DBusSchedQOSStateHandler requires to set process priority explicitly.
+    base::Process::Current().SetPriority(
+        base::Process::Priority::kUserBlocking);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // LacrosService instance needs the sequence of the main thread,

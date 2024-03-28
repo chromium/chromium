@@ -17,6 +17,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
@@ -112,7 +113,12 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (GetProcessType() == switches::kRendererProcess) {
+  if (base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
+    // All child processes in ChromeOS inherit the main process's priority when
+    // it is forked. It is required to set priority explicitly here because
+    // setting thread QoS states requires the process QoS state in advance.
+    process.process.SetPriority(base::Process::Priority::kUserBlocking);
+  } else if (GetProcessType() == switches::kRendererProcess) {
     process.process.InitializePriority();
   }
 #endif

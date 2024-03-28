@@ -43,6 +43,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
 // is unchanged, since background process is under the spell of the background
 // CPU c-group (via cgroup.procs).
 BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
+
+class ProcessPriorityDelegate;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -252,6 +254,10 @@ class BASE_EXPORT Process {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Sets a delegate which handles process priority changes. This
+  // must be externally synchronized with any call to base::Process methods.
+  static void SetProcessPriorityDelegate(ProcessPriorityDelegate* delegate);
+
   // Exposes OneGroupPerRendererEnabled() to unit tests.
   static bool OneGroupPerRendererEnabledForTesting();
 

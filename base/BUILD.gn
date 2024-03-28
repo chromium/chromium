@@ -1035,7 +1035,10 @@ component("base") {
   }
 
   if (is_chromeos) {
-    sources += [ "threading/platform_thread_cros.cc" ]
+    sources += [
+      "process/process_priority_delegate.h",
+      "threading/platform_thread_cros.cc",
+    ]
   }
 
   if (is_chromeos_ash) {

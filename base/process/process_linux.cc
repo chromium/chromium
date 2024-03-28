@@ -33,6 +33,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/process/process_handle.h"
+#include "base/process/process_priority_delegate.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -56,6 +57,8 @@ namespace {
 const int kForegroundPriority = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
+ProcessPriorityDelegate* g_process_priority_delegate = nullptr;
+
 // We are more aggressive in our lowering of background process priority
 // for chromeos as we have much more control over other processes running
 // on the machine.
@@ -185,6 +188,10 @@ Time Process::CreationTime() const {
 // static
 bool Process::CanSetPriority() {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (g_process_priority_delegate) {
+    return g_process_priority_delegate->CanSetProcessPriority();
+  }
+
   if (CGroups::Get().enabled)
     return true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -217,6 +224,10 @@ bool Process::SetPriority(Priority priority) {
   DCHECK(IsValid());
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (g_process_priority_delegate) {
+    return g_process_priority_delegate->SetProcessPriority(process_, priority);
+  }
+
   // Go through all the threads for a process and set it as [un]backgrounded.
   // Threads that are created after this call will also be [un]backgrounded by
   // detecting that the main thread of the process has been [un]backgrounded.
@@ -325,6 +336,15 @@ bool Process::IsSeccompSandboxed() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
+// static
+void Process::SetProcessPriorityDelegate(ProcessPriorityDelegate* delegate) {
+  // A component cannot override a delegate set by another component, thus
+  // disallow setting a delegate when one already exists.
+  DCHECK_NE(!!g_process_priority_delegate, !!delegate);
+
+  g_process_priority_delegate = delegate;
+}
+
 // static
 bool Process::OneGroupPerRendererEnabledForTesting() {
   return OneGroupPerRendererEnabled();
