@@ -131,13 +131,10 @@ Element* HTMLDetailsElement::FindMainSummary() const {
   if (HTMLSummaryElement* summary =
           Traversal<HTMLSummaryElement>::FirstChild(*this))
     return summary;
-
-  auto* element = UserAgentShadowRoot()->firstChild();
-  CHECK(!element || IsA<HTMLSlotElement>(element));
-  HTMLSlotElement* slot = To<HTMLSlotElement>(element);
-  DCHECK(slot->firstChild());
-  CHECK(IsA<HTMLSummaryElement>(*slot->firstChild()));
-  return To<Element>(slot->firstChild());
+  HTMLSlotElement& slot =
+      To<HTMLSlotElement>(*UserAgentShadowRoot()->firstChild());
+  CHECK(IsA<HTMLSummaryElement>(*slot.firstChild()));
+  return To<Element>(slot.firstChild());
 }
 
 void HTMLDetailsElement::ManuallyAssignSlots() {
