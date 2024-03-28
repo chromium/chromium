@@ -4308,6 +4308,9 @@ enum WebFeature {
   kCSSColor_SpaceOkLxx = 4932,
   kCSSColor_SpaceOkLxx_outOfRec2020 = 4933,
 
+  // Uses of base URL in sandboxed srcdoc frames:
+  kSandboxedSrcdocFrameResolvesRelativeURL = 4934,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

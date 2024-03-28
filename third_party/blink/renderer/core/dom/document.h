@@ -2400,6 +2400,14 @@ class CORE_EXPORT Document : public ContainerNode,
   KURL base_url_override_;  // An alternative base URL that takes precedence
                             // over base_url_ (but not base_element_url_).
 
+  // Indicates whether all the conditions are met to trigger recording of counts
+  // for cases where sandboxed srcdoc documents use their base url to resolve
+  // relative urls.
+  // Note: mutable since it needs to be reset inside a const function.
+  // TODO(https://crbug.com/330744612): Remove this code once we have the data
+  // around how often this happens.
+  mutable bool should_record_sandboxed_srcdoc_baseurl_metrics_ = false;
+
   // Used in FallbackBaseURL() to provide the base URL for  about:srcdoc  and
   // about:blank documents, which is the initiator's base URL at the time the
   // navigation was initiated. Separate from the base_url_* fields because the

@@ -119,6 +119,60 @@ class DocumentTest : public PageTestBase {
 
   void SetHtmlInnerHTML(const char*);
 
+  // Note: callers must mock any urls that are referred to in `html_content`,
+  // with the exception of foo.html, which can be assumed to be defined by this
+  // function.
+  // Note: callers must not use double-quotes in the `html_content` string,
+  // since that will conflict with the srcdoc attribute assignment in the
+  // javascript below.
+  enum SandboxState { kIsSandboxed, kIsNotSandboxed };
+  enum UseCountedExpectation { kIsUseCounted, kIsNotUseCounted };
+  void NavigateSrcdocMaybeSandboxed(
+      const String& base_url,
+      const std::string& html_content,
+      const SandboxState sandbox_state,
+      const UseCountedExpectation use_counted_expectation) {
+    WebURL mocked_mainframe_url =
+        url_test_helpers::RegisterMockedURLLoadFromBase(
+            base_url, test::CoreTestDataPath(),
+            WebString::FromUTF8("foo.html"));
+
+    frame_test_helpers::WebViewHelper web_view_helper;
+    // Load a non-about:blank simple mainframe page.
+    web_view_helper.InitializeAndLoad(mocked_mainframe_url.GetString().Utf8());
+
+    WebLocalFrame* main_frame = web_view_helper.LocalMainFrame();
+    const char js_template[] =
+        R"( javascript:
+            var frm = document.createElement('iframe');
+            %s
+            frm.srcdoc = "%s";
+            document.body.appendChild(frm);
+        )";
+    frame_test_helpers::LoadFrame(
+        main_frame,
+        base::StringPrintf(
+            js_template,
+            sandbox_state == kIsSandboxed ? "frm.sandbox = '';" : "",
+            html_content.c_str()));
+    EXPECT_NE(nullptr, main_frame->FirstChild());
+    WebLocalFrame* iframe = main_frame->FirstChild()->ToWebLocalFrame();
+
+    Document* srcdoc_document = iframe->GetDocument();
+    KURL url("about:srcdoc");
+    EXPECT_EQ(url, srcdoc_document->Url());
+    switch (use_counted_expectation) {
+      case kIsUseCounted:
+        EXPECT_TRUE(srcdoc_document->IsUseCounted(
+            WebFeature::kSandboxedSrcdocFrameResolvesRelativeURL));
+        break;
+      case kIsNotUseCounted:
+        EXPECT_FALSE(srcdoc_document->IsUseCounted(
+            WebFeature::kSandboxedSrcdocFrameResolvesRelativeURL));
+    }
+    url_test_helpers::RegisterMockedURLUnregister(mocked_mainframe_url);
+  }
+
   void NavigateWithSandbox(const KURL& url) {
     auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
         /*html=*/"", url);
@@ -889,6 +943,63 @@ TEST_F(DocumentTest, ViewportPropagationNoRecalc) {
   int new_element_count = GetDocument().GetStyleEngine().StyleForElementCount();
 
   EXPECT_EQ(1, new_element_count - old_element_count);
+}
+
+// A relative url in a sandboxed, srcdoc frame should trigger a usecount.
+TEST_F(DocumentTest, SandboxedSrcdocUserCounts_BasicRelativeUrl) {
+  String base_url("https://example.com/");
+  WebURL mocked_url = url_test_helpers::RegisterMockedURLLoadFromBase(
+      base_url, test::CoreTestDataPath(), "white-1x1.png", "image/png");
+  std::string content =
+      R"(<html><body><img src='white-1x1.png'></body></html>)";
+  NavigateSrcdocMaybeSandboxed(base_url, content, kIsSandboxed, kIsUseCounted);
+  url_test_helpers::RegisterMockedURLUnregister(mocked_url);
+}
+
+// An absolute url in a sandboxed, srcdoc frame should not trigger a usecount.
+TEST_F(DocumentTest, SandboxedSrcdocUserCounts_BasicAbsoluteUrl) {
+  String base_url("https://example.com/");
+  WebURL mocked_url = url_test_helpers::RegisterMockedURLLoadFromBase(
+      base_url, test::CoreTestDataPath(), "white-1x1.png", "image/png");
+  std::string content =
+      R"(<html>
+           <body>
+             <img src='https://example.com/white-1x1.png'>
+          </body>
+        </html>)";
+  NavigateSrcdocMaybeSandboxed(base_url, content, kIsSandboxed,
+                               kIsNotUseCounted);
+  url_test_helpers::RegisterMockedURLUnregister(mocked_url);
+}
+
+// As in BasicRelativeUrl, but this time the url is for an iframe.
+TEST_F(DocumentTest, SandboxedSrcdocUserCounts_BasicRelativeUrlInIframe) {
+  String base_url("https://example.com/");
+  std::string content = R"(<html><body><iframe src='foo.html'></body></html>)";
+  NavigateSrcdocMaybeSandboxed(base_url, content, kIsSandboxed, kIsUseCounted);
+}
+
+// Non-sandboxed srcdoc frames with relative urls shouldn't trigger the use
+// count.
+TEST_F(DocumentTest,
+       SandboxedSrcdocUserCounts_BasicRelativeUrlInNonSandboxedIframe) {
+  String base_url("https://example.com/");
+  std::string content = R"(<html><body><iframe src='foo.html'></body></html>)";
+  NavigateSrcdocMaybeSandboxed(base_url, content, kIsNotSandboxed,
+                               kIsNotUseCounted);
+}
+
+// As in BasicAbsoluteUrl, but this time the url is for an iframe.
+TEST_F(DocumentTest, SandboxedSrcdocUserCounts_BasicAbsoluteUrlInIframe) {
+  String base_url("https://example.com/");
+  std::string content =
+      R"(<html>
+           <body>
+             <iframe src='https://example.com/foo.html'>
+           </body>
+         </html>)";
+  NavigateSrcdocMaybeSandboxed(base_url, content, kIsSandboxed,
+                               kIsNotUseCounted);
 }
 
 TEST_F(DocumentTest, CanExecuteScriptsWithSandboxAndIsolatedWorld) {
