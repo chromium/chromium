@@ -768,6 +768,8 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
                          AutofillSuggestionTriggerSource::kTextFieldDidChange);
 }
 
+// LINT.IfChange()
+
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element) {
   InformBrowserAboutUserInput(
@@ -787,15 +789,7 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     return;
   }
 
-  // Notify PasswordManager about potential username fields for UFF.
-  // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
-  // to be characters/digits of OTPs.
-  // Exclude too large inputs, as they are usually not usernames.
   const std::u16string element_value = element.Value().Utf16();
-  if (element_value.size() == 1 || element_value.size() > 100) {
-    return;
-  }
-
   static base::NoDestructor<WebString> kAutocomplete("autocomplete");
   std::string autocomplete_attribute =
       element.GetAttribute(*kAutocomplete).Utf8();
@@ -806,17 +800,12 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
   std::u16string label_attribute = element.GetAttribute(*kLabel).Utf16();
 
   if (!password_manager::util::CanBeConsideredAsSingleUsername(
-          name_attribute, id_attribute, label_attribute)) {
+          element_value, name_attribute, id_attribute, label_attribute)) {
     return;
   }
 
-  bool is_likely_otp =
-      autofill::MatchesRegex<password_manager::constants::kOneTimePwdRe>(
-          name_attribute) ||
-      autofill::MatchesRegex<password_manager::constants::kOneTimePwdRe>(
-          id_attribute) ||
-      base::Contains(autocomplete_attribute,
-                     password_manager::constants::kAutocompleteOneTimePassword);
+  bool is_likely_otp = password_manager::util::IsLikelyOtp(
+      name_attribute, id_attribute, autocomplete_attribute);
 
   GetPasswordManagerDriver().UserModifiedNonPasswordField(
       GetFieldRendererId(element), element_value,
@@ -824,6 +813,8 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
                      password_manager::constants::kAutocompleteUsername),
       is_likely_otp);
 }
+
+// LINT.ThenChange(//components/password_manager/core/browser/password_manager.cc:update_password_state_for_text_change)
 
 void PasswordAutofillAgent::TrackAutofilledElement(
     const blink::WebFormControlElement& element) {

@@ -18,11 +18,17 @@ namespace password_manager::util {
 // with autocomplete="username", or a textfield with autocomplete="webauthn".
 bool IsRendererRecognizedCredentialForm(const autofill::FormData& form);
 
-// Returns whether field attributes allow to consider it as a single username
-// field (e.g. don't indicate it's a search field).
-bool CanBeConsideredAsSingleUsername(const std::u16string& name,
+// Returns whether field attributes and value allow to consider it as a single
+// username field (e.g. don't indicate it's a search field).
+bool CanBeConsideredAsSingleUsername(const std::u16string& value,
+                                     const std::u16string& name,
                                      const std::u16string& id,
                                      const std::u16string& label);
+
+// Returns true if the field attributes indicate an OTP field.
+bool IsLikelyOtp(std::u16string_view name,
+                 std::u16string_view id,
+                 std::string_view autocomplete);
 
 }  // namespace password_manager::util
 
