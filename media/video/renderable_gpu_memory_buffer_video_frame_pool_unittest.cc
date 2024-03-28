@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
@@ -51,7 +52,9 @@ gfx::BufferFormat GetBufferFormatForVideoPixelFormat(
 
 class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
-  FakeContext() : weak_factory_(this) {}
+  FakeContext()
+      : context_provider_(viz::TestContextProvider::Create()),
+        weak_factory_(this) {}
   ~FakeContext() override = default;
 
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
@@ -72,12 +75,10 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
     DoCreateSharedImage(si_format, gpu_memory_buffer->GetSize(), color_space,
                         surface_origin, alpha_type, usage,
                         gpu_memory_buffer->CloneHandle());
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(),
-        gpu::SharedImageMetadata(si_format, gpu_memory_buffer->GetSize(),
-                                 color_space, surface_origin, alpha_type,
-                                 usage),
-        sync_token, nullptr, gpu_memory_buffer->GetType());
+    return context_provider_->SharedImageInterface()->CreateSharedImage(
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "RenderableGpuMemoryBufferVideoFramePoolTest"},
+        gpu_memory_buffer->CloneHandle());
   }
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -89,13 +90,10 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
       gpu::SyncToken& sync_token) override {
     DoCreateSharedImage(gpu_memory_buffer, plane, color_space, surface_origin,
                         alpha_type, usage);
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(),
-        gpu::SharedImageMetadata(viz::GetSinglePlaneSharedImageFormat(
-                                     gpu_memory_buffer->GetFormat()),
-                                 gpu_memory_buffer->GetSize(), color_space,
-                                 surface_origin, alpha_type, usage),
-        sync_token, nullptr, gpu_memory_buffer->GetType());
+    return context_provider_->SharedImageInterface()->CreateSharedImage(
+        gpu_memory_buffer, /*gpu_memory_buffer_manager=*/nullptr, plane,
+        {color_space, surface_origin, alpha_type, usage,
+         "RenderableGpuMemoryBufferVideoFramePoolTest"});
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,
@@ -122,6 +120,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
   base::WeakPtr<FakeContext> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
+  scoped_refptr<viz::TestContextProvider> context_provider_;
   base::WeakPtrFactory<FakeContext> weak_factory_;
 };
 
