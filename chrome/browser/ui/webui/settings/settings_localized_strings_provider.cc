@@ -132,6 +132,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -164,14 +165,6 @@
 
 namespace settings {
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS)
-std::string BuildOSSettingsUrl(const std::string& sub_page) {
-  std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
-  os_settings_url.append(sub_page);
-  return os_settings_url;
-}
-#endif
 
 void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -801,7 +794,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osPowerSettingsUrl",
-      BuildOSSettingsUrl(chromeos::settings::mojom::kPowerSubpagePath));
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPowerSubpagePath)
+          .spec());
 #endif
 }
 
@@ -897,10 +891,11 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString(
       "osSettingsLanguagesPageUrl",
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? BuildOSSettingsUrl(chromeos::settings::mojom::kLanguagesSubpagePath)
-          : BuildOSSettingsUrl(
-                chromeos::settings::mojom::kLanguagesAndInputSectionPath));
+      chrome::GetOSSettingsUrl(
+          ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? chromeos::settings::mojom::kLanguagesSubpagePath
+              : chromeos::settings::mojom::kLanguagesAndInputSectionPath)
+          .spec());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1447,13 +1442,15 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSyncSetupSettingsUrl",
-      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath));
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath)
+          .spec());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddString(
-      "osSettingsPrivacyHubSubpageUrl",
-      BuildOSSettingsUrl(chromeos::settings::mojom::kPrivacyHubSubpagePath));
+  html_source->AddString("osSettingsPrivacyHubSubpageUrl",
+                         chrome::GetOSSettingsUrl(
+                             chromeos::settings::mojom::kPrivacyHubSubpagePath)
+                             .spec());
 
   html_source->AddBoolean(
       "osDeprecateSyncMetricsToggle",
@@ -1463,7 +1460,8 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
       "osSyncSettingsUrl",
-      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath));
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath)
+          .spec());
 #endif
 }
 
@@ -1580,10 +1578,11 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           ash::IsAccountManagerAvailable(profile));
   html_source->AddString(
       "osSettingsAccountsPageUrl",
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? BuildOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
-          : BuildOSSettingsUrl(
-                chromeos::settings::mojom::kMyAccountsSubpagePath));
+      chrome::GetOSSettingsUrl(
+          ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? chromeos::settings::mojom::kPeopleSectionPath
+              : chromeos::settings::mojom::kMyAccountsSubpagePath)
+          .spec());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean(
       "isAccountManagerEnabled",

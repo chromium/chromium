@@ -64,10 +64,13 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/webui/settings/public/constants/routes_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #else
@@ -638,14 +641,15 @@ void ShowAppManagementPage(Profile* profile,
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
                                                                sub_page);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
 GURL GetOSSettingsUrl(const std::string& sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;
-  std::string url = kChromeUIOSSettingsURL;
-  return GURL(url + sub_page);
+  return GURL(std::string(kChromeUIOSSettingsURL) + sub_page);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ShowPrintManagementApp(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
