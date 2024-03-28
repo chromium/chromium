@@ -1497,8 +1497,7 @@ ScriptPromise<Credential> AuthenticationCredentialsContainer::store(
   auto promise = resolver->Promise();
 
   if (!(credential->IsFederatedCredential() ||
-        credential->IsPasswordCredential() ||
-        credential->IsDigitalCredential())) {
+        credential->IsPasswordCredential())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Store operation not permitted for this credential type."));
