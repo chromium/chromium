@@ -287,7 +287,6 @@ TEST_F(FormJsTest, RemoveForm) {
     info = block_observer->form_removal_info();
     return info != nil;
   }));
-  EXPECT_FALSE(info->form_removal_params.input_missing);
   EXPECT_THAT(info->form_removal_params.removed_forms,
               ElementsAre(FormRendererId(1)));
 }
@@ -315,7 +314,6 @@ TEST_F(FormJsTest, RemoveFormlessPasswordFields) {
     info = block_observer->form_removal_info();
     return info != nil;
   }));
-  EXPECT_FALSE(info->form_removal_params.input_missing);
   EXPECT_TRUE(info->form_removal_params.removed_forms.empty());
   EXPECT_THAT(info->form_removal_params.removed_unowned_fields,
               ElementsAre(FieldRendererId(1)));

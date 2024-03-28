@@ -39,10 +39,6 @@ struct BaseFormActivityParams {
                           BaseFormActivityParams* params);
   std::string frame_id;
 
-  // |input_missing| is set to true if at least one of the members above isn't
-  // set.
-  bool input_missing = false;
-
   // |is_main_frame| is true when the activity was registered in the main frame.
   bool is_main_frame = false;
 };
@@ -100,6 +96,11 @@ struct FormActivityParams : public BaseFormActivityParams {
   std::string field_type;
   std::string value;
   std::string type;
+
+  // |input_missing| is set to true if at least one of the members above isn't
+  // set.
+  bool input_missing = false;
+
   // |has_user_gesture| is true when the activity was registered as a result of
   // a user action, and not by an event created and dispatched by JavaScript.
   bool has_user_gesture = false;

@@ -175,7 +175,6 @@ TEST_P(FormActivityTabHelperTest,
   EXPECT_EQ("text", observer_->form_activity_info()->form_activity.field_type);
   EXPECT_EQ("focus", observer_->form_activity_info()->form_activity.type);
   EXPECT_EQ("", observer_->form_activity_info()->form_activity.value);
-  EXPECT_FALSE(observer_->form_activity_info()->form_activity.input_missing);
   EXPECT_TRUE(observer_->form_activity_info()->form_activity.is_main_frame);
   EXPECT_TRUE(observer_->form_activity_info()->form_activity.has_user_gesture);
 }
@@ -209,8 +208,6 @@ TEST_P(FormActivityTabHelperTest, FormRemovalRegistered) {
   EXPECT_EQ(main_frame, observer_->form_removal_info()->sender_frame);
   EXPECT_THAT(observer_->form_removal_info()->form_removal_params.removed_forms,
               ElementsAre(FormRendererId(1)));
-  EXPECT_FALSE(
-      observer_->form_removal_info()->form_removal_params.input_missing);
 
   if (allow_batching) {
     histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
