@@ -29,6 +29,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
+#include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
@@ -431,6 +432,14 @@ bool BidderWorklet::IsComponentAdKAnon(
     const blink::AdDescriptor& ad_component_descriptor) {
   return IsKAnon(bidder_worklet_non_shared_params,
                  blink::KAnonKeyForAdComponentBid(ad_component_descriptor));
+}
+
+// static
+bool BidderWorklet::SupportMultiBid() {
+  // Multi-bid is auto-disabled in mode-A/B trials.
+  return base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid) &&
+         !base::FeatureList::IsEnabled(
+             features::kCookieDeprecationFacilitatedTesting);
 }
 
 void BidderWorklet::BeginGenerateBid(
@@ -1500,7 +1509,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
            // Cast to help gin on mac.
            static_cast<uint64_t>(blink::MaxAdAuctionAdComponents()))) ||
       // Report the multi-bid limit if the corresponding feature on.
-      (base::FeatureList::IsEnabled(blink::features::kFledgeMultiBid) &&
+      (SupportMultiBid() &&
        !browser_signals_dict.Set("multiBidLimit",
                                  static_cast<uint32_t>(multi_bid_limit))) ||
       (base::FeatureList::IsEnabled(
