@@ -2399,7 +2399,7 @@
     },
     {
       name: "MediaSessionChapterInformation",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "MediaSessionEnterPictureInPicture",
