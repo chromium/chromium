@@ -16,7 +16,8 @@ GuideName* const kNewTabButtonGuide = @"kNewTabButtonGuide";
 GuideName* const kTabSwitcherGuide = @"kTabSwitcherGuide";
 GuideName* const kToolsMenuGuide = @"kToolsMenuGuide";
 GuideName* const kVoiceSearchButtonGuide = @"kVoiceSearchButtonGuide";
-GuideName* const kDiscoverFeedHeaderMenuGuide = @"kDiscoverFeedHeaderMenuGuide";
+GuideName* const kFeedHeaderManagementButtonGuide =
+    @"kFeedHeaderManagementButtonGuide";
 GuideName* const kShareButtonGuide = @"kShareButtonGuide";
 GuideName* const kTabGridBottomToolbarGuide = @"kTabGridBottomToolbarGuide";
 GuideName* const kAutofillFirstSuggestionGuide =

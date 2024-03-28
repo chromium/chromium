@@ -247,7 +247,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
 
   UIView* menuButton = [self.layoutGuideCenter
-      referencedViewUnderName:kDiscoverFeedHeaderMenuGuide];
+      referencedViewUnderName:kFeedHeaderManagementButtonGuide];
   // Checks "canPresentBubble" after checking that the NTP with feed is visible.
   // This ensures that the feature tracker doesn't trigger the IPH event if the
   // bubble isn't shown, which would prevent it from ever being shown again.

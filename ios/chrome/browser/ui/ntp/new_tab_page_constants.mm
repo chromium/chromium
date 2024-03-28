@@ -10,8 +10,8 @@ NSString* const kNTPCollectionViewIdentifier = @"NTPCollectionViewIdentifier";
 
 NSString* const kNTPIncognitoViewIdentifier = @"kNTPIncognitoViewIdentifier";
 
-NSString* const kNTPFeedHeaderMenuButtonIdentifier =
-    @"kNTPFeedHeaderMenuButtonIdentifier";
+NSString* const kNTPFeedHeaderManagementButtonIdentifier =
+    @"kNTPFeedHeaderManagementButtonIdentifier";
 
 NSString* const kNTPFeedHeaderSortButtonIdentifier =
     @"kNTPFeedHeaderSortButtonIdentifier";

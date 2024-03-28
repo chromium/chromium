@@ -11,44 +11,34 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
-using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 
 namespace {
 
 // Matcher for the feed header menu button.
 id<GREYMatcher> FeedMenuButton() {
-  return ButtonWithAccessibilityLabelId(
+  return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
 }
 // Matcher for the Turn Off menu item in the feed menu.
 id<GREYMatcher> TurnOffFeedMenuItem() {
-  return ButtonWithAccessibilityLabelId(
+  return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM);
 }
 // Matcher for the Learn More menu item in the feed menu.
 id<GREYMatcher> LearnMoreFeedMenuItem() {
-  return ButtonWithAccessibilityLabelId(
+  return ContextMenuItemWithAccessibilityLabelId(
       IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM);
 }
 // Matcher for the Manage menu item in the feed menu.
 id<GREYMatcher> ManageFeedMenuItem() {
-  return ButtonWithAccessibilityLabelId(IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM);
-}
-
-// Dismisses the feed menu.
-void DismissSignOut() {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap the tools menu to dismiss the popover.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-        performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
-        performAction:grey_tap()];
-  }
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM);
 }
 
 void SelectFeedMenu() {
@@ -58,6 +48,18 @@ void SelectFeedMenu() {
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
       onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_tap()];
+}
+
+void SignInToFakeIdentity() {
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:identity];
+  [SigninEarlGrey signinWithFakeIdentity:identity];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Close NTP and reopen. This is only needed for tests since the observer to
+  // update the NTP after signing in doesn't work.
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 }
 
 }  // namespace
@@ -83,7 +85,8 @@ void SelectFeedMenu() {
   [[EarlGrey selectElementWithMatcher:ManageFeedMenuItem()]
       assertWithMatcher:grey_nil()];
 
-  DismissSignOut();
+  GREYAssertTrue([ChromeEarlGreyUI dismissContextMenuIfPresent],
+                 @"Failed to dismiss context menu.");
 }
 
 // TODO(crbug.com/1277545): Test fails on device.
@@ -93,12 +96,8 @@ void SelectFeedMenu() {
 #define MAYBE_testSignedInOpenAndCloseFeedMenu \
   DISABLED_testSignedInOpenAndCloseFeedMenu
 #endif
-- (void)MAYBE_testSignedInOpenAndCloseFeedMenu {
-  // Sign into a fake identity.
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-
+- (void)testSignedInOpenAndCloseFeedMenu {
+  SignInToFakeIdentity();
   SelectFeedMenu();
 
   [[EarlGrey selectElementWithMatcher:ManageFeedMenuItem()]
@@ -108,7 +107,8 @@ void SelectFeedMenu() {
   [[EarlGrey selectElementWithMatcher:LearnMoreFeedMenuItem()]
       assertWithMatcher:grey_notNil()];
 
-  DismissSignOut();
+  GREYAssertTrue([ChromeEarlGreyUI dismissContextMenuIfPresent],
+                 @"Failed to dismiss context menu.");
 }
 
 // TODO(crbug.com/1277545): Test fails on device.
@@ -119,15 +119,11 @@ void SelectFeedMenu() {
   DISABLED_testOpenFeedManagementSurface
 #endif
 - (void)MAYBE_testOpenFeedManagementSurface {
-  // Sign into a fake identity.
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity1];
-
+  SignInToFakeIdentity();
   SelectFeedMenu();
+
   [[EarlGrey selectElementWithMatcher:ManageFeedMenuItem()]
       performAction:grey_tap()];
-
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
       performAction:grey_tap()];

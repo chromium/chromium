@@ -28,16 +28,14 @@
 
 namespace {
 
-// Contains the attributes of a UIAlertAction that will be checked.
+// Contains the attributes of a UIAction that will be checked.
 struct ExpectedAction {
   int title;
-  UIAlertActionStyle style = UIAlertActionStyleDefault;
 
   // Expects the attributes of `action` to match this `ExpectedAction`.
-  void ExpectMatch(UIAlertAction* action) {
+  void ExpectMatch(UIAction* action) {
     NSString* expected_title = l10n_util::GetNSString(this->title);
     EXPECT_NSEQ(action.title, expected_title);
-    EXPECT_EQ(action.style, this->style);
   }
 };
 
@@ -74,9 +72,6 @@ class FeedMenuCoordinatorTest : public PlatformTest {
                            browser:browser_.get()];
   }
 
-  // Opens the feed menu.
-  void OpenFeedMenu() { [coordinator_ openFeedMenuFromButton:button_]; }
-
   // Enables or disables the feed in prefs.
   void SetFeedEnabled(bool enabled) {
     PrefService* prefs = browser_state_->GetPrefs();
@@ -96,20 +91,13 @@ class FeedMenuCoordinatorTest : public PlatformTest {
                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
-  // Returns the presented UIAlertController.
-  UIAlertController* GetAlertController() {
-    EXPECT_TRUE([base_view_controller_.presentedViewController
-        isKindOfClass:[UIAlertController class]]);
-    return base::apple::ObjCCastStrict<UIAlertController>(
-        base_view_controller_.presentedViewController);
-  }
-
   // Expects that the action attributes match the given `items`.
   void ExpectActions(std::vector<ExpectedAction> expected) {
-    NSArray<UIAlertAction*>* actions = GetAlertController().actions;
+    NSArray<UIAction*>* actions =
+        static_cast<NSArray<UIAction*>*>(button_.menu.children);
     ASSERT_EQ(actions.count, expected.size());
     int index = 0;
-    for (UIAlertAction* action in actions) {
+    for (UIAction* action in actions) {
       expected[index].ExpectMatch(action);
       index++;
     }
@@ -131,30 +119,25 @@ class FeedMenuCoordinatorTest : public PlatformTest {
 // Tests the menu actions when the feed is turned on.
 TEST_F(FeedMenuCoordinatorTest, FeedOn) {
   SetFeedEnabled(true);
-  OpenFeedMenu();
-  ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM,
-                  UIAlertActionStyleDestructive},
-                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM},
-                 {IDS_APP_CANCEL, UIAlertActionStyleCancel}});
+  [coordinator_ configureManagementMenu:button_];
+  ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM},
+                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM}});
 }
 
 // Tests the menu actions when the feed is turned off.
 TEST_F(FeedMenuCoordinatorTest, FeedOff) {
   SetFeedEnabled(false);
-  OpenFeedMenu();
+  [coordinator_ configureManagementMenu:button_];
   ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM},
-                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM},
-                 {IDS_APP_CANCEL, UIAlertActionStyleCancel}});
+                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM}});
 }
 
 // Tests the menu actions when the user is signed-in.
 TEST_F(FeedMenuCoordinatorTest, SignedIn) {
   SetFeedEnabled(true);
   SignInFakeIdentity();
-  OpenFeedMenu();
-  ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM,
-                  UIAlertActionStyleDestructive},
+  [coordinator_ configureManagementMenu:button_];
+  ExpectActions({{IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM},
                  {IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM},
-                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM},
-                 {IDS_APP_CANCEL, UIAlertActionStyleCancel}});
+                 {IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM}});
 }

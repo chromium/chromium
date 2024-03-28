@@ -16,8 +16,8 @@
 
 @interface FeedHeaderViewController : UIViewController
 
-// Button for opening top-level feed menu.
-@property(nonatomic, readonly, strong) UIButton* menuButton;
+// Button for opening top-level feed management menu.
+@property(nonatomic, readonly, strong) UIButton* managementButton;
 
 // Delegate for controlling the presented feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;

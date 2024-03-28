@@ -8,8 +8,8 @@
 // Protocol for actions relating to the NTP feed top-level control menu.
 @protocol FeedMenuCommands
 
-// Opens feed control menu.
-- (void)openFeedMenuFromButton:(UIButton*)button;
+// Creates feed management menu for a `button`.
+- (void)configureManagementMenu:(UIButton*)button;
 
 @end
 

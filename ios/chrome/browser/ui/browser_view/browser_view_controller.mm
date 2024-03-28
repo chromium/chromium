@@ -1612,7 +1612,7 @@ enum HeaderBehaviour {
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
-      [NTPCoordinator constrainDiscoverHeaderMenuButtonNamedGuide];
+      [NTPCoordinator constrainFeedHeaderManagementButtonNamedGuide];
     } else {
       self.browserContainerViewController.contentView = view;
     }

@@ -10,7 +10,6 @@
 
 // An enum of all the Feed Menu item types.
 enum class FeedMenuItemType {
-  kCancel,
   kTurnOff,
   kTurnOn,
   kManage,

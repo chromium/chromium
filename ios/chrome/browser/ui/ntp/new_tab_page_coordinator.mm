@@ -477,13 +477,13 @@
   }
 }
 
-- (void)constrainDiscoverHeaderMenuButtonNamedGuide {
+- (void)constrainFeedHeaderManagementButtonNamedGuide {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
   [LayoutGuideCenterForBrowser(self.browser)
-      referenceView:self.feedHeaderViewController.menuButton
-          underName:kDiscoverFeedHeaderMenuGuide];
+      referenceView:self.feedHeaderViewController.managementButton
+          underName:kFeedHeaderManagementButtonGuide];
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
@@ -824,8 +824,6 @@
 
 - (void)didSelectFeedMenuItem:(FeedMenuItemType)item {
   switch (item) {
-    case FeedMenuItemType::kCancel:
-      break;
     case FeedMenuItemType::kTurnOff:
       [self setFeedVisibleFromHeader:NO];
       break;
