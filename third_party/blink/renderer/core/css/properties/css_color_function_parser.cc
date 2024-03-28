@@ -479,14 +479,6 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
     return true;
   }
 
-  if ((alpha_ = ConsumeRelativeColorChannel(
-           args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}},
-           {kCalcNumber, kCalcPercent}, 1.0))) {
-    // Same as above, check if the channel contains only the keyword
-    // "alpha", because that can be either an rgb or an xyz param.
-    return true;
-  }
-
   if (is_relative_color_ && (alpha_ = ConsumeRelativeColorChannel(
                                  args, context, channel_keyword_values_,
                                  {kCalcNumber, kCalcPercent}, 1.0))) {

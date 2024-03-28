@@ -35,6 +35,8 @@
     // Testing with calc().
     test_invalid_value(`color`, `rgb(from rebeccapurple calc(r + 1%) g b)`);
 
+    // Using a channel keyword without being a relative color.
+    test_invalid_value(`color`, `rgb(0 0 0 / alpha)`);
 
     // hsl(from ...)
 
