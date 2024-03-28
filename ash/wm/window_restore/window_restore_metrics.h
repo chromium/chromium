@@ -31,7 +31,8 @@ enum class ScreenshotOnShutdownStatus {
   kFailedWithNoWindows,
   kFailedOnTakingScreenshotTimeout,
   kFailedOnDifferentOrientations,
-  kMaxValue = kFailedOnDifferentOrientations,
+  kFailedOnDLP,
+  kMaxValue = kFailedOnDLP,
 };
 
 // Records `status` on taking the screenshot on shutdown.

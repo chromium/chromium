@@ -1011,6 +1011,11 @@ void CaptureModeController::MaybeUpdateVcPanel() {
   }
 }
 
+void CaptureModeController::CheckScreenCaptureDlpRestrictions(
+    OnCaptureModeDlpRestrictionChecked callback) {
+  delegate_->CheckCaptureModeInitRestrictionByDlp(std::move(callback));
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {

@@ -190,6 +190,13 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Takes a pine image first and then start the shutdown process.
   void TakePineImageAndShutdown(bool with_pre_animation);
 
+  // Binds to a callback that will be called by the DLP manager to let us know
+  // whether capturing the screenshot should `proceed` or abort due to some
+  // restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtScreenCapture(bool with_pre_animation,
+                                              const base::FilePath& file_path,
+                                              bool proceed);
+
   // Starts the shutdown process. If `with_pre_animation` is true, then starts
   // with the pre-shutdown animation, otherwise, starts the real shutdown.
   void StartShutdownProcess(bool with_pre_animation);

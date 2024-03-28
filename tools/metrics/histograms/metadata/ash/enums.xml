@@ -1789,6 +1789,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="7" label="Failed as it takes too long to take the screenshot"/>
   <int value="8"
       label="Failed as the screenshot and display have different orientations"/>
+  <int value="9" label="Failed on DLP checking"/>
 </enum>
 
 <enum name="SeaPenTemplateId">

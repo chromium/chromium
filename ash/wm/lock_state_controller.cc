@@ -11,6 +11,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/cancel_mode.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
@@ -798,8 +799,6 @@ void LockStateController::ShutdownOnPine(bool with_pre_animation) {
 }
 
 void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
-  // TODO(b/319921650): Finalize the expected behavior on multi-display.
-  auto* root = Shell::GetRootWindowForNewWindows();
   const base::FilePath file_path = GetShutdownPineImagePath();
 
   if (!ShouldTakePineScreeshot()) {
@@ -807,6 +806,27 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
     StartShutdownProcess(with_pre_animation);
     return;
   }
+
+  // Check if there are any content currently on the screen that are restricted
+  // by DLP.
+  CaptureModeController::Get()->CheckScreenCaptureDlpRestrictions(
+      base::BindOnce(
+          &LockStateController::OnDlpRestrictionCheckedAtScreenCapture,
+          weak_ptr_factory_.GetWeakPtr(), with_pre_animation, file_path));
+}
+
+void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
+    bool with_pre_animation,
+    const base::FilePath& file_path,
+    bool proceed) {
+  if (!proceed) {
+    RecordScreenshotOnShutdownStatus(ScreenshotOnShutdownStatus::kFailedOnDLP);
+    StartShutdownProcess(with_pre_animation);
+    return;
+  }
+
+  // TODO(b/319921650): Finalize the expected behavior on multi-display.
+  auto* root = Shell::GetRootWindowForNewWindows();
 
   // Create a new layer that mirrors the painted wallpaper view layer. Adds it
   // to be the bottom-most child of the shutdown screenshot container layer,

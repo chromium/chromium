@@ -316,6 +316,13 @@ class ASH_EXPORT CaptureModeController
   // screen recording and whether camera or audio are being recorded.
   void MaybeUpdateVcPanel();
 
+  // Checks if there are any content currently on the screen that are restricted
+  // by DLP. `callback` will be triggered by the DLP manager with `proceed` set
+  // to true if screen capture is allowed to continue, or set to false if it
+  // should not continue.
+  void CheckScreenCaptureDlpRestrictions(
+      OnCaptureModeDlpRestrictionChecked callback);
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
