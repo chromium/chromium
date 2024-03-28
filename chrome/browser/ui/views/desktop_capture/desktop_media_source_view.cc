@@ -19,9 +19,14 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+constexpr int kCornerRadius = 8;
+}
 
 using content::DesktopMediaID;
 
@@ -61,6 +66,11 @@ DesktopMediaSourceView::DesktopMediaSourceView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetStyle(style);
   views::FocusRing::Install(this);
+  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
+      features::IsChromeRefresh2023()) {
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  kCornerRadius);
+  }
 }
 
 DesktopMediaSourceView::~DesktopMediaSourceView() {}
@@ -98,7 +108,8 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
         features::IsChromeRefresh2023()) {
       SetBackground(views::CreateRoundedRectBackground(
-          GetColorProvider()->GetColor(ui::kColorSysTonalContainer), 8));
+          GetColorProvider()->GetColor(ui::kColorSysTonalContainer),
+          kCornerRadius));
     } else {
       image_view_->SetBackground(views::CreateSolidBackground(
           GetColorProvider()->GetColor(ui::kColorMenuItemBackgroundSelected)));
