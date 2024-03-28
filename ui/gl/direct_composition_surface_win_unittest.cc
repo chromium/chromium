@@ -119,12 +119,14 @@ bool AreColorsSimilar(int a, int b) {
 
 }  // namespace
 
-class DirectCompositionSurfaceTest : public testing::Test {
+class DirectCompositionSurfaceTest : public testing::Test,
+                                     public testing::WithParamInterface<bool> {
  public:
   DirectCompositionSurfaceTest() : parent_window_(ui::GetHiddenWindow()) {}
 
  protected:
   void SetUp() override {
+    SetupScopedFeatureList();
     // These tests are assumed to run on battery.
     fake_power_monitor_source_.SetOnBatteryPower(true);
 
@@ -148,6 +150,16 @@ class DirectCompositionSurfaceTest : public testing::Test {
     if (surface_)
       DestroySurface(std::move(surface_));
     gl::init::ShutdownGL(display_, false);
+  }
+
+  virtual void SetupScopedFeatureList() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kDCompVisualTreeOptimization);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kDCompVisualTreeOptimization);
+    }
   }
 
   scoped_refptr<DirectCompositionSurfaceWin>
@@ -178,9 +190,12 @@ class DirectCompositionSurfaceTest : public testing::Test {
   scoped_refptr<GLContext> context_;
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
   raw_ptr<GLDisplay> display_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {
+INSTANTIATE_TEST_SUITE_P(All, DirectCompositionSurfaceTest, testing::Bool());
+
+TEST_P(DirectCompositionSurfaceTest, TestMakeCurrent) {
   if (!surface_)
     return;
   EXPECT_TRUE(
@@ -229,7 +244,7 @@ TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {
 }
 
 // Tests that switching using EnableDCLayers works.
-TEST_F(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
+TEST_P(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
   if (!surface_)
     return;
   surface_->SetEnableDCLayers(false);
@@ -274,7 +289,7 @@ TEST_F(DirectCompositionSurfaceTest, DXGIDCLayerSwitch) {
 }
 
 // Ensure that the swapchain's alpha is correct.
-TEST_F(DirectCompositionSurfaceTest, SwitchAlpha) {
+TEST_P(DirectCompositionSurfaceTest, SwitchAlpha) {
   if (!surface_)
     return;
   surface_->SetEnableDCLayers(false);
@@ -308,7 +323,7 @@ TEST_F(DirectCompositionSurfaceTest, SwitchAlpha) {
 }
 
 // Ensure that the overlay image isn't presented again unless it changes.
-TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
+TEST_P(DirectCompositionSurfaceTest, NoPresentTwice) {
   if (!surface_)
     return;
 
@@ -391,7 +406,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
 
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is support - swapchain should be set to the onscreen video size.
-TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
+TEST_P(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
   if (!surface_)
     return;
 
@@ -463,7 +478,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
 
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is not support - swapchain should be the onscreen video size.
-TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
+TEST_P(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
   if (!surface_)
     return;
 
@@ -523,7 +538,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
 }
 
 // Test protected video flags
-TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
+TEST_P(DirectCompositionSurfaceTest, ProtectedVideos) {
   if (!surface_)
     return;
 
@@ -588,8 +603,7 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
   // video support is enabled by defaut in the Intel driver and Chrome
 }
 
-class DirectCompositionPixelTest : public DirectCompositionSurfaceTest,
-                                   public testing::WithParamInterface<bool> {
+class DirectCompositionPixelTest : public DirectCompositionSurfaceTest {
  public:
   DirectCompositionPixelTest()
       : window_(&platform_delegate_, gfx::Rect(100, 100)) {
@@ -1455,11 +1469,11 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
   EXPECT_EQ(buffer_count, desc.BufferCount);
 }
 
-TEST_F(DirectCompositionSurfaceTest, RootSwapChainBufferCount) {
+TEST_P(DirectCompositionSurfaceTest, RootSwapChainBufferCount) {
   RunBufferCountTest(surface_, /*buffer_count=*/2u, /*for_video=*/false);
 }
 
-TEST_F(DirectCompositionSurfaceTest, VideoSwapChainBufferCount) {
+TEST_P(DirectCompositionSurfaceTest, VideoSwapChainBufferCount) {
   RunBufferCountTest(surface_, /*buffer_count=*/2u, /*for_video=*/true);
 }
 
@@ -1469,7 +1483,7 @@ TEST_F(DirectCompositionSurfaceTest, VideoSwapChainBufferCount) {
 // subsequent frames may cause flickering under certain conditions that include
 // specific Intel drivers, custom present duration etc.
 // See https://bugs.chromium.org/p/chromium/issues/detail?id=1421175.
-TEST_F(DirectCompositionSurfaceTest, VisualsReused) {
+TEST_P(DirectCompositionSurfaceTest, VisualsReused) {
   if (!surface_) {
     return;
   }
@@ -1533,8 +1547,12 @@ TEST_F(DirectCompositionSurfaceTest, VisualsReused) {
   // to the root visual in a reversed order.
   EXPECT_EQ(visual0.Get(), dcLayerTree->GetContentVisualForTesting(1));
   EXPECT_EQ(visual1.Get(), dcLayerTree->GetContentVisualForTesting(0));
-  EXPECT_TRUE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(0));
-  EXPECT_FALSE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(1));
+#if DCHECK_IS_ON()
+  if (base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization)) {
+    EXPECT_TRUE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(0));
+    EXPECT_FALSE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(1));
+  }
+#endif  // DCHECK_IS_ON()
 }
 
 void ScheduleDCLayer(scoped_refptr<DirectCompositionSurfaceWin> surface,
@@ -1559,7 +1577,10 @@ void CreateSwapChain(IDXGIFactory2* dxgi_factory,
   ASSERT_TRUE(swap_chain);
 }
 
-TEST_F(DirectCompositionSurfaceTest, MatchedAndUnmatchedVisualsReused) {
+TEST_P(DirectCompositionSurfaceTest, MatchedAndUnmatchedVisualsReused) {
+  if (!base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization)) {
+    GTEST_SKIP() << "kDCompVisualTreeOptimization test only.\n";
+  }
   if (!surface_) {
     return;
   }
@@ -1703,23 +1724,33 @@ class DirectCompositionTripleBufferingTest
   DirectCompositionTripleBufferingTest() = default;
   ~DirectCompositionTripleBufferingTest() override = default;
 
- private:
-  void SetUp() override {
-    DirectCompositionSurfaceTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kDCompTripleBufferRootSwapChain,
-         features::kDCompTripleBufferVideoSwapChain},
-        {});
+ protected:
+  void SetUp() override { DirectCompositionSurfaceTest::SetUp(); }
+  void SetupScopedFeatureList() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kDCompTripleBufferRootSwapChain,
+           features::kDCompTripleBufferVideoSwapChain,
+           features::kDCompVisualTreeOptimization},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kDCompTripleBufferRootSwapChain,
+           features::kDCompTripleBufferVideoSwapChain},
+          {features::kDCompVisualTreeOptimization});
+    }
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DirectCompositionTripleBufferingTest, MainSwapChainBufferCount) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         DirectCompositionTripleBufferingTest,
+                         testing::Bool());
+
+TEST_P(DirectCompositionTripleBufferingTest, MainSwapChainBufferCount) {
   RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/false);
 }
 
-TEST_F(DirectCompositionTripleBufferingTest, VideoSwapChainBufferCount) {
+TEST_P(DirectCompositionTripleBufferingTest, VideoSwapChainBufferCount) {
   RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/true);
 }
 
