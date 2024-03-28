@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -1288,6 +1289,28 @@ class NonManagedAccountNoFlag : public TestAccountBrowserTest {
 // non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
+}
+
+// |InProcessBrowserTest| which allows a user to login to Guest mode.
+class GuestMode : public MixinBasedInProcessBrowserTest {
+ public:
+  GuestMode() {
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
+  }
+
+ protected:
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when
+// |kUploadOfficeToCloud| is enabled but the user is in Guest mode.
+IN_PROC_BROWSER_TEST_F(GuestMode, IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_FALSE(
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }

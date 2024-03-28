@@ -40,6 +40,10 @@ bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile) {
   if (!profile) {
     return false;
   }
+  // Drive and OneDrive are disabled in Guest mode.
+  if (profile->IsGuestSession()) {
+    return false;
+  }
   // If `kUploadOfficeToCloudForEnterprise` flag is enabled, we loosen the
   // condition below to allow managed accounts.
   if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {

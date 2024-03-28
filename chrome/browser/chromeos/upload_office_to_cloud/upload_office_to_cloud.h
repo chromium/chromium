@@ -11,9 +11,11 @@ class PrefRegistrySimple;
 namespace chromeos {
 
 // Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
-// the user of the `profile`. A user is eligible if they are not managed.
-// If `kUploadOfficeToCloudForEnterprise` is enabled too, the condition is
-// loosened and the user becomes eligible if they're not a child profile.
+// the user of the `profile`.  A user is eligible if:
+// - They are not in Guest mode.
+// - They are not managed.
+// - They are not a child profile and `kUploadOfficeToCloudForEnterprise` is
+// enabled.
 bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile);
 
 namespace cloud_upload {
