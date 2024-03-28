@@ -1490,6 +1490,13 @@
     "args": ["--enable-blink-features=DOMParserIncludeShadowRoots"],
     "expires": "Oct 15, 2024"
   },
+  "This virtual suite ensures that mutation events continue to function in the",
+  "case that MutationEvents are re-enabled. That is important because there is",
+  "an active Deprecation Trial [1] and an active Enterprise Policy [2]. So this",
+  "virtual suite should *not* be removed until at least M135, which is the end-",
+  "milestone for both of these. M135 goes to stable on April 1, 2025.",
+  "[1] https://developer.chrome.com/origintrials/#/view_trial/919297273937002497",
+  "[2] components/policy/resources/templates/policy_definitions/Miscellaneous/MutationEventsEnabled.yaml",
   {
     "prefix": "mutation-events-enabled",
     "platforms": ["Linux"],
@@ -1513,7 +1520,7 @@
       "virtual/text-antialias/split-text-crash.xhtml"
     ],
     "args": ["--enable-blink-features=MutationEvents", "--disable-blink-features=OmitBlurEventOnElementRemoval"],
-    "expires": "Mar 1, 2025"
+    "expires": "Apr 1, 2025"
   },
   {
     "prefix": "popover-hint-disabled",
