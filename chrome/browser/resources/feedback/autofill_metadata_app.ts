@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../strings.m.js';
+import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import './css/about_sys.css.js';
-import './css/logs_map_page.css.js';
-import './feedback_shared_styles.css.js';
+import './strings.m.js';
 // <if expr="chromeos_ash">
 import './js/jelly_colors.js';
 
 // </if>
+import type {KeyValuePairEntry} from '/shared/key_value_pair_viewer/key_value_pair_entry.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './autofill_metadata_app.html.js';
 import {FeedbackBrowserProxyImpl} from './js/feedback_browser_proxy.js';
-import {createLogsMapTable} from './js/logs_map_page.js';
 
 export class AutofillMetadataAppElement extends PolymerElement {
   static get is() {
@@ -25,6 +24,20 @@ export class AutofillMetadataAppElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      entries_: Array,
+      loading_: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  private entries_: KeyValuePairEntry[];
+  private loading_: boolean;
+
   override connectedCallback() {
     super.connectedCallback();
     const dialogArgs =
@@ -32,8 +45,8 @@ export class AutofillMetadataAppElement extends PolymerElement {
     if (!dialogArgs) {
       return;
     }
-
     this.createAutofillMetadataTable(dialogArgs);
+    this.loading_ = false;
   }
 
   /**
@@ -43,7 +56,7 @@ export class AutofillMetadataAppElement extends PolymerElement {
   private createAutofillMetadataTable(dialogArgs: string) {
     const autofillMetadata = JSON.parse(dialogArgs);
 
-    const items: chrome.feedbackPrivate.LogsMapEntry[] = [];
+    const items: KeyValuePairEntry[] = [];
 
     if (autofillMetadata.triggerFormSignature) {
       items.push({
@@ -73,7 +86,7 @@ export class AutofillMetadataAppElement extends PolymerElement {
       });
     }
 
-    createLogsMapTable(items, this.shadowRoot!);
+    this.entries_ = items;
   }
 }
 

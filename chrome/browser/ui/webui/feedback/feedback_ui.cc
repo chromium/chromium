@@ -12,6 +12,8 @@
 #include "chrome/grit/feedback_resources.h"
 #include "chrome/grit/feedback_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/key_value_pair_viewer_shared_resources.h"
+#include "chrome/grit/key_value_pair_viewer_shared_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -39,13 +41,9 @@ void AddStringResources(content::WebUIDataSource* source,
       {"freeFormTextAi", IDS_FEEDBACK_FREE_TEXT_AI_LABEL},
       {"appTitle", IDS_FEEDBACK_REPORT_APP_TITLE},
       {"logIdCheckboxLabel", IDS_FEEDBACK_LOG_ID_CHECKBOX_LABEL},
-      {"logsMapPageCollapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL},
-      {"logsMapPageCollapseBtn", IDS_ABOUT_SYS_COLLAPSE},
-      {"logsMapPageExpandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL},
-      {"logsMapPageExpandBtn", IDS_ABOUT_SYS_EXPAND},
-      {"logsMapPageStatusLoading", IDS_FEEDBACK_SYSINFO_PAGE_LOADING},
-      {"logsMapPageTableTitle", IDS_ABOUT_SYS_TABLE_TITLE},
-      {"minimizeBtnLabel", IDS_FEEDBACK_MINIMIZE_BUTTON_LABEL},
+      {"collapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL},
+      {"expandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL},
+      {"tableTitle", IDS_ABOUT_SYS_TABLE_TITLE},
       {"noDescription", IDS_FEEDBACK_NO_DESCRIPTION},
       {"offensiveCheckboxLabel", IDS_FEEDBACK_OFFENSIVE_CHECKBOX_LABEL},
       {"pageTitle", IDS_FEEDBACK_REPORT_PAGE_TITLE},
@@ -80,7 +78,9 @@ void CreateAndAddFeedbackHTMLSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kFeedbackResources, kFeedbackResourcesSize),
       IDR_FEEDBACK_FEEDBACK_HTML);
-
+  source->AddResourcePaths(
+      base::make_span(kKeyValuePairViewerSharedResources,
+                      kKeyValuePairViewerSharedResourcesSize));
   AddStringResources(source, profile);
 }
 

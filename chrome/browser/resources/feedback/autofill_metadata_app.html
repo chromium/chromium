@@ -1,19 +1,6 @@
-<style include="about-sys logs-map-page feedback-shared-styles"></style>
+<style include="about-sys"></style>
 <div id="header">
   <h1 id="title">$i18n{autofillMetadataPageTitle}</h1>
 </div>
-<div id="content">
-  <h2 id="tableTitle">$i18n{logsMapPageTableTitle}</h2>
-  <div id="anchor"></div>
-  <button id="expandAllBtn" class="global-button">
-    $i18n{logsMapPageExpandAllBtn}
-  </button>
-  <button id="collapseAllBtn" class="global-button">
-    $i18n{logsMapPageCollapseAllBtn}
-  </button>
-  <div id="spinner-container">
-    <div class="inline-spinner"></div>
-    <p id="status">$i18n{logsMapPageStatusLoading}</p>
-  </div>
-  <table class="list" id="detailsTable"></table>
-</div>
+<key-value-pair-viewer loading="[[loading_]]" entries="[[entries_]]">
+</key-value-pair-viewer>
