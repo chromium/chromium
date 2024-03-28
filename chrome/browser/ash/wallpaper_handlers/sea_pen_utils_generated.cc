@@ -1321,6 +1321,15 @@ std::string TemplateOptionToString(
         kSurrealSubjectGlowingBubbles:
       return "glowing_bubbles";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kFlowerTypeSucculent:
+      return "succulent";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kFlowerTypeGrass:
+      return "grass";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kFlowerTypeCactusFlower:
+      return "cactus_flower";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
         kVcBackgroundSimpleStyleMinimal:
       return "minimal";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -2098,23 +2107,21 @@ ChipToOptionSet() {
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kFlowerTypeOrchid,
                ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kFlowerTypeCallaLily,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kFlowerTypeWindflower,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
                    kFlowerTypeTulip,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kFlowerTypeLilyOfTheValley,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kFlowerTypeBirdOfParadise,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kFlowerTypeRose,
                ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kFlowerTypeRanunculus,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
                    kFlowerTypeDaisy,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kFlowerTypeHydrangea,
+               ash::personalization_app::mojom::SeaPenTemplateOption::
+                   kFlowerTypeSucculent,
+               ash::personalization_app::mojom::SeaPenTemplateOption::
+                   kFlowerTypeGrass,
+               ash::personalization_app::mojom::SeaPenTemplateOption::
+                   kFlowerTypeCactusFlower,
            }},
           {ash::personalization_app::mojom::SeaPenTemplateChip::kArtFeature,
            {
@@ -2172,8 +2179,6 @@ ChipToOptionSet() {
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kArtMovementArtNouveau,
                ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kArtMovementBaroque,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
                    kArtMovementBauhaus,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kArtMovementClassicist,
@@ -2181,8 +2186,6 @@ ChipToOptionSet() {
                    kArtMovementWatercolor,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kArtMovementAbstract,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kArtMovementPointillist,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kArtMovementGraphicDesign,
                ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -2206,8 +2209,6 @@ ChipToOptionSet() {
                    kTerrainFeatureMountains,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kTerrainFeatureBioluminescentBeach,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kTerrainFeatureFireflyForest,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kTerrainFeatureDifferentPlanet,
                ash::personalization_app::mojom::SeaPenTemplateOption::
@@ -2260,13 +2261,9 @@ ChipToOptionSet() {
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kDreamscapesObjectBridge,
                ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kDreamscapesObjectLighthouse,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
                    kDreamscapesObjectPagoda,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kDreamscapesObjectPalace,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kDreamscapesObjectTower,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kDreamscapesObjectChair,
            }},

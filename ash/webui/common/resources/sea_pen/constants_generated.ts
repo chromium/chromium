@@ -334,32 +334,11 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/orchid.jpg',
             },
             {
-              value: SeaPenTemplateOption.kFlowerTypeCallaLily,
-              translation:
-                  loadTimeData.getString('seaPenOptionFlowerTypeCallaLily'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/calla_lily.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kFlowerTypeWindflower,
-              translation:
-                  loadTimeData.getString('seaPenOptionFlowerTypeWindflower'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/windflower.jpg',
-            },
-            {
               value: SeaPenTemplateOption.kFlowerTypeTulip,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeTulip'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tulip.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kFlowerTypeLilyOfTheValley,
-              translation: loadTimeData.getString(
-                  'seaPenOptionFlowerTypeLilyOfTheValley'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lily_of_the_valley.jpg',
             },
             {
               value: SeaPenTemplateOption.kFlowerTypeBirdOfParadise,
@@ -375,13 +354,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/garden_rose.jpg',
             },
             {
-              value: SeaPenTemplateOption.kFlowerTypeRanunculus,
-              translation:
-                  loadTimeData.getString('seaPenOptionFlowerTypeRanunculus'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/ranunculus.jpg',
-            },
-            {
               value: SeaPenTemplateOption.kFlowerTypeDaisy,
               translation:
                   loadTimeData.getString('seaPenOptionFlowerTypeDaisy'),
@@ -394,6 +366,27 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionFlowerTypeHydrangea'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/hydrangea.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeSucculent,
+              translation:
+                  loadTimeData.getString('seaPenOptionFlowerTypeSucculent'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/succulent.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeGrass,
+              translation:
+                  loadTimeData.getString('seaPenOptionFlowerTypeGrass'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/grass.jpg',
+            },
+            {
+              value: SeaPenTemplateOption.kFlowerTypeCactusFlower,
+              translation:
+                  loadTimeData.getString('seaPenOptionFlowerTypeCactusFlower'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/cactus_flower.jpg',
             },
           ],
         ],
@@ -592,13 +585,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/art_nouveau.jpg',
             },
             {
-              value: SeaPenTemplateOption.kArtMovementBaroque,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementBaroque'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/baroque.jpg',
-            },
-            {
               value: SeaPenTemplateOption.kArtMovementBauhaus,
               translation:
                   loadTimeData.getString('seaPenOptionArtMovementBauhaus'),
@@ -625,13 +611,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionArtMovementAbstract'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/abstract.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kArtMovementPointillist,
-              translation:
-                  loadTimeData.getString('seaPenOptionArtMovementPointillist'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/pointillist.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtMovementGraphicDesign,
@@ -720,13 +699,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'seaPenOptionTerrainFeatureBioluminescentBeach'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bioluminescent_beach.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kTerrainFeatureFireflyForest,
-              translation: loadTimeData.getString(
-                  'seaPenOptionTerrainFeatureFireflyForest'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/firefly_forest.jpg',
             },
             {
               value: SeaPenTemplateOption.kTerrainFeatureDifferentPlanet,
@@ -908,13 +880,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/bridge.jpg',
             },
             {
-              value: SeaPenTemplateOption.kDreamscapesObjectLighthouse,
-              translation: loadTimeData.getString(
-                  'seaPenOptionDreamscapesObjectLighthouse'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/lighthouse.jpg',
-            },
-            {
               value: SeaPenTemplateOption.kDreamscapesObjectPagoda,
               translation:
                   loadTimeData.getString('seaPenOptionDreamscapesObjectPagoda'),
@@ -927,13 +892,6 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
                   loadTimeData.getString('seaPenOptionDreamscapesObjectPalace'),
               previewUrl:
                   'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/palace.jpg',
-            },
-            {
-              value: SeaPenTemplateOption.kDreamscapesObjectTower,
-              translation:
-                  loadTimeData.getString('seaPenOptionDreamscapesObjectTower'),
-              previewUrl:
-                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/tower.jpg',
             },
             {
               value: SeaPenTemplateOption.kDreamscapesObjectChair,

@@ -38,6 +38,6 @@ suite('SeaPenTemplatesElementTest', function() {
     assertEquals(templates[1]!.innerText, 'Airbrushed');
     templates[1]!.dispatchEvent(new CustomEvent('mouseover', {bubbles: true}));
     await waitAfterNextRender(templates[1]!);
-    assertEquals(templates[1]!.innerText, 'A radiant\npink\norchid\nin bloom');
+    assertEquals(templates[1]!.innerText, 'A radiant\npink\norchid');
   });
 });

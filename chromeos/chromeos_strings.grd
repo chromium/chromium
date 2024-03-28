@@ -3260,7 +3260,7 @@
           Airbrushed
         </message>
         <message name="IDS_SEA_PEN_TEMPLATE_FLOWER" desc="Template used to generate an image of FLOWER. Users can select the variables from a drop-down menu.">
-          A radiant <ph name="FLOWER_COLOR">$1<ex>pink</ex></ph> <ph name="FLOWER_TYPE">$2<ex>orchid</ex></ph> in bloom
+          A radiant <ph name="FLOWER_COLOR">$1<ex>pink</ex></ph> <ph name="FLOWER_TYPE">$2<ex>orchid</ex></ph>
         </message>
         <message name="IDS_SEA_PEN_OPTION_FLOWER_COLOR_PINK" desc="Option to fill in the FLOWER_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           pink
@@ -3289,17 +3289,8 @@
         <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_ORCHID" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           orchid
         </message>
-        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_CALLA_LILY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
-          calla lily
-        </message>
-        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_WINDFLOWER" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
-          windflower
-        </message>
         <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_TULIP" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           tulip
-        </message>
-        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_LILY_OF_THE_VALLEY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
-          lily of the valley
         </message>
         <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_BIRD_OF_PARADISE" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           bird of paradise
@@ -3307,14 +3298,20 @@
         <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_ROSE" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           garden rose
         </message>
-        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_RANUNCULUS" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
-          ranunculus
-        </message>
         <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_DAISY" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           daisy
         </message>
         <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_HYDRANGEA" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
           hydrangea
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_SUCCULENT" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          succulent
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_GRASS" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          dried feather grass
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_FLOWER_TYPE_CACTUS_FLOWER" desc="Option to fill in the FLOWER_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_FLOWER.">
+          cactus flower
         </message>
         <!-- Wallpaper template art -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_ART" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_ART.">
@@ -3398,9 +3395,6 @@
         <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_ART_NOUVEAU" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
           art nouveau
         </message>
-        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_BAROQUE" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
-          baroque
-        </message>
         <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_BAUHAUS" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
           bauhaus
         </message>
@@ -3412,9 +3406,6 @@
         </message>
         <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_ABSTRACT" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
           abstract
-        </message>
-        <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_POINTILLIST" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
-          pointillist
         </message>
         <message name="IDS_SEA_PEN_OPTION_ART_MOVEMENT_GRAPHIC_DESIGN" desc="Option to fill in the ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_ART.">
           graphic design
@@ -3452,9 +3443,6 @@
         </message>
         <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_BIOLUMINESCENT_BEACH" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
           bioluminescent beach
-        </message>
-        <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_FIREFLY_FOREST" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
-          firefly forest
         </message>
         <message name="IDS_SEA_PEN_OPTION_TERRAIN_FEATURE_DIFFERENT_PLANET" desc="Option to fill in the TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_TERRAIN.">
           different planet
@@ -3529,17 +3517,11 @@
         <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_BRIDGE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
           bridge
         </message>
-        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_LIGHTHOUSE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
-          lighthouse
-        </message>
         <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_PAGODA" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
           pagoda
         </message>
         <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_PALACE" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
           palace
-        </message>
-        <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_TOWER" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
-          tower
         </message>
         <message name="IDS_SEA_PEN_OPTION_DREAMSCAPES_OBJECT_CHAIR" desc="Option to fill in the DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_DREAMSCAPES.">
           chair
