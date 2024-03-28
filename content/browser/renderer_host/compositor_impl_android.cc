@@ -271,6 +271,10 @@ CompositorImpl::CompositorImpl(CompositorClient* client,
 }
 
 CompositorImpl::~CompositorImpl() {
+  for (auto& observer : simple_begin_frame_observers_) {
+    observer.OnBeginFrameSourceShuttingDown();
+  }
+
   DetachRootWindow();
   // Clean-up any surface references.
   SetSurface(nullptr, false);
@@ -910,17 +914,14 @@ void CompositorImpl::DecrementPendingReadbacks() {
 void CompositorImpl::AddSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
-  DCHECK(!base::Contains(simple_begin_frame_observers_, obs));
-  simple_begin_frame_observers_.insert(obs);
+  simple_begin_frame_observers_.AddObserver(obs);
   MaybeUpdateObserveBeginFrame();
 }
 
 void CompositorImpl::RemoveSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
-  DCHECK(base::Contains(simple_begin_frame_observers_, obs));
-
-  simple_begin_frame_observers_.erase(obs);
+  simple_begin_frame_observers_.RemoveObserver(obs);
   MaybeUpdateObserveBeginFrame();
 }
 

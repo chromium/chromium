@@ -5,6 +5,7 @@
 #ifndef UI_COMPOSITOR_HOST_BEGIN_FRAME_OBSERVER_H_
 #define UI_COMPOSITOR_HOST_BEGIN_FRAME_OBSERVER_H_
 
+#include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/begin_frame_observer.mojom.h"
 #include "ui/compositor/compositor_export.h"
@@ -25,17 +26,20 @@ namespace ui {
 class COMPOSITOR_EXPORT HostBeginFrameObserver
     : public viz::mojom::BeginFrameObserver {
  public:
-  class SimpleBeginFrameObserver {
+  class SimpleBeginFrameObserver : public base::CheckedObserver {
    public:
-    virtual ~SimpleBeginFrameObserver() = default;
+    ~SimpleBeginFrameObserver() override = default;
     virtual void OnBeginFrame(base::TimeTicks frame_begin_time,
                               base::TimeDelta frame_interval) = 0;
     virtual void OnBeginFrameSourceShuttingDown() = 0;
   };
 
+  using SimpleBeginFrameObserverList =
+      base::ObserverList<ui::HostBeginFrameObserver::SimpleBeginFrameObserver,
+                         true>;
+
   HostBeginFrameObserver(
-      const base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>&
-          observers,
+      SimpleBeginFrameObserverList& observers,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~HostBeginFrameObserver() override;
 
@@ -46,9 +50,7 @@ class COMPOSITOR_EXPORT HostBeginFrameObserver
   void CoalescedBeginFrame();
   void CallObservers(const viz::BeginFrameArgs& args);
 
-  const raw_ref<
-      const base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>>
-      simple_begin_frame_observers_;
+  const raw_ref<SimpleBeginFrameObserverList> simple_begin_frame_observers_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool pending_coalesce_callback_ = false;

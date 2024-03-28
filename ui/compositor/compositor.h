@@ -541,8 +541,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   std::unique_ptr<PendingBeginFrameArgs> pending_begin_frame_args_;
 
-  base::flat_set<raw_ptr<ui::HostBeginFrameObserver::SimpleBeginFrameObserver,
-                         CtnExperimental>>
+  ui::HostBeginFrameObserver::SimpleBeginFrameObserverList
       simple_begin_frame_observers_;
   std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
 

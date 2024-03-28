@@ -11,8 +11,7 @@
 namespace ui {
 
 HostBeginFrameObserver::HostBeginFrameObserver(
-    const base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>&
-        observers,
+    SimpleBeginFrameObserverList& observers,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : simple_begin_frame_observers_(observers),
       task_runner_(std::move(task_runner)) {}
@@ -62,9 +61,8 @@ void HostBeginFrameObserver::CoalescedBeginFrame() {
 
 // This may be deleted as part of `CallObservers`.
 void HostBeginFrameObserver::CallObservers(const viz::BeginFrameArgs& args) {
-  auto observers_copy = *simple_begin_frame_observers_;
-  for (SimpleBeginFrameObserver* simple_observer : observers_copy) {
-    simple_observer->OnBeginFrame(args.frame_time, args.interval);
+  for (auto& simple_observer : *simple_begin_frame_observers_) {
+    simple_observer.OnBeginFrame(args.frame_time, args.interval);
   }
 }
 

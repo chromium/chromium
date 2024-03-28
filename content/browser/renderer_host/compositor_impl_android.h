@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
 #include "cc/slim/layer_tree_client.h"
@@ -263,8 +264,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   ui::CompositorLockManager lock_manager_;
 
-  base::flat_set<raw_ptr<ui::HostBeginFrameObserver::SimpleBeginFrameObserver,
-                         CtnExperimental>>
+  ui::HostBeginFrameObserver::SimpleBeginFrameObserverList
       simple_begin_frame_observers_;
   std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
 

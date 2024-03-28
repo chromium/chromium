@@ -292,7 +292,7 @@ Compositor::~Compositor() {
     observer.OnCompositingShuttingDown(this);
 
   for (auto& observer : simple_begin_frame_observers_) {
-    observer->OnBeginFrameSourceShuttingDown();
+    observer.OnBeginFrameSourceShuttingDown();
   }
 
   if (root_layer_)
@@ -982,17 +982,14 @@ const cc::LayerTreeSettings& Compositor::GetLayerTreeSettings() const {
 void Compositor::AddSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
-  DCHECK(!base::Contains(simple_begin_frame_observers_, obs));
-  simple_begin_frame_observers_.insert(obs);
+  simple_begin_frame_observers_.AddObserver(obs);
   MaybeUpdateObserveBeginFrame();
 }
 
 void Compositor::RemoveSimpleBeginFrameObserver(
     ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
-  DCHECK(base::Contains(simple_begin_frame_observers_, obs));
-
-  simple_begin_frame_observers_.erase(obs);
+  simple_begin_frame_observers_.RemoveObserver(obs);
   MaybeUpdateObserveBeginFrame();
 }
 
