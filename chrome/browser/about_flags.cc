@@ -7365,6 +7365,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTGoogleBottomBar,
                                     kCCTGoogleBottomBarVariations,
                                     "CCTGoogleBottomBarVariations")},
+    {"cct-revamped-branding", flag_descriptions::kCCTRevampedBrandingName,
+     flag_descriptions::kCCTRevampedBrandingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTRevampedBranding)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

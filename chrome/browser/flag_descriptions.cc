@@ -3933,6 +3933,10 @@ const char kCCTResizableSideSheetForThirdPartiesName[] =
 const char kCCTResizableSideSheetForThirdPartiesDescription[] =
     "Enable side sheet Custom Tabs for third party apps.";
 
+const char kCCTRevampedBrandingName[] = "Revamped CCT toolbar branding.";
+const char kCCTRevampedBrandingDescription[] =
+    "Enables a revamped branding animation on the CCT toolbar.";
+
 const char kAccountReauthenticationRecentTimeWindowName[] =
     "Account Reauthentication Recent Time Window";
 const char kAccountReauthenticationRecentTimeWindowDescription[] =

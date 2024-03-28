@@ -188,6 +188,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
     &kCCTResizableSideSheetForThirdParties,
+    &kCCTRevampedBranding,
     &kCCTTabModalDialog,
     &kDataSharingAndroid,
     &kDefaultBrowserPromoAndroid,
@@ -548,6 +549,10 @@ BASE_FEATURE(kCCTResizableSideSheet,
 BASE_FEATURE(kCCTResizableSideSheetForThirdParties,
              "CCTResizableSideSheetForThirdParties",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTRevampedBranding,
+             "CCTRevampedBranding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",

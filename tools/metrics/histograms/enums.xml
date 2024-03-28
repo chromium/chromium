@@ -24129,6 +24129,7 @@ from previous Chrome versions.
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
   <int value="1449336160" label="MainThreadCompositingPriority:disabled"/>
   <int value="1450313630" label="RestartToGainAccessToKeychain:enabled"/>
+  <int value="1450567138" label="CCTRevampedBranding:disabled"/>
   <int value="1450865360" label="webrtc-hw-encoding:enabled"/>
   <int value="1451065780" label="MediaFoundationClearRendering:enabled"/>
   <int value="1451146739"
@@ -24505,6 +24506,7 @@ from previous Chrome versions.
   <int value="1622131033" label="ozone-test-single-overlay-support"/>
   <int value="1622672308" label="ReaderMode:enabled"/>
   <int value="1623345369" label="OmniboxAdaptNarrowTabletWindows:enabled"/>
+  <int value="1625829110" label="CCTRevampedBranding:enabled"/>
   <int value="1625988511" label="DurableClientHintsCache:enabled"/>
   <int value="1626258278"
       label="PrivacySandboxProactiveTopicsBlocking:enabled"/>

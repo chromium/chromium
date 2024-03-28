@@ -1283,6 +1283,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "cct-revamped-branding",
+    "owners": ["sinansahin@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cdm-storage-database",
     "owners": ["vpasupathy@google.com", "alcatraz-eng@google.com", "chrome-owp-storage@google.com"],
     "expiry_milestone": 128
