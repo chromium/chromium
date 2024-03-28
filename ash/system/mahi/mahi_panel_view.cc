@@ -27,6 +27,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/branding_buildflags.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "components/vector_icons/vector_icons.h"
@@ -60,6 +61,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -113,6 +118,23 @@ enum FeedbackType {
   THUMBS_UP,
   THUMBS_DOWN,
 };
+
+// TODO(b/331127382): Finalize Mahi panel strings.
+std::u16string GetMahiPanelTitle() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAHI_PANEL_TITLE);
+#else
+  return l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetMahiPanelDisclaimer() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_MAHI_PANEL_DISCLAIMER);
+#else
+  return l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
 
 // Creates a thumbs-up or thumbs-down button for the feedback section.
 std::unique_ptr<IconButton> CreateFeedbackButton(FeedbackType type) {
@@ -461,8 +483,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   auto footer_row = std::make_unique<views::BoxLayoutView>();
   footer_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-  footer_row->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ASH_MAHI_DISCLAIMER_LABEL_TEXT)));
+  footer_row->AddChildView(
+      std::make_unique<views::Label>(GetMahiPanelDisclaimer()));
 
   auto learn_more_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT));
@@ -497,7 +519,7 @@ std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {
           views::Builder<views::Label>()
               // TODO(b/319264190): Replace the string used here with the
               // correct string ID.
-              .SetText(u"Mahi Panel")
+              .SetText(GetMahiPanelTitle())
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosTitle1))
