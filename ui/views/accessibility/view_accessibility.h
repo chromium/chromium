@@ -190,18 +190,21 @@ class VIEWS_EXPORT ViewAccessibility {
   // The source type options are:
   //
   // * kNone: No name provided.
-  // * kAttribute: Name from a flat string (e.g. aria-label or View).
+  // * kAttribute: Name from a flat string (e.g. aria-label or View). This is
+  //   the default value.
   // * kAttributeExplicitlyEmpty: Name removed for accessibility reasons.
   // * kCaption: Name from a table caption.
   // * kContents: Name from the displayed text (e.g. label or link).
   // * kPlaceholder: Name from a textfield placeholder.
   // * kRelatedElement: Name from another object in the UI(e.g. figcaption or
-  // View).
+  //   View).
   // * kTitle: Name from a title attribute or element (HTML or SVG).
   // * kValue: Name from a value attribute (e.g. button).
   // * kPopoverAttribute: Name from a tooltip-style popover.
-  void SetName(const std::string& name, ax::mojom::NameFrom name_from);
-  void SetName(const std::u16string& name, ax::mojom::NameFrom name_from);
+  void SetName(const std::string& name,
+               ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
+  void SetName(const std::u16string& name,
+               ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
 
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name
