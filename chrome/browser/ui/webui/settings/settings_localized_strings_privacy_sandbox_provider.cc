@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
-
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -18,6 +17,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -70,18 +70,24 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"adPrivacyPageTitle", IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE},
       {"adPrivacyPageTopicsLinkRowLabel",
        IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL},
+      {"adPrivacyPageTopicsLinkRowLabelV2",
+       IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL_V2},
       {"adPrivacyPageTopicsLinkRowSubLabelEnabled",
        IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_ENABLED},
       {"adPrivacyPageTopicsLinkRowSubLabelDisabled",
        IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_SUB_LABEL_DISABLED},
       {"adPrivacyPageFledgeLinkRowLabel",
        IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL},
+      {"adPrivacyPageFledgeLinkRowLabelV2",
+       IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL_V2},
       {"adPrivacyPageFledgeLinkRowSubLabelEnabled",
        IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_ENABLED},
       {"adPrivacyPageFledgeLinkRowSubLabelDisabled",
        IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_SUB_LABEL_DISABLED},
       {"adPrivacyPageAdMeasurementLinkRowLabel",
        IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL},
+      {"adPrivacyPageAdMeasurementLinkRowLabelV2",
+       IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL_V2},
       {"adPrivacyPageAdMeasurementLinkRowSubLabelEnabled",
        IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_ENABLED},
       {"adPrivacyPageAdMeasurementLinkRowSubLabelDisabled",
@@ -292,6 +298,12 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxFirstPartySetsUI));
+  html_source->AddBoolean(
+      "psRedesignAdPrivacyPageEnabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kPsRedesignAdPrivacyPage));
+  html_source->AddBoolean(
+      "psRedesignAdPrivacyPageEnableToggles",
+      privacy_sandbox::kPsRedesignAdPrivacyPageEnableToggles.Get());
 }
 
 }  // namespace settings

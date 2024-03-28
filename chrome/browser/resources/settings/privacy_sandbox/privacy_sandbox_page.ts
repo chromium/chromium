@@ -62,11 +62,25 @@ export class SettingsPrivacySandboxPageElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
       },
+
+      enablePsReAP_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('psRedesignAdPrivacyPageEnabled'),
+      },
+
+      enablePsReAPToggles_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('psRedesignAdPrivacyPageEnableToggles'),
+      },
+
     };
   }
 
   focusConfig: FocusConfig;
   private isPrivacySandboxRestricted_: boolean;
+  private enablePsReAP_: boolean;
+  private enablePsReAPToggles_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

@@ -284,6 +284,15 @@
       <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_CLANK" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
         Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting. Learn more about <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>managing your ad privacy<ph name="END_LINK_1">&lt;/link1&gt;</ph>.
       </message>
+      <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_TOPICS_LINK_ROW_LABEL_V2" translateable="false" desc="">
+        Manage your ad topics settings
+      </message>
+      <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_FLEDGE_LINK_ROW_LABEL_V2" translateable="false" desc="">
+        Manage your site-suggested ads settings
+      </message>
+      <message name="IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_LABEL_V2" translateable="false" desc="">
+        Manage your ad measurement settings
+      </message>
     </messages>
   </release>
 </grit>

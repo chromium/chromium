@@ -208,6 +208,14 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionNoticeRequestTracking);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Enables visibility for toggles on the top-level Ad Privacy page.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPsRedesignAdPrivacyPage);
+
+// Enables setting the toggles on the top-level Ad Privacy page.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

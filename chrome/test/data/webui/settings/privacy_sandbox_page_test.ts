@@ -27,6 +27,7 @@ suite('PrivacySandboxPage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -54,7 +55,7 @@ suite('PrivacySandboxPage', function() {
   test('privacySandboxLinkRowsVisible', function() {
     assertTrue(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
     assertTrue(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
   });
 
   test('hatsSurveyRequested', async function() {
@@ -104,19 +105,22 @@ suite('PrivacySandboxPage', function() {
   test('privacySandboxAdMeasurementRowSublabel', async function() {
     page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', true);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    const measurementRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxAdMeasurementLinkRow');
+    assertTrue(!!measurementRow);
+    assertTrue(isVisible(measurementRow));
     assertEquals(
         loadTimeData.getString(
             'adPrivacyPageAdMeasurementLinkRowSubLabelEnabled'),
-        page.$.privacySandboxAdMeasurementLinkRow.subLabel);
+        measurementRow.subLabel);
 
     page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', false);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
     assertEquals(
         loadTimeData.getString(
             'adPrivacyPageAdMeasurementLinkRowSubLabelDisabled'),
-        page.$.privacySandboxAdMeasurementLinkRow.subLabel);
+        measurementRow.subLabel);
   });
 
   test('clickPrivacySandboxTopicsLinkRow', async function() {
@@ -144,7 +148,10 @@ suite('PrivacySandboxPage', function() {
   });
 
   test('clickPrivacySandboxAdMeasurementLinkRow', async function() {
-    page.$.privacySandboxAdMeasurementLinkRow.click();
+    const measurementRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxAdMeasurementLinkRow');
+    assertTrue(!!measurementRow);
+    measurementRow.click();
     assertEquals(
         'Settings.PrivacySandbox.AdMeasurement.Opened',
         await metricsBrowserProxy.whenCalled('recordAction'));
@@ -162,6 +169,7 @@ suite('RestrictedEnabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -183,7 +191,7 @@ suite('RestrictedEnabled', function() {
   test('privacySandboxLinkRowsNotVisible', function() {
     assertFalse(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
     assertFalse(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
   });
 });
 
@@ -198,6 +206,7 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -585,6 +594,7 @@ suite('TopicsSubpageEmptyWithProactiveTopicsBlockingDisabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -675,6 +685,7 @@ suite('FledgeSubpageWithProactiveTopicsBlockingEnabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -741,6 +752,7 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1375,6 +1387,7 @@ suite('ManageTopics', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1683,6 +1696,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1925,6 +1939,7 @@ suite('FledgeSubpageWithProactiveTopicsBlockingDisabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -2239,6 +2254,7 @@ suite('FledgeSubpageEmpty', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -2333,6 +2349,7 @@ suite('FledgeSubpageSeeAllSites', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -2511,6 +2528,7 @@ suite('AdMeasurementSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
