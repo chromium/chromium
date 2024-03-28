@@ -11,9 +11,7 @@ import android.util.FloatProperty;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 
 /**
  * {@link StripLayoutGroupTitle} is used to keep track of the strip position and rendering
@@ -45,12 +43,11 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int CORNER_RADIUS_DP = 7;
     private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
 
-    private final float mEffectiveMinWidth;
-    private final float mEffectiveMaxWidth;
+    private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
+    private static final int EFFECTIVE_MAX_WIDTH = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
 
     // External dependencies.
     private final Context mContext;
-    private final LayoutUpdateHost mUpdateHost;
 
     // Position variables.
     private float mDrawX;
@@ -67,16 +64,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private float mBottomIndicatorWidth;
 
     public StripLayoutGroupTitle(
-            Context context, LayoutUpdateHost updateHost, int rootId, @ColorInt int color) {
+            Context context, int rootId, String title, float textWidth, @ColorInt int color) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
         mContext = context;
-        mUpdateHost = updateHost;
-        mEffectiveMinWidth = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
-        mEffectiveMaxWidth = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
 
         updateRootId(rootId);
-        updateTitle(TabGroupTitleUtils.getTabGroupTitle(mRootId), 0);
+        updateTitle(title, textWidth);
         updateTint(color);
     }
 
@@ -107,13 +101,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public void setWidth(float width) {
-        // Increment to prevent off-by-one rounding errors adding a title fade when unnecessary.
-        width = width + (DEFAULT_MARGIN_DP * 2) + 1;
-        width = MathUtils.clamp(width, mEffectiveMinWidth, mEffectiveMaxWidth);
-        if (mWidth != width) {
-            mWidth = width;
-            mUpdateHost.requestUpdate();
-        }
+        mWidth = width;
     }
 
     @Override
@@ -162,9 +150,20 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         mColor = color;
     }
 
-    protected void updateTitle(String title, float width) {
+    /**
+     * @return The group's title.
+     */
+    protected String getTitle() {
+        return mTitle;
+    }
+
+    protected void updateTitle(String title, float textWidth) {
         mTitle = title;
-        setWidth(width + (TEXT_PADDING_DP * 2));
+
+        // Account for view padding & margins. Increment to prevent off-by-one rounding errors
+        // adding a title fade when unnecessary.
+        float viewWidth = textWidth + (TEXT_PADDING_DP * 2) + (DEFAULT_MARGIN_DP * 2) + 1;
+        setWidth(MathUtils.clamp(viewWidth, EFFECTIVE_MIN_WIDTH, EFFECTIVE_MAX_WIDTH));
     }
 
     /**

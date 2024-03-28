@@ -59,6 +59,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -108,6 +109,7 @@ public class StripLayoutHelperTest {
     @Mock private CompositorOnClickHandler mClickHandler;
     @Mock private TabDragSource mTabDragSource;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private LayerTitleCache mLayerTitleCache;
 
     private Activity mActivity;
     private Context mContext;
@@ -1135,7 +1137,6 @@ public class StripLayoutHelperTest {
         // Initialize.
         initializeTest(false, false, 5);
         groupTabs(0, 2);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
@@ -1160,7 +1161,7 @@ public class StripLayoutHelperTest {
         assertTrue("Should in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
 
         float initialPosition = 48.f; // offsetXLeft(10) + groupTitle(42) + deltaOffset(-4)
-        float delta = 140.4f; // tabWidth(168.4) - tabOverlap(28);
+        float delta = 132.f; // tabWidth(160) - tabOverlap(28);
 
         // Assert: tab position should not changed.
         for (int i = 1; i < views.length; i++) {
@@ -3066,6 +3067,7 @@ public class StripLayoutHelperTest {
         mModel.setIndex(tabIndex);
         mStripLayoutHelper.setTabModel(mModel, null, true);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
+        mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0, false);
         // Flush UI updated
     }
@@ -3563,7 +3565,6 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, true, 0, 10);
         groupTabs(1, 3);
         groupTabs(4, 8);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(2);
 
         // Rebuild views.
         mStripLayoutHelper.rebuildStripViews();
@@ -3583,7 +3584,6 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, true, 0, 10);
         groupTabs(1, 3);
         groupTabs(4, 8);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(2);
 
         // Rebuild views.
         mStripLayoutHelper.rebuildStripViews();
@@ -3688,7 +3688,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getTabGroupModelFilterObserverForTesting();
         verify(mTabGroupModelFilter).addTabGroupObserver(observer);
 
-        // Set a new tab group model filter.
+        // Set a new TabGroupModelFilter.
         TabGroupModelFilter newModelFilter = mock(TabGroupModelFilter.class);
         mStripLayoutHelper.setTabGroupModelFilter(newModelFilter);
 
@@ -3698,6 +3698,25 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testSetLayerTitleCache() {
+        // Setup.
+        initializeTest(false, false, 0);
+
+        // Group 2nd and 3rd tab.
+        groupTabs(1, 3);
+        mStripLayoutHelper.rebuildStripViews();
+
+        // Set a new LayerTitleCache.
+        LayerTitleCache newTitleCache = mock(LayerTitleCache.class);
+        mStripLayoutHelper.setLayerTitleCache(newTitleCache);
+
+        // Verify the observers have been updated as expected.
+        verify(newTitleCache).getGroupTitleWidth(eq(false), eq(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testDestroy() {
         // Setup.
         initializeTest(false, false, 0);

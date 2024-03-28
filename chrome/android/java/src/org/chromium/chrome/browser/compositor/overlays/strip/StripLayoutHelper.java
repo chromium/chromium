@@ -83,8 +83,7 @@ import java.util.Set;
  *
  * <p>The stacking and visual behavior is driven by setting a {@link StripStacker}.
  */
-public class StripLayoutHelper
-        implements StripLayoutTab.StripLayoutTabDelegate, LayerTitleCache.GroupTitleObserver {
+public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate {
     /** A property for animations to use for changing the X offset of the tab. */
     public static final FloatProperty<StripLayoutHelper> SCROLL_OFFSET =
             new FloatProperty<StripLayoutHelper>("scrollOffset") {
@@ -202,6 +201,20 @@ public class StripLayoutHelper
                 }
 
                 @Override
+                public void didChangeTabGroupTitle(int rootId, String newTitle) {
+                    final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+                    if (groupTitle == null) return;
+
+                    int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, newTitle);
+                    updateGroupTitle(rootId, newTitle, widthPx);
+
+                    // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
+                    //  with groupTitle.isVisible() check to avoid creating when unneeded.
+                    mLayerTitleCache.getUpdatedGroupTitle(rootId, groupTitle.getTitle());
+                    mRenderHost.requestRender();
+                }
+
+                @Override
                 public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
@@ -211,6 +224,12 @@ public class StripLayoutHelper
                             ColorPickerUtils.getTabGroupColorPickerItemColor(
                                     mContext, newColor, mIncognito);
                     groupTitle.updateTint(color);
+
+                    // Title may also need to change color.
+                    // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
+                    //  with groupTitle.isVisible() check to avoid creating when unneeded.
+                    mLayerTitleCache.getUpdatedGroupTitle(rootId, groupTitle.getTitle());
+                    mRenderHost.requestRender();
                 }
             };
 
@@ -222,6 +241,7 @@ public class StripLayoutHelper
     private TabModel mModel;
     private TabGroupModelFilter mTabGroupModelFilter;
     private TabCreator mTabCreator;
+    private LayerTitleCache mLayerTitleCache;
     private StripStacker mStripStacker = new ScrollingStripStacker();
 
     // Internal State
@@ -847,11 +867,33 @@ public class StripLayoutHelper
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
+        updateTitleCacheForInit();
         rebuildStripViews();
     }
 
     TabGroupModelFilterObserver getTabGroupModelFilterObserverForTesting() {
         return mTabGroupModelFilterObserver;
+    }
+
+    /**
+     * Sets the {@link LayerTitleCache} for the tab strip bitmaps.
+     *
+     * @param layerTitleCache The {@link LayerTitleCache}.
+     */
+    public void setLayerTitleCache(LayerTitleCache layerTitleCache) {
+        mLayerTitleCache = layerTitleCache;
+        updateTitleCacheForInit();
+        mRenderHost.requestRender();
+    }
+
+    private void updateTitleCacheForInit() {
+        if (mTabGroupModelFilter == null || mLayerTitleCache == null) return;
+
+        for (int i = 0; i < mStripGroupTitles.length; ++i) {
+            final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+            int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, groupTitle.getTitle());
+            updateGroupTitle(groupTitle, groupTitle.getTitle(), widthPx);
+        }
     }
 
     /**
@@ -2230,17 +2272,23 @@ public class StripLayoutHelper
         return animationList;
     }
 
-    @Override
-    public void onGroupTitleUpdated(boolean incognito, int rootId, String title, int widthPx) {
-        if (mIncognito == incognito) updateGroupTitle(rootId, title, widthPx);
-    }
-
     private void updateGroupTitle(int rootId, String title, int widthPx) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
         if (groupTitle == null) return;
 
+        updateGroupTitle(groupTitle, title, widthPx);
+    }
+
+    private void updateGroupTitle(StripLayoutGroupTitle groupTitle, String title, int widthPx) {
+        assert groupTitle != null;
+
+        float oldWidth = groupTitle.getWidth();
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         groupTitle.updateTitle(title, widthDp);
+
+        if (groupTitle.getWidth() != oldWidth) {
+            resizeTabStrip(false, false, false);
+        }
     }
 
     private StripLayoutGroupTitle findGroupTitle(int rootId) {
@@ -2260,9 +2308,17 @@ public class StripLayoutHelper
         @TabGroupColorId int colorId = mTabGroupModelFilter.getTabGroupColor(rootId);
         @ColorInt
         int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
+        String titleString = mTabGroupModelFilter.getTabGroupTitle(rootId);
+        float textWidth = 0;
+
+        if (mLayerTitleCache != null) {
+            textWidth =
+                    mLayerTitleCache.getGroupTitleWidth(mIncognito, titleString)
+                            / mContext.getResources().getDisplayMetrics().density;
+        }
 
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(mContext, mUpdateHost, rootId, color);
+                new StripLayoutGroupTitle(mContext, rootId, titleString, textWidth, color);
         pushPropertiesToGroupTitle(groupTitle);
 
         return groupTitle;
@@ -2377,7 +2433,11 @@ public class StripLayoutHelper
         assert viewIndex == mStripViews.length - 1 : "Did not find all tab groups.";
         mStripViews[viewIndex] = mStripTabs[mStripTabs.length - 1];
 
+        int oldGroupCount = mStripGroupTitles.length;
         mStripGroupTitles = groupTitles;
+        if (mStripGroupTitles.length != oldGroupCount) {
+            resizeTabStrip(true, false, false);
+        }
     }
 
     private void copyTabs() {
@@ -2561,6 +2621,7 @@ public class StripLayoutHelper
         // Return early if there is no animation to run.
         if (resizeAnimationList == null) {
             buildBottomIndicator();
+            mUpdateHost.requestUpdate();
             return null;
         }
 

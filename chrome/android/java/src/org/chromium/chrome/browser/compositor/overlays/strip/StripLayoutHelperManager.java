@@ -510,8 +510,8 @@ public class StripLayoutHelperManager
 
         mLayerTitleCacheSupplier.addObserver(
                 (LayerTitleCache layerTitleCache) -> {
-                    layerTitleCache.addObserver(mNormalHelper);
-                    layerTitleCache.addObserver(mIncognitoHelper);
+                    mNormalHelper.setLayerTitleCache(layerTitleCache);
+                    mIncognitoHelper.setLayerTitleCache(layerTitleCache);
                 });
 
         // TODO (crbug/328055199): Move this logic to a desktop_windowing helper method.
@@ -560,11 +560,6 @@ public class StripLayoutHelperManager
 
     /** Cleans up internal state. */
     public void destroy() {
-        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
-        if (layerTitleCache != null) {
-            layerTitleCache.removeObserver(mNormalHelper);
-            layerTitleCache.removeObserver(mIncognitoHelper);
-        }
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
         mIncognitoHelper.destroy();

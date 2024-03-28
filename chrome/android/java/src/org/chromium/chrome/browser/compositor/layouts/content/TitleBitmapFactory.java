@@ -43,6 +43,7 @@ public class TitleBitmapFactory {
     private final int mMaxWidth;
     private final int mViewHeight;
     private int mFaviconDimension;
+    private boolean mIncognito;
 
     private final TextPaint mTabTextPaint;
     private final float mTabTextHeight;
@@ -58,10 +59,11 @@ public class TitleBitmapFactory {
      */
     public TitleBitmapFactory(Context context, boolean incognito) {
         Resources res = context.getResources();
+        mIncognito = incognito;
         int textColor =
                 AppCompatResources.getColorStateList(
                                 context,
-                                incognito
+                                mIncognito
                                         ? R.color.compositor_tab_title_bar_text_incognito
                                         : R.color.compositor_tab_title_bar_text)
                         .getDefaultColor();
@@ -146,17 +148,15 @@ public class TitleBitmapFactory {
      * Generates the group title bitmap.
      *
      * @param context The current Android's context.
-     * @param incognito Whether the given tab group is Incognito or not.
      * @param rootId The root ID of the group.
      * @param title The title of the group.
      * @return The Bitmap with the title.
      */
-    public Bitmap getGroupTitleBitmap(
-            Context context, boolean incognito, int rootId, String title) {
+    public Bitmap getGroupTitleBitmap(Context context, int rootId, String title) {
         @TabGroupColorId int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
         @ColorInt
         int color =
-                ColorPickerUtils.getTabGroupColorPickerItemTextColor(context, colorId, incognito);
+                ColorPickerUtils.getTabGroupColorPickerItemTextColor(context, colorId, mIncognito);
         mGroupTextPaint.setColor(color);
         return getTitleBitmap(mGroupTextPaint, mGroupTextHeight, mGroupTextYOffset, title);
     }
@@ -174,8 +174,7 @@ public class TitleBitmapFactory {
         try {
             final long startTime = SystemClock.elapsedRealtime();
             boolean drawText = !TextUtils.isEmpty(title);
-            int textWidth =
-                    drawText ? (int) Math.ceil(Layout.getDesiredWidth(title, textPaint)) : 0;
+            int textWidth = drawText ? getTitleWidth(title, textPaint) : 0;
 
             // Minimum 1 width bitmap to avoid createBitmap function's IllegalArgumentException,
             // when textWidth == 0.
@@ -211,5 +210,17 @@ public class TitleBitmapFactory {
         }
 
         return null;
+    }
+
+    /**
+     * @param titleString The title of the tab group.
+     * @return The width in px of the title.
+     */
+    public int getGroupTitleWidth(String titleString) {
+        return getTitleWidth(titleString, mGroupTextPaint);
+    }
+
+    private int getTitleWidth(String titleString, TextPaint textPaint) {
+        return (int) Math.ceil(Layout.getDesiredWidth(titleString, textPaint));
     }
 }
