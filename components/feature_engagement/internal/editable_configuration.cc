@@ -8,7 +8,13 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/feature_engagement/public/configuration_provider.h"
+#endif
 
 namespace feature_engagement {
 
@@ -25,6 +31,11 @@ void EditableConfiguration::SetConfiguration(
 void EditableConfiguration::SetConfiguration(const base::Feature* group,
                                              const GroupConfig& group_config) {
   group_configs_[group->name] = group_config;
+}
+
+void EditableConfiguration::AddAllowedEventPrefix(const std::string& prefix) {
+  CHECK(!prefix.empty());
+  event_prefixes_.insert(prefix);
 }
 
 const FeatureConfig& EditableConfiguration::GetFeatureConfig(
@@ -80,5 +91,22 @@ const std::vector<std::string> EditableConfiguration::GetRegisteredGroups()
     groups.push_back(element.first);
   return groups;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void EditableConfiguration::UpdateConfig(
+    const base::Feature& feature,
+    const ConfigurationProvider* provider) {
+  FeatureConfig& config = configs_[feature.name];
+
+  // Clear existing configs.
+  config = FeatureConfig();
+  provider->MaybeProvideFeatureConfiguration(feature, config, {}, {});
+}
+
+const Configuration::EventPrefixSet&
+EditableConfiguration::GetRegisteredAllowedEventPrefixes() const {
+  return event_prefixes_;
+}
+#endif
 
 }  // namespace feature_engagement

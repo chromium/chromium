@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -130,5 +132,16 @@ TEST_F(EditableConfigurationTest, GroupConfigShouldBeEditable) {
       configuration_.GetGroupConfig(kEditableTestGroupFeatureFoo);
   EXPECT_EQ(invalid_foo_config, invalid_foo_config_result);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(EditableConfigurationTest, SinglePrefixAddAndGet) {
+  const std::string foo_prefix = "FooEventPrefix";
+  configuration_.AddAllowedEventPrefix(foo_prefix);
+  const auto& foo_prefix_result =
+      configuration_.GetRegisteredAllowedEventPrefixes();
+  EXPECT_EQ(1u, foo_prefix_result.size());
+  EXPECT_TRUE(foo_prefix_result.contains(foo_prefix));
+}
+#endif
 
 }  // namespace feature_engagement

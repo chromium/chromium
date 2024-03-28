@@ -12,6 +12,8 @@
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/availability_model.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"
@@ -121,12 +123,22 @@ class TestConfiguration : public Configuration {
   const std::vector<std::string> GetRegisteredGroups() const override {
     return std::vector<std::string>();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void UpdateConfig(const base::Feature& feature,
+                    const ConfigurationProvider* provider) override {}
+  const EventPrefixSet& GetRegisteredAllowedEventPrefixes() const override {
+    return event_prefixes_;
+  }
+#endif
 
  private:
   FeatureConfig config_;
   GroupConfig group_config_;
   Configuration::ConfigMap map_;
   Configuration::GroupConfigMap group_map_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Configuration::EventPrefixSet event_prefixes_;
+#endif
 };
 
 class TestEventModel : public EventModel {

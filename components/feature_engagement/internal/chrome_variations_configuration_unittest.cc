@@ -14,7 +14,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/group_constants.h"
 #include "components/feature_engagement/public/stats.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -67,6 +70,38 @@ BlockedBy CreateBlockedByExplicit(std::vector<std::string> affected_features) {
   blocked_by.affected_features = affected_features;
   return blocked_by;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class TestConfigurationProvider : public ConfigurationProvider {
+ public:
+  TestConfigurationProvider() = default;
+  ~TestConfigurationProvider() override = default;
+
+  // ConfigurationProvider:
+  bool MaybeProvideFeatureConfiguration(
+      const base::Feature& feature,
+      feature_engagement::FeatureConfig& config,
+      const feature_engagement::FeatureVector& known_features,
+      const feature_engagement::GroupVector& known_groups) const override {
+    config = config_;
+    return true;
+  }
+
+  const char* GetConfigurationSourceDescription() const override {
+    return "Test Configuration Provider";
+  }
+
+  std::set<std::string> MaybeProvideAllowedEventPrefixes(
+      const base::Feature& feature) const override {
+    return {"TestEventPrefix"};
+  }
+
+  void SetConfig(const FeatureConfig& config) { config_ = config; }
+
+ private:
+  FeatureConfig config_;
+};
+#endif
 
 class ChromeVariationsConfigurationTest : public ::testing::Test {
  public:
@@ -2158,5 +2193,57 @@ TEST_F(ChromeVariationsConfigurationTest,
       kConfigParseEventName,
       static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ChromeVariationsConfigurationTest, UpdateConfigs) {
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used =
+      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger =
+      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
+  expected_foo.event_configs.insert(EventConfig(
+      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
+  expected_foo.event_configs.insert(EventConfig(
+      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+
+  auto provider = std::make_unique<TestConfigurationProvider>();
+  provider->SetConfig(expected_foo);
+  configuration_.UpdateConfig(kChromeTestFeatureFoo, provider.get());
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(expected_foo, foo);
+
+  // Update config, removing `event_1` and `event_3`.
+  expected_foo = FeatureConfig();
+  expected_foo.valid = true;
+  expected_foo.used =
+      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger =
+      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
+  expected_foo.event_configs.insert(EventConfig(
+      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  EXPECT_NE(expected_foo, foo);
+
+  provider->SetConfig(expected_foo);
+  configuration_.UpdateConfig(kChromeTestFeatureFoo, provider.get());
+
+  foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(expected_foo, foo);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, GetEventPrefixes) {
+  ConfigurationProviderList providers;
+  providers.emplace_back(std::make_unique<TestConfigurationProvider>());
+  configuration_.LoadConfigs(providers, /*features=*/{&kChromeTestFeatureFoo},
+                             /*groups=*/{});
+
+  const auto& prefixes = configuration_.GetRegisteredAllowedEventPrefixes();
+  EXPECT_EQ(1u, prefixes.size());
+  EXPECT_TRUE(prefixes.contains("TestEventPrefix"));
+}
+#endif
 
 }  // namespace feature_engagement

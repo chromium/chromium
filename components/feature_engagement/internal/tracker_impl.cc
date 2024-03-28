@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/blocked_iph_features.h"
 #include "components/feature_engagement/internal/chrome_variations_configuration.h"
@@ -459,6 +460,14 @@ void TrackerImpl::UnregisterPriorityNotificationHandler(
     const base::Feature& feature) {
   priority_notification_handlers_.erase(feature.name);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TrackerImpl::UpdateConfig(const base::Feature& feature,
+                               const ConfigurationProvider* provider) {
+  CHECK(IsInitialized());
+  configuration_->UpdateConfig(feature, provider);
+}
+#endif
 
 const Configuration* TrackerImpl::GetConfigurationForTesting() const {
   CHECK_IS_TEST();

@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
@@ -278,6 +279,38 @@ class TestSessionController : public SessionController {
  private:
   bool should_reset_for_next_call_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class TestConfigurationProvider : public ConfigurationProvider {
+ public:
+  TestConfigurationProvider() = default;
+  ~TestConfigurationProvider() override = default;
+
+  // ConfigurationProvider:
+  bool MaybeProvideFeatureConfiguration(
+      const base::Feature& feature,
+      feature_engagement::FeatureConfig& config,
+      const feature_engagement::FeatureVector& known_features,
+      const feature_engagement::GroupVector& known_groups) const override {
+    config = config_;
+    return true;
+  }
+
+  const char* GetConfigurationSourceDescription() const override {
+    return "Test Configuration Provider";
+  }
+
+  std::set<std::string> MaybeProvideAllowedEventPrefixes(
+      const base::Feature& feature) const override {
+    return {};
+  }
+
+  void SetConfig(const FeatureConfig& config) { config_ = config; }
+
+ private:
+  FeatureConfig config_;
+};
+#endif
 
 class TrackerImplTest : public ::testing::Test {
  public:
@@ -1179,6 +1212,35 @@ TEST_F(TrackerImplTest, TestWouldTriggerInspection) {
   VerifyHistograms(true, 1, 1, 0, true, 1, 0, 0, false, 0, 0, 0, false, 0, 0,
                    0);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(TrackerImplTest, TestWouldTriggerWithUpdatedConfig) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+  base::UserActionTester user_action_tester;
+
+  // Initially, foo would have been shown.
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
+
+  FeatureConfig config;
+  config.valid = false;
+  config.used.name = kTrackerTestFeatureFoo.name + std::string("_used");
+  config.trigger.name = kTrackerTestFeatureFoo.name + std::string("_trigger");
+
+  auto provider = std::make_unique<TestConfigurationProvider>();
+  provider->SetConfig(config);
+  tracker_->UpdateConfig(kTrackerTestFeatureFoo, provider.get());
+  EXPECT_FALSE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
+
+  config.valid = true;
+  provider->SetConfig(config);
+  tracker_->UpdateConfig(kTrackerTestFeatureFoo, provider.get());
+  EXPECT_TRUE(tracker_->WouldTriggerHelpUI(kTrackerTestFeatureFoo));
+}
+#endif
 
 TEST_F(TrackerImplTest, TestTriggerStateInspection) {
   // Before initialization has finished, NOT_READY should always be returned.

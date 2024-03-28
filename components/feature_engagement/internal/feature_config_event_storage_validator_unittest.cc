@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
@@ -136,6 +138,17 @@ class FeatureConfigEventStorageValidatorTest : public ::testing::Test {
     validator_.ClearForTesting();
     EditableConfiguration configuration;
     configuration.SetConfiguration(&kEventStorageTestFeatureFoo, foo_config);
+    validator_.InitializeFeatures(features, {}, configuration);
+  }
+
+  void UseConfigEventPrefix(const FeatureConfig& foo_config,
+                            const std::string& foo_prefix) {
+    FeatureVector features = {&kEventStorageTestFeatureFoo};
+
+    validator_.ClearForTesting();
+    EditableConfiguration configuration;
+    configuration.SetConfiguration(&kEventStorageTestFeatureFoo, foo_config);
+    configuration.AddAllowedEventPrefix(foo_prefix);
     validator_.InitializeFeatures(features, {}, configuration);
   }
 
@@ -347,5 +360,86 @@ TEST_F(FeatureConfigEventStorageValidatorTest,
     VerifyKeep10Days();
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(FeatureConfigEventStorageValidatorTest,
+       ShouldStoreIfEventStartsWithPrefix) {
+  scoped_feature_list_.InitWithFeatures({kEventStorageTestFeatureFoo}, {});
+
+  UseConfig(kNeverStored);
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"event");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"tneveym");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"eventmy");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"ymevent");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myeventfoo");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore("my_event"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore("_myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore("1myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_TRUE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_TRUE(validator_.ShouldStore("myevent_a"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_TRUE(validator_.ShouldStore("myevent1"));
+
+  // Tests with case sensitivity.
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"Myevent");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myEvent");
+  EXPECT_FALSE(validator_.ShouldStore("myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"Myevent");
+  EXPECT_TRUE(validator_.ShouldStore("Myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"MyEvent");
+  EXPECT_FALSE(validator_.ShouldStore("Myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"MyEvent");
+  EXPECT_TRUE(validator_.ShouldStore("MyEvent"));
+
+  // Tests with empty string or with spaces.
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore(""));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore(" "));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore("  "));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/" myevent");
+  EXPECT_FALSE(validator_.ShouldStore(" "));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore(" myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/"myevent");
+  EXPECT_FALSE(validator_.ShouldStore("  myevent"));
+
+  UseConfigEventPrefix(kNeverStored, /*foo_prefix=*/" myevent");
+  EXPECT_FALSE(validator_.ShouldStore("  myevent"));
+}
+#endif
 
 }  // namespace feature_engagement

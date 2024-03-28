@@ -4,6 +4,9 @@
 
 #include "components/feature_engagement/public/configuration_provider.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
 namespace feature_engagement {
 
 ConfigurationProvider::ConfigurationProvider() = default;
@@ -22,6 +25,13 @@ bool ConfigurationProvider::MaybeProvideGroupConfiguration(
     GroupConfig& config) const {
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::set<std::string> ConfigurationProvider::MaybeProvideAllowedEventPrefixes(
+    const base::Feature& feature) const {
+  return {};
+}
+#endif
 
 stats::ConfigParsingEvent ConfigurationProvider::GetOnSuccessEvent() const {
   return stats::ConfigParsingEvent::SUCCESS;

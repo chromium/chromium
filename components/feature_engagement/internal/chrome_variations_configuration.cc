@@ -10,10 +10,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_constants.h"
 #include "components/feature_engagement/public/stats.h"
@@ -81,6 +85,9 @@ void ChromeVariationsConfiguration::LoadConfigs(
 
   for (auto* feature : features) {
     LoadFeatureConfig(*feature, configuration_providers, features, groups);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    LoadAllowedEventPrefixes(*feature, configuration_providers);
+#endif
   }
 
   ExpandGroupNamesInFeatures(groups);
@@ -89,6 +96,23 @@ void ChromeVariationsConfiguration::LoadConfigs(
     LoadGroupConfig(*group, configuration_providers);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeVariationsConfiguration::UpdateConfig(
+    const base::Feature& feature,
+    const ConfigurationProvider* provider) {
+  FeatureConfig& config = configs_[feature.name];
+
+  // Clear existing configs.
+  config = FeatureConfig();
+  provider->MaybeProvideFeatureConfiguration(feature, config, {}, {});
+}
+
+const Configuration::EventPrefixSet&
+ChromeVariationsConfiguration::GetRegisteredAllowedEventPrefixes() const {
+  return event_prefixes_;
+}
+#endif
 
 void ChromeVariationsConfiguration::LoadFeatureConfig(
     const base::Feature& feature,
@@ -143,6 +167,29 @@ void ChromeVariationsConfiguration::LoadGroupConfig(
     DVLOG(3) << "No field trial or checked in config for " << group.name;
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeVariationsConfiguration::LoadAllowedEventPrefixes(
+    const base::Feature& feature,
+    const ConfigurationProviderList& configuration_providers) {
+  // Allowed prefixes from different providers are inserted in a set, therefore,
+  // it could potential affect other features.
+  for (const auto& provider : configuration_providers) {
+    const auto prefixes = provider->MaybeProvideAllowedEventPrefixes(feature);
+    for (auto it = prefixes.begin(); it != prefixes.end(); ++it) {
+      // Do not insert empty prefix.
+      if (it->empty()) {
+        continue;
+      }
+
+      // Check if there are duplicate prefixes.
+      const auto inserted = event_prefixes_.insert(*it);
+      CHECK(inserted.second)
+          << "Configuration has duplicate event prefixes: " << *it;
+    }
+  }
+}
+#endif
 
 void ChromeVariationsConfiguration::ExpandGroupNamesInFeatures(
     const GroupVector& all_groups) {

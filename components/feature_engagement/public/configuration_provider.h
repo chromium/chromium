@@ -6,7 +6,11 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_CONFIGURATION_PROVIDER_H_
 
 #include <memory>
+#include <set>
 #include <vector>
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_list.h"
 #include "components/feature_engagement/public/stats.h"
@@ -55,6 +59,13 @@ class ConfigurationProvider {
   // As `MaybeProvideFeatureConfiguration()`, but reads a group config.
   virtual bool MaybeProvideGroupConfiguration(const base::Feature& feature,
                                               GroupConfig& config) const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Provides an allowed set of prefixes for the events which can be stored and
+  // kept, regardless of whether or not they are used in a config.
+  virtual std::set<std::string> MaybeProvideAllowedEventPrefixes(
+      const base::Feature& feature) const;
+#endif
 
   // Gets a description of the source of the configuration for debugging and
   // error tracing purposes.

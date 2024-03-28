@@ -61,9 +61,18 @@ class FeatureConfigEventStorageValidator : public EventStorageValidator {
   // |event_config|.
   void InitializeEventConfig(const EventConfig& event_config);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Updates the internal allowed prefixes set.
+  void InitializeEventPrefixes(const Configuration& configuration);
+#endif
+
   // Contains an entry for each of the events that any EventConfig required to
   // be stored.
   std::unordered_set<std::string> should_store_event_names_;
+
+  // Contains an allowed list of prefixes of the event names that any
+  // ConfigurationProvider required to be stored.
+  std::unordered_set<std::string> should_store_event_name_prefixes_;
 
   // Contains the longest time to store each event across all EventConfigs,
   // as a number of days.
