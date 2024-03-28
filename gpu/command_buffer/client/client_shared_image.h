@@ -184,18 +184,9 @@ class GPU_EXPORT ClientSharedImage
   static scoped_refptr<ClientSharedImage> ImportUnowned(
       const ExportedSharedImage& exported_shared_image);
 
-  static scoped_refptr<ClientSharedImage> CreateForTesting() {
-    SharedImageMetadata metadata;
-    metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
-    metadata.color_space = gfx::ColorSpace::CreateSRGB();
-    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
-    metadata.alpha_type = kOpaque_SkAlphaType;
-    metadata.usage = 0;
-
-    return base::MakeRefCounted<ClientSharedImage>(
-        Mailbox::GenerateForSharedImage(), metadata, gpu::SyncToken(), nullptr,
-        gfx::EMPTY_BUFFER);
-  }
+  // Creates a ClientSharedImage that is not associated with any
+  // SharedImageInterface for testing.
+  static scoped_refptr<ClientSharedImage> CreateForTesting();
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,

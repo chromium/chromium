@@ -303,6 +303,19 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
       exported_shared_image.texture_target_));
 }
 
+// static
+scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
+  SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = 0;
+
+  return ImportUnowned(ExportedSharedImage(
+      Mailbox::GenerateForSharedImage(), metadata, SyncToken(), GL_TEXTURE_2D));
+}
+
 ExportedSharedImage::ExportedSharedImage() = default;
 ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
                                          const SharedImageMetadata& metadata,
