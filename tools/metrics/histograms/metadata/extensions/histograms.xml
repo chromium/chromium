@@ -1466,6 +1466,44 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
+    name="Extensions.Events.DispatchToAckTime.ExtensionEventPage3{ContextActive}"
+    units="microseconds" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the time it took for the event to be sent to the event router for
+    dispatch for background page of type event page{ContextActive}. Emitted when
+    extensions browser code receives receives an ack from the renderer that it
+    fired the event in the event page. It only counts events that ran in a event
+    page background script, other listeners in the extension renderer that can
+    receive the event are not counted. Reports samples at microseconds
+    granualarity up to 5 minutes. Values over 5 minutes are bucketed together
+    since no ack is expected to take longer than that. 5 minutes was decided
+    since that is the maximum for extension service worker event lifetime. This
+    is recorded only for clients with high-resolution clocks. It does not
+    include any requests that utilize the EventRouter::DispatchEventToSender()
+    event routing flow (some web request API, and web view API events).
+
+    Note: Previous version replaced October, 2023 because values were inaccurate
+    due to a bug where we recorded this metric for all events for an extension,
+    rather that just for those that ran in the lazy background page script.
+  </summary>
+  <token key="ContextActive">
+    <variant name="" summary=""/>
+    <variant name=".Active"
+        summary="and in status active. Active means that the background
+                 script was started and ready to receive events when the
+                 event was dispatched"/>
+    <variant name=".Inactive"
+        summary="and in status inactive. Inactive means that the background
+                 script was not started and not ready to receive events when
+                 the event was dispatched"/>
+  </token>
+</histogram>
+
+<histogram
     name="Extensions.Events.DispatchToAckTime.ExtensionPersistentBackgroundPage"
     units="microseconds" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
@@ -1495,7 +1533,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.Events.DispatchToAckTime.{BackgroundContextType}{ContextActive}"
+    name="Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2{ContextActive}"
     units="microseconds" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
 
@@ -1503,45 +1541,35 @@ of interesting buckets, such as "internal + external".
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the time it took for the event to be sent to the event router for
-    dispatch for background page of type {BackgroundContextType}{ContextActive}.
-    Reports samples at microseconds granualarity up to 5 minutes. Values over 5
-    minutes are bucketed together since no ack is expected to take longer than
-    that. 5 minutes was decided since that is the maximum for extension service
-    worker event lifetime. This is recorded only for clients with
-    high-resolution clocks. It does not include any requests that utilize the
-    EventRouter::DispatchEventToSender() event routing flow (some web request
-    API, and web view API events).
+    dispatch for a background page of type service worker{ContextActive}.
+    Emitted shortly after extensions browser code receives the ack from the
+    renderer that it fired the event in the service worker. &quot;shortly&quot;
+    because there is a function call between the receipt by the browser and
+    recording the value. Note: this may include some amount of execution time of
+    the extension service worker JS listener. Reports samples at microseconds
+    granualarity up to 5 minutes. Values over 5 minutes are bucketed together
+    since no ack is expected to take longer than that. 5 minutes was decided
+    since that is the maximum for extension service worker event lifetime. This
+    is recorded only for clients with high-resolution clocks. It does not
+    include any requests that utilize the EventRouter::DispatchEventToSender()
+    event routing flow (some web request API, and web view API events).
+
+    Note: this histogram was incremented March, 2024 since it was emitting for
+    an incorrect definition of &quot;started&quot;.&quot;
   </summary>
-  <token key="BackgroundContextType">
-    <variant name="ExtensionEventPage3"
-        summary="event page. Emitted when extensions browser code receives
-                 receives an ack from the renderer that it fired the event in
-                 the event page. It only counts events that ran in a event
-                 page background script, other listeners in the extension
-                 renderer that can receive the event are not counted.
-                 Replaced previous version because values were inaccurate due
-                 to a bug where we recorded this metric for all events for an
-                 extension, rather that just for those that ran in the lazy
-                 background page script 2023-10"/>
-    <variant name="ExtensionServiceWorker2"
-        summary="service worker. Emitted shortly after extensions browser
-                 code receives the ack from the renderer that it fired the
-                 event in the service worker. &quot;shortly&quot; because
-                 there is a function call between the receipt by the browser
-                 and recording the value. Note: this may include some amount
-                 of execution time of the extension service worker JS
-                 listener. Replaced previous version because values were
-                 inaccurate due to a bug with recording the dispatch start
-                 time 2023-08"/>
-  </token>
   <token key="ContextActive">
     <variant name="" summary=""/>
-    <variant name=".Active"
+    <variant name=".Active2"
         summary="and in status active. Active means that the background
-                 script was already started when the event was dispatched"/>
-    <variant name=".Inactive"
+                 script was started and ready to receive and run events (both
+                 //content browser notification and extension renderer JS
+                 global evaluation completed) when the event was dispatched"/>
+    <variant name=".Inactive2"
         summary="and in status inactive. Inactive means that the background
-                 script was not started when the event was dispatched"/>
+                 script was not started and not ready to receive and run
+                 events (either the //content browser notification or
+                 extension renderer JS global evaluation did not complete)
+                 when the event was dispatched"/>
   </token>
 </histogram>
 
@@ -4168,7 +4196,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker"
+    name="Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker2"
     enum="Boolean" expires_after="2024-09-15">
 <!-- expires-never: Monitors core extension system health. -->
 
@@ -4179,6 +4207,9 @@ of interesting buckets, such as "internal + external".
     the worker was ready to run tasks when pendings tasks are added (this is not
     optimal). Records false if the worker was not ready to run tasks when the
     pending task was added (this is the optimal expected state).
+
+    Note: this histogram was incremented March, 2024 since it was emitting for
+    an incorrect definition of &quot;started&quot;.
   </summary>
 </histogram>
 
@@ -4339,7 +4370,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RequestedWorkerStartForStartedWorker"
+    name="Extensions.ServiceWorkerBackground.RequestedWorkerStartForStartedWorker2"
     enum="Boolean" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->
 
@@ -4353,6 +4384,9 @@ of interesting buckets, such as "internal + external".
     running and could've processed the event without the request to start. A
     `false` value means that we correctly started the worker because it was not
     ready to run events.
+
+    Note: this histogram was incremented March, 2024 since it was emitting for
+    an incorrect definition of &quot;started&quot;.
   </summary>
 </histogram>
 

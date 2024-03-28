@@ -193,6 +193,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
     // associated `extension_id`.
     virtual void DidInitializeServiceWorkerContext(
         const ExtensionId& extension_id) {}
+
+    // Called when a service worker is fully started (DidStartWorkerForScope()
+    // and DidStartServiceWorkerContext() were called) for the extension with
+    // the associated `extension_id`.
+    virtual void DidStartWorker(const ExtensionId& extension_id) {}
   };
 
   static void SetObserverForTest(TestObserver* observer);

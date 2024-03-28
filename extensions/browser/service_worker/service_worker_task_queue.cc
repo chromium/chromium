@@ -392,11 +392,28 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
   const WorkerState* worker_state = GetWorkerState(context_id);
 
   if (!worker_state || !worker_state->worker_id_) {
-    // Assume the worker has not been started (is kRunning). It is likely in
+    // Assume the worker has not been started. It is likely in
     // blink::EmbeddedWorkerStatus::(kStarting|kStopped) status.
     return false;
   }
 
+  // We must check both states since the worker could begin stopping and call
+  // DidStopServiceWorkerContext after BrowserState::kReady.
+  if (worker_state->browser_state_ != BrowserState::kReady) {
+    return false;
+  }
+  if (worker_state->renderer_state_ != RendererState::kStarted) {
+    return false;
+  }
+
+  // `browser_ready` and `renderer_ready` are //extension browser's view of the
+  // worker being ready to run tasks and are mostly accurate for whether a
+  // worker is ready to run. But there are edge cases if a worker is in
+  // transition (stopping or starting). `browser_ready` and `renderer_ready`
+  // would be true in these edge cases, but the worker wouldn't be ready to run
+  // a task. Due to the current async-ness of stopping/starting a worker
+  // //extension browser can't synchronously check this, so we synchonously
+  // check the //content browser layer instead.
   content::ServiceWorkerContext* sw_context =
       util::GetServiceWorkerContextForExtensionId(extension->id(), context);
   return sw_context->IsLiveRunningServiceWorker(
@@ -408,7 +425,7 @@ void ServiceWorkerTaskQueue::AddPendingTask(
     PendingTask task) {
   DCHECK(lazy_context_id.IsForServiceWorker());
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker",
+      "Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker2",
       IsReadyToRunTasks(
           browser_context_,
           extensions::ExtensionRegistry::Get(browser_context_)
@@ -727,6 +744,9 @@ void ServiceWorkerTaskQueue::RunPendingTasksIfWorkerReady(
   // DidStartWorkerForScope and DidStartWorkerContext, change `browser_ready`
   // state of the worker so that new tasks can be queued up.
   worker_state->browser_state_ = BrowserState::kReady;
+  if (g_test_observer) {
+    g_test_observer->DidStartWorker(context_id.extension_id);
+  }
 
   DCHECK(worker_state->has_pending_tasks())
       << "Worker ready, but no tasks to run!";
@@ -911,7 +931,7 @@ void ServiceWorkerTaskQueue::EmitWorkerWillBeStartedHistograms(
                             ->GetInstalledExtension(extension_id));
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground."
-      "RequestedWorkerStartForStartedWorker",
+      "RequestedWorkerStartForStartedWorker2",
       worker_is_ready_to_run_tasks);
 }
 

@@ -12,8 +12,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -88,6 +90,34 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
+};
+
+// A helper class to wait for a service worker for an extension with
+// `extension_id` to be initialized or stopped (to indirectly know that the
+// new/previous worker should've been added/remove to/from `WorkerIdSet`).
+class ServiceWorkerReadyWaiter : public ServiceWorkerTaskQueue::TestObserver {
+ public:
+  explicit ServiceWorkerReadyWaiter(const ExtensionId& extension_id)
+      : extension_id_(extension_id) {
+    ServiceWorkerTaskQueue::SetObserverForTest(this);
+  }
+
+  ~ServiceWorkerReadyWaiter() override {
+    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
+  }
+
+  void Wait() { worker_ready_run_loop.Run(); }
+
+ private:
+  // ServiceWorkerTaskQueue::TestObserver:
+  void DidStartWorker(const ExtensionId& extension_id) override {
+    if (extension_id == extension_id_) {
+      worker_ready_run_loop.Quit();
+    }
+  }
+
+  const std::string extension_id_;
+  base::RunLoop worker_ready_run_loop;
 };
 
 // Tests that the only the dispatch time histogram provided to the test is
@@ -423,15 +453,15 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   // Call to webNavigation.onCompleted expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active2",
       /*expected_count=*/1);
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
   histogram_tester.ExpectBucketCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active2",
       /*sample=*/base::Minutes(5).InMicroseconds(), /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive2",
       /*expected_count=*/0);
 }
 
@@ -475,15 +505,15 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   // Call to webNavigation.onCompleted expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive2",
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active2",
       /*expected_count=*/0);
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
   histogram_tester.ExpectBucketCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive2",
       /*sample=*/base::Minutes(5).InMicroseconds(),
       /*expected_count=*/0);
 }
@@ -533,6 +563,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
       GetServiceWorkerContext(), /*service_worker_version_id=*/0));
 
   base::HistogramTester histogram_tester;
+  ServiceWorkerReadyWaiter ready_waiter(extension->id());
   ExtensionTestMessageListener test_event_listener_fired("listener fired");
   // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
   // the extension listener.
@@ -543,26 +574,33 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
 
   if (GetParam()) {
     // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true.
-    // Since feature prevents starting a worker when it is running, the
+    // Since the feature prevents starting a worker when it is running, the
     // event/task will not be added as pending and therefore this UMA is not
     // emitted. But as per the assertions, we still run the event successfully.
     histogram_tester.ExpectTotalCount(
         "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker",
+        "RequestedWorkerStartForStartedWorker2",
         /*expected_count=*/0);
   } else {
+    {
+      SCOPED_TRACE("Waiting for the worker to start.");
+      ready_waiter.Wait();
+    }
+    // TODO(crbug.com/40909770): Additionally test the case when
+    // BrowserState::kReady but !RendererState::kStarted.
+
     // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
     // Since the feature is disabled, we will redundantly attempt to start the
     // worker.
     histogram_tester.ExpectTotalCount(
         "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker",
+        "RequestedWorkerStartForStartedWorker2",
         /*expected_count=*/1);
     // Verify that the value is `true` since the without the feature the worker
     // will be redundantly started.
     histogram_tester.ExpectBucketCount(
         "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker",
+        "RequestedWorkerStartForStartedWorker2",
         /*sample=*/true, /*expected_count=*/1);
   }
 }
