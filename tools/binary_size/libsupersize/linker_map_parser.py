@@ -642,7 +642,8 @@ class MapFileParserLld:
                   #   symbol.
                   # Anything that makes it here would be an anomaly worthy of
                   # investigation, so print warnings.
-                  logging.warn('Unrecognized __typeid_ symbol at %08X', address)
+                  logging.warning('Unrecognized __typeid_ symbol at %08X',
+                                  address)
                   continue
               else:
                 # Prefer |size|, and only fall back to |span| if |size == 0|.

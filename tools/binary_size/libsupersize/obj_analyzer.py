@@ -146,7 +146,7 @@ class _BulkObjectFileAnalyzerWorker:
       if encoded_strs != parallel.EMPTY_ENCODED_DICT:
         self._encoded_string_addresses_by_path_chunks.append(encoded_strs)
     if total_no_symbols:
-      logging.warn('nm found no symbols in %d objects.', total_no_symbols)
+      logging.warning('nm found no symbols in %d objects.', total_no_symbols)
 
   def _RunLlvmBcAnalyzer(self, paths_by_type):
     """Calls llvm-bcanalyzer to extract string data (for LLD-LTO)."""
