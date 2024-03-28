@@ -12,10 +12,13 @@ ts_library("build_ts") {
   visibility = [
     ":build_bundle",
 
-    # TODO(crbug.com/1503223): Currently Limiting only to cr_elements/ and
-    # cr_components/for the initial experimentation phase, and some tests that
-    # need to refer to CrLitElement. Update when the migration enters its next
-    # phase.
+    # TODO(crbug.com/1503223): Currently limiting Lit usage to a small set of
+    # folders during the initial experimentation phase.
+    # - cr_elements/ and cr_components/
+    # - tests that need to refer to CrLitElement.
+    # - a few chrome/browser/resources/ folders  that hold small UIs.
+    # Update when the migration enters its next phase.
+    "//chrome/browser/resources/whats_new:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/extensions:build_ts",
     "//chrome/test/data/webui/history:build_ts",
