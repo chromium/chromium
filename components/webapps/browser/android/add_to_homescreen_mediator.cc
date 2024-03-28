@@ -128,10 +128,8 @@ void AddToHomescreenMediator::AddToHomescreen(
   }
 
   if (params_->IsWebApk()) {
-    AppBannerManagerAndroid* app_banner_manager =
-        AppBannerManagerAndroid::FromWebContents(GetWebContents());
-    app_banner_manager->TrackInstallPath(/* bottom_sheet= */ false,
-                                         params_->install_source);
+    PwaInstallPathTracker::TrackInstallPath(/* bottom_sheet= */ false,
+                                            params_->install_source);
   }
 
   AddToHomescreenInstaller::Install(GetWebContents(), *params_,

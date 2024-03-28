@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -138,15 +139,12 @@ void PwaBottomSheetController::OnAddToHomescreen(
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
     return;
-  auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
-      WebappsClient::Get()->GetAppBannerManager(web_contents));
-  if (!app_banner_manager)
-    return;
 
   install_triggered_ = true;
-  app_banner_manager->Install(*a2hs_params_, std::move(a2hs_event_callback_));
-  app_banner_manager->TrackInstallPath(/* bottom_sheet= */ true,
-                                       a2hs_params_->install_source);
+  AddToHomescreenInstaller::Install(web_contents, *a2hs_params_,
+                                    std::move(a2hs_event_callback_));
+  PwaInstallPathTracker::TrackInstallPath(/* bottom_sheet= */ true,
+                                          a2hs_params_->install_source);
 }
 
 void PwaBottomSheetController::ShowBottomSheetInstaller(

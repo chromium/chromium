@@ -143,10 +143,6 @@ class AppBannerManagerAndroid
                                             const AddToHomescreenParams&)>
                    a2hs_event_callback);
 
-  // Tracks the route taken to an install of a PWA (whether the bottom sheet
-  // was shown or the infobar/install) and what triggered it (install source).
-  void TrackInstallPath(bool bottom_sheet, WebappInstallSource install_source);
-
   // Returns the appropriate app name based on whether we have a native/web app.
   std::u16string GetAppName() const override;
 
@@ -265,10 +261,6 @@ class AppBannerManagerAndroid
   std::optional<int> current_native_request_id_;
 
   std::unique_ptr<AmbientBadgeManager> ambient_badge_manager_;
-
-  // Keeps track of the path the user took through the UI, before deciding to
-  // install.
-  PwaInstallPathTracker install_path_tracker_;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 

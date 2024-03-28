@@ -11,32 +11,20 @@
 
 namespace webapps {
 
-namespace {
-
-void LogHistogram(PwaInstallPathTracker::InstallPathMetric metric) {
-  base::UmaHistogramEnumeration("WebApk.Install.PathToInstall", metric);
-}
-
-}  // anonymous namespace
-
-PwaInstallPathTracker::PwaInstallPathTracker() = default;
-
-PwaInstallPathTracker::~PwaInstallPathTracker() = default;
-
 void PwaInstallPathTracker::TrackInstallPath(
     bool bottom_sheet,
     WebappInstallSource install_source) {
-  bottom_sheet_ = bottom_sheet;
-  install_source_ = install_source;
-  PwaInstallPathTracker::InstallPathMetric metric = GetInstallPathMetric();
-  if (metric != InstallPathMetric::kUnknownMetric)
-    LogHistogram(metric);
+  base::UmaHistogramEnumeration(
+      "WebApk.Install.PathToInstall",
+      GetInstallPathMetric(bottom_sheet, install_source));
 }
 
 PwaInstallPathTracker::InstallPathMetric
-PwaInstallPathTracker::GetInstallPathMetric() {
-  if (bottom_sheet_) {
-    switch (install_source_) {
+PwaInstallPathTracker::GetInstallPathMetric(
+    bool bottom_sheet,
+    WebappInstallSource install_source) {
+  if (bottom_sheet) {
+    switch (install_source) {
       case WebappInstallSource::MENU_BROWSER_TAB:
       case WebappInstallSource::MENU_CUSTOM_TAB:
         return InstallPathMetric::kAppMenuBottomSheet;
@@ -45,14 +33,13 @@ PwaInstallPathTracker::GetInstallPathMetric() {
         return InstallPathMetric::kApiInitiatedBottomSheet;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-      case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
         return InstallPathMetric::kAmbientBottomSheet;
       default:
         NOTREACHED();
         break;
     }
   } else {
-    switch (install_source_) {
+    switch (install_source) {
       case WebappInstallSource::MENU_BROWSER_TAB:
       case WebappInstallSource::MENU_CUSTOM_TAB:
         return InstallPathMetric::kAppMenuInstall;
@@ -61,8 +48,7 @@ PwaInstallPathTracker::GetInstallPathMetric() {
         return InstallPathMetric::kApiInitiatedInstall;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-      case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
-        return InstallPathMetric::kAmbientInfobar;
+        return InstallPathMetric::kAmbientMessage;
       default:
         NOTREACHED();
         break;
@@ -70,11 +56,6 @@ PwaInstallPathTracker::GetInstallPathMetric() {
   }
 
   return InstallPathMetric::kUnknownMetric;
-}
-
-void PwaInstallPathTracker::Reset() {
-  install_source_ = WebappInstallSource::COUNT;
-  bottom_sheet_ = false;
 }
 
 }  // namespace webapps

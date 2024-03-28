@@ -272,7 +272,6 @@ void AppBannerManagerAndroid::ResetCurrentPageData() {
   current_native_request_id_ = std::nullopt;
   ambient_badge_manager_.reset();
   AppBannerManager::ResetCurrentPageData();
-  install_path_tracker_.Reset();
   native_java_app_data_.Reset();
   native_app_package_ = "";
 }
@@ -598,12 +597,6 @@ void AppBannerManagerAndroid::Install(
         a2hs_event_callback) {
   AddToHomescreenInstaller::Install(web_contents(), a2hs_params,
                                     std::move(a2hs_event_callback));
-}
-
-void AppBannerManagerAndroid::TrackInstallPath(
-    bool bottom_sheet,
-    WebappInstallSource install_source) {
-  install_path_tracker_.TrackInstallPath(bottom_sheet, install_source);
 }
 
 bool AppBannerManagerAndroid::IsSupportedNonWebAppPlatform(
