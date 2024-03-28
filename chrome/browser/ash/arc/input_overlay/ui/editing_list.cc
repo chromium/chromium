@@ -302,9 +302,6 @@ void EditingList::AddHeader() {
           ash::IconButton::Type::kMedium, &ash::kGdHelpIcon,
           IDS_INPUT_OVERLAY_EDITING_LIST_HELP_BUTTON_NAME));
   help_button->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 8));
-  // TODO(b/324940030): Re-enable the help button once a fix or workaround has
-  // been resolved.
-  help_button->SetVisible(false);
 
   // Add done button.
   auto* done_button =

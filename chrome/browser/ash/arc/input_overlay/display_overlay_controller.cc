@@ -63,8 +63,7 @@ constexpr char kActionHighlight[] = "ActionHighlight";
 std::unique_ptr<views::Widget> CreateTransientWidget(
     aura::Window* parent_window,
     const std::string& widget_name,
-    bool accept_events,
-    bool is_floating) {
+    bool accept_events) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -82,9 +81,6 @@ std::unique_ptr<views::Widget> CreateTransientWidget(
   wm::TransientWindowManager::GetOrCreate(widget_window)
       ->set_parent_controls_visibility(false);
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-  if (is_floating) {
-    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-  }
   return widget;
 }
 
@@ -823,9 +819,10 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
     RemoveButtonOptionsMenuWidget();
   }
 
-  button_options_widget_ = CreateTransientWidget(
-      touch_injector_->window(), /*widget_name=*/kButtonOptionsMenu,
-      /*accept_events=*/true, /*is_floating=*/true);
+  button_options_widget_ =
+      CreateTransientWidget(input_mapping_widget_->GetNativeWindow(),
+                            /*widget_name=*/kButtonOptionsMenu,
+                            /*accept_events=*/true);
   widget_observations_.AddObservation(button_options_widget_.get());
   button_options_widget_->SetContentsView(
       std::make_unique<ButtonOptionsMenu>(this, action));
@@ -899,7 +896,7 @@ void DisplayOverlayController::AddActionHighlightWidget(Action* action) {
   if (!action_highlight_widget_) {
     action_highlight_widget_ = CreateTransientWidget(
         touch_injector_->window(), /*widget_name=*/kActionHighlight,
-        /*accept_events=*/false, /*is_floating=*/false);
+        /*accept_events=*/false);
     action_highlight_widget_->SetContentsView(
         std::make_unique<ActionHighlight>(this, anchor_view));
   }
@@ -1205,10 +1202,7 @@ void DisplayOverlayController::UpdateForBoundsChanged() {
     UpdateInputMappingWidgetBounds();
     UpdateEditingListWidgetBounds();
     UpdateTargetWidgetBounds();
-
-    // Remove the floating window attached the ActionView.
-    RemoveButtonOptionsMenuWidget();
-    RemoveDeleteEditShortcutWidget();
+    UpdateButtonOptionsMenuWidgetBounds();
   } else {
     // Overlay widget is null for test.
     if (!GetOverlayWidget()) {
@@ -1242,9 +1236,9 @@ void DisplayOverlayController::AddInputMappingWidget() {
     return;
   }
 
-  input_mapping_widget_ = CreateTransientWidget(
-      touch_injector_->window(), /*widget_name=*/kInputMapping,
-      /*accept_events=*/false, /*is_floating=*/false);
+  input_mapping_widget_ = CreateTransientWidget(touch_injector_->window(),
+                                                /*widget_name=*/kInputMapping,
+                                                /*accept_events=*/false);
   widget_observations_.AddObservation(input_mapping_widget_.get());
   input_mapping_widget_->SetContentsView(
       std::make_unique<InputMappingView>(this));
@@ -1287,12 +1281,10 @@ void DisplayOverlayController::AddEditingListWidget() {
     return;
   }
   editing_list_widget_ = CreateTransientWidget(
-      touch_injector_->window(), /*widget_name=*/kEditingList,
-      /*accept_events=*/true, /*is_floating=*/true);
+      input_mapping_widget_->GetNativeWindow(), /*widget_name=*/kEditingList,
+      /*accept_events=*/true);
   widget_observations_.AddObservation(editing_list_widget_.get());
   editing_list_widget_->SetContentsView(std::make_unique<EditingList>(this));
-  auto* window = editing_list_widget_->GetNativeWindow();
-  window->parent()->StackChildAtTop(window);
 
   editing_list_widget_->Show();
   UpdateEditingListWidgetBounds();
@@ -1385,9 +1377,9 @@ void DisplayOverlayController::UpdateButtonPlacementNudgeAnchorRect() {
 void DisplayOverlayController::AddTargetWidget(ActionType action_type) {
   DCHECK(!target_widget_);
 
-  target_widget_ = CreateTransientWidget(
-      touch_injector_->window(), /*widget_name=*/kInputMapping,
-      /*accept_events=*/true, /*is_floating=*/true);
+  target_widget_ = CreateTransientWidget(touch_injector_->window(),
+                                         /*widget_name=*/kInputMapping,
+                                         /*accept_events=*/true);
   target_widget_->SetContentsView(
       std::make_unique<TargetView>(this, action_type));
   target_widget_->ShowInactive();

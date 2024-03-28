@@ -322,4 +322,53 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
   EXPECT_FALSE(delete_edit_focus_manager->GetFocusedView());
 }
 
+// Verifies that the views keep open when entering and exiting fullscreen.
+TEST_F(EditModeDisplayOverlayControllerTest, TestEnterExitFullscreen) {
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(touch_injector_->window());
+
+  // 1. Enter and exit fullscreen with editing list.
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+  widget->SetFullscreen(true);
+  EXPECT_TRUE(widget->IsFullscreen());
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+  widget->SetFullscreen(false);
+  EXPECT_FALSE(widget->IsFullscreen());
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/true,
+      /*button_options_visible=*/false, /*delete_edit_menu_visible=*/false);
+
+  // 2. Enter and exit fullscreen in button placement mode.
+  PressAddButton();
+  EXPECT_TRUE(GetTargetView());
+  widget->SetFullscreen(true);
+  EXPECT_TRUE(widget->IsFullscreen());
+  EXPECT_TRUE(GetTargetView());
+  widget->SetFullscreen(false);
+  EXPECT_FALSE(widget->IsFullscreen());
+  EXPECT_TRUE(GetTargetView());
+  // Exit button placement mode.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+
+  // 3. Enter and exit fullscreen mode with bottom options menu.
+  ShowButtonOptionsMenu(tap_action_);
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/false,
+      /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
+  widget->SetFullscreen(true);
+  EXPECT_TRUE(widget->IsFullscreen());
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/false,
+      /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
+  widget->SetFullscreen(false);
+  EXPECT_FALSE(widget->IsFullscreen());
+  CheckWidgetsVisible(
+      /*input_mapping_visible=*/true, /*editing_list_visible=*/false,
+      /*button_options_visible=*/true, /*delete_edit_menu_visible=*/false);
+}
+
 }  // namespace arc::input_overlay

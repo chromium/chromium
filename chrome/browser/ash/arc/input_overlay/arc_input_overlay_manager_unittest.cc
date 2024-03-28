@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -633,6 +634,63 @@ TEST_P(VersionArcInputOverlayManagerTest, TestO4CGame) {
   EXPECT_TRUE(injector);
   EXPECT_EQ(3u, injector->actions().size());
   game_window.reset();
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestOverviewMode) {
+  auto arc_window_widget = CreateArcWindowSyncAndWait(
+      task_environment(), ash::Shell::GetPrimaryRootWindow(), window_bounds,
+      kEnabledPackageName);
+  auto* arc_window = arc_window_widget->GetNativeWindow();
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+  EnterOverview();
+  EXPECT_EQ(nullptr, GetRegisteredWindow());
+  ExitOverview();
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+
+  // Test beta in edit mode.
+  if (IsBetaVersion()) {
+    UpdateFlagAndProperty(arc_window, ash::ArcGameControlsFlag::kEdit,
+                          /*turn_on=*/true);
+    EnterOverview();
+    EXPECT_EQ(nullptr, GetRegisteredWindow());
+    ExitOverview();
+    EXPECT_EQ(arc_window, GetRegisteredWindow());
+  }
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestFullscreen) {
+  auto arc_window_widget = CreateArcWindowSyncAndWait(
+      task_environment(), ash::Shell::GetPrimaryRootWindow(), window_bounds,
+      kEnabledPackageName);
+  auto* arc_window = arc_window_widget->GetNativeWindow();
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+
+  // Set it to fullscreen.
+  arc_window_widget->SetFullscreen(true);
+  EXPECT_TRUE(arc_window_widget->IsFullscreen());
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+  EXPECT_TRUE(arc_window_widget->IsFullscreen());
+
+  // Focus on another random window.
+  auto* primary_root_window = ash::Shell::GetPrimaryRootWindow();
+  auto random_window = CreateArcWindowSyncAndWait(
+      task_environment(), primary_root_window, gfx::Rect(310, 300, 300, 280),
+      kRandomPackageName);
+  auto* focus_client = aura::client::GetFocusClient(primary_root_window);
+  focus_client->FocusWindow(random_window->GetNativeWindow());
+  EXPECT_EQ(nullptr, GetRegisteredWindow());
+
+  // Focus back on the game window.
+  focus_client->FocusWindow(arc_window);
+  EXPECT_EQ(arc_window, GetRegisteredWindow());
+
+  // Test beta in edit mode.
+  if (IsBetaVersion()) {
+    UpdateFlagAndProperty(arc_window, ash::ArcGameControlsFlag::kEdit,
+                          /*turn_on=*/true);
+    focus_client->FocusWindow(random_window->GetNativeWindow());
+    EXPECT_EQ(nullptr, GetRegisteredWindow());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
