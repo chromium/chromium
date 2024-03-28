@@ -71,10 +71,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // successful, returns false otherwise.
   bool OnSnappingWindow(aura::Window* to_be_snapped_window);
 
-  // Used to decide whether showing overview on window snapped is allowed in
-  // clamshell.
-  bool CanEnterOverview() const;
-
   // Minimizes the most recently used and unminimized snap groups.
   void MinimizeTopMostSnapGroup();
 
@@ -88,7 +84,7 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;
-  void OnOverviewModeEnded() override;
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -96,9 +92,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   const SnapGroups& snap_groups_for_testing() const { return snap_groups_; }
   const WindowToSnapGroupMap& window_to_snap_group_map_for_testing() const {
     return window_to_snap_group_map_;
-  }
-  void set_can_enter_overview_for_testing(bool can_enter_overview) {
-    can_enter_overview_ = can_enter_overview;
   }
 
  private:
@@ -130,11 +123,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   WindowToSnapGroupMap window_to_snap_group_map_;
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  // If false, overview will not be allowed to show on the other side of the
-  // screen on one window snapped, which is an instant way to snap window when
-  // restoring the window snapped state.
-  bool can_enter_overview_ = true;
 };
 
 }  // namespace ash

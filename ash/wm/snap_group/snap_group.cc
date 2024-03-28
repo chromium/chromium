@@ -15,6 +15,7 @@
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "ui/base/hit_test.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -60,8 +61,26 @@ SnapGroup::~SnapGroup() {
 }
 
 void SnapGroup::ShowDivider() {
-  snap_group_divider_.ShowFor(GetEquivalentDividerPosition(
-      window1_, /*account_for_divider_width=*/true));
+  const gfx::Rect window1_bounds = window1_->GetBoundsInScreen();
+  const gfx::Rect window2_bounds = window2_->GetBoundsInScreen();
+  int edge_gap = 0;
+  if (IsLayoutHorizontal(window1_)) {
+    edge_gap = window2_bounds.x() - window1_bounds.right();
+  } else {
+    edge_gap = window2_bounds.y() - window1_bounds.bottom();
+  }
+
+  // We should account for the divider width only if the space between two
+  // windows is smaller than `kSplitviewDividerShortSideLength`. This adjustment
+  // is necessary when restoring a snap group on Overview exit for example, as
+  // the gap might have been created.
+  // TODO(michelefan): See if there are other conditions where we need to
+  // account for the divider.
+  const bool account_for_divider_width =
+      edge_gap < kSplitviewDividerShortSideLength;
+
+  snap_group_divider_.ShowFor(
+      GetEquivalentDividerPosition(window1_, account_for_divider_width));
 }
 
 void SnapGroup::HideDivider() {

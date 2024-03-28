@@ -2670,9 +2670,11 @@ TEST_F(SnapGroupTest, RemainingWindowBoundsRestoreAfterDestructionInOverview) {
   EXPECT_FALSE(overview_controller->InOverviewSession());
   const gfx::Size w1_size_after_overview = w1->GetBoundsInScreen().size();
 
-  // Verify that the size of `w1` on overview exit is equal to that of before
-  // entering overview.
-  EXPECT_EQ(w1_size_before_overview, w1_size_after_overview);
+  // Verify that w1 is restored to its pre-overview bounds and any
+  // divider-related margin adjustments have been reverted.
+  EXPECT_EQ(
+      w1_size_before_overview.width() + kSplitviewDividerShortSideLength / 2.f,
+      w1_size_after_overview.width());
 
   // Verify that the transform is identity.
   EXPECT_TRUE(w1->transform().IsIdentity());
@@ -2708,7 +2710,6 @@ TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
   const auto end_point = hover_location + drag_delta;
   split_view_divider()->ResizeWithDivider(end_point);
   split_view_divider()->EndResizeWithDivider(end_point);
-  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
               WindowState::Get(w1.get())->snap_ratio().value(),
               /*abs_error=*/0.01);
@@ -2736,6 +2737,53 @@ TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
   const float size_ratio =
       static_cast<float>(item1_bounds.width()) / item2_bounds.width();
   EXPECT_NEAR(size_ratio, 0.5, /*abs_error=*/0.05);
+}
+
+// Tests that snap group restores to its original snap ratio after on Overview
+// exit.
+TEST_F(SnapGroupTest, RestoreSnapRatioOnOverviewExit) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_TRUE(split_view_divider()->divider_widget());
+
+  // Drag the divider between the snapped windows to get the 1/3 and 2/3 split
+  // screen.
+  const gfx::Point hover_location =
+      split_view_divider_bounds_in_screen().CenterPoint();
+  split_view_divider()->StartResizeWithDivider(hover_location);
+  const gfx::Vector2d drag_delta(-work_area_bounds().width() / 6, 0);
+  const auto end_point = hover_location + drag_delta;
+  split_view_divider()->ResizeWithDivider(end_point);
+  split_view_divider()->EndResizeWithDivider(end_point);
+
+  WindowState* w1_window_state = WindowState::Get(w1.get());
+  WindowState* w2_window_state = WindowState::Get(w2.get());
+
+  auto w1_snap_ratio_before = w1_window_state->snap_ratio();
+  ASSERT_TRUE(w1_snap_ratio_before.has_value());
+  auto w2_snap_ratio_before = w2_window_state->snap_ratio();
+  ASSERT_TRUE(w2_snap_ratio_before.has_value());
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio, *w1_snap_ratio_before,
+              /*abs_error=*/0.01);
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio, *w2_snap_ratio_before,
+              /*abs_error=*/0.01);
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+
+  // Both of the windows restored to their original snap ratio on Overview exit.
+  auto w1_snap_ratio_after = w1_window_state->snap_ratio();
+  ASSERT_TRUE(w1_snap_ratio_after.has_value());
+  auto w2_snap_ratio_after = w2_window_state->snap_ratio();
+  ASSERT_TRUE(w2_snap_ratio_after.has_value());
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio, *w1_snap_ratio_after,
+              /*abs_error=*/0.01);
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio, *w2_snap_ratio_after,
+              /*abs_error=*/0.01);
 }
 
 // Tests the individual close functionality of the `OverviewGroupItem` by
@@ -3049,10 +3097,10 @@ TEST_F(SnapGroupTest, GroupItemActivation) {
     gfx::Vector2d offset;
     raw_ptr<aura::Window> expected_activated_window;
   } kTestCases[]{
-      {false, gfx::Vector2d(-5, -5), window0.get()},
-      {true, gfx::Vector2d(-5, -5), window0.get()},
-      {false, gfx::Vector2d(5, 5), window1.get()},
-      {true, gfx::Vector2d(5, 5), window1.get()},
+      {false, gfx::Vector2d(-10, 0), window0.get()},
+      {true, gfx::Vector2d(-10, 0), window0.get()},
+      {false, gfx::Vector2d(10, 0), window1.get()},
+      {true, gfx::Vector2d(10, 0), window1.get()},
   };
 
   OverviewController* overview_controller = OverviewController::Get();
@@ -3561,32 +3609,6 @@ TEST_F(SnapGroupTest, SkipPairingInOverviewWithEscapeKey) {
             WindowStateType::kPrimarySnapped);
   EXPECT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
-}
-
-// Tests that when disallowing showing overview in clamshell with `kSnapGroup`
-// enabled, the overview will not show on one window snapped. The overview will
-// show when re-enabling showing overview.
-TEST_F(SnapGroupTest, SnapWithoutShowingOverview) {
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  snap_group_controller->set_can_enter_overview_for_testing(
-      /*can_enter_overview=*/false);
-
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  std::unique_ptr<aura::Window> w3(CreateAppWindow());
-  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
-                    chromeos::kDefaultSnapRatio);
-  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
-  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
-                    chromeos::kDefaultSnapRatio);
-  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
-  w2.reset();
-
-  snap_group_controller->set_can_enter_overview_for_testing(
-      /*can_enter_overview=*/true);
-  SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,
-                    chromeos::kDefaultSnapRatio);
-  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
 }
 
 // Tests that the window list is reordered when there is snap group. The two

@@ -183,20 +183,6 @@ bool SnapGroupController::OnSnappingWindow(aura::Window* to_be_snapped_window) {
   return true;
 }
 
-bool SnapGroupController::CanEnterOverview() const {
-  // `SnapGroupController` is currently available for clamshell only, tablet
-  // mode check will not be handled here.
-  // TODO(michelefan): Get the `SplitViewController` for the actual root
-  // window instead of hard code it to be primary root window.
-  if (display::Screen::GetScreen()->InTabletMode() ||
-      !SplitViewController::Get(Shell::GetPrimaryRootWindow())
-           ->InSplitViewMode()) {
-    return true;
-  }
-
-  return can_enter_overview_;
-}
-
 void SnapGroupController::MinimizeTopMostSnapGroup() {
   auto* topmost_snap_group = GetTopmostSnapGroup();
   topmost_snap_group->MinimizeWindows();
@@ -235,7 +221,7 @@ void SnapGroupController::OnOverviewModeStarting() {
   }
 }
 
-void SnapGroupController::OnOverviewModeEnded() {
+void SnapGroupController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   for (const auto& snap_group : snap_groups_) {
     // TODO(http://b/328783493):  The divider may have been created in the
     // snap group creation session with partial overview, avoid additional
@@ -275,8 +261,6 @@ aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(
 }
 
 void SnapGroupController::RestoreSnapGroups() {
-  // TODO(b/286968669): Restore the snap ratio when snapping the windows in
-  // snap group.
   // TODO(b/288335850): Currently `SplitViewController` only supports two
   // windows, the group at the end will overwrite any split view operations.
   // This will be addressed in multiple snap groups feature.
@@ -289,15 +273,25 @@ void SnapGroupController::RestoreSnapGroups() {
 
 void SnapGroupController::RestoreSnapState(SnapGroup* snap_group) {
   CHECK(snap_group);
-  auto* window1 = snap_group->window1();
-  auto* window2 = snap_group->window2();
-  auto* root_window = window1->GetRootWindow();
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(root_window);
 
-  base::AutoReset<bool> bypass(&can_enter_overview_, false);
-  split_view_controller->SnapWindow(window1, SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(window2, SnapPosition::kSecondary);
+  auto* window1 = snap_group->window1();
+  const auto window1_snap_ratio = WindowState::Get(window1)->snap_ratio();
+  CHECK(window1_snap_ratio);
+
+  auto* window2 = snap_group->window2();
+  const auto window2_snap_ratio = WindowState::Get(window2)->snap_ratio();
+  CHECK(window2_snap_ratio);
+
+  // Preferably to use `SplitViewController::SnapWindow()` as it also handles
+  // asynchronous operations from client controlled state.
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(window1->GetRootWindow());
+  split_view_controller->SnapWindow(
+      window1, SnapPosition::kPrimary,
+      WindowSnapActionSource::kSnapByWindowStateRestore, *window1_snap_ratio);
+  split_view_controller->SnapWindow(
+      window2, SnapPosition::kSecondary,
+      WindowSnapActionSource::kSnapByWindowStateRestore, *window2_snap_ratio);
 }
 
 void SnapGroupController::OnTabletModeStarted() {
