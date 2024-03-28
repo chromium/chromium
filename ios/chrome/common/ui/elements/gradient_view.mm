@@ -57,7 +57,13 @@
   if ([self.traitCollection
           hasDifferentColorAppearanceComparedToTraitCollection:
               previousTraitCollection]) {
+    [CATransaction begin];
+    // If this isn't set, the changes here are automatically animated. The other
+    // color changes for dark mode don't animate, however, so there ends up
+    // being visual desyncing.
+    [CATransaction setDisableActions:YES];
     [self updateColors];
+    [CATransaction commit];
   }
 }
 
@@ -70,17 +76,10 @@
 #pragma mark - Private
 
 - (void)updateColors {
-  [CATransaction begin];
-  // If this isn't set, the changes here are automatically animated. The other
-  // color changes for dark mode don't animate, however, so there ends up being
-  // visual desyncing.
-  [CATransaction setDisableActions:YES];
-
   self.gradientLayer.colors = @[
     (id)self.startColor.CGColor,
     (id)self.endColor.CGColor,
   ];
-  [CATransaction commit];
 }
 
 @end
