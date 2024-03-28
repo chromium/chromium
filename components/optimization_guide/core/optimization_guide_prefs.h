@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PREFS_H_
 
 #include "base/component_export.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 class PrefRegistrySimple;
@@ -49,6 +50,9 @@ enum class FeatureOptInState {
 // the given `feature`.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature);
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
 
 namespace localstate {
 

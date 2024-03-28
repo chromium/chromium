@@ -131,8 +131,11 @@ component("features") {
     "optimization_guide_prefs.h",
     "optimization_guide_switches.cc",
     "optimization_guide_switches.h",
+    "model_execution/feature_keys.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+  ]
   deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
