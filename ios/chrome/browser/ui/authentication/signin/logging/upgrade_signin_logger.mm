@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/logging/upgrade_signin_logger.h"
 
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"

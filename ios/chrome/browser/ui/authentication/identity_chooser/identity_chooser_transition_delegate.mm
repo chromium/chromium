@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_transition_delegate.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_transition_delegate.h"
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_animator.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_presentation_controller.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_animator.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_presentation_controller.h"
 
 @implementation IdentityChooserTransitionDelegate
 

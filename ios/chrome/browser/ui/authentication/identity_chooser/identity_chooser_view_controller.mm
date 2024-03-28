@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_add_account_item.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_add_account_item.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_header_item.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

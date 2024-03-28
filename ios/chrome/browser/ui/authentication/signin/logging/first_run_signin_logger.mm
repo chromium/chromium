@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"

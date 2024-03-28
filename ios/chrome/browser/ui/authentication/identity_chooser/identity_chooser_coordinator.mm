@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
 
 #import <ostream>
 
@@ -12,11 +12,11 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_transition_delegate.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_mediator.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_transition_delegate.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 
 namespace {
 

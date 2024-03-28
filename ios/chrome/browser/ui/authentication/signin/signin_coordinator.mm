@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/two_screens_signin/two_screens_signin_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;

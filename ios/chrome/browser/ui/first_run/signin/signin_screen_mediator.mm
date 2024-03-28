@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 
