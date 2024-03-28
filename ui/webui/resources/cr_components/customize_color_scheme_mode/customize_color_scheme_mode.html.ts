@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CustomizeColorSchemeModeElement} from './customize_color_scheme_mode.js';
+
+export function getHtml(this: CustomizeColorSchemeModeElement) {
+  return html`
 <segmented-button
     selected="${this.currentMode_.id}"
     group-aria-label="${this.i18n('colorSchemeModeLabel')}"
@@ -8,4 +17,5 @@
       ${this.i18n(item.id)}
     </segmented-button-option>
   `)}
-</segmented-button>
+</segmented-button>`;
+}

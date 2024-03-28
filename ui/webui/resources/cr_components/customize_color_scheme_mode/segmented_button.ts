@@ -30,7 +30,7 @@ export class SegmentedButtonElement extends CrLitElement {
     };
   }
 
-  selected: string;
+  selected?: string;
   selectableElements: string = 'segmented-button-option';
   groupAriaLabel: string = '';
 }
