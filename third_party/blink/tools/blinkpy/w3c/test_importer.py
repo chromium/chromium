@@ -122,8 +122,9 @@ class TestImporter:
         # File bugs for the previous imported CL. This is done at the start so
         # that manually revived CLs still receive bugs.
         gerrit_api = GerritAPI.from_credentials(self.host, credentials)
-        self.file_and_record_bugs(local_wpt, gerrit_api,
-                                  options.auto_file_bugs)
+        self.file_and_record_bugs(local_wpt,
+                                  gerrit_api,
+                                  auto_file_bugs=options.auto_file_bugs)
 
         if options.revision is not None:
             _log.info('Checking out %s', options.revision)
