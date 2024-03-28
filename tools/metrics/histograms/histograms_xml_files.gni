@@ -124,6 +124,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/login/histograms.xml",
   "//tools/metrics/histograms/metadata/mac/enums.xml",
   "//tools/metrics/histograms/metadata/mac/histograms.xml",
+  "//tools/metrics/histograms/metadata/magic_stack/enums.xml",
   "//tools/metrics/histograms/metadata/magic_stack/histograms.xml",
   "//tools/metrics/histograms/metadata/media/enums.xml",
   "//tools/metrics/histograms/metadata/media/histograms.xml",

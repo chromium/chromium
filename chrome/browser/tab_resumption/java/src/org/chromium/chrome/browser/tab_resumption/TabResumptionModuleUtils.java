@@ -8,9 +8,13 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleVisibility;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.url.GURL;
@@ -19,39 +23,48 @@ import java.util.concurrent.TimeUnit;
 
 /** Utilities for the tab resumption module. */
 public class TabResumptionModuleUtils {
+
     /** Callback to handle click on suggestion tiles. */
     public interface SuggestionClickCallback {
         void onSuggestionClick(GURL gurl);
     }
 
     /**
-     * Returns whether to show the tab resumption module. Only shows if the following are met:
-     *
-     * <pre>
-     * 1. Feature flags TAB_RESUMPTION_MODULE_ANDROID is enabled;
-     * 2. The user has signed in;
-     * 3. The user has turned on sync.
-     * </pre>
+     * Based on settings, decides whether Chrome should attempt to show the tab resumption module.
+     * Provides the reason if the decision is to not show.
      */
-    static boolean shouldShowTabResumptionModule(Profile profile) {
-        if (!ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
-            // TODO(crbug.com/1515325): Record metrics here.
-            return false;
+    static ModuleVisibility computeModuleVisibility(Profile profile) {
+        if (!ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()
+                || !HomeModulesConfigManager.getInstance()
+                        .getPrefModuleTypeEnabled(ModuleType.TAB_RESUMPTION)) {
+            return new ModuleVisibility(false, ModuleNotShownReason.FEATURE_DISABLED);
         }
 
         if (!IdentityServicesProvider.get()
                 .getIdentityManager(profile)
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
-            // TODO(crbug.com/1515325): Record metrics here.
-            return false;
+            return new ModuleVisibility(false, ModuleNotShownReason.NOT_SIGNED_IN);
         }
 
         if (!SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced()) {
-            // TODO(crbug.com/1515325): Record metrics here.
-            return false;
+            return new ModuleVisibility(false, ModuleNotShownReason.NOT_SYNC);
         }
 
-        return true;
+        return new ModuleVisibility(true, ModuleNotShownReason.NUM_ENTRIES);
+    }
+
+    /**
+     * Returns whether to show the tab resumption module. The module shows only if the following are
+     * met:
+     *
+     * <pre>
+     * 1. Feature (by flag TAB_RESUMPTION_MODULE_ANDROID and user preferences) is enabled;
+     * 2. The user has signed in;
+     * 3. The user has turned on sync.
+     * </pre>
+     */
+    static boolean shouldShowTabResumptionModule(Profile profile) {
+        return computeModuleVisibility(profile).value;
     }
 
     /**

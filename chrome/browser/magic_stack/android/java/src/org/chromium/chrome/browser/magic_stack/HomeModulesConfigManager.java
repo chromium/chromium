@@ -105,7 +105,7 @@ public class HomeModulesConfigManager {
      *
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      */
-    boolean getPrefModuleTypeEnabled(@ModuleType int moduleType) {
+    public boolean getPrefModuleTypeEnabled(@ModuleType int moduleType) {
         return mSharedPreferencesManager.readBoolean(getSettingsPreferenceKey(moduleType), true);
     }
 

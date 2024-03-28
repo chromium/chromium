@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -14,6 +15,7 @@ import java.util.List;
 public abstract class TabResumptionDataProvider {
 
     /** Strength of fetchSuggestions() results. */
+    @IntDef({ResultStrength.TENTATIVE, ResultStrength.STABLE, ResultStrength.FORCED_NULL})
     @interface ResultStrength {
         // The result is tentative: Can only happen once, stable or forced-empty results may follow.
         int TENTATIVE = 0;

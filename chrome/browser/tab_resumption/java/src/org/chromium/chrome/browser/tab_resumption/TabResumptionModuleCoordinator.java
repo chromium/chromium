@@ -37,7 +37,6 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
         SuggestionClickCallback wrappedClickCallback =
                 (GURL url) -> {
                     mModuleDelegate.onUrlClicked(url, getModuleType());
-                    // TODO(crbug.com/1515325): Record metrics here.
                 };
         mMediator =
                 new TabResumptionModuleMediator(

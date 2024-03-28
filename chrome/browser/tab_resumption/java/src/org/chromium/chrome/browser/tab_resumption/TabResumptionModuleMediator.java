@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -15,19 +16,27 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleShowConfig;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** The Mediator for the tab resumption module. */
 public class TabResumptionModuleMediator {
-
     private static final int MAX_TILES_NUMBER = 2;
+
+    // If TENTATIVE suggestions were received, and the following duration has elapsed without
+    // receiving a STABLE suggestion, then consider the results stable and log accordingly.
+    private static final long STABILITY_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(7);
 
     private final Context mContext;
     private final ModuleDelegate mModuleDelegate;
     private final PropertyModel mModel;
+
+    private final Handler mHandler = new Handler();
 
     protected final TabResumptionDataProvider mDataProvider;
     protected final UrlImageProvider mUrlImageProvider;
@@ -37,6 +46,7 @@ public class TabResumptionModuleMediator {
     // module is visible (iff non-0), and is useful for logging.
     private int mTileCount;
 
+    private long mFirstLoadTime;
     private boolean mIsStable;
 
     public TabResumptionModuleMediator(
@@ -59,8 +69,10 @@ public class TabResumptionModuleMediator {
     }
 
     void destroy() {
-        // Active if STABLE and FORCED_NULL results were never seen.
-        ensureStabilityAndLogMetrics(mTileCount);
+        mHandler.removeCallbacksAndMessages(null);
+        // Activates if STABLE and FORCED_NULL results isn't seen, and timeout has triggered yet.
+        // This includes the case where TENTATIVE tiles are quickly clicked by a user.
+        ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mTileCount);
     }
 
     /** Returns the current time in ms since the epoch. */
@@ -126,9 +138,6 @@ public class TabResumptionModuleMediator {
         // Logging the "stable" module state should be done on receiving the first STABLE data. For
         // the STABLE "(never sent)" case, this can be done in destroy().
         //
-        // TODO (crbug.com/1515325): Perhaps use timeout to capture logging for the
-        // STABLE "(never sent)" case.
-        //
         // TODO (crbug.com/1515325): Handle manual refresh. Likely just use STABLE.
         //
         // Permission changes (e.g., disabling sync) may require module change beyond STABLE. This
@@ -137,6 +146,10 @@ public class TabResumptionModuleMediator {
         // Skip work if the module instance is irreversibly hidden.
         if (mIsStable && mTileCount == 0) {
             return;
+        }
+
+        if (mFirstLoadTime == 0) {
+            mFirstLoadTime = getCurrentTimeMs();
         }
 
         mDataProvider.fetchSuggestions(this::onSuggestionReceived);
@@ -181,14 +194,36 @@ public class TabResumptionModuleMediator {
                         R.plurals.home_modules_context_menu_hide_tab, bundle.entries.size());
     }
 
-    /** If not yet done so, declare that results are stable, and log module state. */
-    void ensureStabilityAndLogMetrics(int numTilesShown) {
+    /**
+     * If not yet done so, declares that results are stable, and logs module state.
+     *
+     * @param recordStabilityDelay Whether to record how long it takes to get and render stable
+     *     results from "slow path".
+     * @param numTilesShown The number of tiles that user sees when suggestions are deemed stable.
+     */
+    private void ensureStabilityAndLogMetrics(boolean recordStabilityDelay, int numTilesShown) {
+        // Activates only on first call.
         if (mIsStable) {
             return;
         }
 
-        // TODO(crbug.com/1515325): Record metrics here.
         mIsStable = true;
+        if (recordStabilityDelay) {
+            TabResumptionModuleMetricsUtils.recordStabilityDelay(
+                    getCurrentTimeMs() - mFirstLoadTime);
+        }
+        if (numTilesShown == 0) {
+            TabResumptionModuleMetricsUtils.recordModuleNotShownReason(
+                    ModuleNotShownReason.NO_SUGGESTIONS);
+        } else if (numTilesShown == 1) {
+            // Assumes ForeignSessionTabResumptionDataProvider.
+            TabResumptionModuleMetricsUtils.recordModuleShowConfig(
+                    ModuleShowConfig.SINGLE_TILE_FOREIGN);
+        } else {
+            // Assumes ForeignSessionTabResumptionDataProvider.
+            TabResumptionModuleMetricsUtils.recordModuleShowConfig(
+                    ModuleShowConfig.DOUBLE_TILE_FOREIGN);
+        }
     }
 
     /** Computes and sets UI properties and triggers render. */
@@ -220,20 +255,28 @@ public class TabResumptionModuleMediator {
         @ResultStrength int strength = result.strength;
         if (strength == ResultStrength.TENTATIVE) {
             setPropertiesAndTriggerRender(bundle);
-            // Do not log yet.
+            // Start timeout to transition to STABLE and log.
+            mHandler.postDelayed(
+                    () -> {
+                        // Activates if STABLE is never encountered. In this case TENTATIVE
+                        // suggestions is considered stable.
+                        ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mTileCount);
+                    },
+                    STABILITY_TIMEOUT_MS);
 
         } else if (strength == ResultStrength.STABLE) {
             if (mTileCount == 0 && nextTileCount == 0) {
                 mModuleDelegate.onDataFetchFailed(getModuleType());
             }
             setPropertiesAndTriggerRender(bundle);
-            ensureStabilityAndLogMetrics(nextTileCount);
+            ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ true, nextTileCount);
 
         } else if (strength == ResultStrength.FORCED_NULL) {
             assert nextTileCount == 0;
             setPropertiesAndTriggerRender(bundle);
-            // Active if STABLE was never encountered, using previous number of tiles shown.
-            ensureStabilityAndLogMetrics(mTileCount);
+            // Activates if STABLE was never encountered. In this case TENTATIVDE suggestions are
+            // considered stable. Uses corresponding number of tiles shown.
+            ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mTileCount);
         }
 
         // If module visibility changes.
