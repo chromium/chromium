@@ -43,6 +43,7 @@ test("pix_code_validator_fuzzer") {
   sources = [ "pix_code_validator_fuzzer.cc" ]
 
   testonly = true
+  fuzztests = [ "IsValidPixCodeTest.IsValidPixCodeCanParseAnyString" ]
 
   deps = [
     ":fuzzer_util",
