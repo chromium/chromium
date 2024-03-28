@@ -768,19 +768,12 @@ public class NewTabPageLayout extends LinearLayout {
 
         if (mIsSurfacePolishEnabled) {
             if (mIsNtpAsHomeSurfaceOnTablet) {
-                if (isScrollableMvtEnabled()) {
-                    marginLayoutParams.topMargin =
-                            getResources()
-                                    .getDimensionPixelSize(
-                                            shouldShowLogo()
-                                                    ? R.dimen.mvt_container_top_margin_polish
-                                                    : R.dimen.tile_grid_layout_no_logo_top_margin);
-                } else {
-                    // Set a bit more top padding on the tile grid if there is no logo.
-                    ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
-                    layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    marginLayoutParams.topMargin = getGridMvtTopMargin();
-                }
+                marginLayoutParams.topMargin =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        shouldShowLogo()
+                                                ? R.dimen.mvt_container_top_margin_polish
+                                                : R.dimen.tile_grid_layout_no_logo_top_margin);
             }
             return;
         }
