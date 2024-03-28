@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
+#include "device/bluetooth/bluetooth_low_energy_advertisement_manager_mac.h"
 
 namespace device {
 
@@ -17,9 +17,8 @@ namespace device {
 class BluetoothLowEnergyPeripheralManagerBridge {
  public:
   BluetoothLowEnergyPeripheralManagerBridge(
-      BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager,
-      BluetoothLowEnergyAdapterApple* adapter)
-      : advertisement_manager_(advertisement_manager), adapter_(adapter) {}
+      BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager)
+      : advertisement_manager_(advertisement_manager) {}
 
   ~BluetoothLowEnergyPeripheralManagerBridge() = default;
 
@@ -31,10 +30,6 @@ class BluetoothLowEnergyPeripheralManagerBridge {
     advertisement_manager_->DidStartAdvertising(error);
   }
 
-  CBPeripheralManager* GetPeripheralManager() {
-    return adapter_->GetPeripheralManager();
-  }
-
  private:
   // TODO(https://crbug.com/330009945): Fix this two dangling dangling pointer.
   // They are dangling on mac_chromium_10.15_rel_ng during
@@ -42,8 +37,6 @@ class BluetoothLowEnergyPeripheralManagerBridge {
   raw_ptr<BluetoothLowEnergyAdvertisementManagerMac,
           AcrossTasksDanglingUntriaged>
       advertisement_manager_;
-  raw_ptr<BluetoothLowEnergyAdapterApple, AcrossTasksDanglingUntriaged>
-      adapter_;
 };
 
 }  // namespace device
@@ -54,15 +47,12 @@ class BluetoothLowEnergyPeripheralManagerBridge {
   std::unique_ptr<device::BluetoothLowEnergyPeripheralManagerBridge> _bridge;
 }
 
-- (instancetype)
-    initWithAdvertisementManager:
-        (device::BluetoothLowEnergyAdvertisementManagerMac*)advertisementManager
-                      andAdapter:
-                          (device::BluetoothLowEnergyAdapterApple*)adapter {
+- (instancetype)initWithAdvertisementManager:
+    (device::BluetoothLowEnergyAdvertisementManagerMac*)advertisementManager {
   if ((self = [super init])) {
     _bridge =
         std::make_unique<device::BluetoothLowEnergyPeripheralManagerBridge>(
-            advertisementManager, adapter);
+            advertisementManager);
   }
   return self;
 }

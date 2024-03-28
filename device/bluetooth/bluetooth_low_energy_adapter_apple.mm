@@ -68,8 +68,7 @@ BluetoothLowEnergyAdapterApple::BluetoothLowEnergyAdapterApple()
       low_energy_peripheral_manager_delegate_(
           [[BluetoothLowEnergyPeripheralManagerDelegate alloc]
               initWithAdvertisementManager:
-                  low_energy_advertisement_manager_.get()
-                                andAdapter:this]) {
+                  low_energy_advertisement_manager_.get()]) {
   DCHECK(low_energy_discovery_manager_);
 }
 
