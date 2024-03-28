@@ -5,6 +5,7 @@
 #include "chrome/browser/cart/cart_service.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -361,14 +362,14 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  std::string getDomainName(base::StringPiece domain) {
+  std::string getDomainName(std::string_view domain) {
     std::string* res = service_->domain_name_mapping_.FindString(domain);
     if (!res)
       return "";
     return *res;
   }
 
-  std::string getDomainCartURL(base::StringPiece domain) {
+  std::string getDomainCartURL(std::string_view domain) {
     std::string* res = service_->domain_cart_url_mapping_.FindString(domain);
     if (!res)
       return "";

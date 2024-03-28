@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/fetch_discount_worker.h"
+
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -309,7 +312,7 @@ class FakeCartDiscountServiceDelegate : public CartDiscountServiceDelegate {
   void SetCartDiscountUpdateExpectedData(
       cart_db::ChromeCartContentProto fake_updater_expected_data,
       bool has_rule_discounts,
-      base::StringPiece fake_updater_highest_discount_string = "",
+      std::string_view fake_updater_highest_discount_string = "",
       bool has_coupon_discounts = false) {
     fake_update_expected_data_ = fake_updater_expected_data;
     fake_update_has_rule_discounts_ = has_rule_discounts;
