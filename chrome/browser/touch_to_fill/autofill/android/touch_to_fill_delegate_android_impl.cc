@@ -186,17 +186,11 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
       // TODO(b/309163844): Handle dry_run.ibans_to_suggest case.
     }
   }
+
+  // TODO(b/309163888): Revisit how to log IBAN related metrics.
   if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
-    const AutofillField* autofill_field =
-        manager_->FindCachedFormById(form.global_id())
-            ->GetFieldById(field.global_id());
-    if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard) {
-      base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
-                                    dry_run.outcome);
-    } else {
-      base::UmaHistogramEnumeration(kUmaTouchToFillIbanTriggerOutcome,
-                                    dry_run.outcome);
-    }
+    base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
+                                  dry_run.outcome);
   }
   LOG_AF(manager_->client().GetLogManager())
       << LoggingScope::kTouchToFill << LogMessage::kTouchToFill

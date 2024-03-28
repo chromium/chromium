@@ -229,14 +229,23 @@ class TouchToFillDelegateAndroidImplPaymentMethodUnitTest
   bool IsCreditCard() const { return GetParam(); }
 
   std::string GetTriggerOutcomeHistogramName() {
-    return IsCreditCard() ? kUmaTouchToFillCreditCardTriggerOutcome
-                          : kUmaTouchToFillIbanTriggerOutcome;
+    return kUmaTouchToFillCreditCardTriggerOutcome;
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
                          testing::Bool());
+
+TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
+       TryToShowTouchToFillFailsForInvalidForm) {
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+
+  browser_autofill_manager_->ClearFormStructures();
+
+  EXPECT_EQ(false, touch_to_fill_delegate_->TryToShowTouchToFill(
+                       form_, form_.fields[0]));
+}
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillPaymentMethodSucceeds) {
