@@ -873,14 +873,10 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
         let w = open(location.href, '', 'popup');
         return new Promise(resolve => {
           w.onload = () => {
-            w.document.onfullscreenchange = () => {
-              clearInterval(w.int);
-              resolve(!!w.document.fullscreenElement);
-            };
-            // Wait for document settings to reach the renderer after load :-/
-            w.int = setInterval(() => w.document.body.requestFullscreen(), 500);
-            // Stop retrying before the automatic fullscreen cooldown period.
-            setTimeout(w.document.onfullscreenchange, 3000);
+            setTimeout(async () => {
+                try { await w.document.body.requestFullscreen(); } catch {}
+                resolve(!!w.document.fullscreenElement);
+            }, 300);  // Wait for document settings to propagate :-/
           };
         });
       })();
