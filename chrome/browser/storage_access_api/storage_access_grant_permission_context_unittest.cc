@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
+
 #include <memory>
 
 #include "base/barrier_callback.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
+#include "chrome/browser/webid/federated_identity_permission_context.h"
+#include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -22,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
@@ -43,6 +47,7 @@
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Pair;
 using testing::UnorderedElementsAre;
@@ -692,4 +697,55 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_LT(setting.metadata.expiration(),
             permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime +
                 base::Time::Now());
+}
+
+class StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest
+    : public StorageAccessGrantPermissionContextTest {
+ public:
+  StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest() = default;
+
+  void SetUp() override {
+    StorageAccessGrantPermissionContextTest::SetUp();
+
+    feature_list_.InitAndEnableFeature(::features::kFedCmWithStorageAccessAPI);
+
+    FederatedIdentityPermissionContextFactory::GetForProfile(profile())
+        ->GrantSharingPermission(
+            /*relying_party_requester=*/url::Origin::Create(GetTopLevelURL()),
+            /*relying_party_embedder=*/
+            url::Origin::Create(GURL("https://unrelated-site.test")),
+            /*identity_provider=*/url::Origin::Create(GetRequesterURL()),
+            "my_account");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(StorageAccessGrantPermissionContextAPIWithFedCMConnectionTest,
+       AutoResolveWithConnection) {
+  prompt_factory().set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+  auto future = DecidePermission(/*user_gesture=*/false);
+  // Ensure no prompt is shown.
+  ASSERT_FALSE(request_manager()->IsRequestInProgress());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future->Get());
+
+  histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
+                                        RequestOutcome::kAllowedByFedCM, 1);
+
+  EXPECT_THAT(HostContentSettingsMapFactory::GetForProfile(profile())
+                  ->GetSettingsForOneType(
+                      ContentSettingsType::STORAGE_ACCESS,
+                      content_settings::mojom::SessionModel::DURABLE),
+              ElementsAre(ContentSettingPatternSource(
+                  ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(),
+                  content_settings::ContentSettingToValue(
+                      ContentSetting::CONTENT_SETTING_ASK),
+                  /*source=*/"default", /*incognito=*/false)));
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
 }

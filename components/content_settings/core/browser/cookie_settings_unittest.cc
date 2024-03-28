@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -167,12 +168,16 @@ class CookieSettingsTestBase {
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
             &prefs_,
             /*onboarding_service=*/nullptr, /*is_incognito=*/false);
-    cookie_settings_ = new CookieSettings(settings_map_.get(), &prefs_,
-                                          tracking_protection_settings_.get(),
-                                          false, "chrome-extension");
+
+    auto has_fedcm_sharing_permission =
+        CookieSettings::NoFedCmSharingPermissionsCallback();
+
+    cookie_settings_ = new CookieSettings(
+        settings_map_.get(), &prefs_, tracking_protection_settings_.get(),
+        false, has_fedcm_sharing_permission, "chrome-extension");
     cookie_settings_incognito_ = new CookieSettings(
         settings_map_.get(), &prefs_, tracking_protection_settings_.get(), true,
-        "chrome-extension");
+        has_fedcm_sharing_permission, "chrome-extension");
   }
 
   void FastForwardTime(base::TimeDelta delta) {
@@ -730,7 +735,7 @@ TEST_P(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
   // ForceThirdPartyCookieBlocking was enabled.
   scoped_refptr<CookieSettings> cookie_settings = new CookieSettings(
       settings_map_.get(), &prefs_, tracking_protection_settings_.get(), false,
-      "chrome-extension");
+      CookieSettings::NoFedCmSharingPermissionsCallback(), "chrome-extension");
 
   EXPECT_EQ(kSupports3pcBlocking,
             cookie_settings->ShouldBlockThirdPartyCookies());
@@ -1282,6 +1287,53 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAWebsocket) {
   // Insecure websocket stays blocked.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 ws_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, GetCookieSettingSAAViaFedCM) {
+  const GURL top_level_url = GURL(kFirstPartySite);
+  const GURL url = GURL(kAllowedSite);
+  const GURL third_url = GURL(kBlockedSite);
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+
+  cookie_settings_ = new CookieSettings(
+      settings_map_.get(), &prefs_, tracking_protection_settings_.get(), false,
+      base::BindLambdaForTesting([&]() -> ContentSettingsForOneType {
+        return ContentSettingsForOneType{
+            ContentSettingPatternSource(
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(url),
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    top_level_url),
+                content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+                /*source=*/"", /*incognito=*/false),
+        };
+      }),
+      "chrome-extension");
+
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithSaaOverride());
+  histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram,
+      static_cast<int>(BlockedStorageAccessResultWithSaaOverride()), 1);
+
+  // Grants are not bidrectional.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                top_level_url, url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // Unrelated contexts do not get access.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, third_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 }
 

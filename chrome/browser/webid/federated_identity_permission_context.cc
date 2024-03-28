@@ -66,6 +66,13 @@ bool FederatedIdentityPermissionContext::HasSharingPermission(
   return sharing_context_->HasPermission(relying_party_requester);
 }
 
+bool FederatedIdentityPermissionContext::HasSharingPermission(
+    const net::SchemefulSite& relying_party_requester,
+    const net::SchemefulSite& identity_provider) {
+  return sharing_context_->HasPermission(relying_party_requester,
+                                         identity_provider);
+}
+
 void FederatedIdentityPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
@@ -83,7 +90,12 @@ void FederatedIdentityPermissionContext::RevokeSharingPermission(
     const std::string& account_id) {
   sharing_context_->RevokePermission(relying_party_requester,
                                      relying_party_embedder, identity_provider,
-                                     account_id);
+                                     account_id, base::DoNothing());
+}
+
+ContentSettingsForOneType FederatedIdentityPermissionContext::
+    GetSharingPermissionGrantsAsContentSettings() {
+  return sharing_context_->GetSharingPermissionGrantsAsContentSettings();
 }
 
 void FederatedIdentityPermissionContext::GetAllDataKeys(

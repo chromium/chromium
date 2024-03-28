@@ -67,6 +67,9 @@ class CookieSettings
     virtual void OnCookieSettingChanged() {}
   };
 
+  using ComputeFedCmSharingPermissionsCallback =
+      base::RepeatingCallback<ContentSettingsForOneType()>;
+
   // Creates a new CookieSettings instance.
   // The caller is responsible for ensuring that |extension_scheme| is valid for
   // the whole lifetime of this instance.
@@ -77,6 +80,7 @@ class CookieSettings
       PrefService* prefs,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       bool is_incognito,
+      ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
       const char* extension_scheme = kDummyExtensionScheme);
 
   CookieSettings(const CookieSettings&) = delete;
@@ -255,6 +259,11 @@ class CookieSettings
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
+  static ComputeFedCmSharingPermissionsCallback
+  NoFedCmSharingPermissionsCallback() {
+    return base::BindRepeating([]() { return ContentSettingsForOneType(); });
+  }
+
  protected:
   ~CookieSettings() override;
 
@@ -284,6 +293,15 @@ class CookieSettings
   // TrackingProtectionSettingsObserver:
   void OnTrackingProtection3pcdChanged() override;
   void OnBlockAllThirdPartyCookiesChanged() override;
+
+  // Updates the FEDERATED_IDENTITY_SHARING settings.
+  void UpdateFedCmSharingPermissions();
+
+  // Returns true iff the FedCM sharing permission has been granted between
+  // `primary_url` and `secondary_url`. Note that this is not a symmetric
+  // relation.
+  bool HasFedCmSharingPermission(const GURL& primary_url,
+                                 const GURL& secondary_url) const;
 
   // content_settings::Observer:
   void OnContentSettingChanged(
@@ -324,6 +342,15 @@ class CookieSettings
   bool block_third_party_cookies_ GUARDED_BY(lock_);
   bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
   bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
+
+  mutable base::Lock fedcm_sharing_permissions_lock_;
+  HostIndexedContentSettings fedcm_sharing_permissions_
+      GUARDED_BY(fedcm_sharing_permissions_lock_);
+
+  const ComputeFedCmSharingPermissionsCallback
+      compute_fedcm_sharing_permissions_
+          GUARDED_BY(fedcm_sharing_permissions_lock_) =
+              NoFedCmSharingPermissionsCallback();
 };
 
 }  // namespace content_settings

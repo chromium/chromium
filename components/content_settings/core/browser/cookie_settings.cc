@@ -33,6 +33,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -46,6 +47,7 @@ CookieSettings::CookieSettings(
     PrefService* prefs,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     bool is_incognito,
+    ComputeFedCmSharingPermissionsCallback compute_fedcm_sharing_permissions,
     const char* extension_scheme)
     : tracking_protection_settings_(tracking_protection_settings),
       host_content_settings_map_(host_content_settings_map),
@@ -54,7 +56,8 @@ CookieSettings::CookieSettings(
       block_third_party_cookies_(
           net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()),
       mitigations_enabled_for_3pcd_(
-          net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+          net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()),
+      compute_fedcm_sharing_permissions_(compute_fedcm_sharing_permissions) {
   content_settings_observation_.Observe(host_content_settings_map_.get());
   if (tracking_protection_settings_) {
     tracking_protection_settings_observation_.Observe(
@@ -76,6 +79,8 @@ CookieSettings::CookieSettings(
   } else {
     settings_for_3pcd_metadata_grants_ = ContentSettingsForOneType();
   }
+
+  UpdateFedCmSharingPermissions();
 }
 
 ContentSetting CookieSettings::GetDefaultCookieSetting(
@@ -356,6 +361,12 @@ ContentSetting CookieSettings::GetContentSetting(
                : CONTENT_SETTING_BLOCK;
   }
 
+  if (content_type == ContentSettingsType::FEDERATED_IDENTITY_SHARING) {
+    return HasFedCmSharingPermission(primary_url, secondary_url)
+               ? ContentSetting::CONTENT_SETTING_ALLOW
+               : ContentSetting::CONTENT_SETTING_BLOCK;
+  }
+
   return host_content_settings_map_->GetContentSetting(
       primary_url, secondary_url, content_type, info);
 }
@@ -440,6 +451,11 @@ void CookieSettings::OnContentSettingChanged(
       observer.OnCookieSettingChanged();
     }
   }
+
+  if (content_type_set.Contains(
+          ContentSettingsType::FEDERATED_IDENTITY_SHARING)) {
+    UpdateFedCmSharingPermissions();
+  }
 }
 
 void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
@@ -517,6 +533,32 @@ bool CookieSettings::MitigationsEnabledFor3pcd() const {
 bool CookieSettings::TrackingProtectionEnabledFor3pcd() const {
   base::AutoLock auto_lock(lock_);
   return tracking_protection_enabled_for_3pcd_;
+}
+
+void CookieSettings::UpdateFedCmSharingPermissions() {
+  base::AutoLock lock(fedcm_sharing_permissions_lock_);
+  ContentSettingsForOneType settings = compute_fedcm_sharing_permissions_.Run();
+  if (settings.empty()) {
+    fedcm_sharing_permissions_ = HostIndexedContentSettings();
+  } else {
+    std::vector<HostIndexedContentSettings> indices =
+        HostIndexedContentSettings::Create(settings);
+    // All FedCM sharing permissions should use the same source attribute.
+    CHECK_EQ(indices.size(), 1u);
+    fedcm_sharing_permissions_ = std::move(indices.front());
+  }
+}
+
+bool CookieSettings::HasFedCmSharingPermission(
+    const GURL& primary_url,
+    const GURL& secondary_url) const {
+  base::AutoLock lock(fedcm_sharing_permissions_lock_);
+
+  const RuleEntry* entry =
+      fedcm_sharing_permissions_.Find(primary_url, secondary_url);
+
+  return entry && content_settings::ValueToContentSetting(
+                      entry->second.value) == CONTENT_SETTING_ALLOW;
 }
 
 }  // namespace content_settings

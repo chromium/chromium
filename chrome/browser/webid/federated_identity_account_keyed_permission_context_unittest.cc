@@ -6,9 +6,17 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/schemeful_site.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -16,6 +24,9 @@
 namespace {
 
 constexpr char kTestIdpOriginKey[] = "idp-origin";
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 }
 
 class FederatedIdentityAccountKeyedPermissionContextTest
@@ -70,7 +81,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
       context()->GetKeyForObject(granted_objects[0]->value);
 
   // Cleanup
-  context()->RevokePermission(rp, rp, idp, account);
+  context()->RevokePermission(rp, rp, idp, account, base::DoNothing());
   EXPECT_TRUE(context()->GetAllGrantedObjects().empty());
 
   // New format
@@ -183,9 +194,9 @@ void TestGrantAndRevoke(FederatedIdentityAccountKeyedPermissionContext* context,
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id));
 
-  context->RevokePermission(grant1.relying_party_requester,
-                            grant1.relying_party_embedder,
-                            grant1.identity_provider, grant1.account_id);
+  context->RevokePermission(
+      grant1.relying_party_requester, grant1.relying_party_embedder,
+      grant1.identity_provider, grant1.account_id, base::DoNothing());
   EXPECT_FALSE(context->HasPermission(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id));
@@ -193,9 +204,9 @@ void TestGrantAndRevoke(FederatedIdentityAccountKeyedPermissionContext* context,
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id));
 
-  context->RevokePermission(grant2.relying_party_requester,
-                            grant2.relying_party_embedder,
-                            grant2.identity_provider, grant2.account_id);
+  context->RevokePermission(
+      grant2.relying_party_requester, grant2.relying_party_embedder,
+      grant2.identity_provider, grant2.account_id, base::DoNothing());
   EXPECT_FALSE(context->HasPermission(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id));
@@ -271,6 +282,25 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
   EXPECT_TRUE(context()->HasPermission(site, site, site, account));
 }
 
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
+       HasPermission_SchemefulSite) {
+  const url::Origin relying_party_requester =
+      url::Origin::Create(GURL("https://www.relying_party_requester.com"));
+  const url::Origin relying_party_embedder =
+      url::Origin::Create(GURL("https://www.relying_party_embedder.com"));
+  const url::Origin identity_provider =
+      url::Origin::Create(GURL("https://www.identity_provider.com"));
+
+  context()->GrantPermission(relying_party_requester, relying_party_embedder,
+                             identity_provider, "my_account");
+  EXPECT_TRUE(
+      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+                               net::SchemefulSite(identity_provider)));
+  EXPECT_FALSE(
+      context()->HasPermission(net::SchemefulSite(identity_provider),
+                               net::SchemefulSite(relying_party_requester)));
+}
+
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
   constexpr char kAccountId[] = "account123";
   const url::Origin rpRequester =
@@ -280,7 +310,8 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
   const url::Origin idp = url::Origin::Create(GURL("https://idp.example"));
 
   // Revoke will not crash if there are no previous permissions.
-  context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId);
+  context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId,
+                              base::DoNothing());
 
   context()->GrantPermission(rpRequester, rpEmbedder, idp, kAccountId);
   EXPECT_TRUE(
@@ -288,7 +319,8 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
 
   // Revoke will remove the permission even if the account ID does not
   // match.
-  context()->RevokePermission(rpRequester, rpEmbedder, idp, "noMatch");
+  context()->RevokePermission(rpRequester, rpEmbedder, idp, "noMatch",
+                              base::DoNothing());
   EXPECT_FALSE(
       context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
 
@@ -296,8 +328,68 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
   // only that permission.
   context()->GrantPermission(rpRequester, rpEmbedder, idp, kAccountId);
   context()->GrantPermission(rpRequester, rpEmbedder, idp, "other");
-  context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId);
+  context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId,
+                              base::DoNothing());
   EXPECT_FALSE(
       context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
   EXPECT_TRUE(context()->HasPermission(rpRequester, rpEmbedder, idp, "other"));
+}
+
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
+       GetSharingPermissionGrantsAsContentSettings_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kFedCmWithStorageAccessAPI);
+  const url::Origin relying_party_requester =
+      url::Origin::Create(GURL("https://www.relying_party_requester.com"));
+  const url::Origin relying_party_embedder =
+      url::Origin::Create(GURL("https://www.relying_party_embedder.com"));
+  const url::Origin identity_provider =
+      url::Origin::Create(GURL("https://www.identity_provider.com"));
+
+  context()->GrantPermission(relying_party_requester, relying_party_embedder,
+                             identity_provider, "my_account");
+  ASSERT_TRUE(
+      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+                               net::SchemefulSite(identity_provider)));
+
+  EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
+              IsEmpty());
+}
+
+TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
+       GetSharingPermissionGrantsAsContentSettings_FeatureEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kFedCmWithStorageAccessAPI);
+  const url::Origin relying_party_requester =
+      url::Origin::Create(GURL("https://www.relying_party_requester.com"));
+  const url::Origin relying_party_embedder =
+      url::Origin::Create(GURL("https://www.relying_party_embedder.com"));
+  const url::Origin identity_provider =
+      url::Origin::Create(GURL("https://www.identity_provider.com"));
+  constexpr char account_id[] = "my_account";
+
+  context()->GrantPermission(relying_party_requester, relying_party_embedder,
+                             identity_provider, account_id);
+  ASSERT_TRUE(
+      context()->HasPermission(net::SchemefulSite(relying_party_requester),
+                               net::SchemefulSite(identity_provider)));
+
+  EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
+              ElementsAre(ContentSettingPatternSource(
+                  ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                      identity_provider.GetURL()),
+                  ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                      relying_party_requester.GetURL()),
+                  content_settings::ContentSettingToValue(
+                      ContentSetting::CONTENT_SETTING_ALLOW),
+                  /*source=*/"", /*incognito=*/false)));
+
+  base::test::TestFuture<void> future;
+  context()->RevokePermission(relying_party_requester, relying_party_embedder,
+                              identity_provider, account_id,
+                              future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_THAT(context()->GetSharingPermissionGrantsAsContentSettings(),
+              IsEmpty());
 }

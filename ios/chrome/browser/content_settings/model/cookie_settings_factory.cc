@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -55,7 +56,8 @@ CookieSettingsFactory::BuildServiceInstanceFor(
   return base::MakeRefCounted<content_settings::CookieSettings>(
       ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
       browser_state->GetPrefs(), /*tracking_protection_settings=*/nullptr,
-      browser_state->IsOffTheRecord());
+      browser_state->IsOffTheRecord(),
+      content_settings::CookieSettings::NoFedCmSharingPermissionsCallback());
 }
 
 }  // namespace ios

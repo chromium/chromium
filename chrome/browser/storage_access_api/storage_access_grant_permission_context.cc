@@ -18,6 +18,8 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/webid/federated_identity_permission_context.h"
+#include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -32,6 +34,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
@@ -41,6 +44,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace {
 
@@ -72,6 +76,9 @@ bool IsImplicitOutcome(RequestOutcome outcome) {
     case RequestOutcome::kDeniedByUser:
     case RequestOutcome::kGrantedByUser:
       return false;
+
+    case RequestOutcome::kAllowedByFedCM:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -94,6 +101,9 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kDeniedByPrerequisites:
     case RequestOutcome::kDeniedAborted:
       return false;
+
+    case RequestOutcome::kAllowedByFedCM:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -146,6 +156,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kDeniedByCookieSettings:
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
+    case RequestOutcome::kAllowedByFedCM:
       NOTREACHED_NORETURN();
     case RequestOutcome::kGrantedByUser:
     case RequestOutcome::kDeniedByUser:
@@ -294,6 +305,23 @@ void StorageAccessGrantPermissionContext::DecidePermission(
       return;
     }
     CHECK_EQ(existing_setting, CONTENT_SETTING_ASK);
+  }
+
+  // FedCM grants (and the appropriate permissions policy) may allow the call to
+  // auto-resolve (without granting a new permission).
+  if (base::FeatureList::IsEnabled(features::kFedCmWithStorageAccessAPI) &&
+      rfh->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+    FederatedIdentityPermissionContext* fedcm_context =
+        FederatedIdentityPermissionContextFactory::GetForProfile(
+            browser_context());
+    if (fedcm_context && fedcm_context->HasSharingPermission(
+                             /*relying_party_requester=*/embedding_site,
+                             /*identity_provider=*/requesting_site)) {
+      RecordOutcomeSample(RequestOutcome::kAllowedByFedCM);
+      std::move(callback).Run(CONTENT_SETTING_ALLOW);
+      return;
+    }
   }
 
   if (!request_data.user_gesture) {

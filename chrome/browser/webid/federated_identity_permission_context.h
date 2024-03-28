@@ -10,9 +10,11 @@
 
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webid/federated_identity_data_model.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
+#include "net/base/schemeful_site.h"
 
 namespace content {
 class BrowserContext;
@@ -83,6 +85,15 @@ class FederatedIdentityPermissionContext
       base::OnceClosure callback) override;
 
   void FlushScheduledSaveSettingsCalls();
+
+  // Returns whether there is an existing sharing permission for the given
+  // (relying party requester site, identity provider site) pair.
+  bool HasSharingPermission(const net::SchemefulSite& relying_party_requester,
+                            const net::SchemefulSite& identity_provider);
+
+  // Converts existing sharing permission grants into (site, site)-keyed content
+  // settings.
+  ContentSettingsForOneType GetSharingPermissionGrantsAsContentSettings();
 
  private:
   std::unique_ptr<FederatedIdentityAccountKeyedPermissionContext>

@@ -6,12 +6,21 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
+#include "net/base/schemeful_site.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/origin.h"
 
 namespace {
@@ -60,10 +69,20 @@ std::string BuildKey(const url::Origin& relying_party_requester,
 FederatedIdentityAccountKeyedPermissionContext::
     FederatedIdentityAccountKeyedPermissionContext(
         content::BrowserContext* browser_context)
-    : ObjectPermissionContextBase(
-          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
+    : FederatedIdentityAccountKeyedPermissionContext(
+          browser_context,
           HostContentSettingsMapFactory::GetForProfile(
               Profile::FromBrowserContext(browser_context))) {}
+
+FederatedIdentityAccountKeyedPermissionContext::
+    FederatedIdentityAccountKeyedPermissionContext(
+        content::BrowserContext* browser_context,
+        HostContentSettingsMap* host_content_settings_map)
+    : ObjectPermissionContextBase(
+          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
+          host_content_settings_map),
+      browser_context_(
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)) {}
 
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester) {
@@ -75,6 +94,29 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     }
   }
   return false;
+}
+
+bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
+    const net::SchemefulSite& relying_party_requester,
+    const net::SchemefulSite& identity_provider) {
+  return base::ranges::any_of(
+      GetGrantedObjects(relying_party_requester),
+      [&](const std::unique_ptr<
+          permissions::ObjectPermissionContextBase::Object>& object) -> bool {
+        if (!object) {
+          return false;
+        }
+
+        const std::string* rp_requester_origin =
+            object->value.FindString(kRpRequesterKey);
+        const std::string* idp_origin =
+            object->value.FindString(kSharingIdpKey);
+
+        return rp_requester_origin && idp_origin &&
+               net::SchemefulSite(GURL(*rp_requester_origin)) ==
+                   relying_party_requester &&
+               net::SchemefulSite(GURL(*idp_origin)) == identity_provider;
+      });
 }
 
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
@@ -135,13 +177,16 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
     AddToAccountList(new_object, account_id);
     GrantObjectPermission(relying_party_requester, std::move(new_object));
   }
+
+  SyncSharingPermissionGrantsToNetworkService(base::DoNothing());
 }
 
 void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const std::string& account_id) {
+    const std::string& account_id,
+    base::OnceClosure callback) {
   std::string key = BuildKey(relying_party_requester, relying_party_embedder,
                              identity_provider);
   const auto object = GetGrantedObject(relying_party_requester, key);
@@ -163,6 +208,8 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
     UpdateObjectPermission(relying_party_requester, object->value,
                            std::move(new_object));
   }
+
+  SyncSharingPermissionGrantsToNetworkService(std::move(callback));
 }
 
 std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
@@ -223,8 +270,62 @@ void FederatedIdentityAccountKeyedPermissionContext::
     RemoveFederatedIdentityDataByDataKey(
         const webid::FederatedIdentityDataModel::DataKey& data_key,
         base::OnceClosure callback) {
-  RevokePermission(data_key.relying_party_requester(),
-                   data_key.relying_party_embedder(),
-                   data_key.identity_provider(), data_key.account_id());
-  std::move(callback).Run();
+  RevokePermission(
+      data_key.relying_party_requester(), data_key.relying_party_embedder(),
+      data_key.identity_provider(), data_key.account_id(), std::move(callback));
+}
+
+ContentSettingsForOneType FederatedIdentityAccountKeyedPermissionContext::
+    GetSharingPermissionGrantsAsContentSettings() {
+  if (!base::FeatureList::IsEnabled(features::kFedCmWithStorageAccessAPI)) {
+    return ContentSettingsForOneType();
+  }
+  // ObjectPermissionContext stores its settings in the HostContentSettingsMap
+  // keyed by <origin, null> with a value of `base::Value` (which is translated
+  // to CONTENT_SETTING_DEFAULT). It's not possible to reconstruct the actual
+  // <RP requester, RP embedder, IDP> grants from this, so we use the raw
+  // objects instead, and construct the corresponding list of settings with
+  // appropriate primary/secondary keys.
+  //
+  // Note that these settings patterns are keyed by <site, site> rather than
+  // <origin, origin>.
+
+  ContentSettingsForOneType settings;
+
+  for (const std::unique_ptr<Object>& object : GetAllGrantedObjects()) {
+    if (!object) {
+      continue;
+    }
+
+    const std::string* rp_requester_origin =
+        object->value.FindString(kRpRequesterKey);
+    const std::string* idp_origin = object->value.FindString(kSharingIdpKey);
+
+    if (!rp_requester_origin || !idp_origin) {
+      continue;
+    }
+
+    settings.emplace_back(
+        ContentSettingsPattern::FromURLToSchemefulSitePattern(
+            GURL(*idp_origin)),
+        ContentSettingsPattern::FromURLToSchemefulSitePattern(
+            GURL(*rp_requester_origin)),
+        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+        /*source=*/"", browser_context_->IsOffTheRecord());
+  }
+  return settings;
+}
+
+void FederatedIdentityAccountKeyedPermissionContext::
+    SyncSharingPermissionGrantsToNetworkService(base::OnceClosure callback) {
+  // Note: ProfileNetworkContextService::OnContentSettingChanged also updates
+  // the network service's content settings. But we explicitly sync the
+  // permissions here and then invoke the callback, to avoid a race condition
+  // between the callback and the unsynchronized
+  // ProfileNetworkContextService::OnContentSettingChanged invocation.
+  browser_context_->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->SetContentSettings(ContentSettingsType::FEDERATED_IDENTITY_SHARING,
+                           GetSharingPermissionGrantsAsContentSettings(),
+                           std::move(callback));
 }

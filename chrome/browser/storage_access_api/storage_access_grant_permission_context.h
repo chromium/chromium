@@ -55,8 +55,10 @@ enum class RequestOutcome {
   // The request was aborted by the browser (e.g. because the RenderFrameHost
   // was deleted).
   kDeniedAborted = 13,
+  // The request was allowed by SAA/FedCM integration.
+  kAllowedByFedCM = 14,
 
-  kMaxValue = kDeniedAborted,
+  kMaxValue = kAllowedByFedCM,
 };
 
 class StorageAccessGrantPermissionContext

@@ -16,6 +16,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/features.h"
+#include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
 namespace permissions {
@@ -126,6 +127,25 @@ ObjectPermissionContextBase::GetGrantedObjects(const url::Origin& origin) {
   std::vector<std::unique_ptr<Object>> results;
   for (const auto& object : origin_objects_it->second)
     results.push_back(object.second->Clone());
+
+  return results;
+}
+
+std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
+ObjectPermissionContextBase::GetGrantedObjects(const net::SchemefulSite& site) {
+  std::vector<std::unique_ptr<Object>> results;
+  for (const auto& pair : objects()) {
+    if (!CanRequestObjectPermission(pair.first)) {
+      continue;
+    }
+    if (net::SchemefulSite(pair.first) != site) {
+      continue;
+    }
+
+    for (const auto& key_value : pair.second) {
+      results.push_back(key_value.second->Clone());
+    }
+  }
 
   return results;
 }

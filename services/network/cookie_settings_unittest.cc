@@ -491,6 +491,73 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   }
 }
 
+TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocksViaFedCM) {
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+  GURL third_url = GURL(kDomainURL);
+
+  base::HistogramTester histogram_tester;
+
+  CookieSettings settings;
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
+  settings.set_block_third_party_cookies(true);
+
+  settings.set_content_settings(
+      ContentSettingsType::FEDERATED_IDENTITY_SHARING,
+      {CreateSetting(net::SchemefulSite(url).Serialize(),
+                     net::SchemefulSite(top_level_url).Serialize(),
+                     CONTENT_SETTING_ALLOW)});
+
+  // When requesting our setting for the embedder/top-level combination our
+  // grant is for access should be allowed. For any other domain pairs access
+  // should still be blocked.
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            SettingWithSaaOverride(CONTENT_SETTING_ALLOW));
+  histogram_tester.ExpectUniqueSample(
+      kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaOverride(),
+      1);
+
+  // Grants are not bidirectional.
+  EXPECT_EQ(settings.GetCookieSetting(top_level_url, url,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  histogram_tester.ExpectBucketCount(kAllowedRequestsHistogram,
+                                     net::cookie_util::StorageAccessResult::
+                                         ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
+                                     IsStorageAccessGrantEligible() ? 1 : 0);
+  histogram_tester.ExpectBucketCount(
+      kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaOverride(),
+      IsStorageAccessGrantEligible() ? 1 : 2);
+
+  // Unrelated contexts do not get access.
+  EXPECT_EQ(settings.GetCookieSetting(url, third_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(settings.GetCookieSetting(third_url, top_level_url,
+                                      GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+
+  // If cookies are globally blocked, SAA grants and 3PC override
+  // should both be ignored.
+  {
+    settings.set_content_settings(
+        ContentSettingsType::COOKIES,
+        {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
+    settings.set_block_third_party_cookies(true);
+    base::HistogramTester histogram_tester_2;
+    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
+                                        GetCookieSettingOverrides(), nullptr),
+              CONTENT_SETTING_BLOCK);
+    histogram_tester_2.ExpectUniqueSample(
+        kAllowedRequestsHistogram,
+        net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
+  }
+}
+
 // The Top-Level Storage Access API should unblock storage access that would
 // otherwise be blocked.
 TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccessUnblocks) {

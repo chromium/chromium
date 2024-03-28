@@ -39,6 +39,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
+#include "chrome/browser/webid/federated_identity_permission_context.h"
+#include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_content_client.h"
@@ -247,9 +249,25 @@ void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
   if (!IsContentSettingsTypeEnabled(type)) {
     return;
   }
-  ContentSettingsForOneType settings =
-      HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetSettingsForOneType(type);
+
+  ContentSettingsForOneType settings;
+  if (type == ContentSettingsType::FEDERATED_IDENTITY_SHARING) {
+    // Note: FederatedIdentityPermissionContext also syncs the permissions
+    // directly, in order to avoid a race condition. (Namely,
+    // FederatedIdentityPermissionContext must guarantee that the permissions
+    // have propagated before it calls its callback. However, the syncing that
+    // occurs in this class is unsynchronized, so it would be racy to rely on
+    // this update finishing before calling the context's callback.) This
+    // unfortunately triggers a double-update here.
+    if (FederatedIdentityPermissionContext* fedcm_context =
+            FederatedIdentityPermissionContextFactory::GetForProfile(profile);
+        fedcm_context) {
+      settings = fedcm_context->GetSharingPermissionGrantsAsContentSettings();
+    }
+  } else {
+    settings = HostContentSettingsMapFactory::GetForProfile(profile)
+                   ->GetSettingsForOneType(type);
+  }
   profile->ForEachLoadedStoragePartition(
       [&](content::StoragePartition* storage_partition) {
         storage_partition->GetCookieManagerForBrowserProcess()
@@ -779,8 +797,19 @@ ProfileNetworkContextService::CreateCookieManagerParams(
     if (!IsContentSettingsTypeEnabled(type)) {
       continue;
     }
-    out->content_settings[type] =
-        host_content_settings_map->GetSettingsForOneType(type);
+    if (type == ContentSettingsType::FEDERATED_IDENTITY_SHARING) {
+      if (FederatedIdentityPermissionContext* fedcm_context =
+              FederatedIdentityPermissionContextFactory::GetForProfile(profile);
+          fedcm_context) {
+        out->content_settings[type] =
+            fedcm_context->GetSharingPermissionGrantsAsContentSettings();
+      } else {
+        out->content_settings[type] = ContentSettingsForOneType();
+      }
+    } else {
+      out->content_settings[type] =
+          host_content_settings_map->GetSettingsForOneType(type);
+    }
   }
 
   out->cookie_access_delegate_type =

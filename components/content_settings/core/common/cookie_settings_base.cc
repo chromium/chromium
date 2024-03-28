@@ -154,6 +154,7 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::TPCD_HEURISTICS_GRANTS,
           ContentSettingsType::TPCD_TRIAL,
           ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
+          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
       });
   return kInstance;
 }
@@ -691,10 +692,21 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
   // same-origin check first for performance reasons.
   const url::Origin origin = url::Origin::Create(url);
   const url::Origin first_party_origin = url::Origin::Create(first_party_url);
-  return origin.IsSameOriginWith(first_party_origin) ||
-         net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin) ||
-         GetContentSetting(url, first_party_url,
-                           ContentSettingsType::STORAGE_ACCESS,
+  if (origin.IsSameOriginWith(first_party_origin) ||
+      net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin)) {
+    return true;
+  }
+  if (GetContentSetting(url, first_party_url,
+                        ContentSettingsType::STORAGE_ACCESS,
+                        /*info=*/nullptr) == CONTENT_SETTING_ALLOW) {
+    return true;
+  }
+  // Note: no need to check permissions policy here. If the appropriate
+  // permissions policy was not present, then `overrides` would not
+  // contain `kStorageAccessGrantEligible`, and we'd have returned early
+  // above.
+  return GetContentSetting(url, first_party_url,
+                           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 

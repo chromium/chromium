@@ -61,7 +61,9 @@ class PrivacySandboxTestUtilTest : public testing::Test {
         false /* restore_session */, false /* should_record_metrics */);
     cookie_settings_ = new content_settings::CookieSettings(
         host_content_settings_map_.get(), &prefs_,
-        /*tracking_protection_settings=*/nullptr, false, "chrome-extension");
+        /*tracking_protection_settings=*/nullptr, false,
+        content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+        "chrome-extension");
   }
 
   ~PrivacySandboxTestUtilTest() override {
