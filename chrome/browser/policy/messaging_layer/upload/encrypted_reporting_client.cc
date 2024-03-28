@@ -188,6 +188,21 @@ UploadState* GetState(Priority priority, int64_t generation_id) {
   return &state_it->second;
 }
 
+// Removes confirmed events from cache.
+void RemoveConfirmedEventFromCache(UploadState* state) {
+  // Remove no longer needed events from cache.
+  while (!state->cached_records.empty() &&
+         state->cached_records.begin()->first <= state->last_sequence_id) {
+    state->cached_records.erase(state->cached_records.begin());
+  }
+  // Reduce reserved memory.
+  uint64_t records_memory = 0u;
+  for (const auto& [_, record] : state->cached_records) {
+    records_memory += record.ByteSizeLong();
+  }
+  state->scoped_reservation.Reduce(records_memory);
+}
+
 // Builds uploading payload.
 // Returns dictionary (null in case of failure), matching memory reservation
 // and last seq id included in request.
@@ -634,6 +649,7 @@ void EncryptedReportingClient::OnReportUploadCompleted(
         response_parser.force_confirm_flag()) {
       state->last_sequence_id = last_sequence_id;
     }
+    RemoveConfirmedEventFromCache(state);
   }
   // Forward results to the pending callback.
   std::move(callback).Run(std::move(response_parser));

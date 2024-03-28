@@ -66,6 +66,7 @@ constexpr char kClientId[] = "fake-client-id";
 constexpr char kServerUrl[] = "https://example.com/reporting";
 
 constexpr int kGenerationId = 1;
+constexpr int kFirstSequenceId = 1;
 constexpr char kEncryptedRecord[] = "encrypted-record";
 
 size_t RecordsSize(const std::vector<EncryptedRecord>& records) {
@@ -177,7 +178,8 @@ class EncryptedReportingClientTest : public ::testing::Test {
   }
 
   UploadResponseParser GetAndValidateResponse(
-      test::TestEvent<StatusOr<UploadResponseParser>>& response_event) const {
+      test::TestEvent<StatusOr<UploadResponseParser>>& response_event,
+      std::optional<int64_t> expected_seq_id = std::nullopt) const {
     auto actual_response = response_event.result();
     CHECK(actual_response.has_value()) << actual_response.error();
     if (actual_response.value()
@@ -187,9 +189,10 @@ class EncryptedReportingClientTest : public ::testing::Test {
                       .last_successfully_uploaded_record_sequence_info()
                       .value()
                       .sequencing_id(),
-                  Eq(payload_records_.rbegin()
-                         ->sequence_information()
-                         .sequencing_id()));
+                  Eq(expected_seq_id.has_value() ? expected_seq_id.value()
+                                                 : payload_records_.rbegin()
+                                                       ->sequence_information()
+                                                       .sequencing_id()));
     } else {
       // No confirmation - at least envcryption key is to be expected.
       EXPECT_TRUE(actual_response.value().encryption_settings().has_value());
@@ -211,7 +214,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
   bool need_encryption_key_ = false;
   int config_file_version_ = 0;
   std::vector<EncryptedRecord> payload_records_;
-  int sequence_id_ = 10;
+  int sequence_id_ = kFirstSequenceId;
 
   std::unique_ptr<policy::DeviceManagementService> device_management_service_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -227,7 +230,7 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
-  // Send record #10 for upload.
+  // Send record kFirstSequenceId for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -239,7 +242,8 @@ TEST_F(EncryptedReportingClientTest, RegularUploads) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    // Simulate server-side processing, generate response confirming #10.
+    // Simulate server-side processing, generate response confirming
+    // kFirstSequenceId.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
@@ -280,7 +284,7 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithSameRecords) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
-  // Send record #10 for upload.
+  // Send record kFirstSequenceId for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -305,7 +309,7 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithSameRecords) {
     EXPECT_FALSE(actual_response.has_value());
   }
 
-  // Send record #10 for upload again.
+  // Send record kFirstSequenceId for upload again.
   // Avoid rate limiting by time.
   task_environment_.FastForwardBy(base::Minutes(1));
   {
@@ -336,7 +340,7 @@ TEST_F(EncryptedReportingClientTest, TimedOutUploadWithAddedRecord) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
-  // Send record #10 for upload.
+  // Send record kFirstSequenceId for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -439,7 +443,7 @@ TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
-  // Send record #10 for upload.
+  // Send record kFirstSequenceId for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -495,7 +499,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
-  // Send record #10 for processing. No connection to the service.
+  // Send record kFirstSequenceId for processing. No connection to the service.
   AddRecordToPayload();
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
@@ -523,7 +527,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
-  // Send record #10 for upload.
+  // Send record kFirstSequenceId for upload.
   {
     AddRecordToPayload();
     ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -577,7 +581,7 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
       std::make_unique<FakeDelegate>(device_management_service_.get()));
   encrypted_reporting_client->PresetUploads(context_.Clone(), "", "");
 
-  // Send record #10 for upload.
+  // Send record kFirstSequenceId for upload.
   AddRecordToPayload();
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
@@ -653,14 +657,26 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    // Simulate server-side processing, generate response.
+    // Simulate server-side processing.
     auto request_body = GetRequestBody(/*index=*/0);
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
+
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
+
+    // Modify response to not confirm actual records.
+    {
+      auto* const last_successfully_uploaded_record =
+          response.value().FindDict(json_keys::kLastSucceedUploadedRecord);
+      ASSERT_TRUE(last_successfully_uploaded_record);
+      last_successfully_uploaded_record->Set(
+          json_keys::kSequencingId, base::NumberToString(kFirstSequenceId - 1));
+    }
+
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    base::IgnoreResult(GetAndValidateResponse(
+        response_event, /*expected_seq_id=*/kFirstSequenceId - 1));
 
     encrypted_reporting_client->AccountForAllowedJob(
         payload_records_.rbegin()->sequence_information().priority(),
@@ -729,9 +745,20 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
+
+    // Modify response to not confirm the last records.
+    {
+      auto* const last_successfully_uploaded_record =
+          response.value().FindDict(json_keys::kLastSucceedUploadedRecord);
+      ASSERT_TRUE(last_successfully_uploaded_record);
+      last_successfully_uploaded_record->Set(
+          json_keys::kSequencingId, base::NumberToString(sequence_id_ - 2));
+    }
+
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    base::IgnoreResult(GetAndValidateResponse(response_event));
+    base::IgnoreResult(GetAndValidateResponse(
+        response_event, /*expected_seq_id=*/sequence_id_ - 2));
 
     encrypted_reporting_client->AccountForAllowedJob(
         payload_records_.rbegin()->sequence_information().priority(),
