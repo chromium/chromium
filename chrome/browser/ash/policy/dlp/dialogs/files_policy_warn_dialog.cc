@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
@@ -338,10 +339,11 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_->SetID(
       PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId);
   justification_field_->SetAccessibleName(justification_label_text);
-  justification_field_->SetAccessibleDescription(l10n_util::GetStringFUTF16(
-      IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
-      base::NumberToString16(0),
-      base::NumberToString16(kMaxBypassJustificationLength)));
+  justification_field_->GetViewAccessibility().SetDescription(
+      l10n_util::GetStringFUTF16(
+          IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
+          base::NumberToString16(0),
+          base::NumberToString16(kMaxBypassJustificationLength)));
   justification_field_->SetController(this);
   justification_field_->SetBackgroundColor(SK_ColorTRANSPARENT);
   justification_field_->SetPreferredSize(
@@ -372,10 +374,11 @@ void FilesPolicyWarnDialog::ContentsChanged(
         IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
         base::NumberToString16(new_contents.size()),
         base::NumberToString16(kMaxBypassJustificationLength)));
-    justification_field_->SetAccessibleDescription(l10n_util::GetStringFUTF16(
-        IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
-        base::NumberToString16(new_contents.size()),
-        base::NumberToString16(kMaxBypassJustificationLength)));
+    justification_field_->GetViewAccessibility().SetDescription(
+        l10n_util::GetStringFUTF16(
+            IDS_POLICY_DLP_FILES_JUSTIFICATION_TEXTAREA_ACCESSIBLE_DESCRIPTION,
+            base::NumberToString16(new_contents.size()),
+            base::NumberToString16(kMaxBypassJustificationLength)));
   }
 
   if (new_contents.size() == 0 ||

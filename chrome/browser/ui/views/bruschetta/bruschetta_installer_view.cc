@@ -432,7 +432,8 @@ void BruschettaInstallerView::OnStateUpdated() {
   secondary_message_label_->GetViewAccessibility().SetIsIgnored(
       progress_bar_visible);
   if (progress_bar_visible) {
-    progress_bar_->SetAccessibleDescription(secondary_message_label_);
+    progress_bar_->GetViewAccessibility().SetDescription(
+        *secondary_message_label_);
     progress_bar_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                             true);
   }

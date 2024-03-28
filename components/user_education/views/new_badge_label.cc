@@ -8,6 +8,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/border.h"
 #include "ui/views/metadata/type_conversion.h"
@@ -79,7 +80,8 @@ void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   std::u16string accessible_name = GetText();
   if (display_new_badge_) {
     accessible_name.push_back(' ');
-    accessible_name.append(GetAccessibleDescription());
+    accessible_name.append(
+        GetViewAccessibility().GetViewAccessibilityDescription());
   }
   node_data->SetNameChecked(accessible_name);
 }

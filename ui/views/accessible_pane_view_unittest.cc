@@ -13,6 +13,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/test/views_test_base.h"
@@ -50,9 +51,11 @@ class TestBarView : public AccessiblePaneView {
   raw_ptr<LabelButton> second_child_button_;
   raw_ptr<LabelButton> third_child_button_;
   std::unique_ptr<LabelButton> not_child_button_;
+  IgnoreMissingWidgetForTestingScopedSetter a11y_ignore_missing_widget_;
 };
 
-TestBarView::TestBarView() {
+TestBarView::TestBarView()
+    : a11y_ignore_missing_widget_(GetViewAccessibility()) {
   Init();
   set_allow_deactivate_on_esc(true);
 }
@@ -280,13 +283,14 @@ TEST_F(AccessiblePaneViewTest, MAYBE_DoesntCrashOnEscapeWithRemovedView) {
 TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
   std::unique_ptr<TestBarView> test_view = std::make_unique<TestBarView>();
   test_view->SetAccessibleName(u"Name");
-  test_view->SetAccessibleDescription(u"Description");
+  test_view->GetViewAccessibility().SetDescription(u"Description");
   EXPECT_EQ(test_view->GetAccessibleName(), u"Name");
-  EXPECT_EQ(test_view->GetAccessibleDescription(), u"Description");
+  EXPECT_EQ(test_view->GetViewAccessibility().GetViewAccessibilityDescription(),
+            u"Description");
   EXPECT_EQ(test_view->GetAccessibleRole(), ax::mojom::Role::kPane);
 
   ui::AXNodeData data;
-  test_view->GetAccessibleNodeData(&data);
+  test_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
@@ -295,7 +299,7 @@ TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
 
   data = ui::AXNodeData();
   test_view->SetAccessibleRole(ax::mojom::Role::kToolbar);
-  test_view->GetAccessibleNodeData(&data);
+  test_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Name");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),

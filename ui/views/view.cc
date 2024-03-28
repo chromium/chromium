@@ -2092,9 +2092,10 @@ void View::SetAccessibilityProperties(
   // See the comment above regarding the NameFrom value.
   if (description.has_value()) {
     if (description_from.has_value()) {
-      SetAccessibleDescription(description.value(), description_from.value());
+      GetViewAccessibility().SetDescription(description.value(),
+                                            description_from.value());
     } else {
-      SetAccessibleDescription(description.value());
+      GetViewAccessibility().SetDescription(description.value());
     }
   }
 }

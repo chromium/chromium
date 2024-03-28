@@ -268,7 +268,7 @@ class NudgePasswordButtons : public views::View {
         cancel_button_label);
     cancel_button->SetAccessibleRole(ax::mojom::Role::kListBoxOption);
     cancel_button->SetAccessibleName(cancel_button_label);
-    cancel_button->SetAccessibleDescription(help_text);
+    cancel_button->GetViewAccessibility().SetDescription(help_text);
     cancel_button_ = AddChildView(std::move(cancel_button));
 
     AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(),
@@ -284,7 +284,7 @@ class NudgePasswordButtons : public views::View {
     accept_button->SetAccessibleRole(ax::mojom::Role::kListBoxOption);
     accept_button->SetAccessibleName(
         base::JoinString({accept_button_label, controller_->password()}, u" "));
-    accept_button->SetAccessibleDescription(help_text);
+    accept_button->GetViewAccessibility().SetDescription(help_text);
     accept_button_ = AddChildView(std::move(accept_button));
 
     // Set up custom focus predicates for buttons as the default ones check if

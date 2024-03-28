@@ -151,10 +151,11 @@ void CookieControlsIconView::SetLabelAndTooltip() {
   if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
       !label()->GetVisible()) {
     // Set the accessible description to whatever the 3PC blocking state is.
-    SetAccessibleDescription(l10n_util::GetStringUTF16(icon_label));
+    GetViewAccessibility().SetDescription(
+        l10n_util::GetStringUTF16(icon_label));
     icon_label = IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL;
   } else {
-    SetAccessibleDescription(u"");
+    GetViewAccessibility().SetDescription(u"");
   }
   SetTooltipText(l10n_util::GetStringUTF16(icon_label));
   SetLabel(l10n_util::GetStringUTF16(icon_label));
@@ -231,7 +232,7 @@ void CookieControlsIconView::OnFinishedPageReloadWithChangedSettings() {
   // it should have already been visible for the user to have changed the
   // setting.
   if (ShouldBeVisible()) {
-    SetAccessibleDescription(u"");
+    GetViewAccessibility().SetDescription(u"");
     // Animate the icon to provide a visual confirmation to the user that their
     // protection status on the site has changed.
     AnimateIn(GetLabelForStatus());

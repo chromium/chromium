@@ -16,6 +16,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -216,9 +217,9 @@ void SubFeatureOptInView::InitLayout() {
 
   // By default, the description will be set to the tooltip text, but the title
   // is already announced in the accessible name.
-  set_up_button_->SetAccessibleDescription(
+  set_up_button_->GetViewAccessibility().SetDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
-  dismiss_button_->SetAccessibleDescription(
+  dismiss_button_->GetViewAccessibility().SetDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
 

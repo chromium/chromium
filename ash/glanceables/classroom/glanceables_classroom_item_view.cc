@@ -235,7 +235,8 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
   SetAccessibleRole(ax::mojom::Role::kListItem);
   GetViewAccessibility().SetIsLeaf(true);
   SetAccessibleName(base::UTF8ToUTF16(assignment->course_work_title));
-  SetAccessibleDescription(base::JoinString(a11y_description_parts, u", "));
+  GetViewAccessibility().SetDescription(
+      base::JoinString(a11y_description_parts, u", "));
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);

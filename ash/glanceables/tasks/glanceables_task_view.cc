@@ -384,7 +384,7 @@ GlanceablesTaskView::GlanceablesTaskView(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_METADATA_WRAPPER_ACCESSIBLE_DESCRIPTION,
         base::JoinString(details, u", "));
   }
-  check_button_->SetAccessibleDescription(a11y_description);
+  check_button_->GetViewAccessibility().SetDescription(a11y_description);
   check_button_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 

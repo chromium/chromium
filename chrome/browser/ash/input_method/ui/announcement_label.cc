@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ui {
 namespace ime {
@@ -46,7 +47,7 @@ void AnnouncementLabel::DoAnnouncement(const std::u16string text) {
 
   SetAccessibleRole(ax::mojom::Role::kStatus);
   SetAccessibleName(label_name_);
-  SetAccessibleDescription(announcement_text_);
+  GetViewAccessibility().SetDescription(announcement_text_);
 
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged,
                            /*send_native_event=*/false);

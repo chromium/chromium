@@ -259,7 +259,8 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetAccessibleName(name);
     const std::u16string& accessible_description =
         l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
-    indicator_chip->SetAccessibleDescription(accessible_description);
+    indicator_chip->GetViewAccessibility().SetDescription(
+        accessible_description);
     indicator_chip->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 
     RecordIndicators(indicator_model, content_settings, /*clicked=*/false);

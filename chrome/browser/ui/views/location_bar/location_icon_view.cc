@@ -37,6 +37,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -254,7 +255,8 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
 
   // If no display text exists, ensure that the accessibility label is added.
   const std::u16string description =
-      delegate_->IsEditingOrEmpty() ? GetAccessibleDescription()
+      delegate_->IsEditingOrEmpty()
+          ? GetViewAccessibility().GetViewAccessibilityDescription()
       : label()->GetText().empty()
           ? delegate_->GetLocationBarModel()->GetSecureAccessibilityText()
           : std::u16string();
@@ -264,7 +266,7 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
   } else {
     SetAccessibleRole(role);
     SetAccessibleName(name);
-    SetAccessibleDescription(description);
+    GetViewAccessibility().SetDescription(description);
   }
 }
 

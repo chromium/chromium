@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 using testing::AnyNumber;
 using testing::AtLeast;
@@ -270,14 +271,18 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
   // Start installing
   view_->AcceptDialog();
   EXPECT_TRUE(view_->progress_bar_for_testing()->GetVisible());
-  EXPECT_EQ(view_->progress_bar_for_testing()->GetAccessibleDescription(),
+  EXPECT_EQ(view_->progress_bar_for_testing()
+                ->GetViewAccessibility()
+                .GetViewAccessibilityDescription(),
             view_->GetSecondaryMessage());
 
   // InstallThenSuccess already checks that the secondary message changes
   // between states, so we just check that the new progress bar description
   // matches the new message.
   view_->StateChanged(bruschetta::BruschettaInstaller::State::kStartVm);
-  EXPECT_EQ(view_->progress_bar_for_testing()->GetAccessibleDescription(),
+  EXPECT_EQ(view_->progress_bar_for_testing()
+                ->GetViewAccessibility()
+                .GetViewAccessibilityDescription(),
             view_->GetSecondaryMessage());
 }
 
