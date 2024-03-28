@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenImagesElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
+import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenFeedbackElement, SeaPenImagesElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -563,6 +563,41 @@ suite('sea pen', () => {
     await window.personalizationTestApi.reset();
 
     clickWallpaperPreviewLink();
+  });
+
+  suite('feedback', async () => {
+    // At the end of this test, a feedback dialog is expected to be opened in an
+    // external window.
+    test(`open feedback dialog`, async () => {
+      const seaPenRouter = await getSeaPenRouter();
+      const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
+      // Creates images.
+      seaPenTemplateQuery.shadowRoot?.getElementById('searchButton')!.click();
+
+      // Presses thumbs up feedback button.
+      const seaPenImages = await waitUntil(
+          () => seaPenRouter.shadowRoot?.querySelector<SeaPenImagesElement>(
+              'sea-pen-images'),
+          'waiting for sea-pen-images');
+
+      const feedbacks = await waitUntil(
+          () => Array.from(
+              seaPenImages!.shadowRoot!.querySelectorAll<SeaPenFeedbackElement>(
+                  `sea-pen-feedback`)),
+          'waiting for thumbnails load');
+      assertTrue(!!feedbacks, 'feedbacks should exist');
+
+      const thumbsUpButton =
+          feedbacks[0]?.shadowRoot?.getElementById('thumbsUp');
+      assertTrue(!!thumbsUpButton, 'thumbsUpButton should exist');
+      assertEquals(
+          thumbsUpButton?.getAttribute('iron-icon'), 'cr:thumbs-up',
+          'thumbsUpButton should not be filled');
+      thumbsUpButton!.click();
+      assertEquals(
+          thumbsUpButton?.getAttribute('iron-icon'), 'cr:thumbs-up-filled',
+          'thumbsUpButton should be filled');
+    });
   });
 
   test('has selected wallpaper on root page', async () => {

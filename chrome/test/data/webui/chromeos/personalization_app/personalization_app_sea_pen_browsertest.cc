@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "components/manta/features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -101,6 +102,18 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, SeaPen) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
       "runMochaSuite('sea pen')");
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, Feedback) {
+  FeedbackDialog* feedback_dialog = FeedbackDialog::GetInstanceForTest();
+  // Test that no feedback dialog object has been created.
+  ASSERT_EQ(nullptr, feedback_dialog);
+  RunTestWithoutTestLoader(
+      "chromeos/personalization_app/personalization_app_test.js",
+      "runMochaSuite('sea pen feedback')");
+  feedback_dialog = FeedbackDialog::GetInstanceForTest();
+  // Test that a feedback dialog object has been created.
+  ASSERT_NE(nullptr, feedback_dialog);
 }
 
 }  // namespace ash::personalization_app
