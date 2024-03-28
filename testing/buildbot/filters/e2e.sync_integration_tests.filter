@@ -2,6 +2,3 @@
 
 # TODO(crbug.com/1068415): Disabled because it's flaky.
 -TwoClientDictionarySyncTest.Sanity_E2ETest
-
-# TODO(crbug.com/1205316): Flaky.
--TwoClientPasswordsSyncTest.SetPassphraseAndAddPassword_E2ETest
