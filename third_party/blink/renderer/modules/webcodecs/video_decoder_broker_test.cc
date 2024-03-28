@@ -62,11 +62,12 @@ class FakeGpuVideoDecoder : public media::FakeVideoDecoder {
 
   scoped_refptr<media::VideoFrame> MakeVideoFrame(
       const media::DecoderBuffer& buffer) override {
-    gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-    mailbox_holders[0].mailbox.name[0] = 1;
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_image[media::VideoFrame::kMaxPlanes] = {
+            gpu::ClientSharedImage::CreateForTesting()};
     scoped_refptr<media::VideoFrame> frame =
-        media::VideoFrame::WrapNativeTextures(
-            media::PIXEL_FORMAT_ARGB, mailbox_holders,
+        media::VideoFrame::WrapSharedImages(
+            media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
             media::VideoFrame::ReleaseMailboxCB(), current_config_.coded_size(),
             current_config_.visible_rect(), current_config_.natural_size(),
             buffer.timestamp());

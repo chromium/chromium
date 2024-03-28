@@ -321,11 +321,12 @@ class RTCVideoDecoderStreamAdapterTest
 
   void FinishDecodeOnMediaThread(uint32_t timestamp) {
     DCHECK(media_thread_task_runner_->RunsTasksInCurrentSequence());
-    gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-    mailbox_holders[0].mailbox = gpu::Mailbox::GenerateForSharedImage();
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_images[media::VideoFrame::kMaxPlanes];
+    shared_images[0] = gpu::ClientSharedImage::CreateForTesting();
     scoped_refptr<media::VideoFrame> frame =
-        media::VideoFrame::WrapNativeTextures(
-            media::PIXEL_FORMAT_ARGB, mailbox_holders,
+        media::VideoFrame::WrapSharedImages(
+            media::PIXEL_FORMAT_ARGB, shared_images, gpu::SyncToken(), 0,
             media::VideoFrame::ReleaseMailboxCB(), gfx::Size(640, 360),
             gfx::Rect(640, 360), gfx::Size(640, 360),
             base::Microseconds(timestamp));
