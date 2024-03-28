@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
@@ -57,7 +58,7 @@ using ::testing::Return;
 
 using Type = NewAcceptedDeviceType;
 
-constexpr base::StringPiece kUserAcceptedPrivateNetworkDeviceHistogramName =
+constexpr std::string_view kUserAcceptedPrivateNetworkDeviceHistogramName =
     "Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType";
 
 constexpr char kPrivateHost[] = "a.test";
