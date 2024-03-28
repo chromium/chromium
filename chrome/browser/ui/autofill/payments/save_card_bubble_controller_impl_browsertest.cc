@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -59,6 +60,9 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    // Ensure that the browser window is active.
+    CHECK(ui_test_utils::BringBrowserWindowToFront(browser()));
+
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 

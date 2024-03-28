@@ -132,8 +132,6 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowMandatoryReauthBubble(
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCardConfirmationBubble(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller) {
-  save_card_confirmation_bubble_shown_count_++;
-
   if (!save_card_confirmation_bubble_view_) {
     save_card_confirmation_bubble_view_ =
         std::make_unique<TestAutofillBubble>();

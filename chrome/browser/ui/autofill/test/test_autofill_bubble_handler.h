@@ -74,14 +74,9 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       MandatoryReauthBubbleController* controller,
       bool is_user_gesture,
       MandatoryReauthBubbleType bubble_type) override;
-
   AutofillBubbleBase* ShowSaveCardConfirmationBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller) override;
-
-  int SaveCardConfirmationBubbleShownCount() {
-    return save_card_confirmation_bubble_shown_count_;
-  }
 
  private:
   std::unique_ptr<TestAutofillBubble> local_card_migration_bubble_view_;
