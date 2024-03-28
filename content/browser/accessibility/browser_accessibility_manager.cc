@@ -230,6 +230,38 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
   if (!generated_event_callback_for_testing_.is_null()) {
     generated_event_callback_for_testing_.Run(this, event_type, node->id());
   }
+
+  // Currently, this method is only used to fire ARIA notification events.
+  if (event_type != ui::AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED) {
+    return;
+  }
+
+  auto* wrapper = GetFromAXNode(node);
+  DCHECK(wrapper);
+
+  const auto& node_data = wrapper->GetData();
+
+  const auto& announcements = node_data.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationAnnouncements);
+  const auto& notification_ids = node_data.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kAriaNotificationIds);
+
+  const auto& interrupt_properties = node_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties);
+  const auto& priority_properties = node_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties);
+
+  DCHECK_EQ(announcements.size(), notification_ids.size());
+  DCHECK_EQ(announcements.size(), interrupt_properties.size());
+  DCHECK_EQ(announcements.size(), priority_properties.size());
+
+  for (std::size_t i = 0; i < announcements.size(); ++i) {
+    FireAriaNotificationEvent(wrapper, announcements[i], notification_ids[i],
+                              static_cast<ax::mojom::AriaNotificationInterrupt>(
+                                  interrupt_properties[i]),
+                              static_cast<ax::mojom::AriaNotificationPriority>(
+                                  priority_properties[i]));
+  }
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetBrowserAccessibilityRoot()

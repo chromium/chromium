@@ -131,6 +131,15 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   static ui::AXTreeUpdate GetEmptyDocument();
 
+  // Fires the notification event for an ARIA notification posted to the given
+  // `node`. It should be overridden by each platform-specific implementation.
+  virtual void FireAriaNotificationEvent(
+      BrowserAccessibility* node,
+      const std::string& announcement,
+      const std::string& notification_id,
+      ax::mojom::AriaNotificationInterrupt interrupt_property,
+      ax::mojom::AriaNotificationPriority priority_property) {}
+
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
                               BrowserAccessibility* node,
                               int action_request_id) {}
