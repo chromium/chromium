@@ -110,6 +110,7 @@
 
 using base::Bucket;
 using testing::ElementsAre;
+using testing::WithParamInterface;
 
 namespace {
 const char kCreditCardAndAddressUploadForm[] =
@@ -1003,34 +1004,6 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
-// Tests the upload save bubble. Ensures that clicking the [Save] button
-// successfully causes the bubble to go away and sends an UploadCardRequest RPC
-// to Google Payments.
-// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_TransportMode_ClickingSaveClosesBubble \
-  DISABLED_Upload_TransportMode_ClickingSaveClosesBubble
-#else
-#define MAYBE_Upload_TransportMode_ClickingSaveClosesBubble \
-  Upload_TransportMode_ClickingSaveClosesBubble
-#endif
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       MAYBE_Upload_TransportMode_ClickingSaveClosesBubble) {
-  SetUpForSyncTransportModeTest();
-  FillForm();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-
-  // Clicking [Save] should accept and close it, then send an UploadCardRequest
-  // to Google Payments.
-  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
-  base::HistogramTester histogram_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  // UMA should have recorded bubble acceptance.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
-}
-
 // Tests the implicit sync state. Ensures that the (i) info icon appears for
 // upload save offers.
 // TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
@@ -1123,6 +1096,61 @@ IN_PROC_BROWSER_TEST_F(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
   EXPECT_EQ(cardholder_name_textfield->GetText(), u"John Smith");
 }
+
+class SaveCardBubbleViewsSyncTransportFullFormBrowserTestParameterized
+    : public SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
+      /*save_card_loading_and_confirmation*/ public WithParamInterface<bool> {
+ public:
+  SaveCardBubbleViewsSyncTransportFullFormBrowserTestParameterized() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnableSaveCardLoadingAndConfirmation, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests the upload save bubble. Ensures that clicking the "Save" button
+// successfully accepts the bubble and sends an UploadCardRequest RPC to
+// Google Payments.
+// TODO(crbug.com/330528954): Flaky test fails CHECK(save_card_bubble_views) in
+// FindViewInBubbleById().
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Upload_TransportMode_ClickingSaveAcceptsBubble \
+  DISABLED_Upload_TransportMode_ClickingSaveAcceptsBubble
+#else
+#define MAYBE_Upload_TransportMode_ClickingSaveAcceptsBubble \
+  Upload_TransportMode_ClickingSaveAcceptsBubble
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsSyncTransportFullFormBrowserTestParameterized,
+    MAYBE_Upload_TransportMode_ClickingSaveAcceptsBubble) {
+  SetUpForSyncTransportModeTest();
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  // Clicking "Save" should accept it and then send an UploadCardRequest to
+  // Google Payments.
+  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
+  base::HistogramTester histogram_tester;
+  if (GetParam()) {
+    // When loading and confirmation is enabled, dialog waits for confirmation
+    // after "Save" button is clicked. So no need to wait for the dialog to
+    // close.
+    ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  } else {
+    ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
+  }
+  // UMA should have recorded bubble acceptance.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
+    SaveCardBubbleViewsSyncTransportFullFormBrowserTestParameterized,
+    /*save_card_loading_and_confirmation=*/testing::Bool());
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1317,47 +1345,6 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
-// requested, filling it and clicking [Save] closes the dialog.
-// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_EnteringCardholderNameAndClickingSaveClosesBubbleIfCardholderNameRequested \
-  DISABLED_Upload_EnteringCardholderNameAndClickingSaveClosesBubbleIfCardholderNameRequested
-#else
-#define MAYBE_Upload_EnteringCardholderNameAndClickingSaveClosesBubbleIfCardholderNameRequested \
-  Upload_EnteringCardholderNameAndClickingSaveClosesBubbleIfCardholderNameRequested
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_EnteringCardholderNameAndClickingSaveClosesBubbleIfCardholderNameRequested) {
-  // Start sync.
-  ASSERT_TRUE(SetupSync());
-
-  // Submitting the form should still show the upload save bubble and legal
-  // footer, along with a textfield specifically requesting the cardholder name.
-  FillFormWithoutName();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-
-  // Entering a cardholder name and clicking [Save] should accept and close
-  // the bubble, then send an UploadCardRequest to Google Payments.
-  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
-  views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
-      FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  cardholder_name_textfield->InsertOrReplaceText(u"John Smith");
-  base::HistogramTester histogram_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  // UMA should have recorded bubble acceptance for both regular save UMA and
-  // the ".RequestingCardholderName" subhistogram.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow."
-      "RequestingCardholderName",
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
-}
-
-// Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested, it is prefilled with the name from the user's Google Account.
 // TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1429,77 +1416,6 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCardCardholderNamePrefilled", false, 1);
   EXPECT_FALSE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TOOLTIP));
-}
-
-// Tests the upload save bubble. Ensures that if cardholder name is explicitly
-// requested and the user accepts the dialog without changing it, the correct
-// metric is logged.
-// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric \
-  DISABLED_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric
-#else
-#define MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric \
-  Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric) {
-  // Start sync.
-  ASSERT_TRUE(SetupSync());
-  // Set the user's full name.
-  SetAccountFullName("John Smith");
-
-  // Submitting the form should still show the upload save bubble and legal
-  // footer, along with a textfield specifically requesting the cardholder name.
-  FillFormWithoutName();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-
-  // Clicking [Save] should accept and close the bubble, logging that the name
-  // was not edited.
-  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
-  base::HistogramTester histogram_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCardCardholderNameWasEdited", false, 1);
-}
-
-// Tests the upload save bubble. Ensures that if cardholder name is explicitly
-// requested and the user accepts the dialog after changing it, the correct
-// metric is logged.
-// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
-  DISABLED_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
-#else
-#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
-  Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
-  // Start sync.
-  ASSERT_TRUE(SetupSync());
-  // Set the user's full name.
-  SetAccountFullName("John Smith");
-
-  // Submitting the form should still show the upload save bubble and legal
-  // footer, along with a textfield specifically requesting the cardholder name.
-  FillFormWithoutName();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-
-  // Changing the name then clicking [Save] should accept and close the bubble,
-  // logging that the name was edited.
-  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
-  views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
-      FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  cardholder_name_textfield->InsertOrReplaceText(u"Jane Doe");
-  base::HistogramTester histogram_tester;
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCardCardholderNameWasEdited", true, 1);
 }
 
 // TODO(jsaul): Only *part* of the legal message StyledLabel is clickable, and
@@ -2348,6 +2264,159 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetSaveCardBubbleViews()->GetCardIdentifierString(),
             card.NetworkAndLastFourDigits());
 }
+
+class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized
+    : public SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+      /*save_card_loading_and_confirmation*/ public WithParamInterface<bool> {
+ public:
+  SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnableSaveCardLoadingAndConfirmation, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests the upload save bubble. Ensures that if cardholder name is explicitly
+// requested and the user accepts the dialog after changing it, the correct
+// metric is logged.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
+  DISABLED_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
+#else
+#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
+  Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
+    MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
+  // Start sync.
+  ASSERT_TRUE(SetupSync());
+  // Set the user's full name.
+  SetAccountFullName("John Smith");
+
+  // Submitting the form should still show the upload save bubble and legal
+  // footer, along with a textfield specifically requesting the cardholder name.
+  FillFormWithoutName();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
+
+  // Changing the name then clicking "Save" should accept the bubble and log
+  // that the name was edited.
+  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
+  views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
+      FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
+  cardholder_name_textfield->InsertOrReplaceText(u"Jane Doe");
+  base::HistogramTester histogram_tester;
+  if (GetParam()) {
+    // When loading and confirmation is enabled, dialog waits for confirmation
+    // after "Save" button is clicked. So no need to wait for the dialog to
+    // close.
+    ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  } else {
+    ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCardCardholderNameWasEdited", true, 1);
+}
+
+// Tests the upload save bubble. Ensures that if cardholder name is explicitly
+// requested and the user accepts the dialog without changing it, the correct
+// metric is logged.
+// TODO(crbug.com/330528954): Flaky test fails CHECK(save_card_bubble_views) in
+// FindViewInBubbleById().
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#define MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric \
+  DISABLED_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric
+#else
+#define MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric \
+  Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
+    MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric) {
+  // Start sync.
+  ASSERT_TRUE(SetupSync());
+  // Set the user's full name.
+  SetAccountFullName("John Smith");
+
+  // Submitting the form should still show the upload save bubble and legal
+  // footer, along with a textfield specifically requesting the cardholder name.
+  FillFormWithoutName();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
+
+  // Clicking "Save" should accept the bubble and log that the name was not
+  // edited.
+  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
+  base::HistogramTester histogram_tester;
+  if (GetParam()) {
+    // When loading and confirmation is enabled, dialog waits for confirmation
+    // after "Save" button is clicked. So no need to wait for the dialog to
+    // close.
+    ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  } else {
+    ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCardCardholderNameWasEdited", false, 1);
+}
+
+// Tests the upload save bubble. Ensures that if cardholder name is explicitly
+// requested, filling it and clicking "Save" logs dialog's acceptance.
+// TODO(crbug.com/330528954): Flaky test fails CHECK(save_card_bubble_views) in
+// FindViewInBubbleById().
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested \
+  DISABLED_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested
+#else
+#define MAYBE_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested \
+  Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
+    MAYBE_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested) {
+  // Start sync.
+  ASSERT_TRUE(SetupSync());
+
+  // Submitting the form should still show the upload save bubble and legal
+  // footer, along with a textfield specifically requesting the cardholder name.
+  FillFormWithoutName();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
+
+  // Entering a cardholder name and clicking "Save" should accept the bubble and
+  // then send an UploadCardRequest to Google Payments.
+  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
+  views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
+      FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
+  cardholder_name_textfield->InsertOrReplaceText(u"John Smith");
+  base::HistogramTester histogram_tester;
+  if (GetParam()) {
+    // When loading and confirmation is enabled, dialog waits for confirmation
+    // after "Save" button is clicked. So no need to wait for the dialog to
+    // close.
+    ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+  } else {
+    ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
+  }
+  // UMA should have recorded bubble acceptance for both regular save UMA and
+  // the ".RequestingCardholderName" subhistogram.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow."
+      "RequestingCardholderName",
+      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
+    /*save_card_loading_and_confirmation=*/testing::Bool());
 
 class SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation
     : public SaveCardBubbleViewsFullFormBrowserTest {
