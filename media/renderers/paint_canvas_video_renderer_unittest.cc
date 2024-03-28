@@ -912,11 +912,11 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
   cc::SkiaPaintCanvas canvas(AllocBitmap(kWidth, kHeight));
 
   gfx::Size size(kWidth, kHeight);
-  gpu::MailboxHolder holders[VideoFrame::kMaxPlanes] = {
-      gpu::MailboxHolder(gpu::Mailbox::GenerateForSharedImage(),
-                         gpu::SyncToken(), GL_TEXTURE_RECTANGLE_ARB)};
-  auto video_frame = VideoFrame::WrapNativeTextures(
-      PIXEL_FORMAT_NV12, holders, base::BindOnce(MailboxHoldersReleased), size,
+  scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes] =
+      {gpu::ClientSharedImage::CreateForTesting()};
+  auto video_frame = VideoFrame::WrapSharedImages(
+      PIXEL_FORMAT_NV12, shared_images, gpu::SyncToken(),
+      GL_TEXTURE_RECTANGLE_ARB, base::BindOnce(MailboxHoldersReleased), size,
       gfx::Rect(size), size, kNoTimestamp);
 
   cc::PaintFlags flags;

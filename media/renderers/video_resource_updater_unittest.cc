@@ -327,12 +327,11 @@ class VideoResourceUpdaterTest : public testing::Test {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
 
-    auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-
-    gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {
-        gpu::MailboxHolder(mailbox, kMailboxSyncToken, target)};
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapNativeTextures(
-        format, mailbox_holders,
+    scoped_refptr<gpu::ClientSharedImage>
+        shared_images[VideoFrame::kMaxPlanes] = {
+            gpu::ClientSharedImage::CreateForTesting()};
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImages(
+        format, shared_images, kMailboxSyncToken, target,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size
@@ -371,15 +370,12 @@ class VideoResourceUpdaterTest : public testing::Test {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
 
-    gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+    scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
     for (size_t i = 0; i < num_textures; ++i) {
-      gpu::Mailbox mailbox;
-      mailbox.name[0] = 50 + 1;
-      mailbox_holders[i] =
-          gpu::MailboxHolder(mailbox, kMailboxSyncToken, target);
+      shared_images[i] = gpu::ClientSharedImage::CreateForTesting();
     }
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapNativeTextures(
-        format, mailbox_holders,
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImages(
+        format, shared_images, kMailboxSyncToken, target,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size

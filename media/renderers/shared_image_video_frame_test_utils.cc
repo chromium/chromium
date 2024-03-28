@@ -56,18 +56,15 @@ scoped_refptr<VideoFrame> CreateSharedImageFrame(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     base::OnceClosure destroyed_callback) {
-  gpu::MailboxHolder mailboxes_for_frame[VideoFrame::kMaxPlanes] = {};
-  size_t i = 0;
-  for (const auto& shared_image : shared_images) {
-    mailboxes_for_frame[i++] =
-        gpu::MailboxHolder(shared_image->mailbox(), sync_token, texture_target);
-  }
+  scoped_refptr<gpu::ClientSharedImage>
+      shared_images_for_frame[VideoFrame::kMaxPlanes] = {};
+  base::ranges::copy(shared_images, shared_images_for_frame);
   auto callback =
       base::BindOnce(&DestroySharedImages, std::move(context_provider),
                      std::move(shared_images), std::move(destroyed_callback));
-  return VideoFrame::WrapNativeTextures(format, mailboxes_for_frame,
-                                        std::move(callback), coded_size,
-                                        visible_rect, natural_size, timestamp);
+  return VideoFrame::WrapSharedImages(
+      format, shared_images_for_frame, sync_token, texture_target,
+      std::move(callback), coded_size, visible_rect, natural_size, timestamp);
 }
 
 scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
