@@ -66,17 +66,29 @@ class LegacyOutputAdapter:
         r'@@@STEP_LINK@shard (#\d+) test results@(https://[^@]+)@@@')
 
     self._current_proccess_fn = self._StepNameProcessLine
-    # The first match is used. By default _StepNameProcessLine will be used
-    # which prints the step name and it's stdout
+    # The first match is used. This allows us to filter parent steps while still
+    # printing child steps by adding the child step name first. By default
+    # _StepNameProcessLine will be used which prints the step name and it's
+    # stdout
     self._step_to_processors = {
         'compile': self._ProcessCompileLine,
         'reclient compile': self._ProcessCompileLine,
         'test_pre_run.[trigger] ': self._ProcessTriggerLine,
         'collect tasks.wait for tasks': self._ProcessCollectLine,
     }
-    # The first match is used. By default INFO will be used which prints in
-    # non-verbose mode (i.e. no -v flag)
+    # The first match is used. This allows us to filter parent steps while still
+    # printing child steps by adding the child step name first. By default INFO
+    # will be used which prints in non-verbose mode (i.e. no -v flag)
     self._step_to_log_level = {
+        'lookup_builder_gn_args': logging.DEBUG,
+        'git rev-parse': logging.DEBUG,
+        'git diff to instrument': logging.DEBUG,
+        'save paths of affected files': logging.DEBUG,
+        'preprocess for reclient.start reproxy via bootstrap': logging.INFO,
+        'preprocess for reclient': logging.DEBUG,
+        'process clang crashes': logging.DEBUG,
+        'compile confirm no-op': logging.DEBUG,
+        'postprocess for reclient': logging.DEBUG,
         'setup_build': logging.DEBUG,
         'get compile targets for scripts': logging.DEBUG,
         'lookup GN args': logging.DEBUG,
@@ -195,6 +207,10 @@ class LegacyOutputAdapter:
       self._test_results_link = link
     self._current_proccess_fn(line)
     self._last_line = line
+    if line.startswith(self.STEP_CLOSED_TEXT):
+      # Text outside of steps will use the last processor otherwise
+      self._current_log_level = logging.DEBUG
+      _current_proccess_fn = self._StepNameProcessLine
 
   def _get_processor(self, step_name):
     if step_name in self._step_to_processors:
