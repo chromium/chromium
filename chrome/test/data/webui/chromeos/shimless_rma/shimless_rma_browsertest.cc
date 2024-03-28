@@ -40,6 +40,10 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, HardwareErrorPage) {
   RunTest("chromeos/shimless_rma/hardware_error_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, CriticalErrorPage) {
+  RunTest("chromeos/shimless_rma/critical_error_page_test.js", "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
