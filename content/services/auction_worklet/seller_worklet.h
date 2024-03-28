@@ -338,6 +338,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const std::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_score_ad_task,
+        base::TimeTicks task_enqueued_time,
         ScoreAdCallbackInternal callback);
 
     void ReportResult(

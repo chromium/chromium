@@ -31320,6 +31320,12 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Finished"/>
 </enum>
 
+<enum name="ScoreAdInput">
+  <int value="0" label="Trusted signals"/>
+  <int value="1" label="Direct from seller signals"/>
+  <int value="2" label="Scoring script"/>
+</enum>
+
 <enum name="ScrollAndClickStatus">
   <int value="0" label="NO_SCROLL_NO_CLICK"/>
   <int value="1" label="NO_SCROLL_CLICKED"/>

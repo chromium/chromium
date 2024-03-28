@@ -65,6 +65,16 @@ namespace auction_worklet {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ScoreAdInput {
+  kTrustedSignals = 0,
+  kDirectFromSellerSignals = 1,
+  kScoringScript = 2,
+
+  kMaxValue = kScoringScript
+};
+
 // Checks both types of DirectFromSellerSignals results (subresource bundle
 // based and header based) -- at most one of these should be non-null.
 //
@@ -719,8 +729,11 @@ void SellerWorklet::V8State::ScoreAd(
     const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     base::ScopedClosureRunner cleanup_score_ad_task,
+    base::TimeTicks task_enqueued_time,
     ScoreAdCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdQueueTime",
+                          base::TimeTicks::Now() - task_enqueued_time);
   base::ElapsedTimer elapsed_timer;
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
@@ -1717,6 +1730,22 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
                    task->wait_direct_from_seller_signals.InMillisecondsF());
         }
       });
+
+  ScoreAdInput slowest_input = ScoreAdInput::kScoringScript;
+  base::TimeDelta slowest_input_time = task->wait_code;
+  if (task->wait_trusted_signals > task->wait_code) {
+    slowest_input = ScoreAdInput::kTrustedSignals;
+    slowest_input_time = task->wait_trusted_signals;
+  }
+  if (task->wait_direct_from_seller_signals > task->wait_trusted_signals) {
+    slowest_input = ScoreAdInput::kDirectFromSellerSignals;
+    slowest_input_time = task->wait_direct_from_seller_signals;
+  }
+  base::UmaHistogramEnumeration("Ads.InterestGroup.Auction.ScoreAdSlowestInput",
+                                slowest_input);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdInputWaitTime",
+                          slowest_input_time);
+
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
   // Normally the PostTask below will eventually get `task` cleaned up once it
@@ -1748,6 +1777,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           task->browser_signal_for_debugging_only_in_cooldown_or_lockout,
           std::move(task->seller_timeout), task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
+          /*task_enqueued_time*/ base::TimeTicks::Now(),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
