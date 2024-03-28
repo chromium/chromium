@@ -34,6 +34,11 @@ BASE_FEATURE(kSqlWALModeOnDipsDatabase,
              "SqlWALModeOnDipsDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// NOTE: This is flag is intended for local testing and debugging only.
+BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
+             "DisableExclusiveLockingOnDipsDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr char kPrepopulatedKey[] = "prepopulated";
 
 std::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
@@ -101,12 +106,18 @@ const base::TimeDelta DIPSDatabase::kMetricsInterval = base::Hours(24);
 const base::TimeDelta DIPSDatabase::kPopupTtl = base::Days(60);
 
 DIPSDatabase::DIPSDatabase(const std::optional<base::FilePath>& db_path)
-    : db_path_(db_path.value_or(base::FilePath())),
-      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          .wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnDipsDatabase),
-          .page_size = 4096,
-          .cache_size = 32})) {
+    : db_path_(db_path.value_or(base::FilePath())) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
+
+  sql::DatabaseOptions db_options{
+      .wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnDipsDatabase),
+      .page_size = 4096,
+      .cache_size = 32};
+  if (base::FeatureList::IsEnabled(kDisableExclusiveLockingOnDipsDatabase)) {
+    db_options.exclusive_locking = false;
+  }
+  db_ = (std::make_unique<sql::Database>(db_options));
+
   base::AssertLongCPUWorkAllowed();
   if (db_path.has_value()) {
     DCHECK(!db_path->empty())
