@@ -29,6 +29,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -235,6 +236,8 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
     preview_container_view_->SetInsideBorderInsets(
         gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
   }
+
+  views::InstallCircleHighlightPathGenerator(settings_button_);
 
   // Add a highlight border to match the Quick Settings menu, i.e.,
   // `TrayBubbleView`.
