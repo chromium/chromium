@@ -730,6 +730,7 @@ void ResolveInvalidConfigurations() {
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
     WebRuntimeFeatures::EnableFledgeMultiBid(false);
+    WebRuntimeFeatures::EnableFledgeDeprecatedRenderURLReplacements(false);
   }
 }
 

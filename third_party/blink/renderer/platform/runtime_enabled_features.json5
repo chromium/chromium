@@ -1782,7 +1782,8 @@
     {
       // Enables using a 'deprecatedRenderURLReplacements' field within the
       // Protected Audience ad auction config.
-      name: "FledgeDeprecatedRenderURLReplacements"
+      name: "FledgeDeprecatedRenderURLReplacements",
+      public: true,
     },
     {
       name: "FledgeDirectFromSellerSignalsHeaderAdSlot",
