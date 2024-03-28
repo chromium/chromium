@@ -1574,6 +1574,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4030545038933060179">Pan fydd ymlaen, bydd rhestr o'ch pynciau yn ymddangos yma yn seiliedig ar eich hanes pori</translation>
 <translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4036753017940930924">Lotiau a Thir</translation>
+<translation id="4039506337798853114">I ddangos eich cyrchwr, pwyswch |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 modfedd</translation>
 <translation id="404831776305217138">Diweddaru URL ar gyfer estyniad gyda ID '<ph name="EXTENSION_ID" />' yn annilys neu'n defnyddio cynllun heb ei gefnogi. Y cynlluniau a gefnogir yw: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> a <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Byddwch yn gallu ei ddefnyddio ar draws cynhyrchion Google</translation>
@@ -1586,6 +1587,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="406358100705415968">Gêr Diogelu Diogelwch Gwaith</translation>
 <translation id="4063924980214801036">Defnyddio'r datgloi dyfais i gadarnhau cardiau yn gyflymach</translation>
 <translation id="4065659219963895623">Bwytai</translation>
+<translation id="4067774859633143413">I adael y sgrîn lawn a gweld y lawrlwythiad, pwyswch a daliwch |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Ychwanegu Cyfeiriad Dilys</translation>
 <translation id="4072486802667267160">Bu gwall wrth brosesu eich archeb. Rhowch gynnig arall arni.</translation>
 <translation id="4073376909608563327">Methu â defnyddio datgloi dyfais</translation>
@@ -1808,6 +1810,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4456937135469235202">Teithio Antur</translation>
 <translation id="4464826014807964867">Gwefannau gyda gwybodaeth o'ch sefydliad</translation>
 <translation id="4466576951214254884">Benthyciadau Myfyrwyr a Chyllid Coleg</translation>
+<translation id="4467821340016922962">I adael y sgrîn lawn a gweld y lawrlwythiad, pwyswch |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Troi gwell amddiffyniad ymlaen<ph name="END_ENHANCED_PROTECTION_LINK" /> i gael y lefel uchaf o ddiogelwch Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Nid yw'r ffurflen hon yn ddiogel. Mae awtolenwi wedi'i ddiffodd.</translation>
@@ -2678,6 +2681,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6218305986815100395">Methu â throi'r cerdyn rhithwir ymlaen</translation>
 <translation id="6218753634732582820">Tynnu'r cyfeiriad o Chromium?</translation>
 <translation id="622039917539443112">Plyg cyfochrog</translation>
+<translation id="6221286101741304627">I adael y sgrîn lawn, pwyswch |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Ydych chi am gadw'r cerdyn hwn yn eich Cyfrif Google?</translation>
 <translation id="6221345481584921695">Yn ddiweddar, gwnaeth Pori'n Ddiogel gyda Google <ph name="BEGIN_LINK" />ganfod drwgwedd<ph name="END_LINK" /> ar <ph name="SITE" />. Weithiau mae gwefannau sydd fel arfer yn ddiogel yn cael eu heintio â drwgwedd. Daw'r ddrwgwedd o <ph name="SUBRESOURCE_HOST" />, sy'n hysbys am ddosbarthu drwgwedd.</translation>
 <translation id="6221892641068781024">Gwedd Syml</translation>
@@ -3956,7 +3960,6 @@ Manylion ychwanegol:
 <translation id="8612919051706159390">Cymunedau Ar-lein</translation>
 <translation id="8617269623452051934">eich defnydd dyfais</translation>
 <translation id="861775596732816396">Maint 4</translation>
-<translation id="8618975513789458065">Mae pynciau hysbysebion yn un o lawer o bethau y gall gwefan eu defnyddio i bersonoleiddio hysbysebion. Hyd yn oed heb bynciau hysbyseb, gall gwefannau ddangos hysbysebion i chi o hyd ond gallant fod yn llai diddorol.</translation>
 <translation id="8620276786115098679">Amlen Kaku 7</translation>
 <translation id="8623885649813806493">Nid oes unrhyw gyfrineiriau sy'n cyfateb. Dangos yr holl gyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="8624354461147303341">Cael gostyngiadau</translation>
@@ -4147,6 +4150,7 @@ Manylion ychwanegol:
 <translation id="9023536760430404133">Olwynion Cerbyd a Theiars</translation>
 <translation id="9025348182339809926">(Annilys)</translation>
 <translation id="902590795160480390">Wrthi'n llwytho PDF</translation>
+<translation id="9027531288681624875">I adael y sgrîn lawn, pwyswch a daliwch |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Gwall diogelwch</translation>
 <translation id="9035824888276246493">Cadw codau diogelwch</translation>
 <translation id="9036306139374661733">Caniatáu'r meicroffon?</translation>

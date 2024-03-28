@@ -1569,6 +1569,7 @@
 <translation id="4030545038933060179">ఈ సెట్టింగ్ ఆన్‌లో ఉన్నప్పుడు, మీ తాజా బ్రౌజింగ్ హిస్టరీ ఆధారంగా టాపిక్‌ల లిస్ట్ ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4036753017940930924">స్థలాలు &amp; భూములు</translation>
+<translation id="4039506337798853114">మీ కర్సర్‌ను చూపడానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="4047351652147966654">18 x 24 అంగుళాలు</translation>
 <translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ఉన్న ఎక్స్‌టెన్షన్ కోసం అప్‌డేట్ URL చెల్లదు, లేదా సపోర్ట్ చేయని స్కీమ్‌ను ఉపయోగిస్తోంది. సపోర్ట్ ఉన్న స్కీమ్‌లు: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ఇంకా <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">మీరు దానిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించగలరు</translation>
@@ -1581,6 +1582,7 @@
 <translation id="406358100705415968">పని చేసేటప్పుడు రక్షణ కల్పించే దుస్తులు లేదా వస్తువులు</translation>
 <translation id="4063924980214801036">కార్డ్‌లను వేగంగా నిర్ధారించడానికి పరికర అన్‌లాక్‌ను ఉపయోగించండి</translation>
 <translation id="4065659219963895623">రెస్టారెంట్‌లు</translation>
+<translation id="4067774859633143413">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అయ్యి, డౌన్‌లోడ్‌ను చూడటానికి, |<ph name="ACCELERATOR" />|ను నొక్కి, పట్టుకోండి</translation>
 <translation id="4067947977115446013">చెల్లుబాటు అయ్యే అడ్రస్‌ను జోడించండి</translation>
 <translation id="4072486802667267160">మీ ఆర్డర్‌ను ప్రాసెస్ చేస్తున్నప్పుడు ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4073376909608563327">పరికర లాక్‌ను ఉపయోగించడం సాధ్యపడలేదు</translation>
@@ -1803,6 +1805,7 @@
 <translation id="4456937135469235202">సాహసోపేత ప్రయాణం</translation>
 <translation id="4464826014807964867">మీ సంస్థకు సంబంధించిన సమాచారం ఉన్న వెబ్‌సైట్‌లు</translation>
 <translation id="4466576951214254884">విద్యార్థి లోన్‌లు &amp; కాలేజ్ ఫైనాన్సింగ్</translation>
+<translation id="4467821340016922962">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ అయ్యి, డౌన్‌లోడ్‌ను చూడటానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="4473643328224505070">Chrome అత్యధిక స్థాయి సెక్యూరిటీని పొందడానికి,<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />మెరుగైన రక్షణను ఆన్ చేయండి<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ఈ ఫారమ్ సురక్షితమైనది కాదు. ఆటోఫిల్ ఆఫ్ చేయబడింది.</translation>
@@ -2673,6 +2676,7 @@
 <translation id="6218305986815100395">వర్చువల్ కార్డ్‌ను ఆన్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="6218753634732582820">Chromium నుండి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="622039917539443112">పారలల్ ఫోల్డ్</translation>
+<translation id="6221286101741304627">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ కావడానికి, |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="6221311046884916259">మీరు ఈ కార్డ్‌ను మీ Google ఖాతాకు సేవ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="6221345481584921695">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />మాల్వేర్‌ను గుర్తించింది<ph name="END_LINK" />. సాధారణంగా సురక్షితమైన వెబ్‌సైట్‌‌లకు కూడా కొన్నిసార్లు మాల్వేర్ సోకుతుంది. ఈ హానికరమైన కంటెంట్, మాల్వేర్ పంపిణీదారుగా ప్రసిద్ధిగాంచిన <ph name="SUBRESOURCE_HOST" /> నుండి సంక్రమిస్తుంది.</translation>
 <translation id="6221892641068781024">సరళీకృత వీక్షణ</translation>
@@ -3951,7 +3955,6 @@
 <translation id="8612919051706159390">ఆన్‌లైన్ కమ్యూనిటీలు</translation>
 <translation id="8617269623452051934">మీ పరికర వినియోగం</translation>
 <translation id="861775596732816396">సైజ్‌ 4</translation>
-<translation id="8618975513789458065">యాడ్‌లను వ్యక్తిగతీకరించడానికి సైట్ ఉపయోగించే అనేక విషయాలలో యాడ్ టాపిక్‌లు ఒకటి. యాడ్ టాపిక్‌లు లేకున్నా, సైట్‌లు ఇప్పటికీ మీకు యాడ్‌లను చూపగలవు కానీ అవి తక్కువ ఆసక్తికరంగా ఉండవచ్చు.</translation>
 <translation id="8620276786115098679">ఎన్వలప్ కాకు 7</translation>
 <translation id="8623885649813806493">పాస్‌వర్డ్‌లు ఏవీ మ్యాచ్ అవ్వలేదు. సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపు.</translation>
 <translation id="8624354461147303341">డిస్కౌంట్‌లను పొందండి</translation>
@@ -4142,6 +4145,7 @@
 <translation id="9023536760430404133">వాహన చక్రాలు &amp; టైర్‌లు</translation>
 <translation id="9025348182339809926">(చెల్లదు)</translation>
 <translation id="902590795160480390">PDFను లోడ్ చేస్తోంది</translation>
+<translation id="9027531288681624875">ఫుల్ స్క్రీన్ నుండి ఎగ్జిట్ కావడానికి, |<ph name="ACCELERATOR" />|ను నొక్కి, పట్టుకోండి</translation>
 <translation id="9035022520814077154">భద్రతా ఎర్రర్</translation>
 <translation id="9035824888276246493">సెక్యూరిటీ కోడ్‌లను సేవ్ చేయండి</translation>
 <translation id="9036306139374661733">మైక్రోఫోన్‌ను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>

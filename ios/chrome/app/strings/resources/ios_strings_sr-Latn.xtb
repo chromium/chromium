@@ -268,7 +268,6 @@
 
 Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa.</translation>
 <translation id="2381405137052800939">Osnove</translation>
-<translation id="23824747102827308">Pratite vesti, sport i druge teme na osnovu interesovanja</translation>
 <translation id="2386793615875593361">Izabrana je 1 slika</translation>
 <translation id="2390457533592708044">Sakrij „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Nije moguće isporučiti paket</translation>
@@ -727,6 +726,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="47677902929517676">Da biste sačuvali lozinke na nalogu, morate prvo da podesite šifru na uređaju.</translation>
 <translation id="4775879719735953715">Podrazumevani pregledač</translation>
 <translation id="4779732376610430319">Idi u Podešavanja…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Želite da otvorite u režimu bez arhiviranja?</translation>
 <translation id="4803185665210547709">Ovim upravlja organizacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5283494734135414249">Dodirnite prečicu koja se prikazuje ispod trake za adresu.</translation>
 <translation id="5295239312320826323">Želite da uklonite nalog <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Prikaži</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318298563956633672">Već pratite ovaj proizvod.</translation>
 <translation id="5327753393331509826">Dobijajte obaveštenja o sadržaju</translation>

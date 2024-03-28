@@ -268,7 +268,6 @@
 
 Також сайти не можуть використовувати ці файли для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу.</translation>
 <translation id="2381405137052800939">Основні</translation>
-<translation id="23824747102827308">Стежте за новинами, спортивними подіями тощо на основі ваших інтересів</translation>
 <translation id="2386793615875593361">Вибрано 1</translation>
 <translation id="2390457533592708044">Приховати модуль "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Не вдалося доставити посилку</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">У вас немає проблем із безпекою.</translation>
 <translation id="4286718549648564014">Адресу перенесено в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Що нового</translation>
+<translation id="429074084062258019">{count,plural, =1{Додати вкладку в групу}one{Додати вкладки в групу}few{Додати вкладки в групу}many{Додати вкладки в групу}other{Додати вкладки в групу}}</translation>
 <translation id="4293080268407233932">Пошук</translation>
 <translation id="4302248187517737842">Немає імені користувача ••••••••</translation>
 <translation id="4302415908542657649">Надсилання пароля</translation>
@@ -1268,6 +1268,7 @@
 <translation id="7524055474074101597">Отримуйте доступ до паролів тощо в додатках.</translation>
 <translation id="7527917367892640435">Відправлення вже відстежується</translation>
 <translation id="7531345132340165516">Поточний сайт</translation>
+<translation id="75362970626182391">Нова група вкладок</translation>
 <translation id="7537586195939242955">Не вдалося внести дані в Passbook.</translation>
 <translation id="754655535278952384">Перевірено <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Остання відкрита вкладка на пристрої <ph name="SOURCE_DEVICE" /></translation>

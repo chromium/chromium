@@ -1570,6 +1570,7 @@
 <translation id="4030545038933060179">开启此设置后，这里会列出系统根据您近期的浏览记录而推测的主题</translation>
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4036753017940930924">地块与土地</translation>
+<translation id="4039506337798853114">若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 英寸</translation>
 <translation id="404831776305217138">ID 为“<ph name="EXTENSION_ID" />”的扩展程序的更新网址无效或使用的架构不受支持。受支持的架构包括：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">您将能在各种 Google 产品中使用它</translation>
@@ -1582,6 +1583,7 @@
 <translation id="406358100705415968">工作安全防护装备</translation>
 <translation id="4063924980214801036">使用设备解锁功能可更快确认银行卡信息</translation>
 <translation id="4065659219963895623">餐馆</translation>
+<translation id="4067774859633143413">若要退出全屏模式并查看下载内容，请按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">添加有效地址</translation>
 <translation id="4072486802667267160">处理您的订单时出错。请重试。</translation>
 <translation id="4073376909608563327">无法使用设备解锁</translation>
@@ -1804,6 +1806,7 @@
 <translation id="4456937135469235202">探险旅行</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
 <translation id="4466576951214254884">学生贷款与大学助学金</translation>
+<translation id="4467821340016922962">若要退出全屏模式并查看下载内容，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />开启增强型保护<ph name="END_ENHANCED_PROTECTION_LINK" />，获享 Chrome 的最高级别安全防护</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">此表单不安全。因此，系统已关闭自动填充功能。</translation>
@@ -2673,6 +2676,7 @@
 <translation id="6218305986815100395">无法启用虚拟卡</translation>
 <translation id="6218753634732582820">要从 Chromium 中移除地址吗？</translation>
 <translation id="622039917539443112">平行折</translation>
+<translation id="6221286101741304627">若要退出全屏模式，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">要将这张卡的信息保存到您的 Google 账号中吗？</translation>
 <translation id="6221345481584921695">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />检测到了恶意软件<ph name="END_LINK" />。平常非常安全的网站有时也会感染恶意软件。检测到的恶意内容来自于<ph name="SUBRESOURCE_HOST" />，这是个已知的恶意软件散布方。</translation>
 <translation id="6221892641068781024">简化版视图</translation>
@@ -3952,7 +3956,6 @@
 <translation id="8612919051706159390">在线社区</translation>
 <translation id="8617269623452051934">您的设备使用情况</translation>
 <translation id="861775596732816396">大小：4</translation>
-<translation id="8618975513789458065">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能没那么符合您的兴趣。</translation>
 <translation id="8620276786115098679">Kaku 7 信封</translation>
 <translation id="8623885649813806493">没有匹配的密码。显示所有已保存的密码。</translation>
 <translation id="8624354461147303341">获取折扣信息</translation>
@@ -4143,6 +4146,7 @@
 <translation id="9023536760430404133">汽车轮毂与轮胎</translation>
 <translation id="9025348182339809926">（无效）</translation>
 <translation id="902590795160480390">正在加载 PDF</translation>
+<translation id="9027531288681624875">若要退出全屏模式，请按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">安全错误</translation>
 <translation id="9035824888276246493">保存安全码</translation>
 <translation id="9036306139374661733">允许使用麦克风？</translation>

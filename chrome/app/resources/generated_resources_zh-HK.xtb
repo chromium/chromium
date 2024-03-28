@@ -2509,6 +2509,7 @@
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
 <translation id="2845751331501453107">瀏覽時是否看到個人化廣告，取決於此設定、<ph name="BEGIN_LINK1" />網站建議的廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />、網站是否顯示個人化廣告</translation>
 <translation id="284581348330507117">設定獨特的密碼</translation>
+<translation id="284884486564166077">使用智慧鏡頭搜尋所有圖片</translation>
 <translation id="2849035674501872372">查詢</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">已新增您的 PIN</translation>
@@ -3413,6 +3414,7 @@
 <translation id="3577487026101678864">開啟檔案同步功能</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件資料收集聲明</translation>
 <translation id="3581605050355435601">自動設定 IP 位址</translation>
+<translation id="3581861561942370740">搜尋下載記錄</translation>
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
@@ -5326,6 +5328,7 @@
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
 <translation id="5057127674016624293">掃瞄所需時間比預期長</translation>
+<translation id="5057480703570202545">下載記錄</translation>
 <translation id="5059241099014281248">限制登入</translation>
 <translation id="5059429103770496207">顯示樣式</translation>
 <translation id="5059526285558225588">選擇分享內容</translation>
@@ -5735,6 +5738,7 @@
 <translation id="5390677308841849479">深紅色和橙色</translation>
 <translation id="5392192690789334093">已允許傳送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">預設字型</translation>
 <translation id="5397378439569041789">註冊 Kiosk 或標牌裝置</translation>
 <translation id="5397794290049113714">您</translation>

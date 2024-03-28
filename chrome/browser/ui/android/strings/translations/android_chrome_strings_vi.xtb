@@ -637,6 +637,7 @@
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="4425173294238317796">Trang xác nhận khoá truy cập</translation>
 <translation id="442518031075347249">Bạn sẽ không thể sử dụng thẻ ảo qua Google Pay được nữa. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Một số nhật ký duyệt web của bạn có thể không xuất hiện ở đây. Nếu cần, hãy nhấn vào Mở toàn bộ nhật ký duyệt web trên Chrome. Tài khoản Google của bạn cũng có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951">Bạn hiện đang chọn <ph name="EMAIL" />. Chọn một tài khoản.</translation>
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6719634564325948108">Kết nối bằng mã QR?</translation>
 <translation id="6723740634201835758">Trong Tài khoản Google của bạn</translation>
 <translation id="6738867403308150051">Đang tải xuống...</translation>
+<translation id="67404633032079629">Một số nhật ký duyệt web của bạn có thể không xuất hiện ở đây. Để xem toàn bộ nhật ký duyệt web, hãy nhấn vào Mở toàn bộ nhật ký duyệt web trên Chrome.</translation>
 <translation id="674388916582496364">Các trang web bạn truy cập thường ghi nhớ mối quan tâm của bạn để mang lại trải nghiệm phù hợp với cá nhân bạn. Các trang web cũng có thể lưu trữ thông tin trên Chrome về mối quan tâm của bạn.</translation>
 <translation id="6751521182688001123">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="6756507620369789050">Chia sẻ ý kiến phản hồi</translation>
@@ -1626,7 +1628,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="939598580284253335">Nhập cụm mật khẩu</translation>
 <translation id="952301137339791907">Đã mở bảng thông tin chi tiết về trang ở dưới cùng</translation>
 <translation id="95817756606698420">Chrome có thể sử dụng <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> để tìm kiếm tại Trung Quốc. Bạn có thể thay đổi điều này trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
-<translation id="962979164594783469">Cài đặt ứng dụng này</translation>
 <translation id="96681097142096641">Xem trang ở chế độ đơn giản?</translation>
 <translation id="970715775301869095">Còn <ph name="MINUTES" /> phút</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>

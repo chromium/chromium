@@ -1573,6 +1573,7 @@
 <translation id="4030545038933060179">सुरू असताना, तुमच्या अलीकडील ब्राउझिंग इतिहासावर आधारित विषयांची सूची येथे दिसते</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4036753017940930924">प्लॉट आणि जमीन</translation>
+<translation id="4039506337798853114">तुमचा कर्सर दाखवण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" आयडी असलेल्या एक्स्टेंशनसाठी अपडेट URL चुकीची आहे किंवा सपोर्ट नसलेली स्‍कीम वापरत आहे. सपोर्ट असलेल्या स्कीम: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> आणि <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">तुम्हाला तो सर्व Google उत्पादनांवर वापरता येईल</translation>
@@ -1585,6 +1586,7 @@
 <translation id="406358100705415968">कामाच्या ठिकाणी सुरक्षिततेसाठी संरक्षणात्मक गिअर</translation>
 <translation id="4063924980214801036">कार्डची झटपट खात्री करण्यासाठी डिव्हाइस अनलॉक वापरा</translation>
 <translation id="4065659219963895623">रेस्टॉरंट</translation>
+<translation id="4067774859633143413">फुल स्क्रीनमधून बाहेर पडून डाउनलोड पाहण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा</translation>
 <translation id="4067947977115446013">वैध पत्ता जोडा</translation>
 <translation id="4072486802667267160">तुमच्या मागणीवर प्रक्रिया करताना एरर आली, कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="4073376909608563327">डिव्हाइस अनलॉक वापरता आले नाही</translation>
@@ -1807,6 +1809,7 @@
 <translation id="4456937135469235202">साहसी प्रवास</translation>
 <translation id="4464826014807964867">तुमच्या संस्थेची माहिती असलेल्या वेबसाइट</translation>
 <translation id="4466576951214254884">शैक्षणिक कर्ज आणि शैक्षणिक अर्थसाहाय्य</translation>
+<translation id="4467821340016922962">फुल स्क्रीनमधून बाहेर पडून डाउनलोड पाहण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="4473643328224505070">Chrome ची सर्वोच्च सुरक्षा पातळी मिळवण्यासाठी<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />वर्धित संरक्षण सुरू करा<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">हा फॉर्म सुरक्षित नाही. ऑटोफिल बंद केले आहे.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">व्हर्च्युअल कार्ड सुरू करू शकत नाही</translation>
 <translation id="6218753634732582820">Chromium वरून पत्ता काढून टाकायचा?</translation>
 <translation id="622039917539443112">समांतर फोल्ड</translation>
+<translation id="6221286101741304627">फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="6221311046884916259">तुम्हाला तुमच्या Google खाते मध्ये हे कार्ड सेव्ह करायचे आहे का?</translation>
 <translation id="6221345481584921695">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" /> वर <ph name="BEGIN_LINK" />मालवेअर आढळले आहे<ph name="END_LINK" />. सामान्यतः सुरक्षित असलेल्या वेबसाइट काहीवेळा मालवेअरमुळे संक्रमित झालेल्या असतात. एक ज्ञात मालवेअर वितरक असलेल्या, <ph name="SUBRESOURCE_HOST" /> कडून दुर्भावनापूर्ण आशय येते.</translation>
 <translation id="6221892641068781024">सिंप्लिफाइड व्ह्यू</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">ऑनलाइन समुदाय</translation>
 <translation id="8617269623452051934">तुमच्या डिव्हाइसचा वापर</translation>
 <translation id="861775596732816396">आकार ४</translation>
-<translation id="8618975513789458065">जाहिरातीचे विषय ही जाहिराती पर्सनलाइझ करण्यासाठी साइट वापरत असलेल्या अनेक गोष्टींपैकी फक्त एक गोष्ट आहे. साइट तुम्हाला जाहिरातीच्या विषयांशिवायदेखील जाहिराती दाखवू शकतात, पण त्या फारशा मनोरंजक नसतील.</translation>
 <translation id="8620276786115098679">एन्व्हलप काकू ७</translation>
 <translation id="8623885649813806493">जुळणारे कोणतेही पासवर्ड नाहीत. सेव्ह केलेले सर्व पासवर्ड दाखवा.</translation>
 <translation id="8624354461147303341">सवलती मिळवा</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">वाहनाची चाक आणि टायर</translation>
 <translation id="9025348182339809926">(चुकीचे)</translation>
 <translation id="902590795160480390">PDF लोड करत आहे</translation>
+<translation id="9027531288681624875">फुल स्क्रीनमधून बाहेर पडण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करून धरून ठेवा</translation>
 <translation id="9035022520814077154">सुरक्षितता एरर</translation>
 <translation id="9035824888276246493">सुरक्षा कोड सेव्ह करा</translation>
 <translation id="9036306139374661733">मायक्रोफोनची अनुमती द्यायची का?</translation>

@@ -270,7 +270,6 @@
 
 لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
-<translation id="23824747102827308">يمكنك متابعة الأخبار والرياضة وغير ذلك استنادًا إلى اهتماماتك.</translation>
 <translation id="2386793615875593361">تم اختيار عنصر واحد</translation>
 <translation id="2390457533592708044">إخفاء "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">يتعذَّر تسليم الطرد.</translation>
@@ -633,6 +632,7 @@
 <translation id="4282944936010261425">ليست هناك أي مشاكل تتعلق بالأمان مطلوب منك حلّها.</translation>
 <translation id="4286718549648564014">تم نقل العنوان إلى حسابك <ph name="USER_EMAIL" />.</translation>
 <translation id="428768789042547925">الميزات الجديدة</translation>
+<translation id="429074084062258019">{count,plural, =1{إضافة علامة التبويب إلى المجموعة}zero{إضافة علامات التبويب إلى المجموعة}two{إضافة علامتَي التبويب إلى المجموعة}few{إضافة علامات التبويب إلى المجموعة}many{إضافة علامات التبويب إلى المجموعة}other{إضافة علامات التبويب إلى المجموعة}}</translation>
 <translation id="4293080268407233932">بحث</translation>
 <translation id="4302248187517737842">بلا اسم مستخدم ••••••••</translation>
 <translation id="4302415908542657649">مشاركة كلمة المرور</translation>
@@ -728,6 +728,7 @@
 <translation id="47677902929517676">لحفظ كلمات المرور في حسابك، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="4775879719735953715">المتصفح التلقائي</translation>
 <translation id="4779732376610430319">جارٍ الانتقال إلى الإعدادات...</translation>
+<translation id="4787847736989526091">‫<ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">هل تريد فتح الرابط في وضع "التصفُّح المتخفي"؟</translation>
 <translation id="4803185665210547709">تتم إدارة المتصفِّح من خلال مؤسستك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -836,6 +837,7 @@
 <translation id="5283494734135414249">انقر على الاختصار الذي يظهر أسفل شريط العناوين.</translation>
 <translation id="5295239312320826323">هل تريد إزالة الحساب <ph name="USER_EMAIL" />؟</translation>
 <translation id="5300589172476337783">عرض</translation>
+<translation id="5316356981864168850">‫<ph name="INDEX" /> من إجمالي <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318298563956633672">يتم تتبُّع هذا المنتج حاليًا.</translation>
 <translation id="5327753393331509826">الحصول على إشعارات المحتوى</translation>
@@ -1270,6 +1272,7 @@
 <translation id="7524055474074101597">يمكنك الوصول إلى كلمات المرور وغيرها على مختلف التطبيقات.</translation>
 <translation id="7527917367892640435">يتم حاليًا تتبّع الطرد</translation>
 <translation id="7531345132340165516">الموقع الإلكتروني الحالي</translation>
+<translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
 <translation id="7552154146060018538">آخر علامة تبويب تم استخدامها في "<ph name="SOURCE_DEVICE" />"</translation>

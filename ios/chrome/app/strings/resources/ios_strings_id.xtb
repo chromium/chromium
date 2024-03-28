@@ -268,7 +268,6 @@
 
 Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan.</translation>
 <translation id="2381405137052800939">Dasar</translation>
-<translation id="23824747102827308">Ikuti terus berita, olahraga, dan lainnya berdasarkan minat Anda</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
 <translation id="2390457533592708044">Sembunyikan "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Paket Anda tidak dapat dikirim</translation>
@@ -726,6 +725,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="47677902929517676">Untuk menyimpan sandi di akun, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="4775879719735953715">Browser Default</translation>
 <translation id="4779732376610430319">Buka Setelan...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buka di Samaran?</translation>
 <translation id="4803185665210547709">Dikelola oleh organisasi Anda.
 <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -834,6 +834,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5283494734135414249">Ketuk pintasan yang muncul di bawah kolom URL.</translation>
 <translation id="5295239312320826323">Hapus akun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> dari <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda sudah memantau produk ini.</translation>
 <translation id="5327753393331509826">Dapatkan Notifikasi Konten</translation>

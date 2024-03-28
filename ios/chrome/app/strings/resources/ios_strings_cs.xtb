@@ -268,7 +268,6 @@
 
 Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi různými weby, například kvůli personalizaci reklam.</translation>
 <translation id="2381405137052800939">Základní nastavení</translation>
-<translation id="23824747102827308">Dostávejte oznámení ohledně zpráv, sportu a dalších věcí podle vašich zájmů</translation>
 <translation id="2386793615875593361">Vybrána 1 fotka</translation>
 <translation id="2390457533592708044">Skrýt modul <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Zásilku nelze doručit</translation>
@@ -631,6 +630,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4282944936010261425">Nebyly zjištěny žádné bezpečnostní problémy.</translation>
 <translation id="4286718549648564014">Adresa byla přesunuta do vašeho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novinky</translation>
+<translation id="429074084062258019">{count,plural, =1{Přidat kartu do skupiny}few{Přidat karty do skupiny}many{Přidat karty do skupiny}other{Přidat karty do skupiny}}</translation>
 <translation id="4293080268407233932">Hledat</translation>
 <translation id="4302248187517737842">Žádné uživatelské jméno ••••••••</translation>
 <translation id="4302415908542657649">Sdílení hesla</translation>
@@ -1268,6 +1268,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7524055474074101597">Získejte přístup ke svým heslům a dalším funkcím napříč aplikacemi.</translation>
 <translation id="7527917367892640435">Zásilku již sledujete</translation>
 <translation id="7531345132340165516">Aktuální web</translation>
+<translation id="75362970626182391">Nová skupina karet</translation>
 <translation id="7537586195939242955">Pass v této chvíli do aplikace Passbook nelze nainstalovat.</translation>
 <translation id="754655535278952384">Zkontrolováno: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Poslední karta použitá na zařízení <ph name="SOURCE_DEVICE" /></translation>

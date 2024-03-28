@@ -1365,7 +1365,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3620239073311576716">Uniforms en werkdrag</translation>
 <translation id="36224234498066874">Vee blaaierdata uit …</translation>
 <translation id="362276910939193118">Wys hele geskiedenis</translation>
-<translation id="3623041590998910684">Gee vir Chrome toegang in <ph name="LINK" /> om jou kamera te gebruik.</translation>
+<translation id="3623041590998910684">Gee in <ph name="LINK" /> vir Chrome toegang om jou kamera te gebruik.</translation>
 <translation id="3623398832322170566">Romanseflieks</translation>
 <translation id="3624292976554877583">Etikette (mat)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Administrateursbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe oordra nie}other{Administrateursbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe oordra nie}}</translation>
@@ -1574,6 +1574,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4030545038933060179">Indien dit aan is, verskyn ’n lys onderwerpe gegrond op jou onlangse blaaigeskiedenis hier</translation>
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4036753017940930924">Erwe en grondbesit</translation>
+<translation id="4039506337798853114">Druk |<ph name="ACCELERATOR" />| om jou skermpyltjie te wys</translation>
 <translation id="4047351652147966654">18x24 dm.</translation>
 <translation id="404831776305217138">Opdatering-URL vir uitbreiding met ID “<ph name="EXTENSION_ID" />” is ongeldig of gebruik ’n ongesteunde skema. Gesteunde skemas is: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> en <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Jy sal dit in alle Google-produkte kan gebruik</translation>
@@ -1586,6 +1587,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="406358100705415968">Beskermende klere vir werkveiligheid</translation>
 <translation id="4063924980214801036">Gebruik toestelontsluiting om kaarte vinniger te bevestig</translation>
 <translation id="4065659219963895623">Restaurante</translation>
+<translation id="4067774859633143413">Druk en hou |<ph name="ACCELERATOR" />| om uit volskerm te gaan en aflaai te sien</translation>
 <translation id="4067947977115446013">Voeg geldige adres by</translation>
 <translation id="4072486802667267160">Kon nie jou betaling verwerk nie. Probeer weer.</translation>
 <translation id="4073376909608563327">Kon nie toestelontsluiting gebruik nie</translation>
@@ -1808,6 +1810,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4456937135469235202">Avontuurreise</translation>
 <translation id="4464826014807964867">Webwerwe met inligting van jou organisasie</translation>
 <translation id="4466576951214254884">Studentelenings en universiteitsfinansiering</translation>
+<translation id="4467821340016922962">Druk |<ph name="ACCELERATOR" />| om uit volskerm te gaan en aflaai te sien</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Skakel verbeterde beskerming aan<ph name="END_ENHANCED_PROTECTION_LINK" /> om Chrome se hoogste sekuriteitvlak te kry</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Hierdie vorm is nie veilig nie. Outovul is afgeskakel.</translation>
@@ -2051,7 +2054,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4958444002117714549">Vou lys uit</translation>
 <translation id="4960068118612257147">Jy kan veranderinge aan Chrome se advertensieprivaatheidinstellings maak</translation>
 <translation id="4960203958361543136">Kies jou soekenjin</translation>
-<translation id="4961708452830821006">Gee vir Chrome toegang in <ph name="LINK" /> om jou mikrofoon te gebruik.</translation>
+<translation id="4961708452830821006">Gee in <ph name="LINK" /> vir Chrome toegang om jou mikrofoon te gebruik.</translation>
 <translation id="4963413887558778009">Landskapontwerp</translation>
 <translation id="4967366744630699583">Wysig adres</translation>
 <translation id="4968522289500246572">Hierdie program is vir mobiele toestelle ontwerp en sy grootte is dalk nie maklik om te verander nie. Die program sal dalk kwessies ervaar of herbegin.</translation>
@@ -2678,6 +2681,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6218305986815100395">Kan nie virtuele kaart aanskakel nie</translation>
 <translation id="6218753634732582820">Verwyder adres uit Chromium?</translation>
 <translation id="622039917539443112">Parallelvou</translation>
+<translation id="6221286101741304627">Druk |<ph name="ACCELERATOR" />| om uit volskerm te gaan</translation>
 <translation id="6221311046884916259">Wil jy hierdie kaart in jou Google-rekening stoor?</translation>
 <translation id="6221345481584921695">Google Veiligblaai het onlangs <ph name="BEGIN_LINK" />wanware bespeur<ph name="END_LINK" /> op <ph name="SITE" />. Webwerwe wat gewoonlik veilig is, word soms met wanware besmet. Die kwaadwillige inhoud kom van <ph name="SUBRESOURCE_HOST" />, 'n bekende verspreider van wanware, af.</translation>
 <translation id="6221892641068781024">Vereenvoudigde aansig</translation>
@@ -3956,7 +3960,6 @@ Bykomende besonderhede:
 <translation id="8612919051706159390">Aanlyn gemeenskappe</translation>
 <translation id="8617269623452051934">jou toestelgebruik</translation>
 <translation id="861775596732816396">Grootte 4</translation>
-<translation id="8618975513789458065">Advertensie-onderwerpe is net een van baie dinge wat ’n werf kan gebruik om advertensies te personaliseer. Werwe kan selfs sonder advertensie-onderwerpe steeds vir jou advertensies wys, maar dit kan minder interessant wees.</translation>
 <translation id="8620276786115098679">Koevert Kaku 7</translation>
 <translation id="8623885649813806493">Geen passende wagwoorde nie. Wys alle gestoorde wagwoorde.</translation>
 <translation id="8624354461147303341">Kry afslag</translation>
@@ -4147,6 +4150,7 @@ Bykomende besonderhede:
 <translation id="9023536760430404133">Voertuigwiele en -bande</translation>
 <translation id="9025348182339809926">(Ongeldig)</translation>
 <translation id="902590795160480390">Laai tans PDF</translation>
+<translation id="9027531288681624875">Druk en hou |<ph name="ACCELERATOR" />| om uit volskerm te gaan</translation>
 <translation id="9035022520814077154">Sekuriteitsfout</translation>
 <translation id="9035824888276246493">Stoor sekuriteitskodes</translation>
 <translation id="9036306139374661733">Laat mikrofoon toe?</translation>

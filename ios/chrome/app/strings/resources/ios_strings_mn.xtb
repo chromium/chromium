@@ -268,7 +268,6 @@
 
 Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд таны хөтчийн өөр сайт дээрх үйл ажиллагааг харах зорилгоор күүки ашиглах боломжгүй.</translation>
 <translation id="2381405137052800939">Үндэс</translation>
-<translation id="23824747102827308">Та сонирхолдоо тулгуурласан мэдээ, спорт болон бусад зүйлийн мэдээлэлтэй байгаарай</translation>
 <translation id="2386793615875593361">1 сонгогдсон</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />"-г нуух</translation>
 <translation id="2403129868389095715">Таны илгээмжийг хүргэх боломжгүй</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">Танд засах ямар ч аюулгүй байдлын асуудал байхгүй.</translation>
 <translation id="4286718549648564014">Хаягийг таны <ph name="USER_EMAIL" /> бүртгэл рүү зөөсөн</translation>
 <translation id="428768789042547925">Шинэ юм юу байна</translation>
+<translation id="429074084062258019">{count,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
 <translation id="4293080268407233932">Хайх</translation>
 <translation id="4302248187517737842">Ямар ч хэрэглэгчийн нэр байхгүй ••••••••</translation>
 <translation id="4302415908542657649">Нууц үг хуваалцаж байна</translation>
@@ -726,6 +726,7 @@
 <translation id="47677902929517676">Бүртгэлдээ нууц үгнүүд хадгалахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах ёстой.</translation>
 <translation id="4775879719735953715">Өгөгдмөл хөтөч</translation>
 <translation id="4779732376610430319">Тохиргоо руу очих...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Нууцлалтай горимд нээх үү?</translation>
 <translation id="4803185665210547709">Танай байгууллагаас удирддаг.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">Хаяг оруулах хэсгийн доор гарч ирэх товчлолыг товшино уу.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> бүртгэлийг хасах уу?</translation>
 <translation id="5300589172476337783">Харуулах</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-н <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318298563956633672">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна.</translation>
 <translation id="5327753393331509826">Контентын мэдэгдлүүдийг авах</translation>
@@ -1268,6 +1270,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7524055474074101597">Аппууд дээр нууц үгнүүд болон бусад зүйлдээ хандаарай.</translation>
 <translation id="7527917367892640435">Илгээмжийг аль хэдийн хянасан</translation>
 <translation id="7531345132340165516">Одоогийн сайт</translation>
+<translation id="75362970626182391">Шинэ табын бүлэг</translation>
 <translation id="7537586195939242955">Уучлаарай, таны Pass-ыг одоогоор Passbook руу суулгаж болохгүй байна.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> шалгасан</translation>
 <translation id="7552154146060018538">Хамгийн сүүлд табыг <ph name="SOURCE_DEVICE" />-д ашигласан</translation>

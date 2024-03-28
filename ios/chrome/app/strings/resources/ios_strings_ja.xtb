@@ -268,7 +268,6 @@
 
 サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
 <translation id="2381405137052800939">基本設定</translation>
-<translation id="23824747102827308">興味や関心に基づいてニュースやスポーツなどの最新情報をお届けします</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
 <translation id="2390457533592708044">「<ph name="MODULE_NAME" />」を非表示にします</translation>
 <translation id="2403129868389095715">配達不能</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">解決が必要なセキュリティの問題はありません。</translation>
 <translation id="4286718549648564014">住所をアカウント <ph name="USER_EMAIL" /> に移動しました</translation>
 <translation id="428768789042547925">最新情報</translation>
+<translation id="429074084062258019">{count,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
 <translation id="4293080268407233932">検索</translation>
 <translation id="4302248187517737842">ユーザー名が指定されていません ••••••••</translation>
 <translation id="4302415908542657649">パスワードの共有中</translation>
@@ -726,6 +726,7 @@
 <translation id="47677902929517676">パスワードをアカウントに保存するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="4775879719735953715">既定のブラウザ</translation>
 <translation id="4779732376610430319">設定に移動…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />、<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">シークレット モードで開きますか？</translation>
 <translation id="4803185665210547709">組織によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">アドレスバーの下に表示されるショートカットをタップします。</translation>
 <translation id="5295239312320826323">アカウント（<ph name="USER_EMAIL" />）を削除しますか？</translation>
 <translation id="5300589172476337783">表示</translation>
+<translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
 <translation id="5327753393331509826">コンテンツの通知を受け取る</translation>
@@ -1268,6 +1270,7 @@
 <translation id="7524055474074101597">アプリからパスワードなどにアクセスできます。</translation>
 <translation id="7527917367892640435">荷物はすでに追跡されています</translation>
 <translation id="7531345132340165516">現在のサイト</translation>
+<translation id="75362970626182391">新しいタブグループ</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="754655535278952384">前回の確認: <ph name="TIME" /></translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> で最後に使用したタブ</translation>

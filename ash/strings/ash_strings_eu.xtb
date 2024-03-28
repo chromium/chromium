@@ -229,7 +229,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> pantailan islatzen</translation>
 <translation id="1885785240814121742">Desblokeatu hatz-marka bidez</translation>
 <translation id="1904997243703671177">Bluetootha desaktibatzen duzunean, kanpoko <ph name="DEVICE_COUNT" /> gailu deskonektatuko dira <ph name="DEVICE_TYPE" /> gailutik, hauek barne:</translation>
-<translation id="1908992311423394684">Berriki instalatu da</translation>
+<translation id="1908992311423394684">Duela gutxi instalatu da</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
@@ -677,6 +677,7 @@ Konektatu gailua korrontera.</translation>
 <translation id="3702809606464356667">Une honetako lan-eremuko leihoak daude ikusgai. Lan-eremu guztietako leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="3702846122927433391">Zenbat biztanle ditu Nigeriak</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">Aisia</translation>
 <translation id="3708186454126126312">Aurretik konektatutakoak</translation>
 <translation id="3712143870407382523">Aukeratu alde honetarako leiho bat</translation>
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
@@ -1529,6 +1530,7 @@ Berriki instalatu da</translation>
 <translation id="7014684956566476813">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera</translation>
 <translation id="7015766095477679451">Itzuli ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. lan-eremua</translation>
+<translation id="702252130983202758">Zure aplikazioak</translation>
 <translation id="7025533177575372252">Konektatu <ph name="DEVICE_NAME" /> telefonoarekin</translation>
 <translation id="7026338066939101231">Gutxitzea</translation>
 <translation id="7029814467594812963">Irten saiotik</translation>
@@ -2048,6 +2050,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9129245940793250979">Atzeko botoia</translation>
 <translation id="9133335900048457298">Ezin da kapturatu eduki babestua</translation>
 <translation id="9139720510312328767">Ezabatu hurrengo hizkia</translation>
+<translation id="9148058034647219655">Irten</translation>
 <translation id="9151906066336345901">amaiera tekla</translation>
 <translation id="9161053988251441839">IRADOKITAKO APLIKAZIOAK</translation>
 <translation id="9168436347345867845">Geroago</translation>

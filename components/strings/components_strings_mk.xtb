@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">Кога е вклучено, список со теми се појавува овде според вашата неодамнешна историја на прелистувањето</translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4036753017940930924">Плацеви и земјиште</translation>
+<translation id="4039506337798853114">За да се прикаже курсорот, притиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 инчи</translation>
 <translation id="404831776305217138">URL-адресата за ажурирање екстензија со ID „<ph name="EXTENSION_ID" />“ е неважечка или користи неподдржана шема. Поддржани се следниве шеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ќе може да ја користите на производите на Google</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">Заштитна опрема за безбедност на работа</translation>
 <translation id="4063924980214801036">Користете отклучување уред за побрзо потврдување на картичките</translation>
 <translation id="4065659219963895623">Ресторани</translation>
+<translation id="4067774859633143413">За да излезете од цел екран и да го видите преземањето, притиснете и задржете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важечка адреса</translation>
 <translation id="4072486802667267160">Настана грешка при обработката на вашата нарачка. Обидете се повторно.</translation>
 <translation id="4073376909608563327">Не можеше да се користи отклучување уред</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">Авантуристички патувања</translation>
 <translation id="4464826014807964867">Веб-сајтови со информации од вашата организација</translation>
 <translation id="4466576951214254884">Студентски заеми и финансирање за колеџ</translation>
+<translation id="4467821340016922962">За да излезете од цел екран и да го видите преземањето, притиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Вклучете „Подобрена заштита“<ph name="END_ENHANCED_PROTECTION_LINK" /> за да го добиете највисокото ниво на заштита на Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Формуларов не е безбеден. Автоматското пополнување е исклучено.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">Не може да се вклучи виртуелната картичка</translation>
 <translation id="6218753634732582820">Да се отстрани адресата од Chromium?</translation>
 <translation id="622039917539443112">Паралелно превиткување</translation>
+<translation id="6221286101741304627">За да излезете од цел екран, притиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Дали сакате да ја зачувате картичкава во вашата сметка на Google?</translation>
 <translation id="6221345481584921695">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />откри злонамерен софтвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-локациите што обично се безбедни понекогаш се инфицираат со злонамерен софтвер. Злонамерната содржина доаѓа од <ph name="SUBRESOURCE_HOST" />, познат дистрибутер на злонамерен софтвер.</translation>
 <translation id="6221892641068781024">Поедноставен приказ</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">Онлајн заедници</translation>
 <translation id="8617269623452051934">користење на уредот</translation>
 <translation id="861775596732816396">Големина 4</translation>
-<translation id="8618975513789458065">Темите на реклами се само една од многуте работи што може да ги користи конкретен сајт за да персонализира реклами. Дури и без теми на реклами, сајтовите сѐ уште може да ви прикажуваат реклами, но рекламите може да не бидат толку интересни.</translation>
 <translation id="8620276786115098679">Плик Kaku 7</translation>
 <translation id="8623885649813806493">Нема лозинки што се совпаѓаат. Прикажи ги сите зачувани лозинки.</translation>
 <translation id="8624354461147303341">Сакам попусти</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">Тркала и гуми за возила</translation>
 <translation id="9025348182339809926">(Неважечки)</translation>
 <translation id="902590795160480390">Се вчитува PDF</translation>
+<translation id="9027531288681624875">За да излезете од цел екран, притиснете и задржете |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Безбедносна грешка</translation>
 <translation id="9035824888276246493">Зачувај ги безбедносните кодови</translation>
 <translation id="9036306139374661733">Да се дозволи микрофонот?</translation>

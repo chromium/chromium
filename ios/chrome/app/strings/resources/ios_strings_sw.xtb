@@ -268,7 +268,6 @@
 
 Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="2381405137052800939">Mambo ya Msingi</translation>
-<translation id="23824747102827308">Endelea kupata taarifa za habari, michezo na zaidi kulingana na mapendeleo yako</translation>
 <translation id="2386793615875593361">1 iliyochaguliwa</translation>
 <translation id="2390457533592708044">Ficha "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Kifurushi chako hakiwezi kuwasilishwa</translation>
@@ -631,6 +630,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4282944936010261425">Hakuna matatizo yoyote ya usalama unayopaswa kurekebisha.</translation>
 <translation id="4286718549648564014">Anwani imehamishiwa kwenye akaunti yako ya <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Mambo mapya</translation>
+<translation id="429074084062258019">{count,plural, =1{Weka Kichupo kwenye Kikundi}other{Weka Vichupo kwenye Kikundi}}</translation>
 <translation id="4293080268407233932">Tafuta</translation>
 <translation id="4302248187517737842">Hakuna jina la Mtumiaji ••••••••</translation>
 <translation id="4302415908542657649">Unashiriki Nenosiri</translation>
@@ -1268,6 +1268,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7524055474074101597">Fikia manenosiri yako na zaidi kwenye programu.</translation>
 <translation id="7527917367892640435">Kifurushi Tayari Kinafuatiliwa</translation>
 <translation id="7531345132340165516">Tovuti Uliopo kwa Sasa</translation>
+<translation id="75362970626182391">Kikundi Kipya cha Vichupo</translation>
 <translation id="7537586195939242955">Samahani, Indhini yako haiwezi kuhifadhiwa kwenye Kitabu cha idhini kwa wakati huu.</translation>
 <translation id="754655535278952384">Yalikaguliwa <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Kichupo cha Mwisho Kutumika kwenye <ph name="SOURCE_DEVICE" /></translation>

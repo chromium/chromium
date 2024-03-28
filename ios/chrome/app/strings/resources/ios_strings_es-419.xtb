@@ -268,7 +268,6 @@
 
 Tampoco pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
-<translation id="23824747102827308">Mantente al tanto de las noticias, los deportes y mucho más en función de tus intereses</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
 <translation id="2390457533592708044">Ocultar "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">No se puede entregar el paquete</translation>
@@ -631,6 +630,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4282944936010261425">No hay problemas de seguridad que debas corregir.</translation>
 <translation id="4286718549648564014">La dirección se transfirió a tu cuenta <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novedades</translation>
+<translation id="429074084062258019">{count,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="4293080268407233932">Buscar</translation>
 <translation id="4302248187517737842">Sin nombre de usuario ••••••••</translation>
 <translation id="4302415908542657649">Compartiendo contraseña</translation>
@@ -726,6 +726,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="47677902929517676">Para guardar contraseñas en tu cuenta, primero debes configurar una contraseña en tu dispositivo.</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4779732376610430319">Ir a Configuración…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">¿Quieres abrirlo en Incógnito?</translation>
 <translation id="4803185665210547709">Administrado por tu organización.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5283494734135414249">Presiona el acceso directo que aparece debajo de la barra de direcciones.</translation>
 <translation id="5295239312320826323">¿Quieres quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Ya estás realizando un seguimiento de este producto.</translation>
 <translation id="5327753393331509826">Recibe notificaciones de contenido</translation>
@@ -1268,6 +1270,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7524055474074101597">Accede a tus contraseñas y más en diferentes apps.</translation>
 <translation id="7527917367892640435">Ya se hizo un seguimiento del paquete</translation>
 <translation id="7531345132340165516">Sitio actual</translation>
+<translation id="75362970626182391">Nuevo grupo de pestañas</translation>
 <translation id="7537586195939242955">Tu pase no se puede instalar en Passbook en este momento.</translation>
 <translation id="754655535278952384">Se revisó <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Última pestaña utilizada en tu <ph name="SOURCE_DEVICE" /></translation>

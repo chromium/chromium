@@ -637,6 +637,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="4425140285732600465">Jälgite hinda. Teile saadetakse märguanne, kui hind mõnel saidil langeb.</translation>
 <translation id="4425173294238317796">Pääsuvõtme kinnitusleht</translation>
 <translation id="442518031075347249">Te ei saa enam Google Payga virtuaalkaarti kasutada. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Osa teie veebiajaloost ei pruugita siin kuvada. Vajaduse korral puudutage valikut Ava Chrome'i täielik ajalugu. Samuti võib teie Google'i kontol olla aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> muus vormis sirvimisajalugu.</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> on praegu valitud. Valige konto.</translation>
 <translation id="4452411734226507615">Vahelehe <ph name="TAB_TITLE" /> sulgemine</translation>
 <translation id="4452548195519783679">Lisatud järjehoidjana kausta <ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6719634564325948108">Kas ühendada QR-koodi kaudu?</translation>
 <translation id="6723740634201835758">Teie Google’i kontol</translation>
 <translation id="6738867403308150051">Allalaadimine ...</translation>
+<translation id="67404633032079629">Osa teie veebiajaloost ei pruugita siin kuvada. Täieliku veebiajaloo nägemiseks puudutage valikut Ava Chrome'i täielik ajalugu.</translation>
 <translation id="674388916582496364">On tavapärane, et teie külastatavad saidid jätavad meelde asju, mis teile huvi pakuvad, et teie kasutuskogemust isikupärastada. Saidid võivad ka talletada Chrome'i teavet teie huvide kohta.</translation>
 <translation id="6751521182688001123">Uue vahelehe kiire avamine. Selle otsetee muutmiseks puudutage pikalt.</translation>
 <translation id="6756507620369789050">Tagasiside jagamine</translation>
@@ -1626,7 +1628,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="939598580284253335">Sisesta parool</translation>
 <translation id="952301137339791907">Lehe statistika alumine leht on avatud</translation>
 <translation id="95817756606698420">Chrome saab Hiinas otsimiseks kasutada teenust <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Seda saate muuta menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
-<translation id="962979164594783469">Installige see rakendus</translation>
 <translation id="96681097142096641">Kas kuvada lihtsustatud leht?</translation>
 <translation id="970715775301869095">Jäänud on <ph name="MINUTES" /> minutit</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>

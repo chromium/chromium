@@ -3397,6 +3397,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3577487026101678864">Sincronización de ficheiros activada</translation>
 <translation id="3577745545227000795">Recompilación de datos de hardware por parte de <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Configurar enderezo IP de forma automática</translation>
+<translation id="3581861561942370740">Fai buscas no historial de descargas</translation>
 <translation id="3582057310199111521">Escribiuse nun sitio enganoso e viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="3582299299336701326">Escurece as pantallas claras e aclarea as escuras. Para activar e desactivar a inversión da cor, preme Buscar + Control + H.</translation>
 <translation id="3584169441612580296">Ler e modificar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
@@ -5316,6 +5317,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5056950756634735043">Conectando co contedor</translation>
 <translation id="5057110919553308744">Cando fagas clic na extensión</translation>
 <translation id="5057127674016624293">A exploración está levando máis tempo do normal</translation>
+<translation id="5057480703570202545">Historial de descargas</translation>
 <translation id="5059241099014281248">Restrinxir inicio de sesión</translation>
 <translation id="5059429103770496207">Estilo de visualización</translation>
 <translation id="5059526285558225588">Escoller o que se compartirá</translation>
@@ -5725,6 +5727,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5390677308841849479">Vermello escuro e laranxa</translation>
 <translation id="5392192690789334093">Con permiso para enviar notificacións</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Ligazón}other{# ligazóns}}</translation>
+<translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395498824851198390">Tipo de letra predeterminado</translation>
 <translation id="5397378439569041789">Inscribir dispositivo co modo de quiosco ou de sinalización</translation>
 <translation id="5397794290049113714">Ti</translation>

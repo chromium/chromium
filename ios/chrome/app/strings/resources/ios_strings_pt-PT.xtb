@@ -268,7 +268,6 @@
 
 Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="2381405137052800939">Noções básicas</translation>
-<translation id="23824747102827308">Mantenha-se a par de notícias, desporto e muito mais com base nos seus interesses</translation>
 <translation id="2386793615875593361">1 selecionada</translation>
 <translation id="2390457533592708044">Oculte "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Não é possível entregar o seu pacote</translation>
@@ -727,6 +726,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="47677902929517676">Para guardar palavras-passe na sua conta, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="4775879719735953715">Navegador predefinido</translation>
 <translation id="4779732376610430319">Aceder às definições…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Abrir na Navegação anónima?</translation>
 <translation id="4803185665210547709">Gerido pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5283494734135414249">Toque no atalho apresentado abaixo da barra de endereço.</translation>
 <translation id="5295239312320826323">Quer remover a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Já está a acompanhar este produto.</translation>
 <translation id="5327753393331509826">Receba notificações de conteúdo</translation>

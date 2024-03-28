@@ -637,6 +637,7 @@
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
 <translation id="4425173294238317796">גיליון האישור של מפתח הגישה</translation>
 <translation id="442518031075347249">‏לא תהיה לך יותר אפשרות להשתמש בכרטיס הווירטואלי באמצעות Google Pay. <ph name="BEGIN_LINK1" />כאן יש מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">‏יכול להיות שחלק מהיסטוריית האתרים שלך לא תוצג כאן. אם צריך, אפשר להקיש על 'פתיחת ההיסטוריה המלאה ב-Chrome'. כמו כן, ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@
 <translation id="6719634564325948108">‏לקשר באמצעות קוד QR?</translation>
 <translation id="6723740634201835758">‏בחשבון Google שלך</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
+<translation id="67404633032079629">‏יכול להיות שחלק מהיסטוריית האתרים שלך לא תוצג כאן. כדי לראות את היסטוריית האתרים המלאה, אפשר להקיש על 'פתיחת ההיסטוריה המלאה ב-Chrome'.</translation>
 <translation id="674388916582496364">‏בהרבה אתרים נהוג לשמור את תחומי העניין של המבקרים כדי להתאים אישית את חוויית הגלישה. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין האלה.</translation>
 <translation id="6751521182688001123">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
 <translation id="6756507620369789050">שיתוף משוב</translation>
@@ -1626,7 +1628,6 @@
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="952301137339791907">הגיליון התחתון של התובנות לגבי הדף פתוח</translation>
 <translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
-<translation id="962979164594783469">התקנת האפליקציה</translation>
 <translation id="96681097142096641">להציג דף פשוט?</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
 <translation id="981121421437150478">לא מקוון</translation>

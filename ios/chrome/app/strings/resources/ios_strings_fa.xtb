@@ -268,7 +268,6 @@
 
 سایت‌ها نمی‌توانند از کوکی‌ها برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند.</translation>
 <translation id="2381405137052800939">ساده</translation>
-<translation id="23824747102827308">از اخبار، رویدادهای ورزشی، و دیگر اطلاعات مبتنی بر علایقتان مطلع بمانید</translation>
 <translation id="2386793615875593361">۱ مورد انتخاب شد</translation>
 <translation id="2390457533592708044">پنهان کردن «<ph name="MODULE_NAME" />»</translation>
 <translation id="2403129868389095715">بسته شما را نمی‌توان تحویل داد</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">هیچ‌گونه مشکل امنیتی برای برطرف کردن وجود ندارد.</translation>
 <translation id="4286718549648564014">نشانی به حساب <ph name="USER_EMAIL" /> شما منتقل شد</translation>
 <translation id="428768789042547925">ویژگی‌های جدید</translation>
+<translation id="429074084062258019">{count,plural, =1{افزودن برگه به گروه}one{افزودن برگه به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="4293080268407233932">جستجو</translation>
 <translation id="4302248187517737842">بدون نام کاربری ••••••••</translation>
 <translation id="4302415908542657649">درحال هم‌رسانی گذرواژه</translation>
@@ -1268,6 +1268,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7524055474074101597">به گذرواژه‌ها و موارد دیگر در برنامه‌ها دسترسی داشته باشید.</translation>
 <translation id="7527917367892640435">بسته درحال‌حاضر پیگیری می‌شود</translation>
 <translation id="7531345132340165516">سایت فعلی</translation>
+<translation id="75362970626182391">گروه برگه جدید</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
 <translation id="754655535278952384">آخرین بررسی: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">آخرین برگه استفاده‌شده در <ph name="SOURCE_DEVICE" /></translation>

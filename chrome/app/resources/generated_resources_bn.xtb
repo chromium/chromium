@@ -1558,7 +1558,7 @@
 <translation id="2147151613919729065">গেস্ট মোডের ইতিহাস মুছে ফেলতে, সব গেস্ট উইন্ডো বন্ধ করুন।</translation>
 <translation id="2147218225094845757">সাইড প্যানেল লুকান</translation>
 <translation id="2147282432401652483">Command</translation>
-<translation id="2147402320887035428">এই ফাইল ম্যালওয়্যার হতে পারে।<ph name="LINE_BREAK" />এই ফাইলটি নিরপাদ কিনা Google Safe Browsing তা চেক করছে — স্ক্যান করতে সাধারণত কয়েক সেকেন্ড সময় লাগে।</translation>
+<translation id="2147402320887035428">এই ফাইল ম্যালওয়্যার হতে পারে।<ph name="LINE_BREAK" />Google Safe Browsing চেক করছে এই ফাইলটি অসুরক্ষিত কিনা — স্ক্যান করতে সাধারণত কয়েক সেকেন্ড সময় লাগে।</translation>
 <translation id="2148219725039824548">মাউন্টিং শেয়ারে সমস্যা। নেটওয়ার্কে নির্দিষ্ট শেয়ারটি পাওয়া যায়নি।</translation>
 <translation id="2148756636027685713">বিন্যাসন সম্পূর্ণ</translation>
 <translation id="2148892889047469596">ট্যাব কাস্ট করুন</translation>
@@ -2510,6 +2510,7 @@
 <translation id="2845382757467349449">সবসময় বুকমার্কস বার দেখান</translation>
 <translation id="2845751331501453107">আপনি ব্রাউজ করার সময়, আপনাকে পছন্দমতো বিজ্ঞাপন দেখানো হবে কিনা তা এই সেটিংয়ের ভিত্তিতে নির্ধারিত হয়, যেমন <ph name="BEGIN_LINK1" />সাইটের সাজেস্ট করা বিজ্ঞাপন<ph name="LINK_END1" />, আপনার <ph name="BEGIN_LINK2" />কুকি সেটিংস<ph name="LINK_END2" /> এবং আপনার দেখা সাইটটি পছন্দমতো বিজ্ঞাপন সাজায় কিনা</translation>
 <translation id="284581348330507117">অনন্য পাসওয়ার্ড তৈরি করুন</translation>
+<translation id="284884486564166077">Lens ব্যবহার করে যেকোনও ছবি সার্চ করুন</translation>
 <translation id="2849035674501872372">খুঁজে দেখা</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">আপনার পিন যোগ করা হয়েছে</translation>

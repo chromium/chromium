@@ -268,7 +268,6 @@
 
 Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="2381405137052800939">Podstawowe</translation>
-<translation id="23824747102827308">Śledź m.in. wiadomości, sport i inne informacje zgodne z Twoimi zainteresowaniami</translation>
 <translation id="2386793615875593361">Wybrano: 1</translation>
 <translation id="2390457533592708044">Ukryj „<ph name="MODULE_NAME" />”</translation>
 <translation id="2403129868389095715">Nie można dostarczyć paczki</translation>
@@ -631,6 +630,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4282944936010261425">Nie ma żadnych problemów z bezpieczeństwem do rozwiązania.</translation>
 <translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Nowe funkcje</translation>
+<translation id="429074084062258019">{count,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
 <translation id="4293080268407233932">Szukaj</translation>
 <translation id="4302248187517737842">Brak nazwy użytkownika ••••••••</translation>
 <translation id="4302415908542657649">Udostępniam hasło</translation>
@@ -1268,6 +1268,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7524055474074101597">Uzyskaj dostęp do haseł i innych danych w aplikacjach.</translation>
 <translation id="7527917367892640435">Przesyłka jest już śledzona</translation>
 <translation id="7531345132340165516">Bieżąca witryna</translation>
+<translation id="75362970626182391">Nowa grupa kart</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
 <translation id="754655535278952384">Sprawdzono <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Ostatnia karta otwarta na: <ph name="SOURCE_DEVICE" /></translation>

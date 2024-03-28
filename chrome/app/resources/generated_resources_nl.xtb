@@ -2494,6 +2494,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2845382757467349449">Bookmarkbalk altijd tonen</translation>
 <translation id="2845751331501453107">Of een advertentie wordt gepersonaliseerd terwijl je browst, is afhankelijk van deze instelling, <ph name="BEGIN_LINK1" />door sites voorgestelde advertenties<ph name="LINK_END1" />, je <ph name="BEGIN_LINK2" />cookie-instellingen<ph name="LINK_END2" /> en of de site die je bekijkt advertenties personaliseert</translation>
 <translation id="284581348330507117">Maak unieke wachtwoorden</translation>
+<translation id="284884486564166077">Een afbeelding zoeken met Lens</translation>
 <translation id="2849035674501872372">Omhoog kijken</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Je pincode is toegevoegd</translation>
@@ -3398,6 +3399,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3577487026101678864">Bestandssynchronisatie aan</translation>
 <translation id="3577745545227000795">Verzameling van <ph name="DEVICE_OS" />-hardwaregegevens</translation>
 <translation id="3581605050355435601">IP-adres automatisch configureren</translation>
+<translation id="3581861561942370740">Zoeken in downloadgeschiedenis</translation>
 <translation id="3582057310199111521">Ingevoerd op misleidende site en gevonden in gegevenslek</translation>
 <translation id="3582299299336701326">Maak lichte schermen donker en donkere schermen licht. Druk op Zoeken + Ctrl + H om kleurinversie aan en uit te zetten.</translation>
 <translation id="3584169441612580296">Foto's, muziek en andere media van je computer lezen en wijzigen</translation>
@@ -5312,6 +5314,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5056950756634735043">Verbinding maken met de container</translation>
 <translation id="5057110919553308744">Wanneer je op de extensie klikt</translation>
 <translation id="5057127674016624293">Het scannen duurt langer dan verwacht</translation>
+<translation id="5057480703570202545">Downloadgeschiedenis</translation>
 <translation id="5059241099014281248">Inloggen beperken</translation>
 <translation id="5059429103770496207">Weergavestijl</translation>
 <translation id="5059526285558225588">Kies wat je wilt delen</translation>
@@ -5721,6 +5724,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5390677308841849479">Donkerrood/oranje</translation>
 <translation id="5392192690789334093">Toestemming om meldingen te sturen</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
+<translation id="5394529681046491727">Wifi Direct</translation>
 <translation id="5395498824851198390">Standaardlettertype</translation>
 <translation id="5397378439569041789">Kiosk of digitaal bord inschrijven</translation>
 <translation id="5397794290049113714">Jij</translation>

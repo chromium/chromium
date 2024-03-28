@@ -268,7 +268,6 @@
 
 سائٹس مختلف سائٹس پر آپ کی براؤزنگ کی سرگرمی دیکھنے کیلئے کوکیز کا استعمال نہیں کر سکتی ہیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانا۔</translation>
 <translation id="2381405137052800939">مبادیات</translation>
-<translation id="23824747102827308">اپنی دلچسپیوں کی بنیاد پر خبروں، کھیلوں اور بہت کچھ سے باخبر رہیںد</translation>
 <translation id="2386793615875593361">1 کو منتخب کیا گیا</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" کو پوشیدہ کریں</translation>
 <translation id="2403129868389095715">آپ کا پیکیج ڈیلیور نہیں کیا جا سکا</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">ٹھیک کرنے کے لیے آپ کے پاس کوئی سیکیورٹی مسئلہ نہیں ہے۔</translation>
 <translation id="4286718549648564014">پتہ آپ کے اکاؤنٹ <ph name="USER_EMAIL" /> میں منتقل کر دیا گیا</translation>
 <translation id="428768789042547925">نیا کیا ہے</translation>
+<translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="4293080268407233932">تلاش کریں</translation>
 <translation id="4302248187517737842">کوئی صارف نام نہیں ہے ••••••••</translation>
 <translation id="4302415908542657649">پاس ورڈ کا اشتراک ہو رہا ہے</translation>
@@ -726,6 +726,7 @@
 <translation id="47677902929517676">اپنے اکاؤنٹ میں پاس ورڈز محفوظ کرنے کے لیے آپ کو پہلے اپنے آلے پر پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="4775879719735953715">ڈیفالٹ براؤزر</translation>
 <translation id="4779732376610430319">ترتیبات پر جائیں...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />، <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">پوشیدگی وضع میں کھولیں؟</translation>
 <translation id="4803185665210547709">آپ کی تنظیم کے زیر انتظام۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">ایڈریس بار کے نیچے ظاہر ہونے والے شارٹ کٹ پر تھپتھپائیں۔</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> اکاؤنٹ ہٹائیں؟</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> میں سے <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318298563956633672">آپ پہلے سے ہی اس پروڈکٹ کو ٹریک کر رہے ہیں۔</translation>
 <translation id="5327753393331509826">مواد کی اطلاعات حاصل کریں</translation>
@@ -1268,6 +1270,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7524055474074101597">ایپس پر اپنے پاس ورڈز اور مزید بہت کچھ تک رسائی حاصل کریں۔</translation>
 <translation id="7527917367892640435">پیکیج پہلے ہی ٹریک کیا گیا ہے</translation>
 <translation id="7531345132340165516">موجودہ سائٹ</translation>
+<translation id="75362970626182391">نیا ٹیب گروپ</translation>
 <translation id="7537586195939242955">‏معذرت، آپ کا Pass اس وقت Passbook میں انسٹال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="754655535278952384"><ph name="TIME" /> چیک کیا گیا</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> پر آخری ٹیب استعمال کیا گیا</translation>

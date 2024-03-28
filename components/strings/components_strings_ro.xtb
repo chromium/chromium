@@ -1207,7 +1207,7 @@
 <translation id="3333762389743153920">Nu este eligibil pentru un card virtual</translation>
 <translation id="3336044043987989409">Apasă butonul de reîncărcare pentru a permite conexiunea la dispozitivele sau serverele din rețeaua ta privată.</translation>
 <translation id="3338095232262050444">Securizat</translation>
-<translation id="333839153442689579">Antrenament foarte intens, pe intervale</translation>
+<translation id="333839153442689579">Antrenament pe intervale de intensitate ridicată</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">setări</translation>
 <translation id="3342018947887487892">Ulterior, un site pe care îl accesezi poate solicita aceste informații, fie subiectele anunțurilor, fie anunțurile sugerate de site-uri pe care le-ai accesat.</translation>
@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">Când opțiunea este activată, aici apare o listă de subiecte, în funcție de istoricul de navigare recent</translation>
 <translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4036753017940930924">Loturi și terenuri</translation>
+<translation id="4039506337798853114">Pentru a afișa cursorul, apasă pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">Adresa URL pentru actualizarea extensiei cu codul <ph name="EXTENSION_ID" /> nu este validă sau folosește o schemă neacceptată. Schemele acceptate sunt <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> și <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">O vei putea folosi în toate produsele Google</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">Echipamente de protecție la locul de muncă</translation>
 <translation id="4063924980214801036">Folosește deblocarea dispozitivului ca să confirmi cardurile mai rapid</translation>
 <translation id="4065659219963895623">Restaurante</translation>
+<translation id="4067774859633143413">Pentru a ieși din ecranul complet și a vedea descărcarea, apasă lung pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Adaugă o adresă validă</translation>
 <translation id="4072486802667267160">A apărut o eroare la procesarea comenzii. Încearcă din nou.</translation>
 <translation id="4073376909608563327">Nu s-a putut folosi deblocarea dispozitivului</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">Călătorii de aventuri</translation>
 <translation id="4464826014807964867">Site-uri cu informații de la organizația ta</translation>
 <translation id="4466576951214254884">Credite pentru studenți și finanțare pentru studii universitare</translation>
+<translation id="4467821340016922962">Pentru a ieși din ecranul complet și a vedea descărcarea, apasă pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activează Protecția îmbunătățită<ph name="END_ENHANCED_PROTECTION_LINK" /> pentru a beneficia de cel mai înalt nivel de securitate oferit de Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Acest formular nu este sigur. Completarea automată a fost dezactivată.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">Cardul virtual nu poate fi activat</translation>
 <translation id="6218753634732582820">Elimini adresa din Chromium?</translation>
 <translation id="622039917539443112">Îndoire paralelă</translation>
+<translation id="6221286101741304627">Pentru a ieși din ecranul complet, apasă pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Dorești să salvezi acest card în Contul Google?</translation>
 <translation id="6221345481584921695">Navigarea sigură Google <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe <ph name="SITE" />. Site-urile care sunt de obicei sigure sunt uneori infectate cu programe malware. Conținutul rău-intenționat provine de la <ph name="SUBRESOURCE_HOST" />, un distribuitor cunoscut de programe malware.</translation>
 <translation id="6221892641068781024">Afișare simplificată</translation>
@@ -3957,7 +3961,6 @@ Detalii suplimentare:
 <translation id="8612919051706159390">Comunități online</translation>
 <translation id="8617269623452051934">folosirea dispozitivului</translation>
 <translation id="861775596732816396">Mărimea 4</translation>
-<translation id="8618975513789458065">Subiectele anunțurilor reprezintă doar unul dintre numeroasele tipuri de date pe care un site le poate folosi pentru a personaliza anunțurile. Chiar și fără subiecte ale anunțurilor, site-urile pot afișa în continuare anunțuri, dar acestea pot fi mai puțin interesante.</translation>
 <translation id="8620276786115098679">Plic Kaku 7</translation>
 <translation id="8623885649813806493">Parolele nu corespund. Afișează toate parolele salvate.</translation>
 <translation id="8624354461147303341">Primește reduceri</translation>
@@ -4148,6 +4151,7 @@ Detalii suplimentare:
 <translation id="9023536760430404133">Roți și cauciucuri pentru vehicule</translation>
 <translation id="9025348182339809926">(Nevalid)</translation>
 <translation id="902590795160480390">Se încarcă fișierul PDF</translation>
+<translation id="9027531288681624875">Pentru a ieși din ecranul complet, apasă lung pe |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Eroare de securitate</translation>
 <translation id="9035824888276246493">Salvează codurile de securitate</translation>
 <translation id="9036306139374661733">Permiți accesul la microfon?</translation>

@@ -268,7 +268,6 @@
 
 Сајтови не могу да користе колачиће да би видели ваше активности прегледања на различитим сајтовима, на пример, за персонализацију огласа.</translation>
 <translation id="2381405137052800939">Основе</translation>
-<translation id="23824747102827308">Пратите вести, спорт и друге теме на основу интересовања</translation>
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
 <translation id="2390457533592708044">Сакриј „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Није могуће испоручити пакет</translation>
@@ -727,6 +726,7 @@
 <translation id="47677902929517676">Да бисте сачували лозинке на налогу, морате прво да подесите шифру на уређају.</translation>
 <translation id="4775879719735953715">Подразумевани прегледач</translation>
 <translation id="4779732376610430319">Иди у Подешавања…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Желите да отворите у режиму без архивирања?</translation>
 <translation id="4803185665210547709">Овим управља организација.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@
 <translation id="5283494734135414249">Додирните пречицу која се приказује испод траке за адресу.</translation>
 <translation id="5295239312320826323">Желите да уклоните налог <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
 <translation id="5327753393331509826">Добијајте обавештења о садржају</translation>

@@ -637,6 +637,7 @@
 <translation id="4425140285732600465">ధరను ట్రాక్ చేయడం. ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి.</translation>
 <translation id="4425173294238317796">పాస్-కీ నిర్ధారణ షీట్</translation>
 <translation id="442518031075347249">Google Payతో మీ వర్చువల్ కార్డ్‌ను మీరు ఇకపై ఉపయోగించలేరు. <ph name="BEGIN_LINK1" />వర్చువల్ కార్డ్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">మీ వెబ్ హిస్టరీలో కొన్ని ఇక్కడ చూపబడకపోవచ్చు. అవసరమైతే, 'పూర్తి Chrome హిస్టరీని తెరవండి'ని ట్యాప్ చేయండి. అలాగే, మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> వెబ్‌సైట్‌లో ఇతర ఫారమ్‌లలో ఉన్న బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ప్రస్తుతం ఎంచుకోబడింది. ఒక ఖాతాను ఎంచుకోండి.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />కి బుక్‌మార్క్ చేశారు</translation>
@@ -1106,6 +1107,7 @@
 <translation id="6719634564325948108">QR కోడ్‌తో కనెక్ట్ చేయాలా?</translation>
 <translation id="6723740634201835758">మీ Google ఖాతాలో</translation>
 <translation id="6738867403308150051">డౌన్‌లోడ్ చేస్తోంది...</translation>
+<translation id="67404633032079629">మీ వెబ్ హిస్టరీలో కొన్ని ఇక్కడ చూపబడకపోవచ్చు. పూర్తి వెబ్ హిస్టరీని చూడటానికి, 'పూర్తి Chrome హిస్టరీ తెరవండి'ని ట్యాప్ చేయండి.</translation>
 <translation id="674388916582496364">మీకు వ్యక్తిగతీకరించిన అనుభవాన్ని అందించడం కోసం, మీరు చూసే సైట్‌లు మీకు ఆసక్తి ఉన్న విషయాలను గుర్తుంచుకోవడం సర్వసాధారణం. మీ ఆసక్తులకు సంబంధించిన సమాచారాన్ని కూడా సైట్‌లు Chromeతో స్టోర్ చేయగలవు.</translation>
 <translation id="6751521182688001123">త్వరగా కొత్త ట్యాబ్‌ను తెరవండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>
 <translation id="6756507620369789050">ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి</translation>
@@ -1626,7 +1628,6 @@
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="952301137339791907">పేజీ గణాంకాలకు సంబంధించి దిగువున ఉన్న షీట్ తెరవబడింది</translation>
 <translation id="95817756606698420">చైనాలో వెతకడానికి <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ను Chrome ఉపయోగించవచ్చు. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో మార్చవచ్చు.</translation>
-<translation id="962979164594783469">ఈ యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>

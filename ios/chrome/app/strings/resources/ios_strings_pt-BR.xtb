@@ -268,7 +268,6 @@
 
 Eles também não podem usar cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
-<translation id="23824747102827308">Acompanhe notícias, esportes e muito mais com base nos seus interesses</translation>
 <translation id="2386793615875593361">Uma selecionada</translation>
 <translation id="2390457533592708044">Ocultar "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Não foi possível entregar seu pacote</translation>
@@ -631,6 +630,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4282944936010261425">Sem problemas de segurança para corrigir.</translation>
 <translation id="4286718549648564014">Endereço movido para sua conta <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novidades</translation>
+<translation id="429074084062258019">{count,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="4293080268407233932">Pesquisar</translation>
 <translation id="4302248187517737842">Sem nome de usuário ••••••••</translation>
 <translation id="4302415908542657649">Compartilhando senha</translation>
@@ -1268,6 +1268,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7524055474074101597">Acesse suas senhas e muito mais em apps.</translation>
 <translation id="7527917367892640435">Pacote já rastreado</translation>
 <translation id="7531345132340165516">Site atual</translation>
+<translation id="75362970626182391">Novo grupo de guias</translation>
 <translation id="7537586195939242955">Impossível instalar senha no livro de senhas no momento.</translation>
 <translation id="754655535278952384">Verificada <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Última guia usada no dispositivo <ph name="SOURCE_DEVICE" /></translation>

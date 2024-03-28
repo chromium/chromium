@@ -2499,6 +2499,7 @@
 <translation id="2845382757467349449">عرض شريط الإشارات المرجعية دائمًا</translation>
 <translation id="2845751331501453107">إنّ ظهور إعلانات مخصّصة أو غير مخصّصة لك أثناء التصفّح يعتمد على هذا الإعداد وعلى <ph name="BEGIN_LINK1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="LINK_END1" /> و<ph name="BEGIN_LINK2" />إعدادات ملفات تعريف الارتباط<ph name="LINK_END2" /> وما إذا كان الموقع الإلكتروني الذي تعرضه يخصِّص الإعلانات.</translation>
 <translation id="284581348330507117">يجب إنشاء كلمات مرور فريدة</translation>
+<translation id="284884486564166077">‏البحث عن أي صورة باستخدام "عدسة Google"</translation>
 <translation id="2849035674501872372">بحث</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">تمت إضافة رقم التعريف الشخصي</translation>
@@ -3403,6 +3404,7 @@
 <translation id="3577487026101678864">ميزة مزامنة الملفات مفعَّلة</translation>
 <translation id="3577745545227000795">جمع بيانات أجهزة <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">‏ضبط عنوان IP تلقائيًا</translation>
+<translation id="3581861561942370740">البحث في سجلّ التنزيل</translation>
 <translation id="3582057310199111521">تم إدخال كلمة المرور على موقع إلكتروني مريب وتبيّن أنها مستخدَمة في عملية اختراق البيانات.</translation>
 <translation id="3582299299336701326">‏تحوِّل هذه الميزة الشاشات المضيئة إلى شاشات مُعتمة والعكس. اضغط على مفتاح البحث ‏+ Ctrl ‏+ H لتفعيل ميزة "قلب الألوان" أو إيقافها.</translation>
 <translation id="3584169441612580296">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها</translation>
@@ -5317,6 +5319,7 @@
 <translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
 <translation id="5057127674016624293">عملية الفحص تستغرق وقتًا أطول من المتوقَّع</translation>
+<translation id="5057480703570202545">سجلّ التنزيل</translation>
 <translation id="5059241099014281248">حظر تسجيل الدخول على مستخدمين محددين</translation>
 <translation id="5059429103770496207">نمط العرض</translation>
 <translation id="5059526285558225588">اختيار ما تريد مشاركته</translation>
@@ -5726,6 +5729,7 @@
 <translation id="5390677308841849479">أحمر داكن وبرتقالي</translation>
 <translation id="5392192690789334093">المواقع الإلكترونية التي يُسمح لها بإرسال الإشعارات</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{رابط واحد}zero{# رابط}two{رابطان}few{# روابط}many{# رابطًا}other{# رابط}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">الخط التلقائي</translation>
 <translation id="5397378439569041789">‏تسجيل جهاز Kiosk أو جهاز إشارات رقمية</translation>
 <translation id="5397794290049113714">أنت</translation>

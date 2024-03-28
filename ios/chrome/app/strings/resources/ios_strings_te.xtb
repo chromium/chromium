@@ -268,7 +268,6 @@
 
 వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం లాంటివి.</translation>
 <translation id="2381405137052800939">ప్రాథమికాలు</translation>
-<translation id="23824747102827308">మీ ఆసక్తుల ఆధారంగా వార్తలు, క్రీడలు, ఇంకా మరిన్నింటి గురించి తెలుసుకోండి</translation>
 <translation id="2386793615875593361">1 ఎంచుకోబడింది</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />"ను దాచండి</translation>
 <translation id="2403129868389095715">మీ ప్యాకేజీని డెలివరీ చేయడం సాధ్యపడదు</translation>
@@ -727,6 +726,7 @@
 <translation id="47677902929517676">మీ ఖాతాలో పాస్‌వర్డ్‌లను సేవ్ చేయడానికి, మీరు ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="4775879719735953715">డిఫాల్ట్ బ్రౌజర్</translation>
 <translation id="4779732376610430319">సెట్టింగ్‌లకు వెళ్లండి...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">అజ్ఞాత మోడ్‌లో తెరవాలా?</translation>
 <translation id="4803185665210547709">మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@
 <translation id="5283494734135414249">అడ్రస్ బార్ కింద కనిపించే షార్ట్‌కట్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ఖాతాను తీసివేయాలా?</translation>
 <translation id="5300589172476337783">చూపించు</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5318298563956633672">మీరు ఇప్పటికే ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు.</translation>
 <translation id="5327753393331509826">కంటెంట్ నోటిఫికేషన్‌లను పొందండి</translation>

@@ -268,7 +268,6 @@
 
 Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi.</translation>
 <translation id="2381405137052800939">Asosiy</translation>
-<translation id="23824747102827308">Qiziqishlar asosida yangiliklar, sport va boshqa xabarlarni olish</translation>
 <translation id="2386793615875593361">1 ta belgilandi</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />"ni berkitish</translation>
 <translation id="2403129868389095715">Joʻnatmangizni yetkazish imkonsiz</translation>
@@ -726,6 +725,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="47677902929517676">Parollarni hisobingizga saqlashdan avval qurilmada qulf kodini sozlashingiz kerak.</translation>
 <translation id="4775879719735953715">Standart brauzer</translation>
 <translation id="4779732376610430319">Sozlamalarni ochish...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Inkognito rejimida ochilsinmi?</translation>
 <translation id="4803185665210547709">Tashkilotingiz tomonidan boshqariladi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -834,6 +834,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5283494734135414249">Manzillar qatori ostida chiqadigan yorliq ustiga bosing.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> hisobi olib tashlansinmi?</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318298563956633672">Siz bu mahsulotni kuzatyapsiz.</translation>
 <translation id="5327753393331509826">Bildirishnomalar kontentini olish</translation>

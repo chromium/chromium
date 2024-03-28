@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="164269334534774161">このページの <ph name="CREATION_TIME" /> のオフライン コピーを表示しています</translation>
 <translation id="1644574205037202324">履歴</translation>
+<translation id="1644969410150602449">ウェブの履歴を見る</translation>
 <translation id="1657932388559784161">ページの関連情報のボトムシートは閉じています
 </translation>
 <translation id="1670399744444387456">基本設定</translation>
@@ -637,6 +638,7 @@
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
 <translation id="4425173294238317796">パスキー確認シート</translation>
 <translation id="442518031075347249">Google Pay で仮想カードを使用できなくなります。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">一部のウェブ履歴はここに表示されない場合があります。必要に応じて、[Chrome の全履歴を開く] をタップしてください。また、お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> には、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> が現在選択されています。アカウントを選択してください。</translation>
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
@@ -1106,6 +1108,7 @@
 <translation id="6719634564325948108">QR コードを使用して接続しますか？</translation>
 <translation id="6723740634201835758">Google アカウント</translation>
 <translation id="6738867403308150051">ダウンロードしています…</translation>
+<translation id="67404633032079629">一部のウェブ履歴はここに表示されない場合があります。ウェブ履歴をすべて表示するには、[Chrome の全履歴を開く] をタップしてください。</translation>
 <translation id="674388916582496364">多くのウェブサイトでは、アクセスしたユーザーの興味 / 関心を記録して、ユーザー体験をパーソナライズするのが一般的です。そうしたウェブサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合があります。</translation>
 <translation id="6751521182688001123">新しいタブをすばやく開きます。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="6756507620369789050">フィードバックを共有</translation>
@@ -1627,7 +1630,6 @@
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="952301137339791907">ページの関連情報のボトムシートは開いています</translation>
 <translation id="95817756606698420">中国のユーザーは Chrome での検索に <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> を使用できます。この設定は [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で変更可能です。</translation>
-<translation id="962979164594783469">このアプリをインストール</translation>
 <translation id="96681097142096641">簡易版ページを表示しますか？</translation>
 <translation id="970715775301869095">残り <ph name="MINUTES" /> 分</translation>
 <translation id="981121421437150478">オフライン</translation>

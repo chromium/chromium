@@ -639,6 +639,7 @@
 <translation id="4425140285732600465">تم تفعيل ميزة تتبُّع السعر. يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="4425173294238317796">ورقة تأكيد مفتاح المرور</translation>
 <translation id="442518031075347249">‏لن تتمكّن من استخدام بطاقتك الافتراضية هذه مجدّدًا مع خدمة Google Pay. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">‏قد لا تظهر هنا بعض بيانات سجلّ الويب. انقر على "فتح سجلّ Chrome الكامل" إذا لزم الأمر. قد يتضمّن حسابك على Google أيضًا نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951">الحساب الذي تم اختياره حاليًا هو <ph name="EMAIL" />. اختَر حسابًا.</translation>
 <translation id="4452411734226507615">إغلاق علامة التبويب <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">أُضيفَت إشارة مرجعية إلى <ph name="FOLDER_NAME" /></translation>
@@ -1108,6 +1109,7 @@
 <translation id="6719634564325948108">هل تريد ربط جهاز كمبيوتر باستخدام رمز الاستجابة السريعة؟</translation>
 <translation id="6723740634201835758">‏في حسابك على Google</translation>
 <translation id="6738867403308150051">جارٍ التنزيل…</translation>
+<translation id="67404633032079629">‏قد لا تظهر هنا بعض بيانات سجلّ الويب. للاطّلاع على سجلّ الويب بالكامل، انقر على "فتح سجلّ Chrome الكامل".</translation>
 <translation id="674388916582496364">‏إنّ المواقع الإلكترونية التي تنتقل إليها تتذكّر عادةً اهتماماتك لتخصيص تجربتك. يمكن أيضًا أن تخزّن المواقع الإلكترونية في متصفِّح Chrome معلومات عن اهتماماتك.</translation>
 <translation id="6751521182688001123">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="6756507620369789050">مشاركة الملاحظات والآراء</translation>
@@ -1630,7 +1632,6 @@
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="952301137339791907">تم فتح البطاقة السفلية لإحصاءات الصفحة.</translation>
 <translation id="95817756606698420">‏يمكن لـ Chrome استخدام <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> للبحث في الصين. ويمكنك تغيير هذا في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
-<translation id="962979164594783469">تثبيت هذا التطبيق</translation>
 <translation id="96681097142096641">هل تريد عرض صفحة مبسّطة؟</translation>
 <translation id="970715775301869095">عدد الدقائق المتبقية: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">بلا اتصال</translation>

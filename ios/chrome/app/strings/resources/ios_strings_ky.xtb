@@ -268,7 +268,6 @@
 
 Сайттар жарнамаларды жекелештирүү үчүн башка сайттардагы серептөө аракеттериңизди көрүү үчүн cookie файлдарын колдоно алышпайт.</translation>
 <translation id="2381405137052800939">Негизги параметрлер</translation>
-<translation id="23824747102827308">Сиз кызыккан нерселердин негизинде жаңылыктар, спорт жана башка нерселерден кабардар болуп туруңуз</translation>
 <translation id="2386793615875593361">1 тандалды</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" функциясын жашыруу</translation>
 <translation id="2403129868389095715">Таңгагыңызды жеткирүү мүмкүн эмес</translation>
@@ -727,6 +726,7 @@
 <translation id="47677902929517676">Сырсөздөрдү аккаунтуңузга сактоо үчүн адегенде түзмөгүңүзгө өткөрүүчү кодду коюшуңуз керек.</translation>
 <translation id="4775879719735953715">Демейки серепчи</translation>
 <translation id="4779732376610430319">Жөндөөлөргө өтүү...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Жашыруун режимде ачылсынбы?</translation>
 <translation id="4803185665210547709">Уюмуңуз тарабынан башкарылат.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@
 <translation id="5283494734135414249">Дарек тилкесинин астындагы ыкчам баскычты таптап коюңуз.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> аккаунту өчүрүлсүнбү?</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ичинен <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318298563956633672">Бул товарга көз салып жатасыз.</translation>
 <translation id="5327753393331509826">Мазмун тууралуу билдирмелерди алуу</translation>

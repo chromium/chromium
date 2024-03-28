@@ -95,7 +95,7 @@
 <translation id="1437543266176261764">在 <ph name="APP_NAME" /> 中執行</translation>
 <translation id="1448440926884431741">在書籤中整理所追蹤的產品</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
-<translation id="1462833127986525564">如果想讓 Chrome 和其他 Google 服務運用彼此的資料，為你提供貼近個人需求的體驗，請連結 Chrome 和其他 Google 服務</translation>
+<translation id="1462833127986525564">如果想要 Chrome 和其他 Google 服務共用資料，來為你提供個人化體驗，請連結 Chrome 和其他 Google 服務</translation>
 <translation id="1466383950273130737">選擇 Chrome 的顯示語言</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
@@ -635,6 +635,7 @@
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，你會收到通知。</translation>
 <translation id="4425173294238317796">密碼金鑰確認工作表</translation>
 <translation id="442518031075347249">你將無法再透過 Google Pay 使用虛擬卡片。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">這裡可能沒有顯示所有網頁記錄。如有需要，請輕觸「開啟完整的 Chrome 歷史記錄」。此外，你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="4452411734226507615">關閉 [<ph name="TAB_TITLE" />] 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入「<ph name="FOLDER_NAME" />」</translation>
@@ -1104,6 +1105,7 @@
 <translation id="6719634564325948108">要連結 QR 圖碼嗎？</translation>
 <translation id="6723740634201835758">在你的 Google 帳戶中</translation>
 <translation id="6738867403308150051">下載中…</translation>
+<translation id="67404633032079629">這裡可能沒有顯示所有網頁記錄。如要查看完整的網頁記錄，請輕觸「開啟完整的 Chrome 歷史記錄」。</translation>
 <translation id="674388916582496364">一般來說，你造訪的網站會記住你感興趣的內容，以便提供個人化的服務體驗。此外，網站也可以將你的興趣喜好相關資訊儲存在 Chrome 中。</translation>
 <translation id="6751521182688001123">快速開啟新分頁。按住這裡即可編輯這個捷徑。</translation>
 <translation id="6756507620369789050">提供意見</translation>
@@ -1624,7 +1626,6 @@
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="952301137339791907">已開啟網頁洞察資訊底部功能表</translation>
 <translation id="95817756606698420">Chrome 可以在中國使用 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> 搜尋。你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更這項設定。</translation>
-<translation id="962979164594783469">安裝這個應用程式</translation>
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="970715775301869095">還剩 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>

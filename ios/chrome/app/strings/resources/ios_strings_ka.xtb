@@ -268,7 +268,6 @@
 
 საიტებს არ შეუძლია ქუქი-ჩანაწერების გამოყენება სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის თქვენზე მოსარგებად.</translation>
 <translation id="2381405137052800939">ძირითადი</translation>
-<translation id="23824747102827308">არ გამოტოვოთ ახალი ამბები, სპორტული სიახლეები და თქვენთვის საინტერესო სხვა თემები</translation>
 <translation id="2386793615875593361">1 არჩეულია</translation>
 <translation id="2390457533592708044">დაიმალოს „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">ამანათის მიწოდება შეუძლებელია</translation>
@@ -727,6 +726,7 @@
 <translation id="47677902929517676">პაროლები თქვენს ანგარიშში რომ შეინახოთ, თქვენს მოწყობილობაზე ჯერ საიდუმლო კოდი უნდა დააყენოთ.</translation>
 <translation id="4775879719735953715">ნაგულისხმევი ბრაუზერი</translation>
 <translation id="4779732376610430319">პარამეტრებზე გადასვლა...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">გსურთ ინკოგნიტო ფანჯარაში გახსნა?</translation>
 <translation id="4803185665210547709">მართავს თქვენი ორგანიზაცია.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@
 <translation id="5283494734135414249">შეეხეთ მალსახმობს, რომელიც მისამართთა ზოლის ქვემოთ გამოჩნდება.</translation>
 <translation id="5295239312320826323">გსურთ, ამოშალოთ <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318298563956633672">ამ პროდუქტს თვალს უკვე ადევნებთ.</translation>
 <translation id="5327753393331509826">მიიღეთ შეტყობინებები კონტენტის შესახებ</translation>

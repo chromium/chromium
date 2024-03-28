@@ -1574,6 +1574,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4030545038933060179">Gdy ta opcja będzie włączona, pojawi się tutaj lista tematów utworzona na podstawie najnowszej historii przeglądania</translation>
 <translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
 <translation id="4036753017940930924">Działki i grunty</translation>
+<translation id="4039506337798853114">Aby wyświetlić kursor, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 cale</translation>
 <translation id="404831776305217138">URL aktualizacji rozszerzenia o identyfikatorze „<ph name="EXTENSION_ID" />” jest nieprawidłowy lub używa nieobsługiwanego schematu. Obsługiwane schematy to: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Będziesz mieć możliwość używania go w różnych usługach Google</translation>
@@ -1586,6 +1587,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="406358100705415968">Wyposażenie ochronne dla bezpieczeństwa w pracy</translation>
 <translation id="4063924980214801036">Używaj odblokowywania urządzenia, aby szybciej potwierdzać karty</translation>
 <translation id="4065659219963895623">Restauracje</translation>
+<translation id="4067774859633143413">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodaj poprawny adres</translation>
 <translation id="4072486802667267160">Podczas przetwarzania zamówienia wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="4073376909608563327">Nie udało się użyć odblokowywania urządzenia</translation>
@@ -1808,6 +1810,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4456937135469235202">Podróże dla poszukiwaczy przygód</translation>
 <translation id="4464826014807964867">Witryny z informacjami od Twojej organizacji</translation>
 <translation id="4466576951214254884">Kredyty studenckie i finansowanie studiów</translation>
+<translation id="4467821340016922962">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Włącz silniejszą ochronę<ph name="END_ENHANCED_PROTECTION_LINK" />, aby korzystać z najwyższego poziomu zabezpieczeń Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ten formularz nie jest bezpieczny. Autouzupełnianie zostało wyłączone.</translation>
@@ -2678,6 +2681,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6218305986815100395">Nie można włączyć karty wirtualnej</translation>
 <translation id="6218753634732582820">Usunąć ten adres z Chromium?</translation>
 <translation id="622039917539443112">Składanie równoległe</translation>
+<translation id="6221286101741304627">Aby zamknąć tryb pełnoekranowy, naciśnij |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Czy chcesz zapisać tę kartę na swoim koncie Google?</translation>
 <translation id="6221345481584921695">Bezpieczne przeglądanie Google <ph name="BEGIN_LINK" />wykryło ostatnio złośliwe oprogramowanie<ph name="END_LINK" /> na <ph name="SITE" />. Strony, które zazwyczaj są bezpieczne, zostają czasem zainfekowane destrukcyjnym oprogramowaniem. Źródłem złośliwej zawartości jest <ph name="SUBRESOURCE_HOST" /> – znany dystrybutor złośliwego oprogramowania.</translation>
 <translation id="6221892641068781024">Widok uproszczony</translation>
@@ -3956,7 +3960,6 @@ Dodatkowe informacje:
 <translation id="8612919051706159390">Społeczności online</translation>
 <translation id="8617269623452051934">korzystanie z urządzenia</translation>
 <translation id="861775596732816396">Rozmiar 4</translation>
-<translation id="8618975513789458065">Tematy reklam to tylko 1 z wielu czynników, na podstawie których witryna może personalizować reklamy. Nawet jeśli nie wybierzesz tematów reklam, witryny nadal będą mogły wyświetlać reklamy, ale mogą być one mniej interesujące.</translation>
 <translation id="8620276786115098679">Koperta Kaku 7</translation>
 <translation id="8623885649813806493">Nie znaleziono pasujących haseł. Pokaż wszystkie zapisane hasła.</translation>
 <translation id="8624354461147303341">Otrzymaj zniżki</translation>
@@ -4147,6 +4150,7 @@ Dodatkowe informacje:
 <translation id="9023536760430404133">Koła i opony samochodowe</translation>
 <translation id="9025348182339809926">(Nieważny)</translation>
 <translation id="902590795160480390">Wczytuję PDF</translation>
+<translation id="9027531288681624875">Aby zamknąć tryb pełnoekranowy, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Błąd zabezpieczeń</translation>
 <translation id="9035824888276246493">Zapisz kody zabezpieczające</translation>
 <translation id="9036306139374661733">Zezwolić na używanie mikrofonu?</translation>

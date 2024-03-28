@@ -268,7 +268,6 @@
 
 Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion.</translation>
 <translation id="2381405137052800939">Hanfodion</translation>
-<translation id="23824747102827308">Cael y diweddaraf am newyddion, chwaraeon, a rhagor yn seiliedig ar eich diddordebau</translation>
 <translation id="2386793615875593361">Mae 1 wedi'i ddewis</translation>
 <translation id="2390457533592708044">Cuddio '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">Ni ellir danfon eich pecyn</translation>
@@ -631,6 +630,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4282944936010261425">Nid oes unrhyw faterion diogelwch i chi eu trwsio.</translation>
 <translation id="4286718549648564014">Cyfeiriadau wedi'u symud i gyfrif <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Beth sy'n newydd</translation>
+<translation id="429074084062258019">{count,plural, =1{Ychwanegu Tab at Grŵp}zero{Ychwanegu Tabiau at Grŵp}two{Ychwanegu Tabiau at Grŵp}few{Ychwanegu Tabiau at Grŵp}many{Ychwanegu Tabiau at Grŵp}other{Ychwanegu Tabiau at Grŵp}}</translation>
 <translation id="4293080268407233932">Chwilio</translation>
 <translation id="4302248187517737842">Dim Enw Defnyddiwr ••••••••</translation>
 <translation id="4302415908542657649">Yn Rhannu Cyfrinair</translation>
@@ -726,6 +726,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="47677902929517676">I gadw cyfrineiriau yn eich cyfrif, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="4775879719735953715">Porwr Diofyn</translation>
 <translation id="4779732376610430319">Mynd i'r Gosodiadau...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Agor yn y Modd Anhysbys?</translation>
 <translation id="4803185665210547709">Rheolir gan eich sefydliad.
 <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5283494734135414249">Tapiwch y llwybr byr sy'n ymddangos o dan y bar cyfeiriad.</translation>
 <translation id="5295239312320826323">Tynnu'r cyfrif <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Arddangos</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> o <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5318298563956633672">Rydych yn olrhain y cynnyrch hwn yn barod.</translation>
 <translation id="5327753393331509826">Cael Hysbysiadau Cynnwys</translation>
@@ -1268,6 +1270,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7524055474074101597">Cyrchwch eich cyfrineiriau a rhagor ar draws apiau.</translation>
 <translation id="7527917367892640435">Pecyn Eisoes wedi'i Olrhain</translation>
 <translation id="7531345132340165516">Gwefan Bresennol</translation>
+<translation id="75362970626182391">Grŵp Tabiau Newydd</translation>
 <translation id="7537586195939242955">Mae'n ddrwg gennym, ni ellir gosod y Passbook ar yr adeg hon.</translation>
 <translation id="754655535278952384">Gwiriwyd <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Tab Diwethaf a Ddefnyddiwyd ar <ph name="SOURCE_DEVICE" /></translation>

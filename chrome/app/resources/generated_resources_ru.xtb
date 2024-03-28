@@ -3400,6 +3400,7 @@
 <translation id="3577487026101678864">Синхронизация файлов включена</translation>
 <translation id="3577745545227000795">Сбор данных об аппаратном обеспечении устройства с <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Настраивать IP-адрес автоматически</translation>
+<translation id="3581861561942370740">Поиск в истории скачиваний</translation>
 <translation id="3582057310199111521">Введен на поддельном сайте и раскрыт при утечке данных</translation>
 <translation id="3582299299336701326">Сделать светлые цвета темными, а темные светлыми. Чтобы включить или отключить инверсию цветов, нажмите Поиск + Ctrl + H.</translation>
 <translation id="3584169441612580296">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение</translation>
@@ -5316,6 +5317,7 @@
 <translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
 <translation id="5057127674016624293">Сканирование занимает больше времени, чем ожидалось</translation>
+<translation id="5057480703570202545">История скачиваний</translation>
 <translation id="5059241099014281248">Ограниченный вход</translation>
 <translation id="5059429103770496207">Стиль показа</translation>
 <translation id="5059526285558225588">Выберите часть экрана для демонстрации</translation>
@@ -5725,6 +5727,7 @@
 <translation id="5390677308841849479">Темно-красный с оранжевым</translation>
 <translation id="5392192690789334093">Разрешено показывать уведомления</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Ссылка}one{# ссылка}few{# ссылки}many{# ссылок}other{# ссылки}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Шрифт по умолчанию</translation>
 <translation id="5397378439569041789">Зарегистрировать киоск или цифровую вывеску</translation>
 <translation id="5397794290049113714">Вы</translation>

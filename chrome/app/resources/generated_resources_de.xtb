@@ -8830,7 +8830,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7797571222998226653">Aus</translation>
 <translation id="7798504574384119986">Webberechtigungen ansehen</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatisch blockiert</translation>
-<translation id="7799650166313181433">Nur Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, können etwas mit diesem Gerät teilen. Du musst das Teilen von deinen Geräten nicht genehmigen.</translation>
+<translation id="7799650166313181433">Nur Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, können Inhalte mit diesem Gerät teilen. Du musst das Teilen von deinen Geräten nicht genehmigen.</translation>
 <translation id="7800485561443537737">Hierfür wird die mobile Datenverbindung deines Geräts (<ph name="DEVICE_TYPE" />) verwendet und dein Mobilfunkanbieter berechnet möglicherweise zusätzliche Gebühren. Kann auch den Akkuverbrauch erhöhen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">&amp;Gegen den Uhrzeigersinn drehen</translation>
 <translation id="780301667611848630">Nein, danke</translation>

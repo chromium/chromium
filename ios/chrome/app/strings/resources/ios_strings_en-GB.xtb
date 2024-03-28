@@ -268,7 +268,6 @@
 
 Sites can't use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="2381405137052800939">Basics</translation>
-<translation id="23824747102827308">Keep up with news, sports and more, based on your interests</translation>
 <translation id="2386793615875593361">1 selected</translation>
 <translation id="2390457533592708044">Hide '<ph name="MODULE_NAME" />'</translation>
 <translation id="2403129868389095715">Your package can't be delivered</translation>
@@ -727,6 +726,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="47677902929517676">To save passwords in your account, you must first set a passcode on your device.</translation>
 <translation id="4775879719735953715">Default Browser</translation>
 <translation id="4779732376610430319">Go To Settings...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Open in Incognito?</translation>
 <translation id="4803185665210547709">Managed by your organisation.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5283494734135414249">Tap the shortcut that appears under the address bar.</translation>
 <translation id="5295239312320826323">Remove account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Show</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318298563956633672">You're already tracking this product.</translation>
 <translation id="5327753393331509826">Get content notifications</translation>

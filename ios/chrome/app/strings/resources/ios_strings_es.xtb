@@ -268,7 +268,6 @@
 
 Los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
-<translation id="23824747102827308">Mantente al día de las noticias, los deportes y más según tus intereses</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
 <translation id="2390457533592708044">Oculta "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Tu paquete no se puede entregar</translation>
@@ -726,6 +725,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="47677902929517676">Para guardar contraseñas en tu cuenta, primero debes establecer una contraseña en tu dispositivo.</translation>
 <translation id="4775879719735953715">Navegador predeterminado</translation>
 <translation id="4779732376610430319">Ir a Ajustes...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">¿Abrir en modo Incógnito?</translation>
 <translation id="4803185665210547709">Gestionado por tu organización.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -834,6 +834,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5283494734135414249">Toca el acceso directo que aparece debajo de la barra de direcciones.</translation>
 <translation id="5295239312320826323">¿Quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Ya estás siguiendo este producto.</translation>
 <translation id="5327753393331509826">Recibe notificaciones de contenido</translation>

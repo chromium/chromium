@@ -1574,6 +1574,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4030545038933060179">Kapag naka-on, may lalabas ditong listahan ng mga paksa batay sa iyong kamakailang history ng pag-browse</translation>
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4036753017940930924">Mga Lote at Lupain</translation>
+<translation id="4039506337798853114">Para ipakita ang iyong cursor, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
 <translation id="404831776305217138">Invalid o gumagamit ng hindi sinusuportahang scheme ang URL ng update para sa extension na may ID na "<ph name="EXTENSION_ID" />." Ang mga sinusuportahang scheme ay: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> at <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Magagamit mo ito sa lahat ng produkto ng Google</translation>
@@ -1586,6 +1587,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="406358100705415968">Pamproteksyong Kasuotan para sa Kaligtasan sa Trabaho</translation>
 <translation id="4063924980214801036">Gamitin ang pag-unlock ng device para kumpirmahin nang mas mabilis ang mga card</translation>
 <translation id="4065659219963895623">Mga Restaurant</translation>
+<translation id="4067774859633143413">Para lumabas sa full screen at makita ang download, pindutin nang matagal ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Magdagdag ng Wastong Address</translation>
 <translation id="4072486802667267160">Nagkaroon ng error sa pagproseso ng iyong order. Pakisubukang muli.</translation>
 <translation id="4073376909608563327">Hindi magamit ang pag-unlock ng device</translation>
@@ -1808,6 +1810,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4456937135469235202">Adventure na Pagbiyahe</translation>
 <translation id="4464826014807964867">Mga website na may impormasyon mula sa iyong organisasyon</translation>
 <translation id="4466576951214254884">Mga Loan para sa Mag-aaral at Pagpopondo para sa Kolehiyo</translation>
+<translation id="4467821340016922962">Para lumabas sa full screen at makita ang download, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />I-on ang pinaigting na proteksyon<ph name="END_ENHANCED_PROTECTION_LINK" /> para makuha ang pinakamataas na level ng seguridad ng Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Hindi secure ang form na ito. Na-off ang autofill.</translation>
@@ -2678,6 +2681,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6218305986815100395">Hindi ma-on ang virtual card</translation>
 <translation id="6218753634732582820">Gusto mo bang alisin ang address sa Chromium?</translation>
 <translation id="622039917539443112">Parallel fold</translation>
+<translation id="6221286101741304627">Para lumabas sa full screen, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Gusto mo bang i-save ang card na ito sa iyong Google Account?</translation>
 <translation id="6221345481584921695">Kamakailan lang, ang Google Safe Browsing ay <ph name="BEGIN_LINK" />nakakita ng malware<ph name="END_LINK" /> sa <ph name="SITE" />. Paminsan-minsan, nagkakaroon ng malware ang mga website na karaniwang ligtas. Ang nakakahamak na content ay galing sa <ph name="SUBRESOURCE_HOST" />, isang kilalang nagkakalat ng malware.</translation>
 <translation id="6221892641068781024">Pinasimpleng View</translation>
@@ -3956,7 +3960,6 @@ Mga karagdagang detalye:
 <translation id="8612919051706159390">Mga Online na Komunidad</translation>
 <translation id="8617269623452051934">iyong paggamit ng device</translation>
 <translation id="861775596732816396">Laki 4</translation>
-<translation id="8618975513789458065">Ang mga paksa ng ad ay isa lang sa maraming bagay na puwedeng gamitin ng site para makapag-personalize ng mga ad. Kahit walang paksa ng ad, puwede pa ring magpakita ang mga site ng mga ad sa iyo pero posibleng maging hindi gaanong interesante ang mga ito.</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">Walang tumutugmang password. Ipakita ang lahat ng naka-save na password.</translation>
 <translation id="8624354461147303341">Makakuha ng mga diskwento</translation>
@@ -4147,6 +4150,7 @@ Mga karagdagang detalye:
 <translation id="9023536760430404133">Mga Gulong ng Sasakyan</translation>
 <translation id="9025348182339809926">(Invalid)</translation>
 <translation id="902590795160480390">Nilo-load ang PDF</translation>
+<translation id="9027531288681624875">Para lumabas sa full screen, pindutin nang matagal ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Error sa seguridad</translation>
 <translation id="9035824888276246493">Mag-save ng mga panseguridad na code</translation>
 <translation id="9036306139374661733">Payagan ang mikropono?</translation>

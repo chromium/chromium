@@ -1573,6 +1573,7 @@
 <translation id="4030545038933060179">เมื่อเปิดใช้การตั้งค่านี้ รายการหัวข้อจะปรากฏขึ้นที่นี่โดยอิงตามประวัติการท่องเว็บล่าสุดของคุณ</translation>
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4036753017940930924">ที่ดินและแปลงที่ดิน</translation>
+<translation id="4039506337798853114">หากต้องการแสดงเคอร์เซอร์ ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 นิ้ว</translation>
 <translation id="404831776305217138">อัปเดต URL สําหรับส่วนขยายที่มีรหัส "<ph name="EXTENSION_ID" />" ไม่ถูกต้องหรือใช้รูปแบบที่ไม่รองรับ รูปแบบที่รองรับ ได้แก่ <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> และ <ph name="FILE_SCHEME" /></translation>
 <translation id="4050392779074832022">คุณจะใช้ที่อยู่นี้ในผลิตภัณฑ์ต่างๆ ของ Google ได้</translation>
@@ -1585,6 +1586,7 @@
 <translation id="406358100705415968">อุปกรณ์เพื่อความปลอดภัยในการทำงาน</translation>
 <translation id="4063924980214801036">ใช้การปลดล็อกอุปกรณ์เพื่อยืนยันบัตรได้เร็วขึ้น</translation>
 <translation id="4065659219963895623">ร้านอาหาร</translation>
+<translation id="4067774859633143413">หากต้องการออกจากโหมดเต็มหน้าจอและดูการดาวน์โหลด ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
 <translation id="4067947977115446013">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="4072486802667267160">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณ โปรดลองอีกครั้ง</translation>
 <translation id="4073376909608563327">ใช้การปลดล็อกอุปกรณ์ไม่ได้</translation>
@@ -1807,6 +1809,7 @@
 <translation id="4456937135469235202">การท่องเที่ยวแบบผจญภัย</translation>
 <translation id="4464826014807964867">เว็บไซต์ที่มีข้อมูลจากองค์กรของคุณ</translation>
 <translation id="4466576951214254884">สินเชื่อเพื่อการศึกษา</translation>
+<translation id="4467821340016922962">หากต้องการออกจากโหมดเต็มหน้าจอและดูการดาวน์โหลด ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />เปิดใช้การปกป้องที่ดียิ่งขึ้น<ph name="END_ENHANCED_PROTECTION_LINK" />เพื่อรับการรักษาความปลอดภัยระดับสูงสุดของ Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" /> <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ฟอร์มนี้ไม่ปลอดภัย ปิดการป้อนข้อความอัตโนมัติแล้ว</translation>
@@ -2677,6 +2680,7 @@
 <translation id="6218305986815100395">เปิดใช้บัตรเสมือน (Virtual Card) ไม่ได้</translation>
 <translation id="6218753634732582820">ต้องการนำที่อยู่ออกจาก Chromium ใช่ไหม</translation>
 <translation id="622039917539443112">พับแบบขนาน</translation>
+<translation id="6221286101741304627">หากต้องการออกจากโหมดเต็มหน้าจอ ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">ต้องการบันทึกบัตรนี้ไว้ในบัญชี Google ไหม</translation>
 <translation id="6221345481584921695">เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />ตรวจพบมัลแวร์<ph name="END_LINK" />ใน <ph name="SITE" /> เว็บไซต์ที่โดยปกติจะปลอดภัยบางครั้งอาจติดมัลแวร์ เนื้อหาที่เป็นอันตรายมาจาก <ph name="SUBRESOURCE_HOST" /> ซึ่งเป็นผู้เผยแพร่มัลแวร์ที่เป็นที่รู้จัก</translation>
 <translation id="6221892641068781024">มุมมองอย่างง่าย</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">ชุมชนออนไลน์</translation>
 <translation id="8617269623452051934">การใช้งานอุปกรณ์ของคุณ</translation>
 <translation id="861775596732816396">ขนาด 4</translation>
-<translation id="8618975513789458065">หัวข้อโฆษณาเป็นเพียงหนึ่งในหลายอย่างที่เว็บไซต์สามารถใช้เพื่อปรับโฆษณาตามโปรไฟล์ของผู้ใช้ แม้จะไม่มีหัวข้อโฆษณา เว็บไซต์ก็ยังคงแสดงโฆษณาให้คุณเห็นได้ แต่ก็อาจน่าสนใจน้อยลง</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">ไม่มีรหัสผ่านที่ตรงกัน แสดงรหัสผ่านที่บันทึกไว้ทั้งหมด</translation>
 <translation id="8624354461147303341">รับส่วนลด</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">ล้อและยางรถยนต์</translation>
 <translation id="9025348182339809926">(ไม่ถูกต้อง)</translation>
 <translation id="902590795160480390">กำลังโหลด PDF</translation>
+<translation id="9027531288681624875">หากต้องการออกจากโหมดเต็มหน้าจอ ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
 <translation id="9035022520814077154">ข้อผิดพลาดของการรักษาความปลอดภัย</translation>
 <translation id="9035824888276246493">บันทึกรหัสความปลอดภัย</translation>
 <translation id="9036306139374661733">อนุญาตให้เข้าถึงไมโครโฟนไหม</translation>

@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">ဖွင့်ထားပါက သင့်လတ်တလော ကြည့်ရှုမှုမှတ်တမ်းပေါ်မူတည်၍ အကြောင်းအရာများစာရင်းကို ဤနေရာတွင်ပြသည်</translation>
 <translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4036753017940930924">မြေကွက်၊ ခြံ</translation>
+<translation id="4039506337798853114">သင်၏ကာဆာကို ပြရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="4047351652147966654">၁၈ x ၂၄ လက်မ</translation>
 <translation id="404831776305217138">ID “<ph name="EXTENSION_ID" />” ပါသော နောက်ဆက်တွဲအတွက် အပ်ဒိတ် URL သည် မမှန်ပါ (သို့) ပံ့ပိုးမထားသော စနစ်ကို သုံးထားသည်။ ပံ့ပိုးထားသော စနစ်များ- <ph name="HTTP_SCHEME" />၊ <ph name="HTTPS_SCHEME" /> နှင့် <ph name="FILE_SCHEME" />။</translation>
 <translation id="4050392779074832022">၎င်းကို Google ထုတ်ကုန်များတွင် သုံးနိုင်မည်</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">လုပ်ငန်းခွင်ဘေးကင်းမှု အကာအကွယ်ပစ္စည်း</translation>
 <translation id="4063924980214801036">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုရန် စက်လော့ခ်ဖွင့်ခြင်းကို သုံးပါ</translation>
 <translation id="4065659219963895623">စားသောက်ဆိုင်</translation>
+<translation id="4067774859633143413">ဖန်သားပြင်အပြည့်မှ ထွက်ပြီး ဒေါင်းလုဒ်ကို ကြည့်ရန် |<ph name="ACCELERATOR" />| နှိပ်ထားပါ</translation>
 <translation id="4067947977115446013">မှန်ကန်သည့် လိပ်စာကို ထည့်ပါ</translation>
 <translation id="4072486802667267160">သင်၏ မှာယူမှုကို ဆောင်ရွက်နေစဉ် မှားယွင်းမှုတစ်ခု ရှိနေပါသည်။ ထပ်လုပ်ကြည့်ပါ။</translation>
 <translation id="4073376909608563327">စက်လော့ခ်ဖွင့်ခြင်းကို သုံး၍မရပါ</translation>
@@ -1809,6 +1811,7 @@
 <translation id="4456937135469235202">စွန့်စား၍ ခရီးသွားခြင်း</translation>
 <translation id="4464826014807964867">သင့်အဖွဲ့အစည်းမှ အချက်အလက်ပါဝင်သော ဝဘ်ဆိုက်များ</translation>
 <translation id="4466576951214254884">ကျောင်းသားချေးငွေ၊ ကောလိပ်အတွက်ငွေထောက်ပံ့ခြင်း</translation>
+<translation id="4467821340016922962">ဖန်သားပြင်အပြည့်မှ ထွက်ပြီး ဒေါင်းလုဒ်ကို ကြည့်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="4473643328224505070">Chrome ၏ အမြင့်ဆုံးလုံခြုံရေးအဆင့်ကို ရယူရန် <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />အဆင့်မြင့်ကာကွယ်မှု ဖွင့်ပါ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />။ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ဤဖောင်သည် မလုံခြုံပါ။ 'အော်တိုဖြည့်' ကို ပိတ်လိုက်ပါပြီ။</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">ပကတိအသွင်ကတ်ကို ဖွင့်၍မရပါ</translation>
 <translation id="6218753634732582820">Chromium ထဲမှ လိပ်စာကို ဖယ်ရှားရမလား။</translation>
 <translation id="622039917539443112">မျဉ်းပြိုင် ခေါက်ရန်</translation>
+<translation id="6221286101741304627">ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="6221311046884916259">သင့် Google Account တွင် ဤကဒ်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="6221345481584921695">Google  လုံခြုံစွာ ရှာကြည့်မှုသည် မကြာမီတုန်းက <ph name="BEGIN_LINK" /> ပေါ်က<ph name="END_LINK" />မှာ အန္တရာယ်ဝဲ<ph name="SITE" />ကို တွေ့ရှိခဲ့သည်။ ပုံမှန်အားဖြင့် လုံခြုံကြသည့် ဝက်ဘ်ဆိုက်များမှာ ရံဖန်ရံခါမှာ အန္တရာယ် ကူးစက်မှု ရှိနိုင်သည်။ အန္တရာယ် အကြောင်းအရာမှာ အများသိ ဖြစ်သော အန္တရာယ်ဝဲများကို ဖြန့်ဖြူးသူ <ph name="SUBRESOURCE_HOST" /> ထံမှ  ဖြစ်ပါသည်။</translation>
 <translation id="6221892641068781024">ရိုးရှင်းသည့်မြင်ကွင်း</translation>
@@ -3958,7 +3962,6 @@
 <translation id="8612919051706159390">အွန်လိုင်း ကွန်မြူနတီ</translation>
 <translation id="8617269623452051934">သင်၏ ကိရိယာအသုံးပြုမှု</translation>
 <translation id="861775596732816396">အရွယ်အစား ၄</translation>
-<translation id="8618975513789458065">ကြော်ငြာအကြောင်းအရာများသည် ကြော်ငြာများ ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရာတွင် ဝဘ်ဆိုက်က သုံးနိုင်သည့် အရာများထဲမှ တစ်ခုဖြစ်သည်။ ကြော်ငြာအကြောင်းအရာများ မရှိသည့်တိုင် ဝဘ်ဆိုက်များသည် သင့်အား ကြော်ငြာပြနိုင်သော်လည်း ၎င်းတို့သည် စိတ်ဝင်စားဖွယ် ကောင်းမည်မဟုတ်ပါ။</translation>
 <translation id="8620276786115098679">Kaku 7 စာအိတ်</translation>
 <translation id="8623885649813806493">စကားဝှက်များ မတူညီပါ။ သိမ်းထားသော စကားဝှက်အားလုံးကို ပြပါ။</translation>
 <translation id="8624354461147303341">လျှော့ဈေးများ ရယူရန်</translation>
@@ -4149,6 +4152,7 @@
 <translation id="9023536760430404133">ယာဉ်ဘီးနှင့် တာယာ</translation>
 <translation id="9025348182339809926">(မမှန်ပါ)</translation>
 <translation id="902590795160480390">PDF ဖွင့်နေသည်</translation>
+<translation id="9027531288681624875">ဖန်သားပြင်အပြည့်မှ ထွက်ရန် |<ph name="ACCELERATOR" />| နှိပ်ထားပါ</translation>
 <translation id="9035022520814077154">လုံခြုံမှု အမှား</translation>
 <translation id="9035824888276246493">လုံခြုံရေးကုဒ်များ ထည့်ရန်</translation>
 <translation id="9036306139374661733">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုမလား။</translation>

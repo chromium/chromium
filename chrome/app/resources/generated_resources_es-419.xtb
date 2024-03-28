@@ -761,7 +761,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1578558981922970608">Forzar cierre</translation>
 <translation id="157931050206866263">Obtén más información sobre los análisis de software malicioso</translation>
 <translation id="1580772913177567930">Comunícate con tu administrador</translation>
-<translation id="1581962803218266616">Mostrar en Buscador</translation>
+<translation id="1581962803218266616">Mostrar en Finder</translation>
 <translation id="1582955169539260415">borrar [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583082742220286248">Reanudando sesión</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> se procesa de manera local y funciona sin conexión.</translation>
@@ -2491,6 +2491,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2845382757467349449">Mostrar siempre la barra de favoritos</translation>
 <translation id="2845751331501453107">Mientras navegas, la personalización de un anuncio que ves depende de este parámetro de configuración, los <ph name="BEGIN_LINK1" />anuncios sugeridos por sitios<ph name="LINK_END1" />, tu <ph name="BEGIN_LINK2" />configuración de cookies<ph name="LINK_END2" /> y si el sitio que estás viendo personaliza los anuncios.</translation>
 <translation id="284581348330507117">Crea contraseñas únicas</translation>
+<translation id="284884486564166077">Buscar cualquier imagen con Lens</translation>
 <translation id="2849035674501872372">Buscar</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Se agregó tu PIN</translation>
@@ -3395,6 +3396,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3577487026101678864">Se activó la sincronización de archivos</translation>
 <translation id="3577745545227000795">Recopilación de datos de hardware de <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Configurar la dirección IP de forma automática</translation>
+<translation id="3581861561942370740">Buscar en el historial de descargas</translation>
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
@@ -5311,6 +5313,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5056950756634735043">Conectando al contenedor</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="5057127674016624293">El análisis está tardando más de lo esperado</translation>
+<translation id="5057480703570202545">Historial de descargas</translation>
 <translation id="5059241099014281248">Restringir el acceso</translation>
 <translation id="5059429103770496207">Estilo de visualización</translation>
 <translation id="5059526285558225588">Elegir lo que quieres compartir</translation>
@@ -5720,6 +5723,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5392192690789334093">Pueden enviar notificaciones</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Vínculo}other{# vínculos}}</translation>
+<translation id="5394529681046491727">Wi-Fi directo</translation>
 <translation id="5395498824851198390">Fuente predeterminada</translation>
 <translation id="5397378439569041789">Inscribir dispositivo de kiosco o señalización</translation>
 <translation id="5397794290049113714">Tú</translation>

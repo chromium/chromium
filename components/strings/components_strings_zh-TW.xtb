@@ -1572,6 +1572,7 @@
 <translation id="4030545038933060179">開啟設定後，系統會根據最近的瀏覽記錄在這裡列出主題</translation>
 <translation id="4031179711345676612">可使用麥克風</translation>
 <translation id="4036753017940930924">租賃土地</translation>
+<translation id="4039506337798853114">如要顯示游標，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="4047351652147966654">18 x 24 吋</translation>
 <translation id="404831776305217138">擴充功能 ID「<ph name="EXTENSION_ID" />」的更新網址無效，或採用不支援的網路通訊協定。支援的網路通訊協定為：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">你將可在各項 Google 產品中使用這項資訊</translation>
@@ -1584,6 +1585,7 @@
 <translation id="406358100705415968">工安護具</translation>
 <translation id="4063924980214801036">使用裝置解鎖功能即可加快確認卡片的速度</translation>
 <translation id="4065659219963895623">餐廳</translation>
+<translation id="4067774859633143413">如要退出全螢幕模式並查看下載內容，請按住 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
 <translation id="4072486802667267160">處理你的訂單時發生錯誤，請再試一次。</translation>
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
@@ -1806,6 +1808,7 @@
 <translation id="4456937135469235202">探險旅遊</translation>
 <translation id="4464826014807964867">有貴機構資訊的網站</translation>
 <translation id="4466576951214254884">助學貸款與大專獎助學金</translation>
+<translation id="4467821340016922962">如要退出全螢幕模式並查看下載內容，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />開啟強化防護<ph name="END_ENHANCED_PROTECTION_LINK" />，即可享有 Chrome 最強大的安全防護機制</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">這個表單不安全，因此系統已停用自動填入功能。</translation>
@@ -2676,6 +2679,7 @@
 <translation id="6218305986815100395">無法啟用虛擬卡片</translation>
 <translation id="6218753634732582820">要從 Chromium 中移除地址嗎？</translation>
 <translation id="622039917539443112">雙對摺</translation>
+<translation id="6221286101741304627">如要退出全螢幕模式，請按下 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="6221311046884916259">要將這張卡片儲存到 Google 帳戶嗎？</translation>
 <translation id="6221345481584921695">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟體<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會遭到惡意軟體感染。這些惡意內容來自已知的惡意軟體散佈網站 <ph name="SUBRESOURCE_HOST" />。</translation>
 <translation id="6221892641068781024">簡易檢視</translation>
@@ -3145,7 +3149,7 @@
 <translation id="7111012039238467737">(有效)</translation>
 <translation id="7111507312244504964">物業檢查與估價</translation>
 <translation id="7112327784801341716">資料與現況不符嗎？請聯絡銀行辦理資料更新。</translation>
-<translation id="7116334367957017155">你尚未儲存任何地址。只要新增地址，就能在各項 Google 產品中使用這項資訊。</translation>
+<translation id="7116334367957017155">你尚未儲存任何地址。只要新增地址，就能在各項 Google 產品中使用。</translation>
 <translation id="7118618213916969306">搜尋剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">電視劇</translation>
 <translation id="7119371694555167493">複製作業逾時</translation>
@@ -3954,7 +3958,6 @@
 <translation id="8612919051706159390">網路社群</translation>
 <translation id="8617269623452051934">裝置使用狀態</translation>
 <translation id="861775596732816396">粗細：4</translation>
-<translation id="8618975513789458065">廣告主題只是網站可用來放送個人化廣告的其中一項依據。即使未啟用廣告主題，網站仍可放送廣告，但廣告內容可能較不符合你的需求。</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">找不到相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8624354461147303341">取得折扣</translation>
@@ -4145,6 +4148,7 @@
 <translation id="9023536760430404133">交通工具輪圈與輪胎</translation>
 <translation id="9025348182339809926">(無效)</translation>
 <translation id="902590795160480390">正在載入 PDF</translation>
+<translation id="9027531288681624875">如要退出全螢幕模式，請按住 |<ph name="ACCELERATOR" />| 鍵</translation>
 <translation id="9035022520814077154">安全性錯誤</translation>
 <translation id="9035824888276246493">儲存安全碼</translation>
 <translation id="9036306139374661733">要授予麥克風權限嗎？</translation>

@@ -1574,6 +1574,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4030545038933060179">Če je ta nastavitev vklopljena, se tu prikaže seznam tem glede na vašo nedavno zgodovino brskanja.</translation>
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
 <translation id="4036753017940930924">Parcele in zemljišča</translation>
+<translation id="4039506337798853114">Za prikaz kazalca pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 palcev</translation>
 <translation id="404831776305217138">Posodobitveni URL za razširitev z ID-jem »<ph name="EXTENSION_ID" />« ni veljaven ali pa uporablja nepodprto shemo. Podprte sheme: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> in <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Uporabljali ga boste lahko v Googlovih izdelkih</translation>
@@ -1586,6 +1587,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="406358100705415968">Zaščitna oprema za varnost pri delu</translation>
 <translation id="4063924980214801036">Uporabite odklepanje naprave za hitrejše potrjevanje kartic</translation>
 <translation id="4065659219963895623">Restavracije</translation>
+<translation id="4067774859633143413">Če želite zapreti celozaslonski način in si ogledati prenos, pridržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodajanje veljavnega naslova</translation>
 <translation id="4072486802667267160">Pri obdelavi naročila je prišlo do napake. Poskusite znova.</translation>
 <translation id="4073376909608563327">Odklepanja naprave ni bilo mogoče uporabiti</translation>
@@ -1808,6 +1810,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4456937135469235202">Pustolovska potovanja</translation>
 <translation id="4464826014807964867">Spletna mesta s podatki vaše organizacije</translation>
 <translation id="4466576951214254884">Študentska posojila in financiranje študija</translation>
+<translation id="4467821340016922962">Če želite zapreti celozaslonski način in si ogledati prenos, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Vklopite izboljšano zaščito<ph name="END_ENHANCED_PROTECTION_LINK" />, če si želite zagotoviti Chromovo najvišjo raven varnosti</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ta obrazec ni varen. Samodejno izpolnjevanje je izklopljeno.</translation>
@@ -2678,6 +2681,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6218305986815100395">Virtualne kartice ni mogoče vklopiti</translation>
 <translation id="6218753634732582820">Želite naslov odstraniti iz Chromiuma?</translation>
 <translation id="622039917539443112">Vzporedno prepogibanje</translation>
+<translation id="6221286101741304627">Če želite zapreti celozaslonski način, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Ali želite to kartico shraniti v račun Google?</translation>
 <translation id="6221345481584921695">Googlova funkcija varnega brskanja je na spletnem mestu <ph name="BEGIN_LINK" /> nedavno <ph name="END_LINK" />zaznala zlonamerno programsko opremo<ph name="SITE" />. Spletna mesta, ki so običajno varna, so včasih okužena z zlonamerno programsko opremo. Zlonamerno vsebino razširja znani distributer zlonamerne programske opreme, <ph name="SUBRESOURCE_HOST" />.</translation>
 <translation id="6221892641068781024">Poenostavljen pogled</translation>
@@ -3956,7 +3960,6 @@ Dodatne podrobnosti:
 <translation id="8612919051706159390">Spletne skupnosti</translation>
 <translation id="8617269623452051934">podatke o napravi uporabe</translation>
 <translation id="861775596732816396">Velikost 4</translation>
-<translation id="8618975513789458065">Teme oglasov so samo ena od številnih stvari, s katerimi lahko spletno mesto osebno prilagaja oglase. Spletna mesta vam lahko oglase prikazujejo tudi brez tem oglasov, vendar bodo morda manj zanimivi.</translation>
 <translation id="8620276786115098679">Kuverta Kaku 7</translation>
 <translation id="8623885649813806493">Ni gesel, ki bi se ujemala. Prikaži vsa shranjena gesla.</translation>
 <translation id="8624354461147303341">Prejmite popuste</translation>
@@ -4147,6 +4150,7 @@ Dodatne podrobnosti:
 <translation id="9023536760430404133">Pnevmatike za vozila</translation>
 <translation id="9025348182339809926">(neveljavno)</translation>
 <translation id="902590795160480390">Nalaganje PDF-ja</translation>
+<translation id="9027531288681624875">Če želite zapreti celozaslonski način, pridržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Varnostna napaka</translation>
 <translation id="9035824888276246493">Shrani varnostne kode</translation>
 <translation id="9036306139374661733">Želite odobriti dostop do mikrofona?</translation>

@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">この設定が有効な場合、最近の閲覧履歴に基づいたトピックのリストがここに表示されます</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4036753017940930924">用地、土地</translation>
+<translation id="4039506337798853114">カーソルを表示するには、|<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="4047351652147966654">18x24 インチ</translation>
 <translation id="404831776305217138">ID「<ph name="EXTENSION_ID" />」の拡張機能の更新 URL は無効であるか、サポートされていないスキームが使用されています。サポートされているスキームは <ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" />、<ph name="FILE_SCHEME" /> です。</translation>
 <translation id="4050392779074832022">Google サービス全体で使用できるようになります</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">作業用安全保護具</translation>
 <translation id="4063924980214801036">デバイスのロック解除を使用してカードをすばやく確認する</translation>
 <translation id="4065659219963895623">レストラン</translation>
+<translation id="4067774859633143413">全画面表示を終了してダウンロードを表示するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="4073376909608563327">デバイスのロック解除を使用できませんでした</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">冒険旅行</translation>
 <translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
 <translation id="4466576951214254884">学生ローン、大学ローン</translation>
+<translation id="4467821340016922962">全画面表示を終了してダウンロードを表示するには、|<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />保護強化機能をオンにする<ph name="END_ENHANCED_PROTECTION_LINK" />と、Chrome の最高レベルのセキュリティで保護できます。</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">このフォームは安全ではないため、自動入力をオフにしました。</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">仮想カードを有効にできません</translation>
 <translation id="6218753634732582820">Chromium からアドレスを削除してもよろしいですか？</translation>
 <translation id="622039917539443112">巻き折り</translation>
+<translation id="6221286101741304627">全画面表示を終了するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6221311046884916259">このカードを Google アカウントに保存しますか？</translation>
 <translation id="6221345481584921695"><ph name="BEGIN_LINK" /> では最近、Google セーフ ブラウジングにより、<ph name="END_LINK" />不正なソフトウェアが検出されました<ph name="SITE" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。今回の悪意のあるコンテンツは、不正なソフトウェアの既知の配布元である「<ph name="SUBRESOURCE_HOST" />」からもたらされました。</translation>
 <translation id="6221892641068781024">簡易表示</translation>
@@ -3958,7 +3962,6 @@
 <translation id="8612919051706159390">オンライン コミュニティ</translation>
 <translation id="8617269623452051934">デバイスのアクティブ状態</translation>
 <translation id="861775596732816396">サイズ 4</translation>
-<translation id="8618975513789458065">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、興味を引くものでない可能性があります。</translation>
 <translation id="8620276786115098679">角形 7 号封筒</translation>
 <translation id="8623885649813806493">一致するパスワードがありません。保存したパスワードをすべて表示します。</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
@@ -4149,11 +4152,13 @@
 <translation id="9023536760430404133">ホイール、タイヤ</translation>
 <translation id="9025348182339809926">（無効）</translation>
 <translation id="902590795160480390">PDF を読み込んでいます</translation>
+<translation id="9027531288681624875">全画面表示を終了するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
 <translation id="9035022520814077154">セキュリティ エラー</translation>
 <translation id="9035824888276246493">セキュリティ コードを保存する</translation>
 <translation id="9036306139374661733">マイクの使用を許可しますか？</translation>
 <translation id="9038649477754266430">予測サービスを使用してページをより迅速に読み込む</translation>
 <translation id="9039213469156557790">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの動作が変わる可能性もあります。</translation>
+<translation id="9040341831873780534">利用規約を見る</translation>
 <translation id="9042617223719777575">大容量</translation>
 <translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9044359186343685026">Touch ID を使用</translation>

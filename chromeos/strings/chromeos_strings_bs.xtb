@@ -86,7 +86,7 @@
 <translation id="1451536289672181509">Uređaj je tastatura.</translation>
 <translation id="1452939186874918380">Kišobrani</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
-<translation id="1463084054301832672">kućica</translation>
+<translation id="1463084054301832672">koliba</translation>
 <translation id="1468664791493211953">Akcijske ponude</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i moguće je da može pratiti vaše aktivnosti.</translation>
 <translation id="1478594628797167447">Skener</translation>
@@ -681,7 +681,7 @@
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
 <translation id="5051044138948155788">Ovo je jedina stranica. Ovo će vas odvesti na početni ekran za skeniranje.</translation>
-<translation id="5078983345702708852">futuristički</translation>
+<translation id="5078983345702708852">futurističko</translation>
 <translation id="5087864757604726239">nazad</translation>
 <translation id="5088172560898466307">Naziv host računara servera</translation>
 <translation id="5089810972385038852">Država</translation>
@@ -916,7 +916,7 @@
 <translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6417265370957905582">Google Asistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Ovo dozvoljava sistemskim lokacijama s odobrenjem da koriste vašu lokaciju. Lokacija može koristiti izvore kao što su WiFi, mobilne mreže i senzori da lakše procijeni lokaciju uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="6438073885402882007">Ovo dozvoljava sistemskim lokacijama s odobrenjem da koriste vašu lokaciju. Lokacija može koristiti izvore kao što su WiFi, mobilne mreže i senzori radi lakše procjene lokacije vašeg uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odlazak u postavke računa</translation>
 <translation id="6462978824459367242">Dugme za dodavanje APN-a je sada omogućeno</translation>
@@ -927,7 +927,7 @@
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> ekskluzivni čuvar ekrana</translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
-<translation id="6492891353338939218">uznemireno</translation>
+<translation id="6492891353338939218">oronulo</translation>
 <translation id="6494974875566443634">Prilagođavanje</translation>
 <translation id="6500818810472529210">Pogledajte rezultat u Google Pretraživanju</translation>
 <translation id="650266656685499220">Da kreirate albume, idite u Google Fotografije</translation>
@@ -995,6 +995,7 @@
 <translation id="6871256179359663621">svijetloljubičasta</translation>
 <translation id="6889786074662672253">Dok traje ponovno pokretanje, nemojte iskopčati ovaj vanjski uređaj ili isključiti računar. Ovaj prozor možete minimizirati. Ovo može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
 <translation id="6900701049656042631">Album ne sadrži nijednu fotografiju. Da dodate fotografije, idite na <ph name="LINK" /></translation>
+<translation id="6905163627763043954">Isprobaj</translation>
 <translation id="6905724422583748843">Nazad na stranicu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Poklopac skenera je otvoren. Zatvorite poklopac i pokušajte ponovo.</translation>
 <translation id="6911383237894364323">Povezivanje s medijskim serverima nije uspjelo</translation>
@@ -1212,7 +1213,7 @@
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
-<translation id="8156233298086717232">čarobno</translation>
+<translation id="8156233298086717232">magično</translation>
 <translation id="8162776280680283326">Lisice</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
@@ -1276,7 +1277,7 @@
 <translation id="8508640263392900755">Detalji APN-a</translation>
 <translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru ekrana<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="852896705346853285">čajana</translation>
+<translation id="852896705346853285">čajdžinica</translation>
 <translation id="8538236298648811558">Omogućava Google AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>

@@ -206,6 +206,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
       Als je dit beleid niet toepast, is de functie voor boodschappenlijstjes niet beschikbaar.
       </translation>
 <translation id="1144147113722324623">Automatische upgrades naar HTTPS aanzetten voor audio en video en een waarschuwing Niet beveiligd tonen voor afbeeldingen.</translation>
+<translation id="1145928409398419809"><ph name="GOOGLE_CLASSROOM_NAME" />-integratie uitzetten.</translation>
 <translation id="1147732569915511430">De SHA-256-hash van de avatarafbeelding.</translation>
 <translation id="1148415065145333943">Geavanceerde batterijoplaadmodus uitzetten</translation>
 <translation id="1149203480502386713">Post-quantum sleutelovereenkomst voor TLS aanzetten</translation>
@@ -1502,6 +1503,24 @@ Als je dit beleid niet instelt voor gewone gebruikers, is dit functioneel vergel
 <translation id="2180958780733364832">Gebruik van de stand zonder interface beheer</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden aangezet</translation>
 <translation id="2183338188392346527">Runtime-tellers voor apparaat niet rapporteren</translation>
+<translation id="2187372280917024033">De URI-template van de gewenste DNS-over-HTTPS-resolver. Als je meerdere DNS-over-HTTPS-resolvers wilt invoeren, scheid je de overeenkomstige URI-templates met een spatie. Dit beleid lijkt sterk op <ph name="DOH_TEMPLATES_POLICY_NAME" />, dat wordt overschreven als dit is gespecificeerd.
+In tegenstelling tot het beleid <ph name="DOH_TEMPLATES_POLICY_NAME" /> ondersteunt dit beleid het invoeren van identiteitsgegevens.
+ID's worden ingevoerd met variabele tijdelijke aanduidingen die worden vervangen door gebruikers- of apparaatgegevens in <ph name="PRODUCT_NAME" />. De ID's worden niet in platte tekst naar de DNS-server gestuurd. In plaats daarvan worden ze gehasht met het <ph name="SHA256" />-algoritme en worden ze in hoofdletters hex-gecodeerd.
+
+ID's worden tussen accolades geplaatst en worden voorafgegaan door het dollarteken. Gebruik deze tijdelijke aanduidingen voor gebruikersidentificatie: <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> en <ph name="USER_EMAIL_NAME" />. Gebruik deze tijdelijke aanduidingen voor apparaatidentificatie: <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> en <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Vóór versie 122 werden apparaat-ID's voor niet-aangesloten gebruikers niet vervangen. Vanaf versie 122 worden de tijdelijke aanduidingen voor apparaten vervangen door de waarde <ph name="DEVICE_NOT_MANAGED" />, die is gehasht en hex-gecodeerd.
+
+Vanaf versie 125 kunnen de IP-adressen van het apparaat worden toegevoegd als template-URI met de tijdelijke aanduiding <ph name="DEVICE_IP_ADDRESSES" />. Deze tijdelijke aanduiding wordt vervangen door een hexadecimale tekenreeks die de bytevolgorde van het IPv4-adres en/of IPv6-adres van het huidige netwerk aangeeft als het netwerk door beleid wordt beheerd.
+Het IPv4-adres wordt voorafgegaan door de waarde 0010. Het IPv6-adres wordt voorafgegaan door 0020. Voor dual-stack-netwerken wordt zowel het IPv4- als het IPv6-adres gebruikt voor de vervanging van de tijdelijke aanduiding. Meerdere adressen worden achter elkaar toegevoegd, zonder scheidingsteken. Voor niet-aangesloten gebruikers wordt de vervanging alleen uitgevoerd als het netwerk wordt beheerd door gebruikersbeleid. Als de tijdelijke aanduiding voor IP-adressen niet kan worden vervangen door het IP-adres van het apparaat, wordt deze vervangen door een lege tekenreeks.
+
+Als <ph name="DOH_MODE_POLICY_NAME" /> is ingesteld op <ph name="SECURE_DNS_MODE_SECURE" />, moet je dit beleid of <ph name="DOH_TEMPLATES_POLICY_NAME" /> instellen en niet leeg houden.
+
+Als <ph name="DOH_MODE_POLICY_NAME" /> is ingesteld op <ph name="SECURE_DNS_MODE_AUTOMATIC" /> en dit beleid is ingesteld, worden de aangegeven URI-templates gebruikt. Als dit beleid niet is ingesteld, worden hardgecodeerde toewijzingen gebruikt om te proberen de huidige DNS-resolver van de gebruiker te upgraden naar een DoH-resolver van dezelfde provider.
+
+Als de URI-template een <ph name="HTTP_VARIABLE_DNS" />-variabele heeft, wordt voor verzoeken aan de resolver <ph name="HTTP_METHOD_GET" /> gebruikt. Anders wordt voor verzoeken <ph name="HTTP_METHOD_POST" /> gebruikt.
+
+In versie 114 en hoger is <ph name="DOH_SALT_POLICY_NAME" /> optioneel als dit beleid is ingesteld.</translation>
 <translation id="219297066914002620">Geeft <ph name="PRODUCT_OS_NAME" /> de instructie om consoletools voor het beheer van virtuele machines aan te zetten.
 
       Als het beleid is ingesteld op True of als het niet is ingesteld, kan de gebruiker CLI gebruiken voor VM-beheer.
@@ -2078,6 +2097,10 @@ OPMERKING: Dit beleid had de onjuist gedocumenteerde standaardwaarde 'waar' in M
 <translation id="2608535066974278204">Periode (minuten) die de duur van het tijdvenster voor herstarten aangeeft.</translation>
 <translation id="2608887839902987727">Voorkomen dat captive portal-verificatie proxyinstellingen negeert</translation>
 <translation id="2608985885792348429">Standaard klembordinstelling</translation>
+<translation id="2613493229743687635">Met de <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API kunnen geïsoleerde web-apps (geïdentificeerd op basis van hun oorsprong) meerdere platforms tegelijk vastleggen zonder aanvullende gebruikerstoestemming.
+      Als het beleid niet is ingesteld, is <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> niet beschikbaar voor web-apps.
+Voor de privacy ondersteunt dit beleid geen updates van de beleidswaarde tijdens een sessie. Wijzigingen worden pas toegepast nadat de gebruiker is uitgelogd en weer is ingelogd.
+De gebruiker kan er zeker van zijn dat er geen andere apps zijn die de schermen kunnen vastleggen na het inloggen (als dit nog niet was toegestaan bij de start van de sessie).</translation>
 <translation id="2615240493030733717">Informatie over tijdzone rapporteren</translation>
 <translation id="2619258867868873629">De bestemming Opslaan als pdf en de bestemming Opslaan in Google Drive op <ph name="PRODUCT_OS_NAME" />-apparaten</translation>
 <translation id="2621290137818374425">Als je het beleid instelt, wordt de handhaving van vereisten voor openbaarmaking via Certificaattransparantie uitgezet voor de hostnamen in de opgegeven URL's. Hoewel het moeilijker wordt om misbruik van certificaten vast te stellen, kunnen hosts certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt).
@@ -3221,6 +3244,7 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="3540846231645422635">Rapportage voor netwerkinterface van apparaat uitzetten</translation>
 <translation id="3540935459049973317">Tijdslimieten per app</translation>
+<translation id="3546271546272655966">Je kunt <ph name="DBSC_FEATURE_NAME" /> gebruiken, afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="3547954654003013442">Proxyinstellingen</translation>
 <translation id="3548064438634502368">Browsers sluiten</translation>
 <translation id="3548642468619496972">Schadelijke downloads, ongebruikelijke of ongewenste downloads en gevaarlijke bestandstypen blokkeren.</translation>
@@ -4617,6 +4641,7 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4725801978265372736">Vereisen dat de naam van de lokale gebruiker en de eigenaar van de host voor externe toegang met elkaar overeenkomen</translation>
 <translation id="4726228171190098009">Niet toestaan dat het apparaat een Powerwash aanvraagt</translation>
 <translation id="4726895359147376813">Toewijzing van permanente ID's naar VM-configuraties</translation>
+<translation id="4732069502693984686">Hiermee zet je automatische schermopname van meerdere schermen aan</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
 <translation id="473673197014866318">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
 
@@ -4752,6 +4777,15 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
       Als je het beleid niet toepast, of niet instelt, is <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
 
       Dit beleid wordt gebruikt door cloud-beleidsinschrijving voor machinebereik op desktop. Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
+<translation id="4889589161838982604">Beheert de status van de functie <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> beschermt Google-verificatiecookies tegen diefstal van cookies door regelmatig een cryptografisch bewijs van eigendom van het apparaat te verstrekken aan de servers van Google.
+
+Als je dit beleid instelt op onwaar, wordt de functie <ph name="DBSC_FEATURE_NAME" /> uitgezet.
+
+Als je dit beleid instelt op waar, wordt de functie <ph name="DBSC_FEATURE_NAME" /> aangezet.
+
+Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor de functie <ph name="DBSC_FEATURE_NAME" />. Dit betekent dat de functie geleidelijk wordt uitgerold naar een steeds groter aantal gebruikers.</translation>
 <translation id="488996881569316769">Netwerktelemetrie</translation>
 <translation id="4890453377345554695">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
 
@@ -5524,6 +5558,7 @@ Dit is verwijderd in M112.</translation>
       Als je het beleid niet instelt, is <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
+<translation id="552607466422196365"><ph name="DBSC_FEATURE_NAME" /> uitzetten.</translation>
 <translation id="5526184558582921522">Query's naar de Quirks Server en potentiële downloads van hardwarespecifieke configuratiebestanden toestaan</translation>
 <translation id="5526701598901867718">Alle (onbeveiligd)</translation>
 <translation id="5534079385061985566">Functie voor volledig herstel aanzetten.</translation>
@@ -5924,6 +5959,7 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 
       Als het beleid is ingesteld op 'False' of niet is ingesteld, heeft <ph name="PLUGIN_VM_NAME" /> geen toestemming om gegevens te verzamelen.
       Als het is ingesteld op 'True', kan <ph name="PLUGIN_VM_NAME" /> gebruiksgegevens verzamelen van <ph name="PLUGIN_VM_NAME" /> die daarna worden gecombineerd en grondig geanalyseerd om het gebruik van <ph name="PLUGIN_VM_NAME" /> te verbeteren.</translation>
+<translation id="5872738620659477303">Google-inloggegevens aan een apparaat binden</translation>
 <translation id="5875873062228321803">Hiermee configureer je de vereiste voor de minimaal toegestane versie van <ph name="PRODUCT_OS_NAME" />.
 
       Als dit beleid is ingesteld op een niet-lege lijst:
@@ -5949,6 +5985,11 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
       De <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> is een optionele property met False als standaardwaarde.</translation>
 <translation id="5879014913445067283">Bepaalt de detectiemethode van 'Network File Shares' via <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">'Tikken om te zoeken' toestaan</translation>
+<translation id="5881715931837589500">Hiermee zet je <ph name="GOOGLE_CLASSROOM_NAME" />-integratie aan in <ph name="PRODUCT_OS_NAME" />.
+
+Als je dit beleid toepast of niet instelt, wordt de <ph name="GOOGLE_CLASSROOM_NAME" />-integratie aangezet voor zakelijke gebruikers.
+
+Als je dit beleid niet toepast, wordt de <ph name="GOOGLE_CLASSROOM_NAME" />-integratie uitgezet voor zakelijke gebruikers.</translation>
 <translation id="5882345429632338713">Vertraging voor starten van alternatieve browser (in milliseconden)</translation>
 <translation id="5883015257301027298">Standaardinstelling voor cookies</translation>
 <translation id="5883754873839596178">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver opgeven. Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen. De waarde moet lager dan 100 en hoger dan 6 zijn. Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend. Het tot onder de standaardwaarde verlagen van deze waarde is daarom op eigen risico.
@@ -5985,6 +6026,11 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 <translation id="5897913798715600338">Batterij snel opladen.</translation>
 <translation id="5898486742390981550">Wanneer meerdere gebruikers zijn ingelogd, kunnen Android-apps alleen worden gebruikt door de primaire gebruiker.</translation>
 <translation id="5899751601113377553">Voorkomen dat gebruikers <ph name="LACROS_NAME" /> gebruiken</translation>
+<translation id="5900000623536207626">Hiermee zet je <ph name="GOOGLE_TASKS_NAME" />-integratie aan in <ph name="PRODUCT_OS_NAME" />.
+
+Als je dit beleid toepast of niet instelt, wordt de <ph name="GOOGLE_TASKS_NAME" />-integratie aangezet voor zakelijke gebruikers.
+
+Als je dit beleid niet toepast, wordt de <ph name="GOOGLE_TASKS_NAME" />-integratie uitgezet voor zakelijke gebruikers.</translation>
 <translation id="5900919753933009463">Netwerkconfiguratie rapporteren</translation>
 <translation id="5901427587865226597">Alleen dubbelzijdig afdrukken</translation>
 <translation id="5905114360004248993">Pop-ups toestaan op deze sites</translation>
@@ -6129,6 +6175,7 @@ Dit beleid is beëindigd vanaf M124.</translation>
 <translation id="6049117606554031363">Rapportage van moederbordstatus van apparaat aanzetten</translation>
 <translation id="6050796253724099706">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="605132676434455096">Toevoegen van nieuwe profielen niet toestaan</translation>
+<translation id="6052660755155321371"><ph name="GOOGLE_TASKS_NAME" />-integratie uitzetten.</translation>
 <translation id="6053260874233331700">Toegang tot geolocatie op het inlogscherm niet toestaan.</translation>
 <translation id="6053681087509103368">Toestaan dat WebRTC verouderde versies van het TLD-/DTLS-protocol gebruikt</translation>
 <translation id="6056517174496942473">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's</translation>
@@ -7688,6 +7735,7 @@ De beleidswaarde is een lijst met base64-gecodeerde X.509-certificaten. Elk cert
 
       Opmerking: Het beleid heeft geen invloed op Google Drive en interne opslag. Gebruikers kunnen bestanden die zijn opgeslagen in de map 'Downloads' nog steeds openen.</translation>
 <translation id="7177857088692019405">Snel ontgrendelen</translation>
+<translation id="7177980542896745343"><ph name="GOOGLE_CLASSROOM_NAME" />-integratie aanzetten</translation>
 <translation id="7179157174254421614">Tenzij het beleid <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> de automatische tijdzonedetectie uitzet, wordt de methode voor automatische tijdzonedetectie uiteengezet als het beleid wordt ingesteld. Gebruikers kunnen deze methode niet wijzigen.
 
 Je kunt het beleid instellen op:
@@ -7923,6 +7971,7 @@ Dit beleid moet worden ingesteld als een lijst met volledig gekwalificeerde dome
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7372210077527987724"><ph name="GOOGLE_CLASSROOM_NAME" />-integratie aanzetten.</translation>
 <translation id="7372831798009983116">Toegankelijkheidsfunctie voor automatisch klikken aanzetten</translation>
 <translation id="7373200034079131670">Opnieuw opstarten bij uitloggen gebruiker als Android of een VM is gestart.</translation>
 <translation id="7374784840090523241">Toegangssleutels worden standaard op andere opslaglocaties gemaakt, zoals het <ph name="PRODUCT_NAME" />-profiel.</translation>
@@ -8433,6 +8482,7 @@ Ga naar https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-e
       Als je het beleid instelt op False of niet instelt, kan <ph name="FLASH_PLUGIN_NAME" />-content van een andere herkomst of kleine content worden geblokkeerd.
 
       Opmerking: Zie de volgende beleidsregels als je wilt beheren welke websites <ph name="FLASH_PLUGIN_NAME" /> mogen uitvoeren: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801833005984890634"><ph name="GOOGLE_TASKS_NAME" />-integratie aanzetten</translation>
 <translation id="7804859754080118507">Netwerkverbindings- en signaalsterktegebeurtenissen rapporteren op ingeschreven apparaten.
 
       Als je het beleid instelt op False of niet instelt, worden de gegevens niet gerapporteerd.
@@ -9495,6 +9545,7 @@ Dit beleid biedt een overzicht van configuratie-ID's die zijn toegewezen aan VM-
 <translation id="8685748277907759932">Niet toestaan dat gebruikers 'Tikken om te zoeken' gebruiken</translation>
 <translation id="8686700500128191717">Rapportage voor gebruikers van apparaat aanzetten</translation>
 <translation id="8687958770985542440">Web Components v0 API opnieuw aanzetten tot M84.</translation>
+<translation id="8690591325980850680"><ph name="GOOGLE_TASKS_NAME" />-integratie aanzetten.</translation>
 <translation id="8693243869659262736">Ingebouwde DNS-client gebruiken</translation>
 <translation id="8695006038397632296">Installatieverzoeken voor extensies maken en uploaden naar de Beheerdersconsole</translation>
 <translation id="8695108198606654558">Dit beleid bepaalt alleen het eerste uitvoeringsgedrag na de installatie. Hiermee wordt een naadloze overgang naar <ph name="PRODUCT_NAME" /> mogelijk in omgevingen waar vaak een andere browser werd gebruikt voordat de browser werd geïnstalleerd. Dit beleid heeft geen invloed op de mogelijkheden van de wachtwoordmanager voor Google-accounts.
@@ -10199,6 +10250,7 @@ Als je het beleid niet toepast, staat de achtergrondmodus uit.
 Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als je het niet instelt, staat de achtergrondmodus aanvankelijk uit, maar kunnen gebruikers dit aanpassen.</translation>
 <translation id="981245424658084931">Hartslag voor apparaatactiviteit aanzetten</translation>
 <translation id="981346395360763138">Locatieservices van Google staan uit</translation>
+<translation id="982195863867062122"><ph name="DBSC_FEATURE_NAME" /> aanzetten.</translation>
 <translation id="982497069985795632">Spellingcontrole aanzetten</translation>
 <translation id="983256325512298435">Een lijst definiëren met protocollen die een externe app waarvan de herkomst in een lijst wordt vermeld, kunnen starten zonder prompt aan de gebruiker</translation>
 <translation id="984365509386992443">Als je dit beleid toepast of niet instelt, kan de gebruiker enquêtes over Safe Browsing krijgen.

@@ -3414,6 +3414,7 @@
 <translation id="3577487026101678864">फ़ाइल सिंक करने की सुविधा चालू है</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> हार्डवेयर डेटा क्लेकशन</translation>
 <translation id="3581605050355435601">आईपी पता अपने-आप कॉन्फ़िगर होने की सुविधा/विकल्प</translation>
+<translation id="3581861561942370740">डाउनलोड का इतिहास खोजें</translation>
 <translation id="3582057310199111521">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था और यह हैक हो चुका है</translation>
 <translation id="3582299299336701326">हल्के रंग की स्क्रीन को गहरे रंग में बदलें और गहरे रंग की स्क्रीन को हल्के रंग में बदलें. रंग बदलने की सुविधा को चालू या बंद करने के लिए, Search + Ctrl + H दबाएं.</translation>
 <translation id="3584169441612580296">अपने कंप्यूटर से फ़ोटो, संगीत और अन्य मीडिया ऐक्सेस करें और उन्हें बदलें</translation>
@@ -5330,6 +5331,7 @@
 <translation id="5056950756634735043">कंटेनर से जोड़ा जा रहा है</translation>
 <translation id="5057110919553308744">जब आप एक्सटेंशन को क्लिक करते हैं</translation>
 <translation id="5057127674016624293">स्कैन करने में उम्मीद से ज़्यादा समय लग रहा है</translation>
+<translation id="5057480703570202545">डाउनलोड का इतिहास</translation>
 <translation id="5059241099014281248">साइन-इन करने पर पाबंदी लगाएं</translation>
 <translation id="5059429103770496207">डिसप्ले का स्टाइल</translation>
 <translation id="5059526285558225588">चुनें कि क्या शेयर करना है</translation>
@@ -5739,6 +5741,7 @@
 <translation id="5390677308841849479">गहरा लाल और नारंगी</translation>
 <translation id="5392192690789334093">सूचनाएं भेजने की अनुमति दी गई</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}one{# लिंक}other{# लिंक}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">डिफ़ॉल्ट फ़ॉन्ट</translation>
 <translation id="5397378439569041789">कीऑस्क या साइनेज डिवाइस का नाम दर्ज करें</translation>
 <translation id="5397794290049113714">आप</translation>

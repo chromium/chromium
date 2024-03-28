@@ -1573,6 +1573,7 @@
 <translation id="4030545038933060179">Қосылған кезде, соңғы браузерді қолдану тарихыңызға негізделген тақырыптар тізімі осы жерде пайда болады</translation>
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4036753017940930924">Жер телімдері</translation>
+<translation id="4039506337798853114">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="4047351652147966654">18 x 24 дюйм</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" идентификаторы бар кеңейтімге арналған жаңарту URL мекенжайы жарамсыз немесе қолдау көрсетілмейтін схеманы пайдаланады. Қолдау көрсетілетін схемалар: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> және <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Оны Google өнімдерінде пайдалана аласыз.</translation>
@@ -1585,6 +1586,7 @@
 <translation id="406358100705415968">Жұмыс қауіпсіздігін қорғау құралдары</translation>
 <translation id="4063924980214801036">Карталарды жылдамырақ растау үшін құрылғының құлпын ашу функциясын пайдаланыңыз.</translation>
 <translation id="4065659219963895623">Мейрамханалар</translation>
+<translation id="4067774859633143413">Толық экран режимінен шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басып тұрыңыз</translation>
 <translation id="4067947977115446013">Жарамды мекенжайды енгізу</translation>
 <translation id="4072486802667267160">Төлем жасау кезінде қате кетті. Әрекетті қайталаңыз.</translation>
 <translation id="4073376909608563327">Құрылғының құлпын ашу функциясын пайдалану мүмкін болмады</translation>
@@ -1807,6 +1809,7 @@
 <translation id="4456937135469235202">Шытырман саяхат</translation>
 <translation id="4464826014807964867">Ұйымыңыздан алынған ақпарат қамтылған веб-сайттар</translation>
 <translation id="4466576951214254884">Студенттік несиелер және білім алуды қаржыландыру</translation>
+<translation id="4467821340016922962">Толық экран режимінен шығу және жүктеп салынғандарды көру үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="4473643328224505070">Chrome-ның ең жоғары деңгейлі қауіпсіздігіне ие болу үшін <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />күшейтілген қорғанысты қосыңыз<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Бұл үлгі қорғалмаған. Автотолтыру өшірілді.</translation>
@@ -2677,6 +2680,7 @@
 <translation id="6218305986815100395">Виртуалдық картаны қосу мүмкін емес</translation>
 <translation id="6218753634732582820">Мекенжайды Chromium жүйесінен алып тастау керек пе?</translation>
 <translation id="622039917539443112">Параллель бүктеу</translation>
+<translation id="6221286101741304627">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз</translation>
 <translation id="6221311046884916259">Бұл картаны Google аккаунтыңызға сақтағыңыз келе ме?</translation>
 <translation id="6221345481584921695"><ph name="SITE" /> сайтында Google Safe Browsing жақында <ph name="BEGIN_LINK" />зиянды бағдарламаны анықтады<ph name="END_LINK" />. Қорғалған веб-сайттар да кейде зиянды бағдарламамен зақымдалады. Зиянды контент белгілі зиянды бағдарлама үлестірушісі болып табылатын <ph name="SUBRESOURCE_HOST" /> хостынан келеді.</translation>
 <translation id="6221892641068781024">Қарапайым көрініс</translation>
@@ -3955,7 +3959,6 @@
 <translation id="8612919051706159390">Онлайн қауымдастықтар</translation>
 <translation id="8617269623452051934">құрылғыны пайдалануыңыз</translation>
 <translation id="861775596732816396">Өлшемі: 4</translation>
-<translation id="8618975513789458065">Жарнама тақырыптары — сайт жарнамаларды жекелендіру үшін қолдана алатын көп нәрсенің бірі ғана. Бұл тақырыптар болмаса да, сайттарда сізге жарнамалар көрсетіле береді, бірақ олар сізге қызықсыз болуы мүмкін.</translation>
 <translation id="8620276786115098679">Kaku 7 хатқалтасы</translation>
 <translation id="8623885649813806493">Сәйкес құпия сөздер жоқ. Барлық сақталған құпия сөздерді көрсету.</translation>
 <translation id="8624354461147303341">Жеңілдіктер алу</translation>
@@ -4146,6 +4149,7 @@
 <translation id="9023536760430404133">Көлік дөңгелектері мен шиналары</translation>
 <translation id="9025348182339809926">(жарамсыз)</translation>
 <translation id="902590795160480390">PDF жүктеліп жатыр.</translation>
+<translation id="9027531288681624875">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR" />| пернесін басып тұрыңыз</translation>
 <translation id="9035022520814077154">Қауіпсіздік қатесі</translation>
 <translation id="9035824888276246493">Қауіпсіздік кодтарын сақтау</translation>
 <translation id="9036306139374661733">Микрофонды пайдалануға рұқсат берілсін бе?</translation>

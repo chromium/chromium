@@ -637,6 +637,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="4425140285732600465">Praćenje cijene. Dobivajte upozorenja ako se cijena snizi na bilo kojoj web-lokaciji.</translation>
 <translation id="4425173294238317796">List za potvrdu pristupnog ključa</translation>
 <translation id="442518031075347249">Više nećete moći upotrebljavati svoju virtualnu karticu s Google Payom. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Dio vaše web-povijesti možda se neće prikazivati ovdje. Prema potrebi dodirnite Otvori cijelu povijest na Chromeu. Također, na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951">Trenutačno je odabrano: <ph name="EMAIL" />. Odaberite račun.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Oznaka dodana u mapu <ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6719634564325948108">Želite li se povezati pomoću QR koda?</translation>
 <translation id="6723740634201835758">Na vašem Google računu</translation>
 <translation id="6738867403308150051">Preuzimanje...</translation>
+<translation id="67404633032079629">Dio vaše web-povijesti možda se neće prikazivati ovdje. Da biste vidjeli cijelu web-povijest, dodirnite Otvori cijelu povijest na Chromeu.</translation>
 <translation id="674388916582496364">Uobičajeno je da web-lokacije koje posjećujete pamte vaše interese radi personalizacije vašeg doživljaja. Web-lokacije mogu i pohraniti podatke o vašim interesima u Chrome.</translation>
 <translation id="6751521182688001123">Brzo otvorite novu karticu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="6756507620369789050">Pošaljite povratne informacije</translation>
@@ -1626,7 +1628,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="939598580284253335">Unesite zaporku</translation>
 <translation id="952301137339791907">Otvorena je donja tablica uvida u stranicu</translation>
 <translation id="95817756606698420">Chrome za pretraživanje u Kini može upotrebljavati <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. To možete promijeniti u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
-<translation id="962979164594783469">Instalirajte ovu aplikaciju</translation>
 <translation id="96681097142096641">Prikazati pojednostavljenu stranicu?</translation>
 <translation id="970715775301869095">Preostalo minuta: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">Izvanmrežno</translation>

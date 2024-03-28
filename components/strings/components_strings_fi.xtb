@@ -1575,6 +1575,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4030545038933060179">Kun tämä on päällä, selaushistoriaan perustuvat aiheet näkyvät täällä</translation>
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4036753017940930924">Tontit ja maat</translation>
+<translation id="4039506337798853114">Saat kohdistimen näkyviin painamalla |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 tuumaa</translation>
 <translation id="404831776305217138">Päivitysosoite laajennukselle (tunnus "<ph name="EXTENSION_ID" />") on virheellinen tai sen mallia ei tueta. Tuetut mallit ovat <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ja <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Voit käyttää sitä Googlen tuotteissa</translation>
@@ -1587,6 +1588,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="406358100705415968">Työsuojavaatetus</translation>
 <translation id="4063924980214801036">Vahvista kortteja nopeammin laitteen lukituksen avaustavalla</translation>
 <translation id="4065659219963895623">Ravintolat</translation>
+<translation id="4067774859633143413">Poistu koko näytön tilasta ja katso lataus painamalla pitkään |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Lisää kelvollinen osoite</translation>
 <translation id="4072486802667267160">Virhe tilausta käsiteltäessä. Yritä uudelleen.</translation>
 <translation id="4073376909608563327">Laitteen lukituksen avaustapaa ei voitu käyttää</translation>
@@ -1809,6 +1811,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4456937135469235202">Seikkailumatkat</translation>
 <translation id="4464826014807964867">Verkkosivustot, joilla on tietoa organisaatiostasi</translation>
 <translation id="4466576951214254884">Opintolaina ja opintojen rahoittaminen</translation>
+<translation id="4467821340016922962">Poistu koko näytön tilasta ja katso lataus painamalla |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Laita parannettu suojaus päälle<ph name="END_ENHANCED_PROTECTION_LINK" />, niin saat Chromen korkeimman suojaustason</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Tämä lomake ei ole suojattu. Automaattinen täyttö on laitettu pois päältä.</translation>
@@ -2679,6 +2682,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6218305986815100395">Virtuaalikorttia ei voi laittaa päälle</translation>
 <translation id="6218753634732582820">Poistetaanko osoite Chromiumista?</translation>
 <translation id="622039917539443112">Pystytaite</translation>
+<translation id="6221286101741304627">Poistu koko näytön tilasta painamalla |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Haluatko tallentaa tämän kortin Google-tilillesi?</translation>
 <translation id="6221345481584921695">Google-selaussuoja havaitsi sivustossa <ph name="SITE" /> äskettäin <ph name="BEGIN_LINK" />haittaohjelmia<ph name="END_LINK" />. Tavallisesti turvalliset sivustot voivat joskus saada haittaohjelmatartunnan. Haitallinen sisältö on peräisin tunnetusta haittaohjelmien jakelusivustosta nimeltä <ph name="SUBRESOURCE_HOST" />.</translation>
 <translation id="6221892641068781024">Yksinkertaistettu näkymä</translation>
@@ -3958,7 +3962,6 @@ Lisätietoja:
 <translation id="8612919051706159390">Verkkoyhteisöt</translation>
 <translation id="8617269623452051934">laitteesi käyttö</translation>
 <translation id="861775596732816396">Koko 4</translation>
-<translation id="8618975513789458065">Mainosten aiheet ovat vain yksi monista asioista, joita sivusto voi käyttää mainosten personointiin. Sivustot voivat näyttää sinulle mainoksia myös ilman mainosaiheita, mutta ne eivät välttämättä ole niin kiinnostavia.</translation>
 <translation id="8620276786115098679">Kirjekuori Kaku 7</translation>
 <translation id="8623885649813806493">Ei salasanaosumia. Näytä kaikki tallennetut salasanat.</translation>
 <translation id="8624354461147303341">Hyödynnä alennukset</translation>
@@ -4149,6 +4152,7 @@ Lisätietoja:
 <translation id="9023536760430404133">Ajoneuvojen pyörät ja renkaat</translation>
 <translation id="9025348182339809926">(Virheellinen)</translation>
 <translation id="902590795160480390">Ladataan PDF-tiedostoa</translation>
+<translation id="9027531288681624875">Poistu koko näytön tilasta painamalla pitkään |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Suojausvirhe</translation>
 <translation id="9035824888276246493">Tallenna turvakoodit</translation>
 <translation id="9036306139374661733">Sallitaanko mikrofoni?</translation>

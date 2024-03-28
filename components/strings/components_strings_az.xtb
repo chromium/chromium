@@ -1570,6 +1570,7 @@
 <translation id="4030545038933060179">Aktiv olduqda, mövzuların siyahısı son baxış tarixçənizə əsasən burada görünür</translation>
 <translation id="4031179711345676612">Mikrofona icazə verildi</translation>
 <translation id="4036753017940930924">Ərazi və Torpaq Sahələri</translation>
+<translation id="4039506337798853114">Kursoru göstərmək üçün |<ph name="ACCELERATOR" />| üzərinə basın</translation>
 <translation id="4047351652147966654">18 x 24 düym</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID-li artırma üçün güncəllənmə URL-i yanlışdır, yaxud sxemi dəstəklənmir. Dəstəklənən sxemlər: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> və <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Onu Google məhsullarında istifadə edə biləcəksiniz</translation>
@@ -1582,6 +1583,7 @@
 <translation id="406358100705415968">İşdə təhlükəsizlik üçün qoruyucu vasitələr</translation>
 <translation id="4063924980214801036">Kartları daha sürətli təsdiqləmək üçün cihazın kiliddən çıxarılmasından istifadə edin</translation>
 <translation id="4065659219963895623">Restoranlar</translation>
+<translation id="4067774859633143413">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
 <translation id="4067947977115446013">Düzgün Ünvan Əlavə Edin</translation>
 <translation id="4072486802667267160">Sifariş hazırlanarkən xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="4073376909608563327">Cihazın kiliddən çıxarılmasından istifadə etmək mümkün olmadı</translation>
@@ -1804,6 +1806,7 @@
 <translation id="4456937135469235202">Macəra səyahəti</translation>
 <translation id="4464826014807964867">Təşkilatınızın məlumatları olan veb saytlar</translation>
 <translation id="4466576951214254884">Tələbə Kreditləri və Kollec Maliyyələşdirməsi</translation>
+<translation id="4467821340016922962">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsinə basın.</translation>
 <translation id="4473643328224505070">Chrome-un yüksək təhlükəsizlik səviyyəsi üçün <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />təkmil qorumanı aktiv edin<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Bu forma güvənli deyil. Avto doldurma deaktiv edilib.</translation>
@@ -2674,6 +2677,7 @@
 <translation id="6218305986815100395">Virtual kartı aktiv etmək olmur</translation>
 <translation id="6218753634732582820">Ünvan Chromium'dan silinsin?</translation>
 <translation id="622039917539443112">Paralel qatlayın</translation>
+<translation id="6221286101741304627">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| üzərinə basın</translation>
 <translation id="6221311046884916259">Bu kart Google Hesabında yadda saxlansın?</translation>
 <translation id="6221345481584921695">Google Güvənli Brauzinq <ph name="SITE" /> üzərində <ph name="BEGIN_LINK" />virus aşkarladı<ph name="END_LINK" />. Ziyanverici məzmun virus yaymağı ilə məşhur olan <ph name="SUBRESOURCE_HOST" /> tərəfdən gəlir.</translation>
 <translation id="6221892641068781024">Sadə Görünüş</translation>
@@ -3952,7 +3956,6 @@
 <translation id="8612919051706159390">Onlayn birliklər</translation>
 <translation id="8617269623452051934">cihazdan istifadəniz</translation>
 <translation id="861775596732816396">Ölçü 4</translation>
-<translation id="8618975513789458065">Reklam mövzuları saytın reklamları fərdiləşdirmək üçün istifadə edə biləcəyi vasitələrdən biridir. Reklam mövzuları olmasa da, saytlar maraq dairənizə uyğun olmayan reklamlar göstərə bilər.</translation>
 <translation id="8620276786115098679">Zərf Kaku 7</translation>
 <translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
@@ -4143,6 +4146,7 @@
 <translation id="9023536760430404133">Nəqliyyat vasitəsi üçün təkər və şinlər</translation>
 <translation id="9025348182339809926">(Yanlış)</translation>
 <translation id="902590795160480390">PDF yüklənir</translation>
+<translation id="9027531288681624875">Tam ekrandan çıxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
 <translation id="9035022520814077154">Güvənlik xətası</translation>
 <translation id="9035824888276246493">Təhlükəsizlik kodlarını yadda saxlayın</translation>
 <translation id="9036306139374661733">Mikrofon icazəsi verilsin?</translation>

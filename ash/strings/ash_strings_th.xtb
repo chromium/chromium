@@ -673,6 +673,7 @@
 <translation id="3702809606464356667">กำลังแสดงหน้าต่างจากเดสก์ปัจจุบัน กดปุ่มลูกศรขึ้นเพื่อแสดงหน้าต่างจากเดสก์ทั้งหมด</translation>
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">ความบันเทิง</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
 <translation id="3712143870407382523">เลือกหน้าต่างสำหรับด้านนี้</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
@@ -1523,6 +1524,7 @@
 <translation id="7014684956566476813">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">กลับมาเมื่อถึงเวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="70168403932084660">เดสก์ 6</translation>
+<translation id="702252130983202758">แอปของคุณ</translation>
 <translation id="7025533177575372252">เชื่อมต่อ <ph name="DEVICE_NAME" /> กับโทรศัพท์</translation>
 <translation id="7026338066939101231">การลด</translation>
 <translation id="7029814467594812963">ออกจากเซสชัน</translation>
@@ -2042,6 +2044,7 @@
 <translation id="9129245940793250979">ปุ่มด้านหลัง</translation>
 <translation id="9133335900048457298">บันทึกเนื้อหาที่ได้รับการคุ้มครองไม่ได้</translation>
 <translation id="9139720510312328767">ลบตัวอักษรถัดไป</translation>
+<translation id="9148058034647219655">ออก</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9161053988251441839">แอปที่แนะนำ</translation>
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>

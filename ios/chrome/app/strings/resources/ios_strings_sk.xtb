@@ -268,7 +268,6 @@
 
 Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
 <translation id="2381405137052800939">Základy</translation>
-<translation id="23824747102827308">Udržte si prehľad o správach, športe a ďalších témach na základe záujmov</translation>
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
 <translation id="2390457533592708044">Skryť <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Zásielka sa nedá doručiť</translation>
@@ -631,6 +630,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4282944936010261425">Nenašli sa žiadne problémy so zabezpečením, ktoré by ste mali vyriešiť.</translation>
 <translation id="4286718549648564014">Adresa bola presunutá do vášho účtu <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novinky</translation>
+<translation id="429074084062258019">{count,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Pridať karty do skupiny}other{Pridať karty do skupiny}}</translation>
 <translation id="4293080268407233932">Hľadať</translation>
 <translation id="4302248187517737842">Žiadne používateľské meno ••••••••</translation>
 <translation id="4302415908542657649">Zdieľa sa heslo</translation>
@@ -1268,6 +1268,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7524055474074101597">Majte prístup k heslám a ďalším položkám v aplikáciách.</translation>
 <translation id="7527917367892640435">Zásielka už bola sledovaná</translation>
 <translation id="7531345132340165516">Aktuálny web</translation>
+<translation id="75362970626182391">Nová skupina kariet</translation>
 <translation id="7537586195939242955">Kupón Pass sa momentálne nedá do aplikácie Passbook nainštalovať.</translation>
 <translation id="754655535278952384">Skontrolované <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Karta bola naposledy použitá v zariadení <ph name="SOURCE_DEVICE" /></translation>

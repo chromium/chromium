@@ -268,7 +268,6 @@
 
 साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न कुकीहरू प्रयोग गर्न सक्दैनन्।</translation>
 <translation id="2381405137052800939">आधारभूत</translation>
-<translation id="23824747102827308">तपाईंको रुचिका आधारमा समाचार, खेलकुद र अन्य कुरासम्बन्धी सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="2386793615875593361">1 चयन गरियो</translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" लुकाउनुहोस्</translation>
 <translation id="2403129868389095715">तपाईंको प्याकेज डेलिभर गर्न मिल्दैन</translation>
@@ -727,6 +726,7 @@
 <translation id="47677902929517676">तपाईंले आफ्नो डिभाइसको पासकोड सेट गरेपछि मात्र तपाईं आफ्नो खातामा पासवर्डहरू सेभ गर्न सक्नुहुन्छ।</translation>
 <translation id="4775879719735953715">डिफल्ट ब्राउजर</translation>
 <translation id="4779732376610430319">सेटिङमा जानुहोस्…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">इन्कोग्निटो मोडमा खोल्ने हो?</translation>
 <translation id="4803185665210547709">तपाईंको सङ्गठनले व्यवस्थापन गरेको।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@
 <translation id="5283494734135414249">एड्रेस बारको तलपट्टि देखिने सर्टकटमा ट्याप गर्नुहोस्।</translation>
 <translation id="5295239312320826323">खाता <ph name="USER_EMAIL" /> हटाउने हो?</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> मध्ये <ph name="INDEX" /> औँ</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318298563956633672">तपाईंले यो उत्पादन ट्र्याक गर्न थालिसक्नुभएको छ।</translation>
 <translation id="5327753393331509826">सामग्रीसम्बन्धी सूचनाहरू प्राप्त गर्नुहोस्</translation>

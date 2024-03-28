@@ -1582,6 +1582,7 @@
 <translation id="4030545038933060179">Եթե գործառույթը միացված է, այստեղ կցուցադրվի թեմաների ցանկը՝ կազմված ձեր վերջին այցելությունների պատմության հիման վրա</translation>
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4036753017940930924">Հողամասեր և հողատարածքներ</translation>
+<translation id="4039506337798853114">Նշորդը ցույց տալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 դյույմ</translation>
 <translation id="404831776305217138">«<ph name="EXTENSION_ID" />» ID-ով ընդլայնումների թարմացման URL-ն անվավեր է կամ դրա սխեման չի աջակցվում։ Աջակցվող սխեմաներն են՝ <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> և <ph name="FILE_SCHEME" />։</translation>
 <translation id="4050392779074832022">Դուք կկարողանաք օգտագործել այն Google-ի արտադրանքներում</translation>
@@ -1594,6 +1595,7 @@
 <translation id="406358100705415968">Աշխատանքային անվտանգության պաշտպանության միջոցներ</translation>
 <translation id="4063924980214801036">Օգտագործել սարքի ապակողպումը՝ քարտերն ավելի արագ հաստատելու համար</translation>
 <translation id="4065659219963895623">Ռեստորաններ</translation>
+<translation id="4067774859633143413">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնումը տեսնելու համար սեղմեք և պահեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Ավելացրեք վավեր հասցե</translation>
 <translation id="4072486802667267160">Վճարումը մշակելու ընթացքում սխալ առաջացավ: Նորից փորձեք:</translation>
 <translation id="4073376909608563327">Չհաջողվեց օգտագործել սարքի ապակողպումը</translation>
@@ -1816,6 +1818,7 @@
 <translation id="4456937135469235202">Արկածային ճանապարհորդություն</translation>
 <translation id="4464826014807964867">Կայքեր՝ ձեր կազմակերպությունից ստացած տեղեկություններով</translation>
 <translation id="4466576951214254884">Ուսանողական վարկեր և բարձրագույն կրթության ֆինանսավորում</translation>
+<translation id="4467821340016922962">Լիաէկրան ռեժիմից դուրս գալու և ներբեռնումը տեսնելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Միացրեք բարելավված պաշտպանությունը<ph name="END_ENHANCED_PROTECTION_LINK" />՝ Chrome-ի լավագույն պաշտպանության համակարգերն օգտագործելու համար</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />։ <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Այս ձևն ապահով չէ։ Ինքնալրացումն անջատվել է։</translation>
@@ -2689,6 +2692,7 @@
 <translation id="6218305986815100395">Չհաջողվեց միացնել վիրտուալ քարտը</translation>
 <translation id="6218753634732582820">Հեռացնե՞լ հասցեն Chromium-ից:</translation>
 <translation id="622039917539443112">Զուգահեռ ծալում</translation>
+<translation id="6221286101741304627">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Ուզո՞ւմ եք պահել այս քարտը ձեր Google հաշվում</translation>
 <translation id="6221345481584921695">Վերջերս Google Safe Browsing-ը <ph name="BEGIN_LINK" />վնասագիր է հայտնաբերել<ph name="END_LINK" /> <ph name="SITE" /> կայքում: Նույնիսկ ապահով վեբկայքերը երբեմն վնասվում են վնասագրերով: Այս վնասարար բովանդակությունը գալիս է <ph name="SUBRESOURCE_HOST" /> կայքից, որը վնասագրերի հայտնի տարածող է:</translation>
 <translation id="6221892641068781024">Պարզեցված դիտակերպ</translation>
@@ -3967,7 +3971,6 @@
 <translation id="8612919051706159390">Առցանց համայնքներ</translation>
 <translation id="8617269623452051934">սարքի օգտագործում</translation>
 <translation id="861775596732816396">Չափ 4</translation>
-<translation id="8618975513789458065">Գովազդների թեմաներն ընդամենը մեկն են այն գործիքներից, որոնք կայքը կարող է օգտագործել գովազդն անհատականացնելու համար։ Նույնիսկ առանց գովազդների թեմաների՝ կայքերը նախկինի պես կարող են ձեզ գովազդ ցուցադրել, բայց դրանք կարող են պակաս հետաքրքիր լինել։</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">Համընկնող գաղտնաբառեր չկան։ Ցուցադրել բոլոր պահված գաղտնաբառերը։</translation>
 <translation id="8624354461147303341">Ստանալ զեղչեր</translation>
@@ -4158,6 +4161,7 @@
 <translation id="9023536760430404133">Անվահեծեր և անվադողեր</translation>
 <translation id="9025348182339809926">(անվավեր)</translation>
 <translation id="902590795160480390">PDF ֆայլի բեռնում</translation>
+<translation id="9027531288681624875">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք և պահեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Անվտանգության սխալ</translation>
 <translation id="9035824888276246493">Պահել անվտանգության կոդերը</translation>
 <translation id="9036306139374661733">Թույլատրե՞լ խսափողի օգտագործումը</translation>

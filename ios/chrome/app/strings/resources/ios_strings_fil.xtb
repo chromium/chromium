@@ -268,7 +268,6 @@
 
 Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad.</translation>
 <translation id="2381405137052800939">Mga Pangunahing Kaalaman</translation>
-<translation id="23824747102827308">Makasabay sa mga balita, sports, at iba pa batay sa iyong mga interes</translation>
 <translation id="2386793615875593361">1 ang napili</translation>
 <translation id="2390457533592708044">I-hide ang "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Hindi mai-deliver ang iyong package</translation>
@@ -727,6 +726,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="47677902929517676">Para mag-save ng mga password sa iyong account, dapat ka munang magtakda ng passcode sa device mo.</translation>
 <translation id="4775879719735953715">Default na Browser</translation>
 <translation id="4779732376610430319">Pumunta Sa Mga Setting...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buksan sa Incognito?</translation>
 <translation id="4803185665210547709">Pinapamahalaan ng iyong organisasyon.
 <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
@@ -835,6 +835,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5283494734135414249">I-tap ang shortcut na lalabas sa ilalim ng address bar.</translation>
 <translation id="5295239312320826323">Alisin ang account na <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Ipakita</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> sa <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318298563956633672">Sinusubaybayan mo na ang produktong ito.</translation>
 <translation id="5327753393331509826">Makatanggap ng Mga Notification sa Content</translation>

@@ -268,7 +268,6 @@
 
 Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="2381405137052800939">Setări de bază</translation>
-<translation id="23824747102827308">Fii la curent cu știrile, evenimentele sportive și altele, pe baza intereselor tale</translation>
 <translation id="2386793615875593361">1 selectată</translation>
 <translation id="2390457533592708044">Ascunde <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Coletul nu poate fi livrat</translation>
@@ -631,6 +630,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4282944936010261425">Nu există probleme de securitate de remediat.</translation>
 <translation id="4286718549648564014">Adresa a fost mutată în contul <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Noutăți</translation>
+<translation id="429074084062258019">{count,plural, =1{Adaugă fila într-un grup}few{Adaugă filele într-un grup}other{Adaugă filele într-un grup}}</translation>
 <translation id="4293080268407233932">Caută</translation>
 <translation id="4302248187517737842">Niciun nume de utilizator ••••••••</translation>
 <translation id="4302415908542657649">Se permite accesul la parolă</translation>
@@ -726,6 +726,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="47677902929517676">Pentru a salva parole în cont, mai întâi trebuie să setezi o parolă pe dispozitiv.</translation>
 <translation id="4775879719735953715">Browser prestabilit</translation>
 <translation id="4779732376610430319">Accesează Setările...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Deschizi în modul incognito?</translation>
 <translation id="4803185665210547709">Gestionat de organizația ta.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5283494734135414249">Atinge comanda rapidă care apare sub bara de adrese.</translation>
 <translation id="5295239312320826323">Elimini contul <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afișează</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> din <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318298563956633672">Urmărești deja acest produs.</translation>
 <translation id="5327753393331509826">Primește notificări privind conținutul</translation>
@@ -1268,6 +1270,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7524055474074101597">Accesează-ți parolele și multe altele în toate aplicațiile.</translation>
 <translation id="7527917367892640435">Coletul este deja urmărit</translation>
 <translation id="7531345132340165516">Site-ul actual</translation>
+<translation id="75362970626182391">Grup de file nou</translation>
 <translation id="7537586195939242955">Momentan, parola nu poate fi instalată în Agenda de parole.</translation>
 <translation id="754655535278952384">Verificată <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Ultima filă folosită în <ph name="SOURCE_DEVICE" /></translation>

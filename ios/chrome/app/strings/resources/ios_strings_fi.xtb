@@ -268,7 +268,6 @@
 
 Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia.</translation>
 <translation id="2381405137052800939">Perusasetukset</translation>
-<translation id="23824747102827308">Seuraa esimerkiksi kiinnostuksen kohteisiisi perustuvia uutisia ja urheilua</translation>
 <translation id="2386793615875593361">1 valittu</translation>
 <translation id="2390457533592708044">Piilota "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Pakettia ei voida toimittaa</translation>
@@ -631,6 +630,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4282944936010261425">Korjattavia tietoturvaongelmia ei löytynyt.</translation>
 <translation id="4286718549648564014">Osoite siirretty tilille <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Uutta</translation>
+<translation id="429074084062258019">{count,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
 <translation id="4293080268407233932">Haku</translation>
 <translation id="4302248187517737842">Ei käyttäjätunnusta ••••••••</translation>
 <translation id="4302415908542657649">Salasanan jakaminen</translation>
@@ -1268,6 +1268,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7524055474074101597">Käytä esimerkiksi salasanojasi sovelluksissa.</translation>
 <translation id="7527917367892640435">Pakettia seurataan jo</translation>
 <translation id="7531345132340165516">Nykyinen sivusto</translation>
+<translation id="75362970626182391">Uusi välilehtiryhmä</translation>
 <translation id="7537586195939242955">Passiasi ei voi asentaa Passbookiin tällä hetkellä.</translation>
 <translation id="754655535278952384">Tarkistettu <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Viimeksi käytetty välilehti (<ph name="SOURCE_DEVICE" />)</translation>

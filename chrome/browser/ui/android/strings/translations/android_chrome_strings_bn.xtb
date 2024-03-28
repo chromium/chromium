@@ -637,6 +637,7 @@
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
 <translation id="4425173294238317796">পাসকী কনফার্মেশন শিট</translation>
 <translation id="442518031075347249">Google Pay অ্যাপে আপনার ভার্চুয়াল কার্ড আর ব্যবহার করতে পারবেন না। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">আপনার কিছু ওয়েব ইতিহাস এখানে নাও দেখা যেতে পারে। প্রয়োজনে, 'সম্পূর্ণ Chrome ইতিহাস খুলুন' বিকল্পে ট্যাপ করুন। এছাড়াও, <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে।</translation>
 <translation id="4430277756566635951">বর্তমানে <ph name="EMAIL" /> আইডি বেছে নেওয়া হয়েছে। একটি অ্যাকাউন্ট বেছে নিন।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ট্যাবটি বন্ধ করুন</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
@@ -1106,6 +1107,7 @@
 <translation id="6719634564325948108">QR Code-এ কানেক্ট করা আছে?</translation>
 <translation id="6723740634201835758">আপনার Google অ্যাকাউন্টে</translation>
 <translation id="6738867403308150051">ডাউনলোড হচ্ছে...</translation>
+<translation id="67404633032079629">আপনার কিছু ওয়েব ইতিহাস এখানে নাও দেখা যেতে পারে। সম্পূর্ণ ওয়েব ইতিহাস দেখতে, 'সম্পূর্ণ Chrome ইতিহাস খুলুন' বিকল্পে ট্যাপ করুন।</translation>
 <translation id="674388916582496364">সাধারণত আপনার অভিজ্ঞতাকে পছন্দমতো করতে, আপনি যেসব সাইট ভিজিট করেন, সেগুলিতে আপনার আগ্রহের বিষয়গুলি মনে রাখা হয়। এছাড়া Chrome-এর মাধ্যমে আপনার আগ্রহের বিষয়ে তথ্যগুলি সাইট স্টোর করতে পারে।</translation>
 <translation id="6751521182688001123">দ্রুত একটি নতুন ট্যাব খুলুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
 <translation id="6756507620369789050">মতামত জানান</translation>
@@ -1626,7 +1628,6 @@
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="952301137339791907">পেজ ইনসাইট স্ক্রিনের নিচে অ্যাটাচ করা শিট খোলা আছে</translation>
 <translation id="95817756606698420">Chrome, চীনে সার্চের জন্য <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> কে ব্যবহার করতে পারে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে এটি পরিবর্তন করতে পারেন।</translation>
-<translation id="962979164594783469">এই অ্যাপ ইনস্টল করুন</translation>
 <translation id="96681097142096641">'রিডার' মোডে পৃষ্ঠাটি দেখতে চান?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকি আছে</translation>
 <translation id="981121421437150478">অফলাইন</translation>

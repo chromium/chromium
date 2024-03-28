@@ -677,6 +677,7 @@
 <translation id="3702809606464356667">현재 데스크의 창을 표시합니다. 모든 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="3702846122927433391">나이지리아의 인구</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">엔터테인먼트</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
 <translation id="3712143870407382523">이쪽 창을 선택하세요</translation>
 <translation id="371370241367527062">전면 마이크</translation>
@@ -1528,6 +1529,7 @@
 <translation id="7014684956566476813">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
 <translation id="70168403932084660">데스크 6</translation>
+<translation id="702252130983202758">내 앱</translation>
 <translation id="7025533177575372252">휴대전화와 <ph name="DEVICE_NAME" /> 연결</translation>
 <translation id="7026338066939101231">줄이기</translation>
 <translation id="7029814467594812963">세션 종료</translation>
@@ -2047,6 +2049,7 @@
 <translation id="9129245940793250979">후면 버튼</translation>
 <translation id="9133335900048457298">보호된 콘텐츠는 녹화할 수 없음</translation>
 <translation id="9139720510312328767">다음 문자 삭제</translation>
+<translation id="9148058034647219655">나가기</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9161053988251441839">추천 앱</translation>
 <translation id="9168436347345867845">나중에</translation>

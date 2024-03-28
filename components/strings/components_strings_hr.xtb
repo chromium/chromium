@@ -1573,6 +1573,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4030545038933060179">Kad je ta postavka uključena, ovdje se prikazuje popis tema na temelju vaše nedavne povijesti pregledavanja</translation>
 <translation id="4031179711345676612">Mikrofon je dopušten</translation>
 <translation id="4036753017940930924">Parcele i zemljišta</translation>
+<translation id="4039506337798853114">Da bi se prikazao pokazivač, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 inča</translation>
 <translation id="404831776305217138">URL ažuriranja za proširenje s ID-jem "<ph name="EXTENSION_ID" />" nije važeći ili koristi nepodržanu shemu. Podržane su sljedeće sheme: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Moći ćete je upotrebljavati na svim Googleovim proizvodima</translation>
@@ -1585,6 +1586,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="406358100705415968">Zaštitna radna oprema</translation>
 <translation id="4063924980214801036">Koristite otključavanje uređaja da biste brže potvrdili kartice</translation>
 <translation id="4065659219963895623">Restorani</translation>
+<translation id="4067774859633143413">Da biste zatvorili prikaz na cijelom zaslonu i vidjeli preuzimanje, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodajte važeću adresu</translation>
 <translation id="4072486802667267160">Došlo je do pogreške pri obradi narudžbe. Pokušajte ponovo.</translation>
 <translation id="4073376909608563327">Otključavanje uređaja nije uspjelo</translation>
@@ -1807,6 +1809,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4456937135469235202">Pustolovna putovanja</translation>
 <translation id="4464826014807964867">Web-lokacije s podacima iz vaše organizacije</translation>
 <translation id="4466576951214254884">Studentski zajmovi i financiranje koledža</translation>
+<translation id="4467821340016922962">Da biste zatvorili prikaz na cijelom zaslonu i vidjeli preuzimanje, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Uključite poboljšanu zaštitu<ph name="END_ENHANCED_PROTECTION_LINK" /> da biste dobili najvišu Chromeovu razinu sigurnosti</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ovaj obrazac nije siguran. Automatsko popunjavanje je isključeno.</translation>
@@ -2677,6 +2680,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6218305986815100395">Virtualna kartica ne može se uključiti</translation>
 <translation id="6218753634732582820">Želite li ukloniti adresu iz Chromiuma?</translation>
 <translation id="622039917539443112">Paralelno presavijanje</translation>
+<translation id="6221286101741304627">Da biste zatvorili prikaz na cijelom zaslonu, pritisnite |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Želite li spremiti tu karticu na Google račun?</translation>
 <translation id="6221345481584921695">Google sigurno pregledavanje nedavno je <ph name="BEGIN_LINK" />otkrilo zlonamjerni sadržaj<ph name="END_LINK" /> na <ph name="SITE" />. Web-lokacije koje su inače sigurne ponekad mogu biti zaražene zlonamjernim softverom. Zlonamjerni sadržaj potječe s hosta <ph name="SUBRESOURCE_HOST" /> koji je poznat po distribuciji zlonamjernog softvera.</translation>
 <translation id="6221892641068781024">Pojednostavljeni prikaz</translation>
@@ -3956,7 +3960,6 @@ Dodatne pojedinosti:
 <translation id="8612919051706159390">Online zajednice</translation>
 <translation id="8617269623452051934">vaša upotreba uređaja</translation>
 <translation id="861775596732816396">Veličina 4</translation>
-<translation id="8618975513789458065">Teme oglasa samo su jedna od mnogih mogućnosti koje web-lokacija može upotrebljavati za personalizaciju oglasa. Čak i bez tema oglasa, web-lokacije i dalje vam mogu prikazivati oglase, no oni bi mogli biti manje zanimljivi.</translation>
 <translation id="8620276786115098679">Omotnica Kaku 7</translation>
 <translation id="8623885649813806493">Nema zaporki koje se podudaraju. Prikaži sve spremljene zaporke.</translation>
 <translation id="8624354461147303341">Traži popuste</translation>
@@ -4147,6 +4150,7 @@ Dodatne pojedinosti:
 <translation id="9023536760430404133">Kotači i gume za vozila</translation>
 <translation id="9025348182339809926">(Nije važeće)</translation>
 <translation id="902590795160480390">Učitavanje PDF-a</translation>
+<translation id="9027531288681624875">Da biste zatvorili prikaz na cijelom zaslonu, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Sigurnosna pogreška</translation>
 <translation id="9035824888276246493">Spremanje sigurnosnih kodova</translation>
 <translation id="9036306139374661733">Želite li dopustiti mikrofon?</translation>

@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">इस सेटिंग के चालू होने पर, आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, यहां विषयों की सूची दिखती है</translation>
 <translation id="4031179711345676612">माइक्रोफ़ोन की अनुमति है</translation>
 <translation id="4036753017940930924">प्लॉट और ज़मीन</translation>
+<translation id="4039506337798853114">अपना कर्सर देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="4047351652147966654">18 x 24 इंच</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" आईडी वाले एक्सटेंशन के लिए अपडेट यूआरएल अमान्य है या काम न करने वाली स्कीम का इस्तेमाल करता है. काम करने वाली स्कीम, <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, और <ph name="FILE_SCHEME" /> हैं.</translation>
 <translation id="4050392779074832022">इसे Google के सभी प्रॉडक्ट पर इस्तेमाल किया जा सकेगा</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">काम के दौरान बचाव से जुड़े सुरक्षा उपकरण</translation>
 <translation id="4063924980214801036">कार्ड की पुष्टि जल्दी करने के लिए, डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल करें</translation>
 <translation id="4065659219963895623">रेस्टोरेंट</translation>
+<translation id="4067774859633143413">फ़ुल स्क्रीन से बाहर निकलने और डाउनलोड की गई फ़ाइलें देखने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें</translation>
 <translation id="4067947977115446013">मान्य पता जोड़ें</translation>
 <translation id="4072486802667267160">आपका आदेश संसाधित करते समय गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="4073376909608563327">डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल नहीं किया जा सका</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">एडवेंचर ट्रैवल</translation>
 <translation id="4464826014807964867">ऐसी वेबसाइटें जिनके बारे में आपके संगठन ने जानकारी दी है</translation>
 <translation id="4466576951214254884">कॉलेज के छात्र-छात्राओं के लिए लोन और वित्तीय सेवाएं</translation>
+<translation id="4467821340016922962">फ़ुल स्क्रीन से बाहर निकलने और डाउनलोड की गई फ़ाइलें देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="4473643328224505070">Chrome की सबसे बेहतर सुरक्षा पाने के लिए, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />बेहतर सुरक्षा मोड<ph name="END_ENHANCED_PROTECTION_LINK" /> चालू करें</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यह फ़ॉर्म सुरक्षित नहीं है. ऑटोमैटिक भरने की सुविधा बंद कर दी गई है.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">वर्चुअल कार्ड को चालू नहीं किया जा सकता</translation>
 <translation id="6218753634732582820">क्रोमियम से पता निकालें?</translation>
 <translation id="622039917539443112">पैरलल फ़ोल्ड</translation>
+<translation id="6221286101741304627">फ़ुल स्क्रीन से बाहर निकलने के लिए, |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="6221311046884916259">क्या आपको इस कार्ड की जानकारी अपने Google खाते में सेव करनी है?</translation>
 <translation id="6221345481584921695">Google सुरक्षित ब्राउज़िंग को <ph name="SITE" /> पर हाल ही में <ph name="BEGIN_LINK" />मैलवेयर का पता चला<ph name="END_LINK" /> है. आमतौर पर सुरक्षित रहने वाली वेबसाइटें कभी-कभी मैलेवयर से संक्रमित हो जाती हैं. नुकसान पहुंचाने वाली सामग्री <ph name="SUBRESOURCE_HOST" /> से आती है, जो कि एक ज्ञात मैलवेयर वितरक है.</translation>
 <translation id="6221892641068781024">सरल बनाया गया व्यू</translation>
@@ -3957,7 +3961,6 @@
 <translation id="8612919051706159390">ऑनलाइन समुदाय</translation>
 <translation id="8617269623452051934">आपके डिवाइस का इस्तेमाल</translation>
 <translation id="861775596732816396">आकार 4</translation>
-<translation id="8618975513789458065">विज्ञापन के विषय, उन कई चीज़ों में से एक है जिसका इस्तेमाल करके कोई साइट, आपकी दिलचस्पी के मुताबिक विज्ञापन दिखा सकती है. विज्ञापन के विषयों के बिना भी, साइटें आपको विज्ञापन दिखा सकती हैं. हालांकि, ऐसा हो सकता है कि विज्ञापन आपको कम दिलचस्प लगें.</translation>
 <translation id="8620276786115098679">काकू 7 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="8623885649813806493">पासवर्ड गलत है. सेव किए गए सभी पासवर्ड दिखाएं.</translation>
 <translation id="8624354461147303341">छूट पाएं</translation>
@@ -4148,6 +4151,7 @@
 <translation id="9023536760430404133">वाहनों के व्हील और टायर</translation>
 <translation id="9025348182339809926">(मान्य नहीं है)</translation>
 <translation id="902590795160480390">PDF लोड हो रहा है</translation>
+<translation id="9027531288681624875">फ़ुल स्क्रीन से बाहर निकलने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें</translation>
 <translation id="9035022520814077154">सुरक्षा गड़बड़ी</translation>
 <translation id="9035824888276246493">सुरक्षा कोड सेव करें</translation>
 <translation id="9036306139374661733">क्या आप Chromium को माइक्रोफ़ोन ऐक्सेस करने की अनुमति देना चाहते हैं?</translation>

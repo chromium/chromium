@@ -1574,6 +1574,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4030545038933060179">Kur ky cilësim është aktiv, këtu shfaqet një listë e temave bazuar në historikun tënd të shfletimit së fundi.</translation>
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4036753017940930924">Parcela dhe toka</translation>
+<translation id="4039506337798853114">Për të shfaqur kursorin, shtyp |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
 <translation id="404831776305217138">URL-ja e përditësimit për shtesën me ID "<ph name="EXTENSION_ID" />" është e pavlefshme ose përdor një skemë që nuk mbështetet. Skemat e mbështetura janë: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dhe <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Do të mund ta përdorësh atë nëpër produktet e Google</translation>
@@ -1586,6 +1587,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="406358100705415968">Pajisje mbrojtëse për sigurinë në punë</translation>
 <translation id="4063924980214801036">Përdor shkyçjen e pajisjes për të konfirmuar kartat më shpejt</translation>
 <translation id="4065659219963895623">Restorante</translation>
+<translation id="4067774859633143413">Për të dalë nga ekrani i plotë dhe për të shikuar shkarkimin, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
 <translation id="4072486802667267160">Ndodhi një gabim gjatë përpunimit të porosisë. Provo përsëri.</translation>
 <translation id="4073376909608563327">Shkyçja e pajisjes nuk mund të përdorej</translation>
@@ -1808,6 +1810,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4456937135469235202">Udhëtime për aventurë</translation>
 <translation id="4464826014807964867">Uebsajtet me informacione nga organizata jote</translation>
 <translation id="4466576951214254884">Kredi studentore dhe financim për universitetin</translation>
+<translation id="4467821340016922962">Për të dalë nga ekrani i plotë dhe për të parë shkarkimin, shtyp |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktivizo mbrojtjen e përmirësuar<ph name="END_ENHANCED_PROTECTION_LINK" /> për të marrë nivelin më të lartë të sigurisë të Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ky formular nuk është i sigurt. Plotësimi automatik është çaktivizuar.</translation>
@@ -2677,6 +2680,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6218305986815100395">Karta virtuale nuk mund të aktivizohet</translation>
 <translation id="6218753634732582820">Të hiqet adresa nga Chromium?</translation>
 <translation id="622039917539443112">Palosje paralele</translation>
+<translation id="6221286101741304627">Për të dalë nga ekrani i plotë, shtyp |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Dëshiron që ta ruash këtë kartë te "Llogaria jote e Google"?</translation>
 <translation id="6221345481584921695">Kohët e fundit "Shfletimi i sigurt" i Google <ph name="BEGIN_LINK" />zbuloi softuerin keqdashës<ph name="END_LINK" /> në <ph name="SITE" />. Uebsajtet që normalisht janë të sigurta, ndonjëherë infektohen me softuerë keqdashës. Përmbajtja keqdashëse vjen nga <ph name="SUBRESOURCE_HOST" />, një shpërndarës i njohur softuerësh keqdashës.</translation>
 <translation id="6221892641068781024">Pamja e thjeshtuar</translation>
@@ -3955,7 +3959,6 @@ Detaje shtesë:
 <translation id="8612919051706159390">Komunitete online</translation>
 <translation id="8617269623452051934">përdorimi i pajisjes sate</translation>
 <translation id="861775596732816396">Madhësia 4</translation>
-<translation id="8618975513789458065">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak interesante.</translation>
 <translation id="8620276786115098679">Zarf Kaku 7</translation>
 <translation id="8623885649813806493">Nuk ka asnjë fjalëkalim që përputhet. Shfaq të gjitha fjalëkalimet e ruajtura.</translation>
 <translation id="8624354461147303341">Merr uljet e çmimeve</translation>
@@ -4146,6 +4149,7 @@ Detaje shtesë:
 <translation id="9023536760430404133">Rrota dhe goma makinash</translation>
 <translation id="9025348182339809926">(E pavlefshme)</translation>
 <translation id="902590795160480390">PDF-ja po ngarkohet</translation>
+<translation id="9027531288681624875">Për të dalë nga ekrani i plotë, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Gabim i sigurisë</translation>
 <translation id="9035824888276246493">Ruaj kodet e sigurisë</translation>
 <translation id="9036306139374661733">Të lejohet mikrofoni?</translation>

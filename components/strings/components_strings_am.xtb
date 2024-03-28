@@ -1573,6 +1573,7 @@
 <translation id="4030545038933060179">በሚበራበት ጊዜ የርዕሶች ዝርዝር በአሰሳ ታሪክዎ ላይ በመመስረት እዚህ ላይ ይታያል</translation>
 <translation id="4031179711345676612">ማይክሮፎን ተፈቅዷል</translation>
 <translation id="4036753017940930924">ክፍት ቦታ እና መሬት</translation>
+<translation id="4039506337798853114">ጠቋሚዎን ለማሳየት |<ph name="ACCELERATOR" />|ን ይጫኑ</translation>
 <translation id="4047351652147966654">18 x 24 ኢንች</translation>
 <translation id="404831776305217138">ከመታወቂያ «<ph name="EXTENSION_ID" />» ጋር ያለው የቅጥያ ዝማኔ ዩአርኤል ልክ ያልሆነ ነው ወይም የማይደገፍ ዘዴ ይጠቀማል። የሚደገፉት ዘዴዎች የሚከተሉት ናቸው፦ <ph name="HTTP_SCHEME" />፣ <ph name="HTTPS_SCHEME" /> እና <ph name="FILE_SCHEME" />።</translation>
 <translation id="4050392779074832022">በመላው የGoogle ምርቶች ላይ ሊጠቀሙበት ይችላሉ</translation>
@@ -1585,6 +1586,7 @@
 <translation id="406358100705415968">የስራ ደህንነት መከላከያ መሳሪያ</translation>
 <translation id="4063924980214801036">ካርዶችን በበለጠ ፍጥነት ለማረጋገጥ የመሣሪያ መክፈቻን ይጠቀሙ</translation>
 <translation id="4065659219963895623">ምግብ ቤቶች</translation>
+<translation id="4067774859633143413">ከሙሉ ማያ ገጽ ለመውጣት እና ውርዱን ለማየት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="4067947977115446013">የሚሰራ አድራሻ ያስገቡ</translation>
 <translation id="4072486802667267160">የእርስዎን ትዕዛዝ መሥራት ላይ የሆነ ስህተት ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4073376909608563327">የመሣሪያ መክፈቻን መጠቀም አልተቻለም</translation>
@@ -1807,6 +1809,7 @@
 <translation id="4456937135469235202">የጀብዱ ጉዞ</translation>
 <translation id="4464826014807964867">ከድርጅትዎ መረጃ ያላቸው ድርጣቢያዎች</translation>
 <translation id="4466576951214254884">የተማሪ ብድሮች እና የኮሌጅ ፋይናንስ</translation>
+<translation id="4467821340016922962">ከሙሉ ማያ ገጽ ለመውጣት እና ውርዱን ለማየት |<ph name="ACCELERATOR" />|ን ይጫኑ</translation>
 <translation id="4473643328224505070">የChrome ከፍተኛ ደረጃ ጥበቃን ለማግኘት <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />የላቀ ጥበቃን ያብሩ<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />። <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">ይህ ቅጽ ደህንነቱ የተጠበቀ አይደለም። ራስ-ሙላ ጠፍቷል።</translation>
@@ -2677,6 +2680,7 @@
 <translation id="6218305986815100395">ምናባዊ ካርድ ማብራት አልተቻለም</translation>
 <translation id="6218753634732582820">ከChromium ላይ አድራሻ ይወገድ?</translation>
 <translation id="622039917539443112">ትይዩ እጥፋት</translation>
+<translation id="6221286101741304627">ከሙሉ ማያ ገጽ ለመውጣት |<ph name="ACCELERATOR" />|ን ይጫኑ</translation>
 <translation id="6221311046884916259">ይህን ካርድ በGoogle መለያዎ ውስጥ ማስቀመጥ ይፈልጋሉ?</translation>
 <translation id="6221345481584921695">Google የጥንቃቄ አሰሳ በቅርብ ጊዜ <ph name="SITE" /> ላይ <ph name="BEGIN_LINK" />ተንኮል-አዘል ዌር<ph name="END_LINK" /> አግኝቷል። በመደበኛ ጊዜ ደህንነታቸው የተጠበቁ ድር ጣቢያዎች አንዳንድ ጊዜ በተንኮል-አዘል ዌር ሊጠቁ ይችላሉ። ተንኮል-አዘል ይዘቱ የሚታወቅ የተንኮል-አዘል ዌር አሰራጭ ከሆነው <ph name="SUBRESOURCE_HOST" /> ነው የመጣው።</translation>
 <translation id="6221892641068781024">የተቃለለ ዕይታ</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">የመስመር ላይ ማህበረሰቦች</translation>
 <translation id="8617269623452051934">የእርስዎ መሣሪያ አጠቃቀም</translation>
 <translation id="861775596732816396">መጠን 4</translation>
-<translation id="8618975513789458065">የማስታወቂያ ርዕሶች አንድ ጣቢያ ማስታወቂያዎችን ግላዊ ለማድረግ ከሚጠቀምባቸው ብዙ ነገሮች ውስጥ አንዱ ብቻ ነው። የማስታወቂያ ርዕሶች ባይኖሩም እንኳ ጣቢያዎች አሁንም ማስታወቂያዎችን ሊያሳዩዎት ይችላሉ፣ ነገር ግን እነሱ ብዙም ሳቢ ላይሆኑ ይችላሉ።</translation>
 <translation id="8620276786115098679">ካኩ 7 ፖስታ</translation>
 <translation id="8623885649813806493">ምንም ተዛማጅ የይለፍ ቃላት የሉም። ሁሉንም የተቀመጡ የይለፍ ቃላትን አሳይ።</translation>
 <translation id="8624354461147303341">ቅናሾችን ያግኙ</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">የተሽከርካሪ ቸርኬ እና ጎማዎች</translation>
 <translation id="9025348182339809926">(ልክ ያልሆነ)</translation>
 <translation id="902590795160480390">PDF በመጫን ላይ</translation>
+<translation id="9027531288681624875">ከሙሉ ማያ ገጽ ለመውጣት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="9035022520814077154">የደህንነት ጥበቃ ስህተት</translation>
 <translation id="9035824888276246493">የደህንነት ኮዶችን ያስቀምጡ</translation>
 <translation id="9036306139374661733">ማይክሮፎን ይፈቀድ?</translation>

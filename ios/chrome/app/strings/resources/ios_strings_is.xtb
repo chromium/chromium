@@ -268,7 +268,6 @@
 
 Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar.</translation>
 <translation id="2381405137052800939">Grunnatriði</translation>
-<translation id="23824747102827308">Fylgstu með fréttum, íþróttum og fleiru byggt á áhugasviðunum þínum</translation>
 <translation id="2386793615875593361">Eitt valið</translation>
 <translation id="2390457533592708044">Fela „<ph name="MODULE_NAME" />“</translation>
 <translation id="2403129868389095715">Ekki er hægt að afhenda pakkann þinn</translation>
@@ -631,6 +630,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4282944936010261425">Engin öryggisvandamál til staðar.</translation>
 <translation id="4286718549648564014">Heimilisfang var fært yfir á reikninginn <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Nýjungar</translation>
+<translation id="429074084062258019">{count,plural, =1{Bæta flipa við hóp}one{Bæta flipum við hóp}other{Bæta flipum við hóp}}</translation>
 <translation id="4293080268407233932">Leit</translation>
 <translation id="4302248187517737842">Ekkert notandanafn ••••••••</translation>
 <translation id="4302415908542657649">Aðgangsorði deilt</translation>
@@ -726,6 +726,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="47677902929517676">Til að vista aðgangsorð á reikningnum þínum þarftu fyrst að stilla aðgangskóða í tækinu.</translation>
 <translation id="4775879719735953715">Sjálfgefinn vafri</translation>
 <translation id="4779732376610430319">Opna stillingar ...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Opna í huliðsstillingu?</translation>
 <translation id="4803185665210547709">Stjórnað af fyrirtækinu þínu.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5283494734135414249">Ýttu á flýtileiðina sem birtist undir veffangastikunni.</translation>
 <translation id="5295239312320826323">Viltu fjarlægja reikning <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Sýna</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> af <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318298563956633672">Þú ert þegar að vakta þessa vöru.</translation>
 <translation id="5327753393331509826">Fáðu tilkynningar um efni</translation>
@@ -1268,6 +1270,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7524055474074101597">Fáðu aðgang að aðgangsorðum og fleiru á milli forrita.</translation>
 <translation id="7527917367892640435">Pakki þegar rakinn</translation>
 <translation id="7531345132340165516">Þessi síða</translation>
+<translation id="75362970626182391">Nýr flipahópur</translation>
 <translation id="7537586195939242955">Því miður var ekki hægt að vista miðann í Passbook á þessari stundu.</translation>
 <translation id="754655535278952384">Athugað <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Síðasti flipi sem var notaður í <ph name="SOURCE_DEVICE" /></translation>

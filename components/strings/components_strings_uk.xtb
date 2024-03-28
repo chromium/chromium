@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">Якщо ввімкнути це налаштування, тут показуватиметься список тем, сформований на основі вашої нещодавньої історії веб-перегляду</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4036753017940930924">Земельні ділянки</translation>
+<translation id="4039506337798853114">Щоб показати курсор, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 дюйм.</translation>
 <translation id="404831776305217138">URL-адреса оновлення для розширення з ідентифікатором <ph name="EXTENSION_ID" /> недійсна або використовує непідтримувану схему. Підтримувані схеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> і <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ви зможете використовувати цю адресу в усіх продуктах Google</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">Засоби захисту на виробництві</translation>
 <translation id="4063924980214801036">Використовувати функцію розблокування пристрою, щоб швидше підтверджувати картки</translation>
 <translation id="4065659219963895623">Ресторани</translation>
+<translation id="4067774859633143413">Щоб вийти з повноекранного режиму й переглянути завантаження, утримуйте клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додайте дійсну адресу</translation>
 <translation id="4072486802667267160">Не вдалось обробити ваше замовлення. Повторіть спробу.</translation>
 <translation id="4073376909608563327">Не вдалося використати функцію розблокування пристрою</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">Пригодницькі подорожі</translation>
 <translation id="4464826014807964867">Веб-сайти, які отримали інформацію від вашої організації</translation>
 <translation id="4466576951214254884">Студентські кредити й фінансування освіти</translation>
+<translation id="4467821340016922962">Щоб вийти з повноекранного режиму й переглянути завантаження, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Увімкніть покращений захист<ph name="END_ENHANCED_PROTECTION_LINK" />, щоб веб-переглядач Chrome був максимально безпечним</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Ця форма незахищена. Автозаповнення вимкнено.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">Не вдалося ввімкнути віртуальну картку</translation>
 <translation id="6218753634732582820">Видалити адресу з Chromium?</translation>
 <translation id="622039917539443112">Зігнути паралельно</translation>
+<translation id="6221286101741304627">Щоб вийти з повноекранного режиму, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Зберегти дані картки у вашому обліковому записі Google?</translation>
 <translation id="6221345481584921695">Функція безпечного перегляду від Google <ph name="BEGIN_LINK" />виявила зловмисне програмне забезпечення<ph name="END_LINK" /> на сайті <ph name="SITE" />. Іноді зловмисне програмне забезпечення заражає зазвичай безпечні веб-сайти. Шкідливий вміст походить із хосту <ph name="SUBRESOURCE_HOST" /> – відомого розповсюджувача зловмисного програмного забезпечення.</translation>
 <translation id="6221892641068781024">Спрощений перегляд</translation>
@@ -3957,7 +3961,6 @@
 <translation id="8612919051706159390">Онлайн-спільноти</translation>
 <translation id="8617269623452051934">дані про активний стан пристрою</translation>
 <translation id="861775596732816396">Розмір 4</translation>
-<translation id="8618975513789458065">Теми оголошень – це лише один із багатьох параметрів, які сайт може використовувати для персоналізації реклами. Навіть без них сайти все одно можуть показувати оголошення, але не такі релевантні.</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
 <translation id="8623885649813806493">Пароль для цього сайту не знайдено. Показати всі збережені паролі.</translation>
 <translation id="8624354461147303341">Отримувати знижки</translation>
@@ -4148,6 +4151,7 @@
 <translation id="9023536760430404133">Автомобільні колеса й шини</translation>
 <translation id="9025348182339809926">(Недійсний)</translation>
 <translation id="902590795160480390">Завантаження файлу PDF</translation>
+<translation id="9027531288681624875">Щоб вийти з повноекранного режиму, утримуйте клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Помилка системи безпеки</translation>
 <translation id="9035824888276246493">Зберігати коди безпеки</translation>
 <translation id="9036306139374661733">Дозволити доступ до мікрофона?</translation>

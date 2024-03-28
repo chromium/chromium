@@ -1574,6 +1574,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4030545038933060179">Kui see on sisse lülitatud, kuvatakse teie hiljutise sirvimisajaloo põhjal siin teemade loend</translation>
 <translation id="4031179711345676612">Mikrofon on lubatud</translation>
 <translation id="4036753017940930924">Krundid ja maa</translation>
+<translation id="4039506337798853114">Vajutage kursori kuvamiseks klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 × 24 tolli</translation>
 <translation id="404831776305217138">ID-ga „<ph name="EXTENSION_ID" />” laienduse URL-i värskendamine on kehtetu või kasutab toetamata skeemi. Toetatud skeemid on: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ja <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Saate seda kõigis Google'i teenustes kasutada</translation>
@@ -1586,6 +1587,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="406358100705415968">Töökaitsevahendid</translation>
 <translation id="4063924980214801036">Kasutage kaartide kiiremaks kinnitamiseks seadmega avamist</translation>
 <translation id="4065659219963895623">Restoranid</translation>
+<translation id="4067774859633143413">Vajutage Täisekraanilt väljumiseks ja allalaaditud faili(de) nägemiseks pikalt klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Sobiva aadressi lisamine</translation>
 <translation id="4072486802667267160">Teie tellimuse töötlemisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="4073376909608563327">Seadmega avamist ei saanud kasutada</translation>
@@ -1808,6 +1810,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4456937135469235202">Seiklusturism</translation>
 <translation id="4464826014807964867">Teie organisatsiooni teabega veebisaidid</translation>
 <translation id="4466576951214254884">Õppelaenud ja õpingute rahastamine</translation>
+<translation id="4467821340016922962">Vajutage täisekraanilt väljumiseks ja allalaaditud faili(de) kuvamiseks klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070">Chrome'i kõrgeima taseme turvalisuse saavutamiseks <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />lülitage sisse täiustatud kaitse<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">See vorm pole turvaline. Automaattäide on välja lülitatud.</translation>
@@ -2678,6 +2681,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6218305986815100395">Virtuaalkaarti ei saa sisse lülitada</translation>
 <translation id="6218753634732582820">Kas eemaldada Chromiumist aadress?</translation>
 <translation id="622039917539443112">Paralleelselt volditud</translation>
+<translation id="6221286101741304627">Vajutage täisekraanilt väljumiseks klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Kas soovite selle kaardi salvestada oma Google'i kontole?</translation>
 <translation id="6221345481584921695">Google'i ohutu sirvimise teenus <ph name="BEGIN_LINK" />tuvastas hiljuti pahavara<ph name="END_LINK" /> saidil <ph name="SITE" />. Tavaliselt turvalisi veebisaite võidakse mõnikord nakatada pahavaraga. Pahatahtlik sisu pärineb hostilt <ph name="SUBRESOURCE_HOST" />, mis on tuntud pahavara levitaja.</translation>
 <translation id="6221892641068781024">Lihtsustatud vaade</translation>
@@ -3956,7 +3960,6 @@ Lisateave:
 <translation id="8612919051706159390">Internetikogukonnad</translation>
 <translation id="8617269623452051934">teie seadmekasutus</translation>
 <translation id="861775596732816396">Suurus 4</translation>
-<translation id="8618975513789458065">Reklaamiteemad on vaid üks paljudest asjadest, mida sait võib kasutada reklaamide isikupärastamiseks. Saidid võivad teile reklaame näidata ka ilma reklaamiteemadeta, kuid need võivad olla vähem huvitavad.</translation>
 <translation id="8620276786115098679">Ümbrik Kaku 7</translation>
 <translation id="8623885649813806493">Ühtivaid paroole ei ole. Vaadake kõiki salvestatud paroole.</translation>
 <translation id="8624354461147303341">Hangi allahindlusi</translation>
@@ -4147,6 +4150,7 @@ Lisateave:
 <translation id="9023536760430404133">Sõidukite rehvid ja veljed</translation>
 <translation id="9025348182339809926">(Kehtetu)</translation>
 <translation id="902590795160480390">PDF-i laadimine</translation>
+<translation id="9027531288681624875">Vajutage täisekraanilt väljumiseks pikalt klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Turvaviga</translation>
 <translation id="9035824888276246493">Salvesta turvakoodid</translation>
 <translation id="9036306139374661733">Kas lubada mikrofon?</translation>

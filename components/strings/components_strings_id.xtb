@@ -1574,6 +1574,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4030545038933060179">Jika diaktifkan, daftar topik akan muncul di sini berdasarkan histori penjelajahan terbaru Anda</translation>
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4036753017940930924">Kaveling &amp; Tanah</translation>
+<translation id="4039506337798853114">Untuk menampilkan kursor, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 inci (45 x 60 cm)</translation>
 <translation id="404831776305217138">URL update untuk ekstensi dengan ID "<ph name="EXTENSION_ID" />" tidak valid atau menggunakan skema yang tidak didukung. Skema yang didukung adalah: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, dan <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Anda akan dapat menggunakannya di seluruh produk Google</translation>
@@ -1586,6 +1587,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="406358100705415968">Perlengkapan Pelindung Keselamatan Kerja</translation>
 <translation id="4063924980214801036">Gunakan fitur buka kunci perangkat untuk mengonfirmasi kartu lebih cepat</translation>
 <translation id="4065659219963895623">Restoran</translation>
+<translation id="4067774859633143413">Untuk keluar dari layar penuh dan melihat hasil download, tekan dan tahan |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Tambahkan Alamat yang Valid</translation>
 <translation id="4072486802667267160">Terjadi error saat memproses pesanan Anda. Harap coba lagi.</translation>
 <translation id="4073376909608563327">Tidak dapat menggunakan fitur buka kunci perangkat</translation>
@@ -1808,6 +1810,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4456937135469235202">Wisata Petualangan</translation>
 <translation id="4464826014807964867">Situs dengan info dari organisasi Anda</translation>
 <translation id="4466576951214254884">Pinjaman Pelajar &amp; Pembiayaan Kuliah</translation>
+<translation id="4467821340016922962">Untuk keluar dari layar penuh dan melihat hasil download, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Aktifkan perlindungan yang ditingkatkan<ph name="END_ENHANCED_PROTECTION_LINK" /> untuk mendapatkan tingkat keamanan tertinggi Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Formulir ini tidak aman. Isi otomatis telah dinonaktifkan.</translation>
@@ -2678,6 +2681,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6218305986815100395">Tidak dapat mengaktifkan kartu virtual</translation>
 <translation id="6218753634732582820">Hapus alamat dari Chromium?</translation>
 <translation id="622039917539443112">Lipatan paralel</translation>
+<translation id="6221286101741304627">Untuk keluar dari layar penuh, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Ingin menyimpan kartu ini di Akun Google Anda?</translation>
 <translation id="6221345481584921695">Google Safe Browsing baru saja <ph name="BEGIN_LINK" />mendeteksi software perusak<ph name="END_LINK" /> di <ph name="SITE" />. Situs web yang biasanya aman terkadang terinfeksi software perusak. Konten berbahaya datang dari <ph name="SUBRESOURCE_HOST" />, yang dikenal luas sebagai distributor software perusak.</translation>
 <translation id="6221892641068781024">Tampilan Sederhana</translation>
@@ -3952,7 +3956,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8612919051706159390">Komunitas Online</translation>
 <translation id="8617269623452051934">penggunaan perangkat Anda</translation>
 <translation id="861775596732816396">Ukuran 4</translation>
-<translation id="8618975513789458065">Topik iklan hanyalah salah satu dari banyak hal yang dapat digunakan situs untuk mempersonalisasi iklan. Bahkan tanpa topik iklan, situs tetap dapat menampilkan iklan kepada Anda, tetapi iklan tersebut mungkin kurang menarik.</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">Tidak ada sandi yang cocok. Tampilkan semua sandi yang tersimpan.</translation>
 <translation id="8624354461147303341">Dapatkan diskon</translation>
@@ -4143,6 +4146,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9023536760430404133">Roda &amp; Ban Kendaraan</translation>
 <translation id="9025348182339809926">(Tidak valid)</translation>
 <translation id="902590795160480390">Memuat PDF</translation>
+<translation id="9027531288681624875">Untuk keluar dari layar penuh, tekan dan tahan |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Kesalahan keamanan</translation>
 <translation id="9035824888276246493">Simpan kode keamanan</translation>
 <translation id="9036306139374661733">Izinkan mikrofon?</translation>

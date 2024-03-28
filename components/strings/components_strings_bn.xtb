@@ -1575,6 +1575,7 @@
 <translation id="4030545038933060179">চালু করা থাকলে, আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে এখানে বিষয়ের তালিকা দেখানো হবে</translation>
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4036753017940930924">প্লট ও জমি</translation>
+<translation id="4039506337798853114">আপনার কার্সর দেখাতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
 <translation id="404831776305217138">"<ph name="EXTENSION_ID" />" আইডি যুক্ত এক্সটেনশনের আপডেট URL ভুল বা এতে ব্যবহারযোগ্য নয় এমন স্কিম ব্যবহার করা হচ্ছে। ব্যবহারযোগ্য স্কিমগুলি হল: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> এবং <ph name="FILE_SCHEME" />।</translation>
 <translation id="4050392779074832022">আপনি এটি সমস্ত Google প্রোডাক্ট জুড়ে ব্যবহার করতে পারবেন</translation>
@@ -1587,6 +1588,7 @@
 <translation id="406358100705415968">কাজের ক্ষেত্রে সুরক্ষা সম্পর্কিত প্রতিরক্ষামূলক সরঞ্জাম</translation>
 <translation id="4063924980214801036">কার্ড আরও দ্রুত কনফার্ম করতে ডিভাইস আনলক ব্যবহার করুন</translation>
 <translation id="4065659219963895623">রেস্তোরাঁ</translation>
+<translation id="4067774859633143413">ফুল স্ক্রিন থেকে বেরিয়ে আসতে ও ডাউনলোড দেখতে, |<ph name="ACCELERATOR" />| প্রেস করে ধরে রাখুন</translation>
 <translation id="4067947977115446013">সঠিক ঠিকানা যোগ করুন</translation>
 <translation id="4072486802667267160">আপনার অর্ডার প্রক্রিয়া করার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
 <translation id="4073376909608563327">ডিভাইস আনলক ব্যবহার করা যাচ্ছে না</translation>
@@ -1809,6 +1811,7 @@
 <translation id="4456937135469235202">রোমাঞ্চকর ভ্রমণ</translation>
 <translation id="4464826014807964867">এমন ওয়েবসাইট যার ব্যাপারে আপনার সংস্থার কাছ থেকে তথ্য পাওয়া গেছে</translation>
 <translation id="4466576951214254884">স্টুডেন্ট লোন এবং কলেজ ফাইন্যান্সিং</translation>
+<translation id="4467821340016922962">ফুল স্ক্রিন থেকে বেরিয়ে আসতে ও ডাউনলোড দেখতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
 <translation id="4473643328224505070">Chrome-এর সবচেয়ে সেরা লেভেলের সুরক্ষা পেতে <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />উন্নত সুরক্ষা চালু করুন<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">এই ফর্ম নিরাপদ নয়। অটোফিল বন্ধ করে দেওয়া হয়েছে।</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">ভার্চুয়াল কার্ড চালু করা যাচ্ছে না</translation>
 <translation id="6218753634732582820">Chromium থেকে ঠিকানা সরাবেন?</translation>
 <translation id="622039917539443112">প্যারালাল ফোল্ড</translation>
+<translation id="6221286101741304627">ফুল স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করুন</translation>
 <translation id="6221311046884916259">আপনি কি নিজের Google অ্যাকাউন্টে এই কার্ড সেভ করতে চান?</translation>
 <translation id="6221345481584921695">Google নিরাপদ ব্রাউজিং সাম্প্রতিক <ph name="SITE" />-এ <ph name="BEGIN_LINK" />ম্যালওয়্যার শনাক্ত করেছে<ph name="END_LINK" />। যেসব ওয়েবসাইট সাধারণত নিরাপদ থাকে সেগুলি কখনও কখনও ম্যালওয়্যার দ্বারা আক্রান্ত হয়। <ph name="SUBRESOURCE_HOST" />, একটি পরিচিত ম্যালওয়্যার ডিস্ট্রিবিউটরের, থেকে ক্ষতিকারক কন্টেন্ট আসে। কয়েক ঘণ্টা পরে আপনার ফিরে আসা উচিত।</translation>
 <translation id="6221892641068781024">সরলীকৃত ভিউ</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">অনলাইন কমিউনিটি</translation>
 <translation id="8617269623452051934">আপনার ডিভাইসের ব্যবহার</translation>
 <translation id="861775596732816396">সাইজ ৪</translation>
-<translation id="8618975513789458065">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও সাইট যেসব জিনিস ব্যবহার করে, তাদের মধ্যে একটি হল বিজ্ঞাপনের বিষয়। এমনকি বিজ্ঞাপনের বিষয় ছাড়াও, সাইট আপনাকে বিজ্ঞাপন দেখাতে পারবে কিন্তু সেগুলি কম আকর্ষণীয় হতে পারে।</translation>
 <translation id="8620276786115098679">এনভেলপ কাকু ৭</translation>
 <translation id="8623885649813806493">পাসওয়ার্ড ম্যাচ করছে না। সেভ করা সমস্ত পাসওয়ার্ড ম্যানেজ করুন।</translation>
 <translation id="8624354461147303341">ছাড় পান</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">গাড়ির চাকা ও টায়ার</translation>
 <translation id="9025348182339809926">(ভুল)</translation>
 <translation id="902590795160480390">PDF লোড হচ্ছে</translation>
+<translation id="9027531288681624875">ফুল স্ক্রিন থেকে বেরিয়ে আসতে, |<ph name="ACCELERATOR" />| প্রেস করে ধরে রাখুন</translation>
 <translation id="9035022520814077154">নিরাপত্তা ত্রুটি</translation>
 <translation id="9035824888276246493">নিরাপত্তা কোড সেভ করুন</translation>
 <translation id="9036306139374661733">মাইক্রোফোন অ্যাক্সেসের অনুমতি দেবেন?</translation>

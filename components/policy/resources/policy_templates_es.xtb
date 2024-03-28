@@ -206,6 +206,7 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
       Si se inhabilita esta política, la función de lista de la compra no estará disponible.
       </translation>
 <translation id="1144147113722324623">Habilitar las actualizaciones automáticas a HTTPS en audio y vídeo, y mostrar una advertencia sobre las imágenes que indique que no son seguras</translation>
+<translation id="1145928409398419809">Inhabilitar la integración de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="1147732569915511430">El hash SHA-256 de la imagen de avatar.</translation>
 <translation id="1148415065145333943">Inhabilitar el modo avanzado de carga de la batería</translation>
 <translation id="1149203480502386713">Habilitar acuerdo de claves poscuántico para TLS</translation>
@@ -3232,6 +3233,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Inhabilitar los informes sobre la interfaz de red del dispositivo</translation>
 <translation id="3540935459049973317">Límites de tiempo por aplicación</translation>
+<translation id="3546271546272655966"><ph name="DBSC_FEATURE_NAME" /> se podrá usar en función del proceso de lanzamiento de la función.</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3548064438634502368">Cerrar navegadores</translation>
 <translation id="3548642468619496972">Bloquear las descargas maliciosas, poco frecuentes o no deseadas, así como los tipos de archivos peligrosos.</translation>
@@ -4784,6 +4786,15 @@ Si se asigna el valor False a esta política, se usará el comportamiento predet
       Si se inhabilita esta política o no se le asigna ningún valor, el registro en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y, si no se puede hacer, no se bloqueará el proceso de inicio de <ph name="PRODUCT_NAME" />.
 
       En ordenadores, el registro de políticas de permisos de nube utiliza esta política. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="4889589161838982604">Controla el estado de la función <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> protege las cookies de autenticación de Google frente al robo de cookies enviando de forma periódica a los servidores de Google una prueba criptográfica de la posesión de un dispositivo.
+
+Si se le asigna el valor false a esta política, se inhabilitará la función <ph name="DBSC_FEATURE_NAME" />.
+
+Si se le asigna el valor true, se habilitará la función <ph name="DBSC_FEATURE_NAME" />.
+
+Si no se define esta política, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado de la función <ph name="DBSC_FEATURE_NAME" />, lo que significa que la función se lanzará de forma gradual para un número progresivamente mayor de usuarios.</translation>
 <translation id="488996881569316769">Telemetría de red</translation>
 <translation id="4890453377345554695">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
@@ -5561,6 +5572,7 @@ Se eliminó en la versión M112.</translation>
       Si no se establece la política, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="552607466422196365">Inhabilitar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Permitir que se realicen consultas a Quirks Server y que potencialmente se descarguen archivos de configuración de hardware concreto</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
@@ -5974,6 +5986,7 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
 
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se le permitirá recoger datos a <ph name="PLUGIN_VM_NAME" />.
       Si se le asigna el valor "true", <ph name="PLUGIN_VM_NAME" /> podrá recoger datos de uso de <ph name="PLUGIN_VM_NAME" /> que posteriormente se combinarán y se analizarán de forma exhaustiva para mejorar la experiencia de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5872738620659477303">Vincular las credenciales de Google a un dispositivo.</translation>
 <translation id="5875873062228321803">Configura el requisito de la versión mínima permitida de <ph name="PRODUCT_OS_NAME" />.
 
       Cuando a esta política se le asigna una lista que no esté vacía:
@@ -5999,6 +6012,11 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> es una propiedad opcional cuyo valor predeterminado es False.</translation>
 <translation id="5879014913445067283">Controla la búsqueda de archivos compartidos en la red mediante <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Habilitar la función Tocar para buscar</translation>
+<translation id="5881715931837589500">Habilita la integración de <ph name="GOOGLE_CLASSROOM_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
+
+Si se habilita esta política o no se define, se habilitará la integración de <ph name="GOOGLE_CLASSROOM_NAME" /> para los usuarios de empresa.
+
+Si se inhabilita esta política, se inhabilitará la integración de <ph name="GOOGLE_CLASSROOM_NAME" /> para los usuarios de empresa.</translation>
 <translation id="5882345429632338713">Retraso antes de iniciar un navegador alternativo (en milisegundos)</translation>
 <translation id="5883015257301027298">Configuración de cookies predeterminada</translation>
 <translation id="5883754873839596178">Establecer esta política permite especificar el número máximo de conexiones simultáneas al servidor proxy. Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar estableciendo un valor inferior para esta política. El valor debe ser inferior a 100 y superior a 6. Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo. Si estableces un valor inferior al predeterminado, debes hacerlo bajo tu propia responsabilidad.
@@ -6035,6 +6053,11 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
 <translation id="5897913798715600338">Carga la batería usando la tecnología de carga rápida.</translation>
 <translation id="5898486742390981550">Si varios usuarios han iniciado sesión, solo podrá utilizar las aplicaciones para Android el usuario principal.</translation>
 <translation id="5899751601113377553">Evitar que los usuarios utilicen <ph name="LACROS_NAME" /></translation>
+<translation id="5900000623536207626">Habilita la integración de <ph name="GOOGLE_TASKS_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
+
+Si se habilita esta política o no se define, se habilitará la integración de <ph name="GOOGLE_TASKS_NAME" /> para los usuarios de empresa.
+
+Si se inhabilita esta política, se inhabilitará la integración de <ph name="GOOGLE_TASKS_NAME" /> para los usuarios de empresa.</translation>
 <translation id="5900919753933009463">Enviar información sobre la configuración de red</translation>
 <translation id="5901427587865226597">Solo impresión por las dos caras</translation>
 <translation id="5905114360004248993">Permitir ventanas emergentes en estos sitios</translation>
@@ -6179,6 +6202,7 @@ Esta política está obsoleta a partir de la versión M124.</translation>
 <translation id="6049117606554031363">Habilitar los informes sobre el estado de la placa del dispositivo</translation>
 <translation id="6050796253724099706">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="605132676434455096">No permitir que se añadan nuevos perfiles</translation>
+<translation id="6052660755155321371">Inhabilitar la integración de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="6053260874233331700">No permitir el acceso a la geolocalización en la pantalla de inicio de sesión.</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versiones obsoletas del protocolo TLD/DTLS</translation>
 <translation id="6056517174496942473">Habilitar el flujo de atestación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs</translation>
@@ -7760,6 +7784,7 @@ El valor de la política es una lista de certificados X.509 codificados en Base6
 
       Nota: La política no afecta a Google Drive ni al almacenamiento interno. Los usuarios pueden seguir accediendo a los archivos guardados en la carpeta Descargas.</translation>
 <translation id="7177857088692019405">Desbloqueo rápido</translation>
+<translation id="7177980542896745343">Habilitar la integración de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7179157174254421614">A menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive la detección automática de la zona horaria, asignar un valor a esta política define el método de detección automática de la zona horaria, que los usuarios no pueden cambiar.
 
 Si se asignan los siguientes valores:
@@ -7995,6 +8020,7 @@ Esta política debe establecerse como una lista de nombres de dominios completos
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7372210077527987724">Habilitar la integración de <ph name="GOOGLE_CLASSROOM_NAME" />.</translation>
 <translation id="7372831798009983116">Habilitar la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reinicia cuando el usuario cierra sesión si se ha iniciado Android o una máquina virtual.</translation>
 <translation id="7374784840090523241">Crear llaves de acceso de forma predeterminada en otros almacenes, como el perfil de <ph name="PRODUCT_NAME" /></translation>
@@ -8509,6 +8535,7 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si se le asigna el valor False o no se le asigna ningún valor, es posible que se bloquee el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o de tamaño reducido.
 
       Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las políticas <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801833005984890634">Habilitar la integración de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="7804859754080118507">Informa de eventos de conexión de red y de intensidad de señal en dispositivos registrados.
 
       Si se le asigna el valor false a esta política o no se le asigna ningún valor, no se enviará esta información.
@@ -9583,6 +9610,7 @@ Esta política asigna IDs de configuración a las configuraciones de VM. Si una 
 <translation id="8685748277907759932">Evitar que los usuarios utilicen la función Tocar para buscar</translation>
 <translation id="8686700500128191717">Habilitar los informes sobre los usuarios del dispositivo</translation>
 <translation id="8687958770985542440">Volver a habilitar la API v0 de componentes web hasta M84.</translation>
+<translation id="8690591325980850680">Habilitar la integración de <ph name="GOOGLE_TASKS_NAME" />.</translation>
 <translation id="8693243869659262736">Utilizar cliente DNS integrado</translation>
 <translation id="8695006038397632296">Crear y subir solicitudes de instalación de extensiones a la consola de administración</translation>
 <translation id="8695108198606654558">Esta política solo controla el comportamiento de importación al ejecutar el navegador por primera vez después de instalarlo. Permite una transición más fluida a <ph name="PRODUCT_NAME" /> en entornos donde se ha usado mucho otro navegador antes de instalarlo. Esta política no afecta a las funciones del gestor de contraseñas en las cuentas de Google.
@@ -10312,6 +10340,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo desde la configuración del navegador. Si no se le asigna ningún valor, el modo de segundo plano estará desactivado inicialmente, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="981245424658084931">Habilitar señal de latido de actividad de los dispositivos</translation>
 <translation id="981346395360763138">Los servicios de ubicación de Google están inhabilitados</translation>
+<translation id="982195863867062122">Habilitar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Habilitar corrector ortográfico</translation>
 <translation id="983256325512298435">Definir una lista de protocolos que pueden abrir una aplicación externa de orígenes autorizados sin pedir permiso al usuario</translation>
 <translation id="984365509386992443">Si se habilita esta política o no se define, el usuario podrá recibir encuestas relacionadas con Navegación segura.

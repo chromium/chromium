@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">Када је ово подешавање укључено, листа тема се приказује овде на основу недавне историје прегледања</translation>
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4036753017940930924">Парцеле и земља</translation>
+<translation id="4039506337798853114">Да бисте омогућили приказ курсора, притисните |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18×24 in</translation>
 <translation id="404831776305217138">URL ажурирања за додатак са ИД-ом <ph name="EXTENSION_ID" /> је неважећи или користи неподржану шему. Подржане шеме су: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Моћи ћете да је користите у свим Google производима</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">Заштитна опрема за безбедност на раду</translation>
 <translation id="4063924980214801036">Користите откључавање уређаја да бисте брже потврђивали картице</translation>
 <translation id="4065659219963895623">Ресторани</translation>
+<translation id="4067774859633143413">Да бисте изашли из режима целог екрана и прегледали преузимање, притисните и задржите |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важећу адресу</translation>
 <translation id="4072486802667267160">Дошло је до грешке при обради поруџбине. Пробајте поново.</translation>
 <translation id="4073376909608563327">Откључавање уређаја није успело</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">Авантуристичка путовања</translation>
 <translation id="4464826014807964867">Веб-сајтови са подацима из ваше организације</translation>
 <translation id="4466576951214254884">Студентски кредити и стипендирање</translation>
+<translation id="4467821340016922962">Да бисте изашли из режима целог екрана и прегледали преузимање, притисните |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Укључите Побољшану заштиту<ph name="END_ENHANCED_PROTECTION_LINK" /> да бисте добили највиши ниво безбедности у Chrome-у</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Овај образац није безбедан. Аутоматско попуњавање је искључено.</translation>
@@ -2677,6 +2680,7 @@
 <translation id="6218305986815100395">Укључивање виртуелне картице није успело</translation>
 <translation id="6218753634732582820">Желите ли да уклоните адресу из Chromium-а?</translation>
 <translation id="622039917539443112">Паралелно пресавијање</translation>
+<translation id="6221286101741304627">Да бисте изашли из режима целог екрана, притисните |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Да ли желите да сачувате ову картицу на Google налогу?</translation>
 <translation id="6221345481584921695">Google безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило малвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-сајтови који су обично безбедни се понекад заразе малвером. Злонамеран садржај потиче са <ph name="SUBRESOURCE_HOST" />, који је познати дистрибутер малвера.</translation>
 <translation id="6221892641068781024">Поједностављени приказ</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">Онлајн заједнице</translation>
 <translation id="8617269623452051934">коришћење уређаја</translation>
 <translation id="861775596732816396">Величина 4</translation>
-<translation id="8618975513789458065">Теме огласа су само једна од многих ствари које сајт може да користи за персонализацију огласа. Чак и без тема огласа, сајтови и даље могу да вам приказују огласе, али они могу да буду мање занимљиви.</translation>
 <translation id="8620276786115098679">Коверта Kaku 7</translation>
 <translation id="8623885649813806493">Ниједна лозинка се не подудара. Прикажи све сачуване лозинке.</translation>
 <translation id="8624354461147303341">Остварите попусте</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">Точкови и гуме за возила</translation>
 <translation id="9025348182339809926">(Неважеће)</translation>
 <translation id="902590795160480390">PDF се учитава</translation>
+<translation id="9027531288681624875">Да бисте изашли из режима целог екрана, притисните и задржите |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Безбедносна грешка</translation>
 <translation id="9035824888276246493">Сачувај безбедносне кодове</translation>
 <translation id="9036306139374661733">Желите ли да дозволите микрофон?</translation>

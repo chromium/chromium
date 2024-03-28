@@ -1930,6 +1930,7 @@
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2436385001956947090">リンクをコピー(&amp;L)</translation>
+<translation id="2436746748253887661">システム サービスによる位置情報の使用を許可するかどうかを指定します。デバイスの位置情報の特定には、Wi-Fi、モバイル ネットワーク、センサーなどのソースが使用される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">プリンタに接続されていません</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> のパスワードを再設定</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> を読み込んでいます</translation>
@@ -2487,6 +2488,7 @@
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
 <translation id="2845751331501453107">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK1" />ウェブサイトが提案する広告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定状況<ph name="LINK_END2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="284581348330507117">新たなパスワードを作成してください</translation>
+<translation id="284884486564166077">Google レンズで画像を検索</translation>
 <translation id="2849035674501872372">調べる</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />（<ph name="UNICODE_NAME" />）</translation>
 <translation id="2849767214114481738">PIN を追加しました</translation>
@@ -3390,6 +3392,7 @@
 <translation id="3577487026101678864">ファイルの同期はオンになっています</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> のハードウェア データの収集</translation>
 <translation id="3581605050355435601">IP アドレスを自動的に設定する</translation>
+<translation id="3581861561942370740">ダウンロード履歴を検索</translation>
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
@@ -3656,6 +3659,7 @@
 <translation id="3765055238058255342">このタイプのカード</translation>
 <translation id="3765246971671567135">オフライン デモモード ポリシーを読み取ることができませんでした。</translation>
 <translation id="3765696567014520261">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のパーソナライズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />お使いのデバイスの ChromeOS と Android の位置情報は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でいつでもオフにできます。また、同じメニューの [位置情報の詳細設定] で [位置情報の精度の改善] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">スマートフォン ハブの詳細</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">現在のところ、パスワードはファミリー メンバーとのみ共有できます。グループに<ph name="BEGIN_LINK" />ファミリー メンバーを招待<ph name="END_LINK" />すると、Google 全体でサービスや定期購入をお得に利用できます。</translation>
@@ -4322,6 +4326,7 @@
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
 <translation id="4279129444466079448">このデバイスにインストールできる eSIM プロファイルは <ph name="PROFILE_LIMIT" /> 個までです。さらにプロファイルを追加するには、その前にいずれかの既存のプロファイルを削除してください。</translation>
 <translation id="4280325816108262082">デバイスの電源がオフになったときや使用されていないときは接続を自動的に解除します</translation>
+<translation id="4281637354026226955">位置情報の利用を許可されている ChromeOS と Android のアプリやサービスが、ご利用のデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4281849573951338030">ペンボタンをカスタマイズ</translation>
 <translation id="4282196459431406533">Smart Lock が有効です</translation>
@@ -5302,6 +5307,7 @@
 <translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="5057127674016624293">スキャンに通常より時間がかかっています</translation>
+<translation id="5057480703570202545">ダウンロード履歴</translation>
 <translation id="5059241099014281248">ログイン制限</translation>
 <translation id="5059429103770496207">表示スタイル</translation>
 <translation id="5059526285558225588">共有する内容を選択</translation>
@@ -5710,6 +5716,7 @@
 <translation id="5390677308841849479">暗い赤とオレンジ</translation>
 <translation id="5392192690789334093">通知の送信を許可するサイト</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{リンク}other{# 件のリンク}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">デフォルトのフォント</translation>
 <translation id="5397378439569041789">キオスクまたはサイネージ デバイスを登録</translation>
 <translation id="5397794290049113714">あなた</translation>
@@ -6197,6 +6204,8 @@
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" />（システムのデフォルト）</translation>
 <translation id="5776450228446082914">どちらのブラウザでも開くことができるウェブサイトのリストです。</translation>
 <translation id="5776571780337000608">ファイル ブラウザからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
+<translation id="5776884611062957102">Google の位置情報サービスでは、Wi-Fi、モバイル ネットワーク、センサーを使用して現在地を推定することで、位置情報の精度を向上させています。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。
+    この設定をオフにすると、Android での位置情報を確認する情報源が IP アドレスのみになります。これにより、マップなどのアプリで使用される位置情報の精度に影響が及ぶ可能性があります。</translation>
 <translation id="5778491106820461378">ログインする Google アカウントは、<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />で管理できます。ウェブサイトとアプリに許可した権限はすべてのアカウントに適用される可能性があります。サイトやアプリがアカウント情報にアクセスすることを望まない場合は、<ph name="DEVICE_TYPE" /> にゲストとしてログインできます。</translation>
 <translation id="5780011244986845107">選択したフォルダには、機密ファイルが含まれています。このフォルダに対する永続的な読み取りアクセス権を「<ph name="APP_NAME" />」に付与してもよろしいですか？</translation>
 <translation id="5780973441651030252">プロセスの優先値</translation>
@@ -6282,6 +6291,7 @@
 <translation id="5836999627049108525">翻訳元の言語</translation>
 <translation id="583756221537636748">ケース</translation>
 <translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
+<translation id="5841167715783969407">Wi-Fi またはモバイル ネットワークに基づくタイムゾーンの自動設定</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
 <translation id="5844284118433003733">ログイン中は、このデータを Google アカウントにリンクして、すべての Google サービスで保護します（セキュリティ インシデント後に Gmail で保護を強化するなど）。</translation>
@@ -6731,6 +6741,7 @@
 <translation id="6180510783007738939">直線ツール</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> に使用するパスキーを指定してください</translation>
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
+<translation id="6183369864942961155">ライトモード / ダークモード自動設定</translation>
 <translation id="6184099524311454384">タブを検索</translation>
 <translation id="6184868291074982484">Chrome でサードパーティ Cookie を自動的に制限します</translation>
 <translation id="6185132558746749656">デバイスの位置情報</translation>
@@ -7133,6 +7144,7 @@
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
 <translation id="6514010653036109809">接続可能なデバイス:</translation>
 <translation id="6517227424170598783">「<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />」のショートカットを削除しますか？</translation>
+<translation id="6517382055541687102">選択デバイスが <ph name="DEVICE_NAME" /> に変更されました</translation>
 <translation id="6517420300299531857">マイドライブ内のファイルは Chromebook と自動的に同期されるので、インターネット接続がなくてもアクセスできます。この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE_AVAILABLE" /> です。</translation>
 <translation id="6517709704288360414">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。また、更新を無効にすると、問題発生時に法的申し立てを行う権利にも影響が及ぶ場合があります。</translation>
 <translation id="6518014396551869914">画像をコピー(&amp;Y)</translation>
@@ -7388,6 +7400,7 @@
 <translation id="6713441551032149301">ファンクション キーとシステムの最上段のキーを切り替えるには、ランチャーキーを長押しします</translation>
 <translation id="6713668088933662563">翻訳するか確認しない言語</translation>
 <translation id="6715803357256707211">Linux アプリケーションのインストール中にエラーが発生しました。詳細を確認するには通知をクリックしてください。</translation>
+<translation id="6716049856796700977">位置情報の利用を許可されているアプリやウェブサイトはありません。ただし、IP アドレスを通じて位置情報がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
 <translation id="6718849325281682232">ダークモードかライトモードかにかかわらず、すべての人が快適に作業できるように Chrome のテーマの色を一新しました</translation>
 <translation id="671928215901716392">画面をロック</translation>
@@ -8370,6 +8383,7 @@
 <translation id="7478658909253570368">サイトにシリアルポートへの接続を許可しない</translation>
 <translation id="7479221278376295180">ストレージ使用状況</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> および <ph name="SECOND_DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />このデバイスの ChromeOS と Android の位置情報は、[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] でいつでもオフにできます。また、同じメニューの [位置情報の詳細設定] で [位置情報の精度の改善] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481358317100446445">準備完了</translation>
 <translation id="748138892655239008">証明書の基本制約</translation>
@@ -8461,6 +8475,7 @@
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7553012839257224005">Linux コンテナを確認しています</translation>
 <translation id="7553242001898162573">パスワードを入力してください</translation>
+<translation id="7553487223484420820">許可されたアプリ、ウェブサイト、システム サービスが位置情報を使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">この言語は管理者が許可していません</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7556033326131260574">Smart Lock でアカウントを確認できませんでした。ログインするにはパスワードを入力してください。</translation>
@@ -9377,6 +9392,7 @@
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> のアカウントは削除されません</translation>
 <translation id="8225046344534779393">インターネット接続をご確認ください</translation>
 <translation id="8225265270453771718">アプリケーション ウィンドウの共有</translation>
+<translation id="8225516926291976401">システム サービスのみが位置情報を利用できます。ただし、IP アドレスを通じて位置情報がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">アクセスできません</translation>
 <translation id="8226619461731305576">キュー</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
@@ -9813,6 +9829,7 @@
 <translation id="8552102814346875916">常にアクティブにするサイトのリストに保存</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>
 <translation id="8554899698005018844">言語設定なし</translation>
+<translation id="8555444629041783356">日の入り時刻の自動設定</translation>
 <translation id="855604308879080518">この Chromebook で Android アプリから USB デバイスへのアクセスを許可します。USB デバイスを接続するたびに許可するよう要求されます。一部の Android アプリでは、他の権限も許可するよう要求される場合があります。</translation>
 <translation id="8557022314818157177">指紋の登録が完了するまで、セキュリティ キーをタッチし続けてください</translation>
 <translation id="8557180006508471423">Mac の位置情報サービスで「Google Chrome」をオンにしてください</translation>

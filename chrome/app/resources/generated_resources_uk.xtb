@@ -3416,6 +3416,7 @@
 <translation id="3577487026101678864">Синхронізацію файлів увімкнено</translation>
 <translation id="3577745545227000795">Збір даних із пристрою "<ph name="DEVICE_OS" />"</translation>
 <translation id="3581605050355435601">Автоматичне налаштування ІР-адреси</translation>
+<translation id="3581861561942370740">Пошук в історії завантажень</translation>
 <translation id="3582057310199111521">Введено на оманливому сайті та виявлено порушення безпеки даних</translation>
 <translation id="3582299299336701326">Світлі екрани стануть темними й навпаки. Щоб увімкнути або вимкнути інверсію кольорів, натисніть клавішу пошуку + Ctrl + H.</translation>
 <translation id="3584169441612580296">Читати й змінювати фотографії, музику та інші медіафайли на комп’ютері</translation>
@@ -5333,6 +5334,7 @@
 <translation id="5056950756634735043">Підключення до контейнера</translation>
 <translation id="5057110919553308744">Коли ви натискаєте розширення</translation>
 <translation id="5057127674016624293">Сканування триває довше, ніж очікувалося</translation>
+<translation id="5057480703570202545">Історія завантажень</translation>
 <translation id="5059241099014281248">Обмежити вхід</translation>
 <translation id="5059429103770496207">Стиль відображення</translation>
 <translation id="5059526285558225588">Виберіть, що показувати</translation>
@@ -5742,6 +5744,7 @@
 <translation id="5390677308841849479">Темно-червоний і оранжевий</translation>
 <translation id="5392192690789334093">Дозволено надсилати сповіщення</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Посилання}one{# посилання}few{# посилання}many{# посилань}other{# посилання}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Шрифт за умовчанням</translation>
 <translation id="5397378439569041789">Зареєструвати термінал або цифрове табло</translation>
 <translation id="5397794290049113714">Ви</translation>

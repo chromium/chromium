@@ -1543,6 +1543,24 @@ Para usuários comuns, deixar de definir a política tem a mesma função que at
 <translation id="2180958780733364832">Controlar o uso do modo headless</translation>
 <translation id="2182291258410176649">O usuário decide se quer ativar o backup e a restauração</translation>
 <translation id="2183338188392346527">Não informar contadores de tempo de execução do dispositivo</translation>
+<translation id="2187372280917024033">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços. Esta política é muito semelhante à <ph name="DOH_TEMPLATES_POLICY_NAME" />, que será substituída se especificada.
+Diferente da política <ph name="DOH_TEMPLATES_POLICY_NAME" />, esta permite especificar informações de identidade.
+Os identificadores são especificados usando marcadores de posição de variáveis, que são substituídos por informações do usuário ou do dispositivo no <ph name="PRODUCT_NAME" />. Os identificadores não são enviados ao servidor DNS em texto simples. Em vez disso, eles são criptografadas com hash com o algoritmo <ph name="SHA256" /> e codificação hexadecimal em letras maiúsculas.
+
+Os identificadores são especificados entre chaves e precedidos pelo cifrão. Para identificação do usuário, use os marcadores <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> e <ph name="USER_EMAIL_NAME" />. Para a identificação do dispositivo, use os marcadores <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> e <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Antes da versão 122, os identificadores de dispositivo não eram substituídos para usuários não afiliados. Na versão 122 e mais recentes, os marcadores de posição dos dispositivos são substituídos pelo valor <ph name="DEVICE_NOT_MANAGED" />, que tem hash e codificação hexadecimal.
+
+A partir da versão 125, os endereços IP do dispositivo podem ser adicionados como URI do modelo usando o marcador de posição <ph name="DEVICE_IP_ADDRESSES" />. Esse marcador será substituído por uma string hexadecimal que representa a ordem de bytes da rede do endereço IPv4 e/ou IPv6 associado à rede atual, se ela for gerenciada pela política.
+O endereço IPv4 é prefixado com o valor 0010. O endereço IPv6 tem o prefixo 0020. No caso de redes de pilha dupla, os endereços IPv4 e IPv6 serão usados para substituir o marcador. Vários endereços são adicionados consecutivamente, sem um delimitador. Para usuários não afiliados, a substituição só vai acontecer se a rede for gerenciada pela política do usuário. Se o marcador não puder ser substituído pelo endereço IP do dispositivo, ele será substituído por uma string vazia.
+
+Se a política <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_SECURE" />, esta política ou a <ph name="DOH_TEMPLATES_POLICY_NAME" /> precisará ser definida e não poderá estar vazia.
+
+Se a <ph name="DOH_MODE_POLICY_NAME" /> for definida como <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e se esta política for definida, os modelos de URI especificados serão usados. Se esta política for deixada sem definição, os mapeamentos fixados no código serão usados para tentar fazer upgrade do resolvedor de DNS atual do usuário para um resolvedor de DoH operado pelo mesmo provedor.
+
+Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solicitações para o resolvedor vão usar <ph name="HTTP_METHOD_GET" />. Caso contrário, as solicitações vão usar <ph name="HTTP_METHOD_POST" />.
+
+Na versão 114 e mais recentes, o uso de <ph name="DOH_SALT_POLICY_NAME" /> é opcional quando a política está definida.</translation>
 <translation id="219297066914002620">Instrui o <ph name="PRODUCT_OS_NAME" /> para ativar ou desativar as ferramentas do console de administração de máquina virtual.
 
       Se a política for definida como verdadeira ou não for definida, o usuário poderá usar a CLI de administração de VM.
@@ -2144,6 +2162,10 @@ OBSERVAÇÃO: essa política tinha documentado incorretamente o padrão como "ve
 <translation id="2608535066974278204">Período (em minutos) que especifica a duração da janela de reinicialização.</translation>
 <translation id="2608887839902987727">Impedir que a autenticação do portal cativo ignore as configurações de proxy</translation>
 <translation id="2608985885792348429">Configuração padrão da área de transferência</translation>
+<translation id="2613493229743687635">A API <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> permite que aplicativos da Web isolados (identificados pela origem) capturem várias superfícies de uma só vez sem precisar de permissão adicional do usuário.
+      Se a política for deixada sem definição, a propriedade <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> não ficará disponível para nenhum aplicativo da Web.
+Para melhorar a privacidade, esta política não vai oferecer suporte a atualizações do valor da política no meio da sessão. Portanto, as mudanças só serão aplicadas depois que o usuário sair e fizer login de novo.
+Se a captura de tela não tiver sido permitida no início da sessão, nenhum outro app poderá fazê-la após o login.</translation>
 <translation id="2615240493030733717">Enviar informações de fuso horário</translation>
 <translation id="2619258867868873629">Os destinos "Salvar como PDF" e "Salvar no Google Drive" em dispositivos <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2621290137818374425">A definição da política desativa os requisitos de divulgação de Transparência dos certificados para os nomes de host nos URLs especificados. Embora dificultem a detecção de certificados incorretos, os hosts podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que não foram divulgados publicamente de maneira adequada.
@@ -4808,6 +4830,7 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
 <translation id="4725801978265372736">Exigir correspondência entre o nome do usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="4726228171190098009">Não permitir que o dispositivo solicite a execução de um Powerwash</translation>
 <translation id="4726895359147376813">Mapeamento de IDs persistentes para as configurações da VM</translation>
+<translation id="4732069502693984686">Ativa a captura automática de várias telas</translation>
 <translation id="4733471537137819387">Políticas relacionadas à autenticação integrada de HTTP.</translation>
 <translation id="473673197014866318">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas existentes relacionadas a extensões. A política substitui todas as políticas legadas que possam estar definidas.
 

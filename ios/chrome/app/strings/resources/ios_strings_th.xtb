@@ -268,7 +268,6 @@
 
 เว็บไซต์ไม่อาจใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์และดำเนินการต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณได้อีก</translation>
 <translation id="2381405137052800939">พื้นฐาน</translation>
-<translation id="23824747102827308">ติดตามข่าวสาร กีฬา และอื่นๆ ตามความสนใจของคุณ</translation>
 <translation id="2386793615875593361">เลือก 1 รูป</translation>
 <translation id="2390457533592708044">ซ่อน "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">ไม่สามารถนําส่งพัสดุภัณฑ์ได้</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">ไม่มีปัญหาด้านความปลอดภัยที่ควรแก้ไข</translation>
 <translation id="4286718549648564014">ย้ายที่อยู่ไปยังบัญชี <ph name="USER_EMAIL" /> แล้ว</translation>
 <translation id="428768789042547925">มีอะไรใหม่</translation>
+<translation id="429074084062258019">{count,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
 <translation id="4293080268407233932">ค้นหา</translation>
 <translation id="4302248187517737842">ไม่มีชื่อผู้ใช้ ••••••••</translation>
 <translation id="4302415908542657649">กำลังแชร์รหัสผ่าน</translation>
@@ -726,6 +726,7 @@
 <translation id="47677902929517676">หากต้องการบันทึกรหัสผ่านในบัญชี คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="4775879719735953715">เบราว์เซอร์เริ่มต้น</translation>
 <translation id="4779732376610430319">ไปที่การตั้งค่า...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">เปิดในโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="4803185665210547709">จัดการโดยองค์กร
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">แตะทางลัดที่ปรากฏใต้แถบที่อยู่</translation>
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318298563956633672">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
 <translation id="5327753393331509826">รับการแจ้งเตือนเนื้อหา</translation>
@@ -1268,6 +1270,7 @@
 <translation id="7524055474074101597">เข้าถึงรหัสผ่านและข้อมูลอื่นๆ ได้ในแอปต่างๆ</translation>
 <translation id="7527917367892640435">ติดตามพัสดุแล้ว</translation>
 <translation id="7531345132340165516">เว็บไซต์ปัจจุบัน</translation>
+<translation id="75362970626182391">กลุ่มแท็บใหม่</translation>
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>
 <translation id="754655535278952384">ตรวจสอบเมื่อ <ph name="TIME" /></translation>
 <translation id="7552154146060018538">แท็บล่าสุดที่เปิดใน <ph name="SOURCE_DEVICE" /></translation>

@@ -1575,6 +1575,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4030545038933060179">Cuando esta configuración está activada, aparecerá una lista de temas según tu historial de navegación reciente.</translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4036753017940930924">Lotes y terrenos</translation>
+<translation id="4039506337798853114">Para mostrar el cursor, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">45.72 × 60.96 cm</translation>
 <translation id="404831776305217138">La URL de actualización para la extensión con el ID "<ph name="EXTENSION_ID" />" no es válida o utiliza un esquema no compatible. Los esquemas compatibles son <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> y <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Podrás usarla en todos los productos de Google</translation>
@@ -1587,6 +1588,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="406358100705415968">Equipo de protección personal</translation>
 <translation id="4063924980214801036">Usa el desbloqueo del dispositivo para confirmar las tarjetas más rápido.</translation>
 <translation id="4065659219963895623">Restaurantes</translation>
+<translation id="4067774859633143413">Para salir de la pantalla completa y ver la descarga, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
 <translation id="4073376909608563327">No se pudo usar el desbloqueo del dispositivo</translation>
@@ -1809,6 +1811,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4456937135469235202">Viajes de aventura</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
 <translation id="4466576951214254884">Préstamos para estudiantes y financiación universitaria</translation>
+<translation id="4467821340016922962">Para salir de la pantalla completa y ver la descarga, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Activa la protección mejorada<ph name="END_ENHANCED_PROTECTION_LINK" /> para obtener el nivel más alto de seguridad de Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Este formulario no es seguro. Se desactivó la función Autocompletar.</translation>
@@ -2679,6 +2682,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6218305986815100395">No se puede activar la tarjeta virtual</translation>
 <translation id="6218753634732582820">¿Confirmas que quieres quitar la dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
+<translation id="6221286101741304627">Para salir de la pantalla completa, presiona |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">¿Quieres guardar esta tarjeta en tu Cuenta de Google?</translation>
 <translation id="6221345481584921695">La Navegación segura de Google <ph name="BEGIN_LINK" />detectó software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recientemente. A veces, los sitios web que suelen ser seguros contienen software malicioso. El contenido malicioso proviene de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de software malicioso.</translation>
 <translation id="6221892641068781024">Vista simplificada</translation>
@@ -3958,7 +3962,6 @@ Detalles adicionales:
 <translation id="8612919051706159390">Comunidades en línea</translation>
 <translation id="8617269623452051934">uso de tu dispositivo</translation>
 <translation id="861775596732816396">Tamaño 4</translation>
-<translation id="8618975513789458065">Los temas de anuncios son solo una de las muchas opciones que un sitio puede usar para personalizar los anuncios. Incluso sin temas de anuncios, los sitios pueden seguir mostrándote anuncios, pero es posible que sean menos interesantes.</translation>
 <translation id="8620276786115098679">Sobre Kaku n.º 7</translation>
 <translation id="8623885649813806493">No se encontró una contraseña para este sitio. Mostrar todas las contraseñas guardadas.</translation>
 <translation id="8624354461147303341">Obtener descuentos</translation>
@@ -4149,6 +4152,7 @@ Detalles adicionales:
 <translation id="9023536760430404133">Ruedas y neumáticos para vehículos</translation>
 <translation id="9025348182339809926">(No válido)</translation>
 <translation id="902590795160480390">Cargando PDF</translation>
+<translation id="9027531288681624875">Para salir de la pantalla completa, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Error de seguridad</translation>
 <translation id="9035824888276246493">Guardar códigos de seguridad</translation>
 <translation id="9036306139374661733">¿Quieres permitir el acceso al micrófono?</translation>

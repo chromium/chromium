@@ -3414,6 +3414,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3577487026101678864">Sincronização de arquivos ativada</translation>
 <translation id="3577745545227000795">Coleta de dados de hardware do <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Configurar endereço IP automaticamente</translation>
+<translation id="3581861561942370740">Pesquisar histórico de downloads</translation>
 <translation id="3582057310199111521">Inserida em um fraudulento e encontrada em uma violação de dados</translation>
 <translation id="3582299299336701326">Escureça telas claras e clareie as escuras. Pressione as teclas Pesquisa + Ctrl + H para ativar e desativar a inversão de cores.</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, músicas e outras mídias do seu computador</translation>
@@ -5331,6 +5332,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5056950756634735043">Conectando ao contêiner</translation>
 <translation id="5057110919553308744">Quando você clicar na extensão</translation>
 <translation id="5057127674016624293">A verificação está demorando mais que o esperado</translation>
+<translation id="5057480703570202545">Histórico de downloads</translation>
 <translation id="5059241099014281248">Restringir o login</translation>
 <translation id="5059429103770496207">Estilo de exibição</translation>
 <translation id="5059526285558225588">Escolha o que compartilhar</translation>
@@ -5740,6 +5742,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5390677308841849479">Vermelho-escuro e laranja</translation>
 <translation id="5392192690789334093">Permitir o envio de notificações</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# links}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Fonte padrão</translation>
 <translation id="5397378439569041789">Registrar quiosque ou dispositivo de sinalização</translation>
 <translation id="5397794290049113714">Você</translation>

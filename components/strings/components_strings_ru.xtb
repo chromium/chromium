@@ -1573,6 +1573,7 @@
 <translation id="4030545038933060179">Если функция включена, здесь будет показываться список тем на основе недавней истории браузера.</translation>
 <translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4036753017940930924">Землеустройство</translation>
+<translation id="4039506337798853114">Чтобы увидеть указатель, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 дюйма</translation>
 <translation id="404831776305217138">URL для обновления расширений с идентификатором <ph name="EXTENSION_ID" /> недействителен или его схема не поддерживается. Разрешено использовать только схемы <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Вы сможете использовать его в других продуктах Google.</translation>
@@ -1585,6 +1586,7 @@
 <translation id="406358100705415968">Средства индивидуальной защиты</translation>
 <translation id="4063924980214801036">Использовать разблокировку устройства для быстрого подтверждения карт</translation>
 <translation id="4065659219963895623">Рестораны</translation>
+<translation id="4067774859633143413">Чтобы выйти из полноэкранного режима и увидеть скачиваемый файл, нажмите и удерживайте |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Введите действительный адрес</translation>
 <translation id="4072486802667267160">При обработке заказа произошла ошибка. Повторите попытку.</translation>
 <translation id="4073376909608563327">Не удалось разблокировать устройство</translation>
@@ -1807,6 +1809,7 @@
 <translation id="4456937135469235202">Приключенческие туры</translation>
 <translation id="4464826014807964867">Веб-сайты со сведениями от вашей организации</translation>
 <translation id="4466576951214254884">Студенческие кредиты и займы на образование</translation>
+<translation id="4467821340016922962">Чтобы выйти из полноэкранного режима и увидеть скачиваемый файл, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070">Чтобы браузер Chrome стал максимально безопасным, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />включите режим "Улучшенная защита"<ph name="END_ENHANCED_PROTECTION_LINK" />.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" />.</translation>
 <translation id="4476953670630786061">Это незащищенная форма. Автозаполнение отключено.</translation>
@@ -2677,6 +2680,7 @@
 <translation id="6218305986815100395">Не удается подключить виртуальную карту</translation>
 <translation id="6218753634732582820">Удалить адрес из Chromium?</translation>
 <translation id="622039917539443112">Двойная параллельная фальцовка</translation>
+<translation id="6221286101741304627">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Сохранить эту карту в аккаунте Google?</translation>
 <translation id="6221345481584921695">Система Google по проверке безопасности сайтов недавно обнаружила на <ph name="SITE" /> <ph name="BEGIN_LINK" />вредоносное ПО<ph name="END_LINK" />. Его источником является <ph name="SUBRESOURCE_HOST" />, не раз замеченным в распространении вирусов. Будьте внимательны, иногда даже на безопасных сайтах появляются вредоносные программы.</translation>
 <translation id="6221892641068781024">Упрощенный просмотр</translation>
@@ -3955,7 +3959,6 @@
 <translation id="8612919051706159390">Интернет-сообщества</translation>
 <translation id="8617269623452051934">использование устройства</translation>
 <translation id="861775596732816396">Размер: 4</translation>
-<translation id="8618975513789458065">Сайты персонализируют рекламу на основе многих факторов, в том числе с помощью тем. Даже если этот параметр отключен, сайты по-прежнему будут показывать рекламу, однако она может меньше соответствовать вашим интересам.</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
 <translation id="8623885649813806493">Нет подходящих паролей. Показать все сохраненные пароли.</translation>
 <translation id="8624354461147303341">Разрешить</translation>
@@ -4146,6 +4149,7 @@
 <translation id="9023536760430404133">Автомобильные колеса и шины</translation>
 <translation id="9025348182339809926">(недействительный)</translation>
 <translation id="902590795160480390">Загрузка PDF…</translation>
+<translation id="9027531288681624875">Чтобы выйти из полноэкранного режима, нажмите и удерживайте |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Ошибка безопасности</translation>
 <translation id="9035824888276246493">Сохранять защитные коды</translation>
 <translation id="9036306139374661733">Предоставить доступ к микрофону?</translation>

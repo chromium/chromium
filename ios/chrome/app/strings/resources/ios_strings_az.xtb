@@ -268,7 +268,6 @@
 
 Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
-<translation id="23824747102827308">Maraqlarınıza əsasən xəbərlər, idman və s. barədə məlumatlı qalın</translation>
 <translation id="2386793615875593361">1 ədəd seçildi</translation>
 <translation id="2390457533592708044">Gizlədin: "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Bağlamanı çatdırmaq mümkün deyil</translation>
@@ -631,6 +630,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4282944936010261425">Düzəldiləcək güvənlik problemi yoxdur.</translation>
 <translation id="4286718549648564014">Ünvan <ph name="USER_EMAIL" /> hesabına köçürüldü</translation>
 <translation id="428768789042547925">Yeniliklər</translation>
+<translation id="429074084062258019">{count,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
 <translation id="4293080268407233932">Axtarış</translation>
 <translation id="4302248187517737842">İstifadəçi adı yoxdur ••••••••</translation>
 <translation id="4302415908542657649">Parol paylaşılır</translation>
@@ -1268,6 +1268,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7524055474074101597">Tətbiqlərdə parol və s. məlumatlara giriş.</translation>
 <translation id="7527917367892640435">Bağlama izlənir</translation>
 <translation id="7531345132340165516">Cari sayt</translation>
+<translation id="75362970626182391">Yeni tab qrupu</translation>
 <translation id="7537586195939242955">Üzr istəyirik, Parolunuz indi Passbook'a yüklənilə bilmir.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> yoxlanıb</translation>
 <translation id="7552154146060018538">Son tab <ph name="SOURCE_DEVICE" /> cihazında istifadə edilib</translation>

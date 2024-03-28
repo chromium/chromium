@@ -268,7 +268,6 @@
 
 Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren.</translation>
 <translation id="2381405137052800939">Basisinstellingen</translation>
-<translation id="23824747102827308">Blijf op de hoogte van onder meer nieuws en sport op basis van je interesses</translation>
 <translation id="2386793615875593361">1 geselecteerd</translation>
 <translation id="2390457533592708044"><ph name="MODULE_NAME" /> verbergen</translation>
 <translation id="2403129868389095715">Je pakket kan niet worden bezorgd</translation>
@@ -631,6 +630,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4282944936010261425">Er zijn geen beveiligingsproblemen om op te lossen.</translation>
 <translation id="4286718549648564014">Adres verplaatst naar je account <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Nieuws</translation>
+<translation id="429074084062258019">{count,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
 <translation id="4293080268407233932">Zoeken</translation>
 <translation id="4302248187517737842">Geen gebruikersnaam ••••••••</translation>
 <translation id="4302415908542657649">Wachtwoord delen</translation>
@@ -726,6 +726,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="47677902929517676">Als je wachtwoorden wilt opslaan in je account, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="4775879719735953715">Standaardbrowser</translation>
 <translation id="4779732376610430319">Naar Instellingen…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Openen in incognitomodus?</translation>
 <translation id="4803185665210547709">Beheerd door je organisatie.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5283494734135414249">Tik op de snelkoppeling onder de adresbalk.</translation>
 <translation id="5295239312320826323">Account <ph name="USER_EMAIL" /> verwijderen?</translation>
 <translation id="5300589172476337783">Tonen</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318298563956633672">Je volgt dit product al.</translation>
 <translation id="5327753393331509826">Contentmeldingen krijgen</translation>
@@ -1268,6 +1270,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7524055474074101597">Krijg toegang tot onder andere je wachtwoorden in apps.</translation>
 <translation id="7527917367892640435">Pakket al gevolgd</translation>
 <translation id="7531345132340165516">Huidige site</translation>
+<translation id="75362970626182391">Nieuwe tabbladgroep</translation>
 <translation id="7537586195939242955">Je pas kan momenteel niet worden geïnstalleerd in Passbook.</translation>
 <translation id="754655535278952384">Gecheckt: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Laatste tabblad gebruikt op <ph name="SOURCE_DEVICE" /></translation>

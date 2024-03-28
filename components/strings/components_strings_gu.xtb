@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">જ્યારે ચાલુ હોય, ત્યારે તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસને આધારે વિષયોની સૂચિ અહીં દેખાય છે</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4036753017940930924">પ્લૉટ અને જમીન</translation>
+<translation id="4039506337798853114">તમારું કર્સર બતાવવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="4047351652147966654">18 x 24 ઇંચ</translation>
 <translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ધરાવતા એક્સ્ટેન્શનને અપડેટ કરવા માટે ઉપયોગમાં લેવાયેલું URL અમાન્ય છે અથવા અનસપોર્ટેડ સ્કીમનો ઉપયોગ કરે છે. સપોર્ટેડ સ્કીમ આ છે: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> અને <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">તમે Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરી શકશો</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">કામ પર સલામતી સંબંધિત સંરક્ષણાત્મક સાધન</translation>
 <translation id="4063924980214801036">કાર્ડને વધુ ઝડપથી કન્ફર્મ કરવા માટે, ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="4065659219963895623">રેસ્ટોરન્ટ</translation>
+<translation id="4067774859633143413">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા અને ડાઉનલોડ જોવા માટે, |<ph name="ACCELERATOR" />| દબાવી રાખો</translation>
 <translation id="4067947977115446013">માન્ય સરનામું ઉમેરો</translation>
 <translation id="4072486802667267160">તમારા ઑર્ડરની પ્રક્રિયા કરતી વખતે એક ભૂલ આવી હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4073376909608563327">ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરી શકાયો નથી</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">સાહસિક મુસાફરી</translation>
 <translation id="4464826014807964867">તમારી સંસ્થા દ્વારા પ્રદાન કરવામાં આવેલી માહિતી ધરાવતી વેબસાઇટ</translation>
 <translation id="4466576951214254884">કૉલેજના વિદ્યાર્થીઓને લોન આપતી સેવાઓ</translation>
+<translation id="4467821340016922962">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા અને ડાઉનલોડ જોવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="4473643328224505070">Chromeની સુરક્ષાનું સૌથી ઉચ્ચ લેવલ મેળવવા માટે, <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />વધારેલા સંરક્ષણની સુવિધા ચાલુ કરો<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">આ ફોર્મ સુરક્ષિત નથી. ઑટોમૅટિક રીતે ભરવાની સુવિધા બંધ કરવામાં આવી છે.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">વર્ચ્યુઅલ કાર્ડ ચાલુ કરી શકાતું નથી</translation>
 <translation id="6218753634732582820">Chromium માંથી સરનામું દૂર કરીએ?</translation>
 <translation id="622039917539443112">સમાંતર ફોલ્ડ</translation>
+<translation id="6221286101741304627">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="6221311046884916259">શું તમે આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવા માગો છો?</translation>
 <translation id="6221345481584921695">Google Safe Browsing ને તાજેતરમાં <ph name="SITE" /> પર <ph name="BEGIN_LINK" />મૉલવેર મળ્યું<ph name="END_LINK" />. વેબસાઇટ કે જે સામાન્ય રીતે સુરક્ષિત છે તે ક્યારેક મૉલવેરથી દૂષિત હોય છે. દુર્ભાવનાપૂરું કન્ટેન્ટ એક જ્ઞાત મૉલવેર વિક્રેતા એવા, <ph name="SUBRESOURCE_HOST" /> થી આવે છે.</translation>
 <translation id="6221892641068781024">સરળ દૃશ્ય</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">ઑનલાઇન સમુદાયો</translation>
 <translation id="8617269623452051934">તમારા ડિવાઇસનો વપરાશ</translation>
 <translation id="861775596732816396">કદ 4</translation>
-<translation id="8618975513789458065">જાહેરાતના વિષયો એ ઘણી બધી વસ્તુઓમાંથી માત્ર એક છે જેનો ઉપયોગ સાઇટ જાહેરાતોને મનગમતી બનાવવા માટે કરી શકે છે. જાહેરાતના વિષયો વિના પણ, સાઇટ હજુ પણ તમને જાહેરાતો બતાવી શકે છે પરંતુ તે ઓછી રસપ્રદ હોઈ શકે છે.</translation>
 <translation id="8620276786115098679">એન્વલપ કાકૂ 7</translation>
 <translation id="8623885649813806493">કોઈ મેળ ખાતા પાસવર્ડ નથી. બધા સાચવેલા પાસવર્ડ બતાવો.</translation>
 <translation id="8624354461147303341">છૂટ મેળવો</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">વાહનના પૈડા અને ટાયર</translation>
 <translation id="9025348182339809926">(અમાન્ય)</translation>
 <translation id="902590795160480390">PDF લોડ કરી રહ્યાં છીએ</translation>
+<translation id="9027531288681624875">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે, |<ph name="ACCELERATOR" />| દબાવી રાખો</translation>
 <translation id="9035022520814077154">સુરક્ષા ભૂલ</translation>
 <translation id="9035824888276246493">સુરક્ષા કોડ સાચવો</translation>
 <translation id="9036306139374661733">શું માઇક્રોફોનની મંજૂરી આપીએ?</translation>

@@ -399,7 +399,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />ଟି ବୁକ୍‌ମାର୍କ}other{<ph name="BOOKMARKS_COUNT_MANY" />ଟି ବୁକ୍‌ମାର୍କ}}</translation>
 <translation id="3062802207422175757">Chromeରେ ଆପଣଙ୍କ ଆଗ୍ରହଗୁଡ଼ିକ ବିଷୟରେ ଆର୍ଟିକିଲ୍</translation>
 <translation id="3066573403916685335">ତଳକୁ ମୁଭ୍‍ କରନ୍ତୁ</translation>
-<translation id="3070005020161560471">ସ୍ୱଚାଳିତ ଭାବେ ଅନୁବାଦ କରନ୍ତୁ</translation>
+<translation id="3070005020161560471">ସ୍ୱତଃ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି। <ph name="BEGIN_LINK3" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK3" /> ମଧ୍ୟ ଲାଗୁ ହୁଏ।</translation>
 <translation id="3080525922482950719">ଆପଣ ପରେ କିମ୍ବା ଅଫଲାଇନରେ ପଢ଼ିବା ପାଇଁ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="3091010850649238832">କ୍ଲିପବୋର୍ଡର ବିଷୟବସ୍ତୁଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
@@ -1626,7 +1626,6 @@
 <translation id="939598580284253335">ପାସ୍‌-ଫ୍ରେଜ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="952301137339791907">ପୃଷ୍ଠା ଇନସାଇଟ୍ସ ବଟମ ସିଟ ଖୋଲା ଅଛି</translation>
 <translation id="95817756606698420">ଚୀନରେ ସର୍ଚ୍ଚ ପାଇଁ, Chrome <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ବ୍ୟବହାର କରିପାରିବ। ଆପଣ ଏହାକୁ <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
-<translation id="962979164594783469">ଏହି ଆପ୍ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="96681097142096641">ପୃଷ୍ଠାଟିକୁ ରିଡର୍ ମୋଡରେ ଦେଖିବେ କି?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>

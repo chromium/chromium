@@ -79,7 +79,7 @@
 <translation id="142228117786570094">Менде жуп ачкыч бар</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> баскычы басылган жок</translation>
 <translation id="1432110487435300883">Болжолдуу натыйжа үчүн <ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө бөлүңүз: <ph name="CONVERSION_RATE" /></translation>
-<translation id="1435763214710588005">Трафиктин колдонулушу жөнүндө маалымат ар бир айдын тандалган күнү автоматтык түрдө баштапкы абалга келтирилет</translation>
+<translation id="1435763214710588005">Трафиктин колдонулушу жөнүндө маалымат ар бир айдын тандалган күнү автоматтык түрдө баштапкы абалга келет</translation>
 <translation id="1442433966118452622">Сүрөттүн булагы</translation>
 <translation id="1446954767133808402">сапфир</translation>
 <translation id="1449035143498573192">Google Издөө кызматында ачуу</translation>
@@ -494,7 +494,7 @@
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="3981099166243641873">мала жашыл</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
-<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңыртылды</translation>
+<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңырды</translation>
 <translation id="3998976413398910035">Принтерлерди тескөө</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="401147258241215701">обсидиан</translation>
@@ -592,7 +592,7 @@
 <translation id="4536864596629708641">IP конфигурациясы</translation>
 <translation id="4546131424594385779">Видео илмекти түзүү</translation>
 <translation id="4548483925627140043">Сигнал жок</translation>
-<translation id="4556753742174065117">Орнотулган программанын баары жаңыртылды</translation>
+<translation id="4556753742174065117">Орнотулган программанын баары жаңырды</translation>
 <translation id="455835558791489930">Батареянын кубатынын көлөмү – <ph name="CHARGE_VALUE" />мА/с.</translation>
 <translation id="456077979087158257">шаар пейзажы</translation>
 <translation id="4561801978359312462">SIM картанын кулпусу ачылды</translation>
@@ -661,7 +661,7 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4930320165497208503">Туташууну тууралоо же жаңыртуу үчүн <ph name="BEGIN_LINK" />Параметрлерге<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4932733599132424254">Күнү</translation>
-<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> түзмөгүнө орнотулган программа <ph name="VERSION" /> версиясына жаңыртылды</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> түзмөгүнө орнотулган программа <ph name="VERSION" /> версиясына жаңырды</translation>
 <translation id="4950893758552030541">дарактардын аллеясы</translation>
 <translation id="4965703485264574128">Болжолдуу натыйжа үчүн <ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө көбөйтүңүз: <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Бөлүү</translation>
@@ -826,7 +826,7 @@
 <translation id="5939518447894949180">Кайра коюу</translation>
 <translation id="594552776027197022">Башаламан иретте жуп ачкычты түзүү</translation>
 <translation id="5946538341867151940">Туташа элексиз. Эгер мобилдик байланыш операторуңуз жеке APN'ди сунуштаса, "+ Жаңы APN" дегенди тандап, APN маалыматын киргизиңиз</translation>
-<translation id="5947266287934282605">Эгер айдын акыркы күнү бул күнгө чейин болсо, маалыматтар айдын акыркы күнү баштапкы абалга келтирилет</translation>
+<translation id="5947266287934282605">Эгер айдын акыркы күнү бул күнгө чейин болсо, маалыматтар айдын акыркы күнү баштапкы абалга келет</translation>
 <translation id="5948460390109837040">иттер</translation>
 <translation id="5972388717451707488">Каражатты жаңыртуу</translation>
 <translation id="5975130252842127517">маржан</translation>
@@ -995,6 +995,7 @@
 <translation id="6871256179359663621">ачык кызгылт көгүш</translation>
 <translation id="6889786074662672253">Өчүрүп күйгүзүп жатканда тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Бул бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
 <translation id="6900701049656042631">Бул альбомдо сүрөттөр жок. Сүрөттөрдү кошуу үчүн төмөнкү жерге өтүңүз: <ph name="LINK" /></translation>
+<translation id="6905163627763043954">Сынап көрүү</translation>
 <translation id="6905724422583748843">Төмөнкүгө кайтуу: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Сканердин капкагы ачык. Капкагын жаап, кайра аракет кылыңыз.</translation>
 <translation id="6911383237894364323">Медиа серверлерине туташпай жатат</translation>
@@ -1033,7 +1034,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> өзгөчө сүрөттөрүн тандаңыз</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">кубат</translation>
-<translation id="7129287270910503851">Дайын-даректердин өткөрүлүшү ай сайын ушул күнү баштапкы абалга келтирилет</translation>
+<translation id="7129287270910503851">Дайын-даректердин өткөрүлүшү ай сайын ушул күнү баштапкы абалга келет</translation>
 <translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>

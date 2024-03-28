@@ -637,6 +637,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
 <translation id="4425173294238317796">Passkey confirmation sheet</translation>
 <translation id="442518031075347249">You’ll no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Some of your web history might not show up here. If needed, tap Open full Chrome history. Also, your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6719634564325948108">Connect with QR code?</translation>
 <translation id="6723740634201835758">In your Google Account</translation>
 <translation id="6738867403308150051">Downloading…</translation>
+<translation id="67404633032079629">Some of your web history might not show up here. To see a full web history, tap Open full Chrome history.</translation>
 <translation id="674388916582496364">It’s common for sites that you visit to remember things that you’re interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>
 <translation id="6756507620369789050">Share feedback</translation>
@@ -1626,7 +1628,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="952301137339791907">Page insights bottom sheet is opened</translation>
 <translation id="95817756606698420">Chrome can use <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for search in China. You can change this in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
-<translation id="962979164594783469">Install this app</translation>
 <translation id="96681097142096641">View simplified page?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
 <translation id="981121421437150478">Offline</translation>

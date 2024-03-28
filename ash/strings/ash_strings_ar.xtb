@@ -678,6 +678,7 @@
 <translation id="3702809606464356667">يتم الآن عرض النوافذ المفتوحة في سطح المكتب الحالي، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في جميع أسطح المكتب.</translation>
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">الترفيه</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
 <translation id="3712143870407382523">اختَر نافذة لهذا الجانب.</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
@@ -1530,6 +1531,7 @@
 <translation id="7014684956566476813">تم الربط بالجهاز الذي يحمل الاسم <ph name="DEVICE_NAME" />.</translation>
 <translation id="7015766095477679451">يمكنك العودة لاستخدام الجهاز في <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">سطح المكتب 6</translation>
+<translation id="702252130983202758">تطبيقاتك</translation>
 <translation id="7025533177575372252">يمكنك ربط الجهاز <ph name="DEVICE_NAME" /> بهاتفك</translation>
 <translation id="7026338066939101231">تناقص</translation>
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
@@ -2050,6 +2052,7 @@
 <translation id="9129245940793250979">الزرّ الخلفي</translation>
 <translation id="9133335900048457298">لا يمكن تسجيل المحتوى المحمي</translation>
 <translation id="9139720510312328767">حذف الحرف التالي</translation>
+<translation id="9148058034647219655">إنهاء</translation>
 <translation id="9151906066336345901">‏مفتاح End</translation>
 <translation id="9161053988251441839">التطبيقات المُقترحَة</translation>
 <translation id="9168436347345867845">تنفيذ ذلك لاحقًا</translation>

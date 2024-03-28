@@ -2509,6 +2509,7 @@
 <translation id="2845382757467349449">תמיד להציג את סרגל הסימניות</translation>
 <translation id="2845751331501453107">‏במהלך הגלישה, יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK1" />הצעות למודעות מאתרים<ph name="LINK_END1" />, ל<ph name="BEGIN_LINK2" />הגדרות קובצי ה-cookie<ph name="LINK_END2" /> ולמצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת)</translation>
 <translation id="284581348330507117">חשוב ליצור סיסמאות ייחודיות</translation>
+<translation id="284884486564166077">‏חיפוש תמונה כלשהי באמצעות Lens</translation>
 <translation id="2849035674501872372">יש להרים את המבט</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">קוד האימות שלך נוסף</translation>
@@ -3413,6 +3414,7 @@
 <translation id="3577487026101678864">סנכרון הקבצים פועל</translation>
 <translation id="3577745545227000795">איסוף נתוני חומרה של <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">‏הגדרה אוטומטית של כתובת IP</translation>
+<translation id="3581861561942370740">חיפוש בהיסטוריית ההורדות</translation>
 <translation id="3582057310199111521">הוזנה באתר מטעה ונמצאה בפרצה באבטחת מידע</translation>
 <translation id="3582299299336701326">‏שינוי של מסכים בהירים לכהים ומסכים כהים לבהירים. כדי להפעיל או להשבית את היפוך הצבעים, מקישים על מקש החיפוש + Ctrl‏ + H.</translation>
 <translation id="3584169441612580296">לקרוא ולשנות קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
@@ -5331,6 +5333,7 @@
 <translation id="5056950756634735043">מתבצעת התחברות למאגר</translation>
 <translation id="5057110919553308744">בלחיצה על התוסף</translation>
 <translation id="5057127674016624293">הסריקה נמשכת יותר זמן מהצפוי</translation>
+<translation id="5057480703570202545">היסטוריית ההורדות</translation>
 <translation id="5059241099014281248">הגבלת הכניסה</translation>
 <translation id="5059429103770496207">סגנון התצוגה</translation>
 <translation id="5059526285558225588">בחירת הפרטים לשיתוף</translation>
@@ -5740,6 +5743,7 @@
 <translation id="5390677308841849479">אדום כהה וכתום</translation>
 <translation id="5392192690789334093">מורשים לשלוח התראות</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{קישור}one{# קישורים}two{# קישורים}other{# קישורים}}</translation>
+<translation id="5394529681046491727">‏‫Wi-Fi ישיר</translation>
 <translation id="5395498824851198390">גופן ברירת מחדל</translation>
 <translation id="5397378439569041789">רישום של מכשיר שילוט או קיוסק</translation>
 <translation id="5397794290049113714">את/ה</translation>

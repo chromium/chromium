@@ -89,6 +89,7 @@
 <translation id="6562820390860419811">タブを左に移動</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="661742612106409204">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。</translation>
+<translation id="6744956528665271406">グループの色を編集</translation>
 <translation id="6840760312327750441">タブをグループ化するには、タブを押しながら別のタブにドラッグします。</translation>
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{タブを共有する}other{タブを共有する}}</translation>

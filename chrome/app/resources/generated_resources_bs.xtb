@@ -325,7 +325,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="123578888592755962">Disk je pun</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{tekst}one{# tekst}few{# teksta}other{# tekstova}}</translation>
 <translation id="1236009322878349843">Uredite podatke o telefonu</translation>
-<translation id="1237251612871334180">Ažurirajte da sačuvate lozinke</translation>
+<translation id="1237251612871334180">Ažurirajte da pohranjujete lozinke</translation>
 <translation id="1237950098253310325">Promjena redoslijeda dugmeta <ph name="BUTTON_NAME" /> pomoću tipke Ctrl i tipke sa strelicom nagore ili nadolje</translation>
 <translation id="1238293488628890871">Promijeniti profil?</translation>
 <translation id="1239594683407221485">Istražite sadržaj uređaja u aplikaciji Fajlovi.</translation>
@@ -2508,6 +2508,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2845382757467349449">Uvijek prikaži traku oznaka</translation>
 <translation id="2845751331501453107">Hoće li oglas koji vidite dok pregledate biti personaliziran ovisi o ovoj postavci, postavci <ph name="BEGIN_LINK1" />Oglasi koje predlaže web lokacija<ph name="LINK_END1" />, vašim <ph name="BEGIN_LINK2" />postavkama kolačića<ph name="LINK_END2" /> i o tome personalizira li oglase web lokacija koju pregledate</translation>
 <translation id="284581348330507117">Kreirajte jedinstvene lozinke</translation>
+<translation id="284884486564166077">Pretražujte slike pomoću Objektiva</translation>
 <translation id="2849035674501872372">Potražite</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN je dodan</translation>
@@ -3412,7 +3413,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3577487026101678864">Sinhronizacija fajlova je uključena</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> prikupljanje hardverskih podataka</translation>
 <translation id="3581605050355435601">Automatski konfiguriraj IP adresu</translation>
-<translation id="3581861561942370740">Pretraživanje povijesti preuzimanja</translation>
+<translation id="3581861561942370740">Pretražite historiju preuzimanja</translation>
 <translation id="3582057310199111521">Uneseno na obmanjujućoj web lokaciji i pronađeno u narušavanju podataka</translation>
 <translation id="3582299299336701326">Zatamnite svijetle ekrane, a osvijetlite tamne. Pritisnite tipku za pretraživanje + Ctrl + H da uključite i isključite inverziju boja.</translation>
 <translation id="3584169441612580296">Čitanje i promjena fotografija, muzike i drugih medijskih fajlova na vašem računaru</translation>
@@ -5330,7 +5331,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete na ekstenziju</translation>
 <translation id="5057127674016624293">Skeniranje traje duže od očekivanog</translation>
-<translation id="5057480703570202545">Povijest preuzimanja</translation>
+<translation id="5057480703570202545">Historija preuzimanja</translation>
 <translation id="5059241099014281248">Ograniči prijavu</translation>
 <translation id="5059429103770496207">Stil prikaza</translation>
 <translation id="5059526285558225588">Odaberite šta ćete dijeliti</translation>
@@ -5740,7 +5741,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5390677308841849479">Tamnocrvena i narandžasta</translation>
 <translation id="5392192690789334093">Dozvoljeno slanje obavještenja</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}few{# linka}other{# linkova}}</translation>
-<translation id="5394529681046491727">Izravni Wi-Fi</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Zadani font</translation>
 <translation id="5397378439569041789">Prijavi kiosk ili uređaj za prijavu</translation>
 <translation id="5397794290049113714">Vi</translation>
@@ -9887,7 +9888,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8573111744706778015">Upišite "uo7" da dobijete "ươ"</translation>
 <translation id="8574990355410201600">Uvijek dozvoli zvuk na <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Držite <ph name="KEY_EQUIVALENT" /> da izađete</translation>
-<translation id="8575608435630445689">Poboljšanje preciznosti lokacije (samo Android)</translation>
+<translation id="8575608435630445689">Poboljšaj preciznost lokacije (samo Android)</translation>
 <translation id="8576359558126669548">Više o blokiranju kolačića treće strane u anonimnom načinu rada</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Dodaj karticu na listu za čitanje}one{Dodaj kartice na listu za čitanje}few{Dodaj kartice na listu za čitanje}other{Dodaj kartice na listu za čitanje}}</translation>
 <translation id="8577052309681449949">Automatski klikovi, veličina kursora, boja kursora i još mnogo toga</translation>
@@ -10239,7 +10240,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Upravljajte telefonima</translation>
 <translation id="883924185304953854">Pretraživanje po slici</translation>
-<translation id="8841786407272321022">Lozinke su sačuvane samo na ovom uređaju. Da sačuvate nove lozinke na Google računu, ažurirajte Google Play usluge.</translation>
+<translation id="8841786407272321022">Lozinka je sačuvana samo na ovom uređaju. Da sačuvate nove lozinke na Google računu, ažurirajte Google Play usluge.</translation>
 <translation id="8841843049738266382">Čitanje i mijenjanje korisnika s liste dozvoljenih</translation>
 <translation id="8842594465773264717">Izbriši ovaj otisak prsta</translation>
 <translation id="8845001906332463065">Potražite pomoć</translation>

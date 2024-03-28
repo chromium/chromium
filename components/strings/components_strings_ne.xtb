@@ -1571,6 +1571,7 @@
 <translation id="4030545038933060179">यो सेटिङ अन भएका बेला तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा यहाँ विषयहरूको सूची देखिन्छ</translation>
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4036753017940930924">प्लट तथा जग्गा</translation>
+<translation id="4039506337798853114">आफ्नो कर्सर देखाउन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="4047351652147966654">१८ x २४ इन्च</translation>
 <translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" भएको एक्स्टेन्सनको अपडेट URL अवैध छ वा 
 वा त्यसमा प्रयोग गर्न नमिल्ने स्किम प्रयोग गरिएको छ। प्रयोग गर्न मिल्ने स्किमहरू: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> र <ph name="FILE_SCHEME" /> हुन्।</translation>
@@ -1584,6 +1585,7 @@
 <translation id="406358100705415968">काम गर्दा सुरक्षाका लागि प्रोटेक्टिभ गियर</translation>
 <translation id="4063924980214801036">आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्न डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4065659219963895623">रेस्टुरेन्टहरू</translation>
+<translation id="4067774859633143413">फुल स्क्रिनबाट बाहिरिन र डाउनलोड गरिएका सामग्री हेर्न |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
 <translation id="4072486802667267160">तपाईंको भुक्तानीको प्रक्रियालाई अघि बढाउँदा कुनै त्रुटि भयो, कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4073376909608563327">डिभाइस अनलक प्रयोग गर्न सकिएन</translation>
@@ -1806,6 +1808,7 @@
 <translation id="4456937135469235202">साहसिक यात्रा</translation>
 <translation id="4464826014807964867">तपाईंको सङ्गठनले प्रदान गरेको जानकारी भएका वेबसाइटहरू</translation>
 <translation id="4466576951214254884">विद्यार्थी तथा शैक्षिक कर्जा</translation>
+<translation id="4467821340016922962">फुल स्क्रिनबाट बाहिरिन र डाउनलोड गरिएका सामग्री हेर्न |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="4473643328224505070">Chrome को सबैभन्दा उच्च स्तरको सुरक्षा सुविधा प्राप्त गर्न<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />उन्नत सुरक्षा अन गर्नुहोस्<ph name="END_ENHANCED_PROTECTION_LINK" />।</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />। <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यो फारम सुरक्षित छैन। अटोफिल सुविधा अफ गरिएको छ।</translation>
@@ -2676,6 +2679,7 @@
 <translation id="6218305986815100395">भर्चुअल कार्ड अन गर्न सकिएन</translation>
 <translation id="6218753634732582820">Chromium बाट ठेगाना हटाउने हो?</translation>
 <translation id="622039917539443112">समानान्तर फोल्ड</translation>
+<translation id="6221286101741304627">फुल स्क्रिनबाट बाहिरिन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="6221311046884916259">तपाईं यो कार्डलाई आफ्नो Google खातामा सेभ गर्न चाहनुहुन्छ?</translation>
 <translation id="6221345481584921695">Google सुरक्षित ब्राउजिंग हालै <ph name="SITE" /> मा <ph name="BEGIN_LINK" /> मालवेयर पत्ता <ph name="END_LINK" /> लगायो। सामान्यतया सुरक्षित भनिएका वेबसाइटहरू कहिलेकाहीं मालवेयरद्वारा संक्रमित हुन्छन्। द्वेषपूर्ण सामग्री <ph name="SUBRESOURCE_HOST" /> , एक प्रख्यात मालवेयर वितरकबाट आउँछ।</translation>
 <translation id="6221892641068781024">सरलीकृत हेराइको सुविधा</translation>
@@ -3954,7 +3958,6 @@
 <translation id="8612919051706159390">अनलाइन समुदायहरू</translation>
 <translation id="8617269623452051934">तपाईंको डिभाइसको प्रयोग</translation>
 <translation id="861775596732816396">आकार ४</translation>
-<translation id="8618975513789458065">विज्ञापनका विषयहरू भनेका साइटले विज्ञापन पर्सनलाइज गर्न प्रयोग गर्न सक्ने थुप्रै कुरामध्येको एक मात्र हो। तपाईंले "विज्ञापनका विषयहरू" अफ गर्नुभयो भने पनि साइटहरू तपाईंलाई विज्ञापन देखाउन सक्छन् तर ती विज्ञापन कम रुचिकर हुन सक्छन्।</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
 <translation id="8623885649813806493">मिल्दो पासवर्ड फेला परेन। सुरक्षित गरिएका सबै पासवर्डहरू देखाउनुहोस्।</translation>
 <translation id="8624354461147303341">छुट प्राप्त गर्नुहोस्</translation>
@@ -4145,6 +4148,7 @@
 <translation id="9023536760430404133">सवारी साधनका पाङ्ग्रा तथा टायर</translation>
 <translation id="9025348182339809926">(अमान्य)</translation>
 <translation id="902590795160480390">PDF लोड गरिँदै छ</translation>
+<translation id="9027531288681624875">फुल स्क्रिनबाट बाहिरिन |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="9035022520814077154">सुरक्षा त्रुटी</translation>
 <translation id="9035824888276246493">सेक्युरिटी कोडहरू सेभ गर्नुहोस्</translation>
 <translation id="9036306139374661733">माइक्रोफोन प्रयोग गर्ने अनुमति दिने हो?</translation>

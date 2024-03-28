@@ -3400,6 +3400,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3577487026101678864">Synchronizace souborů je zapnutá</translation>
 <translation id="3577745545227000795">Shromažďování dat o hardwaru systémem <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Automaticky konfigurovat IP adresu</translation>
+<translation id="3581861561942370740">Prohledat historii stahování</translation>
 <translation id="3582057310199111521">Zadáno na klamavém webu a nalezeno v porušení zabezpečení údajů</translation>
 <translation id="3582299299336701326">Ztmavit světlé obrazovky a zesvětlit tmavé obrazovky. Převrácení barev zapnete a vypnete stisknutím kláves Hledat + Ctrl + H.</translation>
 <translation id="3584169441612580296">Číst a měnit fotografie, hudbu a další média z počítače</translation>
@@ -5315,6 +5316,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5056950756634735043">Připojování ke kontejneru</translation>
 <translation id="5057110919553308744">Když kliknete na rozšíření</translation>
 <translation id="5057127674016624293">Skenování trvá déle než obvykle</translation>
+<translation id="5057480703570202545">Historie stahování</translation>
 <translation id="5059241099014281248">Omezit přihlášení</translation>
 <translation id="5059429103770496207">Styl zobrazení</translation>
 <translation id="5059526285558225588">Vybrat, co budete sdílet</translation>
@@ -5724,6 +5726,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5390677308841849479">Tmavě červená a oranžová</translation>
 <translation id="5392192690789334093">Odesílání oznámení je povoleno</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Odkaz}few{# odkazy}many{# odkazu}other{# odkazů}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Výchozí písmo</translation>
 <translation id="5397378439569041789">Zaregistrovat zařízení typu terminál nebo ukazatel</translation>
 <translation id="5397794290049113714">Vy</translation>

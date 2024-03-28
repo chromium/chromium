@@ -2511,6 +2511,7 @@
 <translation id="2845382757467349449">북마크바 항상 표시</translation>
 <translation id="2845751331501453107">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK1" />사이트 추천 광고<ph name="LINK_END1" />, 나의 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
 <translation id="284581348330507117">사용한 적이 없는 비밀번호를 만드세요.</translation>
+<translation id="284884486564166077">렌즈로 이미지 검색</translation>
 <translation id="2849035674501872372">찾기</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />(<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN 추가됨</translation>
@@ -3415,6 +3416,7 @@
 <translation id="3577487026101678864">파일 동기화 사용</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 하드웨어 데이터 수집</translation>
 <translation id="3581605050355435601">IP 주소 자동 구성</translation>
+<translation id="3581861561942370740">다운로드 기록 검색</translation>
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3582299299336701326">밝은 화면을 어둡게 하고 어두운 화면을 밝게 합니다. 색상 반전을 사용 설정 또는 중지하려면 검색 + Ctrl + H를 누르세요.</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
@@ -5330,6 +5332,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="5057127674016624293">스캔이 예상보다 오래 걸리고 있음</translation>
+<translation id="5057480703570202545">다운로드 기록</translation>
 <translation id="5059241099014281248">로그인 제한</translation>
 <translation id="5059429103770496207">표시 스타일</translation>
 <translation id="5059526285558225588">공유할 정보 선택</translation>
@@ -5739,6 +5742,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5390677308841849479">진한 빨간색 및 주황색</translation>
 <translation id="5392192690789334093">알림 전송이 허용됨</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{링크}other{링크 #개}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">기본 글꼴</translation>
 <translation id="5397378439569041789">키오스크 또는 사이니지 기기 등록</translation>
 <translation id="5397794290049113714">나</translation>

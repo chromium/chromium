@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">사용 설정하면 최근 방문 기록을 기준으로 여기에 주제 목록이 표시됩니다.</translation>
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4036753017940930924">부지 및 토지</translation>
+<translation id="4039506337798853114">커서를 표시하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="4047351652147966654">18x24인치</translation>
 <translation id="404831776305217138">ID가 "<ph name="EXTENSION_ID" />"인 확장 프로그램의 업데이트 URL이 잘못되었거나 지원되지 않는 스키마를 사용합니다. 지원되는 스키마는 <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, <ph name="FILE_SCHEME" />입니다.</translation>
 <translation id="4050392779074832022">Google 제품에서 사용할 수 있습니다.</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">작업 안전 보호 장구</translation>
 <translation id="4063924980214801036">기기 잠금 해제를 사용하여 빠르게 카드 확인</translation>
 <translation id="4065659219963895623">음식점</translation>
+<translation id="4067774859633143413">전체 화면을 종료하고 다운로드를 보려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="4067947977115446013">유효한 주소 추가</translation>
 <translation id="4072486802667267160">주문을 처리하는 중에 오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="4073376909608563327">기기 잠금 해제를 사용할 수 없음</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">모험 여행</translation>
 <translation id="4464826014807964867">조직의 정보가 포함된 웹사이트</translation>
 <translation id="4466576951214254884">학자금 대출 및 고등교육 파이낸싱</translation>
+<translation id="4467821340016922962">전체 화면을 종료하고 다운로드를 보려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />향상된 보호 모드를 사용 설정<ph name="END_ENHANCED_PROTECTION_LINK" />하여 Chrome의 가장 강력한 보안을 활용하세요.</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">안전하지 않은 양식입니다. 자동 완성이 사용 중지되었습니다.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">가상 카드를 사용 설정할 수 없음</translation>
 <translation id="6218753634732582820">Chromium에서 주소를 삭제하시겠습니까?</translation>
 <translation id="622039917539443112">평행 폴드</translation>
+<translation id="6221286101741304627">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="6221311046884916259">이 카드를 Google 계정에 저장하시겠습니까?</translation>
 <translation id="6221345481584921695">Google 세이프 브라우징이 최근 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 수가 있습니다. 악성 콘텐츠의 출처는 알려진 멀웨어 배포자인 <ph name="SUBRESOURCE_HOST" />입니다.</translation>
 <translation id="6221892641068781024">간단히 보기</translation>
@@ -3955,7 +3959,6 @@
 <translation id="8612919051706159390">온라인 커뮤니티</translation>
 <translation id="8617269623452051934">기기 사용 여부</translation>
 <translation id="861775596732816396">크기 4</translation>
-<translation id="8618975513789458065">광고 주제는 사이트에서 광고를 맞춤설정하는 데 사용할 수 있는 여러 항목 중 하나일 뿐입니다. 광고 주제가 없어도 사이트에서는 광고를 계속 표시할 수는 있지만, 사용자의 관심을 덜 끌 수도 있습니다.</translation>
 <translation id="8620276786115098679">봉투 Kaku 7</translation>
 <translation id="8623885649813806493">일치하는 비밀번호가 없습니다. 저장된 비밀번호를 모두 표시합니다.</translation>
 <translation id="8624354461147303341">할인받기</translation>
@@ -4146,6 +4149,7 @@
 <translation id="9023536760430404133">자동차 핸들 및 타이어</translation>
 <translation id="9025348182339809926">(유효하지 않음)</translation>
 <translation id="902590795160480390">PDF 로드 중</translation>
+<translation id="9027531288681624875">전체 화면을 종료하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
 <translation id="9035022520814077154">보안 오류</translation>
 <translation id="9035824888276246493">보안 코드 저장</translation>
 <translation id="9036306139374661733">마이크 권한을 허용하시겠습니까?</translation>

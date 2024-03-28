@@ -268,7 +268,6 @@
 
 Tampouco poden utilizalas para ver a túa actividade de navegación en distintos sitios (por exemplo, co fin de personalizar anuncios).</translation>
 <translation id="2381405137052800939">Opcións básicas</translation>
-<translation id="23824747102827308">Mantente ao día das noticias, os deportes e moito máis en función dos teus intereses</translation>
 <translation id="2386793615875593361">Seleccionouse un</translation>
 <translation id="2390457533592708044">Oculta <ph name="MODULE_NAME" /></translation>
 <translation id="2403129868389095715">Non se pode entregar o paquete</translation>
@@ -631,6 +630,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4282944936010261425">Non se atopou ningún problema de seguranza que haxa que resolver.</translation>
 <translation id="4286718549648564014">O enderezo moveuse á túa conta <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novidades</translation>
+<translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="4293080268407233932">Buscar</translation>
 <translation id="4302248187517737842">Sen nome de usuario ••••••••</translation>
 <translation id="4302415908542657649">Compartindo contrasinal</translation>
@@ -1268,6 +1268,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7524055474074101597">Accede aos teus contrasinais e moito máis en todas as aplicacións.</translation>
 <translation id="7527917367892640435">Xa se está facendo o seguimento deste paquete</translation>
 <translation id="7531345132340165516">Sitio actual</translation>
+<translation id="75362970626182391">Novo grupo de pestanas</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Última pestana usada no dispositivo <ph name="SOURCE_DEVICE" /></translation>

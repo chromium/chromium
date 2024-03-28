@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">Калі гэта налада ўключана, спіс тэм, які фарміруецца на падставе нядаўняй гісторыі прагляду сайтаў, будзе паказвацца тут.</translation>
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4036753017940930924">Зямля і зямельныя ўчасткі</translation>
+<translation id="4039506337798853114">Каб паказаць курсор, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 цалі</translation>
 <translation id="404831776305217138">URL-адрас для абнаўлення пашырэння з ідэнтыфікатарам "<ph name="EXTENSION_ID" />" з'яўляецца недапушчальным або яго схема не падтрымліваецца. Падтрымліваюцца наступныя схемы: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> і <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Вы зможаце выкарыстоўваць яго ў другіх прадуктах Google</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">Сродкі індывідуальнай аховы</translation>
 <translation id="4063924980214801036">Выкарыстоўваць разблакіроўку прылады для хутчэйшага пацвярджэння картак</translation>
 <translation id="4065659219963895623">Рэстараны</translation>
+<translation id="4067774859633143413">Каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
 <translation id="4073376909608563327">Не ўдалося выкарыстаць функцыю разблакіроўкі прылады</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">Прыгодніцкі турызм</translation>
 <translation id="4464826014807964867">Вэб-сайты са звесткамі ад вашай арганізацыі</translation>
 <translation id="4466576951214254884">Студэнцкія крэдыты і пазыкі на адукацыю</translation>
+<translation id="4467821340016922962">Каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Уключыце палепшаную абарону<ph name="END_ENHANCED_PROTECTION_LINK" /> – найвышэйшы ўзровень бяспекі Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Гэта форма не з'яўляецца бяспечнай. Аўтазапаўненне было выключана.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">Не ўдалося падключыць віртуальную картку</translation>
 <translation id="6218753634732582820">Выдаліць адрас з Chromium?</translation>
 <translation id="622039917539443112">Паралельны згіб</translation>
+<translation id="6221286101741304627">Каб выйсці з поўнаэкраннага рэжыму, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Захаваць гэту картку ў вашым Уліковым запісе Google?</translation>
 <translation id="6221345481584921695">Google Бяспечны прагляд толькі што <ph name="BEGIN_LINK" />выявіў шкоднае ПЗ<ph name="END_LINK" /> на сайце <ph name="SITE" />. Сайты, якія звычайна з'яўляюцца надзейнымі, часам заражаюцца шкодным ПЗ. Шкоднае змесціва паходзіць з хоста <ph name="SUBRESOURCE_HOST" />, вядомай крыніцы шкоднага ПЗ.</translation>
 <translation id="6221892641068781024">Спрошчаны выгляд</translation>
@@ -3957,7 +3961,6 @@
 <translation id="8612919051706159390">Анлайн-супольнасці</translation>
 <translation id="8617269623452051934">выкарыстанне вамі прылады</translation>
 <translation id="861775596732816396">Памер 4</translation>
-<translation id="8618975513789458065">Тэмы рэкламы – гэта адзін з мноства фактараў, на падставе якіх сайты яе персаналізуюць. Нават калі тэмы адключаны, сайты ўсё роўна будуць паказваць аб'явы, аднак яны могуць менш адпавядаць вашым інтарэсам.</translation>
 <translation id="8620276786115098679">Канверт Kaku 7</translation>
 <translation id="8623885649813806493">Пароль для гэтага сайта не знойдзены. Паказаць усе захаваныя паролі.</translation>
 <translation id="8624354461147303341">Атрымаць скідкі</translation>
@@ -4148,6 +4151,7 @@
 <translation id="9023536760430404133">Аўтамабільныя колы і шыны</translation>
 <translation id="9025348182339809926">(Несапраўдны)</translation>
 <translation id="902590795160480390">Ідзе загрузка PDF</translation>
+<translation id="9027531288681624875">Каб выйсці з поўнаэкраннага рэжыму, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Памылка бяспекі</translation>
 <translation id="9035824888276246493">Захоўваць коды бяспекі</translation>
 <translation id="9036306139374661733">Дазволіць доступ да мікрафона?</translation>

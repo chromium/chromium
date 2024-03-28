@@ -2510,6 +2510,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2845382757467349449">Sýna alltaf bókamerkjastikuna</translation>
 <translation id="2845751331501453107">Hvort auglýsing sem birtist þér þegar þú skoðar vefsvæði er sérsniðin eða ekki veltur á þessari stillingu, <ph name="BEGIN_LINK1" />auglýsingatillögum vefsvæða<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />fótsporastillingum<ph name="LINK_END2" /> og hvort að vefsvæðið sem þú ert að skoða sérsníði auglýsingar</translation>
 <translation id="284581348330507117">Búðu til einkvæm aðgangsorð</translation>
+<translation id="284884486564166077">Leita á hvaða mynd sem er með Linsu</translation>
 <translation id="2849035674501872372">Horfðu upp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN-númerinu þínu var bætt við</translation>
@@ -3414,6 +3415,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3577487026101678864">Kveikt á samstillingu skráa</translation>
 <translation id="3577745545227000795">Söfnun vélbúnaðargagna í <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Stilla IP-tölu sjálfkrafa</translation>
+<translation id="3581861561942370740">Leitaðu í niðurhalsferlinum</translation>
 <translation id="3582057310199111521">Notað á villandi vefsvæði og fannst í öryggisbroti</translation>
 <translation id="3582299299336701326">Gerðu ljósar skjámyndir dökkar og dökkar skjámyndir ljósar. Ýttu á Search + Ctrl + H til að kveikja og slökkva á umsnúningi lita.</translation>
 <translation id="3584169441612580296">Lesa og breyta myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
@@ -5331,6 +5333,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="5057127674016624293">Skönnun tekur lengri tíma en áætlað var</translation>
+<translation id="5057480703570202545">Niðurhalsferill</translation>
 <translation id="5059241099014281248">Takmarka innskráningu</translation>
 <translation id="5059429103770496207">Birtingarstíll</translation>
 <translation id="5059526285558225588">Veldu hverju þú deilir</translation>
@@ -5740,6 +5743,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5390677308841849479">Dökkrauður og appelsínugulur</translation>
 <translation id="5392192690789334093">Mega senda tilkynningar</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Tengill}one{# tengill}other{# tenglar}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Sjálfgefin leturgerð</translation>
 <translation id="5397378439569041789">Skrá tæki í sjálfsala- eða merkingastillingu</translation>
 <translation id="5397794290049113714">Þú</translation>

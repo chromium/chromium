@@ -1574,6 +1574,7 @@
 <translation id="4030545038933060179">Когато настройката е включена, тук се показва списък с теми въз основа на скорошната ви история на сърфиране</translation>
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4036753017940930924">Парцели и земя</translation>
+<translation id="4039506337798853114">За да се покаже курсорът, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4047351652147966654">18 x 24 инча</translation>
 <translation id="404831776305217138">URL адресът за актуализация на разширението с идентификатор <ph name="EXTENSION_ID" /> е невалиден или използва неподдържана схема. Поддържаните схеми са <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ще можете да го използвате в продуктите на Google</translation>
@@ -1586,6 +1587,7 @@
 <translation id="406358100705415968">Защитна екипировка за безопасност на труда</translation>
 <translation id="4063924980214801036">Използвайте функцията за отключване на устройството, за да потвърждавате карти по-бързо</translation>
 <translation id="4065659219963895623">Ресторанти</translation>
+<translation id="4067774859633143413">За да излезете от режима на цял екран и да видите изтеглянето, натиснете и задръжте |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Добавяне на валиден адрес</translation>
 <translation id="4072486802667267160">При обработването на поръчката ви възникна грешка. Моля, опитайте отново.</translation>
 <translation id="4073376909608563327">Отключването на устройството не може да се използва</translation>
@@ -1808,6 +1810,7 @@
 <translation id="4456937135469235202">Приключенски пътешествия</translation>
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
 <translation id="4466576951214254884">Студентски заеми и финансиране на обучение в колежи</translation>
+<translation id="4467821340016922962">За да излезете от режима на цял екран и да видите изтеглянето, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4473643328224505070"><ph name="BEGIN_ENHANCED_PROTECTION_LINK" />Включете подобрената защита<ph name="END_ENHANCED_PROTECTION_LINK" />, за да получите най-високото ниво на сигурност на Chrome</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">Този формуляр не е защитен. Автоматичното попълване е изключено.</translation>
@@ -2678,6 +2681,7 @@
 <translation id="6218305986815100395">Виртуалната карта не може да бъде включена</translation>
 <translation id="6218753634732582820">Адресът да се премахне ли от Chromium?</translation>
 <translation id="622039917539443112">Паралелно сгъване</translation>
+<translation id="6221286101741304627">За да излезете от режима на цял екран, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="6221311046884916259">Искате ли тази карта да се запази в профила ви в Google?</translation>
 <translation id="6221345481584921695">Google Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри злонамерен софтуер<ph name="END_LINK" /> на <ph name="SITE" />. Уебсайтовете, които обикновено са надеждни, понякога се заразяват с опасен софтуер. Въпросното съдържание произлиза от <ph name="SUBRESOURCE_HOST" /> – известен разпространител на злонамерени програми.</translation>
 <translation id="6221892641068781024">Опростен изглед</translation>
@@ -3956,7 +3960,6 @@
 <translation id="8612919051706159390">Онлайн общности</translation>
 <translation id="8617269623452051934">използването на устройството ви</translation>
 <translation id="861775596732816396">Размер 4</translation>
-<translation id="8618975513789458065">Рекламните теми са само едно от многото неща, чрез които даден сайт може да персонализира рекламите. Дори и без рекламни теми сайтовете пак могат да ви показват реклами, но е възможно те да не са толкова интересни.</translation>
 <translation id="8620276786115098679">Плик Kaku 7</translation>
 <translation id="8623885649813806493">Няма съответстващи пароли. Показване на всички запазени пароли.</translation>
 <translation id="8624354461147303341">Получаване на отстъпки</translation>
@@ -4147,6 +4150,7 @@
 <translation id="9023536760430404133">Автомобилни джанти и гуми</translation>
 <translation id="9025348182339809926">(невалиден)</translation>
 <translation id="902590795160480390">PDF файлът се зарежда</translation>
+<translation id="9027531288681624875">За да излезете от режима на цял екран, натиснете и задръжте |<ph name="ACCELERATOR" />|</translation>
 <translation id="9035022520814077154">Грешка в сигурността</translation>
 <translation id="9035824888276246493">Запазване на кодовете за сигурност</translation>
 <translation id="9036306139374661733">Да се разреши ли достъпът до микрофона?</translation>

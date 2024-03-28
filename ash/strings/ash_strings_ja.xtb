@@ -228,6 +228,7 @@
 <translation id="1882814835921407042">モバイル ネットワークに接続されていません</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> へミラーリング</translation>
 <translation id="1885785240814121742">指紋でロックを解除する</translation>
+<translation id="1904997243703671177">Bluetooth をオフにすると、次を含む <ph name="DEVICE_COUNT" /> 台の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="1908992311423394684">新たなインストール</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1918022425394817322">カメラは右上にスナップされています</translation>
@@ -676,6 +677,7 @@
 <translation id="3702809606464356667">現在のデスクのウィンドウを表示しています、すべてのデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">エンターテイメント</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="3712143870407382523">こちら側のウィンドウを選択</translation>
 <translation id="371370241367527062">前方のマイク</translation>
@@ -957,6 +959,7 @@
 <translation id="4813311884204119883">タブバーの空白部分にリンクをドラッグする</translation>
 <translation id="4814539958450445987">ログイン画面</translation>
 <translation id="481455355267255546">次の予定</translation>
+<translation id="481749895090480684">タスクリスト: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">カメラとマイク</translation>
 <translation id="482908187605862807">Google Play ストアから入手可能なアプリ</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
@@ -998,6 +1001,7 @@
 <translation id="4952936045814352993">アラーム音が無効になっている場合、スマートフォンを探す機能は使用できません</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックするよう求めています。デバイスはリセットされ、データはすべて削除されます。</translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
+<translation id="4964188651935955085">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="4966431234408005599">音量を上げる</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />時間<ph name="MINUTES" />分<ph name="SECONDS" />秒</translation>
 <translation id="4975771730019223894">アプリのバッジ</translation>
@@ -1525,6 +1529,7 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="70168403932084660">デスク 6</translation>
+<translation id="702252130983202758">マイアプリ</translation>
 <translation id="7025533177575372252">スマートフォンを使って <ph name="DEVICE_NAME" /> を接続する</translation>
 <translation id="7026338066939101231">減らす</translation>
 <translation id="7029814467594812963">セッションを終了</translation>
@@ -1825,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> の情報ダイアログを開きます</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> を使用しています</translation>
 <translation id="8185090165691050712">ロックモードのサイズ変更メニューのオンとオフを切り替えます</translation>
+<translation id="8192727139462702395">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8203795194971602413">右クリック</translation>
@@ -2043,6 +2049,7 @@
 <translation id="9129245940793250979">背面ボタン</translation>
 <translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9139720510312328767">次の文字を削除する</translation>
+<translation id="9148058034647219655">終了</translation>
 <translation id="9151906066336345901">End</translation>
 <translation id="9161053988251441839">おすすめのアプリ</translation>
 <translation id="9168436347345867845">後で行う</translation>

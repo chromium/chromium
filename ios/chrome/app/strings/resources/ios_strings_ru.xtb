@@ -268,7 +268,6 @@
 
 Сайты не могут использовать файлы cookie, чтобы получать данные о ваших действиях в браузере, например для показа персонализированной рекламы.</translation>
 <translation id="2381405137052800939">Основные</translation>
-<translation id="23824747102827308">Следите за новостями и обновлениями другого контента, получая уведомления с учетом ваших интересов.</translation>
 <translation id="2386793615875593361">Выбрана 1 фотография</translation>
 <translation id="2390457533592708044">Скрыть карточку "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">Недоступно</translation>
@@ -631,6 +630,7 @@
 <translation id="4282944936010261425">Нет проблем с безопасностью, и от вас не требуется действий.</translation>
 <translation id="4286718549648564014">Адрес перемещен в ваш аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="428768789042547925">Что нового</translation>
+<translation id="429074084062258019">{count,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="4293080268407233932">Поиск</translation>
 <translation id="4302248187517737842">Имя пользователя не указано ••••••••</translation>
 <translation id="4302415908542657649">Предоставление доступа к паролю</translation>
@@ -1268,6 +1268,7 @@
 <translation id="7524055474074101597">Получайте доступ к паролям и другим данным в приложениях.</translation>
 <translation id="7527917367892640435">Посылка уже отслеживается</translation>
 <translation id="7531345132340165516">Текущий сайт</translation>
+<translation id="75362970626182391">Новая группа вкладок</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
 <translation id="754655535278952384">Проверено <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Последняя вкладка, открытая на устройстве <ph name="SOURCE_DEVICE" /></translation>

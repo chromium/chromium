@@ -637,6 +637,7 @@
 <translation id="4425140285732600465">किमतीचा माग ठेवत आहे. कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा.</translation>
 <translation id="4425173294238317796">पासकी कन्फर्मेशन शीट</translation>
 <translation id="442518031075347249">तुम्ही यापुढे तुमचे व्हर्च्युअल कार्ड Google Pay सोबत वापरू शकणार नाही. <ph name="BEGIN_LINK1" />व्हर्च्युअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">तुमचा काही वेब इतिहास कदाचित इथे दिसणार नाही. आवश्यकता असल्यास, संपूर्ण Chrome इतिहास उघडा वर टॅप करा. तसेच, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाचे इतर प्रकार असू शकतात.</translation>
 <translation id="4430277756566635951">सध्या <ph name="EMAIL" /> ला निवडले आहे. खाते निवडा.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ला बुकमार्क केले</translation>
@@ -1106,6 +1107,7 @@
 <translation id="6719634564325948108">QR कोड सह कनेक्ट करायचे का?</translation>
 <translation id="6723740634201835758">तुमच्या Google खात्यामध्ये</translation>
 <translation id="6738867403308150051">डाउनलोड करीत आहे…</translation>
+<translation id="67404633032079629">तुमचा काही वेब इतिहास कदाचित इथे दिसणार नाही. संपूर्ण वेब इतिहास पाहण्यासाठी, संपूर्ण Chrome इतिहास उघडा वर टॅप करा.</translation>
 <translation id="674388916582496364">सर्वसाधारणपणे, तुम्ही भेट देता त्या साइट तुमचा अनुभव पर्सनलाइझ करण्यासाठी, तुम्हाला स्वारस्य असलेल्या गोष्टी लक्षात ठेवतात. साइट तुमच्या स्वारस्यांबद्दलची माहिती Chrome वापरून स्टोअरदेखील करू शकतात.</translation>
 <translation id="6751521182688001123">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
 <translation id="6756507620369789050">फीडबॅक शेअर करा</translation>
@@ -1626,7 +1628,6 @@
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="952301137339791907">तळाशी असलेली पेजच्या इनसाइटची शीट सुरू केली आहे</translation>
 <translation id="95817756606698420">Chrome चीनमध्ये शोध करण्‍यासाठी <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> चा वापर करू शकते. तुम्ही हे <ph name="BEGIN_LINK" />सेटिंग्जमध्ये<ph name="END_LINK" /> बदलू शकता.</translation>
-<translation id="962979164594783469">हे ॲप इंस्टॉल करा</translation>
 <translation id="96681097142096641">सरलीकृत पेज पाहायचे आहे का?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनिटे शिल्लक</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>

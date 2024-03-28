@@ -2505,6 +2505,7 @@
 <translation id="2845382757467349449">Хавчуургын мөрийг байнга харуулах</translation>
 <translation id="2845751331501453107">Таныг үзэх явцад таны харж буй зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK1" />Сайтын санал болгож буй зар<ph name="LINK_END1" />, таны <ph name="BEGIN_LINK2" />күүкиний тохиргоо<ph name="LINK_END2" /> болон таны үзэж буй сайт зарыг хувийн болгосон эсэхээс хамаарна</translation>
 <translation id="284581348330507117">Өвөрмөц нууц үгнүүд үүсгэнэ үү</translation>
+<translation id="284884486564166077">Дурын зургийг Lens-р хайгаарай</translation>
 <translation id="2849035674501872372">Хайх</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> ( <ph name="UNICODE_NAME" /> )</translation>
 <translation id="2849767214114481738">Таны ПИН-г нэмсэн байна</translation>
@@ -3409,6 +3410,7 @@
 <translation id="3577487026101678864">Файлын синк асаалттай</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> техник хангамжийн өгөгдлийн цуглуулга</translation>
 <translation id="3581605050355435601">IP хаягийг автоматаар тохируулах</translation>
+<translation id="3581861561942370740">Таталтын түүхээс хайх</translation>
 <translation id="3582057310199111521">Сэжигтэй сайтад оруулсан, өгөгдлийн зөрчилд олдсон</translation>
 <translation id="3582299299336701326">Цайвар дэлгэцийг бараан, харин бараан дэлгэцийг цайвар болгоно уу. Өнгө хувиргалтыг асаах болон унтраахын тулд Search + Ctrl + H дээр дарна уу.</translation>
 <translation id="3584169441612580296">Компьютероосоо зураг, хөгжим болон бусад медиагаа уншуулах эсвэл өөрчлөх</translation>
@@ -5325,6 +5327,7 @@
 <translation id="5056950756634735043">Агуулагчтай холбогдож байна</translation>
 <translation id="5057110919553308744">Та өргөтгөл гэснийг товших үед</translation>
 <translation id="5057127674016624293">Скан хийхэд тооцоолсноос удаж байна</translation>
+<translation id="5057480703570202545">Таталтын түүх</translation>
 <translation id="5059241099014281248">Нэвтрэхийг хязгаарлах</translation>
 <translation id="5059429103770496207">Дэлгэцийн загвар</translation>
 <translation id="5059526285558225588">Юу хуваалцахаа сонгоно уу</translation>
@@ -5734,6 +5737,7 @@
 <translation id="5390677308841849479">Бараан улаан ба улбар шар</translation>
 <translation id="5392192690789334093">Мэдэгдэл илгээхийг зөвшөөрсөн</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Холбоос}other{# холбоос}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">Өгөгдмөл фонт</translation>
 <translation id="5397378439569041789">Киоск эсвэл пайзын төхөөрөмжид бүртгүүлнэ үү</translation>
 <translation id="5397794290049113714">Та</translation>
