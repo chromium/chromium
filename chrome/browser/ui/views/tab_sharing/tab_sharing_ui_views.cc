@@ -52,6 +52,7 @@
 
 namespace {
 
+using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
@@ -111,6 +112,18 @@ bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
   return capture_policy::GetAllowedCaptureLevel(
              GetOriginFromId(capturer_id).GetURL(), capturer) ==
          AllowedScreenCaptureLevel::kSameOrigin;
+}
+
+TabRole GetTabRole(bool is_capturing_tab, bool is_captured_tab) {
+  if (is_capturing_tab && is_captured_tab) {
+    return TabRole::kSelfCapturingTab;
+  } else if (is_capturing_tab) {
+    return TabRole::kCapturingTab;
+  } else if (is_captured_tab) {
+    return TabRole::kCapturedTab;
+  } else {
+    return TabRole::kOtherTab;
+  }
 }
 
 }  // namespace
@@ -461,7 +474,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, capturer_name_,
-      shared_tab_ == contents /*shared_tab*/,
+      GetTabRole(is_capturing_tab, is_captured_tab),
       share_this_tab_instead_button_state, focus_target, this, capture_type_,
       favicons_used_for_switch_to_tab_button_);
 }

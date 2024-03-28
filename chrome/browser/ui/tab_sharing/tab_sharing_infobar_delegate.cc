@@ -31,6 +31,8 @@
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
+using TabRole = ::TabSharingInfoBarDelegate::TabRole;
+
 constexpr int kCscPermissionButtonIconHeight = 16;
 }  // namespace
 
@@ -237,6 +239,18 @@ std::u16string GetMessageTextCapturing(bool shared_tab,
                    app_name);
 }
 
+bool IsCapturedTab(TabRole role) {
+  switch (role) {
+    case TabRole::kCapturingTab:
+    case TabRole::kOtherTab:
+      return false;
+    case TabRole::kCapturedTab:
+    case TabRole::kSelfCapturingTab:
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 // static
@@ -244,7 +258,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     const std::u16string& shared_tab_name,
     const std::u16string& capturer_name,
-    bool shared_tab,
+    TabRole role,
     ButtonState share_this_tab_instead_button_state,
     std::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
@@ -253,7 +267,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
   DCHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateTabSharingInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
-          shared_tab_name, capturer_name, shared_tab,
+          shared_tab_name, capturer_name, role,
           share_this_tab_instead_button_state, focus_target, ui, capture_type,
           favicons_used_for_switch_to_tab_button))));
 }
@@ -261,14 +275,14 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string shared_tab_name,
     std::u16string capturer_name,
-    bool shared_tab,
+    TabRole role,
     ButtonState share_this_tab_instead_button_state,
     std::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button)
     : shared_tab_name_(std::move(shared_tab_name)),
-      shared_tab_(shared_tab),
+      role_(role),
       capturer_name_(std::move(capturer_name)),
       ui_(ui),
       favicons_used_for_switch_to_tab_button_(
@@ -280,13 +294,20 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   }
 
   if (focus_target.has_value()) {
-    quick_nav_button_ =
-        std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
+    quick_nav_button_ = std::make_unique<SwitchToTabButton>(
+        *focus_target, IsCapturedTab(role_));
   }
 
-  // TODO(crbug.com/324468211): Initialize csc_permission_button_ only when it
-  // should be shown
-  if (base::FeatureList::IsEnabled(
+  // Note that kSelfCapturingTab is intentionally disregarded,
+  // because write-access CapturedSurfaceControl APIs are disallowed
+  // in that case anyway.
+  //
+  // TODO(crbug.com/324468211): Do not show this button until the first
+  // invocation of a write-access Captured Surface Control API.
+  // TODO(crbug.com/324468211): Hide the button if Captured Surface Control
+  // is set to BLOCKED or ASK through the user's interaction with PageInfo.
+  if (role_ == TabRole::kCapturingTab &&
+      base::FeatureList::IsEnabled(
           features::kCapturedSurfaceControlStickyPermissions)) {
     csc_permission_button_ = std::make_unique<CscPermissionButton>();
   }
@@ -312,10 +333,10 @@ TabSharingInfoBarDelegate::GetIdentifier() const {
 std::u16string TabSharingInfoBarDelegate::GetMessageText() const {
   switch (capture_type_) {
     case TabShareType::CAST:
-      return GetMessageTextCasting(shared_tab_, shared_tab_name_,
+      return GetMessageTextCasting(IsCapturedTab(role_), shared_tab_name_,
                                    capturer_name_);
     case TabShareType::CAPTURE:
-      return GetMessageTextCapturing(shared_tab_, shared_tab_name_,
+      return GetMessageTextCapturing(IsCapturedTab(role_), shared_tab_name_,
                                      capturer_name_);
   }
   NOTREACHED_NORETURN();

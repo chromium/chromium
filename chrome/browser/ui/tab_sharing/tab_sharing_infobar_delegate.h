@@ -67,6 +67,13 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     CAST,
   };
 
+  enum class TabRole {
+    kCapturingTab,
+    kCapturedTab,
+    kSelfCapturingTab,  // kCapturingTab && kCapturedTab
+    kOtherTab,
+  };
+
   class TabSharingInfoBarDelegateButton;
   class ShareTabInsteadButton;
   class SwitchToTabButton;
@@ -75,6 +82,9 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // Creates a tab sharing infobar, which has 1-2 buttons.
   //
   // The primary button is for stopping the capture. It is always present.
+  //
+  // |role| denotes whether the infobar is associated with the capturing
+  // and/or captured tab.
   //
   // If |focus_target| has a value, the secondary button switches focus.
   // The image on the secondary button is derived from |focus_target|.
@@ -85,7 +95,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
       infobars::ContentInfoBarManager* infobar_manager,
       const std::u16string& shared_tab_name,
       const std::u16string& capturer_name,
-      bool shared_tab,
+      TabRole role,
       ButtonState share_this_tab_instead_button_state,
       std::optional<FocusTarget> focus_target,
       TabSharingUI* ui,
@@ -117,7 +127,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
  private:
   TabSharingInfoBarDelegate(std::u16string shared_tab_name,
                             std::u16string capturer_name,
-                            bool shared_tab,
+                            TabRole role,
                             ButtonState share_this_tab_instead_button_state,
                             std::optional<FocusTarget> focus_target,
                             TabSharingUI* ui,
@@ -125,7 +135,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
                             bool favicons_used_for_switch_to_tab_button);
 
   const std::u16string shared_tab_name_;
-  const bool shared_tab_;
+  const TabRole role_;
 
   // Represents the app name that's doing the capture in `getDisplayMedia` when
   // `TabShareType::CAPTURE`, and the sink name (which could be empty) when

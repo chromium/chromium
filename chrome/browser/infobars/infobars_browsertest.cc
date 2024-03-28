@@ -364,8 +364,9 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
       TabSharingInfoBarDelegate::Create(
           /*infobar_manager=*/GetInfoBarManager(),
-          /*shared_tab_name=*/u"example.com", /*app_name=*/u"application.com",
-          /*shared_tab=*/false,
+          /*shared_tab_name=*/u"example.com",
+          /*capturer_name=*/u"application.com",
+          /*role=*/TabSharingInfoBarDelegate::TabRole::kOtherTab,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
           /*focus_target=*/std::nullopt, /*ui=*/nullptr,
