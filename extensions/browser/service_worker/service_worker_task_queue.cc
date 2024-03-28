@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -329,6 +330,12 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
   //    << "Worker already started";
   worker_state->SetWorkerId(worker_id, ProcessManager::Get(browser_context_));
   worker_state->renderer_state_ = RendererState::kStarted;
+  // TODO(crbug.com/40276609): Since the browser service worker layer is now on
+  // BrowserThread::UI, this renderer start should always come after the browser
+  // notification (DidStartWorkerForScope()).
+  if (worker_state->browser_state_ != BrowserState::kStarted) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   RunPendingTasksIfWorkerReady(context_id);
 }
