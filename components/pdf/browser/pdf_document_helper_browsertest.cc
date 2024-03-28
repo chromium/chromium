@@ -56,11 +56,6 @@ class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
 
  private:
   // PDFDocumentHelperClient:
-  content::RenderFrameHost* FindPdfFrame(
-      content::WebContents* contents) override {
-    return contents->GetPrimaryMainFrame();
-  }
-
   void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
                                  int content_restrictions) override {}
   void OnPDFHasUnsupportedFeature(content::WebContents* contents) override {}

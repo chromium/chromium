@@ -70,10 +70,18 @@ void PDFDocumentHelper::SetListener(
   if (pdf_rwh_) {
     pdf_rwh_->RemoveObserver(this);
   }
-  content::RenderFrameHost* pdf_host =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
-          ? &render_frame_host()
-          : client_->FindPdfFrame(&GetWebContents());
+
+  content::RenderFrameHost* pdf_host;
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    pdf_host = &render_frame_host();
+  } else {
+    content::RenderFrameHost* main_frame =
+        GetWebContents().GetPrimaryMainFrame();
+    content::RenderFrameHost* pdf_frame =
+        pdf_frame_util::FindPdfChildFrame(main_frame);
+    pdf_host = pdf_frame ? pdf_frame : main_frame;
+  }
+
   pdf_rwh_ = pdf_host->GetRenderWidgetHost();
   pdf_rwh_->AddObserver(this);
 }
