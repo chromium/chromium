@@ -39,7 +39,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -57,7 +56,6 @@ import java.io.IOException;
 
 /** Tests {@link PrivacySandboxDialog}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class PrivacySandboxDialogTest {
     @ClassRule
@@ -359,7 +357,7 @@ public final class PrivacySandboxDialogTest {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
         launchDialog();
         // Verify that the EEA notice is shown
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true);
         assertEquals(
                 "Last dialog action",
                 PromptAction.NOTICE_SHOWN,
