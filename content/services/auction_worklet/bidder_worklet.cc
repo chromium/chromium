@@ -548,6 +548,7 @@ void BidderWorklet::ReportWin(
     const url::Origin& browser_signal_seller_origin,
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     std::optional<uint32_t> bidding_signals_data_version,
+    const std::optional<base::TimeDelta> reporting_timeout,
     uint64_t trace_id,
     ReportWinCallback report_win_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -584,8 +585,9 @@ void BidderWorklet::ReportWin(
   report_win_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
   report_win_task->bidding_signals_data_version = bidding_signals_data_version;
-  report_win_task->callback = std::move(report_win_callback);
+  report_win_task->reporting_timeout = reporting_timeout;
   report_win_task->trace_id = trace_id;
+  report_win_task->callback = std::move(report_win_callback);
 
   if (direct_from_seller_per_buyer_signals) {
     // Deleting `report_win_task` will destroy
@@ -793,11 +795,24 @@ void BidderWorklet::V8State::ReportWin(
     const url::Origin& browser_signal_seller_origin,
     const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const std::optional<uint32_t>& bidding_signals_data_version,
+    const std::optional<base::TimeDelta> reporting_timeout,
     uint64_t trace_id,
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
   base::ElapsedTimer elapsed_timer;
+
+  // We may not be allowed any time to run.
+  if (reporting_timeout.has_value() && !reporting_timeout->is_positive()) {
+    PostReportWinCallbackToUserThread(
+        std::move(callback),
+        /*report_url=*/std::nullopt,
+        /*ad_beacon_map=*/{},
+        /*ad_macro_map=*/{},
+        /*pa_requests=*/{}, base::TimeDelta(),
+        /*errors=*/{"reportWin() aborted due to zero timeout."});
+    return;
+  }
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -961,7 +976,7 @@ void BidderWorklet::V8State::ReportWin(
       worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_win", trace_id);
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
-      v8_helper_->CreateTimeLimit(/*script_timeout=*/std::nullopt);
+      v8_helper_->CreateTimeLimit(/*script_timeout=*/reporting_timeout);
   bool script_failed =
       !v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                              total_timeout.get(), errors_out);
@@ -2131,7 +2146,8 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->browser_signal_recency),
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
-          std::move(task->bidding_signals_data_version), task->trace_id,
+          std::move(task->bidding_signals_data_version),
+          std::move(task->reporting_timeout), task->trace_id,
           base::BindOnce(&BidderWorklet::DeliverReportWinOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }

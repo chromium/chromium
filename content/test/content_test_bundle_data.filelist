@@ -6697,6 +6697,12 @@ data/interest_group/page_with_custom_ad_auction_result_header.html.mock-http-hea
 data/interest_group/page_with_custom_ad_auction_result_header2.html
 data/interest_group/page_with_custom_ad_auction_result_header2.html.mock-http-headers
 data/interest_group/page_with_iframe_with_ad_auction_headers.html
+data/interest_group/report_result_loop_forever.js
+data/interest_group/report_result_loop_forever.js.mock-http-headers
+data/interest_group/report_result_reporting_timeout_value.js
+data/interest_group/report_result_reporting_timeout_value.js.mock-http-headers
+data/interest_group/report_win_loop_forever.js
+data/interest_group/report_win_loop_forever.js.mock-http-headers
 data/interest_group/schemaV16.sql
 data/interest_group/schemaV6.sql
 data/interest_group/trusted_bidding_signals.json

@@ -286,6 +286,7 @@ bool IsValidBid(double bid) {
 //  'trustedScoringSignalsURL': ...,
 //  'interestGroupBuyers': ['https://www.example-dsp.com', 'https://buyer2.com',
 //  ...], 'auctionSignals': {...}, 'sellerSignals': {...}, 'sellerTimeout': 100,
+//  `reportingTimeout`: 600,
 //  'perBuyerSignals': {'https://www.example-dsp.com': {...},
 //                      'https://www.another-buyer.com': {...},
 //                       ...},
@@ -460,6 +461,19 @@ bool AppendAuctionConfig(
   if (!per_buyer_cumulative_timeouts.IsEmpty()) {
     auction_config_dict.Set("perBuyerCumulativeTimeouts",
                             per_buyer_cumulative_timeouts);
+  }
+
+  base::TimeDelta reporting_timeout =
+      auction_ad_config_non_shared_params.reporting_timeout.has_value()
+          ? *auction_ad_config_non_shared_params.reporting_timeout
+          : AuctionV8Helper::kScriptTimeout;
+
+  if (base::FeatureList::IsEnabled(blink::features::kFledgeReportingTimeout) &&
+      !v8_helper->InsertJsonValue(
+          context, "reportingTimeout",
+          base::NumberToString(reporting_timeout.InMilliseconds()),
+          auction_config_value)) {
+    return false;
   }
 
   v8::Local<v8::Object> per_buyer_currencies;
@@ -1478,6 +1492,19 @@ void SellerWorklet::V8State::ReportResult(
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
   base::ElapsedTimer elapsed_timer;
 
+  // We may not be allowed any time to run.
+  if (auction_ad_config_non_shared_params.reporting_timeout.has_value() &&
+      !auction_ad_config_non_shared_params.reporting_timeout->is_positive()) {
+    PostReportResultCallbackToUserThread(
+        std::move(callback),
+        /*signals_for_winner=*/std::nullopt,
+        /*report_url=*/std::nullopt,
+        /*ad_beacon_map=*/{},
+        /*pa_requests=*/{}, base::TimeDelta(),
+        /*errors=*/{"reportResult() aborted due to zero timeout."});
+    return;
+  }
+
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
 
@@ -1608,8 +1635,11 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_result", trace_id);
+
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
-      v8_helper_->CreateTimeLimit(/*script_timeout=*/std::nullopt);
+      v8_helper_->CreateTimeLimit(
+          /*script_timeout=*/auction_ad_config_non_shared_params
+              .reporting_timeout);
   bool success =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                             total_timeout.get(), errors_out);
