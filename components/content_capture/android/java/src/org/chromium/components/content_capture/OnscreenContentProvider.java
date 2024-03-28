@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** This class receives captured content from native and forwards to ContetnCaptureConsumer. */
+/** This class receives captured content from native and forwards to ContentCaptureConsumer. */
 @JNINamespace("content_capture")
 public class OnscreenContentProvider {
     private static final String TAG = "ContentCapture";
