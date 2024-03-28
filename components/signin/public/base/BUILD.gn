@@ -49,8 +49,6 @@ static_library("base") {
     "signin_client.h",
     "signin_metrics.cc",
     "signin_metrics.h",
-    "signin_pref_names.cc",
-    "signin_pref_names.h",
     "wait_for_network_callback_helper.cc",
     "wait_for_network_callback_helper.h",
   ]
@@ -166,6 +164,8 @@ component("signin_switches") {
   defines = [ "IS_SIGNIN_SWITCHES_IMPL" ]
 
   sources = [
+    "signin_pref_names.cc",
+    "signin_pref_names.h",
     "signin_switches.cc",
     "signin_switches.h",
   ]
@@ -173,5 +173,7 @@ component("signin_switches") {
   deps = [
     ":signin_buildflags",
     "//base",
+    "//build:chromeos_buildflags",
+    "//components/prefs",
   ]
 }

@@ -482,7 +482,7 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (profile->IsOffTheRecord()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    if (!switches::IsBoundSessionCredentialsEnabled()) {
+    if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
       return;
     }
 #else

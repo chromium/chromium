@@ -28,7 +28,6 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/common/bound_session_request_throttled_handler.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "net/cookies/cookie_util.h"
 #endif
 
@@ -53,9 +52,6 @@ RequestBoundSessionStatus GetRequestBoundSessionStatus(
       bound_session_throttler_params->domain.empty()) {
     return RequestBoundSessionStatus::kNotCovered;
   }
-
-  // The feature must be on if throttler parameters exist.
-  CHECK(switches::IsBoundSessionCredentialsEnabled());
 
   // Check if the request requires the short lived cookie.
   if (!request_url.DomainIs(net::cookie_util::CookieDomainAsHost(
@@ -192,7 +188,8 @@ void GoogleURLLoaderThrottle::WillStartRequest(
   is_main_frame_navigation_ =
       request->is_outermost_main_frame &&
       request->destination == network::mojom::RequestDestination::kDocument;
-  if (switches::IsBoundSessionCredentialsEnabled() && request->SendsCookies()) {
+  sends_cookies_ = request->SendsCookies();
+  if (sends_cookies_) {
     RequestBoundSessionStatus status = GetRequestBoundSessionStatus(
         request->url, dynamic_params_->bound_session_throttler_params.get());
     if (IsCoveredRequestBoundSessionStatus(status)) {
@@ -252,7 +249,7 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
   }
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (switches::IsBoundSessionCredentialsEnabled()) {
+  if (sends_cookies_) {
     RequestBoundSessionStatus status = GetRequestBoundSessionStatus(
         redirect_info->new_url,
         dynamic_params_->bound_session_throttler_params.get());

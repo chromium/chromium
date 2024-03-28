@@ -137,7 +137,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(
       about_signin_internals ? about_signin_internals->GetSigninStatus()
                              : base::Value::Dict();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (switches::IsBoundSessionCredentialsEnabled()) {
+  if (switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
     AppendBoundSessionInfo(
         signin_status,
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile));
@@ -164,7 +164,8 @@ void SignInInternalsHandler::OnSigninStateChanged(
     const base::Value::Dict& info) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (profile && switches::IsBoundSessionCredentialsEnabled()) {
+  if (profile &&
+      switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
     base::Value::Dict signin_status = info.Clone();
     AppendBoundSessionInfo(
         signin_status,

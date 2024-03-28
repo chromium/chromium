@@ -18,6 +18,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/network_service_instance.h"
 
@@ -54,11 +55,11 @@ BoundSessionCookieRefreshServiceFactory::
 std::unique_ptr<KeyedService>
 BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!switches::IsBoundSessionCredentialsEnabled()) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
     return nullptr;
   }
 
-  Profile* profile = Profile::FromBrowserContext(context);
   unexportable_keys::UnexportableKeyService* key_service =
       UnexportableKeyServiceFactory::GetForProfile(profile);
 
@@ -95,4 +96,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
 void BoundSessionCookieRefreshServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   BoundSessionParamsStorage::RegisterProfilePrefs(registry);
+  // Default value for this pref doesn't matter since it is only used when
+  // explicitly set.
+  registry->RegisterBooleanPref(prefs::kBoundSessionCredentialsEnabled, false);
 }

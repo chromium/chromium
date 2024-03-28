@@ -61,7 +61,7 @@ bool HeaderModificationDelegateImpl::ShouldInterceptNavigation(
     content::WebContents* contents) {
   if (profile_->IsOffTheRecord()) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    if (!switches::IsBoundSessionCredentialsEnabled()) {
+    if (!switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs())) {
       return false;
     }
 #else
@@ -86,7 +86,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
     // We expect seeing traffic from OTR profiles only if the feature is
     // enabled.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    CHECK(switches::IsBoundSessionCredentialsEnabled());
+    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
 #else
     CHECK(false);
 #endif
@@ -151,7 +151,7 @@ void HeaderModificationDelegateImpl::ProcessResponse(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (gaia::HasGaiaSchemeHostPort(response_adapter->GetUrl()) &&
-      switches::IsBoundSessionCredentialsEnabled()) {
+      switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs())) {
     BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
     if (bound_session_cookie_refresh_service) {
@@ -173,7 +173,7 @@ void HeaderModificationDelegateImpl::ProcessResponse(
     // We expect seeing traffic from OTR profiles only if the feature is
     // enabled.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    CHECK(switches::IsBoundSessionCredentialsEnabled());
+    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
 #else
     CHECK(false);
 #endif

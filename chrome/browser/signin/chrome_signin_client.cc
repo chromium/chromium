@@ -368,7 +368,7 @@ std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(
   if (BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
           BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
       bound_session_cookie_refresh_service) {
-    CHECK(switches::IsBoundSessionCredentialsEnabled());
+    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
     return std::make_unique<ThrottledGaiaAuthFetcher>(
         consumer, source, GetURLLoaderFactory(),
         bound_session_cookie_refresh_service->GetBoundSessionThrottlerParams(),

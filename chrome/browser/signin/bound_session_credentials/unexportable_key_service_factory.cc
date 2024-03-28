@@ -85,7 +85,8 @@ UnexportableKeyServiceFactory::~UnexportableKeyServiceFactory() = default;
 std::unique_ptr<KeyedService>
 UnexportableKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!switches::IsBoundSessionCredentialsEnabled()) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
     return nullptr;
   }
 

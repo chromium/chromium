@@ -1239,6 +1239,10 @@ policies:
   1238: CustomProfileLabel
   1239: ProfileLabel
   1240: PrivacySandboxFingerprintingProtectionEnabled
+  1241: ''
+  1242: ''
+  1243: ''
+  1244: BoundSessionCredentialsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

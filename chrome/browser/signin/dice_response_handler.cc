@@ -100,12 +100,13 @@ std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
 
 DiceResponseHandler::RegistrationTokenHelperFactory
 CreateRegistrationTokenHelperFactory(
+    const PrefService* profile_prefs,
     unexportable_keys::UnexportableKeyService* unexportable_key_service) {
   if (!unexportable_key_service) {
     return {};
   }
 
-  if (!switches::IsChromeRefreshTokenBindingEnabled()) {
+  if (!switches::IsChromeRefreshTokenBindingEnabled(profile_prefs)) {
     return {};
   }
 
@@ -151,6 +152,7 @@ class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
         registration_token_helper_factory;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     registration_token_helper_factory = CreateRegistrationTokenHelperFactory(
+        profile->GetPrefs(),
         UnexportableKeyServiceFactory::GetForProfile(profile));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     return new DiceResponseHandler(
@@ -205,7 +207,8 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
       std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (!registration_token_helper_factory.is_null()) {
-    CHECK(switches::IsChromeRefreshTokenBindingEnabled());
+    CHECK(switches::IsChromeRefreshTokenBindingEnabled(
+        signin_client_->GetPrefs()));
     StartBindingKeyGeneration(registration_token_helper_factory);
     // Wait until the binding key is generated before fetching a token.
     return;
@@ -231,7 +234,8 @@ void DiceResponseHandler::DiceTokenFetcher::OnClientOAuthSuccess(
   gaia_auth_fetcher_.reset();
   timeout_closure_.Cancel();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (!switches::IsChromeRefreshTokenBindingEnabled() ||
+  if (!switches::IsChromeRefreshTokenBindingEnabled(
+          signin_client_->GetPrefs()) ||
       !result.is_bound_to_key) {
     // Pass an empty binding key if conditions don't apply. This key won't be
     // needed for anything else, so we can just clear it in place.
@@ -277,7 +281,8 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
     const RegistrationTokenHelperFactory& registration_token_helper_factory) {
-  CHECK(switches::IsChromeRefreshTokenBindingEnabled());
+  CHECK(
+      switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   // `base::Unretained()` is safe because `this` owns
   // `registration_token_helper_`.
   registration_token_helper_ = registration_token_helper_factory.Run(
@@ -290,7 +295,8 @@ void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
 
 void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
     std::optional<RegistrationTokenHelper::Result> result) {
-  CHECK(switches::IsChromeRefreshTokenBindingEnabled());
+  CHECK(
+      switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   if (result.has_value()) {
     binding_registration_token_ = std::move(result->registration_token);
     wrapped_binding_key_ = std::move(result->wrapped_binding_key);
@@ -375,7 +381,8 @@ void DiceResponseHandler::SetTaskRunner(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 void DiceResponseHandler::SetRegistrationTokenHelperFactoryForTesting(
     RegistrationTokenHelperFactory factory) {
-  CHECK(switches::IsChromeRefreshTokenBindingEnabled());
+  CHECK(
+      switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   registration_token_helper_factory_ = std::move(factory);
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
