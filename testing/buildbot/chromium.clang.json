@@ -2164,7 +2164,7 @@
           ],
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-13"
+            "os": "Mac-13|Mac-14"
           },
           "named_caches": [
             {
@@ -2233,7 +2233,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "device": "iPhone9,1",
-            "os": "Mac-13"
+            "os": "Mac-13|Mac-14"
           },
           "expiration": 21600,
           "named_caches": [
