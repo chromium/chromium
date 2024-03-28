@@ -48,6 +48,7 @@
 namespace ash {
 namespace {
 constexpr base::TimeDelta kNudgeHideAnimationDuration = base::Milliseconds(50);
+constexpr base::TimeDelta kClipboardRecency = base::Seconds(60);
 
 std::unique_ptr<PickerListItemView> CreateListItemViewForClipboardResult(
     const PickerSearchResult::ClipboardData& data,
@@ -58,6 +59,7 @@ std::unique_ptr<PickerListItemView> CreateListItemViewForClipboardResult(
   item_view->SetSecondaryText(
       l10n_util::GetStringUTF16(IDS_PICKER_FROM_CLIPBOARD_TEXT));
   switch (data.display_format) {
+    case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
     case PickerSearchResult::ClipboardData::DisplayFormat::kText:
       item_view->SetPrimaryText(data.display_text);
       break;
@@ -107,9 +109,10 @@ PickerZeroStateView::PickerZeroStateView(
       AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
 
   clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
-  clipboard_provider_->FetchResult(
-      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResult,
-                          weak_ptr_factory_.GetWeakPtr()));
+  clipboard_provider_->FetchResults(
+      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+                          weak_ptr_factory_.GetWeakPtr()),
+      kClipboardRecency);
 
   for (PickerCategory category : available_categories) {
     auto item_view = std::make_unique<PickerListItemView>(
@@ -324,16 +327,19 @@ void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {
   }
 }
 
-void PickerZeroStateView::OnFetchSuggestedResult(
-    const PickerSearchResult& result) {
+void PickerZeroStateView::OnFetchSuggestedResults(
+    std::vector<PickerSearchResult> results) {
   if (!suggested_section_view_) {
     suggested_section_view_ = section_list_view_->AddSectionAt(0);
     suggested_section_view_->AddTitleLabel(
         l10n_util::GetStringUTF16(IDS_PICKER_SUGGESTED_SECTION_TITLE));
   }
-  if (std::unique_ptr<PickerListItemView> item_view =
-          CreateListItemViewForSearchResult(result, select_result_callback_)) {
-    suggested_section_view_->AddListItem(std::move(item_view));
+  for (const auto& result : results) {
+    if (std::unique_ptr<PickerListItemView> item_view =
+            CreateListItemViewForSearchResult(result,
+                                              select_result_callback_)) {
+      suggested_section_view_->AddListItem(std::move(item_view));
+    }
   }
   SetPseudoFocusedView(section_list_view_->GetTopItem());
 }

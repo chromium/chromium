@@ -16,6 +16,7 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
+#include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_paste_request.h"
@@ -180,6 +181,7 @@ PickerController::PickerController() {
   if (auto* manager = ash::input_method::InputMethodManager::Get()) {
     keyboard_observation_.Observe(manager->GetImeKeyboard());
   }
+  clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
 }
 
 PickerController::~PickerController() {
@@ -265,9 +267,6 @@ void PickerController::GetResultsForCategory(PickerCategory category,
       return;
     case PickerCategory::kExpressions:
       NOTREACHED_NORETURN();
-    case PickerCategory::kClipboard:
-      NOTIMPLEMENTED_LOG_ONCE();
-      break;
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
       client_->GetRecentFileResults(
@@ -281,6 +280,17 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kUnitsMaths:
       NOTIMPLEMENTED_LOG_ONCE();
       break;
+    case PickerCategory::kClipboard:
+      clipboard_provider_->FetchResults(base::BindOnce(
+          [](SearchResultsCallback callback,
+             std::vector<PickerSearchResult> results) {
+            std::move(callback).Run({
+                PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,
+                                           std::move(results)),
+            });
+          },
+          std::move(callback)));
+      return;
   }
 }
 

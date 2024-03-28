@@ -21,8 +21,8 @@ class PickerSearchResult;
 // A provider to fetch clipboard history.
 class ASH_EXPORT PickerClipboardProvider {
  public:
-  using OnFetchResultCallback =
-      base::RepeatingCallback<void(const PickerSearchResult&)>;
+  using OnFetchResultsCallback =
+      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
 
   explicit PickerClipboardProvider(
       base::Clock* clock = base::DefaultClock::GetInstance());
@@ -31,10 +31,13 @@ class ASH_EXPORT PickerClipboardProvider {
   PickerClipboardProvider& operator=(const PickerClipboardProvider&) = delete;
   ~PickerClipboardProvider();
 
-  void FetchResult(OnFetchResultCallback callback);
+  // Fetches clipboard items which were copied within `recency` time duration.
+  void FetchResults(OnFetchResultsCallback callback,
+                    base::TimeDelta recency = base::TimeDelta::Max());
 
  private:
-  void OnFetchHistory(OnFetchResultCallback callback,
+  void OnFetchHistory(OnFetchResultsCallback callback,
+                      base::TimeDelta recency,
                       std::vector<ClipboardHistoryItem> items);
 
   raw_ptr<base::Clock> clock_;

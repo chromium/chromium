@@ -52,6 +52,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
 
   struct ClipboardData {
     enum class DisplayFormat {
+      kFile,
       kText,
       kImage,
       kHtml,

@@ -85,7 +85,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   void ScrollPseudoFocusedViewToVisible();
 
-  void OnFetchSuggestedResult(const PickerSearchResult& result);
+  void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
 
   SelectSearchResultCallback select_result_callback_;
 

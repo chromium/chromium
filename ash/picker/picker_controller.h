@@ -30,6 +30,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerClient;
+class PickerClipboardProvider;
 class PickerInsertMediaRequest;
 class PickerModel;
 class PickerPasteRequest;
@@ -107,6 +108,7 @@ class ASH_EXPORT PickerController
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
   std::unique_ptr<PickerSearchController> search_controller_;
+  std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
   // Periodically records usage metrics based on the Standard Feature Usage
   // Logging (SFUL) framework.

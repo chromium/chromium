@@ -25,10 +25,14 @@
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -41,6 +45,11 @@
 #include "ui/views/view_utils.h"
 
 namespace ash {
+namespace {
+// Some of the icons we use do not have a default size, so we need to manually
+// set it.
+constexpr int kIconSize = 20;
+}  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
     int picker_view_width,
@@ -232,9 +241,37 @@ void PickerSearchResultsView::AddResultToSection(
             section_view->AddEmoticonItem(std::move(emoticon_item));
           },
           [&](const PickerSearchResult::ClipboardData& data) {
-            // Do nothing for now. There are no clipboard results for actual
-            // search currently, ClipboardData is only used for clipboard
-            // items in zero state view.
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            const gfx::VectorIcon* icon = nullptr;
+            switch (data.display_format) {
+              case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
+                icon = &vector_icons::kContentCopyIcon;
+                item_view->SetPrimaryText(data.display_text);
+                break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kText:
+                icon = &chromeos::kTextIcon;
+                item_view->SetPrimaryText(data.display_text);
+                break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
+                if (!data.display_image.has_value()) {
+                  return;
+                }
+                icon = &chromeos::kFiletypeImageIcon;
+                item_view->SetPrimaryImage(
+                    std::make_unique<views::ImageView>(*data.display_image));
+                break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
+                icon = &vector_icons::kCodeIcon;
+                item_view->SetPrimaryText(
+                    l10n_util::GetStringUTF16(IDS_PICKER_HTML_CONTENT));
+                break;
+            }
+            if (icon) {
+              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                  *icon, cros_tokens::kCrosSysOnSurface, kIconSize));
+            }
+            section_view->AddListItem(std::move(item_view));
           },
           [&, this](const PickerSearchResult::GifData& data) {
             // `base::Unretained` is safe here because `this` will own the gif

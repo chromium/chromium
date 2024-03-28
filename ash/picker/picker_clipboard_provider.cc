@@ -10,12 +10,11 @@
 
 namespace ash {
 namespace {
-constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
-
 std::optional<PickerSearchResult::ClipboardData::DisplayFormat>
 GetDisplayFormat(crosapi::mojom::ClipboardHistoryDisplayFormat format) {
   switch (format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
+      return PickerSearchResult::ClipboardData::DisplayFormat::kFile;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       return PickerSearchResult::ClipboardData::DisplayFormat::kText;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
@@ -33,31 +32,34 @@ PickerClipboardProvider::PickerClipboardProvider(base::Clock* clock)
 
 PickerClipboardProvider::~PickerClipboardProvider() = default;
 
-void PickerClipboardProvider::FetchResult(OnFetchResultCallback callback) {
+void PickerClipboardProvider::FetchResults(OnFetchResultsCallback callback,
+                                           base::TimeDelta recency) {
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
   if (clipboard_history_controller) {
-    clipboard_history_controller->GetHistoryValues(
-        base::BindOnce(&PickerClipboardProvider::OnFetchHistory,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    clipboard_history_controller->GetHistoryValues(base::BindOnce(
+        &PickerClipboardProvider::OnFetchHistory,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback), recency));
   }
 }
 
 void PickerClipboardProvider::OnFetchHistory(
-    OnFetchResultCallback callback,
+    OnFetchResultsCallback callback,
+    base::TimeDelta recency,
     std::vector<ClipboardHistoryItem> items) {
+  std::vector<PickerSearchResult> results;
   for (const auto& item : items) {
-    if ((clock_->Now() - item.time_copied()) > kRecencyThreshold) {
+    if ((clock_->Now() - item.time_copied()) > recency) {
       continue;
     }
     if (std::optional<PickerSearchResult::ClipboardData::DisplayFormat>
             display_format = GetDisplayFormat(item.display_format());
         display_format.has_value()) {
-      callback.Run(PickerSearchResult::Clipboard(item.id(), *display_format,
-                                                 item.display_text(),
-                                                 item.display_image()));
+      results.push_back(PickerSearchResult::Clipboard(
+          item.id(), *display_format, item.display_text(),
+          item.display_image()));
     }
   }
+  std::move(callback).Run(std::move(results));
 }
-
 }  // namespace ash

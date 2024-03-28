@@ -19,13 +19,15 @@ namespace ash {
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::FieldsAre;
+using ::testing::IsEmpty;
 using ::testing::Property;
 using ::testing::VariantWith;
 
 class PickerClipboardProviderTest : public views::ViewsTestBase {};
 
-TEST_F(PickerClipboardProviderTest, FetchesRecentTextResult) {
+TEST_F(PickerClipboardProviderTest, FetchesTextResult) {
   base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
@@ -44,19 +46,19 @@ TEST_F(PickerClipboardProviderTest, FetchesRecentTextResult) {
   PickerClipboardProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<const PickerSearchResult&> future;
-  provider.FetchResult(future.GetRepeatingCallback());
+  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(
-      future.Get(),
-      Property("data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                   expected_item_id,
-                   PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                   u"xyz", std::nullopt))));
+  EXPECT_THAT(future.Get(),
+              ElementsAre(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
+                      expected_item_id,
+                      PickerSearchResult::ClipboardData::DisplayFormat::kText,
+                      u"xyz", std::nullopt)))));
 }
 
-TEST_F(PickerClipboardProviderTest, FetchesRecentImageResult) {
+TEST_F(PickerClipboardProviderTest, FetchesImageResult) {
   base::UnguessableToken expected_item_id;
   ui::ImageModel expected_display_image =
       ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16));
@@ -78,16 +80,16 @@ TEST_F(PickerClipboardProviderTest, FetchesRecentImageResult) {
   PickerClipboardProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<const PickerSearchResult&> future;
-  provider.FetchResult(future.GetRepeatingCallback());
+  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  provider.FetchResults(future.GetCallback());
 
-  EXPECT_THAT(
-      future.Get(),
-      Property("data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
-                   expected_item_id,
-                   PickerSearchResult::ClipboardData::DisplayFormat::kImage, _,
-                   expected_display_image))));
+  EXPECT_THAT(future.Get(),
+              ElementsAre(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
+                      expected_item_id,
+                      PickerSearchResult::ClipboardData::DisplayFormat::kImage,
+                      _, expected_display_image)))));
 }
 
 TEST_F(PickerClipboardProviderTest, DoesNotFetchOldResult) {
@@ -107,10 +109,10 @@ TEST_F(PickerClipboardProviderTest, DoesNotFetchOldResult) {
   clock.SetNow(base::Time::Now());
   clock.Advance(base::Hours(1));
 
-  base::test::TestFuture<const PickerSearchResult&> future;
-  provider.FetchResult(future.GetRepeatingCallback());
+  base::test::TestFuture<std::vector<PickerSearchResult>> future;
+  provider.FetchResults(future.GetCallback(), base::Seconds(120));
 
-  EXPECT_FALSE(future.IsReady());
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 }  // namespace
 }  // namespace ash
