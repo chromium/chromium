@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_shutdown_controller.h"
+#include "components/cross_device/logging/logging.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -58,7 +58,8 @@ QuickPairProcessManagerImpl::GetProcessReference(
   if (!service_ || !fast_pair_data_parser_)
     BindToProcess();
 
-  QP_LOG(VERBOSE) << __func__ << ": New process reference requested.";
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": New process reference requested.";
 
   // Ensure the process isn't shutdown (it's possible the controller has started
   // their procedure by here.)
@@ -77,7 +78,7 @@ QuickPairProcessManagerImpl::GetProcessReference(
 void QuickPairProcessManagerImpl::BindToProcess() {
   DCHECK(!service_ && !fast_pair_data_parser_);
 
-  QP_LOG(INFO) << "Starting up QuickPair utility process";
+  CD_LOG(INFO, Feature::FP) << "Starting up QuickPair utility process";
 
   QuickPairBrowserDelegate::Get()->RequestService(
       service_.BindNewPipeAndPassReceiver());
@@ -115,7 +116,7 @@ void QuickPairProcessManagerImpl::OnReferenceDeleted(
   if (!id_to_process_stopped_callback_map_.empty())
     return;
 
-  QP_LOG(VERBOSE)
+  CD_LOG(VERBOSE, Feature::FP)
       << "All process references have been released. Starting shutdown timer";
 
   process_shutdown_controller_->Start(
@@ -128,7 +129,7 @@ void QuickPairProcessManagerImpl::ShutdownProcess(
   if (!service_ && !fast_pair_data_parser_)
     return;
 
-  QP_LOG(WARNING) << __func__ << ": " << shutdown_reason;
+  CD_LOG(WARNING, Feature::FP) << __func__ << ": " << shutdown_reason;
 
   // Ensure that we don't try to stop the process again.
   process_shutdown_controller_->Stop();

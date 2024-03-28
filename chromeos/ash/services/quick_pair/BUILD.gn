@@ -30,6 +30,7 @@ source_set("quick_pair") {
     "//ash/quick_pair/common",
     "//chromeos/ash/services/quick_pair/public/cpp",
     "//chromeos/ash/services/quick_pair/public/mojom",
+    "//components/cross_device/logging:logging",
     "//crypto:crypto",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
