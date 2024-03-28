@@ -50,15 +50,10 @@ void HistoryEmbeddingsHandler::Search(
     return;
   }
 
-  // Service may be null in tests.
-  // TODO(b/325108118): Remove this special case once we have mocks in place.
   history_embeddings::HistoryEmbeddingsService* service =
       HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
-  if (!service) {
-    std::move(callback).Run(history_embeddings::mojom::SearchResult::New());
-    return;
-  }
-
+  // The service is never null. Even tests build and use a service.
+  CHECK(service);
   service->Search(query->query,
                   history_embeddings::kSearchResultItemCount.Get(),
                   base::BindOnce(&OnSearchCompleted, std::move(callback)));

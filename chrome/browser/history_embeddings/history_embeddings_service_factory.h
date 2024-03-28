@@ -15,7 +15,6 @@ class HistoryEmbeddingsService;
 
 class HistoryEmbeddingsServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  // This can return nullptr in tests.
   static history_embeddings::HistoryEmbeddingsService* GetForProfile(
       Profile* profile);
 

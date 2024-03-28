@@ -38,12 +38,8 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* profile = Profile::FromBrowserContext(context);
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
-
-  // The embeddings service can't function without a HistoryService. This
-  // happens in some unit tests.
-  if (!history_service) {
-    return nullptr;
-  }
+  // The history service is never null; even unit tests build and use one.
+  CHECK(history_service);
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
-      history_service->history_dir(), history_service);
+      history_service);
 }

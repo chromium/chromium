@@ -42,10 +42,9 @@ using SearchResultCallback = base::OnceCallback<void(SearchResult)>;
 class HistoryEmbeddingsService : public KeyedService,
                                  public history::HistoryServiceObserver {
  public:
-  // `storage_dir` will generally be the Profile directory.
-  // `history_service` is never nullptr.
-  HistoryEmbeddingsService(const base::FilePath& storage_dir,
-                           history::HistoryService* history_service);
+  // `history_service` is never nullptr and must outlive `this`.
+  // Storage uses its `history_dir() location for the database.
+  explicit HistoryEmbeddingsService(history::HistoryService* history_service);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;

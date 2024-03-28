@@ -101,7 +101,6 @@ void FinishSearchResultWithHistory(
 ////////////////////////////////////////////////////////////////////////////////
 
 HistoryEmbeddingsService::HistoryEmbeddingsService(
-    const base::FilePath& storage_dir,
     history::HistoryService* history_service)
     : history_service_(history_service), weak_ptr_factory_(this) {
   if (!base::FeatureList::IsEnabled(kHistoryEmbeddings)) {
@@ -117,7 +116,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      storage_dir);
+      history_service_->history_dir());
 }
 
 HistoryEmbeddingsService::~HistoryEmbeddingsService() = default;

@@ -5,21 +5,47 @@
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/history_embeddings_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
+std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
+    content::BrowserContext* browser_context) {
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context),
+      ServiceAccessType::EXPLICIT_ACCESS);
+  CHECK(history_service);
+  return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
+      history_service);
+}
+
 class HistoryEmbeddingsHandlerTest : public testing::Test {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(history_embeddings::kHistoryEmbeddings);
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ =
-        profile_manager_->CreateTestingProfile("History Embeddings Test User");
+
+    profile_ = profile_manager_->CreateTestingProfile(
+        "History Embeddings Test User",
+        {
+            {HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()},
+            {HistoryEmbeddingsServiceFactory::GetInstance(),
+             base::BindRepeating(&BuildTestHistoryEmbeddingsService)},
+        });
 
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
@@ -29,6 +55,7 @@ class HistoryEmbeddingsHandlerTest : public testing::Test {
   void TearDown() override { handler_.reset(); }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -47,17 +74,10 @@ TEST_F(HistoryEmbeddingsHandlerTest, DoesSomething) {
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, Searches) {
-  base::MockCallback<HistoryEmbeddingsHandler::SearchCallback> callback;
-  size_t result_size = -1;
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](history_embeddings::mojom::SearchResultPtr result) {
-            result_size = result->items.size();
-          }));
   auto query = history_embeddings::mojom::SearchQuery::New();
   query->query = "search query for empty result";
-  ASSERT_NE(result_size, 0u);
-  handler_->Search(std::move(query), callback.Get());
-  ASSERT_EQ(result_size, 0u);
+  base::test::TestFuture<history_embeddings::mojom::SearchResultPtr> future;
+  handler_->Search(std::move(query), future.GetCallback());
+  auto result = future.Take();
+  ASSERT_EQ(result->items.size(), 0u);
 }

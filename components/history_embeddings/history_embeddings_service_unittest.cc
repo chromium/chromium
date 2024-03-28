@@ -36,8 +36,8 @@ class HistoryEmbeddingsTest : public testing::Test {
 };
 
 TEST_F(HistoryEmbeddingsTest, ConstructsAndInvalidatesWeakPtr) {
-  auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_dir_.GetPath(), history_service_.get());
+  auto service =
+      std::make_unique<HistoryEmbeddingsService>(history_service_.get());
   auto weak_ptr = service->AsWeakPtr();
   EXPECT_TRUE(weak_ptr);
   service.reset();
