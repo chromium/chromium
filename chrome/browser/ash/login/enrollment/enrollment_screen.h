@@ -139,8 +139,7 @@ class EnrollmentScreen
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
-  friend class EnrollmentScreenUnitTest;
-  friend class AutomaticReenrollmentScreenUnitTest;
+  friend class EnrollmentScreenBaseTest;
   friend class test::EnrollmentHelperMixin;
 
   FRIEND_TEST_ALL_PREFIXES(AttestationAuthEnrollmentScreenTest, TestCancel);
