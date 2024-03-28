@@ -57,6 +57,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -121,16 +122,23 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   tile->SetLabel(text);
   tile->SetTooltipText(text);
   tile->SetButtonCornerRadius(kTileCornerRadius);
+  // Set background colors.
   tile->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   tile->SetBackgroundToggledColorId(cros_tokens::kCrosSysPrimary);
   tile->SetBackgroundDisabledColorId(cros_tokens::kCrosSysSystemOnBaseOpaque);
+  // Set the label's foreground colors.
+  tile->SetForegroundColorId(cros_tokens::kCrosSysOnSurface);
   tile->SetForegroundToggledColorId(cros_tokens::kCrosSysOnPrimary);
+  // Set the sub-label's foreground colors.
+  tile->SetForegroundOptionalColorId(cros_tokens::kCrosSysOnSurface);
+  tile->SetForegroundOptionalToggledColorId(cros_tokens::kCrosSysOnPrimary);
 
   if (sub_label.has_value()) {
     tile->SetSubLabel(sub_label.value());
     tile->SetSubLabelVisibility(true);
   }
-
+  // Setup focus ring.
+  views::FocusRing::Get(tile.get())->SetColorId(cros_tokens::kCrosSysPrimary);
   return tile;
 }
 
@@ -746,10 +754,20 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*sub_label=*/std::nullopt));
+    // Set toggled background color.
     record_game_tile_->SetBackgroundToggledColorId(
         cros_tokens::kCrosSysSystemNegativeContainer);
+
+    // Set the label's foreground toggled colors.
     record_game_tile_->SetForegroundToggledColorId(
         cros_tokens::kCrosSysSystemOnNegativeContainer);
+    // Set the sub-label's foreground toggled colors.
+    record_game_tile_->SetForegroundOptionalToggledColorId(
+        cros_tokens::kCrosSysSystemOnNegativeContainer);
+
+    // Set toggled ink drop color.
+    record_game_tile_->SetInkDropToggledBaseColorId(
+        cros_tokens::kCrosSysRippleNeutralOnProminent);
     UpdateRecordGameTile(
         GameDashboardController::Get()->active_recording_context() == context_);
   }

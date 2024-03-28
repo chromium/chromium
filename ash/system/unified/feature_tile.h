@@ -141,6 +141,12 @@ class ASH_EXPORT FeatureTile : public views::Button {
   void SetForegroundColorId(ui::ColorId foreground_color_id);
   void SetForegroundToggledColorId(ui::ColorId foreground_toggled_color_id);
   void SetForegroundDisabledColorId(ui::ColorId foreground_disabled_color_id);
+  void SetForegroundOptionalColorId(ui::ColorId foreground_optional_color_id);
+  void SetForegroundOptionalToggledColorId(
+      ui::ColorId foreground_optional_toggled_color_id);
+
+  // Sets a custom color for the tile's ink drop, when its toggled.
+  void SetInkDropToggledBaseColorId(ui::ColorId ink_drop_toggled_base_color_id);
 
   // Sets the tile icon from an ImageSkia.
   void SetImage(gfx::ImageSkia image);
@@ -260,7 +266,12 @@ class ASH_EXPORT FeatureTile : public views::Button {
   std::optional<ui::ColorId> background_disabled_color_;
   std::optional<ui::ColorId> foreground_color_;
   std::optional<ui::ColorId> foreground_toggled_color_;
+  std::optional<ui::ColorId> foreground_optional_color_;
+  std::optional<ui::ColorId> foreground_optional_toggled_color_;
   std::optional<ui::ColorId> foreground_disabled_color_;
+
+  // Customized value for the tile's ink drop color.
+  std::optional<ui::ColorId> ink_drop_toggled_base_color_;
 
   // Owned by views hierarchy.
   raw_ptr<views::ImageButton> icon_button_ = nullptr;
