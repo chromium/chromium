@@ -494,6 +494,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   class DirectJob;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
+  class SessionAttempt;
   friend class MockQuicSessionPool;
   friend class test::QuicSessionPoolPeer;
 

@@ -813,6 +813,8 @@ component("net") {
     "quic/quic_session_pool_direct_job.h",
     "quic/quic_session_pool_job.cc",
     "quic/quic_session_pool_job.h",
+    "quic/quic_session_pool_session_attempt.cc",
+    "quic/quic_session_pool_session_attempt.h",
     "quic/set_quic_flag.cc",
     "quic/set_quic_flag.h",
     "quic/web_transport_client.cc",

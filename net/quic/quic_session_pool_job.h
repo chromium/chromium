@@ -64,6 +64,7 @@ class QuicSessionPool::Job {
     return requests_;
   }
   RequestPriority priority() const { return priority_; }
+  QuicSessionPool* pool() const { return pool_.get(); }
 
  protected:
   // Set a new `QuicSessionRequest`'s expectations about which callbacks

@@ -582,7 +582,6 @@ int QuicSessionPool::RequestSession(
   std::unique_ptr<Job> job = std::make_unique<DirectJob>(
       this, quic_version, host_resolver_, key,
       CreateCryptoConfigHandle(session_key.network_anonymization_key()),
-      WasQuicRecentlyBroken(session_key),
       params_.retry_on_alternate_network_before_handshake, priority,
       use_dns_aliases, session_key.require_dns_https_alpn(), cert_verify_flags,
       net_log);
