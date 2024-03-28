@@ -6122,6 +6122,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_KEY_SEARCH" desc="In Device Settings, the label and dropdown list item for the Search key.">
     Search
   </message>
+  <message name="IDS_SETTINGS_SPLIT_MODIFIER_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT_DESCRIPTION" translateable="false" desc="In split modifier keyboard, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
+    Press the Fn key to switch the behavior of top-row keys
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION" desc="In Device Settings, when device uses 2017 keyboard layout, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
     Hold the Launcher key to switch the behavior of the top-row keys
   </message>

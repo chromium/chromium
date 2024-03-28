@@ -35,7 +35,7 @@ import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
@@ -294,6 +294,16 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   protected getRemapKeyboardKeysClass(): string {
     return `hr bottom-divider ${
         this.keyboard.isExternal ? '' : 'remap-keyboard-keys-row-internal'}`;
+  }
+
+  protected showSendFunctionKeyDescription(): string {
+    const hasFunctionKey: boolean =
+        this.keyboard.modifierKeys.includes(ModifierKey.kFunction);
+    if (hasFunctionKey) {
+      return this.i18n('splitModifierKeyboardSendFunctionKeysDescription');
+    } else {
+      return this.i18n('keyboardSendFunctionKeysDescription');
+    }
   }
 }
 

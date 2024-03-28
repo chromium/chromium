@@ -787,6 +787,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS},
       {"keyboardSendInvertedFunctionKeysDescription",
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
+      {"splitModifierKeyboardSendInvertedFunctionKeysDescription",
+       IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
       {"keyboardShowInputSettings",
        kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS
                         : IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
@@ -860,6 +862,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString(
         "keyboardSendFunctionKeysDescription",
         IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION);
+    html_source->AddLocalizedString(
+        "splitModifierKeyboardSendFunctionKeysDescription",
+        IDS_SETTINGS_SPLIT_MODIFIER_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT_DESCRIPTION);
     html_source->AddLocalizedString("sixPackKeyDeleteSearch",
                                     IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER);
     html_source->AddLocalizedString("sixPackKeyHomeSearch",
