@@ -7,8 +7,9 @@ package org.chromium.android_webview.common.services;
 /**
  * Defines constants containing the fully-qualified names of WebView services.
  *
- * This class exists to avoid having to depend on service classes just to get
- * their name.
+ * <p>This class exists to avoid having to depend on service classes just to get their name. Note
+ * that it is safe to launch a Service just by its name: Service names can never be obfuscated so we
+ * can rely on the full name to stay the same.
  */
 public class ServiceNames {
     public static final String AW_MINIDUMP_UPLOAD_JOB_SERVICE =
