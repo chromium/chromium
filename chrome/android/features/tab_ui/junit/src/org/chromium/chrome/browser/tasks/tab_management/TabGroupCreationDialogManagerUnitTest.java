@@ -105,9 +105,6 @@ public class TabGroupCreationDialogManagerUnitTest {
                         .getResources()
                         .getString(R.string.tab_group_creation_positive_button_text),
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        Assert.assertEquals(
-                mActivity.getResources().getString(R.string.cancel),
-                model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
 
         DialogTitle title =
                 model.get(ModalDialogProperties.CUSTOM_VIEW)

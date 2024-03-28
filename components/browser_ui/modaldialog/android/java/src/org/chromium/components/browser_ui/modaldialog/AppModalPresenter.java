@@ -92,7 +92,8 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         }
         int buttonIndex = 0;
         int buttonStyle = model.get(ModalDialogProperties.BUTTON_STYLES);
-        if (buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+        if (buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE
+                || buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
             buttonIndex = 1;
         } else if (buttonStyle
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {

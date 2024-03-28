@@ -105,7 +105,9 @@ public class TabGroupCreationDialogManager implements Destroyable {
 
                                 cause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
                             } else {
-                                cause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+                                // This custom dialog design only utilizes the positive button.
+                                assert false : "Not reached.";
+                                cause = DialogDismissalCause.UNKNOWN;
                             }
 
                             mModalDialogManager.dismissDialog(mModel, cause);
@@ -125,14 +127,10 @@ public class TabGroupCreationDialogManager implements Destroyable {
                                             .getString(
                                                     R.string
                                                             .tab_group_creation_positive_button_text))
-                            .with(
-                                    ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                    mActivity.getResources().getString(R.string.cancel))
                             .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                             .with(
                                     ModalDialogProperties.BUTTON_STYLES,
-                                    ModalDialogProperties.ButtonStyles
-                                            .PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                                    ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
                             .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                             .build();
 

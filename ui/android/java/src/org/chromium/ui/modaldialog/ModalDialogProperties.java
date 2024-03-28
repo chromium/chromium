@@ -68,13 +68,15 @@ public class ModalDialogProperties {
     @IntDef({
         ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
-        ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED
+        ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED,
+        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ButtonStyles {
         int PRIMARY_OUTLINE_NEGATIVE_OUTLINE = 0;
         int PRIMARY_FILLED_NEGATIVE_OUTLINE = 1;
         int PRIMARY_OUTLINE_NEGATIVE_FILLED = 2;
+        int PRIMARY_FILLED_NO_NEGATIVE = 3;
     }
 
     /**

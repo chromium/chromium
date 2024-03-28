@@ -1742,42 +1742,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-    public void testTabGroupCreation_cancelInputValues() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        // Verify the creation dialog exists.
-        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-
-        // Change the title.
-        editGroupCreationDialogTitle(cta, "Test");
-        // Change the color.
-        String blueColor =
-                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
-        String notSelectedStringBlue =
-                cta.getString(
-                        R.string
-                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
-                        blueColor);
-        onView(withContentDescription(notSelectedStringBlue)).perform(click());
-        // Cancel the change.
-        onView(withId(R.id.negative_button)).perform(click());
-        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
-
-        // Check that the title and color change is not reflected.
-        verifyFirstCardTitle("2 tabs");
-        verifyFirstCardColor(TabGroupColorId.GREY);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testTabGroupCreation_acceptNullTitle() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);

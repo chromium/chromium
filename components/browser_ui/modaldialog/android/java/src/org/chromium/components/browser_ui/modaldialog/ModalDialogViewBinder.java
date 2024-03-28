@@ -151,6 +151,8 @@ public class ModalDialogViewBinder
             return !TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         } else if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
             return !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        } else if (styles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
+            return TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
         }
 
         return true;

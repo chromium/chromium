@@ -120,7 +120,8 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
 
         int style = R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton;
         int buttonStyles = model.get(ModalDialogProperties.BUTTON_STYLES);
-        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE
+                || buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
             style = R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton;
         } else if (buttonStyles
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
