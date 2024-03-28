@@ -303,6 +303,10 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 // Tests that signing out from a managed user account keeps the user's local
 // data.
 - (void)testsSignOutFromManagedAccountKeepsLocalData {
+  // TODO(crbug.com/331778550): Test fails on iPad simulator.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
+  }
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
