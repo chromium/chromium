@@ -11,7 +11,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
 import {TestBrowserService} from './test_browser_service.js';
@@ -55,7 +55,7 @@ import {navigateTo} from './test_util.js';
       assertEquals(app.$.history, app.$['tabs-content'].selectedItem);
 
       navigateTo('/syncedTabs', app);
-      return flushTasks().then(function() {
+      return eventToPromise('iron-select', sidebar.$.menu).then(function() {
         assertEquals('chrome://history/syncedTabs', window.location.href);
 
         assertEquals('syncedTabs', app.$.content.selected);
@@ -64,6 +64,7 @@ import {navigateTo} from './test_util.js';
             app.$.content.selectedItem);
       });
     });
+
 
     test('routing to /grouped may change active view', function() {
       assertEquals('history', app.$.content.selected);
@@ -109,11 +110,13 @@ import {navigateTo} from './test_util.js';
       assertEquals('chrome://history/', window.location.href);
 
       sidebar.$.syncedTabs.click();
+      await eventToPromise('iron-select', sidebar.$.menu);
       assertEquals('syncedTabs', sidebar.$.menu.selected);
       assertEquals('chrome://history/syncedTabs', window.location.href);
 
       // Currently selected history view is preserved in sidebar menu item.
       keyDownOn(sidebar.$.history, 0, '', ' ');
+      await eventToPromise('iron-select', sidebar.$.menu);
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
@@ -123,21 +126,23 @@ import {navigateTo} from './test_util.js';
       if (isHistoryClustersEnabled) {
         assertTrue(!!historyTabs);
         historyTabs.selected = 1;
-        await historyTabs.updateComplete;
+        await microtasksFinished();
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals('chrome://history/grouped', window.location.href);
 
         keyDownOn(sidebar.$.syncedTabs, 0, '', ' ');
+        await eventToPromise('iron-select', sidebar.$.menu);
         assertEquals('syncedTabs', sidebar.$.menu.selected);
         assertEquals('chrome://history/syncedTabs', window.location.href);
 
         // Currently selected history view is preserved in sidebar menu item.
         keyDownOn(sidebar.$.history, 0, '', ' ');
+        await eventToPromise('iron-select', sidebar.$.menu);
         assertEquals('grouped', sidebar.$.menu.selected);
         assertEquals('chrome://history/grouped', window.location.href);
 
         historyTabs.selected = 0;
-        await historyTabs.updateComplete;
+        await microtasksFinished();
         assertEquals('history', sidebar.$.menu.selected);
         assertEquals('chrome://history/', window.location.href);
       }
@@ -168,6 +173,7 @@ import {navigateTo} from './test_util.js';
           navigateTo('/?q=' + searchTerm, app);
 
           sidebar.$.syncedTabs.click();
+          await eventToPromise('iron-select', sidebar.$.menu);
           assertEquals('syncedTabs', sidebar.$.menu.selected);
           assertEquals(searchTerm, app.$.toolbar.searchTerm);
           assertEquals(
@@ -175,6 +181,7 @@ import {navigateTo} from './test_util.js';
               window.location.href);
 
           sidebar.$.history.click();
+          await eventToPromise('iron-select', sidebar.$.menu);
           assertEquals('history', sidebar.$.menu.selected);
           assertEquals(searchTerm, app.$.toolbar.searchTerm);
           assertEquals(

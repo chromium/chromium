@@ -8,7 +8,7 @@ import type {PasswordManagerSideBarElement} from 'chrome://password-manager/pass
 import {CheckupSubpage, Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {makeInsecureCredential} from './test_util.js';
@@ -48,23 +48,37 @@ suite('PasswordManagerSideBarTest', function() {
       }));
 
   [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
-      page => test(`navigating to ${page} updates selected item`, function() {
+      page => test(`navigating to ${page} updates selected item`, async () => {
+        const whenSelected = eventToPromise('iron-select', sidebar.$.menu);
         Router.getInstance().navigateTo(page);
+        await whenSelected;
         assertEquals(page, Router.getInstance().currentRoute.page);
-        assertEquals(page, (sidebar.$.menu.selectedItem as HTMLElement).id);
+        const selectedItem =
+            sidebar.$.menu.querySelector<HTMLElement>('.iron-selected');
+        assertTrue(!!selectedItem);
+        assertEquals(page, selectedItem.id);
       }));
 
-  test('navigating to password details selects passwords tab', function() {
+  test('navigating to password details selects passwords tab', async () => {
+    const whenSelected = eventToPromise('iron-select', sidebar.$.menu);
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, 'google.com');
+    await whenSelected;
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
-    assertEquals(
-        Page.PASSWORDS, (sidebar.$.menu.selectedItem as HTMLElement).id);
+    const selectedItem =
+        sidebar.$.menu.querySelector<HTMLElement>('.iron-selected');
+    assertTrue(!!selectedItem);
+    assertEquals(Page.PASSWORDS, selectedItem.id);
   });
 
-  test('navigating to checkup details selects checkup tab', function() {
+  test('navigating to checkup details selects checkup tab', async () => {
+    const whenSelected = eventToPromise('iron-select', sidebar.$.menu);
     Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, CheckupSubpage.WEAK);
+    await whenSelected;
     assertEquals(Page.CHECKUP_DETAILS, Router.getInstance().currentRoute.page);
-    assertEquals(Page.CHECKUP, (sidebar.$.menu.selectedItem as HTMLElement).id);
+    const selectedItem =
+        sidebar.$.menu.querySelector<HTMLElement>('.iron-selected');
+    assertTrue(!!selectedItem);
+    assertEquals(Page.CHECKUP, selectedItem.id);
   });
 
   test(

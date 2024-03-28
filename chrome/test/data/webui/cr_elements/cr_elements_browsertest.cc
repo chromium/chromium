@@ -105,6 +105,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSearchField) {
   RunTest("cr_elements/cr_search_field_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSelectableMixin) {
+  RunTest("cr_elements/cr_selectable_mixin_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSlider) {
   RunTest("cr_elements/cr_slider_test.js", "mocha.run()");
 }

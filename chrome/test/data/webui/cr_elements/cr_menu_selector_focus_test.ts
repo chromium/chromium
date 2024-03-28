@@ -10,8 +10,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 
 suite('CrMenuSelectorFocusTest', () => {
@@ -28,7 +27,7 @@ suite('CrMenuSelectorFocusTest', () => {
       </cr-menu-selector>
     `;
     element = document.querySelector('cr-menu-selector')!;
-    await flushTasks();
+    await element.updateComplete;
   });
 
   function getChild(index: number): HTMLAnchorElement {
@@ -129,6 +128,7 @@ suite('CrMenuSelectorFocusTest', () => {
     // First, mock focus on last element.
     getChild(0).focus();
     keyDownOn(getChild(0), 0, [], 'End');
+    await microtasksFinished();
 
     const shiftTabEventPromise = eventToPromise('keydown', getChild(2));
     keyDownOn(getChild(2), 0, ['shift'], 'Tab');
@@ -137,30 +137,34 @@ suite('CrMenuSelectorFocusTest', () => {
     assertFalse(shiftTabEvent.defaultPrevented);
   });
 
-  test('SetsSelectedItemUsingHref', () => {
+  test('SetsSelectedItemUsingHref', async () => {
     const firstItem = getChild(0);
     element.selected = firstItem.href;
+    await microtasksFinished();
     assertTrue(firstItem.hasAttribute('selected'));
     assertEquals('page', firstItem.getAttribute('aria-current'));
     const secondItem = getChild(1);
     element.selected = secondItem.href;
+    await microtasksFinished();
     assertFalse(firstItem.hasAttribute('selected'));
     assertFalse(firstItem.hasAttribute('aria-current'));
     assertTrue(secondItem.hasAttribute('selected'));
     assertEquals('page', secondItem.getAttribute('aria-current'));
   });
 
-  test('DoesNotSelectUnselectableItems', () => {
-    assertEquals(3, element.items!.length);
+  test('DoesNotSelectUnselectableItems', async () => {
+    assertEquals(3, element.getItemsForTest().length);
     element.selected = 'http://google.com';
+    await microtasksFinished();
     assertFalse(getChild(3).hasAttribute('selected'));
   });
 
   test('ActivatesItemOnClick', async () => {
     const itemToSelect = getChild(1);
     const onActivate = eventToPromise('iron-activate', element);
+    const onSelect = eventToPromise('iron-select', element);
     itemToSelect.dispatchEvent(new Event('click', {bubbles: true}));
-    await onActivate;
+    await Promise.all([onActivate, onSelect]);
     assertTrue(itemToSelect.hasAttribute('selected'));
     assertEquals(itemToSelect.href, element.selected);
   });

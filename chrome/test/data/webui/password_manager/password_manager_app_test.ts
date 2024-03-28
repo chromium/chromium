@@ -58,10 +58,11 @@ suite('PasswordManagerAppTest', function() {
   });
 
   [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
-      page => test(`Clicking ${page} in the sidebar`, function() {
+      page => test(`Clicking ${page} in the sidebar`, async () => {
         const element =
             app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
         element.click();
+        await app.$.sidebar.$.menu.updateComplete;
         const ironItem =
             app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
         assertTrue(ironItem.classList.contains('iron-selected'));

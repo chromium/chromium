@@ -4,16 +4,21 @@
 
 import {assert} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
-import {IronSelectableBehavior} from '//resources/polymer/v3_0/iron-selector/iron-selectable.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-const CrMenuSelectorBase =
-    mixinBehaviors([IronSelectableBehavior], PolymerElement) as
-    {new (): PolymerElement & IronSelectableBehavior};
+import {getHtml} from './cr_menu_selector.html.js';
+import {CrSelectableMixin} from './cr_selectable_mixin.js';
+
+const CrMenuSelectorBase = CrSelectableMixin(CrLitElement);
 
 export class CrMenuSelector extends CrMenuSelectorBase {
   static get is() {
     return 'cr-menu-selector';
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private focusOutlineManager_: FocusOutlineManager;
@@ -23,8 +28,8 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
     this.setAttribute('role', 'menu');
     this.addEventListener('focusin', this.onFocusin_.bind(this));
     this.addEventListener('keydown', this.onKeydown_.bind(this));

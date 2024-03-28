@@ -41,6 +41,7 @@ build_webui_tests("build") {
     "cr_ripple_test.ts",
     "cr_scrollable_mixin_test.ts",
     "cr_search_field_test.ts",
+    "cr_selectable_mixin_test.ts",
     "cr_slider_test.ts",
     "cr_splitter_test.ts",
     "cr_tabs_test.ts",

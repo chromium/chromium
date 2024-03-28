@@ -85,6 +85,8 @@ build_webui("build") {
       "cr_lottie/cr_lottie.ts",
       "cr_lottie/cr_lottie.html.ts",
       "cr_menu_selector/cr_menu_selector.ts",
+      "cr_menu_selector/cr_menu_selector.html.ts",
+      "cr_menu_selector/cr_selectable_mixin.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.html.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
       "cr_radio_button/cr_card_radio_button.html.ts",
