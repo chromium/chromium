@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_FILE_CONTEXT_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CACHE_FILE_CONTEXT_H_
 
-#include <functional>
-#include <utility>
-
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -18,15 +15,6 @@ namespace ash::file_system_provider {
 // around evicting files from the cache (e.g. until N bytes have been evicted)
 // and guard against multiple writers to a single file.
 struct CacheFileContext {
-  explicit CacheFileContext(const std::string& version_tag);
-
-  CacheFileContext(CacheFileContext&&);
-  CacheFileContext& operator=(CacheFileContext&&);
-  CacheFileContext(const CacheFileContext&) = delete;
-  CacheFileContext& operator=(const CacheFileContext&) = delete;
-
-  ~CacheFileContext();
-
   // The number of contiguous bytes that are written to this file currently. If
   // a file write is in progress, this might not represent the entire size of
   // the file on disk.

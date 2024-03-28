@@ -17,9 +17,8 @@ using testing::Pair;
 
 TEST(FileSystemProviderContentLRUCacheTest, InitialOrderIsRespectOnInit) {
   ContentLRUCache lru_cache;
-  std::list<PathContextPair> list;
-  list.emplace_back(base::FilePath("/a.txt"), CacheFileContext("versionA"));
-  list.emplace_back(base::FilePath("/b.txt"), CacheFileContext("versionA"));
+  std::list list{PathContextPair(base::FilePath("/a.txt"), CacheFileContext{}),
+                 PathContextPair(base::FilePath("/b.txt"), CacheFileContext{})};
   lru_cache.Init(std::move(list));
 
   // Ensure the LRU cache is initialized in the order that was supplied.
