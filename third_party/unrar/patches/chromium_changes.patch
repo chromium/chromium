@@ -592,10 +592,38 @@ index 35270ba8659dc..53b65dd537628 100644
          ErrHandler.SysErrMsg();
          ErrHandler.Exit(RARX_FATAL);
 diff --git a/third_party/unrar/src/strfn.cpp b/third_party/unrar/src/strfn.cpp
-index fcccb45c43a1c..27340418c363d 100644
+index fcccb45c43a1c..babcd44934b91 100644
 --- a/third_party/unrar/src/strfn.cpp
 +++ b/third_party/unrar/src/strfn.cpp
-@@ -356,8 +356,8 @@ void fmtitoa(int64 n, wchar* Str, size_t MaxSize) {
+@@ -37,6 +37,19 @@ void ArcCharToWide(const char *Src,wchar *Dest,size_t DestSize,ACTW_ENCODING Enc
+     UtfToWide(Src,Dest,DestSize);
+   else
+   {
++#if defined(CHROMIUM_UNRAR)
++    if (Encoding == ACTW_OEM) {
++      // OemToCharBuffA, called by IntToExt, is implemented by user32.dll which
++      // is not available in win32k lockdown sandbox. We can map from the OEM
++      // codepage using CP_OEMCP and MultiByteToWideChar from kernel32.dll
++      // instead, as we're also attempting to map to wide chars.
++      const size_t SrcLength = strlen(Src) + 1;
++      (void)::MultiByteToWideChar(CP_OEMCP, MB_PRECOMPOSED | MB_USEGLYPHCHARS,
++                                  Src, SrcLength, Dest, DestSize);
++    } else {
++      CharToWide(Src, Dest, DestSize);
++    }
++#else
+     Array<char> NameA;
+     if (Encoding==ACTW_OEM)
+     {
+@@ -45,6 +58,7 @@ void ArcCharToWide(const char *Src,wchar *Dest,size_t DestSize,ACTW_ENCODING Enc
+       Src=&NameA[0];
+     }
+     CharToWide(Src,Dest,DestSize);
++#endif  // defined(CHROMIUM_UNRAR)
+   }
+ #else // RAR for Unix.
+   if (Encoding==ACTW_UTF8)
+@@ -356,8 +370,8 @@ void fmtitoa(int64 n, wchar* Str, size_t MaxSize) {
    static wchar ThSep = 0;  // Thousands separator.
  #ifdef _WIN_ALL
    wchar Info[10];
@@ -607,10 +635,89 @@ index fcccb45c43a1c..27340418c363d 100644
    }
  #elif defined(_UNIX)
 diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index 9e1b9a2b9f13b..255fa742af4c1 100644
+index 9e1b9a2b9f13b..255ce467197e6 100644
 --- a/third_party/unrar/src/unicode.cpp
 +++ b/third_party/unrar/src/unicode.cpp
-@@ -573,7 +573,6 @@ int64 atoilw(const wchar *s)
+@@ -487,9 +487,18 @@ const wchar_t* wcscasestr(const wchar_t *str, const wchar_t *search)
+ wchar* wcslower(wchar *s)
+ {
+ #ifdef _WIN_ALL
++#if defined(CHROMIUM_UNRAR)
++  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
++  // lockdown sandbox in chromium, user32.dll can't be loaded.
++  const size_t s_length = wcslen(s) + 1;
++  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_LOWERCASE, s, s_length, s,
++                      s_length, NULL, NULL, 0);
++  return s;
++#else
+   // _wcslwr requires setlocale and we do not want to depend on setlocale
+   // in Windows. Also CharLower involves less overhead.
+   CharLower(s);
++#endif  // defined(CHROMIUM_UNRAR)
+ #else
+   for (wchar *c=s;*c!=0;c++)
+     *c=towlower(*c);
+@@ -503,9 +512,18 @@ wchar* wcslower(wchar *s)
+ wchar* wcsupper(wchar *s)
+ {
+ #ifdef _WIN_ALL
++#if defined(CHROMIUM_UNRAR)
++  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
++  // lockdown sandbox in chromium, user32.dll can't be loaded.
++  const size_t s_length = wcslen(s) + 1;
++  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_UPPERCASE, s, s_length, s,
++                      s_length, NULL, NULL, 0);
++  return s;
++#else
+   // _wcsupr requires setlocale and we do not want to depend on setlocale
+   // in Windows. Also CharUpper involves less overhead.
+   CharUpper(s);
++#endif  // defined(CHROMIUM_UNRAR)
+ #else
+   for (wchar *c=s;*c!=0;c++)
+     *c=towupper(*c);
+@@ -520,11 +538,20 @@ wchar* wcsupper(wchar *s)
+ int toupperw(int ch)
+ {
+ #if defined(_WIN_ALL)
++#if defined(CHROMIUM_UNRAR)
++  wchar_t ch_as_wide_char = static_cast<wchar_t>(ch & 0xffff);
++  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
++  // lockdown sandbox in chromium, user32.dll can't be loaded.
++  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_UPPERCASE,
++                      &ch_as_wide_char, 1, &ch_as_wide_char, 1, NULL, NULL, 0);
++  return int(ch_as_wide_char);
++#else
+   // CharUpper is more reliable than towupper in Windows, which seems to be
+   // C locale dependent even in Unicode version. For example, towupper failed
+   // to convert lowercase Russian characters. Use 0xffff mask to prevent crash
+   // if value larger than 0xffff is passed to this function.
+   return (int)(INT_PTR)CharUpper((wchar *)(INT_PTR)(ch&0xffff));
++#endif  // defined(CHROMIUM_UNRAR)
+ #else
+   return towupper(ch);
+ #endif
+@@ -534,10 +561,19 @@ int toupperw(int ch)
+ int tolowerw(int ch)
+ {
+ #if defined(_WIN_ALL)
++#if defined(CHROMIUM_UNRAR)
++  wchar_t ch_as_wide_char = static_cast<wchar_t>(ch & 0xffff);
++  // kernel32!LCMapStringEx instead of user32.dll!CharLower due to win32k
++  // lockdown sandbox in chromium, user32.dll can't be loaded.
++  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_LOWERCASE,
++                      &ch_as_wide_char, 1, &ch_as_wide_char, 1, NULL, NULL, 0);
++  return int(ch_as_wide_char);
++#else
+   // CharLower is more reliable than towlower in Windows.
+   // See comment for towupper above. Use 0xffff mask to prevent crash
+   // if value larger than 0xffff is passed to this function.
+   return (int)(INT_PTR)CharLower((wchar *)(INT_PTR)(ch&0xffff));
++#endif  // defined(CHROMIUM_UNRAR)
+ #else
+   return towlower(ch);
+ #endif
+@@ -573,7 +609,6 @@ int64 atoilw(const wchar *s)
  
  
  #ifdef DBCS_SUPPORTED
@@ -618,7 +725,7 @@ index 9e1b9a2b9f13b..255fa742af4c1 100644
  
  SupportDBCS::SupportDBCS()
  {
-@@ -590,6 +589,11 @@ void SupportDBCS::Init()
+@@ -590,6 +625,11 @@ void SupportDBCS::Init()
      IsLeadByte[I]=IsDBCSLeadByte(I)!=0;
  }
  

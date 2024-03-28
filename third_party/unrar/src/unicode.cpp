@@ -487,9 +487,18 @@ const wchar_t* wcscasestr(const wchar_t *str, const wchar_t *search)
 wchar* wcslower(wchar *s)
 {
 #ifdef _WIN_ALL
+#if defined(CHROMIUM_UNRAR)
+  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
+  // lockdown sandbox in chromium, user32.dll can't be loaded.
+  const size_t s_length = wcslen(s) + 1;
+  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_LOWERCASE, s, s_length, s,
+                      s_length, NULL, NULL, 0);
+  return s;
+#else
   // _wcslwr requires setlocale and we do not want to depend on setlocale
   // in Windows. Also CharLower involves less overhead.
   CharLower(s);
+#endif  // defined(CHROMIUM_UNRAR)
 #else
   for (wchar *c=s;*c!=0;c++)
     *c=towlower(*c);
@@ -503,9 +512,18 @@ wchar* wcslower(wchar *s)
 wchar* wcsupper(wchar *s)
 {
 #ifdef _WIN_ALL
+#if defined(CHROMIUM_UNRAR)
+  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
+  // lockdown sandbox in chromium, user32.dll can't be loaded.
+  const size_t s_length = wcslen(s) + 1;
+  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_UPPERCASE, s, s_length, s,
+                      s_length, NULL, NULL, 0);
+  return s;
+#else
   // _wcsupr requires setlocale and we do not want to depend on setlocale
   // in Windows. Also CharUpper involves less overhead.
   CharUpper(s);
+#endif  // defined(CHROMIUM_UNRAR)
 #else
   for (wchar *c=s;*c!=0;c++)
     *c=towupper(*c);
@@ -520,11 +538,20 @@ wchar* wcsupper(wchar *s)
 int toupperw(int ch)
 {
 #if defined(_WIN_ALL)
+#if defined(CHROMIUM_UNRAR)
+  wchar_t ch_as_wide_char = static_cast<wchar_t>(ch & 0xffff);
+  // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k
+  // lockdown sandbox in chromium, user32.dll can't be loaded.
+  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_UPPERCASE,
+                      &ch_as_wide_char, 1, &ch_as_wide_char, 1, NULL, NULL, 0);
+  return int(ch_as_wide_char);
+#else
   // CharUpper is more reliable than towupper in Windows, which seems to be
   // C locale dependent even in Unicode version. For example, towupper failed
   // to convert lowercase Russian characters. Use 0xffff mask to prevent crash
   // if value larger than 0xffff is passed to this function.
   return (int)(INT_PTR)CharUpper((wchar *)(INT_PTR)(ch&0xffff));
+#endif  // defined(CHROMIUM_UNRAR)
 #else
   return towupper(ch);
 #endif
@@ -534,10 +561,19 @@ int toupperw(int ch)
 int tolowerw(int ch)
 {
 #if defined(_WIN_ALL)
+#if defined(CHROMIUM_UNRAR)
+  wchar_t ch_as_wide_char = static_cast<wchar_t>(ch & 0xffff);
+  // kernel32!LCMapStringEx instead of user32.dll!CharLower due to win32k
+  // lockdown sandbox in chromium, user32.dll can't be loaded.
+  (void)LCMapStringEx(LOCALE_NAME_USER_DEFAULT, LCMAP_LOWERCASE,
+                      &ch_as_wide_char, 1, &ch_as_wide_char, 1, NULL, NULL, 0);
+  return int(ch_as_wide_char);
+#else
   // CharLower is more reliable than towlower in Windows.
   // See comment for towupper above. Use 0xffff mask to prevent crash
   // if value larger than 0xffff is passed to this function.
   return (int)(INT_PTR)CharLower((wchar *)(INT_PTR)(ch&0xffff));
+#endif  // defined(CHROMIUM_UNRAR)
 #else
   return towlower(ch);
 #endif

@@ -38,5 +38,7 @@ Notable changes from upstream:
 - Cherry-picked https://github.com/aawc/unrar/pull/35
 - Fix alignment errors reported by UBSan by disabling ALLOW_MISALIGNED.
 - Fix unportable include name.
+- Replace functions that call user32.dll and gdi32.dll on Windows, to avoid
+  loading them under win32k lockdown sandbox.
 
 All these changes are included in one patch file (chromium_changes.patch)

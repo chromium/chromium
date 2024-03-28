@@ -37,6 +37,19 @@ void ArcCharToWide(const char *Src,wchar *Dest,size_t DestSize,ACTW_ENCODING Enc
     UtfToWide(Src,Dest,DestSize);
   else
   {
+#if defined(CHROMIUM_UNRAR)
+    if (Encoding == ACTW_OEM) {
+      // OemToCharBuffA, called by IntToExt, is implemented by user32.dll which
+      // is not available in win32k lockdown sandbox. We can map from the OEM
+      // codepage using CP_OEMCP and MultiByteToWideChar from kernel32.dll
+      // instead, as we're also attempting to map to wide chars.
+      const size_t SrcLength = strlen(Src) + 1;
+      (void)::MultiByteToWideChar(CP_OEMCP, MB_PRECOMPOSED | MB_USEGLYPHCHARS,
+                                  Src, SrcLength, Dest, DestSize);
+    } else {
+      CharToWide(Src, Dest, DestSize);
+    }
+#else
     Array<char> NameA;
     if (Encoding==ACTW_OEM)
     {
@@ -45,6 +58,7 @@ void ArcCharToWide(const char *Src,wchar *Dest,size_t DestSize,ACTW_ENCODING Enc
       Src=&NameA[0];
     }
     CharToWide(Src,Dest,DestSize);
+#endif  // defined(CHROMIUM_UNRAR)
   }
 #else // RAR for Unix.
   if (Encoding==ACTW_UTF8)
