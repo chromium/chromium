@@ -40,6 +40,32 @@ TEST(NumericsTest, FromNativeEndian) {
   }
 
   {
+    constexpr uint8_t bytes[] = {0x12u};
+    EXPECT_EQ(I8FromNativeEndian(bytes), 0x12);
+    static_assert(std::same_as<int8_t, decltype(I8FromNativeEndian(bytes))>);
+    static_assert(U8FromNativeEndian(bytes) == 0x12);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u};
+    EXPECT_EQ(I16FromNativeEndian(bytes), 0x34'12);
+    static_assert(std::same_as<int16_t, decltype(I16FromNativeEndian(bytes))>);
+    static_assert(U16FromNativeEndian(bytes) == 0x34'12);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
+    EXPECT_EQ(I32FromNativeEndian(bytes), 0x78'56'34'12);
+    static_assert(std::same_as<int32_t, decltype(I32FromNativeEndian(bytes))>);
+    static_assert(U32FromNativeEndian(bytes) == 0x78'56'34'12);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
+                                 0x90u, 0x12u, 0x34u, 0x56u};
+    EXPECT_EQ(I64FromNativeEndian(bytes), 0x56'34'12'90'78'56'34'12);
+    static_assert(std::same_as<int64_t, decltype(I64FromNativeEndian(bytes))>);
+    static_assert(I64FromNativeEndian(bytes) == 0x56'34'12'90'78'56'34'12);
+  }
+
+  {
     constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
     EXPECT_EQ(FloatFromNativeEndian(bytes), 1.73782443614e+34f);
     EXPECT_EQ(std::bit_cast<uint32_t>(FloatFromNativeEndian(bytes)),
@@ -99,6 +125,32 @@ TEST(NumericsTest, FromLittleEndian) {
   }
 
   {
+    constexpr uint8_t bytes[] = {0x12u};
+    EXPECT_EQ(I8FromLittleEndian(bytes), 0x12);
+    static_assert(std::same_as<int8_t, decltype(I8FromLittleEndian(bytes))>);
+    static_assert(I8FromLittleEndian(bytes) == 0x12);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u};
+    EXPECT_EQ(I16FromLittleEndian(bytes), 0x34'12);
+    static_assert(std::same_as<int16_t, decltype(I16FromLittleEndian(bytes))>);
+    static_assert(I16FromLittleEndian(bytes) == 0x34'12);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
+    EXPECT_EQ(I32FromLittleEndian(bytes), 0x78'56'34'12);
+    static_assert(std::same_as<int32_t, decltype(I32FromLittleEndian(bytes))>);
+    static_assert(I32FromLittleEndian(bytes) == 0x78'56'34'12);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
+                                 0x90u, 0x12u, 0x34u, 0x56u};
+    EXPECT_EQ(I64FromLittleEndian(bytes), 0x56'34'12'90'78'56'34'12);
+    static_assert(std::same_as<int64_t, decltype(I64FromLittleEndian(bytes))>);
+    static_assert(I64FromLittleEndian(bytes) == 0x56'34'12'90'78'56'34'12);
+  }
+
+  {
     constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
     EXPECT_EQ(FloatFromLittleEndian(bytes), 1.73782443614e+34f);
     EXPECT_EQ(std::bit_cast<uint32_t>(FloatFromLittleEndian(bytes)),
@@ -155,6 +207,32 @@ TEST(NumericsTest, FromBigEndian) {
     EXPECT_EQ(U64FromBigEndian(bytes), 0x12'34'56'78'90'12'34'56u);
     static_assert(U64FromBigEndian(bytes) == 0x12'34'56'78'90'12'34'56u);
     static_assert(std::same_as<uint64_t, decltype(U64FromBigEndian(bytes))>);
+  }
+
+  {
+    constexpr uint8_t bytes[] = {0x12u};
+    EXPECT_EQ(I8FromBigEndian(bytes), 0x12);
+    static_assert(I8FromBigEndian(bytes) == 0x12);
+    static_assert(std::same_as<int8_t, decltype(I8FromBigEndian(bytes))>);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u};
+    EXPECT_EQ(I16FromBigEndian(bytes), 0x12'34);
+    static_assert(I16FromBigEndian(bytes) == 0x12'34);
+    static_assert(std::same_as<int16_t, decltype(I16FromBigEndian(bytes))>);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u};
+    EXPECT_EQ(I32FromBigEndian(bytes), 0x12'34'56'78);
+    static_assert(I32FromBigEndian(bytes) == 0x12'34'56'78);
+    static_assert(std::same_as<int32_t, decltype(I32FromBigEndian(bytes))>);
+  }
+  {
+    constexpr uint8_t bytes[] = {0x12u, 0x34u, 0x56u, 0x78u,
+                                 0x90u, 0x12u, 0x34u, 0x56u};
+    EXPECT_EQ(I64FromBigEndian(bytes), 0x12'34'56'78'90'12'34'56);
+    static_assert(I64FromBigEndian(bytes) == 0x12'34'56'78'90'12'34'56);
+    static_assert(std::same_as<int64_t, decltype(I64FromBigEndian(bytes))>);
   }
 
   {
@@ -222,6 +300,40 @@ TEST(NumericsTest, ToNativeEndian) {
   }
 
   {
+    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
+    constexpr auto val = int8_t{0x12};
+    EXPECT_EQ(I8ToNativeEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 1u>, decltype(I8ToNativeEndian(val))>);
+    static_assert(I8ToNativeEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
+    constexpr auto val = int16_t{0x34'12};
+    EXPECT_EQ(I16ToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 2u>,
+                               decltype(I16ToNativeEndian(val))>);
+    static_assert(I16ToNativeEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr auto val = int32_t{0x78'56'34'12};
+    EXPECT_EQ(I32ToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 4u>,
+                               decltype(I32ToNativeEndian(val))>);
+    static_assert(I32ToNativeEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr auto val = int64_t{0x56'34'12'90'78'56'34'12};
+    EXPECT_EQ(I64ToNativeEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(I64ToNativeEndian(val))>);
+    static_assert(I64ToNativeEndian(val) == bytes);
+  }
+
+  {
     constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
     constexpr float val = 1.73782443614e+34f;
     EXPECT_EQ(FloatToNativeEndian(val), bytes);
@@ -282,6 +394,40 @@ TEST(NumericsTest, ToLittleEndian) {
   }
 
   {
+    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
+    constexpr auto val = int8_t{0x12};
+    EXPECT_EQ(I8ToLittleEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 1u>, decltype(I8ToLittleEndian(val))>);
+    static_assert(I8ToLittleEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
+    constexpr auto val = int16_t{0x34'12};
+    EXPECT_EQ(I16ToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 2u>,
+                               decltype(I16ToLittleEndian(val))>);
+    static_assert(I16ToLittleEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr auto val = int32_t{0x78'56'34'12};
+    EXPECT_EQ(I32ToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 4u>,
+                               decltype(I32ToLittleEndian(val))>);
+    static_assert(I32ToLittleEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr auto val = int64_t{0x56'34'12'90'78'56'34'12};
+    EXPECT_EQ(I64ToLittleEndian(val), bytes);
+    static_assert(std::same_as<std::array<uint8_t, 8u>,
+                               decltype(I64ToLittleEndian(val))>);
+    static_assert(I64ToLittleEndian(val) == bytes);
+  }
+
+  {
     constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
     constexpr float val = 1.73782443614e+34f;
     EXPECT_EQ(FloatToLittleEndian(val), bytes);
@@ -339,6 +485,40 @@ TEST(NumericsTest, ToBigEndian) {
     static_assert(
         std::same_as<std::array<uint8_t, 8u>, decltype(U64ToBigEndian(val))>);
     static_assert(U64ToBigEndian(val) == bytes);
+  }
+
+  {
+    constexpr std::array<uint8_t, 1u> bytes = {0x12u};
+    constexpr auto val = int8_t{0x12u};
+    EXPECT_EQ(I8ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 1u>, decltype(I8ToBigEndian(val))>);
+    static_assert(I8ToBigEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 2u> bytes = {0x12u, 0x34u};
+    constexpr auto val = int16_t{0x12'34u};
+    EXPECT_EQ(I16ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 2u>, decltype(I16ToBigEndian(val))>);
+    static_assert(I16ToBigEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 4u> bytes = {0x12u, 0x34u, 0x56u, 0x78u};
+    constexpr auto val = int32_t{0x12'34'56'78u};
+    EXPECT_EQ(I32ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 4u>, decltype(I32ToBigEndian(val))>);
+    static_assert(I32ToBigEndian(val) == bytes);
+  }
+  {
+    constexpr std::array<uint8_t, 8u> bytes = {0x12u, 0x34u, 0x56u, 0x78u,
+                                               0x90u, 0x12u, 0x34u, 0x56u};
+    constexpr auto val = int64_t{0x12'34'56'78'90'12'34'56u};
+    EXPECT_EQ(I64ToBigEndian(val), bytes);
+    static_assert(
+        std::same_as<std::array<uint8_t, 8u>, decltype(I64ToBigEndian(val))>);
+    static_assert(I64ToBigEndian(val) == bytes);
   }
 
   {
