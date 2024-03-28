@@ -268,7 +268,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "blink_unittests",
+    name = "blink_unittests_suite",
     tests = {
         "blink_unit_tests": targets.legacy_test_config(),
     },
@@ -405,7 +405,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chrome_public_wpt",
+    name = "chrome_public_wpt_suite",
     tests = {
         "chrome_public_wpt": targets.legacy_test_config(
             args = [
@@ -421,7 +421,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chrome_sizes",
+    name = "chrome_sizes_suite",
     tests = {
         "chrome_sizes": targets.legacy_test_config(),
     },
@@ -660,7 +660,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromeos_integration_tests",
+    name = "chromeos_integration_tests_suite",
     tests = {
         "chromeos_integration_tests": targets.legacy_test_config(),
     },
@@ -709,7 +709,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromeos_js_code_coverage_browser_tests",
+    name = "chromeos_js_code_coverage_browser_tests_suite",
     tests = {
         "chromeos_js_code_coverage_browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -1761,7 +1761,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "cronet_sizes",
+    name = "cronet_sizes_suite",
     tests = {
         "cronet_sizes": targets.legacy_test_config(
             remove_mixins = [
@@ -1842,7 +1842,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "devtools_browser_tests",
+    name = "devtools_browser_tests_suite",
     tests = {
         "devtools_browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -3049,7 +3049,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_memory_buffer_impl_tests",
+    name = "gpu_memory_buffer_impl_tests_suite",
     tests = {
         "gpu_memory_buffer_impl_tests": targets.legacy_test_config(
             args = [
@@ -3845,7 +3845,7 @@ targets.legacy_basic_suite(
 # END tests which run on the GPU bots
 
 targets.legacy_basic_suite(
-    name = "js_code_coverage_browser_tests",
+    name = "js_code_coverage_browser_tests_suite",
     tests = {
         "js_code_coverage_browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -3856,7 +3856,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "lacros_all_tast_tests",
+    name = "lacros_all_tast_tests_suite",
     tests = {
         "lacros_all_tast_tests": targets.legacy_test_config(
             mixins = [
@@ -4236,7 +4236,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "jni_zero_sample_apk_test",
+    name = "jni_zero_sample_apk_test_suite",
     tests = {
         "jni_zero_sample_apk_test": targets.legacy_test_config(
             experiment_percentage = 100,
@@ -4245,7 +4245,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "model_validation_tests",
+    name = "model_validation_tests_suite",
     tests = {
         "model_validation_tests": targets.legacy_test_config(
             mixins = [
@@ -4427,7 +4427,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "ondevice_stability_tests",
+    name = "ondevice_stability_tests_suite",
     tests = {
         "ondevice_stability_tests": targets.legacy_test_config(
             mixins = [
@@ -4751,7 +4751,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "system_webview_wpt",
+    name = "system_webview_wpt_suite",
     tests = {
         "system_webview_wpt": targets.legacy_test_config(
             args = [
@@ -5130,14 +5130,14 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_hostside_tests",
+    name = "webview_trichrome_64_cts_hostside_tests_suite",
     tests = {
         "webview_trichrome_64_cts_hostside_tests": targets.legacy_test_config(),
     },
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_tests",
+    name = "webview_trichrome_64_cts_tests_suite",
     tests = {
         "webview_trichrome_64_cts_tests": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -5148,7 +5148,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_64_cts_tests_no_field_trial",
+    name = "webview_trichrome_64_cts_tests_no_field_trial_suite",
     tests = {
         "webview_trichrome_64_cts_tests_no_field_trial": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -5159,7 +5159,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "webview_trichrome_cts_tests",
+    name = "webview_trichrome_cts_tests_suite",
     tests = {
         "webview_trichrome_cts_tests": targets.legacy_test_config(),
     },
@@ -5245,7 +5245,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "wpt_tests_ios",
+    name = "wpt_tests_ios_suite",
     tests = {
         "wpt_tests_ios": targets.legacy_test_config(
             args = [

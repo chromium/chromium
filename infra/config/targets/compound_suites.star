@@ -182,7 +182,7 @@ targets.legacy_compound_suite(
     basic_suites = [
         "chromeos_system_friendly_gtests",
         "chromeos_vaapi_fakelib_gtests",
-        "chromeos_integration_tests",
+        "chromeos_integration_tests_suite",
     ],
 )
 
@@ -195,7 +195,7 @@ targets.legacy_compound_suite(
         "chromeos_browser_integration_tests",
         "chromeos_system_friendly_gtests",
         "chromeos_vaapi_fakelib_gtests",
-        "chromeos_integration_tests",
+        "chromeos_integration_tests_suite",
     ],
 )
 
@@ -203,7 +203,7 @@ targets.legacy_compound_suite(
     name = "chromeos_vm_preuprev_tast",
     basic_suites = [
         "chromeos_browser_cq_medium_tast_tests",
-        "chromeos_integration_tests",
+        "chromeos_integration_tests_suite",
         "chromeos_device_only_gtests",
     ],
 )
@@ -434,7 +434,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "chromium_mac_rel_isolated_scripts_and_sizes",
     basic_suites = [
-        "chrome_sizes",
+        "chrome_sizes_suite",
         "chromedriver_py_tests_isolated_scripts",
         "components_perftests_isolated_scripts",
         "desktop_chromium_isolated_scripts",
@@ -564,7 +564,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "cronet_dbg_isolated_scripts",
     basic_suites = [
-        "cronet_sizes",
+        "cronet_sizes_suite",
     ],
 )
 
@@ -572,15 +572,15 @@ targets.legacy_compound_suite(
     name = "cronet_rel_isolated_scripts",
     basic_suites = [
         "cronet_resource_sizes",
-        "cronet_sizes",
+        "cronet_sizes_suite",
     ],
 )
 
 targets.legacy_compound_suite(
     name = "devtools_gtests",
     basic_suites = [
-        "devtools_browser_tests",
-        "blink_unittests",
+        "devtools_browser_tests_suite",
+        "blink_unittests_suite",
     ],
 )
 
@@ -908,7 +908,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "gpu_fyi_lacros_release_gtests",
     basic_suites = [
-        "gpu_memory_buffer_impl_tests",
+        "gpu_memory_buffer_impl_tests_suite",
     ],
 )
 
@@ -936,7 +936,7 @@ targets.legacy_compound_suite(
         "gpu_common_gtests_passthrough",
         "gpu_desktop_specific_gtests",
         "gpu_gles2_conform_gtests",
-        "gpu_memory_buffer_impl_tests",
+        "gpu_memory_buffer_impl_tests_suite",
         "gpu_vulkan_gtests",
     ],
 )
@@ -1225,7 +1225,7 @@ targets.legacy_compound_suite(
     name = "linux_chromeos_isolated_scripts",
     basic_suites = [
         "blink_web_tests_ppapi_isolated_scripts",
-        "chrome_sizes",
+        "chrome_sizes_suite",
     ],
 )
 
@@ -1326,15 +1326,15 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "webview_trichrome_64_cts_gtests",
     basic_suites = [
-        "webview_trichrome_64_cts_tests",
-        "webview_trichrome_64_cts_tests_no_field_trial",
+        "webview_trichrome_64_cts_tests_suite",
+        "webview_trichrome_64_cts_tests_no_field_trial_suite",
     ],
 )
 
 targets.legacy_compound_suite(
     name = "win_specific_isolated_scripts_and_sizes",
     basic_suites = [
-        "chrome_sizes",
+        "chrome_sizes_suite",
         "win_specific_isolated_scripts",
     ],
 )

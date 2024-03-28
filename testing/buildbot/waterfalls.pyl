@@ -127,7 +127,7 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'os_type': 'chromeos',
       },
@@ -142,7 +142,7 @@
           'chrome-swarming-pool',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'os_type': 'chromeos',
       },
@@ -158,7 +158,7 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm64',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'os_type': 'chromeos',
       },
@@ -275,7 +275,7 @@
           'win10-any',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
       },
     },
@@ -1193,7 +1193,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_public_wpt',
+          'isolated_scripts': 'chrome_public_wpt_suite',
         },
         'os_type': 'android',
       },
@@ -1272,7 +1272,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'isolated_scripts': 'system_webview_wpt',
+          'isolated_scripts': 'system_webview_wpt_suite',
         },
         'os_type': 'android',
       },
@@ -1866,7 +1866,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'additional_compile_targets': [
           'all',
@@ -1880,7 +1880,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
       },
       'ToTLinuxASan': {
@@ -1905,7 +1905,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
       },
       'ToTLinuxMSan': {
@@ -1917,7 +1917,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
       },
       # Used on an internal builder.
@@ -1929,7 +1929,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'additional_compile_targets': [
           'all',
@@ -1955,7 +1955,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
       },
       'ToTLinuxUBSanVptr': {
@@ -1967,7 +1967,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
       },
       'ToTMac': {
@@ -2066,7 +2066,7 @@
           'gtest_tests': 'clang_tot_gtests',
           # Doesn't run win_specific_isolated_scripts because the mini
           # installer isn't hooked up in 32-bit debug builds.
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_sizes_suite',
         },
         'additional_compile_targets': [
           'all',
@@ -2309,7 +2309,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_js_code_coverage_browser_tests'
+          'gtest_tests': 'chromeos_js_code_coverage_browser_tests_suite'
         },
       },
       'fuchsia-code-coverage': {
@@ -2371,7 +2371,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'gtest_tests': 'js_code_coverage_browser_tests'
+          'gtest_tests': 'js_code_coverage_browser_tests_suite'
         },
       },
       'linux-lacros-code-coverage': {
@@ -2967,7 +2967,7 @@
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
-          'gtest_tests': 'blink_unittests',
+          'gtest_tests': 'blink_unittests_suite',
           'isolated_scripts': 'devtools_webkit_and_tab_target_isolated_scripts',
         },
       },
@@ -3492,7 +3492,7 @@
           'xcode_15_main',
         ],
         'test_suites': {
-          'isolated_scripts': 'wpt_tests_ios',
+          'isolated_scripts': 'wpt_tests_ios_suite',
         },
       },
       'ios17-beta-simulator': {
@@ -6343,7 +6343,7 @@
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
-          'gtest_tests': 'blink_unittests',
+          'gtest_tests': 'blink_unittests_suite',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
@@ -6353,7 +6353,7 @@
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
-          'gtest_tests': 'blink_unittests',
+          'gtest_tests': 'blink_unittests_suite',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
@@ -6363,7 +6363,7 @@
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
-          'gtest_tests': 'blink_unittests',
+          'gtest_tests': 'blink_unittests_suite',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
@@ -6376,7 +6376,7 @@
         },
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
-          'gtest_tests': 'blink_unittests',
+          'gtest_tests': 'blink_unittests_suite',
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
@@ -6989,7 +6989,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'gtest_tests': 'devtools_browser_tests',
+          'gtest_tests': 'devtools_browser_tests_suite',
           'isolated_scripts': 'devtools_webkit_isolated_scripts',
         },
       },
@@ -6998,7 +6998,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          'gtest_tests': 'devtools_browser_tests',
+          'gtest_tests': 'devtools_browser_tests_suite',
           'isolated_scripts': 'devtools_webkit_isolated_scripts',
         },
       },

@@ -263,7 +263,7 @@
       },
     },
 
-    'blink_unittests': {
+    'blink_unittests_suite': {
       'blink_unit_tests': {
         'test': 'blink_unittests',
       },
@@ -394,7 +394,7 @@
       },
     },
 
-    'chrome_public_wpt': {
+    'chrome_public_wpt_suite': {
       'chrome_public_wpt': {
         'results_handler': 'layout tests',
         'args': [
@@ -410,17 +410,6 @@
           'args': [
             '--verbose',
           ],
-        },
-      },
-    },
-
-    'chrome_sizes': {
-      'chrome_sizes': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'merge': {
-          'script': '//tools/perf/process_perf_results.py',
         },
       },
     },
@@ -450,6 +439,17 @@
             'os': 'Ubuntu-22.04',
           },
         },
+        'merge': {
+          'script': '//tools/perf/process_perf_results.py',
+        },
+      },
+    },
+
+    'chrome_sizes_suite': {
+      'chrome_sizes': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
         },
@@ -605,7 +605,7 @@
       'base_unittests': {},
     },
 
-    'chromeos_integration_tests': {
+    'chromeos_integration_tests_suite': {
       'chromeos_integration_tests': {},
     },
 
@@ -642,7 +642,7 @@
       },
     },
 
-    'chromeos_js_code_coverage_browser_tests': {
+    'chromeos_js_code_coverage_browser_tests_suite': {
       'chromeos_js_code_coverage_browser_tests': {
         'test': 'browser_tests',
         'swarming': {
@@ -1789,7 +1789,7 @@
       },
     },
 
-    'cronet_sizes': {
+    'cronet_sizes_suite': {
       'cronet_sizes': {
         'remove_mixins': [
           'android_r',
@@ -1927,7 +1927,7 @@
       },
     },
 
-    'devtools_browser_tests': {
+    'devtools_browser_tests_suite': {
       'devtools_browser_tests': {
         'test': 'browser_tests',
         'args': [
@@ -2940,7 +2940,7 @@
       },
     },
 
-    'gpu_memory_buffer_impl_tests': {
+    'gpu_memory_buffer_impl_tests_suite': {
       'gpu_memory_buffer_impl_tests': {
         'test': 'gpu_unittests',
         'args': [
@@ -4143,13 +4143,13 @@
       'ui_base_unittests': {},
     },
 
-    'jni_zero_sample_apk_test': {
+    'jni_zero_sample_apk_test_suite': {
       'jni_zero_sample_apk_test': {
         'experiment_percentage': 100,
       },
     },
 
-    'js_code_coverage_browser_tests': {
+    'js_code_coverage_browser_tests_suite': {
       'js_code_coverage_browser_tests': {
         'test': 'browser_tests',
         'swarming': {
@@ -4158,7 +4158,7 @@
       },
     },
 
-    'lacros_all_tast_tests': {
+    'lacros_all_tast_tests_suite': {
       'lacros_all_tast_tests': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -4504,7 +4504,7 @@
       },
     },
 
-    'model_validation_tests': {
+    'model_validation_tests_suite': {
       'model_validation_tests': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -4694,7 +4694,7 @@
       },
     },
 
-    'ondevice_stability_tests': {
+    'ondevice_stability_tests_suite': {
       'ondevice_stability_tests': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -5084,7 +5084,7 @@
       'system_webview_shell_layout_test_apk': {},
     },
 
-    'system_webview_wpt': {
+    'system_webview_wpt_suite': {
       'system_webview_wpt': {
         'results_handler': 'layout tests',
         'args': [
@@ -5486,7 +5486,7 @@
       },
     },
 
-    'webview_trichrome_64_cts_hostside_tests': {
+    'webview_trichrome_64_cts_hostside_tests_suite': {
       'webview_trichrome_64_cts_hostside_tests': {
         'mixins': [
           'webview_cts_archive',
@@ -5494,18 +5494,7 @@
       },
     },
 
-    'webview_trichrome_64_cts_tests': {
-      'webview_trichrome_64_cts_tests': {
-        'mixins': [
-          'webview_cts_archive',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
-    'webview_trichrome_64_cts_tests_no_field_trial': {
+    'webview_trichrome_64_cts_tests_no_field_trial_suite': {
       'webview_trichrome_64_cts_tests_no_field_trial': {
         'test': 'webview_trichrome_64_cts_tests',
         'mixins': [
@@ -5520,7 +5509,18 @@
       },
     },
 
-    'webview_trichrome_cts_tests': {
+    'webview_trichrome_64_cts_tests_suite': {
+      'webview_trichrome_64_cts_tests': {
+        'mixins': [
+          'webview_cts_archive',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
+
+    'webview_trichrome_cts_tests_suite': {
       'webview_trichrome_cts_tests': {
         'mixins': [
           'webview_cts_archive',
@@ -5607,7 +5607,7 @@
       },
     },
 
-    'wpt_tests_ios': {
+    'wpt_tests_ios_suite': {
       'wpt_tests_ios': {
         'test': 'chrome_ios_wpt',
         'results_handler': 'layout tests',
@@ -5851,7 +5851,7 @@
     ],
 
     'chromeos_vm_gtests': [
-      'chromeos_integration_tests',
+      'chromeos_integration_tests_suite',
       'chromeos_system_friendly_gtests',
       'chromeos_vaapi_fakelib_gtests',
     ],
@@ -5861,7 +5861,7 @@
       'chromeos_browser_criticalstaging_tast_tests',
       'chromeos_browser_disabled_tast_tests',
       'chromeos_browser_integration_tests',
-      'chromeos_integration_tests',
+      'chromeos_integration_tests_suite',
       'chromeos_system_friendly_gtests',
       'chromeos_vaapi_fakelib_gtests',
     ],
@@ -5869,7 +5869,7 @@
     'chromeos_vm_preuprev_tast': [
       'chromeos_browser_cq_medium_tast_tests',
       'chromeos_device_only_gtests',
-      'chromeos_integration_tests',
+      'chromeos_integration_tests_suite',
     ],
 
     'chromeos_vm_tast': [
@@ -6022,7 +6022,7 @@
     ],
 
     'chromium_mac_rel_isolated_scripts_and_sizes': [
-      'chrome_sizes',
+      'chrome_sizes_suite',
       'chromedriver_py_tests_isolated_scripts',
       'components_perftests_isolated_scripts',
       'desktop_chromium_isolated_scripts',
@@ -6107,17 +6107,17 @@
     ],
 
     'cronet_dbg_isolated_scripts': [
-      'cronet_sizes',
+      'cronet_sizes_suite',
     ],
 
     'cronet_rel_isolated_scripts': [
       'cronet_resource_sizes',
-      'cronet_sizes',
+      'cronet_sizes_suite',
     ],
 
     'devtools_gtests': [
-      'blink_unittests',
-      'devtools_browser_tests',
+      'blink_unittests_suite',
+      'devtools_browser_tests_suite',
     ],
 
     'fuchsia_arm64_isolated_scripts': [
@@ -6312,7 +6312,7 @@
     ],
 
     'gpu_fyi_lacros_release_gtests': [
-      'gpu_memory_buffer_impl_tests',
+      'gpu_memory_buffer_impl_tests_suite',
     ],
 
     'gpu_fyi_lacros_release_telemetry_tests': [
@@ -6339,7 +6339,7 @@
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_memory_buffer_impl_tests',
+      'gpu_memory_buffer_impl_tests_suite',
       'gpu_vulkan_gtests',
     ],
 
@@ -6548,7 +6548,7 @@
 
     'linux_chromeos_isolated_scripts': [
       'blink_web_tests_ppapi_isolated_scripts',
-      'chrome_sizes',
+      'chrome_sizes_suite',
     ],
 
     'linux_chromeos_specific_and_lacros_dependent_gtests': [
@@ -6610,12 +6610,12 @@
     ],
 
     'webview_trichrome_64_cts_gtests': [
-      'webview_trichrome_64_cts_tests',
-      'webview_trichrome_64_cts_tests_no_field_trial',
+      'webview_trichrome_64_cts_tests_no_field_trial_suite',
+      'webview_trichrome_64_cts_tests_suite',
     ],
 
     'win_specific_isolated_scripts_and_sizes': [
-      'chrome_sizes',
+      'chrome_sizes_suite',
       'win_specific_isolated_scripts',
     ],
 
@@ -6637,7 +6637,7 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_cts_tests': {
+      'webview_trichrome_cts_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
@@ -6656,11 +6656,11 @@
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'fieldtrial_android_tests': {},
-      'jni_zero_sample_apk_test': {},
+      'jni_zero_sample_apk_test_suite': {},
       'linux_flavor_specific_chromium_gtests': {},
       'minidump_uploader_tests': {},
       'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_64_cts_tests': {
+      'webview_trichrome_64_cts_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
@@ -6690,13 +6690,13 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_64_cts_tests': {
+      'webview_trichrome_64_cts_tests_no_field_trial_suite': {},
+      'webview_trichrome_64_cts_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
         ],
       },
-      'webview_trichrome_64_cts_tests_no_field_trial': {},
       'webview_ui_instrumentation_tests': {},
     },
 
@@ -6709,13 +6709,13 @@
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {},
-      'webview_trichrome_64_cts_tests': {
+      'webview_trichrome_64_cts_tests_no_field_trial_suite': {},
+      'webview_trichrome_64_cts_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
         ],
       },
-      'webview_trichrome_64_cts_tests_no_field_trial': {},
       'webview_ui_instrumentation_tests': {},
     },
 
@@ -6762,7 +6762,7 @@
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
@@ -6785,7 +6785,7 @@
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
@@ -6816,7 +6816,7 @@
           'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_JACUZZI_RELEASE_LKGM',
         ],
@@ -6880,7 +6880,7 @@
           'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ],
@@ -6946,7 +6946,7 @@
           'CROS_TROGDOR_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_TROGDOR_RELEASE_ASH_LKGM',
         ],
@@ -6964,7 +6964,7 @@
           'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ],
@@ -6992,7 +6992,7 @@
           'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ],
@@ -7622,7 +7622,7 @@
     },
 
     'lacros_arm64_generic_rel_skylab': {
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_TROGDOR_PUBLIC_LKGM',
         ],
@@ -7635,12 +7635,12 @@
     },
 
     'lacros_device_or_vm_tests': {
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'LACROS_AMD64_GENERIC',
         ],
       },
-      'lacros_all_tast_tests': {
+      'lacros_all_tast_tests_suite': {
         'variants': [
           'LACROS_AMD64_GENERIC',
         ],
@@ -7658,7 +7658,7 @@
     },
 
     'lacros_skylab_arm64': {
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',
         ],
@@ -7722,7 +7722,7 @@
     },
 
     'lacros_skylab_tests_amd64_generic_rel': {
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'variants': [
           'CROS_VOLTEER_PUBLIC_LKGM',
         ],
@@ -7735,7 +7735,7 @@
     },
 
     'lacros_skylab_tests_amd64_generic_rel_gtest': {
-      'chromeos_integration_tests': {
+      'chromeos_integration_tests_suite': {
         'mixins': [
           'ci_only',
         ],
@@ -7916,13 +7916,13 @@
     },
 
     'optimization_guide_desktop_script_tests': {
-      'model_validation_tests': {
+      'model_validation_tests_suite': {
         'variants': [
           'MODEL_VALIDATION_BASE',
           'MODEL_VALIDATION_TRUNK',
         ],
       },
-      'ondevice_stability_tests': {},
+      'ondevice_stability_tests_suite': {},
     },
 
     'optimization_guide_linux_gtests': {
@@ -7940,7 +7940,7 @@
     },
 
     'optimization_guide_linux_script_tests': {
-      'model_validation_tests': {
+      'model_validation_tests_suite': {
         'mixins': [
           'gce',
         ],
@@ -7949,7 +7949,7 @@
           'MODEL_VALIDATION_TRUNK',
         ],
       },
-      'ondevice_stability_tests': {
+      'ondevice_stability_tests_suite': {
         'variants': [
           'INTEL_UHD_630',
           'NVIDIA_GEFORCE_GTX_1660',
@@ -7973,7 +7973,7 @@
     },
 
     'optimization_guide_win_script_tests': {
-      'model_validation_tests': {
+      'model_validation_tests_suite': {
         'mixins': [
           'gce',
         ],
@@ -7982,7 +7982,7 @@
           'MODEL_VALIDATION_TRUNK',
         ],
       },
-      'ondevice_stability_tests': {
+      'ondevice_stability_tests_suite': {
         'variants': [
           'AMD_RADEON_RX_5500_XT',
           'INTEL_UHD_630',
@@ -7992,7 +7992,7 @@
     },
 
     'webview_trichrome_10_cts_tests_gtest': {
-      'webview_trichrome_cts_tests': {
+      'webview_trichrome_cts_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',
@@ -8001,7 +8001,7 @@
     },
 
     'webview_trichrome_64_cts_hostside_gtests': {
-      'webview_trichrome_64_cts_hostside_tests': {
+      'webview_trichrome_64_cts_hostside_tests_suite': {
         'variants': [
           'WEBVIEW_TRICHROME_FULL_CTS_TESTS',
           'WEBVIEW_TRICHROME_INSTANT_CTS_TESTS',

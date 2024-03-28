@@ -22,7 +22,7 @@ targets.legacy_matrix_compound_suite(
         "chromium_gtests_for_devices_with_graphical_output": None,
         "linux_flavor_specific_chromium_gtests": None,
         "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
-        "webview_trichrome_cts_tests": targets.legacy_matrix_config(
+        "webview_trichrome_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
@@ -44,11 +44,11 @@ targets.legacy_matrix_compound_suite(
         "chromium_gtests": None,
         "chromium_gtests_for_devices_with_graphical_output": None,
         "fieldtrial_android_tests": None,
-        "jni_zero_sample_apk_test": None,
+        "jni_zero_sample_apk_test_suite": None,
         "linux_flavor_specific_chromium_gtests": None,
         "minidump_uploader_tests": None,
         "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
-        "webview_trichrome_64_cts_tests": targets.legacy_matrix_config(
+        "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
@@ -84,13 +84,13 @@ targets.legacy_matrix_compound_suite(
         "chromium_gtests_for_devices_with_graphical_output": None,
         "linux_flavor_specific_chromium_gtests": None,
         "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
-        "webview_trichrome_64_cts_tests": targets.legacy_matrix_config(
+        "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial": None,
+        "webview_trichrome_64_cts_tests_no_field_trial_suite": None,
         "webview_ui_instrumentation_tests": None,
     },
 )
@@ -106,13 +106,13 @@ targets.legacy_matrix_compound_suite(
         "chromium_gtests_for_devices_with_graphical_output": None,
         "linux_flavor_specific_chromium_gtests": None,
         "system_webview_shell_instrumentation_tests": None,  # Not an experimental test
-        "webview_trichrome_64_cts_tests": targets.legacy_matrix_config(
+        "webview_trichrome_64_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial": None,
+        "webview_trichrome_64_cts_tests_no_field_trial_suite": None,
         "webview_ui_instrumentation_tests": None,
     },
 )
@@ -170,7 +170,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_BRYA_RELEASE_ASH_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_BRYA_RELEASE_ASH_LKGM",
             ],
@@ -254,7 +254,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM",
             ],
@@ -332,7 +332,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_TROGDOR_RELEASE_ASH_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_TROGDOR_RELEASE_ASH_LKGM",
             ],
@@ -363,7 +363,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_VOLTEER_RELEASE_ASH_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_RELEASE_ASH_LKGM",
             ],
@@ -379,7 +379,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_BRYA_RELEASE_ASH_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_BRYA_RELEASE_ASH_LKGM",
             ],
@@ -404,7 +404,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
@@ -425,7 +425,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_VOLTEER_RELEASE_ASH_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_RELEASE_ASH_LKGM",
             ],
@@ -1142,7 +1142,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_TROGDOR_PUBLIC_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_TROGDOR_PUBLIC_LKGM",
             ],
@@ -1153,12 +1153,12 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "lacros_device_or_vm_tests",
     basic_suites = {
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "LACROS_AMD64_GENERIC",
             ],
         ),
-        "lacros_all_tast_tests": targets.legacy_matrix_config(
+        "lacros_all_tast_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "LACROS_AMD64_GENERIC",
             ],
@@ -1185,7 +1185,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
@@ -1255,7 +1255,7 @@ targets.legacy_matrix_compound_suite(
                 "CROS_VOLTEER_PUBLIC_LKGM",
             ],
         ),
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_PUBLIC_LKGM",
             ],
@@ -1266,7 +1266,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_tests_amd64_generic_rel_gtest",
     basic_suites = {
-        "chromeos_integration_tests": targets.legacy_matrix_config(
+        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "ci_only",
             ],
@@ -1477,13 +1477,13 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "optimization_guide_desktop_script_tests",
     basic_suites = {
-        "model_validation_tests": targets.legacy_matrix_config(
+        "model_validation_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "MODEL_VALIDATION_BASE",
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
-        "ondevice_stability_tests": None,
+        "ondevice_stability_tests_suite": None,
     },
 )
 
@@ -1508,7 +1508,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "optimization_guide_linux_script_tests",
     basic_suites = {
-        "model_validation_tests": targets.legacy_matrix_config(
+        "model_validation_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
             ],
@@ -1517,7 +1517,7 @@ targets.legacy_matrix_compound_suite(
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
-        "ondevice_stability_tests": targets.legacy_matrix_config(
+        "ondevice_stability_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "INTEL_UHD_630",
                 "NVIDIA_GEFORCE_GTX_1660",
@@ -1547,7 +1547,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "optimization_guide_win_script_tests",
     basic_suites = {
-        "model_validation_tests": targets.legacy_matrix_config(
+        "model_validation_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
             ],
@@ -1556,7 +1556,7 @@ targets.legacy_matrix_compound_suite(
                 "MODEL_VALIDATION_TRUNK",
             ],
         ),
-        "ondevice_stability_tests": targets.legacy_matrix_config(
+        "ondevice_stability_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "AMD_RADEON_RX_5500_XT",
                 "INTEL_UHD_630",
@@ -1569,7 +1569,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "webview_trichrome_10_cts_tests_gtest",
     basic_suites = {
-        "webview_trichrome_cts_tests": targets.legacy_matrix_config(
+        "webview_trichrome_cts_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
@@ -1581,7 +1581,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "webview_trichrome_64_cts_hostside_gtests",
     basic_suites = {
-        "webview_trichrome_64_cts_hostside_tests": targets.legacy_matrix_config(
+        "webview_trichrome_64_cts_hostside_tests_suite": targets.legacy_matrix_config(
             variants = [
                 "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
