@@ -877,7 +877,7 @@ def _get_bundle_resolver():
                     spec, error = _apply_mixin(spec, m.props.mixin_values)
                     if error:
                         fail("modifying {} {} with {} failed: {}"
-                            .format(spec.spec_handler.type_name, test.key.id, mixin, error))
+                            .format(spec.handler.type_name, test.key.id, mixin, error))
                 test_spec_and_source_by_name[test.key.id] = spec, n.key
 
             for child in graph.children(n.key, kind = _targets_nodes.BUNDLE.kind):
@@ -902,7 +902,7 @@ def _get_bundle_resolver():
                 if error:
                     fail(
                         "modifying {} {} with {} failed: {}"
-                            .format(spec.spec_type.type_name, test_name, mixin, error),
+                            .format(spec.handler.type_name, test_name, mixin, error),
                         trace = n.props.stacktrace,
                     )
                 test_spec_and_source_by_name[test_name] = new_spec, n.key
