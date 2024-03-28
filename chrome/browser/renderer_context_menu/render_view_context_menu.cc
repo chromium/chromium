@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -283,6 +282,7 @@
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -824,7 +824,6 @@ void RenderViewContextMenu::AddSpellCheckServiceItem(ui::SimpleMenuModel* menu,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kExitFullscreenMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kComposeMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu, kRegionSearchItem);
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -2170,20 +2169,11 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendLiveCaptionItem();
   AppendMediaRouterItem();
-  LensOverlayController* controller =
-      LensOverlayController::GetController(source_web_contents_);
-
-  // TODO(https://crbug.com/330808104): Delete the code in the else statement
-  // once overlay is launched.
-  if (controller && controller->Enabled()) {
-    AppendRegionSearchItem();
-  } else {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (IsRegionSearchEnabled()) {
     AppendRegionSearchItem();
   }
 #endif
-  }
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -2685,16 +2675,12 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   // menu item.
   const TemplateURL* provider = GetImageSearchProvider();
   if (provider) {
-    int region_search_idc = GetRegionSearchIdc();
-    menu_model_.AddItem(region_search_idc,
+    menu_model_.AddItem(GetRegionSearchIdc(),
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
     if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
       menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
     }
-    menu_model_.SetElementIdentifierAt(
-        menu_model_.GetIndexOfCommandId(region_search_idc).value(),
-        kRegionSearchItem);
 
     MaybePrepareForLensQuery();
   }
@@ -4274,22 +4260,20 @@ void RenderViewContextMenu::ExecAddANote() {
 void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
-  if (is_google_default_search_provider) {
-    // TODO(https://crbug.com/330808104): This should become a CHECK. If the
-    // menu item is clickable, then the controller must be enabled.
-    LensOverlayController* controller =
-        LensOverlayController::GetController(source_web_contents_);
-    if (controller && controller->Enabled()) {
-      controller->ShowUI();
-      return;
-    }
-  }
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Browser* browser = GetBrowser();
   CHECK(browser);
   if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
     lens::OpenLensStaticPage(browser);
+    return;
+  }
+
+  if (is_google_default_search_provider &&
+      lens::features::IsLensOverlayEnabled()) {
+    browser->tab_strip_model()
+        ->GetActiveTab()
+        ->lens_overlay_controller()
+        ->ShowUI();
     return;
   }
 

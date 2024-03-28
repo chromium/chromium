@@ -5,7 +5,6 @@
 // This class runs CUJ tests for lens overlay. These tests simulate input events
 // and cannot be run in parallel.
 
-#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -48,12 +47,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
 
-  // In kDocumentWithNamedElement.
-  const DeepQuery kPathToBody{
-      "body",
-  };
-
-  // In the lens overlay.
   const DeepQuery kPathToCloseButton{
       "lens-overlay-app",
       "#closeButton",
@@ -62,14 +55,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 
   RunTestSequence(
       InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
-      FlushEvents(), EnsurePresent(kActiveTab, kPathToBody), FlushEvents(),
-      MoveMouseTo(kActiveTab, kPathToBody), FlushEvents(),
-      ClickMouse(ui_controls::RIGHT), FlushEvents(),
-      WaitForShow(RenderViewContextMenu::kRegionSearchItem),
-      FlushEvents(),  // Required to fully render the menu before selection.
-
-      SelectMenuItem(RenderViewContextMenu::kRegionSearchItem),
-
+      // TODO(https://crbug.com/328501283): Use a UI entry point.
+      Do([&]() {
+        browser()
+            ->tab_strip_model()
+            ->GetActiveTab()
+            ->lens_overlay_controller()
+            ->ShowUI();
+      }),
       // The overlay controller is an independent floating widget associated
       // with a tab rather than a browser window, so by convention gets its own
       // element context.
