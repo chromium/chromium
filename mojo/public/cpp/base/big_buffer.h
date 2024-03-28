@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -121,7 +122,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
 
   base::span<const uint8_t> byte_span() const {
     DCHECK_EQ(storage_type_, StorageType::kBytes);
-    return base::make_span(bytes_.get(), bytes_size_);
+    return bytes_.as_span();
   }
 
   internal::BigBufferSharedMemoryRegion& shared_memory() {
@@ -133,8 +134,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBuffer {
   friend class BigBufferView;
 
   StorageType storage_type_;
-  std::unique_ptr<uint8_t[]> bytes_;
-  size_t bytes_size_;
+  base::HeapArray<uint8_t> bytes_;
   std::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 };
 

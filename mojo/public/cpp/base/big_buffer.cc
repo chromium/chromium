@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 
@@ -65,16 +66,14 @@ void TryCreateSharedMemory(
 // static
 constexpr size_t BigBuffer::kMaxInlineBytes;
 
-BigBuffer::BigBuffer() : storage_type_(StorageType::kBytes), bytes_size_(0) {}
+BigBuffer::BigBuffer() : storage_type_(StorageType::kBytes) {}
 
 BigBuffer::BigBuffer(BigBuffer&& other)
     : storage_type_(other.storage_type_),
       bytes_(std::move(other.bytes_)),
-      bytes_size_(other.bytes_size_),
       shared_memory_(std::move(other.shared_memory_)) {
   // Make sure |other| looks empty.
   other.storage_type_ = StorageType::kInvalidBuffer;
-  other.bytes_size_ = 0;
 }
 
 BigBuffer::BigBuffer(base::span<const uint8_t> data) {
@@ -93,8 +92,7 @@ BigBuffer::BigBuffer(size_t size) {
   if (storage_type_ == BigBuffer::StorageType::kBytes) {
     // Either |size| is small enough or shared memory allocation failed, and
     // fallback to inline allocation is feasible.
-    bytes_ = std::make_unique<uint8_t[]>(size);
-    bytes_size_ = size;
+    bytes_ = base::HeapArray<uint8_t>::Uninit(size);
   }
 }
 
@@ -103,11 +101,9 @@ BigBuffer::~BigBuffer() = default;
 BigBuffer& BigBuffer::operator=(BigBuffer&& other) {
   storage_type_ = other.storage_type_;
   bytes_ = std::move(other.bytes_);
-  bytes_size_ = other.bytes_size_;
   shared_memory_ = std::move(other.shared_memory_);
   // Make sure |other| looks empty.
   other.storage_type_ = StorageType::kInvalidBuffer;
-  other.bytes_size_ = 0;
   return *this;
 }
 
@@ -118,7 +114,7 @@ uint8_t* BigBuffer::data() {
 const uint8_t* BigBuffer::data() const {
   switch (storage_type_) {
     case StorageType::kBytes:
-      return bytes_.get();
+      return bytes_.data();
     case StorageType::kSharedMemory:
       DCHECK(shared_memory_->buffer_mapping_);
       return static_cast<const uint8_t*>(
@@ -136,7 +132,7 @@ const uint8_t* BigBuffer::data() const {
 size_t BigBuffer::size() const {
   switch (storage_type_) {
     case StorageType::kBytes:
-      return bytes_size_;
+      return bytes_.size();
     case StorageType::kSharedMemory:
       return shared_memory_->size();
     case StorageType::kInvalidBuffer:
@@ -202,9 +198,7 @@ BigBuffer BigBufferView::ToBigBuffer(BigBufferView view) {
   BigBuffer buffer;
   buffer.storage_type_ = view.storage_type_;
   if (view.storage_type_ == BigBuffer::StorageType::kBytes) {
-    buffer.bytes_ = std::make_unique<uint8_t[]>(view.bytes_.size());
-    buffer.bytes_size_ = view.bytes_.size();
-    base::ranges::copy(view.bytes_, buffer.bytes_.get());
+    buffer.bytes_ = base::HeapArray<uint8_t>::CopiedFrom(view.bytes_);
   } else if (view.storage_type_ == BigBuffer::StorageType::kSharedMemory) {
     buffer.shared_memory_ = std::move(*view.shared_memory_);
   }
