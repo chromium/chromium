@@ -1913,7 +1913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Intent.HasNonSpoofablePackageName" enum="Boolean"
-    expires_after="2024-05-01">
+    expires_after="2024-12-01">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
