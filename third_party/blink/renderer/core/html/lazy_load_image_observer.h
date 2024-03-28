@@ -7,9 +7,9 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -34,7 +34,7 @@ class LazyLoadImageObserver final
     base::TimeTicks time_when_first_load_finished;
   };
 
-  LazyLoadImageObserver(const Document&);
+  LazyLoadImageObserver() = default;
 
   void StartMonitoringNearViewport(Document*, Element*);
   void StopMonitoring(Element*);
