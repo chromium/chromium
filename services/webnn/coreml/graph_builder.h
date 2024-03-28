@@ -6,6 +6,8 @@
 #define SERVICES_WEBNN_COREML_GRAPH_BUILDER_H_
 
 #include <cstdint>
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -20,8 +22,8 @@ namespace webnn::coreml {
 const char kPlaceholderInputName[] = "placeholder";
 
 // Get name identifiers used in CoreML model files for input/output operands.
-std::string GetCoreMLNameFromInput(const std::string& input_name);
-std::string GetCoreMLNameFromOutput(const std::string& output_name);
+std::string GetCoreMLNameFromInput(std::string_view input_name);
+std::string GetCoreMLNameFromOutput(std::string_view output_name);
 
 // Reads the WebNN graph from the mojom::GraphInfo to
 // produce CoreML model and serializes to provided `working_directory`.

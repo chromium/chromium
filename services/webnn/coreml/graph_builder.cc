@@ -225,13 +225,13 @@ base::unexpected<mojom::ErrorPtr> NewUnknownError(std::string message) {
 
 }  // namespace
 
-std::string GetCoreMLNameFromInput(const std::string& input_name) {
+std::string GetCoreMLNameFromInput(std::string_view input_name) {
   // Prefix is added to user provided names to avoid collision with intermediate
   // operands' names
   return base::StrCat({"input_", input_name});
 }
 
-std::string GetCoreMLNameFromOutput(const std::string& output_name) {
+std::string GetCoreMLNameFromOutput(std::string_view output_name) {
   // Prefix is added to user provided names to avoid collision with intermediate
   // operands' names
   return base::StrCat({"output_", output_name});
