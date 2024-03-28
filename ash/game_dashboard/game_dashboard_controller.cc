@@ -4,6 +4,7 @@
 
 #include "ash/game_dashboard/game_dashboard_controller.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,6 +38,13 @@ namespace ash {
 namespace {
 // The singleton instance owned by `Shell`.
 GameDashboardController* g_instance = nullptr;
+
+// List of known app IDs that are games.
+static const std::array<std::string, 7> kGameAppIdAllowList{
+    extension_misc::kGeForceNowAppId,   "iicceeckdelepgbcpojbgahbhnklpane",
+    "ojjlibnpojmhhabohpkclejfdblglkpj", "hhkmajjdndhdnkbmomodobajdjngeejb",
+    "gihmggjjlnjaldngedmnegjmhccccahg", "lbefcdhjbnilmnokeflglbaiaebadckd",
+    "bifaabbnnccaenolhjngemgmegdjflkg"};
 }  // namespace
 
 // static
@@ -251,6 +259,8 @@ void GameDashboardController::OnOverviewModeEnded() {
 void GameDashboardController::GetWindowGameState(aura::Window* window) {
   if (const auto* app_id = window->GetProperty(kAppIDKey); !app_id) {
     RefreshWindowTracking(window, WindowGameState::kNotYetKnown);
+  } else if (base::Contains(kGameAppIdAllowList, *app_id)) {
+    RefreshWindowTracking(window, WindowGameState::kGame);
   } else if (IsArcWindow(window)) {
     // For ARC apps, the "app_id" is equivalent to its package name.
     delegate_->GetIsGame(
@@ -261,9 +271,7 @@ void GameDashboardController::GetWindowGameState(aura::Window* window) {
                          std::vector<raw_ptr<aura::Window, VectorExperimental>>(
                              {window}))));
   } else {
-    RefreshWindowTracking(window, (*app_id == extension_misc::kGeForceNowAppId)
-                                      ? WindowGameState::kGame
-                                      : WindowGameState::kNotGame);
+    RefreshWindowTracking(window, WindowGameState::kNotGame);
   }
 }
 

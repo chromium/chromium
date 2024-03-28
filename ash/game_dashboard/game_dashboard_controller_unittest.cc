@@ -77,6 +77,13 @@ TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GameArcWindow) {
       AppType::ARC_APP);
 }
 
+TEST_F(GameDashboardControllerTest, IsGameWindowProperty_AllowlistedArcWindow) {
+  // Verifies an allowlisted ARC window is a game.
+  CreateAppWindowAndVerifyIsGameWindowProperty(
+      TestGameDashboardDelegate::kAllowlistedAppId,
+      /*expected_is_game=*/true, AppType::ARC_APP);
+}
+
 TEST_F(GameDashboardControllerTest, IsGameWindowProperty_OtherArcWindow) {
   // Verifies a not-game ARC window is not a game.
   CreateAppWindowAndVerifyIsGameWindowProperty(

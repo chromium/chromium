@@ -12,6 +12,8 @@ namespace ash {
 class TestGameDashboardDelegate : public GameDashboardDelegate {
  public:
   static constexpr char kGameAppId[] = "gameAppId";
+  static constexpr char kAllowlistedAppId[] =
+      "gihmggjjlnjaldngedmnegjmhccccahg";
   static constexpr char kOtherAppId[] = "otherAppId";
 
   TestGameDashboardDelegate() = default;
