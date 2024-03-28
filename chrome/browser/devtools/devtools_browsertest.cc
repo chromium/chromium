@@ -3887,8 +3887,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteTest, PausedDebuggerFocus) {
 class DevToolsConsoleInsightsTest : public DevToolsTest {
  public:
   DevToolsConsoleInsightsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDevToolsConsoleInsights);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDevToolsConsoleInsights,
+                              features::kDevToolsConsoleInsightsSettingVisible},
+        /*disabled_features=*/{});
     policy_provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
@@ -3977,23 +3979,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForEduUsers) {
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsDisabledForNonUSUsers) {
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("at");
-  SetupAccountCapabilities();
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
-#else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
-#endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-  CloseDevToolsWindow();
-}
-
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        IsNotEnabledForEnterpriseUsers) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
@@ -4077,5 +4062,67 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
 #endif
+  CloseDevToolsWindow();
+}
+
+class DevToolsConsoleInsightsBlockedByRegionTest : public DevToolsTest {
+ public:
+  DevToolsConsoleInsightsBlockedByRegionTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDevToolsConsoleInsightsSettingVisible,
+        {{"blocked_reason", "region"}});
+  }
+
+  ~DevToolsConsoleInsightsBlockedByRegionTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRegionTest,
+                       IsBlockedByGeo) {
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
+#endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByRollout=true"));
+  CloseDevToolsWindow();
+}
+
+class DevToolsConsoleInsightsBlockedByRolloutTest : public DevToolsTest {
+ public:
+  DevToolsConsoleInsightsBlockedByRolloutTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDevToolsConsoleInsightsSettingVisible,
+        {{"blocked_reason", "rollout"}});
+  }
+
+  ~DevToolsConsoleInsightsBlockedByRolloutTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRolloutTest,
+                       IsBlockedByRollout) {
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByRollout=true"));
+#else
+  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByRollout=true"));
+#endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
   CloseDevToolsWindow();
 }

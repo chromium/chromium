@@ -41,6 +41,9 @@ extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 extern const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn;
 BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsDogfood);
+BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsSettingVisible);
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsSettingVisibleBlockedReason;
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);

@@ -110,6 +110,16 @@ BASE_FEATURE(kDevToolsConsoleInsightsDogfood,
              "DevToolsConsoleInsightsDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether DevTools shows the setting for console insights. The setting can be
+// shown in a disabled state, even if the feature itself is not available.
+BASE_FEATURE(kDevToolsConsoleInsightsSettingVisible,
+             "DevToolsConsoleInsightsSettingVisible",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsSettingVisibleBlockedReason{
+        &kDevToolsConsoleInsightsSettingVisible, "blocked_reason",
+        /*default*/ ""};
+
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",

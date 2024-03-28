@@ -1310,6 +1310,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (blocked_reason.blocked_by_geo) {
         url += "&ci_blockedByGeo=true";
       }
+      if (blocked_reason.blocked_by_rollout) {
+        url += "&ci_blockedByRollout=true";
+      }
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;

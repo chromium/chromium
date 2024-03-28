@@ -60,15 +60,6 @@ bool IsAidaBlockedByEnterpriseOrEdu(std::optional<AccountInfo> account_info) {
              signin::Tribool::kFalse;
 }
 
-bool IsAidaBlockedByGeo() {
-  auto* variations_service = g_browser_process->variations_service();
-  if (!variations_service) {
-    CHECK_IS_TEST();
-    return false;
-  }
-  return variations_service->GetStoredPermanentCountry() != "us";
-}
-
 AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   struct BlockedReason result;
   // Console insights is only available on branded builds
@@ -83,9 +74,26 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
     result.blocked = false;
     return result;
   }
+  // If `SettingVisible` is disabled, DevTools does not show a blocked reason
+  if (!base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsSettingVisible)) {
+    result.blocked = true;
+    result.blocked_by_feature_flag = true;
+    return result;
+  }
   // Console insights is not available if the feature flag is off
   if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
     result.blocked = true;
+    auto blocked_by =
+        ::features::kDevToolsConsoleInsightsSettingVisibleBlockedReason.Get();
+    if (blocked_by == "rollout") {
+      result.blocked_by_rollout = true;
+      return result;
+    }
+    if (blocked_by == "region") {
+      result.blocked_by_geo = true;
+      return result;
+    }
     result.blocked_by_feature_flag = true;
     return result;
   }
@@ -97,9 +105,7 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
       IsAidaBlockedByEnterpriseOrEdu(account_info) ||
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) !=
           static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
-  result.blocked_by_geo = IsAidaBlockedByGeo();
-  result.blocked = result.blocked_by_age ||
-                   result.blocked_by_enterprise_policy || result.blocked_by_geo;
+  result.blocked = result.blocked_by_age || result.blocked_by_enterprise_policy;
   return result;
 #endif
 }

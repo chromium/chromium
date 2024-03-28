@@ -380,7 +380,9 @@ std::string SanitizeFrontendQueryParam(
 
   if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) ||
       base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
+          ::features::kDevToolsConsoleInsightsDogfood) ||
+      base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsSettingVisible)) {
     if (key == "enableAida" && value == "true") {
       return value;
     }
@@ -401,6 +403,10 @@ std::string SanitizeFrontendQueryParam(
   }
 
   if (key == "ci_blockedByGeo" && value == "true") {
+    return value;
+  }
+
+  if (key == "ci_blockedByRollout" && value == "true") {
     return value;
   }
 
