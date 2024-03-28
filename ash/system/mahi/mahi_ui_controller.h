@@ -25,6 +25,9 @@ class ASH_EXPORT MahiUiController {
     // Called when an answer is loaded with a success.
     virtual void OnAnswerLoaded(const std::u16string& answer) {}
 
+    // Called when a request to refresh the panel contents was initiated.
+    virtual void OnContentsRefreshInitiated() {}
+
     // Called when receiving any error status. `status` cannot be `kSuccess`.
     virtual void OnError(chromeos::MahiResponseStatus status) {}
 
@@ -37,6 +40,9 @@ class ASH_EXPORT MahiUiController {
 
     // Called when a question is posted to backend.
     virtual void OnQuestionPosted(const std::u16string& question) {}
+
+    // Called when content refresh availability changes.
+    virtual void OnRefreshAvailabilityChanged(bool available) {}
 
     // Called when a summary is loaded with a success.
     virtual void OnSummaryLoaded(const std::u16string& summary) {}
@@ -52,6 +58,13 @@ class ASH_EXPORT MahiUiController {
 
   // Navigates to the summary & outlines section and notifies observers.
   void NavigateToSummaryOutlinesSection();
+
+  // Notifies UI observers that there is a content refresh availability change.
+  void NotifyRefreshAvailabilityChanged(bool available);
+
+  // Updates the content icon and title, calls `UpdateSummaryAndOutlines` and
+  // navigates to the summary view.
+  void RefreshContents();
 
   // Sends `question` to the backend. `current_panel_content` determines if the
   // `question` is regarding the current content displayed on the panel.

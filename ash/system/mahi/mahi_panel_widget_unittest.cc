@@ -16,11 +16,14 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
 
 constexpr int kPanelDefaultWidth = 360;
 constexpr int kPanelDefaultHeight = 492;
 constexpr int kPanelBoundsShelfPadding = 8;
+
+}  // namespace
 
 class MahiPanelWidgetTest : public AshTestBase {
  public:
@@ -89,5 +92,4 @@ TEST_F(MahiPanelWidgetTest, WidgetBoundsWithRefreshBanner) {
                               mahi_constants::kRefreshBannerStackDepth);
 }
 
-}  // namespace
 }  // namespace ash

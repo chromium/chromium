@@ -30,12 +30,13 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
  private:
   // MahiUiController::Observer:
   void OnAnswerLoaded(const std::u16string& answer) override;
+  void OnContentsRefreshInitiated() override;
   void OnError(chromeos::MahiResponseStatus status) override;
   void OnNavigatedToSummaryOutlinesSection() override;
   void OnQuestionPosted(const std::u16string& question) override;
 
   base::ScopedObservation<MahiUiController, MahiUiController::Observer>
-      observation_{this};
+      controller_observation_{this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

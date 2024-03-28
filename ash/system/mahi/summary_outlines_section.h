@@ -37,6 +37,7 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
 
  private:
   // MahiUiController::Observer:
+  void OnContentsRefreshInitiated() override;
   void OnError(chromeos::MahiResponseStatus status) override;
   void OnNavigatedToSummaryOutlinesSection() override;
   void OnOutlinesLoaded(
@@ -48,15 +49,16 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
   // active content and starts playing the loading animations.
   void LoadSummaryAndOutlines();
 
-  // `controller_` will outlive `this`.
+  // `ui_controller_` will outlive `this`.
   const raw_ptr<MahiUiController> ui_controller_;
-
   base::ScopedObservation<MahiUiController, MahiUiController::Observer>
-      observation_{this};
+      controller_observation_{this};
 
+  // Owned by the views hierarchy.
   raw_ptr<views::AnimatedImageView> summary_loading_animated_image_ = nullptr;
   raw_ptr<views::AnimatedImageView> outlines_loading_animated_image_ = nullptr;
   raw_ptr<views::Label> summary_label_ = nullptr;
+  raw_ptr<views::View> outlines_container_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, SummaryOutlinesSection, views::BoxLayoutView)

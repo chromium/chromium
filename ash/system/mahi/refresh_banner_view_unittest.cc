@@ -9,6 +9,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,13 +38,16 @@ class RefreshBannerViewTest : public views::ViewsTestBase {
  public:
   MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
 
+  MahiUiController* ui_controller() { return &ui_controller_; }
+
  private:
   NiceMock<MockMahiManager> mock_mahi_manager_;
   chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
+  MahiUiController ui_controller_;
 };
 
 TEST_F(RefreshBannerViewTest, ShowsCorrectTitle) {
-  RefreshBannerView banner_view;
+  RefreshBannerView banner_view(ui_controller());
 
   const std::u16string kContentTitle(u"New content");
   ON_CALL(mock_mahi_manager(), GetContentTitle)
@@ -62,8 +66,8 @@ TEST_F(RefreshBannerViewTest, BannerVisibilityAnimations) {
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  RefreshBannerView* banner_view =
-      widget->SetContentsView(std::make_unique<RefreshBannerView>());
+  RefreshBannerView* banner_view = widget->SetContentsView(
+      std::make_unique<RefreshBannerView>(ui_controller()));
 
   banner_view->Show();
   EXPECT_TRUE(banner_view->layer()->GetAnimator()->is_animating());
@@ -84,8 +88,8 @@ TEST_F(RefreshBannerViewTest, HideImmediatelyAfterShow) {
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  RefreshBannerView* banner_view =
-      widget->SetContentsView(std::make_unique<RefreshBannerView>());
+  RefreshBannerView* banner_view = widget->SetContentsView(
+      std::make_unique<RefreshBannerView>(ui_controller()));
 
   // Call `Show` then `Hide` in succession. The banner should not be visible
   // after animations finish.
@@ -101,8 +105,8 @@ TEST_F(RefreshBannerViewTest, ShowImmediatelyAfterHide) {
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  RefreshBannerView* banner_view =
-      widget->SetContentsView(std::make_unique<RefreshBannerView>());
+  RefreshBannerView* banner_view = widget->SetContentsView(
+      std::make_unique<RefreshBannerView>(ui_controller()));
 
   // Ensure the banner is initially visible, so that `Hide` will trigger an
   // animation.
@@ -118,6 +122,20 @@ TEST_F(RefreshBannerViewTest, ShowImmediatelyAfterHide) {
 
   ui::LayerAnimationStoppedWaiter().Wait(banner_view->layer());
   EXPECT_TRUE(banner_view->GetVisible());
+}
+
+TEST_F(RefreshBannerViewTest, RefreshingSummaryContentsHidesBanner) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  RefreshBannerView* banner_view = widget->SetContentsView(
+      std::make_unique<RefreshBannerView>(ui_controller()));
+
+  // Make the banner visible.
+  banner_view->Show();
+  EXPECT_TRUE(banner_view->GetVisible());
+
+  // Triggering a summary contents refresh should hide the banner.
+  ui_controller()->RefreshContents();
+  EXPECT_FALSE(banner_view->GetVisible());
 }
 
 }  // namespace ash

@@ -338,6 +338,7 @@ namespace ash {
 MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
     : ui_controller_(ui_controller) {
   CHECK(ui_controller_);
+  controller_observation_.Observe(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -378,11 +379,13 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .SetBetweenChildSpacing(kSourceRowSpacing)
           .AddChildren(
               views::Builder<views::ImageView>()
+                  .CopyAddressTo(&content_icon_)
                   .SetID(mahi_constants::kContentIcon)
                   .SetImage(ui::ImageModel::FromImageSkia(
                       mahi_manager->GetContentIcon()))
                   .SetImageSize(mahi_constants::kContentIconSize),
               views::Builder<views::Label>()
+                  .CopyAddressTo(&content_title_)
                   .SetID(mahi_constants::kContentTitle)
                   .SetText(mahi_manager->GetContentTitle())
                   .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
@@ -561,6 +564,13 @@ bool MahiPanelView::HandleKeyEvent(views::Textfield* textfield,
   }
 
   return false;
+}
+
+void MahiPanelView::OnContentsRefreshInitiated() {
+  auto* mahi_manager = chromeos::MahiManager::Get();
+  content_icon_->SetImage(
+      ui::ImageModel::FromImageSkia(mahi_manager->GetContentIcon()));
+  content_title_->SetText(mahi_manager->GetContentTitle());
 }
 
 void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {

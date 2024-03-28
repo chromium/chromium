@@ -90,7 +90,7 @@ std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
 MahiQuestionAnswerView::MahiQuestionAnswerView(
     MahiUiController* ui_controller) {
   CHECK(ui_controller);
-  observation_.Observe(ui_controller);
+  controller_observation_.Observe(ui_controller);
 
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kInteriorMargin);
@@ -106,6 +106,10 @@ MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;
 
 void MahiQuestionAnswerView::OnAnswerLoaded(const std::u16string& answer) {
   AddChildView(CreateTextBubble(answer, /*is_question=*/false));
+}
+
+void MahiQuestionAnswerView::OnContentsRefreshInitiated() {
+  RemoveAllChildViews();
 }
 
 void MahiQuestionAnswerView::OnError(chromeos::MahiResponseStatus status) {

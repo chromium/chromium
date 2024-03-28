@@ -63,7 +63,7 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
 SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
     : ui_controller_(ui_controller) {
   CHECK(ui_controller_);
-  observation_.Observe(ui_controller_);
+  controller_observation_.Observe(ui_controller_);
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
@@ -116,6 +116,7 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
 
   outlines_section_container->AddChildView(
       views::Builder<views::FlexLayoutView>()
+          .CopyAddressTo(&outlines_container_)
           .SetID(mahi_constants::ViewId::kOutlinesContainer)
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetVisible(false)
@@ -125,6 +126,10 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
 }
 
 SummaryOutlinesSection::~SummaryOutlinesSection() = default;
+
+void SummaryOutlinesSection::OnContentsRefreshInitiated() {
+  LoadSummaryAndOutlines();
+}
 
 void SummaryOutlinesSection::OnError(chromeos::MahiResponseStatus status) {
   SetVisible(false);
@@ -136,10 +141,9 @@ void SummaryOutlinesSection::OnNavigatedToSummaryOutlinesSection() {
 
 void SummaryOutlinesSection::OnOutlinesLoaded(
     const std::vector<chromeos::MahiOutline>& outlines) {
-  auto* outlines_container =
-      GetViewByID(mahi_constants::ViewId::kOutlinesContainer);
+  outlines_container_->RemoveAllChildViews();
   for (auto outline : outlines) {
-    outlines_container->AddChildView(
+    outlines_container_->AddChildView(
         views::Builder<views::Label>()
             .SetText(outline.outline_content)
             .SetMultiLine(true)
@@ -154,7 +158,8 @@ void SummaryOutlinesSection::OnOutlinesLoaded(
 
   outlines_loading_animated_image_->Stop();
   outlines_loading_animated_image_->SetVisible(false);
-  outlines_container->SetVisible(true);
+  // TODO(b/330643995): Show the outlines section once it is ready.
+  outlines_container_->SetVisible(false);
 }
 
 void SummaryOutlinesSection::OnQuestionPosted(const std::u16string& question) {
@@ -173,6 +178,16 @@ void SummaryOutlinesSection::LoadSummaryAndOutlines() {
   if (!chromeos::MahiManager::Get()) {
     CHECK_IS_TEST();
     return;
+  }
+
+  if (summary_label_->GetVisible()) {
+    summary_label_->SetVisible(false);
+    summary_loading_animated_image_->SetVisible(true);
+  }
+
+  if (outlines_container_->GetVisible()) {
+    outlines_container_->SetVisible(false);
+    outlines_loading_animated_image_->SetVisible(true);
   }
 
   // Plays loading animation before summary and outlines are loaded.

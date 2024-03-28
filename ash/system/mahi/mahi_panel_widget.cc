@@ -57,8 +57,8 @@ MahiPanelWidget::MahiPanelWidget(InitParams params)
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .Build());
 
-  refresh_view_ =
-      contents_view->AddChildView(std::make_unique<RefreshBannerView>());
+  refresh_view_ = contents_view->AddChildView(
+      std::make_unique<RefreshBannerView>(&ui_controller_));
   refresh_view_observation_.Observe(refresh_view_);
 
   auto* panel_view = contents_view->AddChildView(
@@ -91,12 +91,8 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(int64_t display_id) {
   return widget;
 }
 
-void MahiPanelWidget::SetRefreshViewVisible(bool visible) {
-  if (!refresh_view_) {
-    return;
-  }
-
-  visible ? refresh_view_->Show() : refresh_view_->Hide();
+void MahiPanelWidget::NotifyRefreshAvailabilityChanged(bool available) {
+  ui_controller_.NotifyRefreshAvailabilityChanged(available);
 }
 
 void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,

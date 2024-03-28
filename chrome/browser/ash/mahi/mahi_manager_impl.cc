@@ -173,7 +173,7 @@ void MahiManagerImpl::OnContextMenuClicked(
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   auto* mahi_widget = static_cast<MahiPanelWidget*>(mahi_panel_widget_.get());
   if (mahi_widget) {
-    mahi_widget->SetRefreshViewVisible(/*visible=*/available);
+    mahi_widget->NotifyRefreshAvailabilityChanged(available);
   }
 }
 

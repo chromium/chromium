@@ -35,6 +35,20 @@ void MahiUiController::NavigateToSummaryOutlinesSection() {
   }
 }
 
+void MahiUiController::NotifyRefreshAvailabilityChanged(bool available) {
+  for (auto& observer : observers_) {
+    observer.OnRefreshAvailabilityChanged(available);
+  }
+}
+
+void MahiUiController::RefreshContents() {
+  NavigateToSummaryOutlinesSection();
+
+  for (auto& observer : observers_) {
+    observer.OnContentsRefreshInitiated();
+  }
+}
+
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content) {
   for (auto& observer : observers_) {

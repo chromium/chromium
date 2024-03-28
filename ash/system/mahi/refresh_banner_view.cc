@@ -81,19 +81,22 @@ SkPath GetClipPath(gfx::Size size) {
 
 }  // namespace
 
-RefreshBannerView::RefreshBannerView() {
-  auto* manager = chromeos::MahiManager::Get();
-
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemPrimaryContainer, /*radius=*/0));
+RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
+    : ui_controller_(ui_controller) {
+  CHECK(ui_controller_);
+  controller_observation_.Observe(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetInteriorMargin(kRefreshBannerInteriorMargin);
   SetID(mahi_constants::ViewId::kRefreshView);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemPrimaryContainer, /*radius=*/0));
+  SetVisible(false);
 
   // We need to paint this view to a layer for animations.
   SetPaintToLayer();
-  SetVisible(false);
+
+  auto* const manager = chromeos::MahiManager::Get();
 
   AddChildView(
       views::Builder<views::Label>()
@@ -113,11 +116,15 @@ RefreshBannerView::RefreshBannerView() {
                                        views::MaximumFlexSizeRule::kUnbounded))
           .SetProperty(views::kMarginsKey, kTitleLabelMargin)
           .Build());
-  auto* icon_button =
-      AddChildView(IconButton::Builder()
-                       .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
-                       .SetType(IconButton::Type::kSmallProminentFloating)
-                       .Build());
+
+  auto* icon_button = AddChildView(
+      IconButton::Builder()
+          .SetViewId(mahi_constants::ViewId::kRefreshButton)
+          .SetCallback(base::BindRepeating(&MahiUiController::RefreshContents,
+                                           base::Unretained(ui_controller)))
+          .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
+          .SetType(IconButton::Type::kSmallProminentFloating)
+          .Build());
   icon_button->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   icon_button->SetFocusBehavior(views::View::FocusBehavior::NEVER);
 }
@@ -180,6 +187,18 @@ void RefreshBannerView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Make sure the refresh banner is always shown on top.
   if (layer() && layer()->parent()) {
     layer()->parent()->StackAtTop(layer());
+  }
+}
+
+void RefreshBannerView::OnContentsRefreshInitiated() {
+  Hide();
+}
+
+void RefreshBannerView::OnRefreshAvailabilityChanged(bool available) {
+  if (available) {
+    Show();
+  } else {
+    Hide();
   }
 }
 

@@ -150,6 +150,21 @@ void ReturnLongSummary(chromeos::MahiManager::MahiSummaryCallback callback) {
       MahiResponseStatus::kSuccess);
 }
 
+views::Label* GetContentTitle(views::View* mahi_view) {
+  return views::AsViewClass<views::Label>(
+      mahi_view->GetViewByID(mahi_constants::ViewId::kContentTitle));
+}
+
+views::ImageView* GetContentIcon(views::View* mahi_view) {
+  return views::AsViewClass<views::ImageView>(
+      mahi_view->GetViewByID(mahi_constants::ViewId::kContentIcon));
+}
+
+views::Label* GetSummaryLabel(views::View* mahi_view) {
+  return views::AsViewClass<views::Label>(
+      mahi_view->GetViewByID(mahi_constants::ViewId::kSummaryLabel));
+}
+
 }  // namespace
 
 class MahiPanelViewTest : public AshTestBase {
@@ -498,7 +513,8 @@ TEST_F(MahiPanelViewTest, LoadingAnimations) {
   EXPECT_FALSE(summary_loading_animated_image->GetVisible());
   EXPECT_FALSE(outlines_loading_animated_image->GetVisible());
   EXPECT_TRUE(summary_label->GetVisible());
-  EXPECT_TRUE(outlines_container->GetVisible());
+  // TODO(b/330643995): Expect TRUE after outlines are shown by default.
+  EXPECT_FALSE(outlines_container->GetVisible());
 }
 
 // Tests that pressing on the send button with a valid textfield takes the user
@@ -865,6 +881,85 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
   }
+}
+
+// Tests that calling `RefreshSummaryContents` will update the panel's contents
+// with the new data from the manager.
+TEST_F(MahiPanelViewTest, RefreshSummaryContents) {
+  const std::u16string title1(u"Test content title");
+  const std::u16string summary1(u"Short summary");
+  const auto icon1(gfx::test::CreateImageSkia(/*size=*/128, SK_ColorBLUE));
+
+  ON_CALL(mock_mahi_manager(), GetContentTitle).WillByDefault(Return(title1));
+  ON_CALL(mock_mahi_manager(), GetContentIcon).WillByDefault(Return(icon1));
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault(
+          [&summary1](chromeos::MahiManager::MahiSummaryCallback callback) {
+            std::move(callback).Run(summary1,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  MahiPanelView mahi_view(ui_controller());
+
+  EXPECT_EQ(GetContentTitle(&mahi_view)->GetText(), title1);
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *GetContentIcon(&mahi_view)->GetImage().bitmap(), *icon1.bitmap()));
+  EXPECT_EQ(GetSummaryLabel(&mahi_view)->GetText(), summary1);
+
+  const std::u16string title2(u"Test content title 2");
+  const std::u16string summary2(u"Short summary 2");
+  const auto icon2(gfx::test::CreateImageSkia(/*size=*/128, SK_ColorRED));
+
+  ON_CALL(mock_mahi_manager(), GetContentTitle).WillByDefault(Return(title2));
+  ON_CALL(mock_mahi_manager(), GetContentIcon).WillByDefault(Return(icon2));
+  ON_CALL(mock_mahi_manager(), GetSummary)
+      .WillByDefault(
+          [&summary2](chromeos::MahiManager::MahiSummaryCallback callback) {
+            std::move(callback).Run(summary2,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  ui_controller()->RefreshContents();
+
+  EXPECT_EQ(GetContentTitle(&mahi_view)->GetText(), title2);
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(
+      *GetContentIcon(&mahi_view)->GetImage().bitmap(), *icon2.bitmap()));
+  EXPECT_EQ(GetSummaryLabel(&mahi_view)->GetText(), summary2);
+}
+
+// Tests that refreshing Summary contents will bring the user to the Summary
+// View and clear all previously added Q&A text bubbles.
+TEST_F(MahiPanelViewTest, RefreshSummaryContents_TransitionToSummaryView) {
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [](const std::u16string& question, bool current_panel_content,
+             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(u"answer",
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  const auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  // Transition to Q&A view by asking a question.
+  question_textfield->SetText(u"question");
+  LeftClickOn(send_button);
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_EQ(question_answer_view->children().size(), 2u);
+
+  // Refreshing summary contents should clear all Q&A contents and transition to
+  // the summary view.
+  ui_controller()->RefreshContents();
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_TRUE(question_answer_view->children().empty());
 }
 
 }  // namespace ash

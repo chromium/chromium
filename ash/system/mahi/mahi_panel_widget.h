@@ -30,8 +30,9 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
   // Creates the Mahi panel widget within the display with `display_id`.
   static views::UniqueWidgetPtr CreatePanelWidget(int64_t display_id);
 
-  // Shows/hides the refresh UI in the panel.
-  void SetRefreshViewVisible(bool visible);
+  // Notifies observers through the UI controller that availability for a
+  // content refresh has changed.
+  void NotifyRefreshAvailabilityChanged(bool available);
 
  private:
   // views::ViewObserver:
