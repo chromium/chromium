@@ -401,6 +401,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
       return StepUIType::NONE;
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
+    case AuthenticatorRequestDialogModel::Step::kGPMReauthAccount:
       return StepUIType::WINDOW;
 
     case AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey:

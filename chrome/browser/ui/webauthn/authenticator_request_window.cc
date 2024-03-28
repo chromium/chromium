@@ -5,17 +5,62 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
+
+// This WebContents observer watches the WebView that shows a GAIA
+// reauthentication page. When that page navigates to a URL that includes the
+// resulting RAPT token, it invokes a callback with that token.
+class ReauthWebContentsObserver : public content::WebContentsObserver {
+ public:
+  ReauthWebContentsObserver(content::WebContents* web_contents,
+                            const GURL& reauth_url,
+                            base::OnceCallback<void(std::string)> callback)
+      : content::WebContentsObserver(web_contents),
+        reauth_url_(reauth_url),
+        callback_(std::move(callback)) {}
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!callback_ || !navigation_handle->IsInPrimaryMainFrame() ||
+        !url::IsSameOriginWith(reauth_url_, navigation_handle->GetURL()) ||
+        !navigation_handle->GetResponseHeaders() ||
+        !IsValidHttpStatus(
+            navigation_handle->GetResponseHeaders()->response_code())) {
+      return;
+    }
+
+    std::string rapt;
+    if (!net::GetValueForKeyInQuery(navigation_handle->GetURL(), "rapt",
+                                    &rapt)) {
+      return;
+    }
+
+    std::move(callback_).Run(std::move(rapt));
+  }
+
+ private:
+  static bool IsValidHttpStatus(int status) {
+    return status == net::HTTP_OK || status == net::HTTP_NO_CONTENT;
+  }
+
+  const GURL reauth_url_;
+  base::OnceCallback<void(std::string)> callback_;
+};
 
 // Shows a pop-up window containing some WebAuthn-related UI. This object
 // owns itself.
@@ -26,10 +71,6 @@ class AuthenticatorRequestWindow
   explicit AuthenticatorRequestWindow(content::WebContents* caller_web_contents,
                                       AuthenticatorRequestDialogModel* model)
       : step_(model->step()), model_(model) {
-    // Only one UI step involves showing a top-level window:
-    CHECK_EQ(step_,
-             AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
-
     model_->observers.AddObserver(this);
 
     Profile* const profile =
@@ -66,24 +107,44 @@ class AuthenticatorRequestWindow
         content::WebContents::Create(webcontents_params);
     WebContentsObserver::Observe(web_contents.get());
 
-    // The kdi parameter here was generated from the following protobuf:
-    //
-    // {
-    //   operation: RETRIEVAL
-    //   retrieval_inputs: {
-    //     security_domain_name: "hw_protected"
-    //   }
-    // }
-    //
-    // And then converted to bytes with:
-    //
-    // % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
-    //       proto gaia_frontend.ClientDecryptableKeyDataInputs
-    //
-    // Then the contents of `/tmp/out.pb` need to be base64url-encoded to
-    // produce the "kdi" parameter's value.
-    GURL url = GaiaUrls::GetInstance()->gaia_url().Resolve(
-        "/encryption/unlock/desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk");
+    GURL url;
+    switch (step_) {
+      case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
+        // The kdi parameter here was generated from the following protobuf:
+        //
+        // {
+        //   operation: RETRIEVAL
+        //   retrieval_inputs: {
+        //     security_domain_name: "hw_protected"
+        //   }
+        // }
+        //
+        // And then converted to bytes with:
+        //
+        // % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
+        //       proto gaia_frontend.ClientDecryptableKeyDataInputs
+        //
+        // Then the contents of `/tmp/out.pb` need to be base64url-encoded to
+        // produce the "kdi" parameter's value.
+        url = GaiaUrls::GetInstance()->gaia_url().Resolve(
+            "/encryption/unlock/desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk");
+        break;
+
+      case AuthenticatorRequestDialogModel::Step::kGPMReauthAccount:
+        // TODO(enclave): this isn't the correct URL, but it'll serve for now.
+        url = GaiaUrls::GetInstance()->reauth_url();
+        reauth_observer_ = std::make_unique<ReauthWebContentsObserver>(
+            web_contents.get(), url,
+            // Unretained: `reauth_observer_` is owned by this object so if
+            // it exists, this object also exists.
+            base::BindOnce(&AuthenticatorRequestWindow::OnReauthComplete,
+                           base::Unretained(this)));
+        break;
+
+      default:
+        NOTREACHED_NORETURN();
+    }
+
     content::NavigationController::LoadURLParams load_params(url);
     web_contents->GetController().LoadURLWithParams(load_params);
     web_contents_weak_ptr_ = web_contents->GetWeakPtr();
@@ -130,8 +191,14 @@ class AuthenticatorRequestWindow
     delete this;
   }
 
+  void OnReauthComplete(std::string rapt) {
+    // TODO(enclave): plumb this value for resetting a GPM PIN.
+    NOTIMPLEMENTED();
+  }
+
   const AuthenticatorRequestDialogModel::Step step_;
   raw_ptr<AuthenticatorRequestDialogModel> model_;
+  std::unique_ptr<ReauthWebContentsObserver> reauth_observer_;
   base::WeakPtr<content::WebContents> web_contents_weak_ptr_;
 };
 

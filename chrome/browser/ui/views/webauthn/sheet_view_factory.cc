@@ -375,6 +375,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kGPMTouchID:
     case Step::kGPMOnboarding:
     case Step::kGPMPasskeySaved:
+    case Step::kGPMReauthAccount:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));
       break;

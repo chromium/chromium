@@ -281,6 +281,9 @@ struct AuthenticatorRequestDialogModel {
     kTrustThisComputer,
     kWaitingForEnclave,
 
+    // Changing GPM PIN.
+    kGPMReauthAccount,
+
     // User verification prompt for GPM for demo purposes.
     // TODO(nsatragno): integrate with create / get passkey instead.
     kGPMTouchID,
