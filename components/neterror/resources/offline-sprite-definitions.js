@@ -288,7 +288,7 @@ export const spriteDefinitionByType = {
         yPos: 95,
         multipleSpeed: 999,
         minGap: 120,
-        minSpeed: 0,
+        minSpeed: 8,
         collisionBoxes: [
           new CollisionBox(0, 17, 8, 28),
           new CollisionBox(6, 3, 24, 42),
@@ -305,7 +305,7 @@ export const spriteDefinitionByType = {
         yPos: 95,
         multipleSpeed: 999,
         minGap: 120,
-        minSpeed: 0,
+        minSpeed: 8,
         collisionBoxes: [
           new CollisionBox(0, 17, 8, 28),
           new CollisionBox(6, 3, 24, 42),
@@ -322,7 +322,7 @@ export const spriteDefinitionByType = {
         yPos: 95,
         multipleSpeed: 999,
         minGap: 120,
-        minSpeed: 0,
+        minSpeed: 5,
         collisionBoxes: [
           new CollisionBox(0, 0, 42, 50),
         ],
@@ -334,7 +334,7 @@ export const spriteDefinitionByType = {
         yPos: 93,
         multipleSpeed: 999,
         minGap: 120,
-        minSpeed: 0,
+        minSpeed: 7,
         collisionBoxes: [
           new CollisionBox(0, 11, 8, 40),
           new CollisionBox(8, 0, 19, 51),
@@ -348,7 +348,7 @@ export const spriteDefinitionByType = {
         yPos: 93,
         multipleSpeed: 999,
         minGap: 120,
-        minSpeed: 0,
+        minSpeed: 6,
         collisionBoxes: [
           new CollisionBox(0, 11, 19, 40),
           new CollisionBox(19, 0, 19, 51),
