@@ -556,21 +556,21 @@ message PolicyFetchRequest {
   //
   // Possible values for Chrome OS are:
   //   google/chromeos/device => ChromeDeviceSettingsProto
-  //   google/chromeos/user => ChromeSettingsProto
   //   google/chromeos/publicaccount => ChromeSettingsProto
   //   google/chromeos/signinextension => ExternalPolicyData
   //   google/chromeos/remotecommand => RemoteCommand (*)
   //
-  // For users signed in to other Chrome platforms,
+  // For users signed in to Chrome,
+  //   google/chromeos/user => ChromeSettingsProto
   //   google/android/user => ChromeSettingsProto
   //   google/chrome/user => ChromeSettingsProto
   //   google/ios/user => ChromeSettingsProto
+  //   google/chrome/extension => ExternalPolicyData
   //
   // For Chrome Browser Cloud Management,
   //   google/chrome/machine-level-user => ChromeSettingsProto
   //   google/chrome/machine-level-user-android => ChromeSettingsProto
   //   google/chrome/machine-level-user-ios => ChromeSettingsProto
-  //   google/chrome/extension => ExternalPolicyData
   //   google/chrome/machine-level-extension => ExternalPolicyData
   //   google/machine-level-apps =>
   //       Omaha policy fetch is translated into two policy types
