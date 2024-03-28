@@ -3558,12 +3558,6 @@
       status: "stable",
     },
     {
-      // If enabled Border, Outline and Column-Rule Widths
-      // will be pixel snapped before layout.
-      name: "SnapBorderWidthsBeforeLayout",
-      status: "stable",
-    },
-    {
       // Used to enable the code for detecting soft navigations through task
       // attribution. Set to stable as this generates an enabled-by-default
       // base::Feature for a field-trial remote shutoff. Needs to be a runtime

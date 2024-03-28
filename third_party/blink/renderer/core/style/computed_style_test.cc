@@ -1231,8 +1231,6 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
 TEST_F(ComputedStyleTest, BorderWidthConversion) {
   // Tests that Border, Outline and Column Rule Widths
   // are converted as expected.
-  ScopedSnapBorderWidthsBeforeLayoutForTest
-      enable_snap_border_widths_before_layout_for_test(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
@@ -1308,8 +1306,6 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
 TEST_F(ComputedStyleTest, BorderWidthConversionWithZoom) {
   // Tests that Border Widths
   // are converted as expected when Zoom is applied.
-  ScopedSnapBorderWidthsBeforeLayoutForTest
-      enable_snap_border_widths_before_layout_for_test(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);

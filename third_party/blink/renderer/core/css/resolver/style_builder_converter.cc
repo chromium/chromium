@@ -1704,22 +1704,14 @@ LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
     return LayoutUnit(1);
   }
 
-  if (RuntimeEnabledFeatures::SnapBorderWidthsBeforeLayoutEnabled()) {
-    return LayoutUnit(floor(result));
-  }
-
-  return LayoutUnit(result);
+  return LayoutUnit(floor(result));
 }
 
 uint16_t StyleBuilderConverter::ConvertColumnRuleWidth(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (RuntimeEnabledFeatures::SnapBorderWidthsBeforeLayoutEnabled()) {
-    return ClampTo<uint16_t>(
-        StyleBuilderConverter::ConvertBorderWidth(state, value).ToDouble());
-  }
-
-  return StyleBuilderConverter::ConvertLineWidth<uint16_t>(state, value);
+  return ClampTo<uint16_t>(
+      StyleBuilderConverter::ConvertBorderWidth(state, value).ToDouble());
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(
