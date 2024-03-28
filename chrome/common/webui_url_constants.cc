@@ -96,10 +96,8 @@ const char kChromeUIExtensionsHost[] = "extensions";
 const char kChromeUIExtensionsInternalsHost[] = "extensions-internals";
 const char kChromeUIExtensionsInternalsURL[] = "chrome://extensions-internals";
 const char kChromeUIExtensionsURL[] = "chrome://extensions/";
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kChromeUIFamilyLinkUserInternalsHost[] =
     "family-link-user-internals";
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kChromeUIFaviconHost[] = "favicon";
 const char kChromeUIFaviconURL[] = "chrome://favicon/";
 const char kChromeUIFavicon2Host[] = "favicon2";
@@ -690,9 +688,7 @@ const char* const kChromeHostURLs[] = {
 #endif
     kChromeUIDeviceLogHost,
     kChromeUIDownloadInternalsHost,
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     kChromeUIFamilyLinkUserInternalsHost,
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     kChromeUIFlagsHost,
     kChromeUIGCMInternalsHost,
     kChromeUIHistoryHost,

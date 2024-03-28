@@ -18,6 +18,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
+assert(enable_supervised_users)
+
 grit("resources") {
   source = "resources/renderer_resources.grd"
   defines = chrome_grit_defines
@@ -96,6 +98,11 @@ static_library("renderer") {
     "plugins/non_loadable_plugin_placeholder.h",
     "plugins/pdf_plugin_placeholder.cc",
     "plugins/pdf_plugin_placeholder.h",
+    "supervised_user/supervised_user_error_page_controller.cc",
+    "supervised_user/supervised_user_error_page_controller.h",
+    "supervised_user/supervised_user_error_page_controller_delegate.h",
+    "supervised_user/supervised_user_error_page_controller_delegate_impl.cc",
+    "supervised_user/supervised_user_error_page_controller_delegate_impl.h",
     "trusted_vault_encryption_keys_extension.cc",
     "trusted_vault_encryption_keys_extension.h",
     "url_loader_throttle_provider_impl.cc",
@@ -109,16 +116,6 @@ static_library("renderer") {
     "worker_content_settings_client.cc",
     "worker_content_settings_client.h",
   ]
-
-  if (enable_supervised_users) {
-    sources += [
-      "supervised_user/supervised_user_error_page_controller.cc",
-      "supervised_user/supervised_user_error_page_controller.h",
-      "supervised_user/supervised_user_error_page_controller_delegate.h",
-      "supervised_user/supervised_user_error_page_controller_delegate_impl.cc",
-      "supervised_user/supervised_user_error_page_controller_delegate_impl.h",
-    ]
-  }
 
   if (enable_bound_session_credentials) {
     sources += [

@@ -56,6 +56,7 @@ import("//v8/gni/v8.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+assert(enable_supervised_users)
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -380,6 +381,7 @@ static_library("test_support") {
     "//chrome/browser:test_support",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/sharing/proto",
+    "//chrome/browser/supervised_user:test_support",
     "//chrome/child",
     "//chrome/common:non_code_constants",
     "//chrome/common:test_support",
@@ -436,7 +438,11 @@ static_library("test_support") {
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/test_support",
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
@@ -543,16 +549,6 @@ static_library("test_support") {
       "../browser/printing/browser_printing_context_factory_for_test.h",
     ]
     public_deps += [ "//printing:test_support" ]
-  }
-
-  if (enable_supervised_users) {
-    public_deps += [
-      "//chrome/browser/supervised_user:test_support",
-      "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser/proto",
-      "//components/supervised_user/core/common",
-      "//components/supervised_user/test_support",
-    ]
   }
 
   if (is_chromeos_lacros && also_build_ash_chrome) {
@@ -1723,6 +1719,7 @@ if (!is_android) {
       "//chrome/browser/segmentation_platform:test_utils",
       "//chrome/browser/sharing/proto",
       "//chrome/browser/storage_access_api",
+      "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/top_level_storage_access_api:permissions",
       "//chrome/browser/tpcd/http_error_observer:browser_tests",
@@ -1926,9 +1923,16 @@ if (!is_android) {
       "//components/segmentation_platform/internal",
       "//components/segmentation_platform/internal:test_support",
       "//components/segmentation_platform/public",
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/browser:fetcher_config",
+      "//components/supervised_user/core/browser:mocked",
+      "//components/supervised_user/core/browser/proto",
+      "//components/supervised_user/core/common",
+      "//components/supervised_user/core/common:test_utils",
       "//components/tpcd/metadata",
       "//components/tpcd/metadata:metadata_proto",
       "//components/tpcd/metadata:test_support",
+      "//components/variations/service",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
       "//components/optimization_guide/core:test_support",
@@ -1962,6 +1966,9 @@ if (!is_android) {
       "//components/subresource_filter/core/browser",
       "//components/subresource_filter/core/browser:test_support",
       "//components/subresource_filter/core/common:test_support",
+      "//components/supervised_user/core/browser:fetcher",
+      "//components/supervised_user/test_support",
+      "//components/supervised_user/test_support",
       "//components/sync",
       "//components/sync:test_support",
       "//components/sync_device_info:test_support",
@@ -2352,6 +2359,11 @@ if (!is_android) {
       "../browser/media/webrtc/sub_capture_browsertest.cc",
       "../browser/media/webrtc/test_stats_dictionary_unittest.cc",
       "../browser/performance_manager/persistence/site_data/site_data_cache_facade_browsertest.cc",
+
+      # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
+      "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",
+      "../browser/supervised_user/incognito_mode_interactive_uitest.cc",
+      "../browser/supervised_user/url_filter_interactive_uitest.cc",
       "../browser/tpcd/heuristics/opener_heuristic_browsertest.cc",
       "../browser/tpcd/metadata/devtools_observer_browsertest.cc",
       "../browser/tpcd/metadata/updater_service_browsertest.cc",
@@ -2632,6 +2644,11 @@ if (!is_android) {
       "../browser/subresource_filter/subresource_filter_special_subframe_navigations_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_web_socket_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_worker_browsertest.cc",
+      "../browser/supervised_user/supervised_user_incognito_browsertest.cc",
+      "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
+      "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
+      "../browser/supervised_user/supervised_user_service_browsertest.cc",
+      "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
       "../browser/support_tool/policy_data_collector_browsertest.cc",
       "../browser/support_tool/screenshot_data_collector_browsertest.cc",
       "../browser/support_tool/support_tool_util_browsertest.cc",
@@ -2764,6 +2781,7 @@ if (!is_android) {
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
       "../browser/ui/views/device_chooser_browsertest.cc",
+      "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
       "../browser/ui/views/eye_dropper/eye_dropper_browsertest.cc",
       "../browser/ui/views/file_system_access/file_system_access_test_utils.cc",
       "../browser/ui/views/file_system_access/file_system_access_test_utils.h",
@@ -2891,6 +2909,12 @@ if (!is_android) {
       "interaction/interaction_test_util_browser_browsertest.cc",
       "interaction/interactive_browser_test_browsertest.cc",
       "interaction/webcontents_interaction_test_util_browsertest.cc",
+      "supervised_user/family_live_test.cc",
+      "supervised_user/family_live_test.h",
+      "supervised_user/family_member.cc",
+      "supervised_user/family_member.h",
+      "supervised_user/test_state_seeded_observer.cc",
+      "supervised_user/test_state_seeded_observer.h",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
@@ -2912,30 +2936,6 @@ if (!is_android) {
         "//components/compose/core/browser",
         "//components/compose/core/browser:features",
       ]
-    }
-
-    if (enable_supervised_users) {
-      sources += [
-        # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
-        "../browser/supervised_user/advanced_content_restrictions_interactive_uitest.cc",
-        "../browser/supervised_user/incognito_mode_interactive_uitest.cc",
-        "../browser/supervised_user/url_filter_interactive_uitest.cc",
-        "supervised_user/family_live_test.cc",
-        "supervised_user/family_live_test.h",
-        "supervised_user/family_member.cc",
-        "supervised_user/family_member.h",
-        "supervised_user/test_state_seeded_observer.cc",
-        "supervised_user/test_state_seeded_observer.h",
-      ]
-      deps += [
-        "//components/supervised_user/core/browser:fetcher",
-        "//components/supervised_user/test_support",
-      ]
-      if (enable_extensions) {
-        sources +=
-            [ "../browser/supervised_user/extensions_interactive_uitest.cc" ]
-      }
-      deps += [ "//components/supervised_user/test_support" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
@@ -3840,6 +3840,7 @@ if (!is_android) {
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.cc",
         "../browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h",
         "../browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
+        "../browser/supervised_user/extensions_interactive_uitest.cc",
         "../browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
         "../browser/ui/views/web_apps/create_shortcut_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/simple_install_dialog_bubble_view_browsertest.cc",
@@ -4332,39 +4333,6 @@ if (!is_android) {
       if (!is_official_build) {
         sources += [ "../browser/ash/crosapi/sharesheet_ash_browsertest.cc" ]
       }
-    }
-
-    if (enable_supervised_users) {
-      sources += [
-        "../browser/supervised_user/supervised_user_incognito_browsertest.cc",
-        "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
-        "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
-        "../browser/supervised_user/supervised_user_service_browsertest.cc",
-        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
-        "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
-      ]
-
-      # Extension approvals tests for Desktop platforms only.
-      # ChromeOS has a different platform-specific approval flow.
-      if (enable_extensions && (is_win || is_mac || is_linux)) {
-        sources += [
-          "../browser/supervised_user/linux_mac_windows/supervised_user_extension_browsertest.cc",
-          "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
-          "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
-          "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
-        ]
-      }
-
-      deps += [
-        "//chrome/browser/supervised_user:test_support",
-        "//components/supervised_user/core/browser",
-        "//components/supervised_user/core/browser:fetcher_config",
-        "//components/supervised_user/core/browser:mocked",
-        "//components/supervised_user/core/browser/proto",
-        "//components/supervised_user/core/common",
-        "//components/supervised_user/core/common:test_utils",
-        "//components/variations/service",
-      ]
     }
 
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
@@ -5481,6 +5449,13 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_dice_sign_in_provider_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
+
+        # Extension approvals tests for Desktop platforms only.
+        # ChromeOS has a different platform-specific approval flow.
+        "../browser/supervised_user/linux_mac_windows/supervised_user_extension_browsertest.cc",
+        "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
+        "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
+        "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
       ]
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
@@ -6220,6 +6195,7 @@ test("unit_tests") {
     "../browser/metrics/chrome_metrics_service_accessor_unittest.cc",
     "../browser/metrics/chrome_metrics_service_client_unittest.cc",
     "../browser/metrics/chrome_metrics_services_manager_client_unittest.cc",
+    "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
     "../browser/metrics/process_memory_metrics_emitter_unittest.cc",
     "../browser/metrics/tab_footprint_aggregator_unittest.cc",
     "../browser/metrics/variations/chrome_variations_service_client_unittest.cc",
@@ -6429,6 +6405,9 @@ test("unit_tests") {
     "../browser/storage_access_api/storage_access_api_tab_helper_unittest.cc",
     "../browser/storage_access_api/storage_access_grant_permission_context_unittest.cc",
     "../browser/subresource_filter/subresource_filter_history_observer_unittest.cc",
+    "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
+    "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
+    "../browser/supervised_user/supervised_user_navigation_throttle_unittest.cc",
     "../browser/sync/session_sync_service_factory_unittest.cc",
     "../browser/sync/sessions/sync_sessions_web_contents_router_unittest.cc",
     "../browser/sync/sync_service_factory_unittest.cc",
@@ -6741,6 +6720,7 @@ test("unit_tests") {
     "//chrome/browser/share",
     "//chrome/browser/sharing/proto",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/supervised_user:test_support",
     "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/tpcd/experiment:unit_tests",
@@ -6972,7 +6952,12 @@ test("unit_tests") {
     "//components/strings",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:fetcher",
+    "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:buildflags",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync:test_support",
     "//components/sync_bookmarks",
@@ -7471,6 +7456,7 @@ test("unit_tests") {
       "../browser/sharing/optimization_guide/optimization_guide_message_handler_unittest.cc",
       "../browser/sharing/sms/sms_fetch_request_handler_unittest.cc",
       "../browser/supervised_user/android/favicon_fetcher_unittest.cc",
+      "../browser/supervised_user/android/supervised_user_web_content_handler_impl_unittest.cc",
       "../browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_controller_unittest.cc",
       "../browser/touch_to_fill/autofill/android/touch_to_fill_credit_card_quality_metrics_unittest.cc",
       "../browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl_unittest.cc",
@@ -8366,6 +8352,10 @@ test("unit_tests") {
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
       "../browser/renderer_context_menu/read_write_card_observer_unittest.cc",
       "../browser/speech/tts_crosapi_util_unittest.cc",
+      "../browser/supervised_user/chromeos/mock_large_icon_service.cc",
+      "../browser/supervised_user/chromeos/mock_large_icon_service.h",
+      "../browser/supervised_user/chromeos/supervised_user_favicon_request_handler_unittest.cc",
+      "../browser/supervised_user/chromeos/supervised_user_web_content_handler_impl_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/usb/usb_pinned_notification_unittest.cc",
     ]
@@ -10186,46 +10176,12 @@ test("unit_tests") {
   if (!is_android && use_nss_certs) {
     sources += [ "../common/net/x509_certificate_model_nss_unittest.cc" ]
   }
-  if (enable_supervised_users) {
+  if (enable_extensions) {
     sources += [
-      "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
-      "../browser/supervised_user/supervised_user_browser_utils_unittest.cc",
-      "../browser/supervised_user/supervised_user_google_auth_navigation_throttle_unittest.cc",
-      "../browser/supervised_user/supervised_user_navigation_throttle_unittest.cc",
-    ]
-    deps += [ "//components/supervised_user/core/browser:fetcher" ]
-
-    if (is_chromeos) {
-      sources += [
-        "../browser/supervised_user/chromeos/mock_large_icon_service.cc",
-        "../browser/supervised_user/chromeos/mock_large_icon_service.h",
-        "../browser/supervised_user/chromeos/supervised_user_web_content_handler_impl_unittest.cc",
-      ]
-    }
-    if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/ash/crosapi" ]
-    }
-    if (is_android) {
-      sources += [ "../browser/supervised_user/android/supervised_user_web_content_handler_impl_unittest.cc" ]
-    }
-
-    if (enable_extensions) {
-      sources += [
-        "../browser/supervised_user/extension_icon_loader_unittest.cc",
-        "../browser/supervised_user/supervised_user_extension_unittest.cc",
-        "../browser/supervised_user/supervised_user_extensions_manager_unittest.cc",
-        "../browser/supervised_user/supervised_user_url_filter_extensions_unittest.cc",
-      ]
-    }
-    if (is_chromeos) {
-      sources += [ "../browser/supervised_user/chromeos/supervised_user_favicon_request_handler_unittest.cc" ]
-    }
-    deps += [
-      "//chrome/browser/supervised_user:test_support",
-      "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/browser/proto",
-      "//components/supervised_user/core/common",
-      "//components/supervised_user/core/common:buildflags",
+      "../browser/supervised_user/extension_icon_loader_unittest.cc",
+      "../browser/supervised_user/supervised_user_extension_unittest.cc",
+      "../browser/supervised_user/supervised_user_extensions_manager_unittest.cc",
+      "../browser/supervised_user/supervised_user_url_filter_extensions_unittest.cc",
     ]
   }
   if (safe_browsing_mode == 1 && enable_extensions) {
@@ -10436,6 +10392,14 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util.h",
       "permissions/permission_request_manager_test_api.cc",
       "permissions/permission_request_manager_test_api.h",
+      "supervised_user/api_mock_setup_mixin.cc",
+      "supervised_user/api_mock_setup_mixin.h",
+      "supervised_user/child_account_test_utils.cc",
+      "supervised_user/child_account_test_utils.h",
+      "supervised_user/embedded_test_server_setup_mixin.cc",
+      "supervised_user/embedded_test_server_setup_mixin.h",
+      "supervised_user/supervision_mixin.cc",
+      "supervised_user/supervision_mixin.h",
       "user_education/interactive_feature_promo_test.cc",
       "user_education/interactive_feature_promo_test.h",
       "user_education/interactive_feature_promo_test_common.cc",
@@ -10444,23 +10408,11 @@ if (!is_android) {
       "user_education/interactive_feature_promo_test_internal.h",
     ]
 
-    if (enable_supervised_users) {
-      sources += [
-        "supervised_user/api_mock_setup_mixin.cc",
-        "supervised_user/api_mock_setup_mixin.h",
-        "supervised_user/child_account_test_utils.cc",
-        "supervised_user/child_account_test_utils.h",
-        "supervised_user/embedded_test_server_setup_mixin.cc",
-        "supervised_user/embedded_test_server_setup_mixin.h",
-        "supervised_user/supervision_mixin.cc",
-        "supervised_user/supervision_mixin.h",
-      ]
-    }
-
     configs += [ "//build/config:precompiled_headers" ]
 
     public_deps = [
       "//chrome/browser:test_support_ui",
+      "//components/supervised_user/core/browser",
       "//content/public/browser",
       "//content/test:test_support",
       "//google_apis:test_support",
@@ -10528,6 +10480,7 @@ if (!is_android) {
       "//components/signin/public/identity_manager",
       "//components/storage_monitor:test_support",
       "//components/supervised_user/core/browser/proto",
+      "//components/supervised_user/test_support",
       "//components/sync:test_support",
       "//components/user_education/test:test",
       "//components/user_education/views:views",
@@ -10551,14 +10504,6 @@ if (!is_android) {
       "//ui/views:test_support",
       "//ui/views/controls/webview",
     ]
-
-    if (enable_supervised_users) {
-      deps += [
-        "//components/prefs",
-        "//components/supervised_user/test_support",
-      ]
-      public_deps += [ "//components/supervised_user/core/browser" ]
-    }
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]

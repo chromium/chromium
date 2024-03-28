@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/lens/buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -91,9 +90,7 @@ extern const char kChromeUIExtensionsHost[];
 extern const char kChromeUIExtensionsInternalsHost[];
 extern const char kChromeUIExtensionsInternalsURL[];
 extern const char kChromeUIExtensionsURL[];
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kChromeUIFamilyLinkUserInternalsHost[];
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kChromeUIFaviconHost[];
 extern const char kChromeUIFaviconURL[];
 extern const char kChromeUIFavicon2Host[];

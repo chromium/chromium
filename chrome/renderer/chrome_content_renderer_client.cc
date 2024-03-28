@@ -60,6 +60,7 @@
 #include "chrome/renderer/net_benchmarking_extension.h"
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
+#include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate_impl.h"
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 #include "chrome/renderer/v8_unwinder.h"
@@ -110,7 +111,6 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
@@ -252,10 +252,6 @@
 #include "components/spellcheck/renderer/spellcheck_panel.h"
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate_impl.h"
-#endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/media/chrome_key_systems.h"
@@ -665,9 +661,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   new NetErrorHelper(render_frame);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   new SupervisedUserErrorPageControllerDelegateImpl(render_frame);
-#endif
 
   if (!render_frame->IsMainFrame()) {
     auto* main_frame_no_state_prefetch_helper =
@@ -1359,10 +1353,8 @@ void ChromeContentRendererClient::PrepareErrorPage(
           http_method == "POST", std::move(alternative_error_page_info),
           error_html);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserErrorPageControllerDelegateImpl::Get(render_frame)
       ->PrepareForErrorPage();
-#endif
 }
 
 void ChromeContentRendererClient::PrepareErrorPageForHttpStatusError(

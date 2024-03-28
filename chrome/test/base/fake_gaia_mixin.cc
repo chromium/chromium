@@ -6,15 +6,11 @@
 
 #include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/http_response.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/test/supervised_user/child_account_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {
 
@@ -70,8 +66,6 @@ void FakeGaiaMixin::SetupFakeGaiaForLogin(const std::string& user_email,
   fake_gaia_->IssueOAuthToken(refresh_token, token_info);
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
                                               const std::string& gaia_id,
                                               const std::string& refresh_token,
@@ -114,8 +108,6 @@ void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
     fake_gaia_->UpdateConfiguration(configuration_update);
   }
 }
-
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

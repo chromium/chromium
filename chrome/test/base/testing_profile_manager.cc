@@ -5,6 +5,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/feature_list.h"
@@ -25,7 +26,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +40,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
 const char kGuestProfileName[] = "Guest";
@@ -121,10 +118,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   TestingProfile::Builder builder;
   builder.SetPath(profile_path);
   builder.SetPrefService(std::move(prefs));
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (is_supervised_profile)
     builder.SetIsSupervisedProfile();
-#endif
   builder.SetProfileName(profile_name);
   builder.SetIsNewProfile(is_new_profile.value_or(false));
   if (policy_service)
@@ -148,11 +143,9 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
           .GetProfileAttributesWithPath(profile_path);
   DCHECK(entry);
   entry->SetAvatarIconIndex(avatar_id);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   entry->SetSupervisedUserId(is_supervised_profile
                                  ? ::supervised_user::kChildAccountSUID
                                  : std::string());
-#endif
   entry->SetLocalProfileName(user_name, entry->IsUsingDefaultName());
 
   testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));

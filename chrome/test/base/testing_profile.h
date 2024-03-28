@@ -27,7 +27,6 @@
 #include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -176,7 +175,6 @@ class TestingProfile : public Profile {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Marks profile as a Family Link supervised profile.
-    // Only available when ENABLE_SUPERVISED_USERS feature is enabled.
     Builder& SetIsSupervisedProfile();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -312,7 +310,6 @@ class TestingProfile : public Profile {
   void SetOffTheRecordProfile(std::unique_ptr<Profile> otr_profile);
 
   // Marks profile Family Link supervision status.
-  // Only available when ENABLE_SUPERVISED_USERS feature is enabled.
   void SetIsSupervisedProfile(bool is_supervised_profile = true);
 
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
@@ -467,11 +464,9 @@ class TestingProfile : public Profile {
   // Creates a TestingPrefService and associates it with the TestingProfile.
   void CreateTestingPrefService();
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Creates a pref service that uses SupervisedUserPrefStore and associates
   // it with the TestingProfile.
   void CreatePrefServiceForSupervisedUser();
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // Initializes |prefs_| for an incognito profile, derived from
   // |original_profile_|.
@@ -555,9 +550,7 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<policy::PolicyService> policy_service_;
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   scoped_refptr<TestingPrefStore> supervised_user_pref_store_ = nullptr;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };

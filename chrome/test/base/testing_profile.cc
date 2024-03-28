@@ -49,6 +49,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/buildflags.h"
@@ -82,7 +83,9 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -135,12 +138,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
 using base::Time;
@@ -338,7 +335,6 @@ void TestingProfile::Init(bool is_supervised_profile) {
   ChromeBrowserMainExtraPartsProfiles::
       EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (!IsOffTheRecord()) {
     supervised_user::SupervisedUserSettingsService* settings_service =
         SupervisedUserSettingsServiceFactory::GetForKey(key_.get());
@@ -351,16 +347,13 @@ void TestingProfile::Init(bool is_supervised_profile) {
 
     supervised_user_pref_store_->SetInitializationCompleted();
   }
-#endif
 
   if (prefs_.get())
     user_prefs::UserPrefs::Set(this, prefs_.get());
   else if (IsOffTheRecord())
     CreateIncognitoPrefService();
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   else if (is_supervised_profile)
     CreatePrefServiceForSupervisedUser();
-#endif
   else
     CreateTestingPrefService();
 
@@ -701,25 +694,17 @@ const Profile* TestingProfile::GetOriginalProfile() const {
 }
 
 void TestingProfile::SetIsSupervisedProfile(bool is_supervised_profile) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (is_supervised_profile) {
     GetPrefs()->SetString(prefs::kSupervisedUserId,
                           supervised_user::kChildAccountSUID);
   } else {
     GetPrefs()->ClearPref(prefs::kSupervisedUserId);
   }
-#else
-  NOTREACHED() << "Supervised users are not enabled";
-#endif
 }
 
 bool TestingProfile::IsChild() const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return GetPrefs()->GetString(prefs::kSupervisedUserId) ==
          supervised_user::kChildAccountSUID;
-#else
-  return false;
-#endif
 }
 
 bool TestingProfile::AllowsBrowserWindows() const {
@@ -756,7 +741,6 @@ void TestingProfile::CreateTestingPrefService() {
   RegisterUserProfilePrefs(testing_prefs_->registry());
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void TestingProfile::CreatePrefServiceForSupervisedUser() {
   DCHECK(!prefs_.get());
 
@@ -774,7 +758,6 @@ void TestingProfile::CreatePrefServiceForSupervisedUser() {
   user_prefs::UserPrefs::Set(this, prefs_.get());
   RegisterUserProfilePrefs(testing_prefs_->registry());
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 void TestingProfile::CreateIncognitoPrefService() {
   DCHECK(original_profile_);

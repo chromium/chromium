@@ -12,7 +12,6 @@
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "google_apis/gaia/fake_gaia.h"
 
 namespace base {
@@ -85,7 +84,6 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
                              const std::string& gaia_id,
                              const std::string& refresh_token);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Sets up fake gaia to serve access tokens for a child user.
   // *   Maps `user_email` to `gaia_id`. If `gaia_id` is empty, `user_email`
   //     will be mapped to kDefaultGaiaId in FakeGaia.
@@ -98,7 +96,6 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
                                  const std::string& gaia_id,
                                  const std::string& refresh_token,
                                  bool issue_any_scope_token);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetupFakeGaiaForLoginManager();
@@ -109,13 +106,11 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
     initialize_configuration_ = value;
   }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   bool initialize_child_id_token() { return initialize_child_id_token_; }
 
   void set_initialize_child_id_token(bool value) {
     initialize_child_id_token_ = value;
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   FakeGaia* fake_gaia() { return fake_gaia_.get(); }
   net::EmbeddedTestServer* gaia_server() { return &gaia_server_; }
@@ -134,9 +129,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
 
   std::unique_ptr<FakeGaia> fake_gaia_;
   bool initialize_configuration_ = true;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   bool initialize_child_id_token_ = false;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 };
 
 #endif  // CHROME_TEST_BASE_FAKE_GAIA_MIXIN_H_
