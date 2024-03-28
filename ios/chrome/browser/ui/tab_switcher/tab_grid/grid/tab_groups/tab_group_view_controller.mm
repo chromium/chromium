@@ -418,15 +418,16 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
       // dismiss the view.
   }];
 
-  UIAction* closeGroupAction = [actionFactory actionToCloseTabGroupWithBlock:^{
-      // TODO(crbug.com/1501837): Close all the tabs from the
-      // current group, remove the group and dismiss the view.
-  }];
+  UIAction* deleteGroupAction =
+      [actionFactory actionToDeleteTabGroupWithBlock:^{
+          // TODO(crbug.com/1501837): Delete the current group, remove the group
+          // and dismiss the view.
+      }];
 
   return
       [UIMenu menuWithTitle:@""
                    children:@[
-                     renameGroup, newTabAction, ungroupAction, closeGroupAction
+                     renameGroup, newTabAction, ungroupAction, deleteGroupAction
                    ]];
 }
 

@@ -983,6 +983,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_COPYIMAGE" desc="The name of the Copy Image command in the content area context menu.">
         Copy Image
       </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_DELETEGROUP" desc="The iOS context menu item for closing a tab group. Title case. [iOS only]">
+        Delete Group
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP" desc="The iOS context menu item for adding a new tab in a tab group. [iOS only]">
         New Tab in Group
       </message>

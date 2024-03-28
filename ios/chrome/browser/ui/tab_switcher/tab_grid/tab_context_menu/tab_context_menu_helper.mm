@@ -257,7 +257,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   [menuElements
       addObject:[actionFactory actionToAddNewTabInGroupWithBlock:nil]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:nil]];
-  [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:nil]];
+  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:nil]];
 
   return menuElements;
 }

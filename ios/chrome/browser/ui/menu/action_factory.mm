@@ -465,15 +465,16 @@
   return action;
 }
 
-- (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
+- (UIAction*)actionToDeleteTabGroupWithBlock:(ProceduralBlock)block {
   CHECK(IsTabGroupInGridEnabled());
   UIImage* image =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)
-                image:image
-                 type:MenuActionType::ClaseTabGroup
-                block:block];
+      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
+                      image:image
+                       type:MenuActionType::DeleteTabGroup
+                      block:block];
   action.attributes = UIMenuElementAttributesDestructive;
   return action;
 }

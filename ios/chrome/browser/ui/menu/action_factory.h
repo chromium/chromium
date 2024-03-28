@@ -161,8 +161,8 @@ class TabGroup;
 // Creates a UIAction instance for ungrouping a tab group.
 - (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block;
 
-// Creates a UIAction instance for closing a tab group.
-- (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block;
+// Creates a UIAction instance for deleting a tab group.
+- (UIAction*)actionToDeleteTabGroupWithBlock:(ProceduralBlock)block;
 
 @end
 
