@@ -73,11 +73,6 @@ const char kZeroTouchEnrollmentForced[] = "forced";
 // DeviceReportingProto in components/policy/proto/chrome_device_policy.proto.
 constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
 
-// Checks whether forced re-enrollment is enabled.
-bool IsForcedReEnrollmentEnabled() {
-  return AutoEnrollmentTypeChecker::IsFREEnabled();
-}
-
 }  // namespace
 
 DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
@@ -198,7 +193,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   CHECK(!service());
 
   // Set state keys here so the first policy fetch submits them to the server.
-  if (IsForcedReEnrollmentEnabled()) {
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
     client_to_connect->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }
 
@@ -357,7 +352,7 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we should call it here.
-  if (client() && IsForcedReEnrollmentEnabled()) {
+  if (client() && AutoEnrollmentTypeChecker::IsFREEnabled()) {
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }
 }
