@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_check;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -811,7 +812,7 @@ public class PasswordCheckViewTest {
                     mModel.set(VIEW_CREDENTIAL, ANA);
                     mModel.set(VIEW_DIALOG_HANDLER, fakeHandler);
                 });
-        onView(withId(R.id.view_dialog_copy_button)).perform(click());
+        onView(withId(R.id.view_dialog_copy_button)).inRoot(isDialog()).perform(click());
 
         ClipboardManager clipboard =
                 (ClipboardManager)
