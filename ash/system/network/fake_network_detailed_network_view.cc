@@ -76,11 +76,12 @@ FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
 }
 
 NetworkListTetherHostsHeaderView*
-FakeNetworkDetailedNetworkView::AddTetherHostsSectionHeader() {
+FakeNetworkDetailedNetworkView::AddTetherHostsSectionHeader(
+    NetworkListTetherHostsHeaderView::OnExpandedStateToggle callback) {
   std::unique_ptr<FakeNetworkListTetherHostsHeaderView>
       tether_hosts_header_view =
           std::make_unique<FakeNetworkListTetherHostsHeaderView>(
-              /*delegate=*/nullptr);
+              std::move(callback));
   tether_hosts_header_view->SetID(static_cast<int>(
       NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
           kTetherHostsSectionHeader));

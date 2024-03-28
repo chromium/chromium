@@ -96,7 +96,8 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // Creates, adds and returns a Tether Hosts sticky sub-header to the end
   // of the network list. The client is expected to use the returned pointer
   // for removing and rearranging the sub-header.
-  virtual NetworkListTetherHostsHeaderView* AddTetherHostsSectionHeader() = 0;
+  virtual NetworkListTetherHostsHeaderView* AddTetherHostsSectionHeader(
+      NetworkListTetherHostsHeaderView::OnExpandedStateToggle callback) = 0;
 
   // Updates the scanning bar visibility.
   virtual void UpdateScanningBarVisibility(bool visible) = 0;
@@ -110,7 +111,6 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   virtual void ReorderNetworkListView(size_t index) = 0;
   virtual void ReorderMobileTopContainer(size_t index) = 0;
   virtual void ReorderMobileListView(size_t index) = 0;
-  virtual void ReorderTetherHostsTopContainer(size_t index) = 0;
   virtual void ReorderTetherHostsListView(size_t index) = 0;
 
   // Removes the first list view if there's no child views in it.

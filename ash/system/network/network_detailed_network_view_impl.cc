@@ -199,19 +199,16 @@ NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
 }
 
 NetworkListTetherHostsHeaderView*
-NetworkDetailedNetworkViewImpl::AddTetherHostsSectionHeader() {
+NetworkDetailedNetworkViewImpl::AddTetherHostsSectionHeader(
+    NetworkListTetherHostsHeaderView::OnExpandedStateToggle callback) {
   DCHECK(features::IsInstantHotspotRebrandEnabled());
-  if (!tether_hosts_top_container_) {
-    tether_hosts_top_container_ =
-        scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
-            RoundedContainer::Behavior::kTopRounded));
-    tether_hosts_top_container_->SetBorderInsets(kTopContainerBorder);
-    tether_hosts_top_container_->SetProperty(views::kMarginsKey,
-                                             kBetweenContainerMargins);
-  }
-  return tether_hosts_top_container_->AddChildView(
-      std::make_unique<NetworkListTetherHostsHeaderView>(
-          /*delegate=*/this));
+  NetworkListTetherHostsHeaderView* header_view =
+      scroll_content()->AddChildView(
+          std::make_unique<NetworkListTetherHostsHeaderView>(
+              std::move(callback)));
+  header_view->SetBorderInsets(kTopContainerBorder);
+  header_view->SetProperty(views::kMarginsKey, kBetweenContainerMargins);
+  return header_view;
 }
 
 views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
@@ -298,14 +295,6 @@ void NetworkDetailedNetworkViewImpl::ReorderMobileListView(size_t index) {
   }
 }
 
-void NetworkDetailedNetworkViewImpl::ReorderTetherHostsTopContainer(
-    size_t index) {
-  DCHECK(base::FeatureList::IsEnabled(features::kInstantHotspotRebrand));
-  if (tether_hosts_top_container_) {
-    scroll_content()->ReorderChildView(tether_hosts_top_container_, index);
-  }
-}
-
 void NetworkDetailedNetworkViewImpl::ReorderTetherHostsListView(size_t index) {
   DCHECK(base::FeatureList::IsEnabled(features::kInstantHotspotRebrand));
   if (tether_hosts_network_list_view_) {
@@ -343,11 +332,6 @@ void NetworkDetailedNetworkViewImpl::UpdateMobileStatus(bool enabled) {
 }
 
 void NetworkDetailedNetworkViewImpl::UpdateTetherHostsStatus(bool enabled) {
-  if (tether_hosts_top_container_) {
-    tether_hosts_top_container_->SetBehavior(
-        enabled ? RoundedContainer::Behavior::kTopRounded
-                : RoundedContainer::Behavior::kAllRounded);
-  }
   if (tether_hosts_network_list_view_) {
     tether_hosts_network_list_view_->SetVisible(enabled);
   }

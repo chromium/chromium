@@ -13,8 +13,8 @@
 namespace ash {
 
 FakeNetworkListTetherHostsHeaderView::FakeNetworkListTetherHostsHeaderView(
-    NetworkListNetworkHeaderView::Delegate* delegate)
-    : NetworkListTetherHostsHeaderView(delegate) {
+    OnExpandedStateToggle callback)
+    : NetworkListTetherHostsHeaderView(std::move(callback)) {
   DCHECK(base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand));
 }
 

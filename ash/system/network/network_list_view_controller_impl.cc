@@ -298,11 +298,15 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     if (ShouldTetherHostsSectionBeShown()) {
       if (!tether_hosts_header_view_) {
         tether_hosts_header_view_ =
-            network_detailed_network_view()->AddTetherHostsSectionHeader();
+            network_detailed_network_view()->AddTetherHostsSectionHeader(
+                base::BindRepeating(
+                    &NetworkListViewControllerImpl::UpdateTetherHostsSection,
+                    weak_ptr_factory_.GetWeakPtr()));
       }
 
       UpdateTetherHostsSection();
-      network_detailed_network_view()->ReorderTetherHostsTopContainer(index++);
+      tether_hosts_header_view_->parent()->ReorderChildView(
+          tether_hosts_header_view_, index++);
 
       size_t tether_item_index = 0;
 
@@ -708,7 +712,8 @@ void NetworkListViewControllerImpl::UpdateTetherHostsSection() {
     return;
   }
 
-  network_detailed_network_view()->UpdateTetherHostsStatus(/*enabled=*/true);
+  network_detailed_network_view()->UpdateTetherHostsStatus(
+      tether_hosts_header_view_->is_expanded());
 
   if (!IsBluetoothEnabledOrEnabling(bluetooth_system_state_) &&
       !has_phone_eligible_for_setup_) {

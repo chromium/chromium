@@ -544,6 +544,14 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
   EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
 
+  // Tap the Tether Header - hide the Network List
+  LeftClickOn(GetTetherHostsSubHeader());
+  EXPECT_FALSE(network_list(NetworkType::kTether)->GetVisible());
+
+  // Tap it again - show the list
+  LeftClickOn(GetTetherHostsSubHeader());
+  EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
+
   // Simulate login as secondary user.
   LoginAsSecondaryUser();
   cros_network()->ClearNetworksAndDevices();
