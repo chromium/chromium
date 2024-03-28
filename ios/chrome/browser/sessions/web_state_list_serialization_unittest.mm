@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -25,6 +26,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -1122,4 +1124,108 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsDisabled) {
   // Check tab groups.
   std::set<const TabGroup*> groups = web_state_list.GetGroups();
   ASSERT_EQ(groups.size(), 0u);
+}
+
+// Tests deserializing works when support for tab groups is enabled.
+// Tests with invalid tab group.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsInvalid) {
+  FakeWebStateListDelegate delegate;
+  const WebStateList::Range valid_group_range = WebStateList::Range(0, 1);
+
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
+                                                         "| [0 a] b* c d"));
+
+    SerializeWebStateList(web_state_list, storage);
+  }
+
+  // Add invalid tab group to `storage`.
+  ios::proto::TabGroupStorage& group_storage = *storage.add_groups();
+  ios::proto::RangeIndex& range = *group_storage.mutable_range();
+  range.set_start(2);
+  range.set_count(4);
+  group_storage.set_title("Invalid");
+  group_storage.set_color(ios::proto::TabGroupColorId::GREY);
+
+  EXPECT_EQ(storage.items_size(), 4);
+  EXPECT_EQ(storage.active_index(), 1);
+  EXPECT_EQ(storage.groups_size(), 2);
+
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ true,
+                              /*enable_tab_groups*/ true,
+                              base::BindRepeating(&CreateWebStateFromProto));
+  EXPECT_EQ(restored_web_states.size(), 4u);
+
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+
+  // Check tab group.
+  std::set<const TabGroup*> groups = web_state_list.GetGroups();
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_TRUE(CheckWebStateListHasTabGroup(web_state_list, valid_group_range));
+}
+
+// Tests deserializing works when support for tab groups is enabled.
+// Tests with invalid tab group.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsInvalid) {
+  FakeWebStateListDelegate delegate;
+  const WebStateList::Range valid_group_range = WebStateList::Range(0, 1);
+
+  // Create a WebStateList, populate it, and save data to `session_window`.
+  SessionWindowIOS* session_window = nil;
+  {
+    WebStateList web_state_list(&delegate);
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list,
+                                                         "| [0 a] b* c d"));
+
+    session_window = SerializeWebStateList(&web_state_list);
+  }
+
+  // Add invalid tab group to `session_window`.
+  SessionTabGroup* invalid_tab_group =
+      [[SessionTabGroup alloc] initWithRangeStart:2
+                                       rangeCount:4
+                                            title:@"Invalid"
+                                          colorId:0];
+  NSArray<SessionTabGroup*>* session_groups = [session_window.tabGroups
+      arrayByAddingObjectsFromArray:@[ invalid_tab_group ]];
+  session_window =
+      [[SessionWindowIOS alloc] initWithSessions:session_window.sessions
+                                       tabGroups:session_groups
+                                   selectedIndex:session_window.selectedIndex];
+
+  EXPECT_EQ(session_window.sessions.count, 4u);
+  EXPECT_EQ(session_window.selectedIndex, 1u);
+  EXPECT_EQ(session_window.tabGroups.count, 2u);
+
+  // Deserialize `session_window` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
+  const std::vector<web::WebState*> restored_web_states =
+      DeserializeWebStateList(
+          &web_state_list, session_window,
+          /*enable_pinned_web_states*/ true, /*enable_tab_groups*/ true,
+          base::BindRepeating(&CreateWebStateWithSessionStorage));
+  EXPECT_EQ(restored_web_states.size(), 4u);
+
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+  EXPECT_EQ(web_state_list.pinned_tabs_count(), 0);
+
+  // Check tab group.
+  std::set<const TabGroup*> groups = web_state_list.GetGroups();
+  ASSERT_EQ(groups.size(), 1u);
+  EXPECT_TRUE(CheckWebStateListHasTabGroup(web_state_list, valid_group_range));
 }
