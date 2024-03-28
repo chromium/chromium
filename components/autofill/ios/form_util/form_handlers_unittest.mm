@@ -80,6 +80,8 @@ class AutofillFormHandlersJavascriptTest
 
 // Tests that the deletion of a form with a password in it is notified.
 TEST_P(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
+  // TODO(crbug.com/328464301): Add test coverage for non-password forms and
+  // multiple form removal.
   NSString* html = @"<html><body><form id=\"form1\">"
                     "<input type=\"password\"></form></body></html>";
   ASSERT_TRUE(LoadHtml(html));
@@ -104,9 +106,8 @@ TEST_P(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
   ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
   EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
   EXPECT_TRUE(body[@"frameID"]);
-  EXPECT_TRUE(body[@"formName"]);
-  EXPECT_TRUE(body[@"uniqueFormID"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_TRUE(body[@"removedFormIDs"]);
+  EXPECT_FALSE([body objectForKey:@"removedFieldIDs"]);
 
   if (allowMessagesBatch) {
     EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
@@ -156,9 +157,8 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
   EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
   ASSERT_TRUE(body[@"frameID"]);
-  EXPECT_NSEQ(@"", body[@"formName"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
-  EXPECT_TRUE(body[@"uniqueFieldID"]);
+  EXPECT_TRUE(body[@"removedFieldIDs"]);
+  EXPECT_FALSE([body objectForKey:@"removedFormIDs"]);
   if (allowMessagesBatch) {
     EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
     EXPECT_NSEQ(@1, body[@"metadata"][@"size"]);
@@ -222,9 +222,8 @@ TEST_P(AutofillFormHandlersJavascriptTest,
     ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
     EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
     EXPECT_TRUE(body[@"frameID"]);
-    EXPECT_TRUE(body[@"formName"]);
-    EXPECT_TRUE(body[@"uniqueFormID"]);
-    EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+    EXPECT_TRUE(body[@"removedFormIDs"]);
+    EXPECT_FALSE([body objectForKey:@"removedFieldIDs"]);
     EXPECT_NSEQ(nil, body[@"metadata"]);
 
     // Wait until the notification is pushed and received.
@@ -312,9 +311,8 @@ TEST_P(AutofillFormHandlersJavascriptTest,
     ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
     EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
     EXPECT_TRUE(body[@"frameID"]);
-    EXPECT_TRUE(body[@"formName"]);
-    EXPECT_TRUE(body[@"uniqueFormID"]);
-    EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+    EXPECT_TRUE(body[@"removedFormIDs"]);
+    EXPECT_FALSE([body objectForKey:@"removedFieldIDs"]);
     // Verify that there is no metadata attached to the first message in the
     // batch where the metadata should be attached to the last message.
     EXPECT_NSEQ(nil, body[@"metadata"]);

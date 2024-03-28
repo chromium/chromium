@@ -1017,8 +1017,15 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 - (void)webState:(web::WebState*)webState
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
-  DCHECK_EQ(_webState, webState);
-  if (!params.unique_form_id) {
+  CHECK_EQ(_webState, webState);
+  CHECK(!params.removed_forms.empty() || !params.removed_unowned_fields.empty())
+      << "Invalid params. Form removal events with missing input should have "
+         "been filtered out by FormActivityTabHelper.";
+
+  // TODO(crbug.com/330909663): Move unowned fields input check to
+  // PasswordFormManager and only do it if formless form is the last interacted
+  // form.
+  if (!params.removed_unowned_fields.empty()) {
     // If formless password fields were removed, check that all of them had
     // user input.
     if (![self allFieldsContainUserInput:params.removed_unowned_fields]) {
@@ -1028,9 +1035,12 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   auto fieldDataManager =
       UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
+  // TODO(crbug.com/330909663): Handle multiple form removals in Password
+  // Manager.
   _passwordManager->OnPasswordFormRemoved(
       [_driverHelper PasswordManagerDriver:frame], *fieldDataManager,
-      params.unique_form_id);
+      params.removed_forms.empty() ? FormRendererId()
+                                   : params.removed_forms[0]);
 }
 
 @end

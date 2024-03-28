@@ -130,9 +130,8 @@ void FormActivityTabHelper::HandleFormActivity(
 void FormActivityTabHelper::HandleFormRemoval(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  const base::Value::Dict* message_body = nullptr;
   FormRemovalParams params;
-  if (!BaseFormActivityParams::FromMessage(message, &message_body, &params)) {
+  if (!FormRemovalParams::FromMessage(message, &params)) {
     return;
   }
 
@@ -141,23 +140,6 @@ void FormActivityTabHelper::HandleFormRemoval(
   web::WebFrame* sender_frame = frames_manager->GetFrameWithId(params.frame_id);
   if (!sender_frame) {
     return;
-  }
-
-  if (!params.unique_form_id) {
-    const std::string* unique_field_ids =
-        message_body->FindString("uniqueFieldID");
-    if (!unique_field_ids) {
-      params.input_missing = true;
-    }
-
-    std::optional<std::vector<autofill::FieldRendererId>>
-        removed_unowned_fields =
-            ExtractIDs<FieldRendererId>(SysUTF8ToNSString(*unique_field_ids));
-    if (removed_unowned_fields) {
-      params.removed_unowned_fields = *removed_unowned_fields;
-    } else {
-      params.input_missing = true;
-    }
   }
 
   for (auto& observer : observers_)

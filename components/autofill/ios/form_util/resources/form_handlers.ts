@@ -407,9 +407,8 @@ function trackFormMutationsOld(delay: number): void {
         const msg = {
           'command': 'pwdform.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          'formName': gCrWeb.form.getFormIdentifier(pwdFormGone),
-          'uniqueFormID': uniqueFormId,
-          'uniqueFieldID': '',
+          // TODO(crbug.com/328464301): Send all removed forms to browser.
+          'removedFormIDs': gCrWeb.stringify([uniqueFormId]),
         };
         sendFormMutationMessagesAfterDelay([msg], delay);
         return;
@@ -422,9 +421,7 @@ function trackFormMutationsOld(delay: number): void {
         const msg = {
           'command': 'pwdform.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          'formName': '',
-          'uniqueFormID': '',
-          'uniqueFieldID': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
+          'removedFieldIDs': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
         sendFormMutationMessagesAfterDelay([msg], delay);
         return;
@@ -517,9 +514,7 @@ function trackFormMutationsNew(delay: number): void {
         removedFormMessage = {
           'command': 'pwdform.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          'formName': gCrWeb.form.getFormIdentifier(pwdFormGone),
-          'uniqueFormID': uniqueFormId,
-          'uniqueFieldID': '',
+          'removedFormIDs': gCrWeb.stringify([uniqueFormId]),
         };
         continue;
       } else if (pwdFormGone) {
@@ -536,9 +531,7 @@ function trackFormMutationsNew(delay: number): void {
         removedFormMessage = {
           'command': 'pwdform.removal',
           'frameID': gCrWeb.message.getFrameId(),
-          'formName': '',
-          'uniqueFormID': '',
-          'uniqueFieldID': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
+          'removedFieldIDs': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
         continue;
       } else if (formlessFieldsWereRemoved) {

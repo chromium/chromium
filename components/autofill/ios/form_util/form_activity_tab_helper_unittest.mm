@@ -19,8 +19,10 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "testing/platform_test.h"
 
+using autofill::FormRendererId;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using ::testing::ElementsAre;
 using web::WebFrame;
 
 // Tests fixture for autofill::FormActivityTabHelper class.
@@ -205,8 +207,8 @@ TEST_P(FormActivityTabHelperTest, FormRemovalRegistered) {
 
   EXPECT_EQ(web_state(), observer_->form_removal_info()->web_state);
   EXPECT_EQ(main_frame, observer_->form_removal_info()->sender_frame);
-  EXPECT_EQ(autofill::FormRendererId(1),
-            observer_->form_removal_info()->form_removal_params.unique_form_id);
+  EXPECT_THAT(observer_->form_removal_info()->form_removal_params.removed_forms,
+              ElementsAre(FormRendererId(1)));
   EXPECT_FALSE(
       observer_->form_removal_info()->form_removal_params.input_missing);
 

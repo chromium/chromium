@@ -1442,9 +1442,8 @@ TEST_F(SharedPasswordControllerTest,
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_manager_, OnPasswordFormRemoved).Times(1);
 
-  autofill::FormRendererId unique_form_id;
   autofill::FormRemovalParams params;
-  params.unique_form_id = unique_form_id;
+  params.removed_forms = {autofill::FormRendererId()};
 
   [controller_ webState:&web_state_
       didRegisterFormRemoval:params

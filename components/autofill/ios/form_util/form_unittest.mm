@@ -13,13 +13,15 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using ::testing::ElementsAre;
 
 // Text fixture to test password controller.
 class FormJsTest : public AutofillTestWithWebState {
@@ -260,8 +262,11 @@ TEST_F(FormJsTest, AddOption) {
   EXPECT_FALSE(info->form_activity.input_missing);
 }
 
-// Tests that removing password form triggers 'password_form_removed" event.
+// Tests that removing password form triggers
+// 'password_form_removed" event.
 TEST_F(FormJsTest, RemoveForm) {
+  // TODO(crbug.com/328464301): Expand test cases to cover multiple forms and
+  // non-password form removal.
   LoadHtml(@"<form id=\"form1\">"
             "<input type=\"text\" name=\"username\" id=\"id1\">"
             "<input type=\"password\" name=\"password\" id=\"id2\">"
@@ -283,7 +288,8 @@ TEST_F(FormJsTest, RemoveForm) {
     return info != nil;
   }));
   EXPECT_FALSE(info->form_removal_params.input_missing);
-  EXPECT_EQ(FormRendererId(1), info->form_removal_params.unique_form_id);
+  EXPECT_THAT(info->form_removal_params.removed_forms,
+              ElementsAre(FormRendererId(1)));
 }
 
 // Tests that removing unowned password fields triggers 'password_form_removed"
@@ -310,10 +316,9 @@ TEST_F(FormJsTest, RemoveFormlessPasswordFields) {
     return info != nil;
   }));
   EXPECT_FALSE(info->form_removal_params.input_missing);
-  EXPECT_FALSE(info->form_removal_params.unique_form_id);
-  std::vector<FieldRendererId> expected_removed_ids = {FieldRendererId(1)};
-  EXPECT_EQ(info->form_removal_params.removed_unowned_fields,
-            expected_removed_ids);
+  EXPECT_TRUE(info->form_removal_params.removed_forms.empty());
+  EXPECT_THAT(info->form_removal_params.removed_unowned_fields,
+              ElementsAre(FieldRendererId(1)));
 }
 
 // Tests that a new element that contains 'form' in the tag name does not

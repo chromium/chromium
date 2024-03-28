@@ -344,14 +344,14 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   void SimulateFormRemovalObserverSignal(
-      FormRendererId form_id,
+      std::vector<FormRendererId> form_ids,
       std::vector<FieldRendererId> field_ids) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     WebFrame* frame =
         feature->GetWebFramesManager(web_state())->GetMainWebFrame();
     FormRemovalParams params;
-    params.unique_form_id = form_id;
+    params.removed_forms = form_ids;
     params.removed_unowned_fields = field_ids;
     params.frame_id = frame->GetFrameId();
     [passwordController_.sharedPasswordController webState:web_state()
@@ -1958,6 +1958,8 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
 
 // Tests that submission is detected on removal of the form that had user input.
 TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
+  // TODO(crbug.com/330909663): Add test coverage for multiple removed forms,
+  // including non-password forms.
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
   for (bool has_form_tag : {true, false}) {
@@ -1987,7 +1989,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
       removed_ids.push_back(FieldRendererId(4));
       removed_ids.push_back(FieldRendererId(5));
     }
-    SimulateFormRemovalObserverSignal(form_id, removed_ids);
+
+    SimulateFormRemovalObserverSignal({form_id}, removed_ids);
 
     auto& form_manager_check = form_manager_to_save;
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
