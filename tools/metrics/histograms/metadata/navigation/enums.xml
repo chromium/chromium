@@ -1727,6 +1727,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kParsingToProtoFailed"/>
   <int value="4" label="kErroneousSpec"/>
   <int value="5" label="kErroneousSource"/>
+  <int value="6" label="kErroneousDtrp"/>
+  <int value="7" label="kIllicitDtrp"/>
 </enum>
 
 <enum name="UserAgentStringType">

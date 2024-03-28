@@ -316,6 +316,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdTrialSettings);
 // component updater.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);
 
+// Whether to enable staged rollback of the TPCD Metadata Entries.
+NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataStagedRollback);
+
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
 

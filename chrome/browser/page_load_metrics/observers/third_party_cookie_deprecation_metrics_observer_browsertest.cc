@@ -40,7 +40,6 @@
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/tpcd/metadata/parser.h"
-#include "components/tpcd/metadata/parser_test_helper.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -976,7 +975,7 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
       // Set up tpcd metadata, make sure both the primary pattern and secondary
       // pattern match.
       tpcd::metadata::Metadata metadata;
-      tpcd::metadata::AddEntryToMetadata(
+      tpcd::metadata::helpers::AddEntryToMetadata(
           metadata, ContentSettingsPattern::FromURL(third_party_url).ToString(),
           ContentSettingsPattern::FromURL(first_party_url).ToString(), source);
       EXPECT_EQ(metadata.metadata_entries_size(), 1);

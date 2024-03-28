@@ -81,7 +81,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core",
-    "//components/tpcd/metadata:test_support",
+    "//components/tpcd/metadata",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

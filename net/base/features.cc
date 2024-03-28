@@ -286,6 +286,10 @@ BASE_FEATURE(kTpcdMetadataGrants,
              "TpcdMetadataGrants",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTpcdMetadataStagedRollback,
+             "TpcdMetadataStageControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAlpsParsing, "AlpsParsing", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlpsClientHintParsing,

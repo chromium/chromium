@@ -17,7 +17,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/tpcd/metadata/parser.h"
-#include "components/tpcd/metadata/parser_test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
@@ -72,19 +71,15 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     ClearNotifications();
 
     // Initialize mock 3PCD metadata component.
-    std::vector<MetadataPair> metadata_pairs;
     const std::string first_party_pattern_spec = "[*.]a.test";
     const std::string third_party_pattern_spec_1 = "[*.]b.test";
     const std::string third_party_pattern_spec_2 = "c.test";
-    metadata_pairs.emplace_back(third_party_pattern_spec_1,
-                                first_party_pattern_spec);
-    metadata_pairs.emplace_back(third_party_pattern_spec_2,
-                                first_party_pattern_spec);
+
     Metadata metadata;
-    AddEntryToMetadata(metadata, third_party_pattern_spec_1,
-                       first_party_pattern_spec);
-    AddEntryToMetadata(metadata, third_party_pattern_spec_2,
-                       first_party_pattern_spec);
+    tpcd::metadata::helpers::AddEntryToMetadata(
+        metadata, third_party_pattern_spec_1, first_party_pattern_spec);
+    tpcd::metadata::helpers::AddEntryToMetadata(
+        metadata, third_party_pattern_spec_2, first_party_pattern_spec);
     tpcd::metadata::Parser::GetInstance()->ParseMetadata(
         metadata.SerializeAsString());
 

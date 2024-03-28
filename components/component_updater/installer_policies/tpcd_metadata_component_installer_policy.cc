@@ -107,7 +107,7 @@ void TpcdMetadataComponentInstallerPolicy::ComponentReady(
   }
 }
 
-void WriteMetrics(TpcdMetadataInstallationResult result) {
+void WriteMetrics(tpcd::metadata::InstallationResult result) {
   base::UmaHistogramEnumeration(
       "Navigation.TpcdMitigations.MetadataInstallationResult", result);
 }
@@ -117,44 +117,29 @@ bool TpcdMetadataComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   if (!base::PathExists(GetComponentPath(install_dir))) {
-    WriteMetrics(TpcdMetadataInstallationResult::kMissingMetadataFile);
+    WriteMetrics(tpcd::metadata::InstallationResult::kMissingMetadataFile);
     return false;
   }
 
   std::string contents;
   if (!base::ReadFileToString(GetComponentPath(install_dir), &contents)) {
-    WriteMetrics(TpcdMetadataInstallationResult::kReadingMetadataFileFailed);
+    WriteMetrics(
+        tpcd::metadata::InstallationResult::kReadingMetadataFileFailed);
     return false;
   }
 
   tpcd::metadata::Metadata metadata;
   if (!metadata.ParseFromString(contents)) {
-    WriteMetrics(TpcdMetadataInstallationResult::kParsingToProtoFailed);
+    WriteMetrics(tpcd::metadata::InstallationResult::kParsingToProtoFailed);
     return false;
   }
 
-  for (const tpcd::metadata::MetadataEntry& me : metadata.metadata_entries()) {
-    if (!me.has_primary_pattern_spec() ||
-        !ContentSettingsPattern::FromString(me.primary_pattern_spec())
-             .IsValid()) {
-      WriteMetrics(TpcdMetadataInstallationResult::kErroneousSpec);
-      return false;
-    }
-
-    if (!me.has_secondary_pattern_spec() ||
-        !ContentSettingsPattern::FromString(me.secondary_pattern_spec())
-             .IsValid()) {
-      WriteMetrics(TpcdMetadataInstallationResult::kErroneousSpec);
-      return false;
-    }
-
-    if (!me.has_source()) {
-      WriteMetrics(TpcdMetadataInstallationResult::kErroneousSource);
-      return false;
-    }
+  if (!tpcd::metadata::Parser::IsValidMetadata(metadata,
+                                               base::BindOnce(WriteMetrics))) {
+    return false;
   }
 
-  WriteMetrics(TpcdMetadataInstallationResult::kSuccessful);
+  WriteMetrics(tpcd::metadata::InstallationResult::kSuccessful);
   return true;
 }
 

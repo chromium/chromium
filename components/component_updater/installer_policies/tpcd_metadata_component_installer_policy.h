@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
+#include "components/tpcd/metadata/parser.h"
 #include "components/update_client/update_client.h"
 
 namespace base {
@@ -20,30 +21,10 @@ class FilePath;
 }  // namespace base
 
 namespace component_updater {
+using Parser = tpcd::metadata::Parser;
 
 inline constexpr base::FilePath::CharType kTpcdMetadataComponentFileName[] =
     FILE_PATH_LITERAL("metadata.pb");
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// NOTE: Keep in sync with `TpcdMetadataInstallationResult` at
-// src/tools/metrics/histograms/metadata/navigation/enums.xml
-enum class TpcdMetadataInstallationResult {
-  // The metadata component was successfully .
-  kSuccessful = 0,
-  // The component file wasn't present.
-  kMissingMetadataFile = 1,
-  // Reading from the component file failed.
-  kReadingMetadataFileFailed = 2,
-  // The raw metadata string was unable to be parsed into the proto.
-  kParsingToProtoFailed = 3,
-  // One or more of the specs are erroneous or missing.
-  kErroneousSpec = 4,
-  // The field is erroneous or missing.
-  kErroneousSource = 5,
-  kMaxValue = kErroneousSource,
-};
-
 class TpcdMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   using OnTpcdMetadataComponentReadyCallback =

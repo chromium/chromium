@@ -41,7 +41,6 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/tpcd/metadata/parser.h"
-#include "components/tpcd/metadata/parser_test_helper.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -171,7 +170,7 @@ class AdHeuristicTPCDBrowserTestBase
     // primary pattern.
     base::ScopedAllowBlockingForTesting allow_blocking;
     tpcd::metadata::Metadata metadata;
-    tpcd::metadata::AddEntryToMetadata(
+    tpcd::metadata::helpers::AddEntryToMetadata(
         metadata, ContentSettingsPattern::FromURL(third_party_url).ToString(),
         "*");
     EXPECT_EQ(metadata.metadata_entries_size(), 1);

@@ -12,6 +12,7 @@ source_set("metadata") {
   deps = [ ":metadata_proto" ]
   public_deps = [
     "//base",
+    "//components/content_settings/core/common",
     "//components/content_settings/core/common:content_settings_enums",
     "//components/content_settings/core/common:features",
     "//net",

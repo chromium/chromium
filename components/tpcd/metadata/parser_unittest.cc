@@ -199,7 +199,8 @@ TEST_F(ParserTest, ParseMetadata_NonEmptyList) {
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   Metadata metadata;
-  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -219,7 +220,8 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterOnly) {
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   Metadata metadata;
-  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -236,7 +238,8 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsOnly) {
   const std::string secondary_pattern_spec = "[*.]foo.com";
 
   Metadata metadata;
-  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+  helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                              secondary_pattern_spec);
   EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                             MakeBase64EncodedMetadata(metadata)}});
 
@@ -255,7 +258,8 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterThenFeatureParams) {
     EnableFeature();
 
     Metadata metadata;
-    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -271,7 +275,7 @@ TEST_F(ParserTest, GetMetadata_ComponentUpdaterThenFeatureParams) {
 
   {
     Metadata metadata;
-    AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
+    helpers::AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
 
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                               MakeBase64EncodedMetadata(metadata)}});
@@ -295,7 +299,7 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_1) {
 
   {
     Metadata metadata;
-    AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
+    helpers::AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
 
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                               MakeBase64EncodedMetadata(metadata)}});
@@ -315,7 +319,8 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_1) {
     EnableFeature();
 
     Metadata metadata;
-    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -335,7 +340,7 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
 
   {
     Metadata metadata;
-    AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
+    helpers::AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
 
     EnableFeatureWithParams({{Parser::kMetadataFeatureParamName,
                               MakeBase64EncodedMetadata(metadata)}});
@@ -351,7 +356,8 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
 
   {
     Metadata metadata;
-    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+    helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                secondary_pattern_spec);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ExecFakeComponentInstallation(metadata.SerializeAsString());

@@ -9,11 +9,13 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
@@ -49,6 +51,82 @@ TpcdMetadataRuleSource Parser::ToRuleSource(const std::string& source) {
   // invalid by the sanitizer. Thus, used here as a translation for any new,
   // uncategorized server source type.
   return TpcdMetadataRuleSource::SOURCE_UNSPECIFIED;
+}
+
+// static
+bool Parser::IsDtrpEligible(const TpcdMetadataRuleSource& rule_source) {
+  switch (rule_source) {
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
+      return true;
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
+    case content_settings::mojom::TpcdMetadataRuleSource::
+        SOURCE_CRITICAL_SECTOR:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
+      return false;
+  }
+}
+
+// static
+bool Parser::IsValidMetadata(const Metadata& metadata,
+                             RecordInstallationResultCallback callback) {
+  for (const tpcd::metadata::MetadataEntry& me : metadata.metadata_entries()) {
+    if (!me.has_primary_pattern_spec() ||
+        !ContentSettingsPattern::FromString(me.primary_pattern_spec())
+             .IsValid()) {
+      if (callback) {
+        std::move(callback).Run(InstallationResult::kErroneousSpec);
+      }
+      return false;
+    }
+
+    if (!me.has_secondary_pattern_spec() ||
+        !ContentSettingsPattern::FromString(me.secondary_pattern_spec())
+             .IsValid()) {
+      if (callback) {
+        std::move(callback).Run(InstallationResult::kErroneousSpec);
+      }
+      return false;
+    }
+
+    if (!me.has_source()) {
+      if (callback) {
+        std::move(callback).Run(InstallationResult::kErroneousSource);
+      }
+      return false;
+    }
+
+    if (base::FeatureList::IsEnabled(
+            net::features::kTpcdMetadataStagedRollback)) {
+      if (tpcd::metadata::Parser::IsDtrpEligible(
+              tpcd::metadata::Parser::ToRuleSource(me.source()))) {
+        if (!me.has_dtrp() || !IsValidDtrp(me.dtrp())) {
+          if (callback) {
+            std::move(callback).Run(InstallationResult::kErroneousDtrp);
+          }
+          return false;
+        } else if (me.has_dtrp_override() && !IsValidDtrp(me.dtrp_override())) {
+          if (callback) {
+            std::move(callback).Run(InstallationResult::kErroneousDtrp);
+          }
+          return false;
+        }
+      } else if (me.has_dtrp() || me.has_dtrp_override()) {
+        // Catching this cases as they could point to a server-side
+        // misconfiguration of the TPCD metadata generally stemming from human
+        // errors.
+        if (callback) {
+          std::move(callback).Run(InstallationResult::kIllicitDtrp);
+        }
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 Parser::Parser() = default;
@@ -89,6 +167,8 @@ MetadataEntries ParseMetadataFromFeatureParam(
 
   CHECK(metadata.ParseFromString(uncompressed));
 
+  CHECK(Parser::IsValidMetadata(metadata, base::NullCallback()));
+
   return ToMetadataEntries(metadata);
 }
 
@@ -106,31 +186,29 @@ void Parser::CallOnMetadataReady() {
   }
 }
 
-MetadataEntries GenerateLargeMetadataEntries() {
-  MetadataEntries entries;
+Metadata GenerateLargeTestMetadata() {
+  Metadata metadata;
   for (int i = 1; i < content_settings::features::kUseTestMetadata.Get() + 1;
        ++i) {
-    MetadataEntry entry = MetadataEntry();
     std::string hostname = "";
     int j = i;
     while (j > 0) {
       hostname.push_back('a' + j % 24);
       j /= 24;
     }
-    entry.set_primary_pattern_spec(
-        base::StrCat({"http://", hostname, ".test"}));
-    entry.set_secondary_pattern_spec("*");
-    entry.set_source(Parser::kSourceTest);
-    entries.emplace_back(entry);
+    helpers::AddEntryToMetadata(metadata,
+                                base::StrCat({"http://", hostname, ".test"}),
+                                "*", Parser::kSourceTest);
   }
-  return entries;
+  CHECK(Parser::IsValidMetadata(metadata, base::NullCallback()));
+  return metadata;
 }
 
 MetadataEntries Parser::GetMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (content_settings::features::kUseTestMetadata.Get() > 0) {
-    return GenerateLargeMetadataEntries();
+    return ToMetadataEntries(GenerateLargeTestMetadata());
   }
 
   base::FieldTrialParams params;
@@ -165,4 +243,23 @@ MetadataEntries Parser::ParseMetadataFromFeatureParamForTesting(
 }
 // End Parser testing methods impl.
 
+namespace helpers {
+void AddEntryToMetadata(Metadata& metadata,
+                        const std::string& primary_pattern_spec,
+                        const std::string& secondary_pattern_spec,
+                        const std::string& source,
+                        const std::optional<int>& dtrp,
+                        const std::optional<int>& dtrp_override) {
+  MetadataEntry* me = metadata.add_metadata_entries();
+  me->set_primary_pattern_spec(primary_pattern_spec);
+  me->set_secondary_pattern_spec(secondary_pattern_spec);
+  me->set_source(source);
+  if (dtrp.has_value()) {
+    me->set_dtrp(dtrp.value());
+  }
+  if (dtrp_override.has_value()) {
+    me->set_dtrp_override(dtrp_override.value());
+  }
+}
+}  // namespace helpers
 }  // namespace tpcd::metadata

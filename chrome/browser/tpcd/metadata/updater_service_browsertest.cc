@@ -30,7 +30,6 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/tpcd/metadata/parser_test_helper.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -230,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 
   Metadata metadata;
-  AddEntryToMetadata(metadata, "[*.]bar.com", "[*.]foo.com");
+  tpcd::metadata::helpers::AddEntryToMetadata(metadata, "[*.]bar.com",
+                                              "[*.]foo.com");
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   MockComponentInstallation(metadata);
@@ -258,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
   {
     Metadata metadata;
-    AddEntryToMetadata(metadata, "[*.]bar.com", "[*.]foo.com");
+    tpcd::metadata::helpers::AddEntryToMetadata(metadata, "[*.]bar.com",
+                                                "[*.]foo.com");
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
@@ -274,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
   {
     Metadata metadata;
-    AddEntryToMetadata(metadata, "[*.]baz.com", "[*.]daz.com");
+    tpcd::metadata::helpers::AddEntryToMetadata(metadata, "[*.]baz.com",
+                                                "[*.]daz.com");
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
@@ -360,7 +362,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
 
   const std::string wildcard_spec = "*";
   Metadata metadata;
-  AddEntryToMetadata(metadata, wildcard_spec, wildcard_spec);
+  tpcd::metadata::helpers::AddEntryToMetadata(metadata, wildcard_spec,
+                                              wildcard_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
   EXPECT_THAT(
@@ -396,7 +399,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
     const std::string secondary_pattern_spec =
         ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
     Metadata metadata;
-    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+    tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                                secondary_pattern_spec);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
     MockComponentInstallation(metadata);
 
@@ -433,7 +437,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
     const std::string secondary_pattern_spec =
         ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
     Metadata metadata;
-    AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+    tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                                secondary_pattern_spec);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
     MockComponentInstallation(metadata);
 
@@ -472,7 +477,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
   const std::string secondary_pattern_spec =
       ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
   Metadata metadata;
-  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                              secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
 
@@ -547,7 +553,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
   const std::string secondary_pattern_spec =
       ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
   Metadata metadata;
-  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                              secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
 
@@ -620,7 +627,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
   const std::string secondary_pattern_spec =
       ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
   Metadata metadata;
-  AddEntryToMetadata(metadata, primary_pattern_spec, secondary_pattern_spec);
+  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
+                                              secondary_pattern_spec);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
   MockComponentInstallation(metadata);
 
