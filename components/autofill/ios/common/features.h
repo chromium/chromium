@@ -10,5 +10,6 @@
 BASE_DECLARE_FEATURE(kAutofillFormActivityMsgBatchingIos);
 BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
 BASE_DECLARE_FEATURE(kAutofillIsolatedWorldForJavascriptIos);
+BASE_DECLARE_FEATURE(kAutofillStickyInfobarIos);
 
 #endif  // COMPONENTS_AUTOFILL_IOS_COMMON_FEATURES_H_

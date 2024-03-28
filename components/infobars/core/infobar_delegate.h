@@ -198,8 +198,13 @@ class InfoBarDelegate {
     bool did_replace_entry;
     bool is_reload;
     bool is_redirect;
+#if BUILDFLAG(IS_IOS)
     // True if the navigation was caused by a form submission.
-    bool is_form_submission = false;
+    bool is_form_submission;
+    // True if the navigation was caused by a user gesture, e.g. reload or load
+    // new content from the omnibox.
+    bool has_user_gesture;
+#endif  // BUILDFLAG(IS_IOS)
   };
 
   // Value to use when the InfoBar has no icon to show.

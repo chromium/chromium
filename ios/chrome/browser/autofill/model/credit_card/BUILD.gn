@@ -20,7 +20,10 @@ source_set("infobar_delegate") {
     "autofill_save_card_infobar_delegate_ios.h",
     "autofill_save_card_infobar_delegate_ios.mm",
   ]
-  deps = [ "//components/autofill/core/browser" ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/common",
+  ]
 }
 
 source_set("unit_tests") {
@@ -31,5 +34,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/ios/common",
   ]
 }

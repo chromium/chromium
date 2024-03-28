@@ -28,3 +28,12 @@ BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
 BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
              "AutofillIsolatedWorldForJavascriptIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Makes the autofill and password infobars sticky on iOS. The sticky infobar
+// sticks there until navigating from an explicit user gesture (e.g. reload or
+// load a new page from the omnibox). This includes the infobar UI and the
+// badge. The badge may remain there after the infobar UI is dismissed from
+// timeout but will be dismissed once navigating from an explicit user gesture.
+BASE_FEATURE(kAutofillStickyInfobarIos,
+             "AutofillStickyInfobarIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);

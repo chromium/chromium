@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 
+#import "base/feature_list.h"
+#import "components/autofill/ios/common/features.h"
+
 namespace autofill {
 
 AutofillSaveCardInfoBarDelegateIOS::AutofillSaveCardInfoBarDelegateIOS(
@@ -14,6 +17,11 @@ AutofillSaveCardInfoBarDelegateIOS::AutofillSaveCardInfoBarDelegateIOS(
 
 bool AutofillSaveCardInfoBarDelegateIOS::ShouldExpire(
     const NavigationDetails& details) const {
+  if (base::FeatureList::IsEnabled(kAutofillStickyInfobarIos)) {
+    return !details.is_form_submission && !details.is_redirect &&
+           details.has_user_gesture &&
+           ConfirmInfoBarDelegate::ShouldExpire(details);
+  }
   return !details.is_form_submission && !details.is_redirect;
 }
 
