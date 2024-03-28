@@ -343,7 +343,7 @@ bool CanComputeBlockSizeWithoutLayout(
       style.LogicalMaxHeight().HasContentOrIntrinsic()) {
     return false;
   }
-  if (style.LogicalHeight().IsAuto()) {
+  if (style.LogicalHeight().HasAuto()) {
     // Any 'auto' inset will trigger shink-to-fit sizing.
     if (has_auto_block_inset) {
       return false;
@@ -635,7 +635,7 @@ bool ComputeOofInlineDimensions(
 
     // If our block constraint is strong/explicit.
     const bool is_block_explicit =
-        !style.LogicalHeight().IsAuto() ||
+        !style.LogicalHeight().HasAuto() ||
         (!imcb.has_auto_block_inset &&
          block_alignment_position == ItemPosition::kStretch);
 
@@ -659,7 +659,7 @@ bool ComputeOofInlineDimensions(
 
       // Apply the automatic minimum size.
       if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-          min_inline_length.IsAuto()) {
+          min_inline_length.HasAuto()) {
         min_inline_length = Length::MinIntrinsic();
       }
     } else {

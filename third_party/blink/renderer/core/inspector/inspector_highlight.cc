@@ -1226,6 +1226,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   if (flex_basis.IsFixed()) {
     base_size = flex_basis;
   } else if (flex_basis.IsAuto() && size.IsFixed()) {
+    // TODO(https://crbug.com/313072): 'flex-basis' should support calc-size()
     base_size = size;
   }
 

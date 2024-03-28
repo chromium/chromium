@@ -205,9 +205,14 @@ bool SmartClip::ShouldSkipBackgroundImage(Node* node) {
   // or a width. On the other hand, if we've got a legit background image,
   // it's very likely the height or the width will be set to auto.
   LayoutObject* layout_object = node->GetLayoutObject();
-  if (layout_object && (layout_object->StyleRef().LogicalHeight().IsAuto() ||
-                        layout_object->StyleRef().LogicalWidth().IsAuto()))
+  if (layout_object && (layout_object->StyleRef()
+                            .LogicalHeight()
+                            .HasAutoOrContentOrIntrinsic() ||
+                        layout_object->StyleRef()
+                            .LogicalWidth()
+                            .HasAutoOrContentOrIntrinsic())) {
     return true;
+  }
 
   return false;
 }

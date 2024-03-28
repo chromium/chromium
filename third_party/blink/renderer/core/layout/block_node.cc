@@ -891,7 +891,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
                             layout_result->GetPhysicalFragment())
                 .InlineSize();
     const bool depends_on_block_constraints =
-        Style().LogicalWidth().IsAuto() ||
+        Style().LogicalWidth().HasAuto() ||
         Style().LogicalWidth().IsPercentOrCalcOrStretch() ||
         Style().LogicalMinWidth().IsPercentOrCalcOrStretch() ||
         Style().LogicalMaxWidth().IsPercentOrCalcOrStretch();
@@ -903,7 +903,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     return Style().LogicalHeight().IsPercentOrCalcOrStretch() ||
            Style().LogicalMinHeight().IsPercentOrCalcOrStretch() ||
            Style().LogicalMaxHeight().IsPercentOrCalcOrStretch() ||
-           (Style().LogicalHeight().IsAuto() &&
+           (Style().LogicalHeight().HasAuto() &&
             constraint_space.IsBlockAutoBehaviorStretch());
   };
 

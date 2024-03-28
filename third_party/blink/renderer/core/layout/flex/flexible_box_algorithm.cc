@@ -292,6 +292,8 @@ void FlexItem::ComputeStretchedSize() {
       std::max(cross_axis_border_padding_,
                Line()->cross_axis_extent_ - CrossAxisMarginExtent());
 
+  // TODO(https://crbug.com/313072): This probably needs some work to support
+  // calc-size(auto, ...).
   if ((MainAxisIsInlineAxis() && style_->LogicalHeight().IsAuto()) ||
       (!MainAxisIsInlineAxis() && style_->LogicalWidth().IsAuto())) {
     cross_axis_size_ =
@@ -781,6 +783,8 @@ bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
       main_axis_is_childs_block_axis &&
       (min.IsMinContent() || min.IsMaxContent() || min.IsMinIntrinsic() ||
        min.IsFitContent());
+  // TODO(https://crbug.com/313072): This needs some work to support
+  // calc-size(auto, ...).
   if (!min.IsAuto() && !intrinsic_in_childs_block_axis)
     return false;
 

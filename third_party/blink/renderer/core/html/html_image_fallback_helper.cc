@@ -168,6 +168,8 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(
   if (element.GetDocument().InQuirksMode()) {
     // Mimic the behaviour of the image host by setting symmetric dimensions if
     // only one dimension is specified.
+    // TODO(https://crbug.com/313072): Is this still correct in the presence
+    // of intrinsic sizing keywords or calc-size?
     if (!builder.Width().IsAuto() && builder.Height().IsAuto()) {
       builder.SetHeight(builder.Width());
     } else if (!builder.Height().IsAuto() && builder.Width().IsAuto()) {
@@ -179,6 +181,8 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(
     }
   }
 
+  // TODO(https://crbug.com/313072): Is this still correct in the presence of
+  // intrinsic sizing keywords or calc-size?
   bool has_intrinsic_dimensions =
       !builder.Width().IsAuto() && !builder.Height().IsAuto();
   bool has_dimensions_from_ar =

@@ -200,9 +200,10 @@ LayoutUnit ComputeEmptyTableInlineSize(
     const BoxStrut& table_border_padding,
     const bool has_collapsed_borders) {
   // If table has a css inline size, use that.
-  if (space.IsFixedInlineSize() ||
-      (space.IsInlineAutoBehaviorStretch() &&
-       table_style.LogicalWidth().IsAuto()) ||
+  // TODO(https://crbug.com/313072): Should these IsAuto calls handle
+  // intrinsic sizing keywords or calc-size() differently, e.g., by using
+  // HasAutoOrContentOrIntrinsic rather than just HasAuto?
+  if (space.IsFixedInlineSize() || space.IsInlineAutoBehaviorStretch() ||
       !table_style.LogicalWidth().IsAuto() ||
       !table_style.LogicalMinWidth().IsAuto()) {
     return assignable_table_inline_size + undistributable_space;
@@ -307,7 +308,9 @@ scoped_refptr<const TableConstraintSpaceData> CreateConstraintSpaceData(
     const TableTypes::Rows& rows,
     const TableTypes::CellBlockConstraints& cell_block_constraints,
     const LogicalSize& border_spacing) {
-  bool is_table_block_size_specified = !style.LogicalHeight().IsAuto();
+  // TODO(https://crbug.com/313072): These should probably use
+  // HasAutoOrContentOrIntrinsic rather than just HasAuto.
+  bool is_table_block_size_specified = !style.LogicalHeight().HasAuto();
   scoped_refptr<TableConstraintSpaceData> data =
       base::MakeRefCounted<TableConstraintSpaceData>();
   data->table_writing_direction = style.GetWritingDirection();
@@ -790,7 +793,7 @@ void TableLayoutAlgorithm::ComputeRows(
     // it will resolve to `kIndefiniteSize` if unresolvable.
     const Length& min_length = Style().LogicalMinHeight();
     const LayoutUnit intrinsic_block_size =
-        min_length.IsAuto() ||
+        min_length.HasAuto() ||
                 ResolveMainBlockLength(space, Style(), table_border_padding,
                                        min_length, /* auto_length */ nullptr,
                                        kIndefiniteSize) == kIndefiniteSize

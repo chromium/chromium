@@ -278,7 +278,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
       child_style.LogicalHeight().IsPercentOrCalc() ||
       child_style.LogicalMinHeight().IsPercentOrCalc() ||
       child_style.LogicalMaxHeight().IsPercentOrCalc() ||
-      (child_style.LogicalHeight().IsAuto() &&
+      (child_style.LogicalHeight().HasAuto() &&
        space.IsBlockAutoBehaviorStretch());
   return MinMaxSizesResult(result, depends_on_block_constraints);
 }
@@ -304,7 +304,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 
   MinMaxSizesResult result;
   // TODO(https://crbug.com/313072): Rewrite this test for calc-size().
-  if (inline_size.IsAuto() || inline_size.IsPercentOrCalc() ||
+  if (inline_size.HasAuto() || inline_size.IsPercentOrCalc() ||
       inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
     result = min_max_sizes_func(MinMaxSizesType::kContent);
   } else {
@@ -445,8 +445,10 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   auto logical_width = style.LogicalWidth();
   auto min_length = style.LogicalMinWidth();
 
+  // TODO(https://crbug.com/313072): Fix these IsMinContent/IsMaxContent tests
+  // for calc-size().
   if (!style.AspectRatio().IsAuto() &&
-      ((logical_width.IsAuto() &&
+      ((logical_width.HasAuto() &&
         space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) ||
        logical_width.IsMinContent() || logical_width.IsMaxContent())) {
     extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
@@ -456,7 +458,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
       // if we need to apply the implied minimum size:
       // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
       if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-          min_length.IsAuto()) {
+          min_length.HasAuto()) {
         min_length = Length::MinIntrinsic();
       }
     }
@@ -613,7 +615,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(const ConstraintSpace& space,
 
   // This implements the transferred min/max sizes per:
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
-  if (!style.AspectRatio().IsAuto() && style.LogicalWidth().IsAuto() &&
+  if (!style.AspectRatio().IsAuto() && style.LogicalWidth().HasAuto() &&
       space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
     MinMaxSizes transferred_sizes =
         ComputeMinMaxInlineSizesFromAspectRatio(space, style, border_padding);
@@ -659,7 +661,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   const bool has_aspect_ratio = !style.AspectRatio().IsAuto();
   Length logical_height = style.LogicalHeight();
   const bool has_implicit_stretch =
-      logical_height.IsAuto() &&
+      logical_height.HasAuto() &&
       space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit;
 
   const Length auto_length =
@@ -689,11 +691,12 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       // We also check for LayoutUnit::Max() because flexbox uses that as a
       // "placeholder" to compute the flex line length while still respecting
       // max-block-size.
-      if (style.LogicalMinHeight().IsAuto() &&
+      if (style.LogicalMinHeight().HasAuto() &&
           style.OverflowBlockDirection() == EOverflow::kVisible &&
           intrinsic_size != kIndefiniteSize &&
-          intrinsic_size != LayoutUnit::Max())
+          intrinsic_size != LayoutUnit::Max()) {
         min_max.min_size = intrinsic_size;
+      }
     }
   }
 
@@ -870,7 +873,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
                (space.IsBlockAutoBehaviorStretch() &&
                 space.AvailableSize().block_size != kIndefiniteSize)) {
       Length block_length_to_resolve = block_length;
-      if (block_length_to_resolve.IsAuto()) {
+      if (block_length_to_resolve.HasAuto()) {
         DCHECK(space.IsBlockAutoBehaviorStretch());
         block_length_to_resolve = Length::FillAvailable();
       }
@@ -967,10 +970,12 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
       DCHECK_GE(*replaced_inline, 0);
-    } else if (!inline_length.IsAuto() ||
+    } else if (!inline_length.HasAuto() ||
                (space.IsInlineAutoBehaviorStretch() &&
                 space.AvailableSize().inline_size != kIndefiniteSize)) {
       Length inline_length_to_resolve = inline_length;
+      // TODO(https://crbug.com/313072): Simplify this to just use
+      // auto_length.
       if (inline_length_to_resolve.IsAuto()) {
         DCHECK(space.IsInlineAutoBehaviorStretch());
         inline_length_to_resolve = Length::FillAvailable();
@@ -1630,7 +1635,7 @@ LayoutUnit ClampIntrinsicBlockSize(
 
   // Apply the "fills viewport" quirk if needed.
   if (!IsBreakInside(break_token) && node.IsQuirkyAndFillsViewport() &&
-      style.LogicalHeight().IsAuto() &&
+      style.LogicalHeight().HasAuto() &&
       space.AvailableSize().block_size != kIndefiniteSize) {
     DCHECK_EQ(node.IsBody() && !node.CreatesNewFormattingContext(),
               body_margin_block_sum.has_value());

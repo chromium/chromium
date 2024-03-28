@@ -172,6 +172,7 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
     return true;
 
   const auto& style = StyleRef();
+  // TODO(https://crbug.com/313072): Should this test min/max-height as well?
   bool is_fixed_sized =
       style.LogicalWidth().IsFixed() && style.LogicalHeight().IsFixed() &&
       (style.LogicalMinWidth().IsFixed() || style.LogicalMinWidth().IsAuto()) &&

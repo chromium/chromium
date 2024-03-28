@@ -263,8 +263,9 @@ class PLATFORM_EXPORT Length {
     return !value_;
   }
 
-  // For the layout purposes, if this |Length| is a block-axis size, see
-  // |HasAutoOrContentOrIntrinsic()|, it is usually a better choice.
+  // If this is a length in a property that accepts calc-size(), use
+  // |HasAuto()|.  If this |Length| is a block-axis size
+  // |HasAutoOrContentOrIntrinsic()| is usually a better choice.
   bool IsAuto() const { return GetType() == kAuto; }
   bool IsFixed() const { return GetType() == kFixed; }
 

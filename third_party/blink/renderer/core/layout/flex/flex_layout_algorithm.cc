@@ -387,8 +387,9 @@ bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
 bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
   // Note: Unresolvable % cross size doesn't count as auto for stretchability.
   // As discussed in https://github.com/w3c/csswg-drafts/issues/4312.
-  if (!DoesItemCrossSizeComputeToAuto(child))
+  if (!DoesItemComputedCrossSizeHaveAuto(child)) {
     return false;
+  }
   const ComputedStyle& child_style = child.Style();
   // https://drafts.csswg.org/css-flexbox/#valdef-align-items-stretch
   // If the cross size property of the flex item computes to auto, and neither
@@ -403,13 +404,13 @@ bool FlexLayoutAlgorithm::DoesItemStretch(const BlockNode& child) const {
          ItemPosition::kStretch;
 }
 
-bool FlexLayoutAlgorithm::DoesItemCrossSizeComputeToAuto(
+bool FlexLayoutAlgorithm::DoesItemComputedCrossSizeHaveAuto(
     const BlockNode& child) const {
   const ComputedStyle& child_style = child.Style();
   if (is_horizontal_flow_) {
-    return child_style.Height().IsAuto();
+    return child_style.Height().HasAuto();
   }
-  return child_style.Width().IsAuto();
+  return child_style.Width().HasAuto();
 }
 
 bool FlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
@@ -655,7 +656,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const Length& cross_axis_length =
         is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
-    all_items_have_non_auto_cross_sizes &= !cross_axis_length.IsAuto();
+    all_items_have_non_auto_cross_sizes &= !cross_axis_length.HasAuto();
 
     std::optional<MinMaxSizesResult> min_max_sizes;
     auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
@@ -752,6 +753,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
       const Length& specified_length_in_main_axis =
           is_horizontal_flow_ ? child_style.Width() : child_style.Height();
+      // TODO(https://crbug.com/313072): 'flex-basis' should support
+      // calc-size()
       const Length& used_flex_basis_length =
           flex_basis.IsAuto() ? specified_length_in_main_axis : flex_basis;
 
@@ -852,10 +855,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       const LayoutUnit specified_size_suggestion = ([&]() -> LayoutUnit {
         const Length& specified_length_in_main_axis =
             is_horizontal_flow_ ? child_style.Width() : child_style.Height();
-        // TODO(https://crbug.com/313072): This (and surrounding) tests
-        // should be HasAuto rather than IsAuto to account for
-        // calc-size().
-        if (specified_length_in_main_axis.IsAuto()) {
+        if (specified_length_in_main_axis.HasAuto()) {
           return LayoutUnit::Max();
         }
         const LayoutUnit resolved_size =
@@ -2512,8 +2512,9 @@ bool FlexLayoutAlgorithm::MinBlockSizeShouldEncompassIntrinsicSize(
     }
 
     // Only allow growth if the item's cross size is auto.
-    if (DoesItemCrossSizeComputeToAuto(item.ng_input_node))
+    if (DoesItemComputedCrossSizeHaveAuto(item.ng_input_node)) {
       return true;
+    }
   }
   return false;
 }

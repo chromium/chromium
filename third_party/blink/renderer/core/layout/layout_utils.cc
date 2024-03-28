@@ -31,8 +31,10 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
                                   const LayoutResult& layout_result) {
   DCHECK_EQ(new_space.InlineAutoBehavior(), old_space.InlineAutoBehavior());
 
+  // TODO(https://crbug.com/313072): Adjust these IsFitContent and
+  // IsFillAvailable calls for calc-size().
   bool is_unspecified =
-      (length.IsAuto() && type != LengthResolveType::kMinSize) ||
+      (length.HasAuto() && type != LengthResolveType::kMinSize) ||
       length.IsFitContent() || length.IsFillAvailable();
 
   // Percentage inline margins will affect the size if the size is unspecified
@@ -63,8 +65,10 @@ inline bool BlockLengthMayChange(const Length& length,
                                  const ConstraintSpace& new_space,
                                  const ConstraintSpace& old_space) {
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
+  // TODO(https://crbug.com/313072): Adjust this IsFillAvailable calls for
+  // calc-size().
   if (length.IsFillAvailable() ||
-      (length.IsAuto() && new_space.IsBlockAutoBehaviorStretch())) {
+      (length.HasAuto() && new_space.IsBlockAutoBehaviorStretch())) {
     if (new_space.AvailableSize().block_size !=
         old_space.AvailableSize().block_size)
       return true;
@@ -247,7 +251,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // custom-layout.
     if (old_space.IsFixedBlockSize() ||
         (old_space.IsBlockAutoBehaviorStretch() &&
-         style.LogicalHeight().IsAuto())) {
+         style.LogicalHeight().HasAuto())) {
       if (node.IsFlexibleBox() || node.IsGrid() || node.IsFieldsetContainer())
         intrinsic_block_size = kIndefiniteSize;
     }

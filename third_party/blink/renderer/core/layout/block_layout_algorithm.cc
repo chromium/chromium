@@ -3253,8 +3253,9 @@ BlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
   if (!Node().IsQuirkyAndFillsViewport())
     return std::nullopt;
 
-  if (!Style().LogicalHeight().IsAuto())
+  if (!Style().LogicalHeight().IsAuto()) {
     return std::nullopt;
+  }
 
   if (GetConstraintSpace().IsNewFormattingContext()) {
     return std::nullopt;

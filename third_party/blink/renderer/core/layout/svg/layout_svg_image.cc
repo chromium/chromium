@@ -89,6 +89,8 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
   const SVGViewportResolver viewport_resolver(*this);
   gfx::Vector2dF style_size = VectorForLengthPair(
       StyleRef().Width(), StyleRef().Height(), viewport_resolver, StyleRef());
+  // TODO(https://crbug.com/313072): This needs a bit of work to support
+  // intrinsic keywords, calc-size(), etc. values for width and height.
   bool width_is_auto = style_size.x() < 0 || StyleRef().Width().IsAuto();
   bool height_is_auto = style_size.y() < 0 || StyleRef().Height().IsAuto();
   if (!width_is_auto && !height_is_auto)

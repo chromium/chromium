@@ -897,7 +897,7 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
   }
 
   const bool applies_auto_min_size =
-      container_style.LogicalMinHeight().IsAuto() &&
+      container_style.LogicalMinHeight().HasAuto() &&
       container_style.OverflowBlockDirection() == EOverflow::kVisible &&
       !container_style.AspectRatio().IsAuto();
   if (grid_available_size_.block_size == kIndefiniteSize ||
@@ -1275,7 +1275,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
           //
           // Start by resolving the cases where |min_length| is non-auto or its
           // automatic minimum size should be zero.
-          if (!min_length.IsAuto() || item_style.IsScrollContainer() ||
+          if (!min_length.HasAuto() || item_style.IsScrollContainer() ||
               !grid_item->IsSpanningAutoMinimumTrack(track_direction) ||
               (grid_item->IsSpanningFlexibleTrack(track_direction) &&
                grid_item->SpanSize(track_direction) > 1)) {

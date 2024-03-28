@@ -41,7 +41,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
 
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
-  bool DoesItemCrossSizeComputeToAuto(const BlockNode& child) const;
+  bool DoesItemComputedCrossSizeHaveAuto(const BlockNode& child) const;
   bool DoesItemStretch(const BlockNode& child) const;
   // This checks for one of the scenarios where a flex-item box has a definite
   // size that would be indefinite if the box weren't a flex item.

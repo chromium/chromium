@@ -3040,8 +3040,10 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
 
   // For quirks mode, we skip most auto-height containing blocks when computing
   // percentages.
-  if (!in_quirks_mode || !containing_block->StyleRef().LogicalHeight().IsAuto())
+  if (!in_quirks_mode ||
+      !containing_block->StyleRef().LogicalHeight().HasAuto()) {
     return false;
+  }
 
   const Node* node = containing_block->GetNode();
   if (UNLIKELY(node->IsInUserAgentShadowRoot())) {
