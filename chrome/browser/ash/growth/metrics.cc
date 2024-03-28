@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/growth/metrics.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace {
+
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
 constexpr char kButtonPressedHistogramName[] =
     "Ash.Growth.Ui.ButtonPressed.Button%d.Campaigns%d";
@@ -63,14 +68,32 @@ void RecordButtonPressed(int campaign_id, CampaignButtonId button_id) {
   const std::string histogram_name =
       GetButtonPressedHistogramName(campaign_id, button_id);
   base::UmaHistogramSparse(histogram_name, campaign_id);
+
+  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled()) {
+    metrics::structured::StructuredMetricsClient::Record(
+        std::move(cros_events::Growth_Ui_ButtonPressed()
+                      .SetCampaignId(campaign_id)
+                      .SetButtonId(static_cast<cros_events::CampaignButtonId>(
+                          button_id))));
+  }
 }
 
 void RecordDismissed(int campaign_id) {
   const std::string histogram_name = GetDismissedHistogramName(campaign_id);
   base::UmaHistogramSparse(histogram_name, campaign_id);
+
+  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled()) {
+    metrics::structured::StructuredMetricsClient::Record(std::move(
+        cros_events::Growth_Ui_Dismissed().SetCampaignId(campaign_id)));
+  }
 }
 
 void RecordImpression(int campaign_id) {
   const std::string histogram_name = GetImpressionHistogramName(campaign_id);
   base::UmaHistogramSparse(histogram_name, campaign_id);
+
+  if (ash::features::IsGrowthCampaignsCrOSEventsEnabled()) {
+    metrics::structured::StructuredMetricsClient::Record(std::move(
+        cros_events::Growth_Ui_Impression().SetCampaignId(campaign_id)));
+  }
 }

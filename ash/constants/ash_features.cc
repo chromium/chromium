@@ -1378,6 +1378,11 @@ BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables CrOS events recording with growth campaigns.
+BASE_FEATURE(kGrowthCampaignsCrOSEvents,
+             "GrowthCampaignsCrOSEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables consumer session customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInConsumerSession,
              "GrowthCampaignsInConsumerSession",
@@ -3581,6 +3586,10 @@ bool IsFeatureManagementGrowthFrameworkEnabled() {
 
 bool IsGrowthFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kGrowthFramework);
+}
+
+bool IsGrowthCampaignsCrOSEventsEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsCrOSEvents);
 }
 
 bool IsGrowthCampaignsExperimentTagTargetingEnabled() {

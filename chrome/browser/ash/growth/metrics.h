@@ -8,7 +8,8 @@
 // Enumeration of campaign button ID. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "CampaignButtonId" in
-// src/tools/metrics/histograms/metadata/ash/histograms.xml.
+// src/tools/metrics/histograms/metadata/ash/histograms.xml and
+// src/tools/metrics/structured/sync/structured.xml.
 enum class CampaignButtonId {
   kPrimary = 0,
   kSecondary = 1,

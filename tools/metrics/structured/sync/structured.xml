@@ -1384,6 +1384,49 @@
     </metric>
   </event>
 
+  <enum name="CampaignButtonId">
+    <variant value="0">PRIMARY</variant>
+    <variant value="1">SECONDARY</variant>
+  </enum>
+
+  <event name="Growth.Ui.ButtonPressed">
+    <summary>
+      Event recorded when the button in the UI is pressed.
+    </summary>
+    <metric name="CampaignId" type="int">
+      <summary>
+        ID of the campaign.
+      </summary>
+    </metric>
+    <metric name="ButtonId" type="CampaignButtonId">
+      <summary>
+        ID of the button pressed in the UI.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Growth.Ui.Dismissed">
+    <summary>
+      Event recorded when the UI is dismissed.
+    </summary>
+    <metric name="CampaignId" type="int">
+      <summary>
+        ID of the campaign.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Growth.Ui.Impression">
+    <summary>
+      Event recorded when it is ready to log a UI impression.
+    </summary>
+    <metric name="CampaignId" type="int">
+      <summary>
+        ID of the campaign.
+      </summary>
+    </metric>
+  </event>
+
   <event name="OOBE.GaiaSigninRequested" force_record="true">
     <summary>
       Recorded after the password is entered for authentication in the GAIA Sign-
