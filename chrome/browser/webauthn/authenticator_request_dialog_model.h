@@ -81,90 +81,91 @@ class AuthenticatorRequestDialogController;
 // This lists the events on the model. Each becomes:
 //   1) A virtual method on AuthenticatorRequestDialogModel::Observer.
 //   2) A method on the Model that broadcasts the event to all observers.
-#define AUTHENTICATOR_EVENTS                                                     \
-  /* Cancels the flow as a result of the user clicking `Cancel` on the UI.       \
-   * Valid action at all steps. */                                               \
-  AUTHENTICATOR_REQUEST_EVENT_0(CancelAuthenticatorRequest)                      \
-  /* Contacts the "priority" paired phone. This is the phone from sync if        \
-   * there are a priori discovered GPM passkeys, or the first phone on the       \
-   * list otherwise. Only valid to call if |model_->priority_phone_name|         \
-   * contains a value. */                                                        \
-  AUTHENTICATOR_REQUEST_EVENT_0(ContactPriorityPhone)                            \
-  /* Continues with the BLE/caBLE flow now that the Bluetooth adapter is         \
-   * powered. Valid action when at step: kBlePowerOnManual,                      \
-   * kBlePowerOnAutomatic. */                                                    \
-  AUTHENTICATOR_REQUEST_EVENT_0(ContinueWithFlowAfterBleAdapterPowered)          \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                             \
-  /* Called when the power state of the Bluetooth adapter has changed. */        \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)                  \
-  /* Called when the UI should update the state of the buttons. */               \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnButtonsStateChanged)                           \
-  /* Called when the user cancelled WebAuthn request by clicking the "cancel"    \
-   * button or the back arrow in the UI dialog. */                               \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnCancelRequest)                                 \
-  /* Called when the user accepts the create passkey sheet. */                   \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                         \
-  /* Called when the user accepts passkey creation in the GPM bubble.            \
-   * TODO(enclave): Add transition to authentication or bootstrapping device.    \
-   */                                                                            \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreatePasskey)                              \
-  /* Called when the user accepts a bubble confirming that they want to start    \
-   * using passkeys. */                                                          \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMOnboardingAccepted)                         \
-  /* Called when the user clicks “Manage Devices” to manage their phones. */ \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnManageDevicesClicked)                          \
-  /* OnOffTheRecordInterstitialAccepted is called when the user accepts the      \
-   * interstitial that warns that platform/caBLE authenticators may record       \
-   * information even in incognito mode. */                                      \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnOffTheRecordInterstitialAccepted)              \
-  /* Called when a user closes the MagicArch window. */                          \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnRecoverSecurityDomainClosed)                   \
-  /* To be called when the Web Authentication request is complete. */            \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnRequestComplete)                               \
-  /* OnResidentCredentialConfirmed is called when a user accepts a dialog        \
-   * confirming that they're happy to create a resident credential. */           \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnResidentCredentialConfirmed)                   \
-  /* Called when the model corresponding to the current sheet of the UX flow     \
-   * was updated, so UI should update. */                                        \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnSheetModelChanged)                             \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnStartOver)                                     \
-  /* Called when the UX flow has navigated to a different step, so the UI        \
-   * should update. */                                                           \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnStepTransition)                                \
-  /* Called when the user accepts enrolling a device to use passkeys. */         \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnTrustThisComputer)                             \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnUserConfirmedPriorityMechanism)                \
-  /* Open the system dialog to grant BLE permission to Chrome. Valid action      \
-   * when at step: kBlePermissionMac. */                                         \
-  AUTHENTICATOR_REQUEST_EVENT_0(OpenBlePreferences)                              \
-  /* Turns on the BLE adapter automatically. Valid action when at step:          \
-   * kBlePowerOnAutomatic. */                                                    \
-  AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                               \
-  /* Show guidance about caBLE USB fallback. */                                  \
-  AUTHENTICATOR_REQUEST_EVENT_0(ShowCableUsbFallback)                            \
-  /* Restarts the UX flow. */                                                    \
-  AUTHENTICATOR_REQUEST_EVENT_0(StartOver)                                       \
-  /* Like `OnAccountPreselected()`, but this takes an index into `creds()`       \
-   * instead of a credential ID. */                                              \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnAccountPreselectedIndex, size_t)               \
-  /* OnAccountSelected is called when one of the accounts from |SelectAccount|   \
-   * has been picked. The argument is the index of the selected account in       \
-   * |creds()|. */                                                               \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnAccountSelected, size_t)                       \
-  /* OnAttestationPermissionResponse is called when the user either allows or    \
-   * disallows an attestation permission request. */                             \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnAttestationPermissionResponse, bool)           \
-  /* Called when the user enters the GPM pin in the UI (during initial setup     \
-   * or authentication). */                                                      \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinEntered, const std::u16string&)          \
-  /* Called when the user chooses an option of creating a GPM pin. The           \
-   * argument is true if the user chooses an arbitrary PIN, and false if the     \
-   * user chose to use a 6-digit PIN. */                                         \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinOptionChanged, bool)                     \
-  /* OnHavePIN is called when the user enters a PIN in the UI. */                \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnHavePIN, std::u16string)                       \
-  /* Called just before the model is destructed. */                              \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                                \
+#define AUTHENTICATOR_EVENTS                                                  \
+  /* Cancels the flow as a result of the user clicking `Cancel` on the */     \
+  /* UI. Valid action at all steps. */                                        \
+  AUTHENTICATOR_REQUEST_EVENT_0(CancelAuthenticatorRequest)                   \
+  /* Contacts the "priority" paired phone. This is the phone from sync if */  \
+  /* there are a priori discovered GPM passkeys, or the first phone on the */ \
+  /* list otherwise. Only valid to call if |model_->priority_phone_name| */   \
+  /* contains a value. */                                                     \
+  AUTHENTICATOR_REQUEST_EVENT_0(ContactPriorityPhone)                         \
+  /* Continues with the BLE/caBLE flow now that the Bluetooth adapter is */   \
+  /* powered. Valid action when at step: kBlePowerOnManual, */                \
+  /* kBlePowerOnAutomatic. */                                                 \
+  AUTHENTICATOR_REQUEST_EVENT_0(ContinueWithFlowAfterBleAdapterPowered)       \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
+  /* Called when the power state of the Bluetooth adapter has changed. */     \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)               \
+  /* Called when the UI should update the state of the buttons. */            \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnButtonsStateChanged)                        \
+  /* Called when the user cancelled WebAuthn request by clicking the */       \
+  /* "cancel" button or the back arrow in the UI dialog. */                   \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnCancelRequest)                              \
+  /* Called when the user accepts the create passkey sheet. */                \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                      \
+  /* Called when the user accepts passkey creation in the GPM bubble. */      \
+  /* TODO(enclave): Add transition to authentication or bootstrapping  */     \
+  /* device. */                                                               \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreatePasskey)                           \
+  /* Called when the user accepts a bubble confirming that they want to */    \
+  /* start using passkeys. */                                                 \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMOnboardingAccepted)                      \
+  /* Called when the user clicks “Manage Devices” to manage their */      \
+  /* phones. */                                                               \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnManageDevicesClicked)                       \
+  /* OnOffTheRecordInterstitialAccepted is called when the user accepts */    \
+  /* the interstitial that warns that platform/caBLE authenticators may */    \
+  /* record information even in incognito mode. */                            \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnOffTheRecordInterstitialAccepted)           \
+  /* Called when a user closes the MagicArch window. */                       \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnRecoverSecurityDomainClosed)                \
+  /* To be called when the Web Authentication request is complete. */         \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnRequestComplete)                            \
+  /* OnResidentCredentialConfirmed is called when a user accepts a dialog */  \
+  /* confirming that they're happy to create a resident credential. */        \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnResidentCredentialConfirmed)                \
+  /* Called when the model corresponding to the current sheet of the UX */    \
+  /* flow was updated, so UI should update. */                                \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnSheetModelChanged)                          \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnStartOver)                                  \
+  /* Called when the UX flow has navigated to a different step, so the UI */  \
+  /* should update. */                                                        \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnStepTransition)                             \
+  /* Called when the user accepts enrolling a device to use passkeys. */      \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnTrustThisComputer)                          \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnUserConfirmedPriorityMechanism)             \
+  /* Open the system dialog to grant BLE permission to Chrome. Valid */       \
+  /* action when at step: kBlePermissionMac. */                               \
+  AUTHENTICATOR_REQUEST_EVENT_0(OpenBlePreferences)                           \
+  /* Turns on the BLE adapter automatically. Valid action when at step: */    \
+  /* kBlePowerOnAutomatic. */                                                 \
+  AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                            \
+  /* Show guidance about caBLE USB fallback. */                               \
+  AUTHENTICATOR_REQUEST_EVENT_0(ShowCableUsbFallback)                         \
+  /* Restarts the UX flow. */                                                 \
+  AUTHENTICATOR_REQUEST_EVENT_0(StartOver)                                    \
+  /* Like `OnAccountPreselected()`, but this takes an index into `creds()` */ \
+  /* instead of a credential ID. */                                           \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnAccountPreselectedIndex, size_t)            \
+  /* OnAccountSelected is called when one of the accounts from  */            \
+  /* |SelectAccount| has been picked. The argument is the index of the */     \
+  /* selected account in |creds()|. */                                        \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnAccountSelected, size_t)                    \
+  /* OnAttestationPermissionResponse is called when the user either */        \
+  /* allows or disallows an attestation permission request. */                \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnAttestationPermissionResponse, bool)        \
+  /* Called when the user enters the GPM pin in the UI (during initial */     \
+  /* setup or authentication). */                                             \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinEntered, const std::u16string&)       \
+  /* Called when the user chooses an option of creating a GPM pin. The */     \
+  /* argument is true if the user chooses an arbitrary PIN, and false if */   \
+  /* the user chose to use a 6-digit PIN. */                                  \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinOptionChanged, bool)                  \
+  /* OnHavePIN is called when the user enters a PIN in the UI. */             \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnHavePIN, std::u16string)                    \
+  /* Called just before the model is destructed. */                           \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
                                 AuthenticatorRequestDialogModel*)
 
 struct AuthenticatorRequestDialogModel {
