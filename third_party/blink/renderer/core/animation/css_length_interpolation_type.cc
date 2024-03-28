@@ -30,19 +30,24 @@ CSSLengthInterpolationType::CSSLengthInterpolationType(
 class InheritedLengthChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedLengthChecker(const CSSProperty& property, const Length& length)
-      : property_(property), length_(length) {}
+  InheritedLengthChecker(const CSSProperty& property,
+                         bool get_length_success,
+                         const Length& length)
+      : property_(property),
+        get_length_success_(get_length_success),
+        length_(length) {}
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     Length parent_length;
-    LengthPropertyFunctions::GetLength(property_, *state.ParentStyle(),
-                                       parent_length);
-    return parent_length == length_;
+    bool success = LengthPropertyFunctions::GetLength(
+        property_, *state.ParentStyle(), parent_length);
+    return get_length_success_ == success && parent_length == length_;
   }
 
   const CSSProperty& property_;
+  bool get_length_success_;
   const Length length_;
 };
 
@@ -70,11 +75,11 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
   Length inherited_length;
-  LengthPropertyFunctions::GetLength(CssProperty(), *state.ParentStyle(),
-                                     inherited_length);
+  bool success = LengthPropertyFunctions::GetLength(
+      CssProperty(), *state.ParentStyle(), inherited_length);
   conversion_checkers.push_back(MakeGarbageCollected<InheritedLengthChecker>(
-      CssProperty(), inherited_length));
-  if (inherited_length.IsAuto()) {
+      CssProperty(), success, inherited_length));
+  if (!success) {
     // If the inherited value changes to a length, the InheritedLengthChecker
     // will invalidate the interpolation's cache.
     return nullptr;

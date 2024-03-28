@@ -159,4 +159,26 @@
     { at: 1.25, expect: '75px' },
   ]);
 
+  let parent_auto_style = document.createElement("style");
+  parent_auto_style.innerText = `
+    body { width: 300px; }
+    .parent { width: auto; }
+  `;
+  document.head.append(parent_auto_style);
+
+  test_interpolation({
+    property: 'width',
+    from: 'inherit',
+    to: `calc-size(auto, size * 0.5)`,
+  }, [
+    { at: -0.25, expect: '337.5px' },
+    { at: 0, expect: '300px' },
+    { at: 0.75, expect: '187.5px' },
+    { at: 1, expect: '150px' },
+    { at: 1.25, expect: '112.5px' },
+  ]);
+
+  parent_auto_style.remove();
+
+
 </script>
