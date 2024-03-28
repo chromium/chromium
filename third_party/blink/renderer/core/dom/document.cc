@@ -7450,12 +7450,16 @@ void Document::SetEncodingData(const DocumentEncodingData& new_data) {
   }
 }
 
-KURL Document::CompleteURL(const String& url) const {
-  return CompleteURLWithOverride(url, base_url_);
+KURL Document::CompleteURL(
+    const String& url,
+    const CompleteURLPreloadStatus preload_status) const {
+  return CompleteURLWithOverride(url, base_url_, preload_status);
 }
 
-KURL Document::CompleteURLWithOverride(const String& url,
-                                       const KURL& base_url_override) const {
+KURL Document::CompleteURLWithOverride(
+    const String& url,
+    const KURL& base_url_override,
+    CompleteURLPreloadStatus preload_status) const {
   DCHECK(base_url_override.IsEmpty() || base_url_override.IsValid());
 
   // Always return a null URL when passed a null string.
@@ -7466,7 +7470,13 @@ KURL Document::CompleteURLWithOverride(const String& url,
 
   KURL result = Encoding().IsValid() ? KURL(base_url_override, url, Encoding())
                                      : KURL(base_url_override, url);
-  if (should_record_sandboxed_srcdoc_baseurl_metrics_) {
+  // If the conditions are met for
+  // `should_record_sandboxed_srcdoc_baseurl_metrics_` to be set, we should
+  // only record the metric if there's no `base_element_url_` set via a base
+  // element. We must also check the preload status below, since a
+  // PreloadRequest could call this function before `base_element_url_` is set.
+  if (should_record_sandboxed_srcdoc_baseurl_metrics_ &&
+      base_element_url_.IsEmpty() && preload_status != kIsPreload) {
     // Compute the same thing assuming an empty base url, to see if it changes.
     // This will allow us to ignore trivial changes, such as 'https://foo.com'
     // resolving as 'https://foo.com/', which happens whether the base url is

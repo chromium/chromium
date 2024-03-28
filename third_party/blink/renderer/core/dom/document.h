@@ -920,13 +920,25 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://html.spec.whatwg.org/C/#fallback-base-url
   KURL FallbackBaseURL() const;
 
+  // If we call CompleteURL* during preload, it's possible that we may not
+  // have processed any <base> element the document might have
+  // (https://crbug.com/331806513), and so we should avoid triggering use counts
+  // for resolving relative urls into absolute urls in that case. The following
+  // enum allows us to detect calls originating from PreloadRequest.
+  // TODO(https://crbug.com/330744612): Remove `CompleteURLPreloadStatus` and
+  // related code once the associated issue is ready to be closed.
+  enum CompleteURLPreloadStatus { kIsNotPreload, kIsPreload };
   // Creates URL based on passed relative url and this documents base URL.
   // Depending on base URL value it is possible that parent document
   // base URL will be used instead. Uses CompleteURLWithOverride internally.
-  KURL CompleteURL(const String&) const;
+  KURL CompleteURL(
+      const String&,
+      const CompleteURLPreloadStatus preload_status = kIsNotPreload) const;
   // Creates URL based on passed relative url and passed base URL override.
-  KURL CompleteURLWithOverride(const String&,
-                               const KURL& base_url_override) const;
+  KURL CompleteURLWithOverride(
+      const String&,
+      const KURL& base_url_override,
+      const CompleteURLPreloadStatus preload_status = kIsNotPreload) const;
 
   // Determines whether a new document should take on the same origin as that of
   // the document which created it.

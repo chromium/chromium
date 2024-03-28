@@ -956,6 +956,23 @@ TEST_F(DocumentTest, SandboxedSrcdocUserCounts_BasicRelativeUrl) {
   url_test_helpers::RegisterMockedURLUnregister(mocked_url);
 }
 
+// A relative url in a sandboxed, srcdoc frame should not trigger a usecount
+// if the srcdoc document has defined a base element.
+TEST_F(DocumentTest,
+       SandboxedSrcdocUserCounts_BasicRelativeUrlWithBaseElement) {
+  String base_url("https://example.com/");
+  WebURL mocked_url = url_test_helpers::RegisterMockedURLLoadFromBase(
+      base_url, test::CoreTestDataPath(), "white-1x1.png", "image/png");
+  static constexpr char kSrcdocTemplate[] =
+      R"(<html><head><base href='%s' /></head>
+               <body><img src='white-1x1.png'></body></html>)";
+  std::string content =
+      base::StringPrintf(kSrcdocTemplate, base_url.Utf8().c_str());
+  NavigateSrcdocMaybeSandboxed(base_url, content, kIsSandboxed,
+                               kIsNotUseCounted);
+  url_test_helpers::RegisterMockedURLUnregister(mocked_url);
+}
+
 // An absolute url in a sandboxed, srcdoc frame should not trigger a usecount.
 TEST_F(DocumentTest, SandboxedSrcdocUserCounts_BasicAbsoluteUrl) {
   String base_url("https://example.com/");
