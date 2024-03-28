@@ -899,8 +899,12 @@ template("ios_app_bundle") {
       sources = [ "${_default_variant.bundle_gen_dir}/$_bundle_short_name" ]
       outputs = [ "$root_out_dir/$_bundle_short_name" ]
 
-      args = rebase_path(sources, root_build_dir) +
-             rebase_path(outputs, root_build_dir)
+      args = [
+               "--output-dir",
+               rebase_path(root_out_dir, root_build_dir),
+               "--relative-to",
+               rebase_path(_default_variant.bundle_gen_dir, root_build_dir),
+             ] + rebase_path(sources, root_build_dir)
     }
   }
 }
@@ -1101,6 +1105,100 @@ template("bundle_data_strings") {
     sources = get_target_outputs(":$_convert_target")
 
     outputs = [ invoker.output ]
+  }
+}
+
+# This template declares a bundle_data target that reference an assets
+# catalog so that is is compiled to the asset catalog of the generated
+# bundle.
+#
+# The target will ensure that only the files explicitly listed will be
+# compiled into the final application (i.e. it allow listing some of
+# the assets catalog content conditionally).
+#
+# The target requires that the files are located in a .xcassets bundle
+# in the repository (or generated via a script). This ensures that the
+# assets catalog is correctly visible in Xcode (though as usual, using
+# Xcode to make change to the .xcassets bundle will not be reflected in
+# the final build unless the target is updated in the gn configuration).
+#
+# Arguments
+#
+#     sources:
+#       required, list of strings, path to the files contained in the
+#       .xcassets bundle; this may contains a sub-set of the files on
+#       disk if some assets are only compiled conditionally
+#
+#     catalog:
+#       required, string, path to the .xcassets bundle; all path in
+#       sources must be relative to this path or the compilation will
+#       fail
+#
+# Example
+#
+#     bundle_data_xcassets("assets") {
+#       catalog = "Assets.xcassets"
+#       sources = [
+#         "Assets.xcassets/Color.colorset/Contents.json",
+#         "Assets.xcassets/Contents.json",
+#       ]
+#       if (includes_images) {
+#         sources += [
+#           "Assets.xcassets/Image.imageset/Contents.json",
+#           "Assets.xcassets/Image.imageset/Image.svg",
+#         ]
+#       }
+#     }
+template("bundle_data_xcassets") {
+  assert(defined(invoker.sources), "sources must be defined for $target_name")
+  assert(defined(invoker.catalog), "catalog must be defined for $target_name")
+
+  _target_name = target_name
+  _target_copy = target_name + "_copy"
+
+  action(_target_copy) {
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "testonly",
+                             "deps",
+                             "public_deps",
+                           ])
+
+    _catalog_name = get_path_info(invoker.catalog, "file")
+    _catalog_path = get_path_info(invoker.catalog, "dir")
+
+    assert(get_path_info(_catalog_name, "extension") == "xcassets",
+           "catalog must point to .xcassets bundle for $_target_name")
+
+    visibility = [ ":$_target_name" ]
+    script = "//build/config/ios/hardlink.py"
+
+    outputs = [ "$target_out_dir/$_catalog_name" ]
+    foreach(_source, sources) {
+      outputs += [ "$target_out_dir/" + rebase_path(_source, _catalog_path) ]
+    }
+
+    args = [
+             "--output-dir",
+             rebase_path(target_out_dir, root_build_dir),
+             "--relative-to",
+             rebase_path(_catalog_path, root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+
+  bundle_data(_target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "sources",
+                             "deps",
+                             "public_deps",
+                           ])
+
+    public_deps = [ ":$_target_copy" ]
+    sources = get_target_outputs(":$_target_copy")
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }
 

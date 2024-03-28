@@ -86,9 +86,14 @@ template("asset_catalog") {
     sources = _sources
     outputs = _outputs + [ _xcassets_dir ]
 
+    _source = get_path_info(_sources[0], "dir")
+
     args = [
-      rebase_path(get_path_info(_sources[0], "dir"), root_build_dir),
-      rebase_path(_output_dir, root_build_dir),
+      "--output-dir",
+      rebase_path(_xcassets_dir, root_build_dir),
+      "--relative-to",
+      rebase_path(get_path_info(_source, "dir"), root_build_dir),
+      rebase_path(_source, root_build_dir),
     ]
   }
 
