@@ -41,8 +41,10 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -59,6 +61,7 @@ import org.chromium.ui.test.util.UiRestriction;
     ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherMultiWindowTest {
     @ClassRule
