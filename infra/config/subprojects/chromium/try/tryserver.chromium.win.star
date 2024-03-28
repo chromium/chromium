@@ -404,14 +404,15 @@ try_.builder(
     os = os.WINDOWS_10,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # Enable when stable.
-    # main_list_view = "try",
-    # tryjob = try_.job(
-    #     # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
-    #     # out builder cache
-    #     cancel_stale = False,
-    # ),
+    main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
+        # out builder cache
+        cancel_stale = False,
+        # TODO(crbug.com/328175907) Enable after resources verified.
+        experiment_percentage = 50,
+    ),
 )
 
 try_.builder(
