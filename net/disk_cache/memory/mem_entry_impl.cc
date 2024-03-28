@@ -357,7 +357,7 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
   if (offset < 0 || buf_len < 0)
     return net::ERR_INVALID_ARGUMENT;
 
-  int max_file_size = backend_->MaxFileSize();
+  const int max_file_size = backend_->MaxFileSize();
 
   int end_offset;
   if (offset > max_file_size || buf_len > max_file_size ||
@@ -366,30 +366,43 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
     return net::ERR_FAILED;
   }
 
-  int old_data_size = data_[index].size();
-  if (truncate || old_data_size < end_offset) {
-    int delta = end_offset - old_data_size;
+  std::vector<char>& data = data_[index];
+  const int old_data_size = base::checked_cast<int>(data.size());
+
+  // Overwrite any data that fits inside the existing file.
+  if (offset < old_data_size && buf_len > 0) {
+    const int bytes_to_copy = std::min(old_data_size - offset, buf_len);
+    std::copy(buf->data(), buf->data() + bytes_to_copy, data.begin() + offset);
+  }
+
+  const int delta = end_offset - old_data_size;
+  if (truncate && delta < 0) {
+    CHECK(!backend_->HasExceededStorageSize());
+    backend_->ModifyStorageSize(delta);
+    CHECK(!backend_->HasExceededStorageSize());
+    data.resize(end_offset);
+  } else if (delta > 0) {
     backend_->ModifyStorageSize(delta);
     if (backend_->HasExceededStorageSize()) {
       backend_->ModifyStorageSize(-delta);
       return net::ERR_INSUFFICIENT_RESOURCES;
     }
 
-    data_[index].resize(end_offset);
-
     // Zero fill any hole.
-    if (old_data_size < offset) {
-      std::fill(data_[index].begin() + old_data_size,
-                data_[index].begin() + offset, 0);
+    int current_size = old_data_size;
+    if (current_size < offset) {
+      data.resize(offset);
+      current_size = offset;
+    }
+    // Append any data after the old end of the file.
+    if (end_offset > current_size) {
+      data.insert(data.end(), buf->data() + current_size - offset,
+                  buf->data() + buf_len);
     }
   }
 
   UpdateStateOnUse(ENTRY_WAS_MODIFIED);
 
-  if (!buf_len)
-    return 0;
-
-  std::copy(buf->data(), buf->data() + buf_len, data_[index].begin() + offset);
   return buf_len;
 }
 
