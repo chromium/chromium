@@ -407,6 +407,8 @@ export class Sparkle {
       gl.deleteProgram(this.program);
       gl.deleteShader(this.vertexShader);
       gl.deleteShader(this.fragmentShader);
+      // https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_lose_context/loseContext
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
     }
 
     this.drawSurface = null;

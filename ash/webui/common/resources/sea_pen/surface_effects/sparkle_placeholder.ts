@@ -76,7 +76,7 @@ export class SparklePlaceholderElement extends PolymerElement {
 
     if (this.shadowRoot != null &&
         this.sparkleImpl.element.parentNode === this.shadowRoot) {
-      this.sparkleImpl.stopRendering();
+      this.sparkleImpl.dispose();
     }
   }
 
