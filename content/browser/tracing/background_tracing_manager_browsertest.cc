@@ -271,11 +271,12 @@ class TestBackgroundTracingHelper
             perfetto::trace_processor::TraceProcessorStorage::CreateInstance(
                 perfetto::trace_processor::Config());
 
-    size_t data_length = proto_file_contents_.length();
-    std::unique_ptr<uint8_t[]> data(new uint8_t[data_length]);
-    memcpy(data.get(), proto_file_contents_.data(), data_length);
+    perfetto::trace_processor::TraceBlob blob =
+        perfetto::trace_processor::TraceBlob::CopyFrom(
+            proto_file_contents_.data(), proto_file_contents_.length());
 
-    auto parse_status = trace_processor->Parse(std::move(data), data_length);
+    auto parse_status = trace_processor->Parse(
+        perfetto::trace_processor::TraceBlobView(std::move(blob)));
     ASSERT_TRUE(parse_status.ok()) << parse_status.message();
 
     trace_processor->NotifyEndOfFile();
