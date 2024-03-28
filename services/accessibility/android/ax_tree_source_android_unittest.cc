@@ -1289,7 +1289,7 @@ TEST_F(AXTreeSourceAndroidTest, SyncFocus) {
 
 TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   auto event = AXEventData::New();
-  event->source_id = 10;
+  event->source_id = 11;
   event->task_id = 1;
   event->event_type = AXEventType::WINDOW_CONTENT_CHANGED;
 
@@ -1300,9 +1300,16 @@ TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   root_window->root_node_id = 10;
 
   event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* root_node = event->node_data.back().get();
+  root_node->id = 10;
+  root_node->window_id = 100;
+  SetProperty(root_node, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({11}));
+
+  event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* range_widget = event->node_data.back().get();
   range_widget->range_info = AXRangeInfoData::New();
-  range_widget->id = 10;
+  range_widget->id = 11;
 
   // State description changed event from range widget.
   std::vector<int> content_change_types = {
@@ -1316,9 +1323,11 @@ TEST_F(AXTreeSourceAndroidTest, StateDescriptionChangedEvent) {
   // State description changed event from non range widget.
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* not_range_widget = event->node_data.back().get();
-  not_range_widget->id = 11;
+  not_range_widget->id = 12;
 
-  event->source_id = 11;
+  event->source_id = 12;
+  SetProperty(root_node, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({11, 12}));
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_TRUE(last_dispatched_events().empty());
 }
