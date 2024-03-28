@@ -146,8 +146,9 @@ enum class WebappInstallSource {
 
   IWA_DEV_UI = 32,
 
-  // Web apps installed via almanac://install-app navigation, see
-  // AppInstallNavigationThrottle.
+  // Web apps installed via almanac://install-app navigation, ChromeOS only, see
+  // [App Install
+  // Service](../../chrome/browser/apps/app_service/app_install/README.md).
   ALMANAC_INSTALL_APP_URI = 33,
 
   // Add any new values above this one.
