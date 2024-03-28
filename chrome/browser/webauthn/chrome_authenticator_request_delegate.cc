@@ -1251,8 +1251,9 @@ void ChromeAuthenticatorRequestDelegate::OnStepTransition() {
 
     if (dialog_controller_->account_state() == AccountState::kEmpty) {
       // The user has set a PIN to create the account.
+      gpm_pin_stashed_ = dialog_controller_->TakeGPMPin();
       enclave_manager_->SetupWithPIN(
-          dialog_controller_->TakeGPMPin(),
+          *gpm_pin_stashed_,
           base::BindOnce(&ChromeAuthenticatorRequestDelegate::OnDeviceAdded,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
