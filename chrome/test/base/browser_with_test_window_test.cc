@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -227,6 +228,11 @@ void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
   NavigateAndCommit(contents, url);
   contents->UpdateTitleForEntry(contents->GetController().GetActiveEntry(),
                                 title);
+}
+
+void BrowserWithTestWindowTest::FocusMainFrameOfActiveWebContents() {
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::FocusWebContentsOnFrame(contents, contents->GetPrimaryMainFrame());
 }
 
 std::string BrowserWithTestWindowTest::GetDefaultProfileName() {

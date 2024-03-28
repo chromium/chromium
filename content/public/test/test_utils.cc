@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -298,6 +299,16 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
   };
 
   Awaiter(web_contents).Await();
+}
+
+void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh) {
+  WebContentsImpl* contents = static_cast<WebContentsImpl*>(web_contents);
+  FrameTreeNode* node =
+      contents->GetPrimaryFrameTree().FindByID(rfh->GetFrameTreeNodeId());
+  CHECK(node);
+  CHECK_EQ(node->current_frame_host(), rfh);
+  contents->GetPrimaryFrameTree().SetFocusedFrame(
+      node, node->current_frame_host()->GetSiteInstance()->group());
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)

@@ -190,6 +190,10 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
                                            const GURL& url,
                                            const std::u16string& title);
 
+  // Sets the focused frame to the main frame of the active WebContents, for
+  // tests that rely on the focused frame not being null.
+  void FocusMainFrameOfActiveWebContents();
+
   // Returns the profile name used for the profile created in SetUp() by
   // default.
   // Subclasses can override to change the profile name.

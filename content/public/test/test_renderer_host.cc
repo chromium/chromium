@@ -28,6 +28,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/content_browser_consistency_checker.h"
 #include "content/test/test_navigation_url_loader_factory.h"
 #include "content/test/test_page_factory.h"
@@ -224,13 +225,7 @@ void RenderViewHostTestHarness::FocusWebContentsOnMainFrame() {
 
 void RenderViewHostTestHarness::FocusWebContentsOnFrame(
     content::RenderFrameHost* rfh) {
-  TestWebContents* contents = static_cast<TestWebContents*>(web_contents());
-  FrameTreeNode* node =
-      contents->GetPrimaryFrameTree().FindByID(rfh->GetFrameTreeNodeId());
-  CHECK(node);
-  CHECK_EQ(node->current_frame_host(), rfh);
-  contents->GetPrimaryFrameTree().SetFocusedFrame(
-      node, node->current_frame_host()->GetSiteInstance()->group());
+  content::FocusWebContentsOnFrame(web_contents(), rfh);
 }
 
 void RenderViewHostTestHarness::NavigateAndCommit(
