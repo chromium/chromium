@@ -47,7 +47,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/service/sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -83,6 +82,15 @@ gfx::Image GetGaiaAccountImage(Profile* profile) {
         .account_image;
   }
   return gfx::Image();
+}
+
+// Expected to be called when there is a sync error.
+// Returning true for non sync paused error.
+bool IsErrorSyncPaused(Profile* profile) {
+  std::optional<AvatarSyncErrorType> error = ::GetAvatarSyncErrorType(profile);
+  CHECK(error);
+  return error == AvatarSyncErrorType::kSyncPaused &&
+         AccountConsistencyModeManager::IsDiceEnabledForProfile(profile);
 }
 
 // Expected to be called when Management is set.
@@ -127,21 +135,19 @@ enum class ButtonState {
 
 namespace {
 
-class StateProvider;
-class ExplicitStateProvider;
-class SyncErrorStateProvider;
-
-// Allows getting data from the underlying implementation of a `StateProvider`.
-// `StateVisitor::visit()` overrides to be added based on the need.
-class StateVisitor {
- public:
-  virtual void visit(const ExplicitStateProvider* state_provider) = 0;
-  virtual void visit(const SyncErrorStateProvider* state_provider) = 0;
+enum class ElementToUpdate {
+  kText,
+  kIcon,
+  kAll,
 };
+
+class StateProvider;
 
 class StateObserver {
  public:
-  virtual void OnStateProviderUpdateRequest(StateProvider* state_provider) = 0;
+  virtual void OnStateProviderUpdateRequest(
+      StateProvider* state_provider,
+      ElementToUpdate element_to_update) = 0;
 
   virtual ~StateObserver() = default;
 };
@@ -151,13 +157,6 @@ class StateObserver {
 // order to affect their active status.
 class StateProvider {
  public:
-  // The constructor should not call any function that would end up calling
-  // `RequestUpdate()` as it could end up trying to compute the active state,
-  // which is not guaranteed to return a valid state at this point since all the
-  // main states might not be created yet.
-  // Consider overriding `Init()` if you need to add a potential code to
-  // `RequestUpdate()`. The init method will be
-  // called right after all the main states are created.
   explicit StateProvider(StateObserver& state_observer)
       : state_observer_(state_observer) {}
 
@@ -168,20 +167,9 @@ class StateProvider {
   // when a state activation changes.
   virtual bool IsActive() const = 0;
 
-  // This method should be used to initialize anything that could potentially
-  // call a `RequestUpdate()` which would end up computing the active state.
-  // This method will be called after all main states are created, making sure
-  // that an active state will be correctly computed.
-  virtual void Init() {}
-
-  // This update request will attempt to update the text shown on the button.
-  // The update will only go through if the requesting state was the main button
-  // active one and is now inactive or if it is currently the main active one.
-  // Therefore every time a `StateProvider` expects a change of internal state
-  // it should call this method to attempt to propagate the changes.
-  void RequestUpdate() { state_observer_->OnStateProviderUpdateRequest(this); }
-
-  virtual void accept(StateVisitor& visitor) const {}
+  void RequestUpdate(ElementToUpdate element_to_update) {
+    state_observer_->OnStateProviderUpdateRequest(this, element_to_update);
+  }
 
   virtual ~StateProvider() = default;
 
@@ -203,8 +191,12 @@ class PrivateStateProvider : public StateProvider, public BrowserListObserver {
   bool IsActive() const override { return true; }
 
   // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override { RequestUpdate(); }
-  void OnBrowserRemoved(Browser* browser) override { RequestUpdate(); }
+  void OnBrowserAdded(Browser* browser) override {
+    RequestUpdate(ElementToUpdate::kAll);
+  }
+  void OnBrowserRemoved(Browser* browser) override {
+    RequestUpdate(ElementToUpdate::kAll);
+  }
 
  private:
   base::ScopedObservation<BrowserList, BrowserListObserver>
@@ -213,21 +205,17 @@ class PrivateStateProvider : public StateProvider, public BrowserListObserver {
 
 class ExplicitStateProvider : public StateProvider {
  public:
-  explicit ExplicitStateProvider(StateObserver& state_observer,
-                                 const std::u16string& explicit_text)
-      : StateProvider(state_observer), explicit_text_(explicit_text) {}
+  explicit ExplicitStateProvider(StateObserver& state_observer)
+      : StateProvider(state_observer) {}
   ~ExplicitStateProvider() override = default;
 
-  // StateProvider:
   bool IsActive() const override { return active_; }
-
-  std::u16string GetExplicitText() const { return explicit_text_; }
 
   // Used as the callback closure to the setter of the explicit state,
   // or when overriding the explicit state by another one.
   void Clear() {
     active_ = false;
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kAll);
   }
 
   base::WeakPtr<ExplicitStateProvider> GetWeakPtr() {
@@ -235,12 +223,7 @@ class ExplicitStateProvider : public StateProvider {
   }
 
  private:
-  // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
-
   bool active_ = true;
-
-  const std::u16string explicit_text_;
 
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
@@ -260,6 +243,10 @@ class ShowIdentityNameStateProvider : public StateProvider,
         IdentityManagerFactory::GetForProfile(&profile);
     CHECK(identity_manager);
     identity_manager_observation_.Observe(identity_manager);
+    if (identity_manager->AreRefreshTokensLoaded()) {
+      OnRefreshTokensLoaded();
+    }
+
     avatar_button_observation_.Observe(&avatar_toolbar_button);
   }
 
@@ -267,16 +254,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
     avatar_button_observation_.Reset();
   }
 
-  // StateProvider:
   bool IsActive() const override { return show_identity_request_count_ > 0; }
-
-  void Init() override {
-    if (IdentityManagerFactory::GetForProfile(&profile_.get())
-            ->AreRefreshTokensLoaded()) {
-      // Will potentially call a `RequestUpdate()`.
-      OnRefreshTokensLoaded();
-    }
-  }
 
   // IdentityManager::Observer:
   // Needed if the first sync promo account should be displayed.
@@ -311,8 +289,10 @@ class ShowIdentityNameStateProvider : public StateProvider,
       return;
     }
 
-    if (!IdentityManagerFactory::GetForProfile(&profile_.get())
-             ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    CoreAccountInfo account =
+        IdentityManagerFactory::GetForProfile(&profile_.get())
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    if (account.IsEmpty()) {
       return;
     }
 
@@ -341,19 +321,27 @@ class ShowIdentityNameStateProvider : public StateProvider,
     ShowIdentityName();
   }
 
-  void OnIconUpdated() override {
+  void OnIconUpdated() override { MaybeShowIdentityName(); }
+
+ private:
+  void UpdateButtonIcon() {
+    if (!avatar_toolbar_button_->GetWidget()) {
+      return;
+    }
+
+    RequestUpdate(ElementToUpdate::kIcon);
+
     // Try to show the name if we were waiting for an image.
     MaybeShowIdentityName();
   }
 
- private:
   // Initiates showing the identity.
   void OnUserIdentityChanged() {
     signin_ui_util::RecordAnimatedIdentityTriggered(&profile_.get());
     // On any following icon update the name will be attempted to be shown when
     // the image is ready.
     waiting_for_image_ = true;
-    MaybeShowIdentityName();
+    UpdateButtonIcon();
   }
 
   // Should be called when the icon is updated. This may trigger theshowing of
@@ -380,7 +368,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
     ++show_identity_request_count_;
     waiting_for_image_ = false;
 
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kText);
 
     // Hide the pill after a while.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -421,7 +409,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
     show_identity_request_count_ = false;
     has_in_product_help_promo_ = false;
 
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kAll);
   }
 
   const raw_ref<Profile> profile_;
@@ -458,21 +446,11 @@ class SyncErrorStateProvider : public StateProvider,
     }
   }
 
-  // StateProvider:
-  bool IsActive() const override { return last_avatar_error_.has_value(); }
-
-  // Returning true for non sync paused error.
-  bool IsErrorSyncPaused() const {
-    return last_avatar_error_ == AvatarSyncErrorType::kSyncPaused &&
-           AccountConsistencyModeManager::IsDiceEnabledForProfile(
-               &profile_.get());
+  bool IsActive() const override {
+    return ::GetAvatarSyncErrorType(&profile_.get()).has_value();
   }
 
  private:
-  // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
-
-  // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override {
     const std::optional<AvatarSyncErrorType> error =
         ::GetAvatarSyncErrorType(&profile_.get());
@@ -481,7 +459,7 @@ class SyncErrorStateProvider : public StateProvider,
     }
 
     last_avatar_error_ = error;
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kAll);
   }
 
   void OnSyncShutdown(syncer::SyncService*) override {
@@ -531,12 +509,7 @@ class SigninPausedStateProvider : public StateProvider,
       return;
     }
 
-    RequestUpdate();
-  }
-
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override {
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kAll);
   }
 
   void OnIdentityManagerShutdown(signin::IdentityManager*) override {
@@ -572,11 +545,13 @@ class ManagementStateProvider : public StateProvider,
     pref_change_registrar_.Add(
         prefs::kCustomProfileLabel,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr(),
+                            ElementToUpdate::kText));
     pref_change_registrar_.Add(
         prefs::kProfileLabelPreset,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr(),
+                            ElementToUpdate::kText));
   }
 
   ~ManagementStateProvider() override { BrowserList::RemoveObserver(this); }
@@ -600,7 +575,7 @@ class ManagementStateProvider : public StateProvider,
     user_accepted_account_management_ =
         chrome::enterprise_util::UserAcceptedAccountManagement(&profile_.get());
     if (!user_accepted_account_management_) {
-      RequestUpdate();
+      RequestUpdate(ElementToUpdate::kAll);
       return;
     }
 
@@ -617,14 +592,14 @@ class ManagementStateProvider : public StateProvider,
       enterprise_text_hide_scheduled_ = true;
       temporarily_showing_ = true;
     }
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kText);
   }
 
   void ClearTransientText() {
     CHECK(IsTransient());
 
     temporarily_showing_ = false;
-    RequestUpdate();
+    RequestUpdate(ElementToUpdate::kAll);
     avatar_toolbar_button_
         ->NotifyManagementTransientTextClearedForTesting();  // IN-TEST
   }
@@ -661,30 +636,6 @@ class NormalStateProvider : public StateProvider {
   bool IsActive() const override { return true; }
 };
 
-// Allows getting the underlying implementation of `StateProvider` given a
-// generic `StateProvider`.
-class StateProviderGetter : public StateVisitor {
- public:
-  explicit StateProviderGetter(const StateProvider& state_provider) {
-    state_provider.accept(*this);
-  }
-
-  const ExplicitStateProvider* AsExplicit() { return explicit_state_; }
-  const SyncErrorStateProvider* AsSyncError() { return sync_error_state_; }
-
- private:
-  void visit(const ExplicitStateProvider* state_provider) override {
-    explicit_state_ = state_provider;
-  }
-
-  void visit(const SyncErrorStateProvider* state_provider) override {
-    sync_error_state_ = state_provider;
-  }
-
-  raw_ptr<const ExplicitStateProvider> explicit_state_ = nullptr;
-  raw_ptr<const SyncErrorStateProvider> sync_error_state_ = nullptr;
-};
-
 }  // namespace
 
 // Container of all the states and returns the active state with the highest
@@ -704,59 +655,6 @@ class StateManager : public StateObserver,
   explicit StateManager(AvatarToolbarButton& avatar_toolbar_button,
                         Browser* browser)
       : avatar_toolbar_button_(avatar_toolbar_button) {
-    // Creates the main states and listeners.
-    CreateStatesAndListeners(browser);
-    ComputeButtonActiveState();
-  }
-  ~StateManager() override = default;
-
-  // This needs to be separated from the constructor since it might call
-  // updates, which will try to access the `StateManager`.
-  void InitializeStates() {
-    // States should initialize here, making sure that this should happen after
-    // all main states are created. This would allow the `Init()` functions of
-    // state to call `ComputeButtonActiveState()`. If this was done in their
-    // constructor there could be a chance that no active state exist yet.
-    for (auto& state : states_) {
-      state.second->Init();
-    }
-    ComputeButtonActiveState();
-  }
-
-  ButtonState GetButtonActiveState() const {
-    return current_active_state_pair_->first;
-  }
-
-  // To be used with `StateProviderGetter` to get more useful type.
-  const StateProvider* GetActiveStateProvider() const {
-    return current_active_state_pair_->second.get();
-  }
-
-  // Special setter for the explicit state as it is controlled externally.
-  void SetExplicitStateProvider(
-      std::unique_ptr<ExplicitStateProvider> explicit_state_provider) {
-    if (auto it = states_.find(ButtonState::kExplicitTextShowing);
-        it != states_.end()) {
-      // Attempt to clear existing states if not already done.
-      static_cast<ExplicitStateProvider*>(it->second.get())->Clear();
-    }
-
-    // Invalidate the pointer as the map will reorder it's element when adding a
-    // new state and the pointer will not be valid anymore. The value will be
-    // set later again with `ComputeButtonActiveState()`.
-    current_active_state_pair_ = nullptr;
-    // Add the new state.
-    states_[ButtonState::kExplicitTextShowing] =
-        std::move(explicit_state_provider);
-
-    // Recompute the button active state after adding a new state.
-    ComputeButtonActiveState();
-    UpdateButtonText();
-  }
-
- private:
-  // Creates all main states and attach listeners.
-  void CreateStatesAndListeners(Browser* browser) {
     // Add each possible state for each Profile type or browser configuration,
     // since this structure is tied to Browser, in which a Profile cannot
     // change, it is correct to initialize the possible fixed states once.
@@ -773,7 +671,7 @@ class StateManager : public StateObserver,
     if (profile->IsRegularProfile()) {
       states_[ButtonState::kShowIdentityName] =
           std::make_unique<ShowIdentityNameStateProvider>(
-              /*state_observer=*/*this, *profile, avatar_toolbar_button_.get());
+              /*state_observer=*/*this, *profile, avatar_toolbar_button);
 
       // Will also be active for SyncPaused state.
       states_[ButtonState::kSyncError] =
@@ -785,8 +683,7 @@ class StateManager : public StateObserver,
         // Contains both Work and School.
         states_[ButtonState::kManagement] =
             std::make_unique<ManagementStateProvider>(
-                /*state_observer=*/*this, *profile,
-                avatar_toolbar_button_.get());
+                /*state_observer=*/*this, *profile, avatar_toolbar_button);
       }
 #endif
 
@@ -821,20 +718,50 @@ class StateManager : public StateObserver,
     states_[ButtonState::kNormal] =
         std::make_unique<NormalStateProvider>(/*state_observer=*/*this);
   }
+  ~StateManager() override = default;
+
+  // Computes and returns the current active state with the highest priority.
+  // Multiple states could be active at the same time.
+  ButtonState ComputeButtonActiveState() {
+    // Traverse the map of states sorted by their priority set in `ButtonState`.
+    for (auto& state_pair : states_) {
+      // Return the first state that is active.
+      if (state_pair.second->IsActive()) {
+        current_active_state_ = state_pair.second.get();
+        // TODO(b/324018028): this could return the state provider itself, if
+        // the information can be get from it later.
+        return state_pair.first;
+      }
+    }
+
+    NOTREACHED_NORETURN()
+        << "There should at least be one active state in the map.";
+  }
+
+  // Special setter for the explicit state as it is controlled externally.
+  void SetExplicitStateProvider(
+      std::unique_ptr<ExplicitStateProvider> explicit_state_provider) {
+    if (auto it = states_.find(ButtonState::kExplicitTextShowing);
+        it != states_.end()) {
+      // Attempt to clear existing states if not already done.
+      static_cast<ExplicitStateProvider*>(it->second.get())->Clear();
+    }
+
+    states_[ButtonState::kExplicitTextShowing] =
+        std::move(explicit_state_provider);
+  }
 
   // StateObserver:
-  void OnStateProviderUpdateRequest(StateProvider* requesting_state) override {
+  void OnStateProviderUpdateRequest(
+      StateProvider* requesting_state,
+      ElementToUpdate element_to_update) override {
     if (!requesting_state->IsActive()) {
-      // Updates goes through if the requesting state was the current button
-      // active state, since we are now clearing it, otherwise we just ignore
-      // the request.
-      if (current_active_state_pair_->second.get() == requesting_state) {
-        // Recompute the new button active state as we are clearing the
+      // Updates everything if the requesting state was the current button
+      // active state, clearing it, otherwise we just ignore the request.
+      if (current_active_state_ == requesting_state) {
+        // Will recompute the new button active state as we are clearing the
         // requesting state effects.
-        ComputeButtonActiveState();
-        // Always update the text since we do not know exactly which state
-        // should now be active.
-        UpdateButtonText();
+        Update(ElementToUpdate::kAll);
       }
       return;
     }
@@ -847,74 +774,70 @@ class StateManager : public StateObserver,
     // because the requesting state despite being active, does not have the
     // highest current active priority, meaning that it's update request should
     // not have any effect.
-    if (current_active_state_pair_->second.get() != requesting_state) {
+    if (current_active_state_ != requesting_state) {
       return;
     }
-    UpdateButtonText();
+
+    Update(element_to_update);
   }
 
-  // Computes the current active state with the highest priority.
-  // Multiple states could be active at the same time.
-  void ComputeButtonActiveState() {
-    // Traverse the map of states sorted by their priority set in `ButtonState`.
-    for (auto& state_pair : states_) {
-      // Sets first state that is active.
-      if (state_pair.second->IsActive()) {
-        current_active_state_pair_ = &state_pair;
-        return;
-      }
+ private:
+  // This method will compute the button active state again with
+  // `ComputeButtonActiveState()` through the delegate.
+  void Update(ElementToUpdate element_to_update) {
+    if (element_to_update == ElementToUpdate::kAll ||
+        element_to_update == ElementToUpdate::kText) {
+      avatar_toolbar_button_->UpdateText();
     }
-
-    NOTREACHED() << "There should at least be one active state in the map.";
+    if (element_to_update == ElementToUpdate::kAll ||
+        element_to_update == ElementToUpdate::kIcon) {
+      avatar_toolbar_button_->UpdateIconWithoutObservers();
+    }
   }
 
-  // `AvatarToolbarButton::UpdateIcon()` will notify observers, the
-  // `ShowIdentityNameStateProvider` being one of the observers.
-  void UpdateButtonIcon() { avatar_toolbar_button_->UpdateIcon(); }
-
-  void UpdateButtonText() { avatar_toolbar_button_->UpdateText(); }
+  // Make sure to notify obsers, the `ShowIdentityNameStateProvider` being one
+  // of the observers.
+  void UpdateIconWithObservers() { avatar_toolbar_button_->UpdateIcon(); }
 
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(signin::IdentityManager*) override {
     scoped_identity_manager_observation_.Reset();
   }
 
-  void OnRefreshTokensLoaded() override { UpdateButtonIcon(); }
+  void OnRefreshTokensLoaded() override { UpdateIconWithObservers(); }
 
   void OnAccountsInCookieUpdated(const signin::AccountsInCookieJarInfo&,
                                  const GoogleServiceAuthError&) override {
-    UpdateButtonIcon();
+    UpdateIconWithObservers();
   }
 
   void OnExtendedAccountInfoUpdated(const AccountInfo&) override {
-    UpdateButtonIcon();
+    UpdateIconWithObservers();
   }
 
   void OnExtendedAccountInfoRemoved(const AccountInfo&) override {
-    UpdateButtonIcon();
+    UpdateIconWithObservers();
   }
 
   //  ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath&) override {
-    UpdateButtonIcon();
+    UpdateIconWithObservers();
   }
 
   void OnProfileHighResAvatarLoaded(const base::FilePath&) override {
-    UpdateButtonIcon();
+    UpdateIconWithObservers();
   }
 
   void OnProfileNameChanged(const base::FilePath&,
                             const std::u16string&) override {
-    UpdateButtonText();
+    Update(ElementToUpdate::kText);
   }
 
   base::flat_map<ButtonState, std::unique_ptr<StateProvider>> states_;
   raw_ref<AvatarToolbarButton> avatar_toolbar_button_;
 
   // Active state per the last request to `ComputeButtonActiveState()`.
-  // Pointer to the active element of `states_` with the highest priority.
-  raw_ptr<std::pair<ButtonState, std::unique_ptr<StateProvider>>>
-      current_active_state_pair_ = nullptr;
+  raw_ptr<StateProvider> current_active_state_ = nullptr;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -934,7 +857,10 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
     Browser* browser)
     : avatar_toolbar_button_(button),
       browser_(browser),
-      profile_(browser->profile()) {
+      profile_(browser->profile()),
+      state_manager_(
+          std::make_unique<internal::StateManager>(*avatar_toolbar_button_,
+                                                   browser)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS this button should only show as badging for Incognito, Guest and
   // captivie portal signin. It's only enabled for non captive portal Incognito
@@ -952,20 +878,8 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
 
 AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() = default;
 
-void AvatarToolbarButtonDelegate::InitializeStateManager() {
-  CHECK(!state_manager_);
-  state_manager_ = std::make_unique<internal::StateManager>(
-      *avatar_toolbar_button_, browser_);
-  state_manager_->InitializeStates();
-}
-
-bool AvatarToolbarButtonDelegate::IsStateManagerInitialized() const {
-  return state_manager_.get() != nullptr;
-}
-
 std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
-  DCHECK_NE(state_manager_->GetButtonActiveState(),
-            ButtonState::kIncognitoProfile);
+  DCHECK_NE(ComputeState(), ButtonState::kIncognitoProfile);
   return profiles::GetAvatarNameForProfile(profile_->GetPath());
 }
 
@@ -1025,6 +939,10 @@ int AvatarToolbarButtonDelegate::GetWindowCount() const {
   return BrowserList::GetOffTheRecordBrowsersActiveForProfile(profile_);
 }
 
+ButtonState AvatarToolbarButtonDelegate::ComputeState() const {
+  return state_manager_->ComputeButtonActiveState();
+}
+
 void AvatarToolbarButtonDelegate::OnThemeChanged(
     const ui::ColorProvider* color_provider) {
   // Update avatar color information in profile attributes.
@@ -1058,12 +976,16 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
   // Create the new explicit state with the clear text callback.
   std::unique_ptr<ExplicitStateProvider> explicit_state_provider =
       std::make_unique<ExplicitStateProvider>(
-          /*state_observer=*/*state_manager_, new_text);
+          /*state_observer=*/*state_manager_);
 
   ExplicitStateProvider* explicit_state_provider_ptr =
       explicit_state_provider.get();
   // Activate the state.
   state_manager_->SetExplicitStateProvider(std::move(explicit_state_provider));
+
+  // Prepare and update the button text.
+  explicit_text_ = new_text;
+  avatar_toolbar_button_->UpdateText();
 
   return base::ScopedClosureRunner(
       base::BindOnce(&ExplicitStateProvider::Clear,
@@ -1081,7 +1003,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
   if (features::IsChromeRefresh2023()) {
     color = color_provider->GetColor(kColorAvatarButtonHighlightDefault);
   }
-  switch (state_manager_->GetButtonActiveState()) {
+  switch (ComputeState()) {
     case ButtonState::kIncognitoProfile: {
       const int incognito_window_count = GetWindowCount();
       avatar_toolbar_button_->SetAccessibleName(
@@ -1100,21 +1022,12 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       text = GetShortProfileName();
       break;
     case ButtonState::kExplicitTextShowing: {
-      const internal::ExplicitStateProvider* explicit_state =
-          internal::StateProviderGetter(
-              *state_manager_->GetActiveStateProvider())
-              .AsExplicit();
-      CHECK(explicit_state);
-      text = explicit_state->GetExplicitText();
+      CHECK(!explicit_text_.empty());
+      text = explicit_text_;
       break;
     }
-    case ButtonState::kSyncError: {
-      const internal::SyncErrorStateProvider* sync_error_state =
-          internal::StateProviderGetter(
-              *state_manager_->GetActiveStateProvider())
-              .AsSyncError();
-      CHECK(sync_error_state);
-      if (sync_error_state->IsErrorSyncPaused()) {
+    case ButtonState::kSyncError:
+      if (IsErrorSyncPaused(profile_)) {
         color = color_provider->GetColor(kColorAvatarButtonHighlightSyncPaused);
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
       } else {
@@ -1122,7 +1035,6 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
         text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR);
       }
       break;
-    }
     case ButtonState::kSigninPaused:
       color = color_provider->GetColor(kColorAvatarButtonHighlightSigninPaused);
       text = l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED);
@@ -1179,24 +1091,18 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
 
 SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
     const ui::ColorProvider* const color_provider) const {
-  switch (state_manager_->GetButtonActiveState()) {
+  switch (ComputeState()) {
     case ButtonState::kIncognitoProfile:
       return color_provider->GetColor(
           kColorAvatarButtonHighlightIncognitoForeground);
-    case ButtonState::kSyncError: {
-      const internal::SyncErrorStateProvider* sync_error_state =
-          internal::StateProviderGetter(
-              *state_manager_->GetActiveStateProvider())
-              .AsSyncError();
-      CHECK(sync_error_state);
-      if (sync_error_state->IsErrorSyncPaused()) {
+    case ButtonState::kSyncError:
+      if (IsErrorSyncPaused(profile_)) {
         return color_provider->GetColor(
             kColorAvatarButtonHighlightNormalForeground);
       } else {
         return color_provider->GetColor(
             kColorAvatarButtonHighlightSyncErrorForeground);
       }
-    }
     case ButtonState::kGuestSession:
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kShowIdentityName:
@@ -1213,7 +1119,7 @@ SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
-  switch (state_manager_->GetButtonActiveState()) {
+  switch (ComputeState()) {
     case ButtonState::kIncognitoProfile:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
     case ButtonState::kGuestSession:
@@ -1247,21 +1153,15 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
   ChromeColorIds ripple_color_id = kColorToolbarInkDropRipple;
 
   if (avatar_toolbar_button_->IsLabelPresentAndVisible()) {
-    switch (state_manager_->GetButtonActiveState()) {
+    switch (ComputeState()) {
       case ButtonState::kIncognitoProfile:
         hover_color_id = kColorAvatarButtonIncognitoHover;
         break;
-      case ButtonState::kSyncError: {
-        const internal::SyncErrorStateProvider* sync_error_state =
-            internal::StateProviderGetter(
-                *state_manager_->GetActiveStateProvider())
-                .AsSyncError();
-        CHECK(sync_error_state);
-        if (sync_error_state->IsErrorSyncPaused()) {
+      case ButtonState::kSyncError:
+        if (IsErrorSyncPaused(profile_)) {
           ripple_color_id = kColorAvatarButtonNormalRipple;
         }
         break;
-      }
       case ButtonState::kGuestSession:
       case ButtonState::kExplicitTextShowing:
       case ButtonState::kShowIdentityName:
@@ -1282,7 +1182,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
 ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     int icon_size,
     SkColor icon_color) const {
-  switch (state_manager_->GetButtonActiveState()) {
+  switch (ComputeState()) {
     case ButtonState::kIncognitoProfile:
       return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
                                                 ? kIncognitoRefreshMenuIcon
@@ -1305,7 +1205,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
 }
 
 bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
-  switch (state_manager_->GetButtonActiveState()) {
+  switch (ComputeState()) {
     case ButtonState::kGuestSession:
     case ButtonState::kShowIdentityName:
     case ButtonState::kNormal:
