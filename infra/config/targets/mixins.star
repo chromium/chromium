@@ -1157,7 +1157,7 @@ targets.mixin(
         dimensions = {
             "cpu": "x86-64",
             "gpu": "1002:679e",
-            "os": "Mac-12.4",
+            "os": "Mac-12.7",
             "pool": "chromium.tests.gpu",
             "display_attached": "1",
         },

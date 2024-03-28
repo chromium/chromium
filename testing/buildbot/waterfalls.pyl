@@ -4559,12 +4559,7 @@
       'Mac Pro FYI Release (AMD)': {
         'os_type': 'mac',
         'browser_config': 'release',
-        # There are only two bots of this type in the Swarming pool right now,
-        # so we have to increase the default expiration time of 1 hour (3600
-        # seconds) to prevent webgl2_conformance_tests' shards from timing
-        # out.
         'mixins': [
-          'limited_capacity_bot',
           'mac_pro_amd_gpu',
         ],
         'test_suites': {
