@@ -38,10 +38,6 @@ void HistogramProtocolErrorLocation(enum JobProtocolErrorLocation location) {
                             location);
 }
 
-void LogConnectionIpPooling(bool pooled) {
-  UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.ConnectionIpPooled", pooled);
-}
-
 void LogStaleConnectionTime(base::TimeTicks start_time) {
   UMA_HISTOGRAM_TIMES("Net.QuicSession.StaleConnectionTime",
                       base::TimeTicks::Now() - start_time);

@@ -3193,11 +3193,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionIpPooled" enum="Boolean"
-    expires_after="2024-02-04">
-  <owner>renjietang@chromium.org</owner>
+    expires_after="2024-06-27">
+  <owner>nidhijaju@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     True if an active session already exists for a given Ip during connection.
+    Recorded when attempting to create a new session. Warning: this histogram
+    was expired from 2024-02-04 to 2024-03-28; data may be missing.
   </summary>
 </histogram>
 

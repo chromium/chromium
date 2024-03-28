@@ -1157,6 +1157,11 @@ quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
   return quic::ParsedQuicVersion::Unsupported();
 }
 
+// static
+void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
+  base::UmaHistogramBoolean("Net.QuicSession.ConnectionIpPooled", pooled);
+}
+
 bool QuicSessionPool::HasMatchingIpSession(
     const QuicSessionAliasKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,

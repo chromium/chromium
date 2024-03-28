@@ -513,6 +513,10 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       std::map<NetworkAnonymizationKey,
                std::unique_ptr<QuicCryptoClientConfigOwner>>;
 
+  // Records whether an active session already exists for a given IP address
+  // during connection.
+  static void LogConnectionIpPooling(bool pooled);
+
   bool HasMatchingIpSession(const QuicSessionAliasKey& key,
                             const std::vector<IPEndPoint>& ip_endpoints,
                             const std::set<std::string>& aliases,
