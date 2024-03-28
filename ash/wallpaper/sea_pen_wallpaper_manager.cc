@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,6 +30,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -82,15 +84,26 @@ bool MigrateFiles(const base::FilePath& source, const base::FilePath& target) {
 }
 
 std::vector<uint32_t> GetImageIdsImpl(const base::FilePath& directory) {
-  std::vector<base::FilePath> jpg_paths;
+  std::vector<std::pair<base::FilePath, base::Time>> jpg_paths_with_timestamp;
 
   base::FileEnumerator jpg_enumerator(directory,
                                       /*recursive=*/false,
                                       base::FileEnumerator::FILES, "*.jpg");
   for (base::FilePath jpg_path = jpg_enumerator.Next(); !jpg_path.empty();
        jpg_path = jpg_enumerator.Next()) {
-    jpg_paths.push_back(jpg_path);
+    const base::FileEnumerator::FileInfo info = jpg_enumerator.GetInfo();
+    jpg_paths_with_timestamp.emplace_back(jpg_path, info.GetLastModifiedTime());
   }
+
+  base::ranges::sort(jpg_paths_with_timestamp, base::ranges::greater(),
+                     &std::pair<base::FilePath, base::Time>::second);
+
+  std::vector<base::FilePath> jpg_paths;
+  jpg_paths.reserve(jpg_paths_with_timestamp.size());
+
+  base::ranges::transform(jpg_paths_with_timestamp,
+                          std::back_inserter(jpg_paths),
+                          &std::pair<base::FilePath, base::Time>::first);
 
   return GetIdsFromFilePaths(jpg_paths);
 }
@@ -146,7 +159,7 @@ void MaybeDeleteOldSeaPenImages(const base::FilePath& wallpaper_dir) {
                                   base::FileEnumerator::FILES);
   for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
        file_path = enumerator.Next()) {
-    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
+    const base::FileEnumerator::FileInfo info = enumerator.GetInfo();
     sea_pen_files.emplace_back(file_path, info.GetLastModifiedTime());
   }
 

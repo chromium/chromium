@@ -27,7 +27,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -321,6 +320,55 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
         kAccountId2, get_image_ids_future.GetCallback());
     EXPECT_THAT(get_image_ids_future.Take(),
                 testing::UnorderedElementsAre(987654321));
+  }
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetImageIdsSortedByLastModifiedTime) {
+  // Create images in the temp directory.
+  base::Time fake_last_modified_time;
+  ASSERT_TRUE(
+      base::Time::FromString("2018-03-05T16:16:16Z", &fake_last_modified_time));
+
+  for (uint32_t i = 1; i <= 5; i++) {
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), i * i},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
+
+    // File save does not respect base::Time::Now override as it will use actual
+    // file system stat calls, so set it manually.
+    const base::FilePath image_path =
+        sea_pen_wallpaper_manager_session_delegate()
+            ->GetStorageDirectory(kAccountId1)
+            .Append(base::NumberToString(i * i))
+            .AddExtension(".jpg");
+    ASSERT_TRUE(base::TouchFile(image_path, fake_last_modified_time,
+                                fake_last_modified_time));
+    fake_last_modified_time += base::Seconds(1);
+  }
+
+  {
+    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
+    sea_pen_wallpaper_manager()->GetImageIds(
+        kAccountId1, get_image_ids_future.GetCallback());
+    EXPECT_THAT(get_image_ids_future.Get(),
+                testing::ElementsAre(25, 16, 9, 4, 1));
+  }
+
+  {
+    // Mark 4 as newest.
+    base::test::TestFuture<bool> touch_file_future;
+    sea_pen_wallpaper_manager()->TouchFile(kAccountId1, 4);
+  }
+
+  {
+    base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
+    sea_pen_wallpaper_manager()->GetImageIds(
+        kAccountId1, get_image_ids_future.GetCallback());
+    EXPECT_THAT(get_image_ids_future.Get(),
+                testing::ElementsAre(4, 25, 16, 9, 1));
   }
 }
 
