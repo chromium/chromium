@@ -26,6 +26,7 @@ group("strings") {
     ":components_branded_strings",
     ":components_locale_settings",
     ":components_strings",
+    ":privacy_sandbox_strings",
     ":search_engine_descriptions_strings",
   ]
 }
