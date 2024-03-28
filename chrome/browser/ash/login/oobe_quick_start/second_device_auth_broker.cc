@@ -112,6 +112,9 @@ constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     {"account_not_supported_federated_dasher",
      SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kFederatedEnterpriseAccountNotSupported},
+    {"account_not_supported_kid",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kUnicornAccountNotEnabled},
 });
 
 // Network annotations.

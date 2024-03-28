@@ -824,6 +824,23 @@ TEST_F(SecondDeviceAuthBrokerTest,
                             AuthCodeRejectionResponseEq(expected_response)));
 }
 
+// A Unicorn account was used for QuickStart when QuickStart is disallowed for
+// the account.
+TEST_F(SecondDeviceAuthBrokerTest,
+       FetchAuthCodeReturnsRejectionResponseForDisabledUnicornAccounts) {
+  AddFakeRejectionResponse(kFakeEmail,
+                           /*rejection_reason=*/"ACCOUNT_NOT_SUPPORTED_KID");
+  AuthCodeRejectionResponse expected_response;
+  expected_response.email = kFakeEmail;
+  expected_response.reason =
+      AuthCodeRejectionResponse::Reason::kUnicornAccountNotEnabled;
+  SecondDeviceAuthBroker::AuthCodeResponse response =
+      FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
+                    /*certificate=*/GetCertificate());
+  EXPECT_THAT(response, VariantWith<AuthCodeRejectionResponse>(
+                            AuthCodeRejectionResponseEq(expected_response)));
+}
+
 TEST_F(
     SecondDeviceAuthBrokerTest,
     FetchAuthCodeReturnsRejectionResponseWithUnknownReasonForMissingRejectionReason) {
