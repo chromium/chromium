@@ -3872,7 +3872,7 @@ deps = {
 
   'src/chrome/app/theme/google_chrome': {
       'url': Var('chrome_git') + '/chrome/theme/google_chrome.git' + '@' +
-        'cef39d62439ac45581b8ded240ede5c3e44e0dcd',
+        '0c3c0e0b660eec622e4c6394a2c6e9937a69acd8',
       'condition': 'checkout_src_internal',
   },
 
