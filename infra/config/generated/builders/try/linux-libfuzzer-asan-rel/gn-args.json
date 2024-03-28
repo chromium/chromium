@@ -12,6 +12,7 @@
     "proprietary_codecs": true,
     "symbol_level": 0,
     "use_libfuzzer": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

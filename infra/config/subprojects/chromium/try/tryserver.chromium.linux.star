@@ -319,8 +319,6 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO: b/311312613 - enable Siso after fixing sanitizer build performance.
-    siso_enabled = False,
     tryjob = try_.job(),
 )
 
