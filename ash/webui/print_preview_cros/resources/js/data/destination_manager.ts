@@ -26,6 +26,8 @@ export enum DestinationManagerState {
   LOADED,
 }
 
+export const DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED =
+    'destination-manager.active-destination-changed';
 export const DESTINATION_MANAGER_STATE_CHANGED =
     'destination-manager.state-changed';
 
@@ -51,6 +53,7 @@ export class DestinationManager extends EventTarget {
     // supported by policy.
     PDF_DESTINATION,
   ];
+  private activeDestinationId: string = '';
   private initialDestinationsLoaded = false;
   private state = DestinationManagerState.NOT_LOADED;
 
@@ -62,13 +65,17 @@ export class DestinationManager extends EventTarget {
     this.destinationProvider = getDestinationProvider();
 
     // Request initial data.
-    // TODO(b/323421684): Once all initial fetch completes update has initial
-    // destinations and trigger event.
     this.updateState(DestinationManagerState.FETCHING);
-    this.destinationProvider.getLocalDestinations().then((): void => {
-      this.initialDestinationsLoaded = true;
-      this.updateState(DestinationManagerState.LOADED);
-    });
+    // TODO(b/323421684): Once the initial local destinations fetch completes
+    // update has initial destination set, determine relevant initial
+    // destination, and create the initial print ticket. If policy restricts
+    // fetching a destination type an empty destination list will be returned.
+    this.destinationProvider.getLocalDestinations().then(
+        (_destinations: Destination[]): void => {
+          this.updateActiveDestination(PDF_DESTINATION.id);
+          this.initialDestinationsLoaded = true;
+          this.updateState(DestinationManagerState.LOADED);
+        });
   }
 
   // TODO(b/323421684): Returns true if initial fetch has returned
@@ -87,6 +94,26 @@ export class DestinationManager extends EventTarget {
     return this.state;
   }
 
+  // Retrieve active/selected destination or null if the activeDestination ID
+  // cannot be found.
+  getActiveDestination(): Destination|null {
+    // Return early if active destination has not been initialized yet.
+    if (this.activeDestinationId === '') {
+      return null;
+    }
+
+    return this.destinations.find(
+               (d: Destination) => d.id === this.activeDestinationId) ??
+        null;
+  }
+
+  // Updates destination ID and triggers event.
+  private updateActiveDestination(destinationId: string): void {
+    this.activeDestinationId = destinationId;
+    this.dispatchEvent(
+        createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED));
+  }
+
   // Updates manager state and triggers event if state has actually changed.
   // No event fired if `nextState` matches current state.
   private updateState(nextState: DestinationManagerState): void {
@@ -101,6 +128,7 @@ export class DestinationManager extends EventTarget {
 
 declare global {
   interface HTMLElementEventMap {
+    [DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED]: CustomEvent<void>;
     [DESTINATION_MANAGER_STATE_CHANGED]: CustomEvent<void>;
   }
 }

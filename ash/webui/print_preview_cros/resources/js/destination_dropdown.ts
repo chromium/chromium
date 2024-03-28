@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_dropdown.html.js';
@@ -24,7 +25,18 @@ export class DestinationDropdownElement extends PolymerElement {
     return getTemplate();
   }
 
-  private controller = new DestinationDropdownController();
+  private controller: DestinationDropdownController;
+  private eventTracker = new EventTracker();
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.controller = new DestinationDropdownController(this.eventTracker);
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
+  }
 
   getControllerForTesting(): DestinationDropdownController {
     return this.controller;

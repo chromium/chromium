@@ -5,11 +5,11 @@
 import 'chrome://os-print/js/data/destination_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
-import {DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
 import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
-import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -91,5 +91,33 @@ suite('DestinationManager', () => {
         assertEquals(
             DestinationManagerState.LOADED, instance.getState(),
             'Fetch complete');
+      });
+
+  // Verify destination manager sets fallback destination to PDF if no other
+  // destinations are returned in local printer fetch.
+  test(
+      'starting and resolving getLocalPrinters triggers state active' +
+          ' destination update',
+      async () => {
+        assertEquals(
+            DestinationManagerState.FETCHING, instance.getState(),
+            'Fetch in progress');
+        assertEquals(
+            null, instance.getActiveDestination(),
+            'Fallback destination is not set before loading local printers');
+
+        const stateChanged = eventToPromise(
+            DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, instance);
+
+        // Resolve local printers fetch.
+        mockTimer.tick(testDelay);
+        await stateChanged;
+
+        assertEquals(
+            DestinationManagerState.LOADED, instance.getState(),
+            'Fetch complete');
+        assertDeepEquals(
+            PDF_DESTINATION, instance.getActiveDestination(),
+            `Fallback destination is ${PDF_DESTINATION.displayName}`);
       });
 });
