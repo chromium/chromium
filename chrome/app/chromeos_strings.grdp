@@ -86,7 +86,7 @@
     You can text from your computer, share your internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that new features may be added, and the exact set of features available to users differs according to the device model used.">
-    <ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph>Offer new features as they become available, and features vary by device
+    New features will be included as they become available, and features may vary by device.
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SINGLE_DEVICE_HEADER" desc="Label appearing over the name of an Android phone which this Chromebook can connect to.">
     Device detected
