@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -346,6 +347,8 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   // Helper class used by subclasses to acquire |lock_| if it exists.
   class SCOPED_LOCKABLE GPU_GLES2_EXPORT AutoLock {
+    STACK_ALLOCATED();
+
    public:
     explicit AutoLock(const SharedImageBacking* shared_image_backing)
         EXCLUSIVE_LOCK_FUNCTION(shared_image_backing->lock_);

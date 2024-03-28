@@ -8,9 +8,8 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -162,49 +161,55 @@ class SCOPED_LOCKABLE BasicAutoLock {
 // This is an implementation used for AutoTryLock templated on the lock type.
 template <class LockType>
 class SCOPED_LOCKABLE BasicAutoTryLock {
+  STACK_ALLOCATED();
+
  public:
   explicit BasicAutoTryLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
-      : lock_(lock), is_acquired_(lock_->Try()) {}
+      : lock_(lock), is_acquired_(lock_.Try()) {}
 
   BasicAutoTryLock(const BasicAutoTryLock&) = delete;
   BasicAutoTryLock& operator=(const BasicAutoTryLock&) = delete;
 
   ~BasicAutoTryLock() UNLOCK_FUNCTION() {
     if (is_acquired_) {
-      lock_->AssertAcquired();
-      lock_->Release();
+      lock_.AssertAcquired();
+      lock_.Release();
     }
   }
 
   bool is_acquired() const { return is_acquired_; }
 
  private:
-  const raw_ref<LockType> lock_;
+  LockType& lock_;
   const bool is_acquired_;
 };
 
 // This is an implementation used for AutoUnlock templated on the lock type.
 template <class LockType>
 class BasicAutoUnlock {
+  STACK_ALLOCATED();
+
  public:
   explicit BasicAutoUnlock(LockType& lock) : lock_(lock) {
     // We require our caller to have the lock.
-    lock_->AssertAcquired();
-    lock_->Release();
+    lock_.AssertAcquired();
+    lock_.Release();
   }
 
   BasicAutoUnlock(const BasicAutoUnlock&) = delete;
   BasicAutoUnlock& operator=(const BasicAutoUnlock&) = delete;
 
-  ~BasicAutoUnlock() { lock_->Acquire(); }
+  ~BasicAutoUnlock() { lock_.Acquire(); }
 
  private:
-  const raw_ref<LockType> lock_;
+  LockType& lock_;
 };
 
 // This is an implementation used for AutoLockMaybe templated on the lock type.
 template <class LockType>
 class SCOPED_LOCKABLE BasicAutoLockMaybe {
+  STACK_ALLOCATED();
+
  public:
   explicit BasicAutoLockMaybe(LockType* lock) EXCLUSIVE_LOCK_FUNCTION(lock)
       : lock_(lock) {
@@ -223,13 +228,15 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
   }
 
  private:
-  const raw_ptr<LockType> lock_;
+  LockType* const lock_;
 };
 
 // This is an implementation used for ReleasableAutoLock templated on the lock
 // type.
 template <class LockType>
 class SCOPED_LOCKABLE BasicReleasableAutoLock {
+  STACK_ALLOCATED();
+
  public:
   explicit BasicReleasableAutoLock(LockType* lock) EXCLUSIVE_LOCK_FUNCTION(lock)
       : lock_(lock) {
@@ -255,7 +262,7 @@ class SCOPED_LOCKABLE BasicReleasableAutoLock {
   }
 
  private:
-  raw_ptr<LockType> lock_;
+  LockType* lock_;
 };
 
 }  // namespace internal

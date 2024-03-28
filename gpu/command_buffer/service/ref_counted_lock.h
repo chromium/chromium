@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_REF_COUNTED_LOCK_H_
 #define GPU_COMMAND_BUFFER_SERVICE_REF_COUNTED_LOCK_H_
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "gpu/gpu_gles2_export.h"
@@ -50,8 +52,8 @@ class GPU_GLES2_EXPORT RefCountedLockHelperDrDc {
       lock_->AssertAcquired();
   }
 
-  std::unique_ptr<base::AutoLockMaybe> GetScopedDrDcLock() const {
-    return std::make_unique<base::AutoLockMaybe>(GetDrDcLockPtr());
+  std::optional<base::AutoLockMaybe> GetScopedDrDcLock() const {
+    return std::optional<base::AutoLockMaybe>(GetDrDcLockPtr());
   }
 
  private:

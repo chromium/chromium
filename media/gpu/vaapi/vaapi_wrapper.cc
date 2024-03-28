@@ -16,6 +16,7 @@
 #include <va/va_version.h>
 #include <xf86drm.h>
 
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -2879,9 +2880,9 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
   {
     TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface_copy");
 
-    std::unique_ptr<base::AutoUnlock> auto_unlock;
+    std::optional<base::AutoUnlock> auto_unlock;
     if (auto_lock) {
-      auto_unlock = std::make_unique<base::AutoUnlock>(*va_lock_);
+      auto_unlock.emplace(*va_lock_);
     }
 
     if (frame.format() == PIXEL_FORMAT_I420) {
