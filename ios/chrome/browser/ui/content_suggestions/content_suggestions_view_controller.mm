@@ -558,6 +558,7 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
         [self.mostVisitedModuleContainer.centerXAnchor
             constraintEqualToAnchor:self.view.centerXAnchor],
       ]];
+      [self.view layoutIfNeeded];
     }
 }
 
