@@ -89,12 +89,12 @@ DispatchEventResult MutationEvent::DispatchEvent(EventDispatcher& dispatcher) {
 
     auto info = event_util::IsDOMMutationEventType(type());
     CHECK(info.is_mutation_event);
-    // We should never fire trusted mutation events unless we've already
-    // checked that we have a listener attached.
-    CHECK(document.HasListenerType(info.listener_type));
 
-    UseCounter::Count(context, info.event_fired_feature);
-    UseCounter::Count(context, WebFeature::kAnyMutationEventFired);
+    // Only count events that have listeners:
+    if (document.HasListenerType(info.listener_type)) {
+      UseCounter::Count(context, info.event_fired_feature);
+      UseCounter::Count(context, WebFeature::kAnyMutationEventFired);
+    }
   }
 
   return Event::DispatchEvent(dispatcher);
