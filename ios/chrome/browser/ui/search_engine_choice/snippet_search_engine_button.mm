@@ -446,14 +446,8 @@ UILabel* SnippetLabel() {
   CHECK_NE(self.snippetText.length, 0ul, base::NotFatalUntil::M124)
       << base::SysNSStringToUTF8(self.searchEngineName) << " "
       << base::SysNSStringToUTF8(self.snippetText);
-  switch (_snippetButtonState) {
-    case SnippetButtonState::kExpanded:
-      return [NSString
-          stringWithFormat:@"%@. %@", self.searchEngineName, self.snippetText];
-    case SnippetButtonState::kOneLine:
-      return self.searchEngineName;
-  }
-  NOTREACHED_NORETURN();
+  return [NSString
+      stringWithFormat:@"%@. %@", self.searchEngineName, self.snippetText];
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
