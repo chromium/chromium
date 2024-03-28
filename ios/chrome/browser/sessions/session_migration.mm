@@ -15,10 +15,12 @@
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
@@ -92,6 +94,10 @@ class OptimizedSession {
   // Helper adding an item to the current object from its legacy
   // representation in `item`.
   void AddItem(CRWSessionStorage* item);
+
+  // Helper adding a tab group to the current object from its legacy
+  // representation in `tab_group`.
+  void AddTabGroup(SessionTabGroup* tab_group);
 
   ios::proto::WebStateListStorage metadata_storage_;
   std::vector<web::proto::WebStateStorage> storage_;
@@ -212,9 +218,21 @@ SessionWindowIOS* OptimizedSession::ToLegacy() const {
     selected_index = static_cast<NSUInteger>(active_index);
   }
 
-  // TODO(crbug.com/331367877): Implement migration for tab groups.
+  // Migrate tab groups.
+  NSMutableArray<SessionTabGroup*>* groups = [[NSMutableArray alloc] init];
+  for (int index = 0; index < metadata_storage_.groups_size(); ++index) {
+    const ios::proto::TabGroupStorage& group_storage =
+        metadata_storage_.groups(index);
+    SessionTabGroup* session_tab_group = [[SessionTabGroup alloc]
+        initWithRangeStart:group_storage.range().start()
+                rangeCount:group_storage.range().count()
+                     title:base::SysUTF8ToNSString(group_storage.title())
+                   colorId:static_cast<NSInteger>(group_storage.color())];
+    [groups addObject:session_tab_group];
+  }
+
   return [[SessionWindowIOS alloc] initWithSessions:items
-                                          tabGroups:@[]
+                                          tabGroups:groups
                                       selectedIndex:selected_index];
 }
 
@@ -271,6 +289,21 @@ OptimizedSession::OptimizedSession(SessionWindowIOS* legacy_session) {
   for (CRWSessionStorage* legacy_item in legacy_session.sessions) {
     AddItem(legacy_item);
   }
+  for (SessionTabGroup* legacy_tab_group in legacy_session.tabGroups) {
+    AddTabGroup(legacy_tab_group);
+  }
+}
+
+void OptimizedSession::AddTabGroup(SessionTabGroup* legacy_tab_group) {
+  ios::proto::TabGroupStorage& group_storage = *metadata_storage_.add_groups();
+  ios::proto::RangeIndex& range = *group_storage.mutable_range();
+
+  range.set_start(legacy_tab_group.rangeStart);
+  range.set_count(legacy_tab_group.rangeCount);
+
+  group_storage.set_title(base::SysNSStringToUTF8(legacy_tab_group.title));
+  group_storage.set_color(
+      static_cast<ios::proto::TabGroupColorId>(legacy_tab_group.colorId));
 }
 
 void OptimizedSession::AddItem(CRWSessionStorage* legacy_item) {

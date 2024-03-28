@@ -8,13 +8,16 @@
 #import "base/containers/span.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
+#import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/tab_group_util.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
@@ -38,11 +41,20 @@ struct TabInfo {
   const bool create_web_session = true;
 };
 
+// Information about a tab group.
+struct TabGroupInfo {
+  const int range_start = -1;
+  const int range_count = 0;
+  const std::u16string title = u"";
+  const tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey;
+};
+
 // Information about a session.
 struct SessionInfo {
   const int active_index = -1;
   const int pinned_tab_count = 0;
   const base::span<const TabInfo> tabs;
+  const base::span<const TabGroupInfo> tab_groups;
 };
 
 // Name of the sessions used by the tests (random string obtained by
@@ -81,10 +93,26 @@ constexpr TabInfo kTabs2[] = {
     TabInfo{},
 };
 
+constexpr TabGroupInfo kTabGroups1[] = {
+    TabGroupInfo{
+        .range_start = 0,
+        .range_count = 1,
+        .title = u"kTabGroup1",
+        .color = tab_groups::TabGroupColorId::kGrey,
+    },
+};
+
 constexpr SessionInfo kSessionInfo2 = {
     .active_index = 0,
     .pinned_tab_count = 0,
     .tabs = base::make_span(kTabs2),
+};
+
+constexpr SessionInfo kSessionWithGroupsInfo = {
+    .active_index = 0,
+    .pinned_tab_count = 0,
+    .tabs = base::make_span(kTabs2),
+    .tab_groups = base::make_span(kTabGroups1),
 };
 
 // Returns the path to the directory containing the optimized session
@@ -189,12 +217,24 @@ bool GenerateLegacySession(const base::FilePath& root,
     [sessions addObject:session];
   }
 
+  // Create tab groups for the session.
+  NSMutableArray<SessionTabGroup*>* groups = [[NSMutableArray alloc] init];
+  for (size_t index = 0; index < session_info.tab_groups.size(); ++index) {
+    const TabGroupInfo group_info = session_info.tab_groups[index];
+    SessionTabGroup* session_tab_group = [[SessionTabGroup alloc]
+        initWithRangeStart:group_info.range_start
+                rangeCount:group_info.range_count
+                     title:base::SysUTF16ToNSString(group_info.title)
+                   colorId:static_cast<NSInteger>(group_info.color)];
+    [groups addObject:session_tab_group];
+  }
+
   const NSUInteger selected_index =
       SelectedIndexFromActiveIndex(session_info.active_index);
 
   SessionWindowIOS* session =
       [[SessionWindowIOS alloc] initWithSessions:sessions
-                                       tabGroups:@[]
+                                       tabGroups:groups
                                    selectedIndex:selected_index];
 
   // Write the session file.
@@ -329,6 +369,20 @@ bool GenerateOptimizedSession(const base::FilePath& root,
     }
   }
 
+  // Create tab groups for the session.
+  for (size_t index = 0; index < session_info.tab_groups.size(); ++index) {
+    const TabGroupInfo group_info = session_info.tab_groups[index];
+
+    ios::proto::TabGroupStorage& group_storage = *storage.add_groups();
+    ios::proto::RangeIndex& range = *group_storage.mutable_range();
+
+    range.set_start(group_info.range_start);
+    range.set_count(group_info.range_count);
+
+    group_storage.set_title(base::UTF16ToUTF8(group_info.title));
+    group_storage.set_color(tab_group_util::ColorForStorage(group_info.color));
+  }
+
   // Write the session metadata file.
   const base::FilePath filename = session_dir.Append(kSessionMetadataFilename);
   return ios::sessions::WriteProto(filename, storage);
@@ -461,6 +515,17 @@ void CheckOptimizedSession(const base::FilePath& root,
         ios::sessions::FileExists(item_dir.Append(kWebStateSessionFilename)),
         tab_info.create_web_session);
   }
+
+  for (size_t index = 0; index < session_info.tab_groups.size(); ++index) {
+    const ios::proto::TabGroupStorage& group_storage = storage.groups(index);
+    const TabGroupInfo& group_info = session_info.tab_groups[index];
+
+    EXPECT_EQ(group_storage.range().start(), group_info.range_start);
+    EXPECT_EQ(group_storage.range().count(), group_info.range_count);
+    EXPECT_EQ(group_storage.title(), base::UTF16ToUTF8(group_info.title));
+    EXPECT_EQ(group_storage.color(),
+              tab_group_util::ColorForStorage(group_info.color));
+  }
 }
 
 // Checks whether the legacy session in `root` named `name` corresponds
@@ -527,7 +592,18 @@ void CheckLegacySession(const base::FilePath& root,
                   web_sessions, session.uniqueIdentifier)),
               tab_info.create_web_session);
   }
+
+  for (size_t index = 0; index < session_info.tab_groups.size(); ++index) {
+    SessionTabGroup* group_session = session_window.tabGroups[index];
+    const TabGroupInfo& group_info = session_info.tab_groups[index];
+
+    EXPECT_EQ(group_session.rangeStart, group_info.range_start);
+    EXPECT_EQ(group_session.rangeCount, group_info.range_count);
+    EXPECT_EQ(base::SysNSStringToUTF16(group_session.title), group_info.title);
+    EXPECT_EQ(group_session.colorId, static_cast<int>(group_info.color));
+  }
 }
+
 }  // namespace
 
 // Tests batch migrating sessions from legacy to optimized works correctly.
@@ -1127,4 +1203,74 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureUnrelatedFilesUnaffected) {
     const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
     EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
   }
+}
+
+// Tests batch migrating sessions with tab groups from legacy to optimized works
+// correctly.
+TEST_F(SessionMigrationTest, BatchToOptimizedWithGroups) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(
+      GenerateLegacySession(root, kSessionName2, kSessionWithGroupsInfo));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(identifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
+
+  // Check that the directories containing legacy sessions and WKWebView
+  // native session data have been deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionWithGroupsInfo);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from optimized to legacy works correctly.
+TEST_F(SessionMigrationTest, BatchToLegacyWithGroups) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few optimized sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateOptimizedSession(root, kSessionName1, kSessionInfo1));
+  EXPECT_TRUE(
+      GenerateOptimizedSession(root, kSessionName2, kSessionWithGroupsInfo));
+  EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success.
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
+
+  // Check that the directories containing optimized sessions have been
+  // deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath optimized_dir =
+        path.Append(kSessionRestorationDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(optimized_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckLegacySession(root, kSessionName1, kSessionInfo1);
+  CheckLegacySession(root, kSessionName2, kSessionWithGroupsInfo);
+  CheckLegacySession(otr, kSessionName1, SessionInfo());
 }
