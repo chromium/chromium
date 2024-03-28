@@ -2,58 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './history_clusters_shared_style.css.js';
-
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRippleMixin} from '//resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {SearchQuery} from './history_cluster_types.mojom-webui.js';
 import {RelatedSearchAction} from './history_clusters.mojom-webui.js';
 import {MetricsProxyImpl} from './metrics_proxy.js';
-import {getTemplate} from './search_query.html.js';
+import {getCss} from './search_query.css.js';
+import {getHtml} from './search_query.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.
  */
 
-interface SearchQueryElement {
+export interface SearchQueryElement {
   $: {
     searchQueryLink: HTMLElement,
   };
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'search-query': SearchQueryElement;
-  }
-}
+const SearchQueryElementBase = CrRippleMixin(CrLitElement);
 
-const SearchQueryElementBase = PaperRippleMixin(PolymerElement);
-
-class SearchQueryElement extends SearchQueryElementBase {
+export class SearchQueryElement extends SearchQueryElementBase {
   static get is() {
     return 'search-query';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The index of the search query pill.
        */
-      index: {
-        type: Number,
-        value: -1,  // Initialized to an invalid value.
-      },
+      index: {type: Number},
 
       /**
        * The search query to display.
        */
-      searchQuery: Object,
+      searchQuery: {type: Object},
     };
   }
 
@@ -61,25 +55,21 @@ class SearchQueryElement extends SearchQueryElementBase {
   // Properties
   //============================================================================
 
-  index: number;
+  index: number = -1;  // Initialized to an invalid value.
   searchQuery: SearchQuery;
-
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _rippleContainer: Element;
 
   //============================================================================
   // Event handlers
   //============================================================================
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
       this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
       this.addEventListener('pointercancel', this.onPointerCancel_.bind(this));
     }
   }
 
-  private onAuxClick_() {
+  protected onAuxClick_() {
     MetricsProxyImpl.getInstance().recordRelatedSearchAction(
         RelatedSearchAction.kClicked, this.index);
 
@@ -90,7 +80,7 @@ class SearchQueryElement extends SearchQueryElementBase {
     }));
   }
 
-  private onClick_(event: MouseEvent) {
+  protected onClick_(event: MouseEvent) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
     // To record metrics.
@@ -99,7 +89,7 @@ class SearchQueryElement extends SearchQueryElementBase {
     this.openUrl_(event);
   }
 
-  private onKeydown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     // Disable ripple on Space.
     this.noink = e.key === ' ';
 
@@ -139,12 +129,17 @@ class SearchQueryElement extends SearchQueryElementBase {
         });
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.$.searchQueryLink;
-    const ripple = super._createRipple();
+  // Overridden from CrRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.$.searchQueryLink;
+    const ripple = super.createRipple();
     return ripple;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'search-query': SearchQueryElement;
   }
 }
 
