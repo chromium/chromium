@@ -64,49 +64,6 @@ void CacheManager::InitializeForProvider(
                      cache_directory_path));
 }
 
-void CacheManager::UninitializeForProvider(
-    const base::FilePath& provider_folder_name) {
-  if (provider_folder_name.empty()) {
-    return;
-  }
-
-  const base::FilePath base64_encoded_provider_folder_name(
-      base::Base64Encode(provider_folder_name.value()));
-  if (!initialized_providers_.contains(base64_encoded_provider_folder_name)) {
-    OnUninitializeForProvider(base64_encoded_provider_folder_name,
-                              base::File::FILE_ERROR_NOT_FOUND);
-    return;
-  }
-
-  // Remove the provider from the set.
-  initialized_providers_.erase(base64_encoded_provider_folder_name);
-
-  if (in_memory_only_) {
-    OnUninitializeForProvider(base64_encoded_provider_folder_name,
-                              base::File::FILE_OK);
-    return;
-  }
-
-  const base::FilePath cache_directory_path(
-      root_content_cache_directory_.Append(
-          base64_encoded_provider_folder_name));
-
-  // Attempt to delete the cache directory to ensure dead files don't remain
-  // on the user's disk as the logic changes in this experimental design phase.
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](const base::FilePath& cache_directory_path) {
-            return base::DeletePathRecursively(cache_directory_path)
-                       ? base::File::FILE_OK
-                       : base::File::FILE_ERROR_FAILED;
-          },
-          std::move(cache_directory_path)),
-      base::BindOnce(&CacheManager::OnUninitializeForProvider,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base64_encoded_provider_folder_name));
-}
-
 void CacheManager::AddObserver(Observer* observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);
@@ -135,18 +92,6 @@ void CacheManager::OnInitializeForProvider(
   for (auto& observer : observers_) {
     observer.OnContentCacheInitializeComplete(
         base64_encoded_provider_folder_name, result);
-  }
-}
-
-void CacheManager::OnUninitializeForProvider(
-    const base::FilePath& base64_encoded_provider_folder_name,
-    base::File::Error result) {
-  LOG_IF(ERROR, result != base::File::FILE_OK)
-      << "Failed to uninitialize provider";
-  // Notify all observers.
-  for (auto& observer : observers_) {
-    observer.OnProviderUninitialized(base64_encoded_provider_folder_name,
-                                     result);
   }
 }
 

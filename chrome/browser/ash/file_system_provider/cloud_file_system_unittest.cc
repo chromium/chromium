@@ -18,7 +18,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::test::RunClosure;
 using testing::_;
 using testing::Field;
 using testing::IsEmpty;
@@ -84,7 +83,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
           OnContentCacheInitializeComplete(
               base::FilePath(base::Base64Encode(mount_path.BaseName().value())),
               base::File::FILE_OK))
-          .WillOnce(RunClosure(run_loop.QuitClosure()));
+          .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       run_loop.Run();
     }
     return cloud_file_system;
