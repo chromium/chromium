@@ -16,6 +16,9 @@ namespace display::win {
 DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     HMONITOR monitor);
 
+DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
+    MONITORINFOEX monitor_info);
+
 // Returns the manufacturer ID of the monitor identified by `path`. Returns 0 if
 // `path` is nullopt or a failure occurred.
 DISPLAY_EXPORT UINT16

@@ -52,6 +52,11 @@ std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     return std::nullopt;
   }
 
+  return GetDisplayConfigPathInfo(monitor_info);
+}
+
+DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
+    MONITORINFOEX monitor_info) {
   // Look for a path info with a matching name.
   for (const auto& info : GetDisplayConfigPathInfos()) {
     DISPLAYCONFIG_SOURCE_DEVICE_NAME device_name = {};

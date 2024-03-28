@@ -42,28 +42,29 @@ class DISPLAY_EXPORT ColorProfileReader {
   gfx::ColorSpace GetDisplayColorSpace(int64_t id) const;
 
  private:
-  typedef std::map<std::wstring, std::wstring> DeviceToPathMap;
-  typedef std::map<std::wstring, std::string> DeviceToDataMap;
+  using DisplayIdToPathMap = std::map<int64_t, std::wstring>;
+  using DisplayIdToDataMap = std::map<int64_t, std::string>;
 
   // Enumerate displays and return a map to their ICC profile path. This
   // needs to be run off of the main thread.
-  static ColorProfileReader::DeviceToPathMap
-  BuildDeviceToPathMapOnBackgroundThread();
+  static ColorProfileReader::DisplayIdToPathMap
+  BuildDisplayIdToPathMapOnBackgroundThread();
 
   // Called on the main thread when the device paths have been retrieved
-  void BuildDeviceToPathMapCompleted(DeviceToPathMap new_device_to_path_map);
+  void BuildDisplayIdToPathMapCompleted(
+      DisplayIdToPathMap new_display_id_to_path_map);
 
   // Do the actual reading from the filesystem. This needs to be run off of the
   // main thread.
-  static DeviceToDataMap ReadProfilesOnBackgroundThread(
-      DeviceToPathMap new_device_to_path_map);
+  static DisplayIdToDataMap ReadProfilesOnBackgroundThread(
+      DisplayIdToPathMap new_display_id_to_path_map);
 
   // Called on the main thread when the read has completed.
-  void ReadProfilesCompleted(DeviceToDataMap device_to_data_map);
+  void ReadProfilesCompleted(DisplayIdToDataMap display_id_to_data_map);
 
   const raw_ptr<Client> client_ = nullptr;
   bool update_in_flight_ = false;
-  DeviceToPathMap device_to_path_map_;
+  DisplayIdToPathMap display_id_to_path_map_;
   std::map<int64_t, gfx::ICCProfile> display_id_to_profile_map_;
   base::WeakPtrFactory<ColorProfileReader> weak_factory_{this};
 };
