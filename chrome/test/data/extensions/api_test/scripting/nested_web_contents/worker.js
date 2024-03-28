@@ -34,7 +34,7 @@ chrome.test.runTests([
     // Only one frame should execute the script, which is the main frame. The
     // frame for the nested WebContents should not execute the script.
     chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq('/iframe.html', results[0].result);
+    chrome.test.assertEq('/iframe_about_blank.html', results[0].result);
     chrome.test.succeed();
   },
 ]);

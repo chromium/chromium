@@ -131,12 +131,17 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
 
 // Test validating we don't insert content into nested WebContents.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, NestedWebContents) {
-  OpenURLInCurrentTab(embedded_test_server()->GetURL("a.com", "/iframe.html"));
+  OpenURLInCurrentTab(
+      embedded_test_server()->GetURL("a.com", "/iframe_about_blank.html"));
 
   content::RenderFrameHost* iframe_host = content::ChildFrameAt(
       browser()->tab_strip_model()->GetActiveWebContents(), 0);
   ASSERT_TRUE(iframe_host);
-  content::CreateAndAttachInnerContents(iframe_host);
+  content::WebContents* inner_web_contents =
+      content::CreateAndAttachInnerContents(iframe_host);
+
+  EXPECT_TRUE(content::NavigateToURL(
+      inner_web_contents, embedded_test_server()->GetURL("/title1.html")));
 
   // From there, the test continues in the JS.
   ASSERT_TRUE(RunExtensionTest("scripting/nested_web_contents")) << message_;
