@@ -74,6 +74,10 @@ constexpr char kNewBadgeFeatureEnabledTimePath[] = "feature_enabled_time";
 constexpr char kRecentSessionStartTimesPath[] =
     "in_product_help.recent_session_start_times";
 
+// Base path to track when recent sessions were enabled.
+constexpr char kRecentSessionEnabledTimePath[] =
+    "in_product_help.recent_session_enabled_time";
+
 }  // namespace
 
 RecentSessionData::RecentSessionData() = default;
@@ -102,6 +106,7 @@ void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
   registry->RegisterListPref(kRecentSessionStartTimesPath);
+  registry->RegisterTimePref(kRecentSessionEnabledTimePath, base::Time());
 }
 
 void BrowserFeaturePromoStorageService::Reset(
@@ -326,6 +331,17 @@ RecentSessionData BrowserFeaturePromoStorageService::ReadRecentSessionData()
       prev = time;
     }
   }
+
+  // Get the time the feature was enabled.
+  //
+  // TODO(dfried): we could cull all data from before the enabled time, but
+  // handling that case is probably something best left to the processing
+  // logic.
+  const auto enabled_time =
+      profile_->GetPrefs()->GetTime(kRecentSessionEnabledTimePath);
+  if (!enabled_time.is_null()) {
+    data.enabled_time = enabled_time;
+  }
   return data;
 }
 
@@ -337,4 +353,16 @@ void BrowserFeaturePromoStorageService::SaveRecentSessionData(
   for (const auto& time : recent_session_data.recent_session_start_times) {
     pref_data.Append(base::TimeToValue(time));
   }
+
+  if (recent_session_data.enabled_time) {
+    profile_->GetPrefs()->SetTime(kRecentSessionEnabledTimePath,
+                                  *recent_session_data.enabled_time);
+  } else {
+    profile_->GetPrefs()->ClearPref(kRecentSessionEnabledTimePath);
+  }
+}
+
+void BrowserFeaturePromoStorageService::ResetRecentSessionData() {
+  profile_->GetPrefs()->ClearPref(kRecentSessionStartTimesPath);
+  profile_->GetPrefs()->ClearPref(kRecentSessionEnabledTimePath);
 }

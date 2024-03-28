@@ -123,10 +123,13 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     service_.SaveRecentSessionData(data);
   }
 
+  void ResetRecentSessionData() { service_.ResetRecentSessionData(); }
+
   void CompareRecentSessionData(const RecentSessionData& expected) {
     const auto actual = service_.ReadRecentSessionData();
     EXPECT_THAT(actual.recent_session_start_times,
                 testing::ContainerEq(expected.recent_session_start_times));
+    EXPECT_EQ(expected.enabled_time, actual.enabled_time);
   }
 
  private:
@@ -260,6 +263,7 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SaveMultipleNewBadgeData) {
 TEST_F(BrowserFeaturePromoStorageServiceTest, SaveAndRestoreRecentSessionData) {
   CompareRecentSessionData(RecentSessionData());
   RecentSessionData data;
+  data.enabled_time = base::Time::FromSecondsSinceUnixEpoch(10);
   data.recent_session_start_times = {
       base::Time::FromSecondsSinceUnixEpoch(100000),
       base::Time::FromSecondsSinceUnixEpoch(10000),
@@ -271,9 +275,21 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SaveAndRestoreRecentSessionData) {
 }
 
 TEST_F(BrowserFeaturePromoStorageServiceTest,
-       SaveAndRestoreRecentSessionData_ElidesOutOfOrderEntries) {
+       SaveAndRestoreRecentSessionData_NoEnabledTime) {
   CompareRecentSessionData(RecentSessionData());
   RecentSessionData data;
+  data.recent_session_start_times = {
+      base::Time::FromSecondsSinceUnixEpoch(1000),
+      base::Time::FromSecondsSinceUnixEpoch(100),
+  };
+  SaveRecentSessionData(data);
+  CompareRecentSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest,
+       SaveAndRestoreRecentSessionData_ElidesOutOfOrderEntries) {
+  RecentSessionData data;
+  data.enabled_time = base::Time::FromSecondsSinceUnixEpoch(10);
   data.recent_session_start_times = {
       base::Time::FromSecondsSinceUnixEpoch(10000),
       base::Time::FromSecondsSinceUnixEpoch(100000),
@@ -289,4 +305,18 @@ TEST_F(BrowserFeaturePromoStorageServiceTest,
       base::Time::FromSecondsSinceUnixEpoch(100),
   };
   CompareRecentSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, ResetRecentSessionData) {
+  RecentSessionData data;
+  data.enabled_time = base::Time::FromSecondsSinceUnixEpoch(10);
+  data.recent_session_start_times = {
+      base::Time::FromSecondsSinceUnixEpoch(100000),
+      base::Time::FromSecondsSinceUnixEpoch(10000),
+      base::Time::FromSecondsSinceUnixEpoch(1000),
+      base::Time::FromSecondsSinceUnixEpoch(100),
+  };
+  SaveRecentSessionData(data);
+  ResetRecentSessionData();
+  CompareRecentSessionData(RecentSessionData());
 }

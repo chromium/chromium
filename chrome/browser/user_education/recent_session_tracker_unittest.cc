@@ -68,15 +68,18 @@ class TestBrowserStorageService
   RecentSessionData ReadRecentSessionData() const override {
     RecentSessionData data;
     data.recent_session_start_times = recent_sessions_;
+    data.enabled_time = enabled_time_;
     return data;
   }
 
   void SaveRecentSessionData(const RecentSessionData& data) override {
     recent_sessions_ = data.recent_session_start_times;
+    enabled_time_ = data.enabled_time;
   }
 
  private:
   std::vector<base::Time> recent_sessions_;
+  std::optional<base::Time> enabled_time_;
 };
 
 base::Time Days(double d) {
@@ -104,6 +107,9 @@ class RecentSessionTrackerTest : public testing::Test {
             std::optional<base::Time> session_before_tracker_init) {
     RecentSessionData data;
     data.recent_session_start_times = old_sessions;
+    if (!old_sessions.empty()) {
+      data.enabled_time = old_sessions.back();
+    }
     storage_service_.SaveRecentSessionData(data);
     if (session_before_tracker_init) {
       StartNewSession(*session_before_tracker_init);
@@ -140,6 +146,12 @@ class RecentSessionTrackerTest : public testing::Test {
       EXPECT_THAT(tracker_->recent_session_data_for_testing()
                       ->recent_session_start_times,
                   testing::ContainerEq(expected_data));
+    }
+    ASSERT_EQ(!recent_sessions.recent_session_start_times.empty(),
+              recent_sessions.enabled_time.has_value());
+    if (recent_sessions.enabled_time) {
+      EXPECT_LE(*recent_sessions.enabled_time,
+                recent_sessions.recent_session_start_times.back());
     }
   }
 
@@ -261,4 +273,11 @@ TEST_F(RecentSessionTrackerTest, ClockSetBackElidesValues) {
       Days(100),
   };
   EnsureRecentSessions(sessions, 1);
+}
+
+TEST_F(RecentSessionTrackerTest, EnabledForTheFirstTime) {
+  Init({}, std::nullopt);
+  EnsureRecentSessions({}, 0);
+  StartNewSession(Days(100));
+  EnsureRecentSessions({Days(100)}, 1);
 }

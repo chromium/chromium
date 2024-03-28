@@ -41,10 +41,14 @@ void RecentSessionTracker::OnSessionStart() {
   if (!recent_session_data_) {
     recent_session_data_ = recent_session_storage_->ReadRecentSessionData();
   }
-  CHECK(recent_session_data_);
   const user_education::FeaturePromoSessionData session =
       feature_promo_storage_->ReadSessionData();
+  CHECK(!session.start_time.is_null())
+      << "This method should only be called when a new session starts; "
+         "therefore the session start time should be valid.";
   RecentSessionData new_data;
+  new_data.enabled_time =
+      recent_session_data_->enabled_time.value_or(session.start_time);
   new_data.recent_session_start_times.emplace_back(session.start_time);
   for (const auto& start_time :
        recent_session_data_->recent_session_start_times) {

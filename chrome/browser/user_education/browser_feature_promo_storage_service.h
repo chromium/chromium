@@ -22,7 +22,11 @@ struct RecentSessionData {
   RecentSessionData& operator=(const RecentSessionData&);
   ~RecentSessionData();
 
+  // Recent session start times, in descending order.
   std::vector<base::Time> recent_session_start_times;
+
+  // When session start times started being recorded.
+  std::optional<base::Time> enabled_time;
 };
 
 // Interface that provides recent session data.
@@ -71,6 +75,7 @@ class BrowserFeaturePromoStorageService
   RecentSessionData ReadRecentSessionData() const override;
   void SaveRecentSessionData(
       const RecentSessionData& recent_session_data) override;
+  void ResetRecentSessionData();
 
  private:
   const raw_ptr<Profile> profile_;
