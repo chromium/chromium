@@ -109,8 +109,13 @@
       [weakSelf setGroupTabInfos:groupTabInfos];
       [weakSelf updateConsumer];
     }];
-    [_consumer setDefaultGroupColor:_tabGroup->visual_data().color()];
-    // TODO(crbug.com/1501837): Set title with current value.
+
+    // Do not use the helper to get the following values as the title helper do
+    // not return nil but the number of tabs. In this case, we want nil so it do
+    // not display anything.
+    tab_groups::TabGroupVisualData visualData = _tabGroup->visual_data();
+    [_consumer setDefaultGroupColor:visualData.color()];
+    [_consumer setGroupTitle:base::SysUTF16ToNSString(visualData.title())];
   }
   return self;
 }

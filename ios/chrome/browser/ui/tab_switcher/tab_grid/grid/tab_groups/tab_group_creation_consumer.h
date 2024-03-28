@@ -13,11 +13,13 @@
 // UI when creating a tab group.
 @protocol TabGroupCreationConsumer
 
-// Sets the default group color.
+// Sets the default group color. Should be called before viewDidLoad.
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color;
 // Sets snapshots, favicons and the total number of selected items.
 - (void)setTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
     numberOfSelectedItems:(NSInteger)numberOfSelectedItems;
+// Sets the default group color. Should be called before viewDidLoad.
+- (void)setGroupTitle:(NSString*)title;
 
 @end
 

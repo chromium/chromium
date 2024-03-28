@@ -70,6 +70,8 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   const TabGroup* _tabGroup;
   // Number of selected items.
   NSInteger _numberOfSelectedItems;
+  // Title of the group.
+  NSString* _title;
 
   // Configured view that handle the snapshots dispositions.
   TabGroupSnapshotsView* _snapshotsView;
@@ -153,6 +155,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   tabGroupTextField.translatesAutoresizingMaskIntoConstraints = NO;
   tabGroupTextField.autocorrectionType = UITextAutocorrectionTypeNo;
   tabGroupTextField.spellCheckingType = UITextSpellCheckingTypeNo;
+  tabGroupTextField.text = _title;
 
   UITraitCollection* interfaceStyleDarkTraitCollection = [UITraitCollection
       traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
@@ -653,6 +656,10 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
       configureTabGroupSnapshotsViewWithTabGroupInfos:tabGroupInfos
                                                  size:_numberOfSelectedItems];
   [self applyConstraints];
+}
+
+- (void)setGroupTitle:(NSString*)title {
+  _title = title;
 }
 
 #pragma mark - Private Helpers
