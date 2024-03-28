@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -87,6 +88,23 @@ ModelTypeChangeProcessor* ModelTypeSyncBridge::change_processor() {
 
 const ModelTypeChangeProcessor* ModelTypeSyncBridge::change_processor() const {
   return change_processor_.get();
+}
+
+void ModelTypeSyncBridge::GetData(StorageKeyList storage_keys,
+                                  DataCallback callback) {
+  // TODO(crbug.com/331763450): remove this method completely. This check exists
+  // to ensure that every bridge implements either GetData() or
+  // GetDataForCommit().
+  NOTREACHED_NORETURN();
+}
+
+void ModelTypeSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                           DataCallback callback) {
+  // TODO(crbug.com/331763450): this method should be purely abstract, this
+  // implementation exists only to allow co-existence of bridges that implements
+  // either GetData() or GetDataForCommit() (the former is being renamed to the
+  // latter across multiple CLs).
+  GetData(storage_keys, std::move(callback));
 }
 
 }  // namespace syncer

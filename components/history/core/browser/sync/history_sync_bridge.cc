@@ -669,8 +669,13 @@ void HistorySyncBridge::ApplyDisableSyncChanges(
       std::move(delete_metadata_change_list));
 }
 
-void HistorySyncBridge::GetData(StorageKeyList storage_keys,
-                                DataCallback callback) {
+void HistorySyncBridge::GetDataForCommit(StorageKeyList storage_keys,
+                                         DataCallback callback) {
+  GetDataImpl(storage_keys, std::move(callback));
+}
+
+void HistorySyncBridge::GetDataImpl(StorageKeyList storage_keys,
+                                    DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
@@ -726,7 +731,7 @@ void HistorySyncBridge::GetAllDataForDebugging(DataCallback callback) {
   for (const auto& [storage_key, metadata] : metadata_batch->GetAllMetadata()) {
     storage_keys.push_back(storage_key);
   }
-  GetData(std::move(storage_keys), std::move(callback));
+  GetDataImpl(std::move(storage_keys), std::move(callback));
 }
 
 std::string HistorySyncBridge::GetClientTag(

@@ -651,7 +651,7 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
     // loaded successfully.
     std::unordered_set<std::string> storage_keys_to_load(
         entities_requiring_data.begin(), entities_requiring_data.end());
-    bridge_->GetData(
+    bridge_->GetDataForCommit(
         std::move(entities_requiring_data),
         base::BindOnce(&ClientTagBasedModelTypeProcessor::OnPendingDataLoaded,
                        weak_ptr_factory_for_worker_.GetWeakPtr(), max_entries,
