@@ -248,7 +248,7 @@ crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
     case healthd::RoutineStateWaiting_Reason::kWaitingToBeScheduled:
       return crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
           kWaitingToBeScheduled;
-    case healthd::RoutineStateWaiting_Reason::kWaitingUserInput:
+    case healthd::RoutineStateWaiting_Reason::kWaitingInteraction:
       return crosapi::TelemetryDiagnosticRoutineStateWaiting_Reason::
           kWaitingUserInput;
   }

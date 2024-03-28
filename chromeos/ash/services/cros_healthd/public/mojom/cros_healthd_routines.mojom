@@ -347,7 +347,7 @@ struct UrandomRoutineArgument {
 // Error Handling:
 // Please check the Error Handling section of CrosHealthdRoutinesService.
 //
-// NextMinVersion: 2, NextIndex: 2
+// NextMinVersion: 3, NextIndex: 3
 [Stable]
 interface RoutineControl {
   // Gets the current state of the routine. Note that if the routine fails to
@@ -361,6 +361,13 @@ interface RoutineControl {
   // See the error handling section above to know how to handle possible
   // exceptions that occur before and after the routine has been started.
   [MinVersion=1] Start@1();
+
+  // Reply to the routine inquiry requested in the waiting state. The routine
+  // will raise an exception (by closing the connection of this
+  // `RoutineControl`) if the routine is not in the waiting state or the reply
+  // does not match the inquiry in the waiting state (see
+  // `RoutineStateWaiting`).
+  [MinVersion=2] ReplyInquiry@2(RoutineInquiryReply reply);
 };
 
 // Implemented by clients who desire routine update notifications.
@@ -418,7 +425,7 @@ struct RoutineStateRunning {};
 
 // Routine is currently waiting.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 3
 [Stable]
 struct RoutineStateWaiting {
   // The reason why the routine waits.
@@ -429,13 +436,89 @@ struct RoutineStateWaiting {
     [Default] kUnmappedEnumField = 0,
     // Waiting for the job to be scheduled for running.
     kWaitingToBeScheduled = 1,
-    // Waiting for user input.
-    kWaitingUserInput = 2,
+    // Waiting for an interaction. Check `interaction` to learn about which
+    // interaction is requested.
+    kWaitingInteraction = 2,
   };
   // Reason why the routine waits.
   Reason reason@0;
   // Additional information, may be used to pass instruction or explanation.
   string message@1;
+  // The requested interaction. This field is set if and only if `reason` is
+  // kWaitingInteraction. When set, clients must respond to the interaction for
+  // the routine to proceed.
+  [MinVersion=1] RoutineInteraction? interaction@2;
+};
+
+// An interaction that is requested by a routine in the waiting state. See the
+// comments on the subtypes to learn how to respond to each interaction request.
+//
+// Note: this union type contains only one field (apart from the unrecognized
+// one) because all interactions currently need to be replied. Another type
+// `RoutineTask` should be added when there are interactions that do not need to
+// be replied.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+union RoutineInteraction {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedInteraction@0;
+  // An interaction that needs to be replied using `ReplyInquiry`.
+  RoutineInquiry inquiry@1;
+};
+
+// An interaction that has to be replied. Each inquiry type has a corresponding
+// reply type in `RoutineInquiryReply`. Clients should call the `ReplyInquiry`
+// method of `RoutineControl` with the corresponding reply type.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+union RoutineInquiry {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedInquiry@0;
+  // Details of the inquiry to check the LED lit up state.
+  CheckLedLitUpStateInquiry check_led_lit_up_state@1;
+};
+
+// Details to reply to a routine inquiry.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable, Extensible]
+union RoutineInquiryReply {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedReply@0;
+  // Details to resume a routine requesting to check the LED lit up state.
+  CheckLedLitUpStateReply check_led_lit_up_state@1;
+};
+
+// Details regarding the inquiry to check the LED lit up state. Clients should
+// inspect the target LED and report its state using `CheckLedLitUpStateReply`.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct CheckLedLitUpStateInquiry {};
+
+// Details to reply to a routine requesting to check the LED lit up state.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct CheckLedLitUpStateReply {
+  // State of the target LED.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum State {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // The LED is lit up with the correct color.
+    kCorrectColor = 1,
+    // The LED is not lit up with the correct color.
+    kNotLitUp = 2
+  };
+  State state@0;
 };
 
 // Information about a finished routine.

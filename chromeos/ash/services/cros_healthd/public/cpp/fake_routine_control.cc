@@ -38,6 +38,8 @@ void FakeRoutineControl::Start() {
   start_called_ = true;
 }
 
+void FakeRoutineControl::ReplyInquiry(mojom::RoutineInquiryReplyPtr reply) {}
+
 void FakeRoutineControl::SetGetStateResponse(mojom::RoutineStatePtr& state) {
   get_state_response_.Swap(&state);
 }

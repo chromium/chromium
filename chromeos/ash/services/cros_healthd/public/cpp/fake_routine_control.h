@@ -26,6 +26,7 @@ class FakeRoutineControl : public mojom::RoutineControl {
   // `RoutineControl`:
   void GetState(GetStateCallback callback) override;
   void Start() override;
+  void ReplyInquiry(mojom::RoutineInquiryReplyPtr reply) override;
 
   void SetGetStateResponse(mojom::RoutineStatePtr& state);
   bool has_start_been_called() { return start_called_; }
