@@ -16,24 +16,13 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_view_controller.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-namespace {
-
-// Preferred width and height of the Search Engine Choice screen on iPad.
-//
-// We prefer to set a prefferred content size to avoid cases when the view is
-// too big which leads to too much white space and unnecessary chevrons. This
-// may need to be adjusted if the layout of the choice screen changes.
-constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredWidth = 540.;
-constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 820.;
-
-}  // namespace
 
 @interface SearchEngineChoiceCoordinator () <
     SearchEngineChoiceActionDelegate,
@@ -156,7 +145,8 @@ constexpr CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 820.;
       [[SearchEngineChoiceLearnMoreCoordinator alloc]
           initWithBaseViewController:_viewController
                              browser:self.browser];
-  _searchEngineChoiceLearnMoreCoordinator.presentationFormSheet = _firstRun;
+  _searchEngineChoiceLearnMoreCoordinator.forcePresentationFormSheet =
+      _firstRun;
   _searchEngineChoiceLearnMoreCoordinator.delegate = self;
   [_searchEngineChoiceLearnMoreCoordinator start];
   if (_firstRun) {
