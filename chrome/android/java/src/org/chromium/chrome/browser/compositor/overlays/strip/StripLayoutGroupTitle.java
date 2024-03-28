@@ -54,6 +54,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private float mDrawY;
     private float mWidth;
     private float mHeight;
+    private final RectF mTouchTarget = new RectF();
 
     // Tab group variables.
     private int mRootId;
@@ -95,6 +96,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void setDrawX(float x) {
         mDrawX = x;
+        mTouchTarget.left = x;
+        mTouchTarget.right = x + mWidth;
     }
 
     @Override
@@ -105,6 +108,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void setDrawY(float y) {
         mDrawY = y;
+        mTouchTarget.top = y;
+        mTouchTarget.bottom = y + mHeight;
     }
 
     @Override
@@ -115,6 +120,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void setWidth(float width) {
         mWidth = width;
+        mTouchTarget.right = mDrawX + mWidth;
     }
 
     @Override
@@ -125,6 +131,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void setHeight(float height) {
         mHeight = height;
+        mTouchTarget.bottom = mDrawY + mHeight;
     }
 
     @Override
@@ -135,18 +142,17 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public void getTouchTarget(RectF outTarget) {
-        // TODO(crbug.com/326492955): Add touch target.
+        outTarget.set(mTouchTarget);
     }
 
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        // TODO(crbug.com/326492955): Implement click to collapse/expand.
-        return false;
+        return mTouchTarget.contains(x, y);
     }
 
     @Override
     public void handleClick(long time) {
-        // No-op for now. We eventually plan to add functionality, such as collapsing a tab group.
+        // TODO(crbug.com/326492955): Implement click to collapse/expand.
     }
 
     /**
