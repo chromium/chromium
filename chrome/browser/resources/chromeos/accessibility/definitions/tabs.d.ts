@@ -202,8 +202,8 @@ declare global {
           callback: (arg: string) => void): void;
 
       export function executeScript(
-          tabId: number|undefined,
-          details: extensionTypes.InjectDetails): Promise<any[]>;
+          tabId: number|undefined, details: extensionTypes.InjectDetails,
+          callback?: (result?: any[]) => void): Promise<any[]>;
 
       export function insertCSS(
           tabId: number|undefined, details: extensionTypes.InjectDetails,

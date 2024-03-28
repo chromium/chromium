@@ -125,23 +125,20 @@ export const TutorialLesson = Polymer({
    * Asynchronously populates practice area.
    * @private
    */
-  populatePracticeContent() {
+  async populatePracticeContent() {
     const path = '../tutorial/practice_areas/' + this.practiceFile + '.html';
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', path, true);
-    xhr.onload = evt => {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        this.$.practiceContent.innerHTML = xhr.responseText;
+    try {
+      const resp = await fetch(path);
+      if (resp.ok) {
+        this.$.practiceContent.innerHTML = await resp.text();
         this.localizePracticeAreaContent();
       } else {
-        console.error(xhr.statusText);
+        console.error(`${resp.status}: ${resp.statusText}`);
       }
-    };
-    xhr.onerror = function(evt) {
+    } catch (err) {
       console.error('Failed to open practice file: ' + path);
-      console.error(xhr.statusText);
-    };
-    xhr.send(null);
+      console.error(err);
+    }
   },
 
   /** @private */

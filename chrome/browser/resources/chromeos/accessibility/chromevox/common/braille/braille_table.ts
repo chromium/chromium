@@ -27,7 +27,8 @@ export namespace BrailleTable {
    * Retrieves a list of all available braille tables.
    * @param callback Called asynchronously with an array of tables.
    */
-  export function getAll(callback: (tables: Table[]) => void): void {
+  export async function getAll(callback: (tables: Table[]) => void):
+      Promise<void> {
     const needsDisambiguation = new Map();
     function preprocess(tables: Table[]): Table[] {
       tables.forEach((table: Table) => {
@@ -57,16 +58,12 @@ export namespace BrailleTable {
       throw 'Invalid path: ' + BrailleTable.TABLE_PATH;
     }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          callback(preprocess(JSON.parse(xhr.responseText) as Table[]));
-        }
-      }
-    };
-    xhr.send();
+
+    const response = await fetch(url);
+    if (response.ok) {
+      const tables = await response.json() as Table[];
+      callback(preprocess(tables));
+    }
   }
 
   /**
