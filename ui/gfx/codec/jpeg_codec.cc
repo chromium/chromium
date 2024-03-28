@@ -6,10 +6,12 @@
 
 #include <setjmp.h>
 
+#include <climits>
 #include <memory>
 #include <ostream>
 
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "ui/gfx/codec/vector_wstream.h"
@@ -244,16 +246,27 @@ bool JPEGCodec::Decode(const unsigned char* input, size_t input_size,
 
   jpeg_start_decompress(cinfo.get());
 
-  // FIXME(brettw) we may want to allow the capability for callers to request
-  // how to align row lengths as we do for the compressor.
-  int row_read_stride = cinfo->output_width * cinfo->output_components;
+  // Confirm that the image width * height * component-size fits within an int.
+  // Note that image width and height are unsigned ints (JDIMENSION) in memory,
+  // but the file format only holds a uint16.
+  base::CheckedNumeric<size_t> checked_output_size = cinfo->output_width;
+  checked_output_size *= cinfo->output_components;
 
-  // Create memory for a decoded image and write decoded lines to the memory
-  // without conversions same as JPEGCodec::Encode().
-  int row_write_stride = row_read_stride;
-  output->resize(row_write_stride * cinfo->output_height);
+  // This shouldn't ever overflow a `size_t`; it's multiplying a uint16 by four.
+  size_t row_write_stride = checked_output_size.ValueOrDie();
 
-  for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
+  // Extremely large JPEGs could overflow here if `size_t` is 32 bits.
+  checked_output_size *= cinfo->output_height;
+  size_t output_size = checked_output_size.ValueOrDefault(INT_MAX);
+  if (output_size >= INT_MAX) {
+    return false;
+  }
+
+  // Create memory for a decoded image.
+  output->resize(output_size);
+
+  // Write decoded lines to the memory.
+  for (unsigned int row = 0; row < cinfo->output_height; row++) {
     unsigned char* rowptr = &(*output)[row * row_write_stride];
     if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
       return false;
