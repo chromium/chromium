@@ -117,7 +117,7 @@ interface InputDeviceSettingsProvider {
   ObserveKeyboardBrightness(
       pending_remote<KeyboardBrightnessObserver> observer);
 
-  // Restore the keyboard remappings to default base on its id.
+  // Restore the keyboard remappings to default based on its id.
   RestoreDefaultKeyboardRemappings(uint32 device_id);
   // Sets the keyboard settings based on its id.
   SetKeyboardSettings(uint32 device_id, ash.mojom.KeyboardSettings settings);
@@ -128,7 +128,7 @@ interface InputDeviceSettingsProvider {
   SetMouseSettings(uint32 device_id, ash.mojom.MouseSettings settings);
   // Sets the touchpad settings based on its id.
   SetTouchpadSettings(uint32 device_id, ash.mojom.TouchpadSettings settings);
-  // Sets the graphics tablet settings bsaed on its id.
+  // Sets the graphics tablet settings based on its id.
   SetGraphicsTabletSettings(
       uint32 device_id, ash.mojom.GraphicsTabletSettings settings);
 
