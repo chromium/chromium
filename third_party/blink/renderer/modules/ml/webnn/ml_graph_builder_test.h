@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -136,12 +135,6 @@ MLOperand* BuildReduce(
     webnn::mojom::blink::Reduce::Kind kind,
     const MLOperand* input,
     const MLReduceOptions* options = MLReduceOptions::Create());
-
-MLOperand* BuildResample2d(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    const MLOperand* input,
-    const MLResample2dOptions* options = MLResample2dOptions::Create());
 
 MLOperand* BuildSoftplus(
     V8TestingScope& scope,

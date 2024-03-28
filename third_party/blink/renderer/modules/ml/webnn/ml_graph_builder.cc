@@ -1857,9 +1857,7 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
       ConvertToComponentOperand(input), scales_or_sizes,
       options->getAxesOr({2, 3}));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
   // Create resample2d operator and its output operand. Connect the resample2d
@@ -1871,8 +1869,7 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), resample2d);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   resample2d->Connect({input}, {output.value()});
