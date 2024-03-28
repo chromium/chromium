@@ -14,14 +14,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
-#include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/common/chrome_features.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
@@ -38,17 +35,6 @@ using base::android::JavaParamRef;
 
 namespace webapps {
 
-namespace {
-
-// The key to look up what the minimum engagement score is for showing the
-// in-product help.
-constexpr char kMinEngagementForIphKey[] = "x_min_engagement_for_iph";
-
-// The key to look up whether the in-product help should replace the toolbar or
-// complement it.
-constexpr char kIphReplacesToolbar[] = "x_iph_replaces_toolbar";
-}  // anonymous namespace
-
 ChromeAppBannerManagerAndroid::ChromeAppBannerManagerAndroid(
     content::WebContents& web_contents)
     : web_contents_(web_contents) {}
@@ -59,45 +45,6 @@ void ChromeAppBannerManagerAndroid::OnInstallableCheckedNoErrors(
     const ManifestId& manifest_id) const {
   // TODO(b/320681613): Maybe move this to components.
   webapk::WebApkUkmRecorder::RecordWebApkableVisit(manifest_id);
-}
-
-bool ChromeAppBannerManagerAndroid::
-    MaybeShowInProductHelpShouldAvoidAmbientBadge(const GURL& validated_url) {
-  if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHPwaInstallAvailableFeature)) {
-    DVLOG(2) << "Feature not enabled";
-    return false;
-  }
-
-  double last_engagement_score = site_engagement::SiteEngagementService::Get(
-                                     web_contents_->GetBrowserContext())
-                                     ->GetScore(validated_url);
-  int min_engagement = base::GetFieldTrialParamByFeatureAsInt(
-      feature_engagement::kIPHPwaInstallAvailableFeature,
-      kMinEngagementForIphKey, 0);
-  if (last_engagement_score < min_engagement) {
-    DVLOG(2) << "IPH for PWA aborted: Engagement score too low: "
-             << last_engagement_score << " < " << min_engagement;
-    return false;
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::string error_message = base::android::ConvertJavaStringToUTF8(
-      Java_AppBannerInProductHelpControllerProvider_showInProductHelp(
-          env, web_contents_->GetJavaWebContents()));
-  if (!error_message.empty()) {
-    DVLOG(2) << "IPH for PWA showing aborted. " << error_message;
-    return false;
-  }
-
-  DVLOG(2) << "Showing IPH.";
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          feature_engagement::kIPHPwaInstallAvailableFeature,
-          kIphReplacesToolbar, false)) {
-    DVLOG(2) << "Install infobar overridden by IPH, as per experiment.";
-    return true;
-  }
-  return false;
 }
 
 segmentation_platform::SegmentationPlatformService*

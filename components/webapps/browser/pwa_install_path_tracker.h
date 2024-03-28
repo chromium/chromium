@@ -41,34 +41,20 @@ class PwaInstallPathTracker {
     // The BottomSheet was shown expanded at the request of a website and was
     // used to trigger install.
     kApiInitiatedBottomSheet = 6,
-    // Same as kAmbientInfobar, except the InProduct Help was shown also.
-    kAmbientInfobarWithIph = 7,
-    // Same as kAppMenuInstall, except the InProduct Help was shown also.
-    kAppMenuInstallWithIph = 8,
-    // Same as kApiInstallInfobar, except the InProduct Help was shown also.
-    // Note that this is is added for completeness and is not expected to
-    // happen, because the IPH does not show when the ambient badge is deferred
-    // by the website.
-    kApiInitiatedInstallWithIph = 9,
-    // Same as kAmbientBottomSheet, except the InProduct Help was shown also.
-    kAmbientBottomSheetWithIph = 10,
-    // Same as kAppMenuBottomSheet, except the InProduct Help was shown also.
-    kAppMenuBottomSheetWithIph = 11,
-    // Same as kApiInitiatedBottomSheet, except the InProduct Help was shown
-    // also. Note that this is is added for completeness and is not expected to
-    // happen, because the IPH does not show when the bottom sheet is deferred
-    // by the website.
-    kApiInitiatedBottomSheetWithIph = 12,
-    // Keeps track of the last entry.
-    kMaxValue = kApiInitiatedBottomSheetWithIph,
+    // kAmbientInfobarWithIph = 7,           // Deprecated
+    // kAppMenuInstallWithIph = 8,           // Deprecated
+    // kApiInitiatedInstallWithIph = 9,      // Deprecated
+    // kAmbientBottomSheetWithIph = 10,      // Deprecated
+    // kAppMenuBottomSheetWithIph = 11,      // Deprecated
+    // kApiInitiatedBottomSheetWithIph = 12, // Deprecated
+
+    // Keeps track of the last entry
+    kMaxValue = kApiInitiatedBottomSheet,
   };
 
   // Tracks the route taken to an install of a PWA (whether the bottom sheet
   // was shown or the infobar/install) and what triggered it (install source).
   void TrackInstallPath(bool bottom_sheet, WebappInstallSource install_source);
-
-  // Tracks that the IPH has been shown.
-  void TrackIphWasShown();
 
   // Resets the tracker (forgets previously recorder events).
   void Reset();
@@ -84,9 +70,6 @@ class PwaInstallPathTracker {
 
   // Whether the bottom sheet install UI was shown or the infobar/install modal.
   bool bottom_sheet_ = false;
-
-  // Whether the IPH has been shown to the user.
-  bool iph_was_shown_ = false;
 };
 
 }  // namespace webapps

@@ -400,9 +400,6 @@ BASE_FEATURE(kIPHChromeReengagementNotification2Feature,
 BASE_FEATURE(kIPHChromeReengagementNotification3Feature,
              "IPH_ChromeReengagementNotification3",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHPwaInstallAvailableFeature,
-             "IPH_PwaInstallAvailableFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHShareScreenshotFeature,
              "IPH_ShareScreenshot",
              base::FEATURE_DISABLED_BY_DEFAULT);

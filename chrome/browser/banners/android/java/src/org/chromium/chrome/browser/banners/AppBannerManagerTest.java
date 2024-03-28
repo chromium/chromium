@@ -4,17 +4,7 @@
 
 package org.chromium.chrome.browser.banners;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -33,8 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -42,7 +30,6 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiSelector;
 
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,28 +46,21 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PackageManagerWrapper;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -90,9 +70,6 @@ import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.feature_engagement.CppWrappedTestTracker;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -113,8 +90,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.Observer;
@@ -134,9 +109,6 @@ public class AppBannerManagerTest {
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    // A callback that fires when the IPH system sends an event.
-    private final CallbackHelper mOnEventCallback = new CallbackHelper();
 
     // The ID of the last event received.
     private String mLastNotifyEvent;
@@ -212,7 +184,6 @@ public class AppBannerManagerTest {
     @Mock private PackageManager mPackageManager;
     private EmbeddedTestServer mTestServer;
     private UiDevice mUiDevice;
-    private CppWrappedTestTracker mTracker;
     private BottomSheetController mBottomSheetController;
 
     @Before
@@ -229,21 +200,6 @@ public class AppBannerManagerTest {
                             Intent shortcutIntent) {
                         // Ignore to prevent adding homescreen shortcuts.
                     }
-                });
-
-        mTracker =
-                new CppWrappedTestTracker(FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE) {
-                    @Override
-                    public void notifyEvent(String event) {
-                        super.notifyEvent(event);
-                        mOnEventCallback.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile = ProfileManager.getLastUsedRegularProfile();
-                    TrackerFactory.setTestingFactory(profile, mTracker);
                 });
 
         mTabbedActivityTestRule.startMainActivityOnBlankPage();
@@ -520,7 +476,6 @@ public class AppBannerManagerTest {
     @Test
     @SmallTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
     public void testAppInstalledEventModalWebAppBannerBrowserTab() throws Exception {
         triggerModalWebAppBanner(
                 mTabbedActivityTestRule,
@@ -915,7 +870,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE)
     public void testAppInstalledEventBottomSheet() throws Exception {
         triggerBottomSheet(
                 mTabbedActivityTestRule,
@@ -1065,93 +1019,6 @@ public class AppBannerManagerTest {
                             BottomSheetController.SheetState.HIDDEN,
                             mBottomSheetController.getSheetState());
                 });
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AppBanners"})
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // add to home screen not supported.
-    @CommandLineFlags.Add({
-        "enable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
-        "disable-features=" + ChromeFeatureList.ADD_TO_HOMESCREEN_IPH
-    })
-    @DisabledTest(message = "crbug/327273599")
-    public void testInProductHelp() throws Exception {
-        // Visit a site that is a PWA. The ambient badge should show.
-        String webBannerUrl = WebappTestPage.getServiceWorkerUrl(mTestServer);
-        resetEngagementForUrl(webBannerUrl, 10);
-
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
-        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
-        // Dismiss the message so it will not overlap with the IPH.
-        dismissAmbientBadgeMessage(mTabbedActivityTestRule);
-
-        waitForHelpBubble(withText(R.string.iph_pwa_install_available_text)).perform(click());
-        assertThat(mTracker.wasDismissed(), is(true));
-
-        int callCount = mOnEventCallback.getCallCount();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    AppMenuCoordinator coordinator =
-                            mTabbedActivityTestRule.getAppMenuCoordinator();
-                    AppMenuTestSupport.showAppMenu(coordinator, null, false);
-                    AppMenuTestSupport.callOnItemClick(coordinator, R.id.install_webapp_id);
-                });
-        mOnEventCallback.waitForCallback(callCount, 1);
-
-        assertThat(mTracker.getLastEvent(), is(EventConstants.PWA_INSTALL_MENU_SELECTED));
-
-        Assert.assertEquals(
-                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
-    }
-
-    private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
-        View mainDecorView = mTabbedActivityTestRule.getActivity().getWindow().getDecorView();
-        return onView(isRoot())
-                .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
-                .check(ViewUtils.isEventuallyVisible(matcher));
-    }
-
-    private void assertNoHelpBubble(Matcher<View> matcher) {
-        onView(isRoot())
-                .inRoot(RootMatchers.withDecorView(isDisplayed()))
-                .check(ViewUtils.withEventualExpectedViewState(matcher, VIEW_NULL));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AppBanners"})
-    public void testInProductHelpSkipsHiddenWebContents() throws Exception {
-        String url =
-                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(
-                        mTestServer,
-                        WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
-                        "call_stashed_prompt_on_click");
-
-        resetEngagementForUrl(url, 10);
-        mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-
-        // Create an extra tab so that there is a background tab.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mTabbedActivityTestRule.getActivity(),
-                /* isIncognito= */ false,
-                /* waitForNtpLoad= */ true);
-
-        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
-        Assert.assertTrue(backgroundTab != null);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    backgroundTab.loadUrl(new LoadUrlParams(url));
-                });
-
-        waitForAppBannerPipelineStatus(
-                backgroundTab, AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
-
-        assertNoHelpBubble(withText(R.string.iph_pwa_install_available_text));
     }
 
     @Test

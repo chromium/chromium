@@ -40,8 +40,6 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIPHController;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
-import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -175,7 +173,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private AddToHomescreenIPHController mAddToHomescreenIPHController;
     private LinkToTextIPHController mLinkToTextIPHController;
     private AddToHomescreenMostVisitedTileClickObserver mAddToHomescreenMostVisitedTileObserver;
-    private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
     private NotificationPermissionController mNotificationPermissionController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
@@ -463,10 +460,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
 
         if (mAddToHomescreenIPHController != null) mAddToHomescreenIPHController.destroy();
-
-        if (mAppBannerInProductHelpController != null) {
-            AppBannerInProductHelpControllerFactory.detach(mAppBannerInProductHelpController);
-        }
 
         if (mPwaBottomSheetController != null) {
             PwaBottomSheetControllerFactory.detach(mPwaBottomSheetController);
@@ -1019,15 +1012,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mAddToHomescreenMostVisitedTileObserver =
                 new AddToHomescreenMostVisitedTileClickObserver(
                         mActivityTabProvider, mAddToHomescreenIPHController);
-        mAppBannerInProductHelpController =
-                AppBannerInProductHelpControllerFactory.createAppBannerInProductHelpController(
-                        mActivity,
-                        profile,
-                        mAppMenuCoordinator.getAppMenuHandler(),
-                        () -> mToolbarManager.getMenuButtonView(),
-                        R.id.add_to_homescreen_id);
-        AppBannerInProductHelpControllerFactory.attach(
-                mWindowAndroid, mAppBannerInProductHelpController);
 
         if (!didTriggerPromo
                 && ChromeFeatureList.isEnabled(

@@ -3483,7 +3483,6 @@ static_library("browser") {
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/android/webapk/proto",
       "//chrome/browser/autofill/android:jni_headers",
-      "//chrome/browser/banners/android:jni_headers",
       "//chrome/browser/bluetooth/android:jni_headers",
       "//chrome/browser/commerce/android:shopping_service_jni",
       "//chrome/browser/commerce/merchant_viewer:merchant_signal_db",

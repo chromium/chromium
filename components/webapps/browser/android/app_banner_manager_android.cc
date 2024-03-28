@@ -606,10 +606,6 @@ void AppBannerManagerAndroid::TrackInstallPath(
   install_path_tracker_.TrackInstallPath(bottom_sheet, install_source);
 }
 
-void AppBannerManagerAndroid::TrackIphWasShown() {
-  install_path_tracker_.TrackIphWasShown();
-}
-
 bool AppBannerManagerAndroid::IsSupportedNonWebAppPlatform(
     const std::u16string& platform) const {
   return base::EqualsASCII(platform, kPlatformPlay);
@@ -628,12 +624,6 @@ bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
 }
 
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
-  if (delegate_->MaybeShowInProductHelpShouldAvoidAmbientBadge(
-          validated_url_)) {
-    TrackIphWasShown();
-    return;
-  }
-
   if (manifest_id_.is_empty()) {
     // TODO(https://crbug.com/324322110): remove once crash understood.
     DUMP_WILL_BE_CHECK(false) << "Pipeline state:" << (int)state();

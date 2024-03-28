@@ -161,7 +161,6 @@ BASE_DECLARE_FEATURE(kIPHFeedSwipeRefresh);
 BASE_DECLARE_FEATURE(kIPHChromeReengagementNotification1Feature);
 BASE_DECLARE_FEATURE(kIPHChromeReengagementNotification2Feature);
 BASE_DECLARE_FEATURE(kIPHChromeReengagementNotification3Feature);
-BASE_DECLARE_FEATURE(kIPHPwaInstallAvailableFeature);
 BASE_DECLARE_FEATURE(kIPHShareScreenshotFeature);
 BASE_DECLARE_FEATURE(kIPHSharingHubLinkToggleFeature);
 BASE_DECLARE_FEATURE(kIPHWebFeedFollowFeature);

@@ -38,31 +38,6 @@ TEST_F(PwaInstallPathTrackerUnitTest, Events) {
             tracker.GetInstallPathMetric());
   tracker.Reset();
 
-  // Success case: Ambient Infobar with IPH.
-  tracker.TrackIphWasShown();
-  tracker.TrackInstallPath(/* bottom_sheet= */ false,
-                           WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB);
-  EXPECT_EQ(InstallPathMetric::kAmbientInfobarWithIph,
-            tracker.GetInstallPathMetric());
-  tracker.Reset();
-
-  // Success case: App Menu initiated Infobar with IPH.
-  tracker.TrackIphWasShown();
-  tracker.TrackInstallPath(/* bottom_sheet= */ false,
-                           WebappInstallSource::MENU_BROWSER_TAB);
-  EXPECT_EQ(InstallPathMetric::kAppMenuInstallWithIph,
-            tracker.GetInstallPathMetric());
-  tracker.Reset();
-
-  // Success case: API initiated Infobar with IPH (included only for
-  // completeness, as IPH should not show with deferred prompts).
-  tracker.TrackIphWasShown();
-  tracker.TrackInstallPath(/* bottom_sheet= */ false,
-                           WebappInstallSource::API_BROWSER_TAB);
-  EXPECT_EQ(InstallPathMetric::kApiInitiatedInstallWithIph,
-            tracker.GetInstallPathMetric());
-  tracker.Reset();
-
   // Success case: Ambient BottomSheet.
   tracker.TrackInstallPath(/* bottom_sheet= */ true,
                            WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB);
@@ -81,31 +56,6 @@ TEST_F(PwaInstallPathTrackerUnitTest, Events) {
   tracker.TrackInstallPath(/* bottom_sheet= */ true,
                            WebappInstallSource::API_BROWSER_TAB);
   EXPECT_EQ(InstallPathMetric::kApiInitiatedBottomSheet,
-            tracker.GetInstallPathMetric());
-  tracker.Reset();
-
-  // Success case: Ambient BottomSheet with IPH.
-  tracker.TrackIphWasShown();
-  tracker.TrackInstallPath(/* bottom_sheet= */ true,
-                           WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB);
-  EXPECT_EQ(InstallPathMetric::kAmbientBottomSheetWithIph,
-            tracker.GetInstallPathMetric());
-  tracker.Reset();
-
-  // Success case: App Menu initiated BottomSheet with IPH.
-  tracker.TrackIphWasShown();
-  tracker.TrackInstallPath(/* bottom_sheet= */ true,
-                           WebappInstallSource::MENU_BROWSER_TAB);
-  EXPECT_EQ(InstallPathMetric::kAppMenuBottomSheetWithIph,
-            tracker.GetInstallPathMetric());
-  tracker.Reset();
-
-  // Success case: API initiated BottomSheet with IPH (included only for
-  // completeness, as IPH should not show with deferred prompts).
-  tracker.TrackIphWasShown();
-  tracker.TrackInstallPath(/* bottom_sheet= */ true,
-                           WebappInstallSource::API_BROWSER_TAB);
-  EXPECT_EQ(InstallPathMetric::kApiInitiatedBottomSheetWithIph,
             tracker.GetInstallPathMetric());
   tracker.Reset();
 }

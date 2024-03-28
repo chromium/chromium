@@ -74,11 +74,6 @@ class AppBannerManagerAndroid
     virtual void OnInstallableCheckedNoErrors(
         const ManifestId& manifest_id) const = 0;
 
-    // Shows the in-product help if possible. Returns if the caller should avoid
-    // showing the ambient badge because the IPH overrides it.
-    virtual bool MaybeShowInProductHelpShouldAvoidAmbientBadge(
-        const GURL& validated_url) = 0;
-
     virtual segmentation_platform::SegmentationPlatformService*
     GetSegmentationPlatformService() = 0;
 
@@ -151,9 +146,6 @@ class AppBannerManagerAndroid
   // Tracks the route taken to an install of a PWA (whether the bottom sheet
   // was shown or the infobar/install) and what triggered it (install source).
   void TrackInstallPath(bool bottom_sheet, WebappInstallSource install_source);
-
-  // Tracks that the IPH has been shown.
-  void TrackIphWasShown();
 
   // Returns the appropriate app name based on whether we have a native/web app.
   std::u16string GetAppName() const override;

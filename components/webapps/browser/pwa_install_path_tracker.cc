@@ -33,28 +33,20 @@ void PwaInstallPathTracker::TrackInstallPath(
     LogHistogram(metric);
 }
 
-void PwaInstallPathTracker::TrackIphWasShown() {
-  iph_was_shown_ = true;
-}
-
 PwaInstallPathTracker::InstallPathMetric
 PwaInstallPathTracker::GetInstallPathMetric() {
   if (bottom_sheet_) {
     switch (install_source_) {
       case WebappInstallSource::MENU_BROWSER_TAB:
       case WebappInstallSource::MENU_CUSTOM_TAB:
-        return iph_was_shown_ ? InstallPathMetric::kAppMenuBottomSheetWithIph
-                              : InstallPathMetric::kAppMenuBottomSheet;
+        return InstallPathMetric::kAppMenuBottomSheet;
       case WebappInstallSource::API_BROWSER_TAB:
       case WebappInstallSource::API_CUSTOM_TAB:
-        return iph_was_shown_
-                   ? InstallPathMetric::kApiInitiatedBottomSheetWithIph
-                   : InstallPathMetric::kApiInitiatedBottomSheet;
+        return InstallPathMetric::kApiInitiatedBottomSheet;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
       case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
-        return iph_was_shown_ ? InstallPathMetric::kAmbientBottomSheetWithIph
-                              : InstallPathMetric::kAmbientBottomSheet;
+        return InstallPathMetric::kAmbientBottomSheet;
       default:
         NOTREACHED();
         break;
@@ -63,17 +55,14 @@ PwaInstallPathTracker::GetInstallPathMetric() {
     switch (install_source_) {
       case WebappInstallSource::MENU_BROWSER_TAB:
       case WebappInstallSource::MENU_CUSTOM_TAB:
-        return iph_was_shown_ ? InstallPathMetric::kAppMenuInstallWithIph
-                              : InstallPathMetric::kAppMenuInstall;
+        return InstallPathMetric::kAppMenuInstall;
       case WebappInstallSource::API_BROWSER_TAB:
       case WebappInstallSource::API_CUSTOM_TAB:
-        return iph_was_shown_ ? InstallPathMetric::kApiInitiatedInstallWithIph
-                              : InstallPathMetric::kApiInitiatedInstall;
+        return InstallPathMetric::kApiInitiatedInstall;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
       case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
-        return iph_was_shown_ ? InstallPathMetric::kAmbientInfobarWithIph
-                              : InstallPathMetric::kAmbientInfobar;
+        return InstallPathMetric::kAmbientInfobar;
       default:
         NOTREACHED();
         break;
@@ -86,7 +75,6 @@ PwaInstallPathTracker::GetInstallPathMetric() {
 void PwaInstallPathTracker::Reset() {
   install_source_ = WebappInstallSource::COUNT;
   bottom_sheet_ = false;
-  iph_was_shown_ = false;
 }
 
 }  // namespace webapps

@@ -2756,9 +2756,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="The label of the button which upon click would open the site user was trying to install as PWA. ">
         Go back to site
       </message>
-      <message name="IDS_IPH_PWA_INSTALL_AVAILABLE_TEXT" desc="The in-product-help message for PWAs that can be installed to the device.">
-        Install this app
-      </message>
       <message name="IDS_IPH_MESSAGE_ADD_TO_HOME_SCREEN_TITLE" desc="The title of in-product-help message encouraging users to add a commonly visited webpage to the home screen.">
         Add to Home screen
       </message>
