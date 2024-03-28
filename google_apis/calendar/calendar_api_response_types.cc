@@ -424,6 +424,7 @@ SingleCalendar& SingleCalendar::operator=(const SingleCalendar&) = default;
 void SingleCalendar::RegisterJSONConverter(
     base::JSONValueConverter<SingleCalendar>* converter) {
   converter->RegisterStringField(kApiResponseIdKey, &SingleCalendar::id_);
+  converter->RegisterStringField(kSummary, &SingleCalendar::summary_);
   converter->RegisterStringField(kCalendarColorId, &SingleCalendar::color_id_);
   converter->RegisterBoolField(kPrimary, &SingleCalendar::primary_);
   converter->RegisterBoolField(kSelected, &SingleCalendar::selected_);
@@ -434,6 +435,7 @@ int SingleCalendar::GetApproximateSizeInBytes() const {
 
   total_bytes += sizeof(SingleCalendar);
   total_bytes += id_.length();
+  total_bytes += summary_.length();
   total_bytes += color_id_.length();
   total_bytes += sizeof(primary_);
   total_bytes += sizeof(selected_);

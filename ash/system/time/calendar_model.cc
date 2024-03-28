@@ -242,7 +242,7 @@ void CalendarModel::UploadLifetimeMetrics() {
 
 void CalendarModel::FetchEvents(base::Time start_of_month) {
   // Early return if it's not a valid user/user-session.
-  if (!calendar_utils::ShouldFetchEvents()) {
+  if (!calendar_utils::ShouldFetchCalendarData()) {
     return;
   }
 
@@ -542,7 +542,7 @@ std::list<CalendarEvent> CalendarModel::FindUpcomingEvents(
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
     base::Time start_time) const {
-  if (!calendar_utils::ShouldFetchEvents()) {
+  if (!calendar_utils::ShouldFetchCalendarData()) {
     return kNa;
   }
 

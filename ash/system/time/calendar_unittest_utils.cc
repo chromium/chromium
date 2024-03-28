@@ -39,6 +39,33 @@ ScopedLibcTimeZone::~ScopedLibcTimeZone() {
   }
 }
 
+std::unique_ptr<google_apis::calendar::SingleCalendar> CreateCalendar(
+    const std::string& id,
+    const std::string& summary,
+    const std::string& color_id,
+    bool selected,
+    bool primary) {
+  auto calendar = std::make_unique<google_apis::calendar::SingleCalendar>();
+  calendar->set_id(id);
+  calendar->set_summary(summary);
+  calendar->set_color_id(color_id);
+  calendar->set_selected(selected);
+  calendar->set_primary(primary);
+  return calendar;
+}
+
+std::unique_ptr<google_apis::calendar::CalendarList> CreateMockCalendarList(
+    std::list<std::unique_ptr<google_apis::calendar::SingleCalendar>>
+        calendars) {
+  auto calendar_list = std::make_unique<google_apis::calendar::CalendarList>();
+
+  for (auto& calendar : calendars) {
+    calendar_list->InjectItemForTesting(std::move(calendar));
+  }
+
+  return calendar_list;
+}
+
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* id,
     const char* summary,

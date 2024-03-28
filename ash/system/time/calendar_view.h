@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_list_model.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_up_next_view.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -456,6 +457,8 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Owned by CalendarView.
   raw_ptr<CalendarUpNextView, DanglingUntriaged> up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
+  raw_ptr<CalendarListModel> calendar_list_model_ =
+      Shell::Get()->system_tray_model()->calendar_list_model();
   raw_ptr<CalendarModel> calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();
 

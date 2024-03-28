@@ -10,7 +10,6 @@
 #include "ash/public/cpp/update_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/locale_model.h"
@@ -20,9 +19,11 @@
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/phonehub/phone_hub_notification_controller.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/time/calendar_list_model.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -41,6 +42,7 @@ SystemTrayModel::SystemTrayModel()
       network_state_model_(std::make_unique<TrayNetworkStateModel>()),
       active_network_icon_(
           std::make_unique<ActiveNetworkIcon>(network_state_model_.get())),
+      calendar_list_model_(std::make_unique<CalendarListModel>()),
       calendar_model_(std::make_unique<CalendarModel>()) {}
 
 SystemTrayModel::~SystemTrayModel() = default;

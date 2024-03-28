@@ -25,6 +25,7 @@ class TracingModel;
 class TrayNetworkStateModel;
 class UpdateModel;
 class VirtualKeyboardModel;
+class CalendarListModel;
 class CalendarModel;
 namespace phonehub {
 class PhoneHubManager;
@@ -90,6 +91,9 @@ class ASH_EXPORT SystemTrayModel : public SystemTray {
     return active_network_icon_.get();
   }
   SystemTrayClient* client() { return client_; }
+  CalendarListModel* calendar_list_model() {
+    return calendar_list_model_.get();
+  }
   CalendarModel* calendar_model() { return calendar_model_.get(); }
   phonehub::PhoneHubManager* phone_hub_manager() { return phone_hub_manager_; }
 
@@ -103,6 +107,7 @@ class ASH_EXPORT SystemTrayModel : public SystemTray {
   std::unique_ptr<VirtualKeyboardModel> virtual_keyboard_;
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
+  std::unique_ptr<CalendarListModel> calendar_list_model_;
   std::unique_ptr<CalendarModel> calendar_model_;
 
   // Client interface in chrome browser. May be null in tests.

@@ -29,6 +29,10 @@ bool IsForGlanceablesV2() {
   return features::IsGlanceablesV2CalendarViewEnabled();
 }
 
+bool IsMultiCalendarEnabled() {
+  return features::IsMultiCalendarSupportEnabled();
+}
+
 bool IsToday(const base::Time selected_date) {
   return IsTheSameDay(selected_date, base::Time::Now());
 }
@@ -252,7 +256,7 @@ ASH_EXPORT base::Time GetStartOfNextMonthUTC(base::Time date) {
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
 }
 
-ASH_EXPORT bool ShouldFetchEvents() {
+ASH_EXPORT bool ShouldFetchCalendarData() {
   return IsActiveUser() && !IsDisabledByAdmin();
 }
 

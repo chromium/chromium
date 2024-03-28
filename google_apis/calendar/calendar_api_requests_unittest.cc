@@ -27,6 +27,8 @@ namespace calendar {
 
 namespace {
 const char kTestCalendarColorId[] = "5";
+const char kTestPrimaryCalendarColorId[] = "14";
+const char kTestPrimaryCalendarSummary[] = "test1@google.com";
 const char kTestUserAgent[] = "test-user-agent";
 }
 
@@ -110,11 +112,14 @@ TEST_F(CalendarApiRequestsTest, GetCalendarListRequest) {
   EXPECT_EQ(
       "/calendar/v3/users/me/calendarList"
       "?maxResults=250"
-      "&fields=etag%2Ckind%2Citems(id%2CcolorId%2Cselected%2Cprimary)",
+      "&fields=etag%2Ckind%2Citems"
+      "(kind%2Cid%2Csummary%2CcolorId%2Cselected%2Cprimary)",
       http_request_.relative_url);
 
   ASSERT_TRUE(calendars.get());
   EXPECT_EQ("calendar#calendarList", calendars->kind());
+  EXPECT_EQ(kTestPrimaryCalendarSummary, calendars->items()[0]->summary());
+  EXPECT_EQ(kTestPrimaryCalendarColorId, calendars->items()[0]->color_id());
   EXPECT_EQ(true, calendars->items()[0]->selected());
   EXPECT_EQ(true, calendars->items()[0]->primary());
 }

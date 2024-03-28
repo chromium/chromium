@@ -56,7 +56,7 @@ void CalendarEventFetch::SendFetchRequest() {
                            time_range_.first, time_range_.second);
   DCHECK(cancel_closure_);
 
-  timeout_.Start(FROM_HERE, calendar_utils::kEventFetchTimeout,
+  timeout_.Start(FROM_HERE, calendar_utils::kCalendarDataFetchTimeout,
                  base::BindOnce(&CalendarEventFetch::OnTimeout,
                                 weak_factory_.GetWeakPtr()));
 }

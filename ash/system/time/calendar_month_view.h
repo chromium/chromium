@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TIME_CALENDAR_MONTH_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/time/calendar_list_model.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/memory/raw_ptr.h"
@@ -131,6 +132,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
 //  Container for `CalendarDateCellView` for a single month.
 class ASH_EXPORT CalendarMonthView : public views::View,
+                                     public CalendarListModel::Observer,
                                      public CalendarModel::Observer {
   METADATA_HEADER(CalendarMonthView, views::View)
  public:
@@ -139,6 +141,9 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   CalendarMonthView(const CalendarMonthView& other) = delete;
   CalendarMonthView& operator=(const CalendarMonthView& other) = delete;
   ~CalendarMonthView() override;
+
+  // CalendarListModel::Observer:
+  void OnCalendarListFetchComplete() override;
 
   // CalendarModel::Observer:
   void OnEventsFetched(const CalendarModel::FetchingStatus status,
@@ -202,6 +207,11 @@ class ASH_EXPORT CalendarMonthView : public views::View,
 
   // UTC midnight to designate the month whose events will be fetched.
   base::Time fetch_month_;
+
+  const raw_ptr<CalendarListModel> calendar_list_model_;
+
+  base::ScopedObservation<CalendarListModel, CalendarListModel::Observer>
+      scoped_calendar_list_model_observer_{this};
 
   // Raw pointer to the (singleton) CalendarModel, to avoid a bunch of
   // daisy-chained calls to get the std::unique_ptr<>.

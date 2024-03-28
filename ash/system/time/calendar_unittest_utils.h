@@ -245,6 +245,18 @@ constexpr base::TimeDelta kAnimationSettleDownDuration = base::Seconds(3);
 constexpr base::TimeDelta kAnimationStartBufferDuration =
     base::Milliseconds(90);
 
+// Creates a `google_apis::calendar::SingleCalendar` for testing only.
+std::unique_ptr<google_apis::calendar::SingleCalendar> CreateCalendar(
+    const std::string& id,
+    const std::string& summary,
+    const std::string& color_id,
+    bool selected,
+    bool primary);
+
+std::unique_ptr<google_apis::calendar::CalendarList> CreateMockCalendarList(
+    std::list<std::unique_ptr<google_apis::calendar::SingleCalendar>>
+        calendars);
+
 // Creates a `google_apis::calendar::CalendarEvent` for testing, that converts
 // start/end time strings to `google_apis::calendar::DateTime`.
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
@@ -325,7 +337,7 @@ class CalendarClientTestImpl : public CalendarClient {
   // Force the task to take longer than the default timeout, causing an internal
   // error to be propagated.
   void ForceTimeout() {
-    task_delay_ = calendar_utils::kEventFetchTimeout + base::Seconds(1);
+    task_delay_ = calendar_utils::kCalendarDataFetchTimeout + base::Seconds(1);
   }
 
  private:

@@ -341,7 +341,7 @@ TEST_F(CalendarEventFetchTest, Timeout) {
 
   // Specifically delay the response until after CalendarEventFetch declares a
   // timeout.
-  client_.set_response_delay(calendar_utils::kEventFetchTimeout +
+  client_.set_response_delay(calendar_utils::kCalendarDataFetchTimeout +
                              base::Milliseconds(100));
 
   // Register our TestCalendarClient with the default user.
@@ -361,7 +361,7 @@ TEST_F(CalendarEventFetchTest, Timeout) {
 
   // Advance time to when the fetch times out. `fetch` can no longer be used
   // after this.
-  task_environment()->FastForwardBy(calendar_utils::kEventFetchTimeout);
+  task_environment()->FastForwardBy(calendar_utils::kCalendarDataFetchTimeout);
 
   // Events should be completely nonexistent.
   EXPECT_FALSE(events_fetched_count().has_value());

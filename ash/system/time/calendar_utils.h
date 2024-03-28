@@ -71,8 +71,13 @@ constexpr base::TimeDelta kDurationForAdjustingDST = base::Hours(5);
 // previous day. It is less than 24 hours to consider daylight savings.
 constexpr base::TimeDelta kDurationForGettingPreviousDay = base::Hours(20);
 
-// Event fetch will terminate if we don't receive a response sooner than this.
-constexpr base::TimeDelta kEventFetchTimeout = base::Seconds(10);
+// The fetch of a user's calendar list or event list will terminate if a
+// response is not received sooner than this.
+constexpr base::TimeDelta kCalendarDataFetchTimeout = base::Seconds(10);
+
+// Maximum number of selected calendars for which events should be fetched when
+// Multi-Calendar Support is enabled.
+constexpr int kMultipleCalendarsLimit = 10;
 
 // Number of months, before and after the month currently on-display, that we
 // cache-ahead.
@@ -95,9 +100,12 @@ constexpr int kUpNextBetweenChildSpacing = 8;
 // between the bottom and top of the 'nub'.
 constexpr int kUpNextOverlapInPx = 12;
 
-// Returns if CalendarView is for GlanceablesV2 based on whether the features
-// are enabled.
+// Returns true if CalendarView is for GlanceablesV2 based on whether the
+// features are enabled.
 bool IsForGlanceablesV2();
+
+// Returns true if the Multi-Calendar Support feature is enabled.
+bool IsMultiCalendarEnabled();
 
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
@@ -234,7 +242,7 @@ ASH_EXPORT base::Time GetNextDayMidnight(base::Time date);
 
 // Returns true if (1) it's a regular user; and (2) the user session is not
 // blocked; and (3) the admin has not disabled Google Calendar integration.
-bool ShouldFetchEvents();
+bool ShouldFetchCalendarData();
 
 // Returns true if it's a regular user or the user session is not blocked.
 bool IsActiveUser();

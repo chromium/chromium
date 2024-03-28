@@ -59,7 +59,7 @@ constexpr int kMaxResults = 2500;
 
 // Requested fields to be returned in the CalendarList result.
 constexpr char kCalendarListFields[] =
-    "etag,kind,items(id,colorId,selected,primary)";
+    "etag,kind,items(kind,id,summary,colorId,selected,primary)";
 
 // Requested fields to be returned in the Event list result.
 std::string GetCalendarEventListFields(bool include_attachments) {

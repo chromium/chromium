@@ -578,6 +578,8 @@ CalendarView::CalendarView(bool use_glanceables_container_style)
   content_view_->SetPaintToLayer();
   content_view_->layer()->SetFillsBoundsOpaquely(false);
 
+  // TODO(b/308701913): Initiate calendar list fetch here.
+
   SetMonthViews();
 
   // Container used for animating the event list view and / or the up next view.
@@ -987,6 +989,7 @@ bool CalendarView::EventsFetchComplete() {
 }
 
 void CalendarView::MaybeUpdateLoadingBarVisibility() {
+  // TODO(b/308701913): Check for calendar list fetch completion as well here.
   const bool visible = !EventsFetchComplete();
   progress_bar_->UpdateProgressBarVisibility(
       /*visible=*/visible);
@@ -1325,7 +1328,7 @@ void CalendarView::OnTimeout(const base::Time start_time) {
 
 void CalendarView::OpenEventList() {
   // Don't show the the `event_list_` view for unlogged in users.
-  if (!calendar_utils::ShouldFetchEvents()) {
+  if (!calendar_utils::ShouldFetchCalendarData()) {
     return;
   }
 
