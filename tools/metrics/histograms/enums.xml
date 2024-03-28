@@ -14014,6 +14014,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="AccessibilityExtraExtraExtraLarge"/>
 </enum>
 
+<enum name="IOSDefaultBookmarkFolderOutcome">
+  <int value="0" label="kUnset"/>
+  <int value="1" label="kExistingLocalFolderSet"/>
+  <int value="2" label="kExistingAccountFolderSet"/>
+  <int value="3" label="kMissingLocalFolderSet"/>
+  <int value="4" label="kMissingAccountFolderSet"/>
+</enum>
+
 <enum name="IOSParcelCarrier">
   <int value="0" label="Unkown"/>
   <int value="1" label="Fedex"/>

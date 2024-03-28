@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/prefs/pref_service.h"
@@ -19,6 +19,12 @@
 using bookmarks::BookmarkNode;
 
 namespace {
+
+void LogDefaultBookmarkFolderOutcome(
+    DefaultBookmarkFolderOutcomeForMetrics value) {
+  base::UmaHistogramEnumeration("IOS.Bookmarks.DefaultBookmarkFolderOutcome",
+                                value);
+}
 
 // Returns the bookmark model designed by `type`.
 LegacyBookmarkModel* GetBookmarkModelForType(
@@ -120,7 +126,10 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   int64_t node_id =
       prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
 
-  if (node_id != kLastUsedBookmarkFolderNone) {
+  if (node_id == kLastUsedBookmarkFolderNone) {
+    LogDefaultBookmarkFolderOutcome(
+        DefaultBookmarkFolderOutcomeForMetrics::kUnset);
+  } else {
     BookmarkModelType type = static_cast<BookmarkModelType>(prefs->GetInteger(
         prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
     LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(
@@ -128,7 +137,18 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     const BookmarkNode* result = bookmark_model->GetNodeById(node_id);
     if (result && result->is_folder()) {
       // Make sure the bookmark node is a folder. See crbug.com/1450146.
+      LogDefaultBookmarkFolderOutcome(
+          (bookmark_model == local_or_syncable_bookmark_model)
+              ? DefaultBookmarkFolderOutcomeForMetrics::kExistingLocalFolderSet
+              : DefaultBookmarkFolderOutcomeForMetrics::
+                    kExistingAccountFolderSet);
       return result;
+    } else {
+      LogDefaultBookmarkFolderOutcome(
+          (bookmark_model == local_or_syncable_bookmark_model)
+              ? DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet
+              : DefaultBookmarkFolderOutcomeForMetrics::
+                    kMissingAccountFolderSet);
     }
   }
 
