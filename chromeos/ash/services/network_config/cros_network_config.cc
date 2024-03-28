@@ -90,6 +90,9 @@ const char kErrorNotReady[] = "Error.NotReady";
 const char kErrorUserIsProhibitedFromConfiguringVpn[] =
     "Error.UserIsProhibitedFromConfiguringVpn";
 
+const char kDefaultCellularProviderName[] = "MobileNetwork";
+const char kDefaultCellularProviderCode[] = "000000";
+
 // Default traffic counter reset day.
 const int kDefaultResetDay = 1;
 
@@ -1189,10 +1192,20 @@ mojom::CellularProviderPropertiesPtr GetCellularProviderProperties(
   if (!provider_dict)
     return nullptr;
   auto provider = mojom::CellularProviderProperties::New();
-  provider->name =
-      GetRequiredString(provider_dict, ::onc::cellular_provider::kName);
-  provider->code =
-      GetRequiredString(provider_dict, ::onc::cellular_provider::kCode);
+  auto name = GetString(provider_dict, ::onc::cellular_provider::kName);
+  if (!name.has_value() || name->empty()) {
+    NET_LOG(ERROR) << "Cellular provider dictionary is missing provider name";
+    provider->name = kDefaultCellularProviderName;
+  } else {
+    provider->name = *name;
+  }
+  auto code = GetString(provider_dict, ::onc::cellular_provider::kCode);
+  if (!code.has_value() || code->empty()) {
+    NET_LOG(ERROR) << "Cellular provider dictionary is missing provider code";
+    provider->code = kDefaultCellularProviderCode;
+  } else {
+    provider->code = *code;
+  }
   provider->country =
       GetString(provider_dict, ::onc::cellular_provider::kCountry);
   return provider;
