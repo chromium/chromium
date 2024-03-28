@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
+
 #include <string>
 
 #include "base/barrier_callback.h"
@@ -14,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -156,6 +158,8 @@ class BuiltInBackendToAndroidBackendMigrator::MigrationMetricsReporter {
                                  update_logins_count_);
     if (migration_type_ == MigrationType::kForLocalUsers) {
       ReportAdditionalMetricsForLocalPasswordsMigration(migration_succeeded);
+      metrics_util::LogLocalPwdMigrationProgressState(
+          metrics_util::LocalPwdMigrationProgressState::kFinished);
     }
   }
 
@@ -362,6 +366,8 @@ void BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData(
 }
 
 void BuiltInBackendToAndroidBackendMigrator::RunMigrationForLocalUsers() {
+  LogLocalPwdMigrationProgressState(
+      metrics_util::LocalPwdMigrationProgressState::kStarted);
   auto barrier_callback = base::BarrierCallback<BackendAndLoginsResults>(
       2,
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::

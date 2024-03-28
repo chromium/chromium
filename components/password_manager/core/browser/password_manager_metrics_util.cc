@@ -419,6 +419,14 @@ void LogGroupedPasswordsResults(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void LogLocalPwdMigrationProgressState(
+    LocalPwdMigrationProgressState scheduling_state) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "ProgressState",
+      scheduling_state);
+}
+
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome) {
   base::UmaHistogramEnumeration(

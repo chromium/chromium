@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
@@ -48,6 +49,10 @@ constexpr base::TimeDelta kLatencyDelta = base::Milliseconds(123u);
 const PasswordStoreBackendError kBackendError = PasswordStoreBackendError(
     PasswordStoreBackendErrorType::kUncategorized,
     PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+
+const char kMigrationProgressStateHistogram[] =
+    "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+    "ProgressState";
 
 PasswordForm CreateTestPasswordForm(int index = 0) {
   PasswordForm form;
@@ -156,6 +161,32 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
 }
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       LocalPasswordMigrationRecordsProgressState) {
+  base::HistogramTester histogram_tester;
+  Init();
+
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
+
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  migrator()->StartMigrationOfLocalPasswords();
+  histogram_tester.ExpectBucketCount(
+      kMigrationProgressStateHistogram,
+      metrics_util::LocalPwdMigrationProgressState::kStarted, 1);
+
+  RunUntilIdle();
+  ASSERT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  histogram_tester.ExpectBucketCount(
+      kMigrationProgressStateHistogram,
+      metrics_util::LocalPwdMigrationProgressState::kFinished, 1);
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
        AllPrefsAreUpdatedAfterLocalPasswordsMigration) {
   Init();
 
@@ -168,6 +199,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   InitSyncService(/*is_password_sync_enabled=*/false);
 
   migrator()->StartMigrationOfLocalPasswords();
+
   RunUntilIdle();
 
   EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),

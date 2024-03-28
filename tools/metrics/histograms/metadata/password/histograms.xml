@@ -3749,6 +3749,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers.ProgressState"
+    enum="LocalPwdMigrationProgressState" expires_after="2024-09-22">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Recorded when the local passwords migration is scheduled, when it's started
+    and when it finishes, irrespective of success status.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
     enum="BooleanSuccess" expires_after="2024-07-28">
   <owner>vsemeniuk@google.com</owner>
