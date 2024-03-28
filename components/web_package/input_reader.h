@@ -38,7 +38,7 @@ class InputReader {
   InputReader(const InputReader&) = delete;
   InputReader& operator=(const InputReader&) = delete;
 
-  uint64_t CurrentOffset() const { return total_size_ - buf_.remaining(); }
+  size_t CurrentOffset() const { return total_size_ - buf_.remaining(); }
   size_t Size() const { return buf_.remaining(); }
 
   std::optional<uint8_t> ReadByte();
@@ -71,7 +71,7 @@ class InputReader {
   std::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument();
 
   base::BigEndianReader buf_;
-  uint64_t total_size_;
+  size_t total_size_;
 };
 
 }  // namespace web_package

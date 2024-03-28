@@ -4,6 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -200,11 +202,9 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesHeader(
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
-  signature_stack_entry->complete_entry_cbor.insert(
-      signature_stack_entry->complete_entry_cbor.end(), data->begin(),
-      data->begin() + input.CurrentOffset());
-  signature_stack_entry->attributes_cbor.assign(
-      data->begin(), data->begin() + input.CurrentOffset());
+  auto current_entry = base::span(*data).first(input.CurrentOffset());
+  base::Extend(signature_stack_entry->complete_entry_cbor, current_entry);
+  base::Extend(signature_stack_entry->attributes_cbor, current_entry);
 
   offset_in_stream += input.CurrentOffset();
   data_source_->get()->Read(
@@ -257,12 +257,9 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyKey(
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
-  signature_stack_entry->complete_entry_cbor.insert(
-      signature_stack_entry->complete_entry_cbor.end(), data->begin(),
-      data->begin() + input.CurrentOffset());
-  signature_stack_entry->attributes_cbor.insert(
-      signature_stack_entry->attributes_cbor.end(), data->begin(),
-      data->begin() + input.CurrentOffset());
+  auto current_entry = base::span(*data).first(input.CurrentOffset());
+  base::Extend(signature_stack_entry->complete_entry_cbor, current_entry);
+  base::Extend(signature_stack_entry->attributes_cbor, current_entry);
 
   offset_in_stream += input.CurrentOffset();
   data_source_->get()->Read(
@@ -290,12 +287,10 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
-  signature_stack_entry->complete_entry_cbor.insert(
-      signature_stack_entry->complete_entry_cbor.end(),
-      public_key_bytes->begin(), public_key_bytes->end());
-  signature_stack_entry->attributes_cbor.insert(
-      signature_stack_entry->attributes_cbor.end(), public_key_bytes->begin(),
-      public_key_bytes->end());
+  base::Extend(signature_stack_entry->complete_entry_cbor,
+               base::span(*public_key_bytes));
+  base::Extend(signature_stack_entry->attributes_cbor,
+               base::span(*public_key_bytes));
 
   offset_in_stream += public_key_bytes->size();
   data_source_->get()->Read(
@@ -334,9 +329,8 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
   }
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
-  signature_stack_entry->complete_entry_cbor.insert(
-      signature_stack_entry->complete_entry_cbor.end(), data->begin(),
-      data->begin() + input.CurrentOffset());
+  auto current_entry = base::span(*data).first(input.CurrentOffset());
+  base::Extend(signature_stack_entry->complete_entry_cbor, current_entry);
 
   offset_in_stream += input.CurrentOffset();
   data_source_->get()->Read(
@@ -363,9 +357,8 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
       [&](std::string error) { RunErrorCallback(std::move(error)); });
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
-  signature_stack_entry->complete_entry_cbor.insert(
-      signature_stack_entry->complete_entry_cbor.end(),
-      signature_bytes->begin(), signature_bytes->end());
+  base::Extend(signature_stack_entry->complete_entry_cbor,
+               base::span(*signature_bytes));
 
   signature_stack_.emplace_back(std::move(signature_stack_entry));
 

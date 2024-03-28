@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/containers/extend.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -220,11 +221,8 @@ class SignedWebBundleSignatureVerifierTest
         WebBundleSigner::CreateIntegrityBlockForBundle(web_bundle, key_pairs);
     auto integrity_block_cbor = *cbor::Writer::Write(integrity_block);
     std::vector<uint8_t> signed_web_bundle;
-    signed_web_bundle.insert(signed_web_bundle.end(),
-                             integrity_block_cbor.begin(),
-                             integrity_block_cbor.end());
-    signed_web_bundle.insert(signed_web_bundle.end(), web_bundle.begin(),
-                             web_bundle.end());
+    base::Extend(signed_web_bundle, base::span(integrity_block_cbor));
+    base::Extend(signed_web_bundle, base::span(web_bundle));
     return std::make_tuple(signed_web_bundle, std::move(integrity_block),
                            integrity_block_cbor.size());
   }

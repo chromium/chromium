@@ -4,6 +4,8 @@
 
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 
+#include "base/containers/extend.h"
+#include "base/containers/to_vector.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -45,8 +47,7 @@ cbor::Value WebBundleSigner::CreateSignatureStackEntry(
 
   cbor::Value::ArrayValue entry;
   entry.emplace_back(CreateSignatureStackEntryAttributes(
-      std::vector(public_key.bytes().begin(), public_key.bytes().end()),
-      errors_for_testing));
+      base::ToVector(public_key.bytes()), errors_for_testing));
   entry.emplace_back(signature);
 
   if (errors_for_testing.Has(
@@ -139,10 +140,8 @@ std::vector<uint8_t> WebBundleSigner::SignBundle(
           unsigned_bundle, key_pairs, errors_for_testing));
 
   std::vector<uint8_t> signed_web_bundle;
-  signed_web_bundle.insert(signed_web_bundle.end(), integrity_block->begin(),
-                           integrity_block->end());
-  signed_web_bundle.insert(signed_web_bundle.end(), unsigned_bundle.begin(),
-                           unsigned_bundle.end());
+  base::Extend(signed_web_bundle, base::span(*integrity_block));
+  base::Extend(signed_web_bundle, unsigned_bundle);
 
   return signed_web_bundle;
 }

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,15 +31,11 @@ namespace {
 // Creates a CBOR-encoded integrity block with an empty signature stack.
 std::vector<uint8_t> CreateIntegrityBlockCBOR() {
   std::vector<uint8_t> integrity_block;
-  integrity_block.insert(
-      integrity_block.end(),
-      std::begin(IntegrityBlockParser::kIntegrityBlockMagicBytes),
-      std::end(IntegrityBlockParser::kIntegrityBlockMagicBytes));
-  integrity_block.insert(
-      integrity_block.end(),
-      std::begin(IntegrityBlockParser::kIntegrityBlockVersionMagicBytes),
-      std::end(IntegrityBlockParser::kIntegrityBlockVersionMagicBytes));
-
+  base::Extend(integrity_block,
+               base::span(IntegrityBlockParser::kIntegrityBlockMagicBytes));
+  base::Extend(
+      integrity_block,
+      base::span(IntegrityBlockParser::kIntegrityBlockVersionMagicBytes));
   // Encode the length of the signature stack array, which is an empty array.
   integrity_block.push_back(static_cast<uint8_t>(0x80));
   return integrity_block;
