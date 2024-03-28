@@ -17,8 +17,8 @@ bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection) {
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
 
-// Determines which font text style to use depending on the device size, the
-// size class and if dynamic type is enabled.
+}  // namespace
+
 UIFontTextStyle GetTitleLabelFontTextStyle(UIViewController* view_controller) {
   UIViewController* presenter = view_controller.presentingViewController
                                     ? view_controller.presentingViewController
@@ -35,10 +35,7 @@ UIFontTextStyle GetTitleLabelFontTextStyle(UIViewController* view_controller) {
   return UIFontTextStyleTitle2;
 }
 
-}  // namespace
-
-UIFont* GetFRETitleFont(UIViewController* view_controller) {
-  UIFontTextStyle text_style = GetTitleLabelFontTextStyle(view_controller);
+UIFont* GetFRETitleFont(UIFontTextStyle text_style) {
   UIFontDescriptor* descriptor =
       [UIFontDescriptor preferredFontDescriptorWithTextStyle:text_style];
   UIFont* font = [UIFont systemFontOfSize:descriptor.pointSize

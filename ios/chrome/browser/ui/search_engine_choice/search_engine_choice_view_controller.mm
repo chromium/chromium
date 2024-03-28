@@ -142,7 +142,8 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   [_titleLabel
       setText:l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE)];
   [_titleLabel setTextColor:[UIColor colorNamed:kSolidBlackColor]];
-  _titleLabel.font = GetFRETitleFont(self);
+  UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
+  _titleLabel.font = GetFRETitleFont(textStyle);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
   [_titleLabel setTextAlignment:NSTextAlignmentCenter];
   [_titleLabel setNumberOfLines:0];
@@ -330,7 +331,8 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   [super traitCollectionDidChange:previousTraitCollection];
   // Reset the title font to make sure that it is
   // properly scaled.
-  _titleLabel.font = GetFRETitleFont(self);
+  UIFontTextStyle textStyle = GetTitleLabelFontTextStyle(self);
+  _titleLabel.font = GetFRETitleFont(textStyle);
   // Update the primary button once the layout changes take effect to have the
   // right measurements to evaluate the scroll position.
   __weak __typeof(self) weakSelf = self;

@@ -664,7 +664,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Reset the title font and the learn more text to make sure that they are
   // properly scaled. Nothing will be done for the Read More text if the
   // bottom is reached.
-  self.titleLabel.font = GetFRETitleFont(self);
+  self.titleLabel.font = GetFRETitleFont(self.titleLabelFontTextStyle);
   [self setReadMoreText];
 
   // Update the primary button once the layout changes take effect to have the
@@ -764,7 +764,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (!_titleLabel) {
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.numberOfLines = 0;
-    _titleLabel.font = GetFRETitleFont(self);
+    _titleLabel.font = GetFRETitleFont(self.titleLabelFontTextStyle);
     _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _titleLabel.text = self.titleText;
     _titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -1000,6 +1000,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   _bannerStyle = currentStyle;
   return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
+}
+
+// Determines which font text style to use depending on the device size, the
+// size class and if dynamic type is enabled.
+- (UIFontTextStyle)titleLabelFontTextStyle {
+  return GetTitleLabelFontTextStyle(self);
 }
 
 - (void)setPrimaryActionButtonFont:(UIButton*)button {
