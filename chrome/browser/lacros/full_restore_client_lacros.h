@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-// This class gathers desk template data for Ash.
+// This class gathers full restore data for Ash.
 class FullRestoreClientLacros : public crosapi::mojom::FullRestoreClient {
  public:
   FullRestoreClientLacros();

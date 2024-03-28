@@ -5,8 +5,10 @@
 #include "chrome/browser/lacros/full_restore_client_lacros.h"
 
 #include "base/barrier_callback.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_util.h"
 #include "chrome/browser/lacros/profile_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -23,21 +25,11 @@ FullRestoreClientLacros::~FullRestoreClientLacros() = default;
 
 void FullRestoreClientLacros::GetSessionInformation(
     GetSessionInformationCallback callback) {
-  // TODO(http://b/329713493): This should use `GetLastOpenedProfiles()`, not
-  // just the main profile. And once multi profile is complete, consider
-  // factoring this code with the block in
-  // `ash::full_restore::FullRestoreService`.
-  Profile* profile = GetMainProfile();
-  if (!profile) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  SessionServiceBase* service =
-      SessionServiceFactory::GetForProfileForSessionRestore(profile);
-  SessionServiceBase* app_service =
-      AppSessionServiceFactory::GetForProfileForSessionRestore(profile);
-  if (!service || !app_service) {
+  // TODO(sammiequon): Once multi profile is complete, consider factoring this
+  // code with the block in `ash::full_restore::FullRestoreService`.
+  const std::vector<Profile*>& profiles =
+      g_browser_process->profile_manager()->GetLastOpenedProfiles();
+  if (profiles.empty()) {
     std::move(callback).Run({});
     return;
   }
@@ -45,16 +37,26 @@ void FullRestoreClientLacros::GetSessionInformation(
   // Retrieves session service data from browser and app browsers, which
   // will be used to display favicons and tab titles.
   auto barrier = base::BarrierCallback<SessionWindows>(
-      /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
+      /*num_callbacks=*/2u * profiles.size(), /*done_callback=*/base::BindOnce(
           &FullRestoreClientLacros::OnGotAllSessions,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  for (Profile* profile : profiles) {
+    SessionServiceBase* service =
+        SessionServiceFactory::GetForProfileForSessionRestore(profile);
+    SessionServiceBase* app_service =
+        AppSessionServiceFactory::GetForProfileForSessionRestore(profile);
+    if (!service || !app_service) {
+      std::move(callback).Run({});
+      return;
+    }
 
-  service->GetLastSession(base::BindOnce(&FullRestoreClientLacros::OnGotSession,
-                                         weak_ptr_factory_.GetWeakPtr(),
-                                         barrier));
-  app_service->GetLastSession(
-      base::BindOnce(&FullRestoreClientLacros::OnGotSession,
-                     weak_ptr_factory_.GetWeakPtr(), barrier));
+    service->GetLastSession(
+        base::BindOnce(&FullRestoreClientLacros::OnGotSession,
+                       weak_ptr_factory_.GetWeakPtr(), barrier));
+    app_service->GetLastSession(
+        base::BindOnce(&FullRestoreClientLacros::OnGotSession,
+                       weak_ptr_factory_.GetWeakPtr(), barrier));
+  }
 }
 
 void FullRestoreClientLacros::OnGotSession(
