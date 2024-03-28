@@ -264,6 +264,7 @@
 </template>
 <template is="dom-if" if="[[isAccessibilityReducedAnimationsEnabled_]]">
   <settings-toggle-button
+    class="hr"
     id="enableReducedAnimations"
     icon="os-settings:reduced-animations"
     pref="{{prefs.settings.a11y.reduced_animations.enabled}}"
