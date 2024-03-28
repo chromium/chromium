@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/branded_strings.h"
@@ -111,15 +112,41 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
 AvatarToolbarButton::~AvatarToolbarButton() = default;
 
 void AvatarToolbarButton::UpdateIcon() {
-  if (!GetWidget()) {
+  // If the delegate state manager isn't initialized, that means the widget is
+  // not set yet and the button doesn't have access to the theme provider to set
+  // colors. Defer updating until AddedToWidget(). This may get called as a
+  // result of OnUserIdentityChanged() called from the constructor when the
+  // button is not yet added to the ToolbarView's hierarchy.
+  if (!delegate_->IsStateManagerInitialized()) {
     return;
   }
 
-  UpdateIconWithoutObservers();
+  const int icon_size = GetIconSize();
+  for (auto state : kButtonStates) {
+    SetImageModel(
+        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
+  }
+
+  SetInsets();
 
   for (auto& observer : observer_list_) {
     observer.OnIconUpdated();
   }
+}
+
+void AvatarToolbarButton::AddedToWidget() {
+  // `AddedToWidget()` can potentially be called more than once. E.g: on Mac
+  // when entering/exiting fullscreen.
+  if (!delegate_->IsStateManagerInitialized()) {
+    delegate_->InitializeStateManager();
+  }
+
+  ToolbarButton::AddedToWidget();
+
+  // A call to `OnThemeChanged()` occurred before adding the widget, and could
+  // not be processed since the delegate was not initialized yet.
+  // This will also end up calling `UpdateIcon()`.
+  OnThemeChanged();
 }
 
 void AvatarToolbarButton::Layout(PassKey) {
@@ -142,24 +169,6 @@ void AvatarToolbarButton::Layout(PassKey) {
   gfx::Size image_size = image->GetImage().size();
   image_size.Enlarge(1, 1);
   image->SetSize(image_size);
-}
-
-void AvatarToolbarButton::UpdateIconWithoutObservers() {
-  // If widget isn't set, the button doesn't have access to the theme provider
-  // to set colors. Defer updating until AddedToWidget(). This may get called as
-  // a result of OnUserIdentityChanged() called from the constructor when the
-  // button is not yet added to the ToolbarView's hierarchy.
-  if (!GetWidget()) {
-    return;
-  }
-
-  const int icon_size = GetIconSize();
-  for (auto state : kButtonStates) {
-    SetImageModel(
-        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
-  }
-
-  SetInsets();
 }
 
 void AvatarToolbarButton::UpdateText() {
@@ -326,6 +335,10 @@ void AvatarToolbarButton::OnBlur() {
 
 void AvatarToolbarButton::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
+  if (!delegate_->IsStateManagerInitialized()) {
+    return;
+  }
+
   delegate_->OnThemeChanged(GetColorProvider());
   UpdateText();
   if (features::IsChromeRefresh2023()) {
