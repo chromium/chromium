@@ -29,7 +29,9 @@ std::set<media_session::mojom::MediaSessionAction> GetDefaultActions() {
           media_session::mojom::MediaSessionAction::kPause,
           media_session::mojom::MediaSessionAction::kStop,
           media_session::mojom::MediaSessionAction::kSeekTo,
-          media_session::mojom::MediaSessionAction::kScrubTo};
+          media_session::mojom::MediaSessionAction::kScrubTo,
+          media_session::mojom::MediaSessionAction::kSeekForward,
+          media_session::mojom::MediaSessionAction::kSeekBackward};
 }
 
 std::set<media_session::mojom::MediaSessionAction>

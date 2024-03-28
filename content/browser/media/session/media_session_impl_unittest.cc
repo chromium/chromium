@@ -103,6 +103,10 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     default_actions_.insert(media_session::mojom::MediaSessionAction::kStop);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kSeekTo);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+    default_actions_.insert(
+        media_session::mojom::MediaSessionAction::kSeekForward);
+    default_actions_.insert(
+        media_session::mojom::MediaSessionAction::kSeekBackward);
   }
 
   MediaSessionImplTest(const MediaSessionImplTest&) = delete;
@@ -112,6 +116,7 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService,
          media_session::features::kAudioFocusEnforcement,
+         media::kGlobalMediaControlsPictureInPicture,
          blink::features::kMediaSessionEnterPictureInPicture},
         {});
 
@@ -810,6 +815,46 @@ TEST_F(MediaSessionImplTest,
   EXPECT_TRUE(base::Contains(
       observer.actions(),
       media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kExitPictureInPicture));
+}
+
+TEST_F(MediaSessionImplTest, WebContentsHasPictureInPictureVideo) {
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  web_contents_impl->SetHasPictureInPictureVideo(true);
+
+  StartNewPlayer();
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  mock_media_session_service().EnableAction(
+      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().FlushForTesting();
+
+  EXPECT_FALSE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_TRUE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kExitPictureInPicture));
+}
+
+TEST_F(MediaSessionImplTest, WebContentsHasPictureInPictureDocument) {
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  web_contents_impl->SetHasPictureInPictureDocument(true);
+
+  StartNewPlayer();
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  mock_media_session_service().EnableAction(
+      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().FlushForTesting();
+
+  EXPECT_FALSE(base::Contains(
+      observer.actions(),
+      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
   EXPECT_TRUE(base::Contains(
       observer.actions(),
       media_session::mojom::MediaSessionAction::kExitPictureInPicture));

@@ -373,6 +373,7 @@ void MediaSessionImpl::DidUpdateFaviconURL(
 void MediaSessionImpl::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
   RebuildAndNotifyMediaSessionInfoChanged();
+  RebuildAndNotifyActionsChanged();
 }
 
 void MediaSessionImpl::RenderFrameHostStateChanged(
@@ -1751,6 +1752,8 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     actions.insert(media_session::mojom::MediaSessionAction::kStop);
     actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
     actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+    actions.insert(media_session::mojom::MediaSessionAction::kSeekForward);
+    actions.insert(media_session::mojom::MediaSessionAction::kSeekBackward);
   }
 
   // If the website has specified an action handler for 'enterpictureinpicture',
@@ -1767,12 +1770,19 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
   }
 
   if (base::FeatureList::IsEnabled(
-          media::kGlobalMediaControlsPictureInPicture) &&
-      IsPictureInPictureAvailable()) {
-    actions.insert(
-        media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
-    actions.insert(
-        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
+          media::kGlobalMediaControlsPictureInPicture)) {
+    if (IsPictureInPictureAvailable()) {
+      actions.insert(
+          media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+      actions.insert(
+          media_session::mojom::MediaSessionAction::kExitPictureInPicture);
+    } else if (web_contents()->HasPictureInPictureVideo() ||
+               web_contents()->HasPictureInPictureDocument()) {
+      // If the media is already in the picture-in-picture state, we allow the
+      // player to exit it.
+      actions.insert(
+          media_session::mojom::MediaSessionAction::kExitPictureInPicture);
+    }
   }
 
   if (base::FeatureList::IsEnabled(

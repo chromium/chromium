@@ -108,8 +108,7 @@ void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {
 
 char kSetUpMediaSessionScript[] =
     "navigator.mediaSession.playbackState = \"playing\";\n"
-    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });\n"
-    "navigator.mediaSession.setActionHandler(\"seekforward\", _ => {});";
+    "navigator.mediaSession.metadata = new MediaMetadata({ title: \"foo\" });";
 
 char kSetUpWebRTCMediaSessionScript[] =
     "navigator.mediaSession.playbackState = \"playing\";\n"
@@ -169,6 +168,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kSeekForward);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kSeekBackward);
 
     observer.WaitForExpectedActions(expected_actions);
   }
@@ -183,6 +184,10 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kSeekForward);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kSeekBackward);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kToggleMicrophone);
     expected_actions.insert(
@@ -230,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::PLAYING,
             GetService()->playback_state());
   EXPECT_TRUE(GetService()->metadata());
-  EXPECT_EQ(1u, GetService()->actions().size());
+  EXPECT_EQ(0u, GetService()->actions().size());
 
   // Start a non-same-page navigation and check the playback state, metadata,
   // actions are reset.
@@ -257,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(blink::mojom::MediaSessionPlaybackState::PLAYING,
             GetService()->playback_state());
   EXPECT_TRUE(GetService()->metadata());
-  EXPECT_EQ(1u, GetService()->actions().size());
+  EXPECT_EQ(0u, GetService()->actions().size());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,

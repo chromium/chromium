@@ -144,6 +144,8 @@ class MediaSessionImplServiceRoutingTest
     actions_.insert(MediaSessionAction::kStop);
     actions_.insert(MediaSessionAction::kSeekTo);
     actions_.insert(MediaSessionAction::kScrubTo);
+    actions_.insert(MediaSessionAction::kSeekForward);
+    actions_.insert(MediaSessionAction::kSeekBackward);
   }
 
   ~MediaSessionImplServiceRoutingTest() override = default;
