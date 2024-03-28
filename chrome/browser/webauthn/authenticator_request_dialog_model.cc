@@ -432,18 +432,9 @@ AUTHENTICATOR_EVENTS
 #undef AUTHENTICATOR_REQUEST_EVENT_0
 #undef AUTHENTICATOR_REQUEST_EVENT_1
 
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
-    content::RenderFrameHost* render_frame_host,
-    AuthenticatorRequestDialogController* controller)
-    : frame_host_id(FrameHostIdFromMaybeNull(render_frame_host)),
-      controller_(controller) {}
-#endif
-
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
     content::RenderFrameHost* render_frame_host)
-    : frame_host_id(FrameHostIdFromMaybeNull(render_frame_host)),
-      controller_(nullptr) {}
+    : frame_host_id(FrameHostIdFromMaybeNull(render_frame_host)) {}
 
 AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
   for (auto& observer : observers) {
@@ -575,7 +566,7 @@ void AuthenticatorRequestDialogController::ResetEphemeralState() {
 
 AuthenticatorRequestDialogController::AuthenticatorRequestDialogController(
     AuthenticatorRequestDialogModel* model)
-    : internal_model_(nullptr), model_(model) {
+    : model_(model) {
   model_->observers.AddObserver(this);
   content::RenderFrameHost* frame_host = model_->GetRenderFrameHost();
   if (frame_host &&
@@ -588,29 +579,6 @@ AuthenticatorRequestDialogController::AuthenticatorRequestDialogController(
     }
   }
 }
-
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-AuthenticatorRequestDialogController::AuthenticatorRequestDialogController(
-    content::RenderFrameHost* render_frame_host)
-    : internal_model_(
-          std::make_unique<AuthenticatorRequestDialogModel>(render_frame_host,
-                                                            this)),
-      model_(internal_model_.get()) {
-  // Temporary duplication of the constructor body. This constructor will be
-  // deleted soon.
-  model_->observers.AddObserver(this);
-  content::RenderFrameHost* frame_host = model_->GetRenderFrameHost();
-  if (frame_host &&
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
-    webauthn::PasskeyModel* passkey_model =
-        PasskeyModelFactory::GetInstance()->GetForProfile(
-            Profile::FromBrowserContext(frame_host->GetBrowserContext()));
-    if (passkey_model) {
-      passkey_model_observation_.Observe(passkey_model);
-    }
-  }
-}
-#endif
 
 AuthenticatorRequestDialogController::~AuthenticatorRequestDialogController() {
   if (model_) {
@@ -623,121 +591,13 @@ AuthenticatorRequestDialogModel* AuthenticatorRequestDialogController::model()
   return model_;
 }
 
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-AuthenticatorRequestDialogModel::Step
-AuthenticatorRequestDialogController::current_step() const {
-  return model_->step();
-}
-bool AuthenticatorRequestDialogController::should_dialog_be_closed() const {
-  return model_->should_dialog_be_closed();
-}
-bool AuthenticatorRequestDialogController::should_bubble_be_closed() const {
-  return model_->should_bubble_be_closed();
-}
-bool AuthenticatorRequestDialogController::ble_adapter_is_powered() const {
-  return model_->ble_adapter_is_powered;
-}
-const std::optional<std::string>&
-AuthenticatorRequestDialogController::selected_phone_name() const {
-  return model_->selected_phone_name;
-}
-void AuthenticatorRequestDialogController::AddObserver(Observer* observer) {
-  model_->observers.AddObserver(observer);
-}
-void AuthenticatorRequestDialogController::RemoveObserver(Observer* observer) {
-  model_->observers.RemoveObserver(observer);
-}
-base::span<const AuthenticatorRequestDialogModel::Mechanism>
-AuthenticatorRequestDialogController::mechanisms() const {
-  return model_->mechanisms;
-}
-std::optional<int>
-AuthenticatorRequestDialogController::priority_mechanism_index() const {
-  return model_->priority_mechanism_index;
-}
-const std::string& AuthenticatorRequestDialogController::cable_qr_string()
-    const {
-  return *model_->cable_qr_string;
-}
-AuthenticatorRequestDialogModel::CableUIType
-AuthenticatorRequestDialogController::cable_ui_type() const {
-  return *model_->cable_ui_type;
-}
-bool AuthenticatorRequestDialogController::cable_should_suggest_usb() const {
-  return model_->cable_should_suggest_usb;
-}
-uint32_t AuthenticatorRequestDialogController::min_pin_length() const {
-  return model_->min_pin_length;
-}
-device::pin::PINEntryError AuthenticatorRequestDialogController::pin_error()
-    const {
-  return model_->pin_error;
-}
-std::optional<int> AuthenticatorRequestDialogController::pin_attempts() const {
-  return model_->pin_attempts;
-}
-std::optional<int> AuthenticatorRequestDialogController::max_bio_samples()
-    const {
-  return model_->max_bio_samples;
-}
-std::optional<int> AuthenticatorRequestDialogController::bio_samples_remaining()
-    const {
-  return model_->bio_samples_remaining;
-}
-std::optional<int> AuthenticatorRequestDialogController::uv_attempts() const {
-  return model_->uv_attempts;
-}
-content::RenderFrameHost*
-AuthenticatorRequestDialogController::GetRenderFrameHost() const {
-  return model_->GetRenderFrameHost();
-}
-const std::vector<device::DiscoverableCredentialMetadata>&
-AuthenticatorRequestDialogController::creds() const {
-  return model_->creds;
-}
-device::ResidentKeyRequirement
-AuthenticatorRequestDialogController::resident_key_requirement() const {
-  return model_->resident_key_requirement;
-}
-void AuthenticatorRequestDialogController::set_relying_party_id(
-    const std::string& relying_party_id) {
-  model_->relying_party_id = relying_party_id;
-}
-const std::string& AuthenticatorRequestDialogController::relying_party_id()
-    const {
-  return model_->relying_party_id;
-}
-void AuthenticatorRequestDialogController::set_user_entity(
-    device::PublicKeyCredentialUserEntity user_entity) {
-  model_->user_entity = std::move(user_entity);
-}
-const device::PublicKeyCredentialUserEntity&
-AuthenticatorRequestDialogController::user_entity() const {
-  return model_->user_entity;
-}
-bool AuthenticatorRequestDialogController::offer_try_again_in_ui() const {
-  return model_->offer_try_again_in_ui;
-}
-AuthenticatorRequestDialogModel::GpmPinError
-AuthenticatorRequestDialogController::gpm_pin_error() const {
-  return model_->gpm_pin_error;
-}
-content::WebContents* AuthenticatorRequestDialogController::GetWebContents()
-    const {
-  return model_->GetWebContents();
-}
-std::vector<std::string>
-AuthenticatorRequestDialogController::paired_phone_names() const {
-  return model_->paired_phone_names;
-}
-#endif
-
 void AuthenticatorRequestDialogController::OnModelDestroyed(
     AuthenticatorRequestDialogModel* model) {
   // This stops the destructor of this object from trying to remove itself from
   // the list of observers. But this is not a valid state for this object to be
   // in: many functions will crash. So this is just to make destroying the two
   // objects together not depend on the order of destruction.
+  CHECK_EQ(model, model_);
   model_ = nullptr;
 }
 

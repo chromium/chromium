@@ -39,12 +39,6 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-// This code is transitioning to a new structure and some aspects are temporary.
-// Those bits are guarded by this define purely to highlight them. Once the
-// transition is complete this define, and the sections that it covers, will be
-// deleted.
-#define AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION
-
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -376,13 +370,6 @@ struct AuthenticatorRequestDialogModel {
     kWrongPin,
   };
 
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-  // This constructor is temporary while the views still expect a Controller.
-  explicit AuthenticatorRequestDialogModel(
-      content::RenderFrameHost* render_frame_host,
-      AuthenticatorRequestDialogController* controller);
-#endif
-
   explicit AuthenticatorRequestDialogModel(
       content::RenderFrameHost* render_frame_host);
   AuthenticatorRequestDialogModel(AuthenticatorRequestDialogModel&) = delete;
@@ -482,10 +469,6 @@ struct AuthenticatorRequestDialogModel {
 
  private:
   Step step_ = Step::kNotStarted;
-
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-  const raw_ptr<AuthenticatorRequestDialogController> controller_;
-#endif
 };
 
 // Encapsulates the logic behind the WebAuthn UI flow.
@@ -501,9 +484,6 @@ class AuthenticatorRequestDialogController
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using TransportAvailabilityInfo =
       device::FidoRequestHandlerBase::TransportAvailabilityInfo;
-  using Observer = AuthenticatorRequestDialogModel::Observer;
-  using CableUIType = AuthenticatorRequestDialogModel::CableUIType;
-  using GpmPinError = AuthenticatorRequestDialogModel::GpmPinError;
 
   enum class AccountState {
     // There isn't a primary account, or enclave support is disabled.
@@ -527,13 +507,6 @@ class AuthenticatorRequestDialogController
 
   explicit AuthenticatorRequestDialogController(Model* model);
 
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-  // This is a temporary constructor that creates an
-  // `AuthenticatorRequestDialogModel` internally.
-  explicit AuthenticatorRequestDialogController(
-      content::RenderFrameHost* render_frame_host);
-#endif
-
   AuthenticatorRequestDialogController(
       const AuthenticatorRequestDialogController&) = delete;
   AuthenticatorRequestDialogController& operator=(
@@ -542,44 +515,6 @@ class AuthenticatorRequestDialogController
   ~AuthenticatorRequestDialogController() override;
 
   Model* model() const;
-
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-  // Temporary functions that forward to the model.
-  //
-  // Until the Views are updated to work with a Model, these function provide
-  // the expected accessors. They should all be deleted once the split is
-  // complete.
-
-  Step current_step() const;
-  bool should_dialog_be_closed() const;
-  bool should_bubble_be_closed() const;
-  bool ble_adapter_is_powered() const;
-  const std::optional<std::string>& selected_phone_name() const;
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-  virtual base::span<const Mechanism> mechanisms() const;
-  std::optional<int> priority_mechanism_index() const;
-  const std::string& cable_qr_string() const;
-  CableUIType cable_ui_type() const;
-  bool cable_should_suggest_usb() const;
-  uint32_t min_pin_length() const;
-  device::pin::PINEntryError pin_error() const;
-  std::optional<int> pin_attempts() const;
-  std::optional<int> max_bio_samples() const;
-  std::optional<int> bio_samples_remaining() const;
-  std::optional<int> uv_attempts() const;
-  content::RenderFrameHost* GetRenderFrameHost() const;
-  const std::vector<device::DiscoverableCredentialMetadata>& creds() const;
-  device::ResidentKeyRequirement resident_key_requirement() const;
-  void set_relying_party_id(const std::string& relying_party_id);
-  const std::string& relying_party_id() const;
-  void set_user_entity(device::PublicKeyCredentialUserEntity user_entity);
-  const device::PublicKeyCredentialUserEntity& user_entity() const;
-  bool offer_try_again_in_ui() const;
-  GpmPinError gpm_pin_error() const;
-  content::WebContents* GetWebContents() const;
-  std::vector<std::string> paired_phone_names() const;
-#endif
 
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
@@ -1007,12 +942,6 @@ class AuthenticatorRequestDialogController
   void UpdateModelForTransportAvailability();
 
   void OnUserConfirmedPriorityMechanism() override;
-
-#if defined(AUTHENTICATOR_REQUEST_MODEL_SPLIT_TRANSITION)
-  // This holds a model for users of this class that haven't been updated
-  // to understand the model/controller split yet.
-  const std::unique_ptr<AuthenticatorRequestDialogModel> internal_model_;
-#endif
 
   raw_ptr<Model> model_;
 
