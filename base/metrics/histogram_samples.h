@@ -15,6 +15,7 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 
@@ -244,9 +245,9 @@ class BASE_EXPORT HistogramSamples {
   }
 
   // Produces an actual graph (set of blank vs non blank char's) for a bucket.
-  void WriteAsciiBucketGraph(double x_count,
-                             int line_length,
-                             std::string* output) const;
+  static void WriteAsciiBucketGraph(double x_count,
+                                    int line_length,
+                                    std::string* output);
 
   // Writes textual description of the bucket contents (relative to histogram).
   // Output is the count in the buckets, as well as the percentage.
@@ -268,6 +269,8 @@ class BASE_EXPORT HistogramSamples {
   Metadata* meta() { return meta_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HistogramSamplesTest, WriteAsciiBucketGraph);
+
   // Depending on derived class `meta_` can come from:
   // - Local storage: Then `meta_owned_` is set and meta_ points to it.
   // - External storage: Then `meta_owned_` is null, and `meta_` point toward an

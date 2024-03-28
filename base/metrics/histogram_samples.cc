@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/pickle.h"
@@ -421,15 +422,18 @@ std::string HistogramSamples::GetAsciiBody() const {
   return output;
 }
 
+// static
 void HistogramSamples::WriteAsciiBucketGraph(double x_count,
                                              int line_length,
-                                             std::string* output) const {
-  int x_remainder = std::max(line_length - x_count, 0.0);
+                                             std::string* output) {
+  output->reserve(ClampAdd(output->size(), ClampAdd(line_length, 1)));
 
-  output->reserve(output->size() + x_count + 1 + x_remainder);
-  output->append(x_count, '-');
+  const size_t count = ClampRound<size_t>(x_count);
+  output->append(count, '-');
   output->append(1, 'O');
-  output->append(saturated_cast<size_t>(x_remainder), ' ');
+  if (const auto len = as_unsigned(line_length); count < len) {
+    output->append(len - count, ' ');
+  }
 }
 
 void HistogramSamples::WriteAsciiBucketValue(HistogramBase::Count current,
