@@ -94,6 +94,64 @@ std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
       profile, base::FileEnumerator::FileType::FILES);
 }
 
+std::vector<ash::PickerSearchResult> ConvertSearchResults(
+    std::vector<std::unique_ptr<ChromeSearchResult>> results) {
+  std::vector<ash::PickerSearchResult> picker_results;
+  picker_results.reserve(results.size());
+
+  for (const std::unique_ptr<ChromeSearchResult>& result : results) {
+    CHECK(result);
+  }
+
+  base::ranges::sort(results, base::ranges::greater(),
+                     [](const std::unique_ptr<ChromeSearchResult>& result) {
+                       return result->relevance();
+                     });
+
+  for (const std::unique_ptr<ChromeSearchResult>& result : results) {
+    switch (result->result_type()) {
+      case ash::AppListSearchResultType::kOmnibox:
+      case ash::AppListSearchResultType::kOpenTab: {
+        if (std::optional<GURL> result_url = result->url();
+            result_url.has_value()) {
+          picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
+              *result_url, result->title(), result->icon().icon));
+        } else {
+          picker_results.push_back(
+              ash::PickerSearchResult::Text(result->title()));
+        }
+        break;
+      }
+      case ash::AppListSearchResultType::kFileSearch: {
+        // TODO: b/322926411 - Move this filtering to the search provider.
+        bool is_image = false;
+        for (std::string_view extension : kImageExtensions) {
+          if (result->filePath().MatchesFinalExtension(extension)) {
+            is_image = true;
+            break;
+          }
+        }
+
+        if (is_image) {
+          picker_results.push_back(ash::PickerSearchResult::LocalFile(
+              result->title(), result->filePath()));
+        }
+        break;
+      }
+      case ash::AppListSearchResultType::kDriveSearch:
+        picker_results.push_back(ash::PickerSearchResult::DriveFile(
+            result->title(), *result->url()));
+        break;
+      default:
+        LOG(DFATAL) << "Got unexpected search result type "
+                    << static_cast<int>(result->result_type());
+        break;
+    }
+  }
+
+  return picker_results;
+}
+
 }  // namespace
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
@@ -217,60 +275,14 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
     PickerClientImpl::CrosSearchResultsCallback callback,
     ash::AppListSearchResultType result_type,
     std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-  std::vector<ash::PickerSearchResult> picker_results;
-  picker_results.reserve(results.size());
+  callback.Run(result_type, ConvertSearchResults(std::move(results)));
+}
 
-  for (const std::unique_ptr<ChromeSearchResult>& result : results) {
-    CHECK(result);
-  }
-
-  base::ranges::sort(results, base::ranges::greater(),
-                     [](const std::unique_ptr<ChromeSearchResult>& result) {
-                       return result->relevance();
-                     });
-
-  for (const std::unique_ptr<ChromeSearchResult>& result : results) {
-    switch (result->result_type()) {
-      case ash::AppListSearchResultType::kOmnibox:
-      case ash::AppListSearchResultType::kOpenTab: {
-        if (std::optional<GURL> result_url = result->url();
-            result_url.has_value()) {
-          picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
-              *result_url, result->title(), result->icon().icon));
-        } else {
-          picker_results.push_back(
-              ash::PickerSearchResult::Text(result->title()));
-        }
-        break;
-      }
-      case ash::AppListSearchResultType::kFileSearch: {
-        // TODO: b/322926411 - Move this filtering to the search provider.
-        bool is_image = false;
-        for (std::string_view extension : kImageExtensions) {
-          if (result->filePath().MatchesFinalExtension(extension)) {
-            is_image = true;
-            break;
-          }
-        }
-
-        if (is_image) {
-          picker_results.push_back(ash::PickerSearchResult::LocalFile(
-              result->title(), result->filePath()));
-        }
-        break;
-      }
-      case ash::AppListSearchResultType::kDriveSearch:
-        picker_results.push_back(ash::PickerSearchResult::DriveFile(
-            result->title(), *result->url()));
-        break;
-      default:
-        LOG(DFATAL) << "Got unexpected search result type "
-                    << static_cast<int>(result->result_type());
-        break;
-    }
-  }
-
-  callback.Run(result_type, std::move(picker_results));
+void PickerClientImpl::OnZeroStateLinksSearchResultsUpdated(
+    PickerClientImpl::SuggestedLinksCallback callback,
+    ash::AppListSearchResultType result_type,
+    std::vector<std::unique_ptr<ChromeSearchResult>> results) {
+  callback.Run(ConvertSearchResults(std::move(results)));
 }
 
 void PickerClientImpl::StopCrosQuery() {
@@ -315,6 +327,23 @@ void PickerClientImpl::GetRecentFileResults(RecentFilesCallback callback) {
       }).Then(std::move(callback)));
 }
 
+void PickerClientImpl::GetSuggestedLinkResults(
+    SuggestedLinksCallback callback) {
+  // TODO: b/330938446 - Replace with proper zero-state logic.
+  if (zero_state_links_search_engine_ == nullptr) {
+    zero_state_links_search_engine_ =
+        std::make_unique<app_list::SearchEngine>(profile_);
+    zero_state_links_search_engine_->AddProvider(
+        CreateOmniboxProvider(GetAllAutocompleteProviderTypes()));
+  }
+
+  zero_state_links_search_engine_->StartSearch(
+      u"http", app_list::SearchOptions(),
+      base::BindRepeating(
+          &PickerClientImpl::OnZeroStateLinksSearchResultsUpdated,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);
@@ -344,6 +373,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
       CreateOmniboxProvider(GetAllAutocompleteProviderTypes()));
   search_engine_->AddProvider(CreateFileSearchProvider(profile_));
   search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
+
+  zero_state_links_search_engine_.reset();
 }
 
 std::unique_ptr<app_list::SearchProvider>

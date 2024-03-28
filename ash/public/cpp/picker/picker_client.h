@@ -34,6 +34,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
                                    std::vector<PickerSearchResult> results)>;
   using RecentFilesCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
+  using SuggestedLinksCallback =
+      base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
 
   // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
   // fetch assets.
@@ -60,6 +62,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
   virtual void ShowEditor() = 0;
 
   virtual void GetRecentFileResults(RecentFilesCallback callback) = 0;
+
+  virtual void GetSuggestedLinkResults(SuggestedLinksCallback callback) = 0;
 
  protected:
   PickerClient();

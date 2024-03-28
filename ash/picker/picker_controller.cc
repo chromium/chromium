@@ -257,8 +257,12 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kEditor:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      NOTIMPLEMENTED_LOG_ONCE();
-      break;
+      // TODO: b/330589902 - Use correct PickerSectionType for this.
+      client_->GetSuggestedLinkResults(
+          base::BindRepeating(CreateSingleSectionFromResults,
+                              PickerSectionType::kRecentlyUsed)
+              .Then(std::move(callback)));
+      return;
     case PickerCategory::kExpressions:
       NOTREACHED_NORETURN();
     case PickerCategory::kClipboard:

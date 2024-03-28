@@ -71,6 +71,7 @@ class PickerClientImpl
   void StopCrosQuery() override;
   void ShowEditor() override;
   void GetRecentFileResults(RecentFilesCallback callback) override;
+  void GetSuggestedLinkResults(SuggestedLinksCallback callback) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -108,6 +109,10 @@ class PickerClientImpl
       CrosSearchResultsCallback callback,
       ash::AppListSearchResultType result_type,
       std::vector<std::unique_ptr<ChromeSearchResult>> results);
+  void OnZeroStateLinksSearchResultsUpdated(
+      SuggestedLinksCallback callback,
+      ash::AppListSearchResultType result_type,
+      std::vector<std::unique_ptr<ChromeSearchResult>> results);
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
@@ -125,6 +130,10 @@ class PickerClientImpl
   // A dedicated cros search engine for filtered searches.
   std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
   std::optional<ash::PickerCategory> current_filter_category_;
+
+  // A dedicated cros search engine for zero state results for links.
+  // TODO: b/330938446 - Replace with proper zero-state logic.
+  std::unique_ptr<app_list::SearchEngine> zero_state_links_search_engine_;
 
   ash::GifTenorApiFetcher gif_tenor_api_fetcher_;
   std::optional<std::string> current_gif_search_query_;

@@ -251,6 +251,23 @@ TEST_F(PickerClientImplTest, GetRecentFilesDoesNotReturnOldFiles) {
   EXPECT_THAT(future.Get(), IsEmpty());
 }
 
+TEST_F(PickerClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  AddSearchToHistory(profile(), GURL("http://foo.com/history"));
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  client.GetSuggestedLinkResults(future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      future.Get(),
+      IsSupersetOf({Property(
+          "data", &ash::PickerSearchResult::data,
+          VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
+              Field("url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                    GURL("http://foo.com/history"))))}));
+}
+
 // TODO: b/325540366 - Add PickerClientImpl tests.
 
 }  // namespace
