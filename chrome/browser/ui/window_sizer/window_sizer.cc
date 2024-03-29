@@ -135,13 +135,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     }
 
     if (window) {
-#if BUILDFLAG(IS_CHROMEOS)
-      if (window->IsVisible()) {
         *bounds = window->GetRestoredBounds();
-      }
-#else
-      *bounds = window->GetRestoredBounds();
-#endif
 
       // On Mac GetRestoredBounds already returns the maximized bounds for
       // maximized windows. Additionally creating a window with a maximized
