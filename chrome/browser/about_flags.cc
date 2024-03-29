@@ -6697,6 +6697,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},
 
+    {"ntp-calendar-module", flag_descriptions::kNtpCalendarModuleName,
+     flag_descriptions::kNtpCalendarModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpCalendarModule)},
+
     {"ntp-chrome-cart-journeys-module-coexist",
      flag_descriptions::kNtpChromeCartHistoryClusterCoexistName,
      flag_descriptions::kNtpChromeCartHistoryClusterCoexistDescription,
@@ -6808,6 +6812,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpModulesRedesignedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesigned)},
 
+    {"ntp-outlook-calendar-module",
+     flag_descriptions::kNtpOutlookCalendarModuleName,
+     flag_descriptions::kNtpOutlookCalendarModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpOutlookCalendarModule)},
+
     {"ntp-photos-module", flag_descriptions::kNtpPhotosModuleName,
      flag_descriptions::kNtpPhotosModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpPhotosModule,
@@ -6911,6 +6920,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,
                                     kNtpSafeBrowsingModuleVariations,
                                     "DesktopNtpModules")},
+
+    {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
+     flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpSharepointModule)},
 
     {"ntp-tab-resumption-module",
      flag_descriptions::kNtpTabResumptionModuleName,

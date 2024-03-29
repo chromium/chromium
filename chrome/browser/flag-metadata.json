@@ -5687,6 +5687,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "ntp-calendar-module",
+    "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ntp-chrome-cart-in-journeys-module",
     "owners": [ "yuezhanggg@chromium.org", "romanarora@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 122
@@ -5765,6 +5770,11 @@
     "name": "ntp-modules-redesigned",
     "owners": [ "mahmadi@chromium.org", "tiborg@chromium.org", "romanarora@chromium.org" ],
     "expiry_milestone": 129
+  },
+  {
+    "name": "ntp-outlook-calendar-module",
+    "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
+    "expiry_milestone": 130
   },
   {
     "name": "ntp-photos-module",
@@ -5860,6 +5870,11 @@
     "name": "ntp-safe-browsing-module",
     "owners": [ "tiborg@chromium.org" ],
     "expiry_milestone": 105
+  },
+  {
+    "name": "ntp-sharepoint-module",
+    "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
+    "expiry_milestone": 130
   },
   {
     "name": "ntp-single-row-shortcuts",

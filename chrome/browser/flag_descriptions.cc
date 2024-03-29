@@ -4775,6 +4775,10 @@ const char kNtpCacheOneGoogleBarDescription[] =
     "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "
     "when available.";
 
+const char kNtpCalendarModuleName[] = "NTP Calendar Module";
+const char kNtpCalendarModuleDescription[] =
+    "Shows the Google Calendar module on the New Tab Page.";
+
 const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
@@ -4879,6 +4883,10 @@ const char kNtpPhotosModuleSoftOptOutName[] = "NTP Photos Module Soft Opt-Out";
 const char kNtpPhotosModuleSoftOptOutDescription[] =
     "Enables soft opt-out option in Photos opt-in card";
 
+const char kNtpOutlookCalendarModuleName[] = "NTP Outlook Calendar Module";
+const char kNtpOutlookCalendarModuleDescription[] =
+    "Shows the Outlook Calendar module on the New Tab Page.";
+
 const char kNtpRealboxContextualAndTrendingSuggestionsName[] =
     "NTP Realbox Contextual and Trending Suggestions";
 const char kNtpRealboxContextualAndTrendingSuggestionsDescription[] =
@@ -4947,6 +4955,10 @@ const char kNtpReducedLogoSpaceDescription[] =
 const char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
 const char kNtpSafeBrowsingModuleDescription[] =
     "Shows the safe browsing module on the New Tab Page.";
+
+const char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
+const char kNtpSharepointModuleDescription[] =
+    "Shows the Sharepoint module on the New Tab Page.";
 
 const char kNtpSingleRowShortcutsName[] = "NTP Single Row Shortcuts";
 const char kNtpSingleRowShortcutsDescription[] =

@@ -2778,6 +2778,9 @@ extern const char kNtpBackgroundImageErrorDetectionDescription[];
 extern const char kNtpCacheOneGoogleBarName[];
 extern const char kNtpCacheOneGoogleBarDescription[];
 
+extern const char kNtpCalendarModuleName[];
+extern const char kNtpCalendarModuleDescription[];
+
 extern const char kNtpChromeCartModuleName[];
 extern const char kNtpChromeCartModuleDescription[];
 
@@ -2830,6 +2833,9 @@ extern const char kNtpModulesHeaderIconDescription[];
 
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
+
+extern const char kNtpOutlookCalendarModuleName[];
+extern const char kNtpOutlookCalendarModuleDescription[];
 
 extern const char kNtpPhotosModuleOptInTitleName[];
 extern const char kNtpPhotosModuleOptInTitleDescription[];
@@ -2887,6 +2893,9 @@ extern const char kNtpReducedLogoSpaceDescription[];
 
 extern const char kNtpSafeBrowsingModuleName[];
 extern const char kNtpSafeBrowsingModuleDescription[];
+
+extern const char kNtpSharepointModuleName[];
+extern const char kNtpSharepointModuleDescription[];
 
 extern const char kNtpSingleRowShortcutsName[];
 extern const char kNtpSingleRowShortcutsDescription[];

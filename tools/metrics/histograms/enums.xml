@@ -16697,6 +16697,7 @@ from previous Chrome versions.
   <int value="-1910438159" label="ShowNtpAtStartupAndroid:enabled"/>
   <int value="-1910427915" label="HttpsOnlyMode:enabled"/>
   <int value="-1910305102" label="EnhancedDeskAnimations:enabled"/>
+  <int value="-1910061571" label="NtpOutlookCalendarModule:enabled"/>
   <int value="-1909983714" label="ExperimentalTabController:disabled"/>
   <int value="-1909702940" label="WebXRARModule:disabled"/>
   <int value="-1909356390"
@@ -17230,6 +17231,7 @@ from previous Chrome versions.
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
   <int value="-1656176904" label="bruschetta-installer-download-strategy"/>
   <int value="-1655535052" label="enable-pointer-events"/>
+  <int value="-1655495554" label="NtpCalendarModule:disabled"/>
   <int value="-1655281250" label="DefaultCalculatorWebApp:enabled"/>
   <int value="-1654476091" label="cast-streaming-force-enable-hardware-vp8"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
@@ -19066,6 +19068,7 @@ from previous Chrome versions.
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
+  <int value="-843339105" label="NtpSharepointModule:disabled"/>
   <int value="-842798026" label="LinkCrossDeviceInternals:disabled"/>
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
@@ -20701,6 +20704,7 @@ from previous Chrome versions.
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
   <int value="-106128305" label="DragDropTabTearing:disabled"/>
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
+  <int value="-103131043" label="NtpOutlookCalendarModule:disabled"/>
   <int value="-102537270" label="extension-content-verification"/>
   <int value="-102387656" label="FillingAcrossAffiliatedWebsites:disabled"/>
   <int value="-102227288" label="PasswordExport:disabled"/>
@@ -22789,6 +22793,7 @@ from previous Chrome versions.
   <int value="824968180" label="SimLockPolicy:enabled"/>
   <int value="825301017" label="EnterpriseProfileBadging:enabled"/>
   <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
+  <int value="826748470" label="NtpCalendarModule:enabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
   <int value="828678083" label="DynamicTopChrome:disabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
@@ -24020,6 +24025,7 @@ from previous Chrome versions.
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1389697465" label="OmniboxGroupingFramework:disabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>
+  <int value="1390803837" label="NtpSharepointModule:enabled"/>
   <int value="1391313384" label="Hotspot:disabled"/>
   <int value="1392836587" label="DesktopPWAsElidedExtensionsMenu:disabled"/>
   <int value="1392935139" label="KidsManagementUrlClassification:enabled"/>
