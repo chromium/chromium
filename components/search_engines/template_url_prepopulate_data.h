@@ -34,7 +34,7 @@ extern const int kMaxPrepopulatedEngineID;
 
 // The maximum number of prepopulated search engines that can be returned in
 // any of the EEA countries by `GetPrepopulatedEngines()`.
-inline constexpr size_t kMaxEeaPrepopulatedEngines = 9;
+inline constexpr size_t kMaxEeaPrepopulatedEngines = 8;
 
 // The maximum number of prepopulated search engines that can be returned in
 // in the rest of the world by `GetPrepopulatedEngines()`.
