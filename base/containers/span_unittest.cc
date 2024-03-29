@@ -11,6 +11,7 @@
 #include <memory>
 #include <span>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1630,7 +1630,7 @@ TEST(SpanTest, MakeStaticSpanFromContainer) {
 }
 
 TEST(SpanTest, MakeStaticSpanFromConstexprContainer) {
-  constexpr StringPiece str = "Hello, World";
+  constexpr std::string_view str = "Hello, World";
   constexpr auto made_span = make_span<12>(str);
   static_assert(str.data() == made_span.data(), "Error: data() does not match");
   static_assert(str.size() == made_span.size(), "Error: size() does not match");

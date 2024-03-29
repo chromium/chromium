@@ -5,12 +5,12 @@
 #include "base/containers/flat_map.h"
 
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -243,8 +243,8 @@ TEST(FlatMap, AtFunction) {
 
   // Heterogeneous look-up works.
   base::flat_map<std::string, int> m2 = {{"a", 1}, {"b", 2}};
-  EXPECT_EQ(1, m2.at(base::StringPiece("a")));
-  EXPECT_EQ(2, std::as_const(m2).at(base::StringPiece("b")));
+  EXPECT_EQ(1, m2.at(std::string_view("a")));
+  EXPECT_EQ(2, std::as_const(m2).at(std::string_view("b")));
 }
 
 // insert_or_assign(K&&, M&&)

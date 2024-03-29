@@ -7,9 +7,9 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +36,7 @@ TEST(ContainsTest, GenericContainsWithProjection) {
 }
 
 TEST(ContainsTest, GenericSetContainsWithProjection) {
-  constexpr StringPiece kFoo = "foo";
+  constexpr std::string_view kFoo = "foo";
   std::set<std::string> set = {"foo", "bar", "baz"};
 
   // Opt into a linear search by explicitly providing a projection:
