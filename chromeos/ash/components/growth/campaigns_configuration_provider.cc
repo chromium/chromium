@@ -1,0 +1,82 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
+
+#include "base/feature_list.h"
+#include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/feature_list.h"
+#include "components/feature_engagement/public/group_list.h"
+
+namespace growth {
+
+namespace {
+
+constexpr char kGrowthFramework[] = "ChromeOS Growth Framework";
+constexpr char kGrowthCampaignsEventNamePrefix[] = "ChromeOSAshGrowthCampaigns";
+constexpr char kGrowthCampaignsEventUsed[] =
+    "ChromeOSAshGrowthCampaigns_EventUsed";
+constexpr char kGrowthCampaignsEventTrigger[] =
+    "ChromeOSAshGrowthCampaigns_EventTrigger";
+
+feature_engagement::FeatureConfig CreateEmptyConfig() {
+  feature_engagement::FeatureConfig config;
+  config.valid = true;
+  config.availability =
+      feature_engagement::Comparator(feature_engagement::ANY, 0);
+  config.session_rate =
+      feature_engagement::Comparator(feature_engagement::ANY, 0);
+  config.used = feature_engagement::EventConfig(
+      kGrowthCampaignsEventUsed,
+      feature_engagement::Comparator(feature_engagement::ANY, 0), 0, 0);
+  config.trigger = feature_engagement::EventConfig(
+      kGrowthCampaignsEventTrigger,
+      feature_engagement::Comparator(feature_engagement::ANY, 0), 0, 0);
+  return config;
+}
+
+}  // namespace
+
+CampaignsConfigurationProvider::CampaignsConfigurationProvider() {
+  SetConfig(CreateEmptyConfig());
+}
+
+CampaignsConfigurationProvider::~CampaignsConfigurationProvider() = default;
+
+bool CampaignsConfigurationProvider::MaybeProvideFeatureConfiguration(
+    const base::Feature& feature,
+    feature_engagement::FeatureConfig& config,
+    const feature_engagement::FeatureVector& known_features,
+    const feature_engagement::GroupVector& known_groups) const {
+  if (feature_engagement::kIPHGrowthFramework.name != feature.name) {
+    return false;
+  }
+
+  // TODO: b/330533766 - Implement the matching logic.
+  config = config_;
+  return true;
+}
+
+const char* CampaignsConfigurationProvider::GetConfigurationSourceDescription()
+    const {
+  return kGrowthFramework;
+}
+
+std::set<std::string>
+CampaignsConfigurationProvider::MaybeProvideAllowedEventPrefixes(
+    const base::Feature& feature) const {
+  if (feature_engagement::kIPHGrowthFramework.name == feature.name) {
+    return {kGrowthCampaignsEventNamePrefix};
+  }
+
+  return {};
+}
+
+void CampaignsConfigurationProvider::SetConfig(
+    const feature_engagement::FeatureConfig& config) {
+  config_ = config;
+}
+
+}  // namespace growth

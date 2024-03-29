@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/feature_engagement/public/configuration_provider.h"
@@ -20,6 +21,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/user_education/user_education_configuration_provider.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/growth/campaigns_configuration_provider.h"
 #endif
 
 namespace feature_engagement {
@@ -68,6 +73,11 @@ KeyedService* TrackerFactory::BuildServiceInstanceFor(
   providers.emplace_back(
       std::make_unique<UserEducationConfigurationProvider>());
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  providers.emplace_back(
+      std::make_unique<growth::CampaignsConfigurationProvider>());
+#endif
+
   return feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider, nullptr,
       std::move(providers));

@@ -37,6 +37,20 @@ component("growth") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]
 }
 
+component("config_provider") {
+  sources = [
+    "campaigns_configuration_provider.cc",
+    "campaigns_configuration_provider.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_CONFIG_PROVIDER_IMPL" ]
+}
+
 source_set("test_support") {
   testonly = true
   public_deps = [ ":growth" ]

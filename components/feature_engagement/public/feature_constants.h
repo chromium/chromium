@@ -256,6 +256,7 @@ BASE_DECLARE_FEATURE(kIPH3pcdUserBypassFeature);
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kIPHGrowthFramework);
 BASE_DECLARE_FEATURE(kIPHGoogleOneOfferNotificationFeature);
 BASE_DECLARE_FEATURE(kIPHLauncherSearchHelpUiFeature);
 BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedOneFeature);

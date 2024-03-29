@@ -605,6 +605,9 @@ BASE_FEATURE(kIPH3pcdUserBypassFeature,
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kIPHGrowthFramework,
+             "IPH_GrowthFramework",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGoogleOneOfferNotificationFeature,
              "IPH_GoogleOneOfferNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
