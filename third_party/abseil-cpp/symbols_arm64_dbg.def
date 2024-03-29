@@ -1,5 +1,5 @@
 EXPORTS
-    ?$TSS0@?1??CrcAndCopy@CrcMemcpy@crc_internal@absl@@SA?AVcrc32c_t@4@PEIAXPEIBX_KV54@_N@Z@4HA
+    ?$TSS0@?1??CrcAndCopy@CrcMemcpy@crc_internal@absl@@SA?AVcrc32c_t@3@PEIAXPEIBX_KV43@_N@Z@4HA
     ??$?0$$CBD$0A@@VoidPtr@str_format_internal@absl@@QEAA@PEBD@Z
     ??$?0$$CBU?$atomic@_N@__Cr@std@@@Condition@absl@@QEAA@P6A_NPEBU?$atomic@_N@__Cr@std@@@Z0@Z
     ??$?0$$CBUCordRep@cord_internal@absl@@@Hex@absl@@QEAA@PEBUCordRep@cord_internal@1@W4PadSpec@1@@Z
