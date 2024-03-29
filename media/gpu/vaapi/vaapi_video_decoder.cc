@@ -29,7 +29,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
-#include "media/gpu/chromeos/frame_resource.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -904,32 +904,13 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
   if (!pixmap_and_info)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  auto handle_id = GetNextGpuMemoryBufferId();
-  gmb_handle.id = handle_id;
-  gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-  gmb_handle.native_pixmap_handle = pixmap_and_info->pixmap->ExportHandle();
-
-  if (gmb_handle.native_pixmap_handle.planes.empty())
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
-
-  gpu::GpuMemoryBufferSupport gmb_support;
-  auto gmb = gmb_support.CreateGpuMemoryBufferImplFromHandle(
-      std::move(gmb_handle), pixmap_and_info->pixmap->GetBufferSize(),
-      pixmap_and_info->pixmap->GetBufferFormat(),
-      gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
-  if (!gmb)
-    return CroStatus::Codes::kFailedToCreateVideoFrame;
-  const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
-  scoped_refptr<FrameResource> frame =
-      VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
-          visible_rect, natural_size, std::move(gmb), mailbox_holders,
-          base::NullCallback(), timestamp));
-
+  scoped_refptr<FrameResource> frame = NativePixmapFrameResource::Create(
+      visible_rect, natural_size, timestamp,
+      gfx::BufferUsage::SCANOUT_VDA_WRITE, std::move(pixmap_and_info->pixmap));
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  allocated_va_surfaces_[handle_id] = surface;
+  allocated_va_surfaces_[frame->GetSharedMemoryId()] = surface;
 
   return frame;
 }
