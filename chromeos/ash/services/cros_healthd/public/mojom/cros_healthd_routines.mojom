@@ -16,7 +16,8 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.m
 
 // Routines interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 3, NextIndex: 2
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
 interface CrosHealthdRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the
@@ -54,7 +55,7 @@ interface CrosHealthdRoutinesService {
   //
   // * |routine_observer| - an optional observer to receive status updates about
   //                        changing routine states.
-  [MinVersion=1] CreateRoutine@0(RoutineArgument routine_argument,
+  CreateRoutine@0(RoutineArgument routine_argument,
       pending_receiver<RoutineControl> routine_receiver,
       pending_remote<RoutineObserver>? routine_observer);
 
@@ -67,54 +68,54 @@ interface CrosHealthdRoutinesService {
   //
   // The response:
   // * |status| - See the documentation of `SupportStatus`.
-  [MinVersion=2] IsRoutineArgumentSupported@1(
-      RoutineArgument routine_argument) => (SupportStatus status);
+  IsRoutineArgumentSupported@1(RoutineArgument routine_argument)
+      => (SupportStatus status);
 };
 
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 6, NextIndex: 19
-[Extensible]
+// NextMinVersion: 1, NextIndex: 19
+[Stable, Extensible]
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument@0;
   // Arguments to create a memory routine.
-  [MinVersion=1] MemoryRoutineArgument memory@1;
+  MemoryRoutineArgument memory@1;
   // Arguments to create a volume button routine.
-  [MinVersion=2] VolumeButtonRoutineArgument volume_button@2;
+  VolumeButtonRoutineArgument volume_button@2;
   // Arguments to create a fan routine.
-  [MinVersion=3] FanRoutineArgument fan@3;
+  FanRoutineArgument fan@3;
   // Arguments to create an audio driver malfunction test routine.
-  [MinVersion=4] AudioDriverRoutineArgument audio_driver@4;
+  AudioDriverRoutineArgument audio_driver@4;
   // Arguments to create a CPU stress routine.
-  [MinVersion=4] CpuStressRoutineArgument cpu_stress@5;
+  CpuStressRoutineArgument cpu_stress@5;
   // Arguments to create a UFS lifetime routine.
-  [MinVersion=4] UfsLifetimeRoutineArgument ufs_lifetime@6;
+  UfsLifetimeRoutineArgument ufs_lifetime@6;
   // Arguments to create a disk read routine.
-  [MinVersion=4] DiskReadRoutineArgument disk_read@7;
+  DiskReadRoutineArgument disk_read@7;
   // Arguments to create a CPU cache routine.
-  [MinVersion=4] CpuCacheRoutineArgument cpu_cache@8;
+  CpuCacheRoutineArgument cpu_cache@8;
   // Arguments to create a prime search routine.
-  [MinVersion=4] PrimeSearchRoutineArgument prime_search@9;
+  PrimeSearchRoutineArgument prime_search@9;
   // Arguments to create a LED lit up routine.
-  [MinVersion=4] LedLitUpRoutineArgument led_lit_up@10;
+  LedLitUpRoutineArgument led_lit_up@10;
   // Arguments to create a floating point routine.
-  [MinVersion=4] FloatingPointRoutineArgument floating_point@11;
+  FloatingPointRoutineArgument floating_point@11;
   // Arguments to create a Bluetooth power routine.
-  [MinVersion=4] BluetoothPowerRoutineArgument bluetooth_power@12;
+  BluetoothPowerRoutineArgument bluetooth_power@12;
   // Arguments to create a Bluetooth discovery routine.
-  [MinVersion=4] BluetoothDiscoveryRoutineArgument bluetooth_discovery@13;
+  BluetoothDiscoveryRoutineArgument bluetooth_discovery@13;
   // Arguments to create a Bluetooth scanning routine.
-  [MinVersion=4] BluetoothScanningRoutineArgument bluetooth_scanning@14;
+  BluetoothScanningRoutineArgument bluetooth_scanning@14;
   // Arguments to create a Bluetooth pairing routine.
-  [MinVersion=4] BluetoothPairingRoutineArgument bluetooth_pairing@15;
+  BluetoothPairingRoutineArgument bluetooth_pairing@15;
   // Arguments to create a camera availability routine.
-  [MinVersion=4] CameraAvailabilityRoutineArgument camera_availability@16;
+  CameraAvailabilityRoutineArgument camera_availability@16;
   // Arguments to create a urandom routine.
-  [MinVersion=4] UrandomRoutineArgument urandom@17;
+  UrandomRoutineArgument urandom@17;
   // Arguments to create a network bandwidth routine.
-  [MinVersion=5] NetworkBandwidthRoutineArgument network_bandwidth@18;
+  NetworkBandwidthRoutineArgument network_bandwidth@18;
 };
 
 // This routine checks whether there is any memory problem by
@@ -223,43 +224,31 @@ struct VolumeButtonRoutineArgument {
   mojo_base.mojom.TimeDelta timeout@1;
 };
 
-// Replier interface for the LED lit up routine.
-//
-// NextMinVersion: 1, NextIndex: 1
-interface LedLitUpRoutineReplier {
-  // Returns whether the actual LED color matches the expected color.
-  //
-  // The response:
-  // * |matched| - true if the actual LED color matches the expected color.
-  //               Otherwise, false.
-  GetColorMatched@0() => (bool matched);
-};
-
 // The routine lights up the target LED in the specified color and requests the
 // caller to verify the change.
 //
-// The routine proceeds with the following steps:
-// 1. Set the specified LED with the specified color. If the LED name or color
-//    is not supported by EC, the routine reports error at this step.
-// 2. Invoke the |GetColorMatched| method of |replier|. The method should
-//    return |true| if the actual color matches the specified color and
-//    |false|, otherwise. Notice that there is no timeout so it will wait
-//    indefinitely.
-// 3. After receiving the response from |replier|, the color of the LED will
-//    be reset (back the auto control). If the replier disconnects before
-//    the response is received, the LED will also be reset.
-// 4. The status of the routine is then updated. The routine passes when the
-//    response is |true|. If the response is |false|, the routine fails.
+// This routine is supported if and only if the device has a ChromeOS EC.
 //
-// NextMinVersion: 1, NextIndex: 3
+// When an LED name or LED color is not supported by the EC, it will cause a
+// routine exception (by closing the connection of `RoutineControl`) at runtime.
+// TODO(b/319047040): add per-LED-name and per-LED-color supported check.
+//
+// The routine proceeds with the following steps:
+// 1. Set the specified LED with the specified color and enter the waiting state
+//    with the `CheckLedLitUpStateInquiry` interaction request.
+// 2. After receiving `CheckLedLitUpStateReply` with the observed LED state, the
+//    color of the LED will be reset (back to auto control). Notice that there
+//    is no timeout so the routine will be in the waiting state indefinitely.
+// 3. The routine passes if the LED is lit up in the correct color. Otherwise,
+//    the routine fails.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct LedLitUpRoutineArgument {
   // The LED to be lit up.
   LedName name@0;
   // The color to be lit up.
   LedColor color@1;
-  // A replier to answer whether the actual LED color matches the expected
-  // color.
-  pending_remote<LedLitUpRoutineReplier> replier@2;
 };
 
 // This routine checks whether there is any CPU problem by repeatedly
