@@ -710,8 +710,6 @@ void ChromeUserManagerImpl::NotifyOnLogin() {
   UserManagerBase::NotifyOnLogin();
 
   CheckProfileForSanity();
-
-  UserSessionManager::GetInstance()->PerformPostUserLoggedInActions();
 }
 
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(

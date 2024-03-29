@@ -195,10 +195,6 @@ class UserSessionManager
                     bool has_active_session,
                     base::WeakPtr<UserSessionManagerDelegate> delegate);
 
-  // Perform additional actions once system wide notification
-  // "UserLoggedIn" has been sent.
-  void PerformPostUserLoggedInActions();
-
   // Restores authentication session after crash.
   void RestoreAuthenticationSession(Profile* profile);
 
@@ -376,6 +372,7 @@ class UserSessionManager
   base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() override;
 
   // user_manager::UserManager::Observer overrides:
+  void OnUserLoggedIn(const user_manager::User& user) override;
   void OnUsersSignInConstraintsChanged() override;
 
   void ChildAccountStatusReceivedCallback(Profile* profile);

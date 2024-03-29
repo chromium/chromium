@@ -806,13 +806,6 @@ void UserSessionManager::StartSession(
       GetUserSessionManagerAsWeakPtr()));
 }
 
-void UserSessionManager::PerformPostUserLoggedInActions() {
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager->GetLoggedInUsers().size() == 1) {
-    InitNonKioskExtensionFeaturesSessionType(user_manager->GetPrimaryUser());
-  }
-}
-
 void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   // We need to restore session only for logged in GAIA (regular) users.
@@ -1215,6 +1208,13 @@ void UserSessionManager::OnProfilePrepared(Profile* profile,
 
 base::WeakPtr<UserSessionManagerDelegate> UserSessionManager::AsWeakPtr() {
   return GetUserSessionManagerAsWeakPtr();
+}
+
+void UserSessionManager::OnUserLoggedIn(const user_manager::User& user) {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (user_manager->GetLoggedInUsers().size() == 1) {
+    InitNonKioskExtensionFeaturesSessionType(user_manager->GetPrimaryUser());
+  }
 }
 
 void UserSessionManager::OnUsersSignInConstraintsChanged() {
