@@ -2139,6 +2139,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.DocumentPictureInPicture.RequestedInitialHeight"
+    units="px" expires_after="2025-03-26">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the height that the website has requested for a document
+    picture-in-picture window. Recorded when calculating the initial bounds of a
+    newly-opened document picture-in-picture window.
+  </summary>
+</histogram>
+
+<histogram name="Media.DocumentPictureInPicture.RequestedInitialWidth"
+    units="px" expires_after="2025-03-26">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the width that the website has requested for a document
+    picture-in-picture window. Recorded when calculating the initial bounds of a
+    newly-opened document picture-in-picture window. If the website requests a
+    size larger than the area of the screen, it will be recorded as 100%. If a
+    website does not request a size or requests a size of zero, it is recorded
+    as 1%.
+  </summary>
+</histogram>
+
+<histogram name="Media.DocumentPictureInPicture.RequestedSizeToScreenRatio"
+    units="%" expires_after="2025-03-26">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the ratio of the total screen area that the website has requested
+    for the picture-in-picture window, specifically the requested width times
+    the requested height as a ratio of the screen's width times height. Recorded
+    when calculating the initial bounds of a newly-opened document
+    picture-in-picture window.
+  </summary>
+</histogram>
+
 <histogram name="Media.DroppedFrameCount" units="units" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 

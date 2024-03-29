@@ -22,6 +22,8 @@
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "media/base/media_switches.h"
@@ -334,6 +336,10 @@ gfx::Rect
 PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display) {
+#if !BUILDFLAG(IS_ANDROID)
+  RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options, display);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Use an empty `excluded_margin`, which more or less guarantees that these
   // bounds are incorrect if `pip_options` includes a requested inner size that
   // we'd like to honor.  It's okay, because we'll recompute it later once we
@@ -499,6 +505,50 @@ void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {
 
   if (base::FeatureList::IsEnabled(media::kPictureInPictureOcclusionTracking)) {
     occlusion_tracker_ = std::make_unique<PictureInPictureOcclusionTracker>();
+  }
+}
+
+void PictureInPictureWindowManager::
+    RecordDocumentPictureInPictureRequestedSizeMetrics(
+        const blink::mojom::PictureInPictureWindowOptions& pip_options,
+        const display::Display& display) {
+  // Directly record the requested width and height.
+  base::UmaHistogramCounts1000(
+      "Media.DocumentPictureInPicture.RequestedInitialWidth",
+      pip_options.width);
+  base::UmaHistogramCounts1000(
+      "Media.DocumentPictureInPicture.RequestedInitialHeight",
+      pip_options.height);
+
+  // Calculate and record the ratio of requested picture-in-picture size to the
+  // total screen size.
+  gfx::Size requested_size(pip_options.width, pip_options.height);
+  base::CheckedNumeric<int> requested_area = requested_size.GetCheckedArea();
+  base::CheckedNumeric<int> screen_area =
+      display.GetSizeInPixel().GetCheckedArea();
+  if (requested_area.IsValid() && screen_area.IsValid()) {
+    int recorded_percent;
+
+    // We already know `screen_area` is valid, so `ValueOrDie()` should never
+    // die.
+    if (screen_area.ValueOrDie() == base::MakeStrictNum(0)) {
+      // If we have an empty screen area (which should generally not happen in
+      // practice), then record the requested size as 100 percent of the screen
+      // size.
+      recorded_percent = 100;
+    } else {
+      // Otherwise, calculate the actual percentage, and clamp to a value
+      // between 1 and 100 percent.
+      base::CheckedNumeric<int> percent_screen_coverage_requested =
+          (requested_area * 100) / screen_area;
+      recorded_percent = std::min(
+          std::max(percent_screen_coverage_requested.ValueOrDefault(100),
+                   base::MakeStrictNum(1)),
+          base::MakeStrictNum(100));
+    }
+    base::UmaHistogramPercentage(
+        "Media.DocumentPictureInPicture.RequestedSizeToScreenRatio",
+        recorded_percent);
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

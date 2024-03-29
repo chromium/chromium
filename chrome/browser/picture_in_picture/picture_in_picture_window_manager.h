@@ -233,6 +233,12 @@ class PictureInPictureWindowManager {
   // Creates the `occlusion_tracker_` if it does not already exist and should
   // exist.
   void CreateOcclusionTrackerIfNecessary();
+
+  // Records metrics about the requested size of a document picture-in-picture
+  // window.
+  void RecordDocumentPictureInPictureRequestedSizeMetrics(
+      const blink::mojom::PictureInPictureWindowOptions& pip_options,
+      const display::Display& display);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   PictureInPictureWindowManager();
