@@ -4102,7 +4102,6 @@ if (!is_android) {
         "../browser/ui/views/autofill/payments/credit_card_access_manager_browsertest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/offer_notification_bubble_views_pixel_browsertest.cc",
-        "../browser/ui/views/autofill/payments/payments_window_user_consent_dialog_browsertest.cc",
         "../browser/ui/views/autofill/payments/save_card_bubble_views_browsertest.cc",
         "../browser/ui/views/autofill/payments/virtual_card_selection_dialog_browsertest.cc",
         "../browser/ui/views/autofill/payments/webauthn_dialog_browsertest.cc",

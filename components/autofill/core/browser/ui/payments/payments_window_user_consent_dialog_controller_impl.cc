@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller_impl.h"
 
-#include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -16,23 +15,7 @@ PaymentsWindowUserConsentDialogControllerImpl::
     : accept_callback_(std::move(accept_callback)) {}
 
 PaymentsWindowUserConsentDialogControllerImpl::
-    ~PaymentsWindowUserConsentDialogControllerImpl() {
-  if (payments_window_user_consent_dialog_) {
-    payments_window_user_consent_dialog_->Dismiss();
-  }
-}
-
-void PaymentsWindowUserConsentDialogControllerImpl::ShowDialog(
-    base::OnceCallback<base::WeakPtr<PaymentsWindowUserConsentDialog>(
-        base::OnceClosure)> create_and_show_dialog_callback) {
-  CHECK(!payments_window_user_consent_dialog_);
-  payments_window_user_consent_dialog_ =
-      std::move(create_and_show_dialog_callback)
-          .Run(base::BindOnce(
-              &PaymentsWindowUserConsentDialogControllerImpl::OnOkButtonClicked,
-              weak_ptr_factory_.GetWeakPtr()));
-  CHECK(payments_window_user_consent_dialog_);
-}
+    ~PaymentsWindowUserConsentDialogControllerImpl() = default;
 
 void PaymentsWindowUserConsentDialogControllerImpl::OnOkButtonClicked() {
   CHECK(accept_callback_);
