@@ -27,7 +27,7 @@ bool IsPlatformWindowVisible(views::Widget* widget) {
   CHECK(native_window);
 
   aura::WindowTreeHostPlatform* host =
-      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+      aura::WindowTreeHostPlatform::GetHostForWindow(native_window);
   CHECK(host);
 
   ui::PlatformWindow* platform_window = host->platform_window();
@@ -43,7 +43,7 @@ gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget) {
   CHECK(native_window);
 
   aura::WindowTreeHostPlatform* host =
-      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+      aura::WindowTreeHostPlatform::GetHostForWindow(native_window);
   CHECK(host);
 
   ui::PlatformWindow* platform_window = host->platform_window();
@@ -58,8 +58,9 @@ namespace {
 
 ui::PlatformWindow* GetPlatformWindow(Browser* browser) {
   DCHECK(browser);
-  auto* window_tree_host_platform = static_cast<aura::WindowTreeHostPlatform*>(
-      browser->window()->GetNativeWindow()->GetHost());
+  auto* window_tree_host_platform =
+      aura::WindowTreeHostPlatform::GetHostForWindow(
+          browser->window()->GetNativeWindow());
   return window_tree_host_platform->platform_window();
 }
 

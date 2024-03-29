@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/window_tree_host_platform.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -36,8 +35,7 @@ bool IsPlatformWindowVisible(views::Widget* widget) {
   gfx::NativeWindow native_window = widget->GetNativeWindow();
   CHECK(native_window);
 
-  aura::WindowTreeHostPlatform* host =
-      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+  aura::WindowTreeHost* host = native_window->GetHost();
   CHECK(host);
 
   gfx::AcceleratedWidget accelerated_widget = host->GetAcceleratedWidget();

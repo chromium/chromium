@@ -54,7 +54,7 @@ ContentWindow::~ContentWindow() = default;
 void ContentWindow::SetTitle(const std::u16string& title) {
   aura::WindowTreeHost* window_tree_host = host_->window_tree_host();
   window_tree_host->window()->SetTitle(title);
-  static_cast<aura::WindowTreeHostPlatform*>(window_tree_host)
+  aura::WindowTreeHostPlatform::GetHostForWindow(window_tree_host->window())
       ->platform_window()
       ->SetTitle(title);
 }

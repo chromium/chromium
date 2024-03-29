@@ -11,8 +11,7 @@
 namespace {
 
 ui::WaylandExtension* GetWaylandExtension(aura::Window* window) {
-  auto* wth_platform =
-      static_cast<aura::WindowTreeHostPlatform*>(window->GetHost());
+  auto* wth_platform = aura::WindowTreeHostPlatform::GetHostForWindow(window);
   auto* wayland_extension =
       ui::GetWaylandExtension(*wth_platform->platform_window());
   DCHECK(wayland_extension);
