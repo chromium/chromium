@@ -131,7 +131,7 @@ suite('SeaPenRouterElementTest', function() {
             routerElement.shadowRoot?.querySelector('iron-location')?.path,
             'navigates to result page');
         assertEquals(
-            'seaPenTemplateId=2',
+            'seaPenTemplateId=10',
             routerElement.shadowRoot?.querySelector('iron-location')?.query,
             'query as selected template id');
 
@@ -145,6 +145,7 @@ suite('SeaPenRouterElementTest', function() {
                 SeaPenZeroStateSvgElement.is),
             'zero state svg is shown after selecting a template from root');
       });
+
   test('remove thumbnail images when templateId changes', async () => {
     personalizationStore.setReducersEnabled(true);
     routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
