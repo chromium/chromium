@@ -7770,10 +7770,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisplayAlignAssist)},
 
-    {"dropdown-panel", flag_descriptions::kDropdownPanel,
-     flag_descriptions::kDropdownPanelDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDropdownPanel)},
-
     {"enable-experimental-rgb-keyboard-patterns",
      flag_descriptions::kExperimentalRgbKeyboardPatternsName,
      flag_descriptions::kExperimentalRgbKeyboardPatternsDescription, kOsCrOS,
@@ -7908,6 +7904,10 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kEnableWebGPUDeveloperFeatures)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"game-dashboard", flag_descriptions::kGameDashboard,
+     flag_descriptions::kGameDashboardDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kGameDashboard)},
+
     {"gesture-properties-dbus-service",
      flag_descriptions::kEnableGesturePropertiesDBusServiceName,
      flag_descriptions::kEnableGesturePropertiesDBusServiceDescription, kOsCrOS,

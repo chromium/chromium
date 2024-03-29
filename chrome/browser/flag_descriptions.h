@@ -3497,9 +3497,6 @@ extern const char kDisableExplicitDmaFencesDescription[];
 extern const char kDisplayAlignmentAssistanceName[];
 extern const char kDisplayAlignmentAssistanceDescription[];
 
-extern const char kDropdownPanel[];
-extern const char kDropdownPanelDescription[];
-
 extern const char kFasterSplitScreenSetupName[];
 extern const char kFasterSplitScreenSetupDescription[];
 
@@ -3807,6 +3804,9 @@ extern const char kFSPsInRecentsDescription[];
 
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
+
+extern const char kGameDashboard[];
+extern const char kGameDashboardDescription[];
 
 extern const char kGlanceablesV2Name[];
 extern const char kGlanceablesV2Description[];

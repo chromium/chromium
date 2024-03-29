@@ -726,11 +726,6 @@ BASE_FEATURE(kDriveFsShowCSEFiles,
              "DriveFsShowCSEFiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables support for the dropdown panel.
-BASE_FEATURE(kDropdownPanel,
-             "DropdownPanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables authenticating to Wi-Fi networks using EAP-GTC.
 BASE_FEATURE(kEapGtcWifiAuthentication,
              "EapGtcWifiAuthentication",
@@ -3227,7 +3222,7 @@ bool IsArcFuseBoxFileSharingEnabled() {
 
 bool IsArcInputOverlayBetaEnabled() {
   return base::FeatureList::IsEnabled(kArcInputOverlayBeta) ||
-         base::FeatureList::IsEnabled(kDropdownPanel);
+         base::FeatureList::IsEnabled(kGameDashboard);
 }
 
 bool IsArcInputOverlayAlphaV2Enabled() {
@@ -3903,8 +3898,7 @@ bool IsEducationEnrollmentOobeFlowEnabled() {
 }
 
 bool IsGameDashboardEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboard) ||
-         base::FeatureList::IsEnabled(kDropdownPanel);
+  return base::FeatureList::IsEnabled(kGameDashboard);
 }
 
 bool IsLockScreenInlineReplyEnabled() {

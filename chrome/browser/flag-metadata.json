@@ -2079,11 +2079,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "dropdown-panel",
-    "owners": [ "phshah@chromium.org" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "dynamic-color-gamut",
     "owners": [ "cblume@chromium.org", "ccameron@chromium.org" ],
     "expiry_milestone": 90
@@ -4598,6 +4593,15 @@
     "name": "gallery-app-pdf-edit-notification",
     "owners": ["yawano@google.com", "assistive-eng@google.com"],
     "expiry_milestone": 120
+  },
+  {
+    "name": "game-dashboard",
+    "owners": [
+      "phshah@chromium.org",
+      "cuicuiruan@google.com",
+      "arc-gaming@google.com"
+    ],
+    "expiry_milestone": 130
   },
   {
     "name": "gesture-properties-dbus-service",
