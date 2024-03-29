@@ -4364,8 +4364,8 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   return is_acceptable_anchor ? anchor_layout_object : nullptr;
 }
 
-const Vector<NonOverflowingScrollRange>*
-LayoutBox::PositionFallbackNonOverflowingRanges() const {
+const Vector<NonOverflowingScrollRange>* LayoutBox::NonOverflowingScrollRanges()
+    const {
   const auto& layout_results = GetLayoutResults();
   if (layout_results.empty()) {
     return nullptr;
@@ -4375,11 +4375,11 @@ LayoutBox::PositionFallbackNonOverflowingRanges() const {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
     DCHECK(base::ValuesEquivalent(
-        layout_results[i]->PositionFallbackNonOverflowingRanges(),
-        layout_results[i - 1]->PositionFallbackNonOverflowingRanges()));
+        layout_results[i]->NonOverflowingScrollRanges(),
+        layout_results[i - 1]->NonOverflowingScrollRanges()));
   }
 #endif
-  return layout_results.front()->PositionFallbackNonOverflowingRanges();
+  return layout_results.front()->NonOverflowingScrollRanges();
 }
 
 const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {

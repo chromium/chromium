@@ -177,10 +177,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // positioned nodes are set.
   void CopyMutableOutOfFlowData(const LayoutResult& previous_result) const;
 
-  const Vector<NonOverflowingScrollRange>*
-  PositionFallbackNonOverflowingRanges() const {
-    return rare_data_ ? rare_data_->PositionFallbackNonOverflowingRanges()
-                      : nullptr;
+  const Vector<NonOverflowingScrollRange>* NonOverflowingScrollRanges() const {
+    return rare_data_ ? rare_data_->NonOverflowingScrollRanges() : nullptr;
   }
 
   bool NeedsAnchorPositionScrollAdjustmentInX() const {
@@ -526,10 +524,12 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
               needs_scroll_adjustment_in_y);
     }
 
-    void SetPositionFallbackResult(
+    void SetNonOverflowingScrollRanges(
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
-      layout_result_->EnsureRareData()->SetPositionFallbackResult(
-          non_overflowing_ranges);
+      if (layout_result_->rare_data_ || !non_overflowing_ranges.empty()) {
+        layout_result_->EnsureRareData()->SetNonOverflowingScrollRanges(
+            non_overflowing_ranges);
+      }
     }
 
    private:
@@ -619,10 +619,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     using BitField = WTF::ConcurrentlyReadBitField<uint16_t>;
     using LineBoxBfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
-    using PositionFallbackResultIsSetFlag =
-        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using OutOfFlowPositionedOffsetIsSetFlag =
-        PositionFallbackResultIsSetFlag::DefineNextValue<bool, 1>;
+        LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using NeedsAnchorPositionScrollAdjustmentInXFlag =
         OutOfFlowPositionedOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using NeedsAnchorPositionScrollAdjustmentInYFlag =
@@ -677,14 +675,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     void set_line_box_bfc_block_offset_is_set(bool flag) {
       return bit_field.set<LineBoxBfcBlockOffsetIsSetFlag>(flag);
-    }
-
-    bool position_fallback_result_is_set() const {
-      return bit_field.get<PositionFallbackResultIsSetFlag>();
-    }
-
-    void set_position_fallback_result_is_set(bool flag) {
-      return bit_field.set<PositionFallbackResultIsSetFlag>(flag);
     }
 
     bool oof_positioned_offset_is_set() const {
@@ -796,8 +786,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           block_end_annotation_space(rare_data.block_end_annotation_space),
           lines_until_clamp(rare_data.lines_until_clamp),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
-          position_fallback_non_overflowing_ranges(
-              rare_data.position_fallback_non_overflowing_ranges),
+          non_overflowing_scroll_ranges(
+              rare_data.non_overflowing_scroll_ranges),
           oof_positioned_offset(rare_data.oof_positioned_offset),
           bit_field(rare_data.bit_field) {
       switch (data_union_type()) {
@@ -863,17 +853,16 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return line_box_bfc_block_offset;
     }
 
-    void SetPositionFallbackResult(
+    void SetNonOverflowingScrollRanges(
         const Vector<NonOverflowingScrollRange>& non_overflowing_ranges) {
-      position_fallback_non_overflowing_ranges = non_overflowing_ranges;
-      set_position_fallback_result_is_set(true);
+      non_overflowing_scroll_ranges = non_overflowing_ranges;
     }
-    const Vector<NonOverflowingScrollRange>*
-    PositionFallbackNonOverflowingRanges() const {
-      if (!position_fallback_result_is_set()) {
+    const Vector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
+        const {
+      if (non_overflowing_scroll_ranges.empty()) {
         return nullptr;
       }
-      return &position_fallback_non_overflowing_ranges;
+      return &non_overflowing_scroll_ranges;
     }
 
     void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
@@ -914,8 +903,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
-    // Only valid if position_fallback_result_is_set
-    Vector<NonOverflowingScrollRange> position_fallback_non_overflowing_ranges;
+    Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
     // Only valid if oof_positioned_offset_is_set
     LogicalOffset oof_positioned_offset;

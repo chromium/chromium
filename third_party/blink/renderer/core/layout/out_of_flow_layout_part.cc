@@ -1716,7 +1716,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   }
 
   // See non_overflowing_scroll_range.h for documentation.
-  Vector<NonOverflowingScrollRange> non_overflowing_ranges;
+  Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
   // Note: This assumes @try rounds can't affect writing-mode/position-anchor.
   // writing-mode/position-anchor.
@@ -1763,7 +1763,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
     // Also check if it fits the containing block after applying scroll offset.
     if (offset_info && try_fit_available_space) {
-      non_overflowing_ranges.push_back(non_overflowing_range);
+      non_overflowing_scroll_ranges.push_back(non_overflowing_range);
       if (!non_overflowing_range.Contains(anchor_offset,
                                           additional_bounds_offset)) {
         offset_info = std::nullopt;
@@ -1799,10 +1799,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   CHECK(offset_info);
 
   if (try_fit_available_space) {
-    offset_info->uses_fallback_style = true;
-    offset_info->non_overflowing_ranges = std::move(non_overflowing_ranges);
+    offset_info->non_overflowing_scroll_ranges =
+        std::move(non_overflowing_scroll_ranges);
   } else {
-    DCHECK(offset_info->non_overflowing_ranges.empty());
+    DCHECK(offset_info->non_overflowing_scroll_ranges.empty());
   }
 
   return *offset_info;
@@ -2124,10 +2124,8 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
       offset_info.needs_scroll_adjustment_in_x,
       offset_info.needs_scroll_adjustment_in_y);
 
-  if (offset_info.uses_fallback_style) {
-    layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(
-        offset_info.non_overflowing_ranges);
-  }
+  layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
+      offset_info.non_overflowing_scroll_ranges);
 
   return layout_result;
 }

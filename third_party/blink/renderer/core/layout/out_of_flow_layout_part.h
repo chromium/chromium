@@ -208,12 +208,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     LogicalOffset original_offset;
 
     // This field is set only if this |OffsetInfo| is calculated from a
-    // position-try-options style, either from a @position-try rule or a tactic.
-    Vector<NonOverflowingScrollRange> non_overflowing_ranges;
+    // position-try-options style, either from a @position-try rule or a tactic,
+    // or the anchored element has position-visibility: no-overflow.
+    Vector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
     bool inline_size_depends_on_min_max_sizes = false;
-
-    bool uses_fallback_style = false;
 
     // True if this element is anchor-positioned, and any anchor reference in
     // the axis is in the same scroll container as the default anchor, in which

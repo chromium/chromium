@@ -40,7 +40,7 @@ const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
     return nullptr;
   }
   CHECK(layout_object->IsBox());
-  return To<LayoutBox>(layout_object)->PositionFallbackNonOverflowingRanges();
+  return To<LayoutBox>(layout_object)->NonOverflowingScrollRanges();
 }
 
 // First return value for x axis, second for y axis.
