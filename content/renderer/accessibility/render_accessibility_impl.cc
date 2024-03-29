@@ -546,8 +546,8 @@ bool RenderAccessibilityImpl::SendAccessibilitySerialization(
 
   blink::mojom::AXUpdatesAndEventsPtr updates_and_events =
       blink::mojom::AXUpdatesAndEvents::New();
-  updates_and_events->updates = std::move(updates);
-  updates_and_events->events = std::move(events);
+  updates_and_events->updates.swap(updates);
+  updates_and_events->events.swap(events);
 
   for (auto& update : updates_and_events->updates) {
     ax_annotators_manager_->Annotate(document, &update,
