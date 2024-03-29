@@ -1393,9 +1393,21 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   std::set<web::WebStateID> selectedIDs;
   for (GridItemIdentifier* identifier in _selectedEditingItems
            .itemsIdentifiers) {
-    // TODO(crbug.com/1501837): Add the tab groups closing.
-    if (identifier.type == GridItemType::Tab) {
-      selectedIDs.insert(identifier.tabSwitcherItem.identifier);
+    switch (identifier.type) {
+      case GridItemType::Tab:
+        selectedIDs.insert(identifier.tabSwitcherItem.identifier);
+        break;
+      case GridItemType::Group: {
+        const WebStateList::Range groupRange =
+            self.webStateList->GetGroupRange(identifier.tabGroupItem.tabGroup);
+        for (int index : groupRange) {
+          web::WebState* webState = self.webStateList->GetWebStateAt(index);
+          selectedIDs.insert(webState->GetUniqueIdentifier());
+        }
+        break;
+      }
+      case GridItemType::SuggestedActions:
+        NOTREACHED_NORETURN();
     }
   }
   [self.delegate
