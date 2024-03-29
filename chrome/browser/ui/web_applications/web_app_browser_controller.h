@@ -113,6 +113,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasReloadButton() const override;
 #if !BUILDFLAG(IS_CHROMEOS)
   bool HasProfileMenuButton() const override;
+  bool IsProfileMenuButtonVisible() const override;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const ash::SystemWebAppDelegate* system_app() const override;

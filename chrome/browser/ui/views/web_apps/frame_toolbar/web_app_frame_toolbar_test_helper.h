@@ -16,6 +16,7 @@
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
+class Profile;
 class GURL;
 class WebAppFrameToolbarView;
 class WebAppOriginText;
@@ -45,6 +46,15 @@ class WebAppFrameToolbarTestHelper {
       delete;
   ~WebAppFrameToolbarTestHelper();
 
+  // Installs but does not launch a web app with the given `start_url`. This
+  // does not modify state of this test helper.
+  webapps::AppId InstallWebApp(Profile* profile, const GURL& start_url);
+
+  // These methods install and launch the given web app; additionally the
+  // various getters in this test helper will start returning objects and
+  // views related to this latest launched web app.
+  webapps::AppId InstallAndLaunchWebApp(Profile* profile,
+                                        const GURL& start_url);
   webapps::AppId InstallAndLaunchWebApp(Browser* browser,
                                         const GURL& start_url);
   webapps::AppId InstallAndLaunchCustomWebApp(

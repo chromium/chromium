@@ -89,6 +89,11 @@
 #include "components/trusted_vault/features.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#endif
+
 namespace {
 
 // Helpers --------------------------------------------------------------------
@@ -427,8 +432,18 @@ void ProfileMenuView::OnOtherProfileSelected(
   } else {
 #if !BUILDFLAG(IS_CHROMEOS)
     // Open the same web app for another profile.
-    // So far the only allowlisted case is PasswordManager WebApp.
+    // On non-macOS the only allowlisted case is PasswordManager WebApp, which
+    // uses a different code path from other PWAs as it needs to not only
+    // support switching profiles, but also possibly installing the app into a
+    // different profile. Regular PWAs can only switch to profiles where the app
+    // is already installed.
     const webapps::AppId& app_id = browser()->app_controller()->app_id();
+#if BUILDFLAG(IS_MAC)
+    if (app_id != web_app::kPasswordManagerAppId) {
+      apps::AppShimManager::Get()->LaunchAppInProfile(app_id, profile_path);
+      return;
+    }
+#endif
     CHECK_EQ(app_id, web_app::kPasswordManagerAppId);
 
     app_profile_switcher_.emplace(
@@ -439,12 +454,12 @@ void ProfileMenuView::OnOtherProfileSelected(
                   views::Widget::ClosedReason::kUnspecified);
             },
             // It's safe to use base::Unretained, because the profile
-            // switcher is onwned by ProfileMenuView and is destroyed
+            // switcher is owned by ProfileMenuView and is destroyed
             // before the widget is destroyed.
             base::Unretained(GetWidget())));
     app_profile_switcher_->SwitchToProfile(profile_path);
 #else
-    // WebApps are can only be installed for the main profile on ChromeOS.
+    // WebApps can only be installed for the main profile on ChromeOS.
     NOTREACHED();
 #endif
   }
@@ -836,15 +851,35 @@ void ProfileMenuView::BuildAvailableProfiles() {
   profiles_selectable = profiles::AreSecondaryProfilesAllowed();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_MAC)
+  const bool is_regular_web_app =
+      web_app::AppBrowserController::IsWebApp(browser()) &&
+      (browser()->app_controller()->app_id() != web_app::kPasswordManagerAppId);
+  std::set<base::FilePath> available_profiles;
+  if (is_regular_web_app) {
+    available_profiles = AppShimRegistry::Get()->GetInstalledProfilesForApp(
+        browser()->app_controller()->app_id());
+  }
+#endif
+
   auto profile_entries = g_browser_process->profile_manager()
                              ->GetProfileAttributesStorage()
                              .GetAllProfilesAttributesSortedByNameWithCheck();
   for (ProfileAttributesEntry* profile_entry : profile_entries) {
     // The current profile is excluded.
-    if (profile_entry->GetPath() == browser()->profile()->GetPath())
+    if (profile_entry->GetPath() == browser()->profile()->GetPath()) {
       continue;
-    if (profile_entry->IsOmitted())
+    }
+    if (profile_entry->IsOmitted()) {
       continue;
+    }
+
+#if BUILDFLAG(IS_MAC)
+    if (is_regular_web_app &&
+        !available_profiles.contains(profile_entry->GetPath())) {
+      continue;
+    }
+#endif
 
     AddAvailableProfile(
         ui::ImageModel::FromImage(

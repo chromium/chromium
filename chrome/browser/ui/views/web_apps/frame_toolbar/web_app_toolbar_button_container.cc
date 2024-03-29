@@ -36,6 +36,10 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#endif
+
 namespace {
 
 bool g_animation_disabled_for_testing = false;
@@ -62,6 +66,13 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
       toolbar_button_provider_(toolbar_button_provider),
       page_action_icon_controller_(
           std::make_unique<PageActionIconController>()) {
+#if BUILDFLAG(IS_MAC)
+  app_shim_registry_observation_ =
+      AppShimRegistry::Get()->RegisterAppChangedCallback(
+          base::BindRepeating(&WebAppToolbarButtonContainer::AppShimChanged,
+                              base::Unretained(this)));
+#endif
+
   views::FlexLayout* const layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -181,6 +192,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     avatar_button_->SetID(VIEW_ID_AVATAR_BUTTON);
     ConfigureWebAppToolbarButton(avatar_button_, toolbar_button_provider_);
     views::SetHitTestComponent(avatar_button_, static_cast<int>(HTCLIENT));
+    avatar_button_->SetVisible(app_controller->IsProfileMenuButtonVisible());
   }
 #endif
 
@@ -365,6 +377,19 @@ void WebAppToolbarButtonContainer::AddedToWidget() {
         &WebAppToolbarButtonContainer::StartTitlebarAnimation);
   }
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebAppToolbarButtonContainer::AppShimChanged(
+    const webapps::AppId& changed_app_id) {
+  const auto* app_controller = browser_view_->browser()->app_controller();
+  if (changed_app_id != app_controller->app_id()) {
+    return;
+  }
+  if (avatar_button_) {
+    avatar_button_->SetVisible(app_controller->IsProfileMenuButtonVisible());
+  }
+}
+#endif
 
 BEGIN_METADATA(WebAppToolbarButtonContainer)
 ADD_READONLY_PROPERTY_METADATA(bool, Animate)

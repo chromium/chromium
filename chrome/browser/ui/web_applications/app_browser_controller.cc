@@ -319,6 +319,9 @@ bool AppBrowserController::IsPreventCloseEnabled() const {
 bool AppBrowserController::HasProfileMenuButton() const {
   return false;
 }
+bool AppBrowserController::IsProfileMenuButtonVisible() const {
+  return false;
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

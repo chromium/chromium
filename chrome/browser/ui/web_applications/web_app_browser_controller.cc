@@ -233,7 +233,24 @@ bool WebAppBrowserController::HasReloadButton() const {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::HasProfileMenuButton() const {
+#if BUILDFLAG(IS_MAC)
+  return true;
+#else
   return app_id() == web_app::kPasswordManagerAppId;
+#endif
+}
+
+bool WebAppBrowserController::IsProfileMenuButtonVisible() const {
+  CHECK(HasProfileMenuButton());
+  if (app_id() == web_app::kPasswordManagerAppId) {
+    return true;
+  }
+#if BUILDFLAG(IS_MAC)
+  return AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id()).size() >
+         1;
+#else
+  NOTREACHED_NORETURN();
+#endif
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

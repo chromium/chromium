@@ -40,6 +40,7 @@
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1361,40 +1363,122 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestGuestSession,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
+class ProfileMenuClickTestWebApp : public ProfileMenuClickTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ProfileMenuClickTest::SetUpOnMainThread();
+
+    // OS integration is needed to be able to launch web applications. This
+    // override ensures OS integration doesn't leave any traces.
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      web_app::test::UninstallAllWebApps(profile);
+    }
+    override_registration_.reset();
+    ProfileMenuClickTest::TearDownOnMainThread();
+  }
+
+  WebAppFrameToolbarTestHelper& toolbar_helper() {
+    return web_app_frame_toolbar_helper_;
+  }
+
+ private:
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
+};
+
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_PasswordManagerWebApp[] = {
         ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
 
-PROFILE_MENU_CLICK_TEST(kActionableItems_PasswordManagerWebApp,
-                        ProfileMenuClickTest_PasswordManagerWebApp) {
+PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
+                          kActionableItems_PasswordManagerWebApp,
+                          ProfileMenuClickTest_PasswordManagerWebApp) {
   // Add an additional profile.
   CreateAdditionalProfile();
 
   // Install and launch an application for the first profile.
-  WebAppFrameToolbarTestHelper toolbar_helper;
-  webapps::AppId app_id = toolbar_helper.InstallAndLaunchCustomWebApp(
+  webapps::AppId app_id = toolbar_helper().InstallAndLaunchCustomWebApp(
       browser(), CreatePasswordManagerWebAppInfo(),
       GURL(kPasswordManagerPWAUrl));
-  SetTargetBrowser(toolbar_helper.app_browser());
+  SetTargetBrowser(toolbar_helper().app_browser());
   RunTest();
 }
+
+#if BUILDFLAG(IS_MAC)
+// List of actionable items in the correct order as they appear in the menu.
+// If a new button is added to the menu, it should also be added to this list.
+// Unfortunately by how Click Tests work we can't verify how many other profile
+// buttons are present, so this test merely verifies that at least one exists.
+constexpr ProfileMenuViewBase::ActionableItem kActionableItems_RegularWebApp[] =
+    {ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
+PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
+                          kActionableItems_RegularWebApp,
+                          ProfileMenuClickTest_RegularWebApp) {
+  // Add an additional profile.
+  Profile* profile1 = GetProfile();
+  Profile* profile2 = CreateAdditionalProfile();
+
+  // Install and launch an application in profile1 and also install the same
+  // app in profile2.
+  webapps::AppId app_id = toolbar_helper().InstallAndLaunchWebApp(
+      profile1, GURL("https://test.org"));
+  SetTargetBrowser(toolbar_helper().app_browser());
+  EXPECT_EQ(app_id,
+            toolbar_helper().InstallWebApp(profile2, GURL("https://test.org")));
+
+  RunTest();
+}
+#endif
 
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
                                   public web_app::WebAppControllerBrowserTest {
  protected:
-  void SetUp() override { web_app::WebAppControllerBrowserTest::SetUp(); }
+  void SetUpOnMainThread() override {
+    web_app::WebAppControllerBrowserTest::SetUpOnMainThread();
 
-  WebAppFrameToolbarTestHelper* toolbar_helper() {
-    return &web_app_frame_toolbar_helper_;
+    // The os_hooks_suppress_ is set as part of the
+    // WebAppControllerBrowserTest to prevent OS integrations from being
+    // executed. OS integration needs to be enabled to make it possible to
+    // launch a standalone windowed web-app, so reset and override it here.
+    os_hooks_suppress_.reset();
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile :
+         g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      web_app::test::UninstallAllWebApps(profile);
+    }
+    override_registration_.reset();
+    web_app::WebAppControllerBrowserTest::TearDownOnMainThread();
+  }
+
+  WebAppFrameToolbarTestHelper& toolbar_helper() {
+    return web_app_frame_toolbar_helper_;
   }
 
  private:
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest,
+                       SelectingOtherProfilePasswordManager) {
   // Create a second profile.
   Profile* second_profile = CreateAdditionalProfile();
   web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
@@ -1402,14 +1486,14 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
   ASSERT_FALSE(chrome::FindBrowserWithProfile(second_profile));
 
   // Install and launch an application for the first profile.
-  webapps::AppId app_id = toolbar_helper()->InstallAndLaunchCustomWebApp(
+  webapps::AppId app_id = toolbar_helper().InstallAndLaunchCustomWebApp(
       browser(), CreatePasswordManagerWebAppInfo(),
       GURL(kPasswordManagerPWAUrl));
-  SetTargetBrowser(toolbar_helper()->app_browser());
+  SetTargetBrowser(toolbar_helper().app_browser());
 
   // Open profile menu.
   auto* toolbar =
-      toolbar_helper()->browser_view()->web_app_frame_toolbar_for_testing();
+      toolbar_helper().browser_view()->web_app_frame_toolbar_for_testing();
   ASSERT_TRUE(toolbar);
   OpenProfileMenuFromToolbar(toolbar);
 
@@ -1430,4 +1514,76 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
             new_web_contents);
   EXPECT_EQ(new_web_contents->GetVisibleURL(), GURL(kPasswordManagerPWAUrl));
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
+  // Add additional profiles.
+  Profile* profile1 = profile();
+  Profile* profile2 = CreateAdditionalProfile();
+  Profile* profile3 = CreateAdditionalProfile();
+
+  // Install an application in first and third profiles, launching only in the
+  // first profile.
+  webapps::AppId app_id = toolbar_helper().InstallAndLaunchWebApp(
+      profile1, GURL("https://test.org"));
+  EXPECT_EQ(app_id,
+            toolbar_helper().InstallWebApp(profile3, GURL("https://test.org")));
+  SetTargetBrowser(toolbar_helper().app_browser());
+  EXPECT_FALSE(chrome::FindBrowserWithProfile(profile3));
+
+  // Open profile menu in first profile.
+  auto* toolbar =
+      toolbar_helper().browser_view()->web_app_frame_toolbar_for_testing();
+  ASSERT_TRUE(toolbar);
+  OpenProfileMenuFromToolbar(toolbar);
+
+  // Select third profile by advancing the focus one step forward.
+  profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  auto* focused_item = profile_menu_view()->GetFocusManager()->GetFocusedView();
+  ASSERT_TRUE(focused_item);
+
+  // Wait for the new app window to be open for the third profile.
+  ui_test_utils::AllBrowserTabAddedWaiter waiter;
+  Click(focused_item);
+  content::WebContents* new_web_contents = waiter.Wait();
+  ASSERT_TRUE(new_web_contents);
+  EXPECT_FALSE(chrome::FindBrowserWithProfile(profile2));
+  Browser* new_browser = chrome::FindBrowserWithProfile(profile3);
+  ASSERT_TRUE(new_browser);
+  EXPECT_TRUE(new_browser->is_type_app());
+  EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
+            new_web_contents);
+  EXPECT_EQ(new_web_contents->GetVisibleURL(), GURL("https://test.org"));
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, ProfileMenuVisibility) {
+  // Add an additional profile.
+  Profile* profile1 = profile();
+  Profile* profile2 = CreateAdditionalProfile();
+
+  // Install and launch an application in first profile.
+  webapps::AppId app_id = toolbar_helper().InstallAndLaunchWebApp(
+      profile1, GURL("https://test.org"));
+
+  // Verify that avatar button is not visible.
+  auto* toolbar_profile1 =
+      toolbar_helper().browser_view()->web_app_frame_toolbar_for_testing();
+  ASSERT_TRUE(toolbar_profile1);
+  ASSERT_TRUE(toolbar_profile1->GetAvatarToolbarButton());
+  EXPECT_FALSE(toolbar_profile1->GetAvatarToolbarButton()->GetVisible());
+
+  // Now install and launch application in second profile.
+  EXPECT_EQ(app_id, toolbar_helper().InstallAndLaunchWebApp(
+                        profile2, GURL("https://test.org")));
+
+  // Avatar button should be visible in both profiles.
+  EXPECT_TRUE(toolbar_profile1->GetAvatarToolbarButton()->GetVisible());
+  auto* toolbar_profile2 =
+      toolbar_helper().browser_view()->web_app_frame_toolbar_for_testing();
+  ASSERT_TRUE(toolbar_profile2);
+  ASSERT_TRUE(toolbar_profile2->GetAvatarToolbarButton());
+  EXPECT_TRUE(toolbar_profile2->GetAvatarToolbarButton()->GetVisible());
+}
+#endif
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)

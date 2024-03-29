@@ -39,8 +39,8 @@ WebAppFrameToolbarTestHelper::WebAppFrameToolbarTestHelper() {
 
 WebAppFrameToolbarTestHelper::~WebAppFrameToolbarTestHelper() = default;
 
-webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
-    Browser* browser,
+webapps::AppId WebAppFrameToolbarTestHelper::InstallWebApp(
+    Profile* profile,
     const GURL& start_url) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
@@ -50,11 +50,16 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  webapps::AppId app_id =
-      web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
+  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+}
+
+webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
+    Profile* profile,
+    const GURL& start_url) {
+  webapps::AppId app_id = InstallWebApp(profile, start_url);
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
-  app_browser_ = web_app::LaunchWebAppBrowser(browser->profile(), app_id);
+  app_browser_ = web_app::LaunchWebAppBrowser(profile, app_id);
   navigation_observer.WaitForNavigationFinished();
 
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
@@ -67,6 +72,12 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   DCHECK(web_app_frame_toolbar_);
   DCHECK(web_app_frame_toolbar_->GetVisible());
   return app_id;
+}
+
+webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
+    Browser* browser,
+    const GURL& start_url) {
+  return InstallAndLaunchWebApp(browser->profile(), start_url);
 }
 
 webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(

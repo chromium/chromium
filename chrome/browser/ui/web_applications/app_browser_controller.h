@@ -222,6 +222,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Not appliccable to ChromeOS, because apps can be installed only for
   // one main profile there.
   virtual bool HasProfileMenuButton() const;
+  virtual bool IsProfileMenuButtonVisible() const;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

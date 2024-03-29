@@ -204,6 +204,11 @@ class AppShimManager
     notification_permission_result_for_testing_ = result;
   }
 
+  // Opens the given app in the given profile in response to the user picking
+  // said profile in the Profiles menu.
+  void LaunchAppInProfile(const webapps::AppId& app_id,
+                          const base::FilePath& profile_path);
+
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
       std::unique_ptr<AppShimHostBootstrap> bootstrap) override;
