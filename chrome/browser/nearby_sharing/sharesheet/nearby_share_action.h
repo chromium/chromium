@@ -22,6 +22,7 @@ class NearbyShareAction : public sharesheet::ShareAction {
   NearbyShareAction& operator=(const NearbyShareAction&) = delete;
 
   // sharesheet::ShareAction:
+  sharesheet::ShareActionType GetActionType() const override;
   const std::u16string GetActionName() override;
   const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(sharesheet::SharesheetController* controller,

@@ -149,6 +149,10 @@ NearbyShareAction::NearbyShareAction(Profile* profile) : profile_(profile) {}
 
 NearbyShareAction::~NearbyShareAction() = default;
 
+sharesheet::ShareActionType NearbyShareAction::GetActionType() const {
+  return sharesheet::ShareActionType::kNearbyShare;
+}
+
 const std::u16string NearbyShareAction::GetActionName() {
   return features::IsNameEnabled()
              ? NearbyShareResourceGetter::GetInstance()

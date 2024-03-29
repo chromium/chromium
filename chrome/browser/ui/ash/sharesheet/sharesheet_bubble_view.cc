@@ -20,8 +20,6 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/about_flags.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
@@ -290,14 +288,11 @@ void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
   // and use that instead for a more consistent UI experience.
   height_ = 1;
 
-  const std::u16string target_name =
-      features::IsNameEnabled()
-          ? NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
-                IDS_NEARBY_SHARE_FEATURE_NAME_PH)
-          : l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
-
-  delegator_->OnTargetSelected(target_name, ::sharesheet::TargetType::kAction,
-                               std::move(intent_), share_action_view_);
+  delegator_->OnTargetSelected(
+      /*type=*/::sharesheet::TargetType::kAction,
+      /*share_action_type=*/::sharesheet::ShareActionType::kNearbyShare,
+      /*app_name=*/std::nullopt, /*intent=*/std::move(intent_),
+      /*share_action_view=*/share_action_view_);
 }
 
 std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
@@ -395,13 +390,18 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
     std::u16string display_name = target.display_name;
     std::u16string secondary_display_name =
         target.secondary_display_name.value_or(std::u16string());
+
+    // Only apps are expected to have an |icon|, while share actions will
+    // have a vector icon.
     std::optional<gfx::ImageSkia> icon = target.icon;
+    const gfx::VectorIcon* vector_icon =
+        delegator_->GetVectorIcon(target.share_action_type);
 
     view_for_target->AddChildView(std::make_unique<SharesheetTargetButton>(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
                             base::Unretained(this), target),
-        display_name, secondary_display_name, icon,
-        delegator_->GetVectorIcon(display_name), target.is_dlp_blocked));
+        display_name, secondary_display_name, icon, vector_icon,
+        target.is_dlp_blocked));
   }
 }
 
@@ -492,7 +492,8 @@ bool SharesheetBubbleView::AcceleratorPressed(
   // not pressed |VKEY_TAB| first to focus the SharesheetBubbleView.
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
   if (share_action_view_->GetVisible() &&
-      delegator_->OnAcceleratorPressed(accelerator, active_target_)) {
+      delegator_->OnAcceleratorPressed(accelerator,
+                                       active_share_action_type_)) {
     return true;
   }
 
@@ -698,12 +699,14 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   }
   auto type = target.type;
   if (type == ::sharesheet::TargetType::kAction) {
-    active_target_ = target.launch_name;
+    active_share_action_type_ = target.share_action_type.value();
   } else {
     intent_->activity_name = target.activity_name;
   }
-  delegator_->OnTargetSelected(target.launch_name, type, std::move(intent_),
-                               share_action_view_);
+  delegator_->OnTargetSelected(
+      /*type=*/type, /*share_action_type=*/target.share_action_type,
+      /*app_name=*/target.launch_name, /*intent=*/std::move(intent_),
+      /*share_action_view=*/share_action_view_);
   if (delivered_callback_) {
     std::move(delivered_callback_)
         .Run(::sharesheet::SharesheetResult::kSuccess);
@@ -797,7 +800,7 @@ void SharesheetBubbleView::CloseWidgetWithReason(
     std::move(close_callback_).Run(closed_reason);
   }
   // Bubble is deleted here.
-  delegator_->OnBubbleClosed(active_target_);
+  delegator_->OnBubbleClosed(active_share_action_type_);
 }
 
 BEGIN_METADATA(SharesheetBubbleView)

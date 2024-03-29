@@ -41,11 +41,10 @@ ShareActionCache::GetShareActions() {
   return share_actions_;
 }
 
-ShareAction* ShareActionCache::GetActionFromName(
-    const std::u16string& action_name) {
+ShareAction* ShareActionCache::GetActionFromType(ShareActionType action_type) {
   auto iter = share_actions_.begin();
   while (iter != share_actions_.end()) {
-    if ((*iter)->GetActionName() == action_name) {
+    if ((*iter)->GetActionType() == action_type) {
       return iter->get();
     } else {
       iter++;
@@ -54,9 +53,9 @@ ShareAction* ShareActionCache::GetActionFromName(
   return nullptr;
 }
 
-const gfx::VectorIcon* ShareActionCache::GetVectorIconFromName(
-    const std::u16string& display_name) {
-  ShareAction* share_action = GetActionFromName(display_name);
+const gfx::VectorIcon* ShareActionCache::GetVectorIconFromType(
+    ShareActionType action_type) {
+  ShareAction* share_action = GetActionFromType(action_type);
   if (share_action == nullptr) {
     return nullptr;
   }

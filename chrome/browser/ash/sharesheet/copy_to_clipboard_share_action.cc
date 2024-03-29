@@ -52,6 +52,11 @@ CopyToClipboardShareAction::CopyToClipboardShareAction(Profile* profile)
 
 CopyToClipboardShareAction::~CopyToClipboardShareAction() = default;
 
+::sharesheet::ShareActionType CopyToClipboardShareAction::GetActionType()
+    const {
+  return ::sharesheet::ShareActionType::kCopyToClipboardShare;
+}
+
 const std::u16string CopyToClipboardShareAction::GetActionName() {
   return l10n_util::GetStringUTF16(
       IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL);

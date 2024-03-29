@@ -96,33 +96,36 @@ void SharesheetServiceDelegator::CloseBubble(SharesheetResult result) {
 }
 
 void SharesheetServiceDelegator::OnBubbleClosed(
-    const std::u16string& active_action) {
+    const std::optional<ShareActionType>& share_action_type) {
   DCHECK(sharesheet_service_);
-  sharesheet_service_->OnBubbleClosed(native_window_, active_action);
+  sharesheet_service_->OnBubbleClosed(native_window_, share_action_type);
   // This object is now deleted and nothing can be accessed any more.
 }
 
 void SharesheetServiceDelegator::OnTargetSelected(
-    const std::u16string& target_name,
     const TargetType type,
+    const std::optional<ShareActionType>& share_action_type,
+    const std::optional<std::u16string>& app_name,
     apps::IntentPtr intent,
     views::View* share_action_view) {
   DCHECK(sharesheet_service_);
-  sharesheet_service_->OnTargetSelected(native_window_, target_name, type,
-                                        std::move(intent), share_action_view);
+  sharesheet_service_->OnTargetSelected(native_window_, type, share_action_type,
+                                        app_name, std::move(intent),
+                                        share_action_view);
 }
 
 bool SharesheetServiceDelegator::OnAcceleratorPressed(
     const ui::Accelerator& accelerator,
-    const std::u16string& active_action) {
+    const ShareActionType share_action_type) {
   DCHECK(sharesheet_service_);
-  return sharesheet_service_->OnAcceleratorPressed(accelerator, active_action);
+  return sharesheet_service_->OnAcceleratorPressed(accelerator,
+                                                   share_action_type);
 }
 
 const gfx::VectorIcon* SharesheetServiceDelegator::GetVectorIcon(
-    const std::u16string& display_name) {
+    const std::optional<ShareActionType>& share_action_type) {
   DCHECK(sharesheet_service_);
-  return sharesheet_service_->GetVectorIcon(display_name);
+  return sharesheet_service_->GetVectorIcon(share_action_type);
 }
 
 }  // namespace sharesheet

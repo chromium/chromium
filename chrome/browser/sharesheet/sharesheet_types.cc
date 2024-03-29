@@ -11,6 +11,7 @@ TargetInfo::TargetInfo(
     const std::optional<gfx::ImageSkia> icon,
     const std::u16string& launch_name,
     const std::u16string& display_name,
+    const std::optional<ShareActionType>& share_action_type,
     const std::optional<std::u16string>& secondary_display_name,
     const std::optional<std::string>& activity_name,
     bool is_dlp_blocked)
@@ -18,6 +19,7 @@ TargetInfo::TargetInfo(
       icon(icon),
       launch_name(launch_name),
       display_name(display_name),
+      share_action_type(share_action_type),
       secondary_display_name(secondary_display_name),
       activity_name(activity_name),
       is_dlp_blocked(is_dlp_blocked) {}
