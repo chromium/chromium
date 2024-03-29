@@ -1068,18 +1068,15 @@ bool ManagedNetworkConfigurationHandlerImpl::IsProhibitedFromConfiguringVpn()
     const {
   if (!user_prefs_ ||
       !user_prefs_->FindPreference(arc::prefs::kAlwaysOnVpnPackage) ||
-      !user_prefs_->FindPreference(arc::prefs::kAlwaysOnVpnLockdown) ||
       !user_prefs_->FindPreference(prefs::kVpnConfigAllowed)) {
     return false;
   }
 
   // When an admin Activate Always ON VPN for all user traffic with an Android
-  // VPN, arc::prefs::kAlwaysOnVpnPackage will be non empty, and
-  // arc::prefs::kAlwaysOnVpnLockdown will be true. If additionally, the admin
-  // prohibits users from disconnecting from a VPN manually,
+  // VPN, arc::prefs::kAlwaysOnVpnPackage will be non empty. If additionally,
+  // the admin prohibits users from disconnecting from a VPN manually,
   // prefs::kVpnConfigAllowed becomes false. See go/test-cros-vpn-policies.
   return !user_prefs_->GetString(arc::prefs::kAlwaysOnVpnPackage).empty() &&
-         user_prefs_->GetBoolean(arc::prefs::kAlwaysOnVpnLockdown) &&
          !user_prefs_->GetBoolean(prefs::kVpnConfigAllowed);
 }
 

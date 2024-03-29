@@ -820,12 +820,9 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   void SetArcAlwaysOnUserPrefs(std::string package_name,
-                               bool lockdown,
                                bool vpn_configured_allowed = false) {
     user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnPackage,
                             base::Value(package_name));
-    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnLockdown,
-                            base::Value(lockdown));
     user_prefs_.SetUserPref(prefs::kVpnConfigAllowed,
                             base::Value(vpn_configured_allowed));
   }
@@ -4419,19 +4416,17 @@ TEST_F(CrosNetworkConfigTest, IsProhibitedFromConfiguringVpn) {
   user_prefs_.registry()->RegisterBooleanPref(prefs::kVpnConfigAllowed, true);
 
   for (const std::string& package_name : {"", "package_name"}) {
-    for (const bool lockdown : {true, false}) {
       for (const bool vpn_configure_allowed : {true, false}) {
-        SetArcAlwaysOnUserPrefs(package_name, lockdown, vpn_configure_allowed);
+        SetArcAlwaysOnUserPrefs(package_name, vpn_configure_allowed);
         const std::string guid = ConfigureNetwork(
             CreateFakeVpnConfig("name", "host", mojom::VpnType::kArc),
             /*shared=*/true);
-        if (package_name.empty() || !lockdown || vpn_configure_allowed) {
+        if (package_name.empty() || vpn_configure_allowed) {
           EXPECT_FALSE(guid.empty());
           continue;
         }
         EXPECT_TRUE(guid.empty());
       }
-    }
   }
 }
 

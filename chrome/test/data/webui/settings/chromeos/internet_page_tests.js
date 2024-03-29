@@ -57,10 +57,10 @@ suite('InternetPage', function() {
     'arc': {
       'vpn': {
         'always_on': {
-          'lockdown': {
-            key: 'lockdown',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
+          'vpn_package': {
+            key: 'vpn_package',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            value: '',
           },
         },
       },
@@ -79,12 +79,13 @@ suite('InternetPage', function() {
   }
 
   /**
-   * @param {boolean} arcVpnAlwaysOnLockdownPrefValue
+   * @param {string} arcVpnAlwaysOnPackageNamePrefValue
    * @param {boolean} vpnConfigAllowedPrefValue
    */
   function setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
-      arcVpnAlwaysOnLockdownPrefValue, vpnConfigAllowedPrefValue) {
-    prefs_.arc.vpn.always_on.lockdown.value = arcVpnAlwaysOnLockdownPrefValue;
+      arcVpnAlwaysOnPackageNamePrefValue, vpnConfigAllowedPrefValue) {
+    prefs_.arc.vpn.always_on.vpn_package.value =
+        arcVpnAlwaysOnPackageNamePrefValue;
     prefs_.vpn_config_allowed.value = vpnConfigAllowedPrefValue;
 
     internetPage.prefs = Object.assign({}, prefs_);
@@ -190,7 +191,7 @@ suite('InternetPage', function() {
     networkSummary_ = internetPage.shadowRoot.querySelector('network-summary');
     assertTrue(!!networkSummary_);
     setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
-        /*arcVpnAlwaysOnLockdownPrefValue=*/ false,
+        /*arcVpnAlwaysOnPackageNamePrefValue=*/ '',
         /*vpnConfigAllowedPrefValue=*/ false);
     return flushAsync().then(() => {
       return Promise.all([
@@ -446,54 +447,55 @@ suite('InternetPage', function() {
 
       [{
         vpnProhibited: true,
-        alwaysOnVpn: false,
+        arcVpnAlwaysOnPackageNamePrefValue: '',
         manualDisconnectionAllowed: false,
       },
        {
          vpnProhibited: true,
-         alwaysOnVpn: false,
+         arcVpnAlwaysOnPackageNamePrefValue: '',
          manualDisconnectionAllowed: true,
        },
        {
          vpnProhibited: true,
-         alwaysOnVpn: true,
+         arcVpnAlwaysOnPackageNamePrefValue: 'PackageName',
          manualDisconnectionAllowed: false,
        },
        {
          vpnProhibited: true,
-         alwaysOnVpn: true,
+         arcVpnAlwaysOnPackageNamePrefValue: 'PackageName',
          manualDisconnectionAllowed: true,
        },
        {
          vpnProhibited: false,
-         alwaysOnVpn: false,
+         arcVpnAlwaysOnPackageNamePrefValue: '',
          manualDisconnectionAllowed: false,
        },
        {
          vpnProhibited: false,
-         alwaysOnVpn: false,
+         arcVpnAlwaysOnPackageNamePrefValue: '',
          manualDisconnectionAllowed: true,
        },
        {
          vpnProhibited: false,
-         alwaysOnVpn: true,
+         arcVpnAlwaysOnPackageNamePrefValue: 'PackageName',
          manualDisconnectionAllowed: false,
        },
        {
          vpnProhibited: false,
-         alwaysOnVpn: true,
+         arcVpnAlwaysOnPackageNamePrefValue: 'PackageName',
          manualDisconnectionAllowed: true,
        },
       ].forEach(({
                   vpnProhibited,
-                  arcVpnAlwaysOnLockdownPrefValue,
+                  arcVpnAlwaysOnPackageNamePrefValue,
                   manualDisconnectionAllowed,
                 }) => {
         test(
             `VPNs prohibited by policy: ${
-                vpnProhibited}, always on VPN exist by policy: ${
-                arcVpnAlwaysOnLockdownPrefValue}, manual disconnection` +
-                `allowed by policy: ${manualDisconnectionAllowed}`,
+                vpnProhibited}, always on VPN set by policy: ${
+                  !!arcVpnAlwaysOnPackageNamePrefValue}, ` +
+                `setDoesDisconnectProhibitedAlwaysOnVpnPrefs allowed ` +
+                `by policy: ${manualDisconnectionAllowed}`,
             async () => {
               await init();
 
@@ -502,8 +504,8 @@ suite('InternetPage', function() {
               addVpnNetworkAndSetDeviceState(vpnProhibited);
 
               setDoesDisconnectProhibitedAlwaysOnVpnPrefs(
-                  /* arcVpnAlwaysOnLockdownPrefValue= */
-                  arcVpnAlwaysOnLockdownPrefValue,
+                  /* arcVpnAlwaysOnPackageNamePrefValue= */
+                  arcVpnAlwaysOnPackageNamePrefValue,
                   /* vpnConfigAllowedPrefValue= */ manualDisconnectionAllowed);
 
               return flushAsync().then(() => {
@@ -515,7 +517,7 @@ suite('InternetPage', function() {
                         .shadowRoot.querySelector('#policyIndicator');
 
                 if (vpnProhibited ||
-                    (arcVpnAlwaysOnLockdownPrefValue &&
+                    (!!arcVpnAlwaysOnPackageNamePrefValue &&
                      !manualDisconnectionAllowed)) {
                   assertTrue(isVisible(vpnPolicyIndicator));
 
@@ -527,8 +529,8 @@ suite('InternetPage', function() {
                   assertTrue(isVisible(policyIndicator));
                 } else {
                   // Note: Users are still allowed to configure existing VPNs
-                  // they set previously if |alwaysOnVpn| is true and
-                  // |manualDisconnectionAllowed| is false.
+                  // they set previously if |arcVpnAlwaysOnPackageNamePrefValue|
+                  // is not set and |manualDisconnectionAllowed| is false.
                   // TODO(http://b/302390893): Consider renaming
                   // |vpn_config_allowed| pref to something like
                   // "manual_disconnection_allowed", or discuss with DPanel team

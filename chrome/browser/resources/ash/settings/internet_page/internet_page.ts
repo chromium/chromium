@@ -949,10 +949,11 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
     const isVpnConfigProhibited =
         this.prefs.vpn_config_allowed && !this.prefs.vpn_config_allowed.value;
-    const hasAlwaysOnVpnWithLockdown = this.prefs.arc && this.prefs.arc.vpn &&
-        this.prefs.arc.vpn.always_on && this.prefs.arc.vpn.always_on.lockdown &&
-        this.prefs.arc.vpn.always_on.lockdown.value;
-    return isVpnConfigProhibited && hasAlwaysOnVpnWithLockdown;
+    const hasAlwaysOnVpnActivated = this.prefs.arc && this.prefs.arc.vpn &&
+        this.prefs.arc.vpn.always_on &&
+        this.prefs.arc.vpn.always_on.vpn_package &&
+        !!this.prefs.arc.vpn.always_on.vpn_package.value;
+    return isVpnConfigProhibited && hasAlwaysOnVpnActivated;
   }
 
   private getAddThirdPartyVpnLabel_(provider: VpnProvider): string {
