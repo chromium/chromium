@@ -17,6 +17,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
+#include "ui/base/l10n/l10n_util_android.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -535,6 +536,9 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   float bottom_indicator_x = x;
   float bottom_indicator_y =
       scrollable_strip_layer_->bounds().height() - bottom_indicator_height;
+  if (l10n_util::IsLayoutRtl()) {
+    bottom_indicator_x -= (bottom_indicator_width - width);
+  }
 
   // Use ceiling value to prevent height float from getting truncated, otherwise
   // it could result in bottom indicator looks thinner than intended in certain
