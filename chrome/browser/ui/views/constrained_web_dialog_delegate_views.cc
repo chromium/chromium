@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
@@ -23,6 +24,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -365,6 +367,7 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
     EnableSizingFromWebContents(RestrictToPlatformMinimumSize(min_size),
                                 max_size);
   }
+  SetProperty(views::kElementIdentifierKey, kConstrainedDialogWebViewElementId);
 }
 ConstrainedDialogWebView::~ConstrainedDialogWebView() {}
 
