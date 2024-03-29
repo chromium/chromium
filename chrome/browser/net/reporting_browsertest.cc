@@ -231,36 +231,19 @@ class JSCallStackReportingBrowserTest : public BaseReportingBrowserTest {
     return "Document-Policy: include-js-call-stacks-in-crash-reports\r\n";
   }
 
- protected:
-  class InfiniteLoopEventWaiter {
-   public:
-    explicit InfiniteLoopEventWaiter(content::ToRenderFrameHost adapter)
-        : message_queue_(adapter.render_frame_host()) {
-      content::ExecuteScriptAsync(adapter,
-                                  R"(
-        function infiniteLoop() {
-          let cnt = 0;
-            while (true) {
-              if (cnt++ == 0) {
-                window.domAutomationController.send('infiniteLoop');
-              }
-            }
-          }
-        infiniteLoop();
-        )");
-
-      Wait();
+  void ExecuteInfiniteLoopScriptAsync(content::RenderFrameHost* frame) {
+    content::ExecuteScriptAsync(frame, R"(
+    function infiniteLoop() {
+      let cnt = 0;
+      while (true) {
+        if (cnt++ == 0) {
+          console.log('infiniteLoop');
+        }
+      }
     }
-
-    void Wait() {
-      std::string message;
-      ASSERT_TRUE(message_queue_.WaitForMessage(&message));
-      EXPECT_EQ("\"infiniteLoop\"", message);
-    }
-
-   private:
-    content::DOMMessageQueue message_queue_;
-  };
+    infiniteLoop();
+  )");
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -623,7 +606,12 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
 
   content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame);
-  InfiniteLoopEventWaiter loop_waiter(frame);
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern("infiniteLoop");
+
+  ExecuteInfiniteLoopScriptAsync(frame);
+
+  ASSERT_TRUE(console_observer.Wait());
 
   content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
 
@@ -677,7 +665,12 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
   ASSERT_TRUE(frame);
-  InfiniteLoopEventWaiter loop_waiter(frame);
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern("infiniteLoop");
+
+  ExecuteInfiniteLoopScriptAsync(frame);
+
+  ASSERT_TRUE(console_observer.Wait());
 
   content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
 
@@ -750,7 +743,12 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
   ASSERT_TRUE(subframe);
-  InfiniteLoopEventWaiter loop_waiter(subframe);
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern("infiniteLoop");
+
+  ExecuteInfiniteLoopScriptAsync(subframe);
+
+  ASSERT_TRUE(console_observer.Wait());
 
   content::SimulateUnresponsiveRenderer(contents,
                                         subframe->GetRenderWidgetHost());
@@ -821,7 +819,12 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
 
   content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
   ASSERT_TRUE(subframe);
-  InfiniteLoopEventWaiter loop_waiter(subframe);
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern("infiniteLoop");
+
+  ExecuteInfiniteLoopScriptAsync(subframe);
+
+  ASSERT_TRUE(console_observer.Wait());
 
   content::SimulateUnresponsiveRenderer(contents,
                                         subframe->GetRenderWidgetHost());
