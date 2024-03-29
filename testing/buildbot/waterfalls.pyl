@@ -6650,6 +6650,7 @@
         'mixins': [
           'chrome-swarming-pool',
           'linux-jammy',
+          'x86-64',
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_nogpu_gtests',

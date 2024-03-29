@@ -52,6 +52,7 @@
         "name": "chrome_ml_unittests",
         "swarming": {
           "dimensions": {
+            "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
@@ -70,6 +71,7 @@
         "name": "optimization_guide_browser_tests",
         "swarming": {
           "dimensions": {
+            "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
@@ -88,6 +90,7 @@
         "name": "optimization_guide_components_unittests",
         "swarming": {
           "dimensions": {
+            "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
@@ -103,6 +106,7 @@
         "name": "optimization_guide_unittests",
         "swarming": {
           "dimensions": {
+            "cpu": "x86-64",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests"
           },
