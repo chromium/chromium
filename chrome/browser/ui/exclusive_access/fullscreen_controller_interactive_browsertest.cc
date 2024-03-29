@@ -860,27 +860,37 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
   bool ExitFullscreen() {
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
     ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = false});
+    const std::string script = R"((() => {
+      window.lastExit = Date.now();
+      return document.exitFullscreen();
+    })())";
     // A user gesture is not needed and may break subsequent activation checks.
-    auto result = EvalJs(web_contents_, "document.exitFullscreen()",
-                         content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+    auto result =
+        EvalJs(web_contents_, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE);
     waiter.Wait();
     return result.error.empty() && !browser->window()->IsFullscreen();
   }
 
   bool OpenPopupAndRequestFullscreenOnLoad() {
-    const std::string script = R"(
-      (async () => {
-        let w = open(location.href, '', 'popup');
-        return new Promise(resolve => {
-          w.onload = () => {
-            setTimeout(async () => {
-                try { await w.document.body.requestFullscreen(); } catch {}
-                resolve(!!w.document.fullscreenElement);
-            }, 300);  // Wait for document settings to propagate :-/
+    const std::string script = R"((() => {
+      let w = open(location.href, '', 'popup');
+      return new Promise(resolve => {
+        w.onload = () => {
+          w.document.onfullscreenchange = () => {
+            clearInterval(w.int);
+            resolve(!!w.document.fullscreenElement);
           };
-        });
-      })();
-    )";
+          // Wait for document settings to reach the renderer after load :-/
+          w.int = setInterval(() => w.document.body.requestFullscreen(), 500);
+          // Stop retrying fullscreen before any ongoing 5s exit cooldown ends.
+          // Timeout precisely; time since `lastExit` may vary: e.g. 500-1750ms.
+          if (window.lastExit && (Date.now() - window.lastExit) < 5000) {
+            setTimeout(w.document.onfullscreenchange,
+                       4500 + window.lastExit - Date.now());
+          }
+        };
+      });
+    })())";
     Browser* browser = chrome::FindBrowserWithTab(web_contents_);
     auto result = EvalJs(web_contents_, script);
     Browser* popup = BrowserList::GetInstance()->GetLastActive();
