@@ -281,7 +281,14 @@ namespace os.diagnostics {
     MemtesterTestItemEnum[] failed_items;
   };
 
-  dictionary MemoryRoutineFinishedInfo {
+  dictionary MemoryRoutineFinishedDetail {
+    // Number of bytes tested in the memory routine.
+    double? bytesTested;
+    // Contains the memtester test results.
+    MemtesterResult? result;
+  };
+
+  dictionary LegacyMemoryRoutineFinishedInfo {
     DOMString? uuid;
     boolean? has_passed;
     // Number of bytes tested in the memory routine.
@@ -303,7 +310,7 @@ namespace os.diagnostics {
     volume_down
   };
 
-  dictionary VolumeButtonRoutineFinishedInfo {
+  dictionary LegacyVolumeButtonRoutineFinishedInfo {
     DOMString? uuid;
     boolean? has_passed;
   };
@@ -325,7 +332,16 @@ namespace os.diagnostics {
     not_configured
   };
 
-  dictionary FanRoutineFinishedInfo {
+  dictionary FanRoutineFinishedDetail {
+    // The ids of fans that can be controlled.
+    long[]? passed_fan_ids;
+    // The ids of fans that cannot be controlled.
+    long[]? failed_fan_ids;
+    // Whether the number of fan probed is matched.
+    HardwarePresenceStatus? fan_count_status;
+  };
+
+  dictionary LegacyFanRoutineFinishedInfo {
     DOMString? uuid;
     boolean? has_passed;
     // The ids of fans that can be controlled.
@@ -337,6 +353,18 @@ namespace os.diagnostics {
   };
 
   dictionary RunFanRoutineArguments {
+  };
+
+  // This is a union type. Exactly one field should be set.
+  dictionary RoutineFinishedDetailUnion {
+    MemoryRoutineFinishedDetail? memory;
+    FanRoutineFinishedDetail? fan;
+  };
+
+  dictionary RoutineFinishedInfo {
+    DOMString? uuid;
+    boolean? has_passed;
+    RoutineFinishedDetailUnion? detail;
   };
 
   dictionary CreateRoutineResponse {
@@ -524,19 +552,29 @@ namespace os.diagnostics {
     // about what the routine is waiting for (see prototype above).
     static void onRoutineWaiting(RoutineWaitingInfo waitingInfo);
 
-    // Informs the extension that a memory routine finished.
-    static void onMemoryRoutineFinished(MemoryRoutineFinishedInfo finishedInfo);
-
-    // Informs the extension that a volume button routine finished.
-    static void onVolumeButtonRoutineFinished(
-        VolumeButtonRoutineFinishedInfo finishedInfo);
-
-    // Informs the extension that a fan routine finished.
-    static void onFanRoutineFinished(FanRoutineFinishedInfo finishedInfo);
+    // Informs the extension that a routine finished.
+    static void onRoutineFinished(RoutineFinishedInfo finishedInfo);
 
     // Informs the extension that an exception occured. The error passed in
     // `ExceptionInfo` is non-recoverable.
     static void onRoutineException(ExceptionInfo exceptionInfo);
+
+    // ----------------- DEPRECATED DIAGNOSTICS API V2 -----------------
+    // TODO(b/331540565): Remove legacy APIs.
+
+    // Deprecated. Use `onRoutineFinished` instead.
+    // Informs the extension that a memory routine finished.
+    static void onMemoryRoutineFinished(
+        LegacyMemoryRoutineFinishedInfo finishedInfo);
+
+    // Deprecated. Use `onRoutineFinished` instead.
+    // Informs the extension that a volume button routine finished.
+    static void onVolumeButtonRoutineFinished(
+        LegacyVolumeButtonRoutineFinishedInfo finishedInfo);
+
+    // Deprecated. Use `onRoutineFinished` instead.
+    // Informs the extension that a fan routine finished.
+    static void onFanRoutineFinished(LegacyFanRoutineFinishedInfo finishedInfo);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

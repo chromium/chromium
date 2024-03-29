@@ -40,18 +40,35 @@ api::os_diagnostics::RoutineWaitingInfo UncheckedConvertPtr(
 api::os_diagnostics::MemtesterResult UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticMemtesterResultPtr input);
 
-api::os_diagnostics::MemoryRoutineFinishedInfo UncheckedConvertPtr(
+// For legacy finished events.
+// TODO(b/331540565): Remove this function after the legacy event is removed.
+api::os_diagnostics::LegacyMemoryRoutineFinishedInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed);
 
-api::os_diagnostics::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
+// For legacy finished events.
+// TODO(b/331540565): Remove this function after the legacy event is removed.
+api::os_diagnostics::LegacyVolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed);
 
-api::os_diagnostics::FanRoutineFinishedInfo UncheckedConvertPtr(
+// For legacy finished events.
+// TODO(b/331540565): Remove this function after the legacy event is removed.
+api::os_diagnostics::LegacyFanRoutineFinishedInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed);
+
+api::os_diagnostics::MemoryRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr input);
+
+api::os_diagnostics::FanRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr input);
+
+api::os_diagnostics::RoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticRoutineStateFinishedPtr input,
     base::Uuid uuid,
     bool has_passed);
 

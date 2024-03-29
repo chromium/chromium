@@ -752,6 +752,7 @@ Called by update_extension_histograms.py.-->
   <int value="554"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED"/>
   <int value="555" label="TTS_ON_VOICES_CHANGED"/>
+  <int value="556" label="OS_DIAGNOSTICS_ON_ROUTINE_FINISHED"/>
 </enum>
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">

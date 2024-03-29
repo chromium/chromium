@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/notreached.h"
@@ -17,6 +18,30 @@ namespace chromeos::converters::routines {
 namespace {
 namespace cx_diag = api::os_diagnostics;
 namespace crosapi = ::crosapi::mojom;
+
+std::optional<cx_diag::RoutineFinishedDetailUnion> ConvertRoutineDetailUnionPtr(
+    crosapi::TelemetryDiagnosticRoutineDetailPtr input) {
+  if (input.is_null()) {
+    return std::nullopt;
+  }
+  cx_diag::RoutineFinishedDetailUnion detail;
+  switch (input->which()) {
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kUnrecognizedArgument:
+      LOG(WARNING) << "Got unknown routine detail";
+      return std::nullopt;
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kMemory:
+      detail.memory = ConvertPtr(std::move(input->get_memory()));
+      return detail;
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kVolumeButton:
+      // This member type in the union is kept only for backward compatibility.
+      // There is no such a field in the web IDL definition.
+      return std::nullopt;
+    case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kFan:
+      detail.fan = ConvertPtr(std::move(input->get_fan()));
+      return detail;
+  }
+}
+
 }  // namespace
 
 namespace unchecked {
@@ -60,37 +85,60 @@ cx_diag::MemtesterResult UncheckedConvertPtr(
   return result;
 }
 
-cx_diag::MemoryRoutineFinishedInfo UncheckedConvertPtr(
+cx_diag::LegacyMemoryRoutineFinishedInfo UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed) {
-  cx_diag::MemoryRoutineFinishedInfo result;
-
+  cx_diag::LegacyMemoryRoutineFinishedInfo result;
   result.uuid = uuid.AsLowercaseString();
   result.has_passed = has_passed;
-  result.bytes_tested = input->bytes_tested;
-  result.result = ConvertPtr(std::move(input->result));
-
+  // Construct the non-legacy detail to ensure the content is the same between
+  // the legacy and the non-legacy ones.
+  cx_diag::MemoryRoutineFinishedDetail detail =
+      UncheckedConvertPtr(std::move(input));
+  result.bytes_tested = std::move(detail.bytes_tested);
+  result.result = std::move(detail.result);
   return result;
 }
 
-cx_diag::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
+cx_diag::LegacyVolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed) {
-  cx_diag::VolumeButtonRoutineFinishedInfo result;
-
+  cx_diag::LegacyVolumeButtonRoutineFinishedInfo result;
   result.uuid = uuid.AsLowercaseString();
   result.has_passed = has_passed;
-
   return result;
 }
 
-cx_diag::FanRoutineFinishedInfo UncheckedConvertPtr(
+cx_diag::LegacyFanRoutineFinishedInfo UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticFanRoutineDetailPtr input,
     base::Uuid uuid,
     bool has_passed) {
-  cx_diag::FanRoutineFinishedInfo result;
+  cx_diag::LegacyFanRoutineFinishedInfo result;
+  result.uuid = uuid.AsLowercaseString();
+  result.has_passed = has_passed;
+  // Construct the non-legacy detail to ensure the content is the same between
+  // the legacy and the non-legacy ones.
+  cx_diag::FanRoutineFinishedDetail detail =
+      UncheckedConvertPtr(std::move(input));
+  result.passed_fan_ids = std::move(detail.passed_fan_ids);
+  result.failed_fan_ids = std::move(detail.failed_fan_ids);
+  result.fan_count_status = std::move(detail.fan_count_status);
+  return result;
+}
+
+cx_diag::MemoryRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr input) {
+  cx_diag::MemoryRoutineFinishedDetail result;
+  result.bytes_tested = input->bytes_tested;
+  result.result = ConvertPtr(std::move(input->result));
+  return result;
+}
+
+cx_diag::FanRoutineFinishedDetail UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticFanRoutineDetailPtr input) {
+  cx_diag::FanRoutineFinishedDetail result;
 
   std::vector<int> passed_fan_ids = {};
   for (const auto& passed_fan_id : input->passed_fan_ids) {
@@ -105,8 +153,17 @@ cx_diag::FanRoutineFinishedInfo UncheckedConvertPtr(
   result.failed_fan_ids = failed_fan_ids;
 
   result.fan_count_status = Convert(input->fan_count_status);
+  return result;
+}
+
+cx_diag::RoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticRoutineStateFinishedPtr input,
+    base::Uuid uuid,
+    bool has_passed) {
+  cx_diag::RoutineFinishedInfo result;
   result.uuid = uuid.AsLowercaseString();
   result.has_passed = has_passed;
+  result.detail = ConvertRoutineDetailUnionPtr(std::move(input->detail));
   return result;
 }
 

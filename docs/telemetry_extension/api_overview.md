@@ -279,6 +279,13 @@ extension-event based interface in M119. The interface is described in
 | reason | RoutineWaitingReason | Reason why the routine waits |
 | message | string | Additional information, may be used to pass instruction or explanation |
 
+### RoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+| detail | RoutineFinishedDetailUnion | Extra details about a finished routine |
+
 ### ExceptionInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -286,13 +293,25 @@ extension-event based interface in M119. The interface is described in
 | reason | ExceptionReason | Reason why the routine threw an exception |
 | debugMessage | string | A human readable message for debugging. Don't rely on the content because it could change anytime |
 
+### RoutineFinishedDetailUnion
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| memory | MemoryRoutineFinishedDetail | Extra detail for a finished memory routine  |
+| fan | FanRoutineFinishedDetail | Extra detail for a finished fan routine |
+
 ### MemtesterResult
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | passed_items | Array<MemtesterTestItemEnum\> | Passed test items |
 | failed_items | Array<MemtesterTestItemEnum\> | Failed test items |
 
-### MemoryRoutineFinishedInfo
+### MemoryRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| bytesTested | number | Number of bytes tested in the memory routine |
+| result | MemtesterResult | Contains the memtester test results |
+
+### LegacyMemoryRoutineFinishedInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
@@ -312,7 +331,14 @@ extension-event based interface in M119. The interface is described in
 | not_matched |
 | not_configured |
 
-### FanRoutineFinishedInfo
+### FanRoutineFinishedDetail
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| passed_fan_ids | Array<number\> | The ids of fans that can be controlled |
+| failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
+| fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
+
+### LegacyFanRoutineFinishedInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
@@ -331,7 +357,7 @@ extension-event based interface in M119. The interface is described in
 | volume_up |
 | volume_down |
 
-### VolumeButtonRoutineFinishedInfo
+### LegacyVolumeButtonRoutineFinishedInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | uuid | string | UUID of the routine that entered this state  |
@@ -384,9 +410,10 @@ extension-event based interface in M119. The interface is described in
 | onRoutineRunning | function(RoutineRunningInfo) | `os.diagnostics` | M119 | Informs the extension that a routine started running. This can happen in two situations: 1. `startRoutine` was called and the routine successfully started execution. 2. The routine exited the "waiting" state and returned to running |
 | onRoutineWaiting | function(RoutineWaitingInfo) | `os.diagnostics` | M119 | Informs the extension that a routine stopped execution and waits for an event, e.g. user interaction. `RoutineWaitingInfo` contains information about what the routine is waiting for |
 | onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
-| onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
-| onFanRoutineFinished | function(FanRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a fan routine finished |
-| onVolumeButtonRoutineFinished | function(VolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a volume button routine finished |
+| onRoutineFinished | function(RoutineFinishedInfo) | `os.diagnostics` | M125 | Informs the extension that a routine finished |
+| onMemoryRoutineFinished | function(LegacyMemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | (Deprecated, use `onRoutineFinished`) Informs the extension that a memory routine finished |
+| onFanRoutineFinished | function(LegacyFanRoutineFinishedInfo) | `os.diagnostics` | M121 | (Deprecated, use `onRoutineFinished`) Informs the extension that a fan routine finished |
+| onVolumeButtonRoutineFinished | function(LegacyVolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M121 | (Deprecated, use `onRoutineFinished`) Informs the extension that a volume button routine finished |
 
 # Events
 

@@ -71,7 +71,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, RoutineWaitingInfo) {
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
-     MemoryRoutineFinishedInfo) {
+     LegacyMemoryRoutineFinishedInfo) {
   constexpr bool kHasPassed = true;
   constexpr uint32_t kBytesTested = 42;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
@@ -108,7 +108,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
-     VolumeButtonRoutineFinishedInfo) {
+     LegacyVolumeButtonRoutineFinishedInfo) {
   constexpr bool kHasPassed = true;
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
 
@@ -124,7 +124,7 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
-     FanRoutineFinishedInfo) {
+     LegacyFanRoutineFinishedInfo) {
   auto input = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
   input->passed_fan_ids = {0};
   input->failed_fan_ids = {1};
@@ -162,6 +162,150 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterResult) {
       result.failed_items,
       testing::ElementsAre(cx_diag::MemtesterTestItemEnum::kCompareAnd,
                            cx_diag::MemtesterTestItemEnum::kCompareSub));
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineFinishedInfoWithoutDetail) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  input->detail = nullptr;
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+
+  EXPECT_FALSE(result.detail.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineFinishedInfoWithUnrecognizedArgument) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  input->detail =
+      crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(false);
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+
+  EXPECT_FALSE(result.detail.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineFinishedInfoWithMemoryDetail) {
+  constexpr bool kHasPassed = true;
+  constexpr uint32_t kBytesTested = 42;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto detail = crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
+  detail->bytes_tested = kBytesTested;
+
+  auto memtester_result = crosapi::TelemetryDiagnosticMemtesterResult::New();
+  memtester_result->passed_items = {
+      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareDIV,
+      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareMUL};
+  memtester_result->failed_items = {
+      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareAND,
+      crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kCompareSUB};
+  detail->result = std::move(memtester_result);
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  input->detail =
+      crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(std::move(detail));
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+
+  ASSERT_TRUE(result.detail.has_value());
+  ASSERT_TRUE(result.detail->memory.has_value());
+
+  ASSERT_TRUE(result.detail->memory->bytes_tested.has_value());
+  EXPECT_EQ(*result.detail->memory->bytes_tested, kBytesTested);
+
+  ASSERT_TRUE(result.detail->memory->result.has_value());
+  EXPECT_THAT(
+      result.detail->memory->result->passed_items,
+      testing::ElementsAre(cx_diag::MemtesterTestItemEnum::kCompareDiv,
+                           cx_diag::MemtesterTestItemEnum::kCompareMul));
+  EXPECT_THAT(
+      result.detail->memory->result->failed_items,
+      testing::ElementsAre(cx_diag::MemtesterTestItemEnum::kCompareAnd,
+                           cx_diag::MemtesterTestItemEnum::kCompareSub));
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineFinishedInfoWithVolumeButtonDetail) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto detail = crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  input->detail = crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
+      std::move(detail));
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+
+  EXPECT_FALSE(result.detail.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticRoutineConvertersTest,
+     RoutineFinishedInfoWithFanDetail) {
+  constexpr bool kHasPassed = true;
+  const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
+
+  auto detail = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+  detail->passed_fan_ids = {0};
+  detail->failed_fan_ids = {1};
+  detail->fan_count_status =
+      crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+
+  auto input = crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+  input->detail =
+      crosapi::TelemetryDiagnosticRoutineDetail::NewFan(std::move(detail));
+
+  auto result = ConvertPtr(std::move(input), kUuid, kHasPassed);
+
+  ASSERT_TRUE(result.uuid.has_value());
+  EXPECT_EQ(*result.uuid, kUuid.AsLowercaseString());
+
+  ASSERT_TRUE(result.has_passed.has_value());
+  EXPECT_EQ(*result.has_passed, kHasPassed);
+
+  ASSERT_TRUE(result.detail.has_value());
+  ASSERT_TRUE(result.detail->fan.has_value());
+
+  ASSERT_TRUE(result.detail->fan->passed_fan_ids.has_value());
+  EXPECT_THAT(*result.detail->fan->passed_fan_ids, testing::ElementsAre(0));
+
+  ASSERT_TRUE(result.detail->fan->failed_fan_ids.has_value());
+  EXPECT_THAT(*result.detail->fan->failed_fan_ids, testing::ElementsAre(1));
+
+  EXPECT_THAT(result.detail->fan->fan_count_status,
+              cx_diag::HardwarePresenceStatus::kMatched);
 }
 
 TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, ExceptionReason) {

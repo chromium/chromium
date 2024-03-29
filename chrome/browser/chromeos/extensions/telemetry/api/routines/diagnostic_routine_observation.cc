@@ -25,7 +25,8 @@ namespace {
 namespace crosapi = ::crosapi::mojom;
 namespace cx_diag = api::os_diagnostics;
 
-std::unique_ptr<extensions::Event> CreateEventForFinishedVolumeButtonRoutine(
+std::unique_ptr<extensions::Event>
+CreateEventForLegacyFinishedVolumeButtonRoutine(
     bool has_passed,
     base::Uuid uuid,
     content::BrowserContext* browser_context) {
@@ -38,7 +39,7 @@ std::unique_ptr<extensions::Event> CreateEventForFinishedVolumeButtonRoutine(
       base::Value::List().Append(finished_info.ToValue()), browser_context);
 }
 
-std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
+std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
     crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
     base::Uuid uuid,
     content::BrowserContext* browser_context,
@@ -47,8 +48,8 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
   // The volume button routine has no detail.
   if (argument_tag_for_legacy_finished_events ==
       crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton) {
-    return CreateEventForFinishedVolumeButtonRoutine(finished->has_passed, uuid,
-                                                     browser_context);
+    return CreateEventForLegacyFinishedVolumeButtonRoutine(
+        finished->has_passed, uuid, browser_context);
   }
 
   switch (finished->detail->which()) {
@@ -83,6 +84,19 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
   NOTREACHED_NORETURN();
 }
 
+std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
+    crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
+    base::Uuid uuid,
+    content::BrowserContext* browser_context) {
+  bool has_passed = finished->has_passed;
+  auto finished_info =
+      converters::routines::ConvertPtr(std::move(finished), uuid, has_passed);
+  return std::make_unique<extensions::Event>(
+      extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_FINISHED,
+      cx_diag::OnRoutineFinished::kEventName,
+      base::Value::List().Append(finished_info.ToValue()), browser_context);
+}
+
 }  // namespace
 
 DiagnosticRoutineObservation::DiagnosticRoutineObservation(
@@ -99,6 +113,7 @@ DiagnosticRoutineObservation::~DiagnosticRoutineObservation() = default;
 void DiagnosticRoutineObservation::OnRoutineStateChange(
     crosapi::TelemetryDiagnosticRoutineStatePtr state) {
   std::unique_ptr<extensions::Event> event;
+  std::unique_ptr<extensions::Event> legacy_finished_event;
   switch (state->state_union->which()) {
     case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::
         kUnrecognizedArgument:
@@ -137,12 +152,13 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
       break;
     }
     case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kFinished: {
+      legacy_finished_event = GetEventForLegacyFinishedRoutine(
+          state->state_union->get_finished().Clone(), info_.uuid,
+          info_.browser_context, info_.argument_tag_for_legacy_finished_events);
       event = GetEventForFinishedRoutine(
           std::move(state->state_union->get_finished()), info_.uuid,
-          info_.browser_context, info_.argument_tag_for_legacy_finished_events);
-      if (!event) {
-        return;
-      }
+          info_.browser_context);
+      break;
     }
   }
 
@@ -152,6 +168,11 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
   } else {
     extensions::EventRouter::Get(info_.browser_context)
         ->DispatchEventToExtension(info_.extension_id, std::move(event));
+    if (legacy_finished_event) {
+      extensions::EventRouter::Get(info_.browser_context)
+          ->DispatchEventToExtension(info_.extension_id,
+                                     std::move(legacy_finished_event));
+    }
   }
 
   if (state->state_union->is_finished() && on_routine_finished_) {
