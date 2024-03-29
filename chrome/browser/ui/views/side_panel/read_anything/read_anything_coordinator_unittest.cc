@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -188,6 +189,43 @@ TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
 
   ActivePageDistillable();
   ActivePageNotDistillable();
+}
+
+TEST_F(ReadAnythingCoordinatorTest, WithWebUIFlagDisabled_ShowsViewsToolbar) {
+  ASSERT_STREQ("ReadAnythingContainerView",
+               CreateContainerView()->GetClassName());
+}
+
+class ReadAnythingCoordinatorWebUIToolbarTest : public TestWithBrowserView {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kReadAnythingWebUIToolbar}, {});
+    TestWithBrowserView::SetUp();
+
+    read_anything_coordinator_ =
+        ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+  }
+
+  void TearDown() override {
+    read_anything_coordinator_ = nullptr;
+    TestWithBrowserView::TearDown();
+  }
+
+  std::unique_ptr<views::View> CreateContainerView() {
+    return read_anything_coordinator_->CreateContainerView();
+  }
+
+ protected:
+  raw_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ReadAnythingCoordinatorWebUIToolbarTest,
+       WithWebUIFlagEnabled_ShowsWebUIToolbar) {
+  ASSERT_STREQ("ReadAnythingSidePanelWebView",
+               CreateContainerView()->GetClassName());
 }
 
 class ReadAnythingCoordinatorScreen2xDataCollectionModeTest

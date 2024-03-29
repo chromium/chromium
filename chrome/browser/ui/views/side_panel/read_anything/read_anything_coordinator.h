@@ -72,6 +72,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
   friend class ReadAnythingCoordinatorTest;
+  friend class ReadAnythingCoordinatorWebUIToolbarTest;
   friend class ReadAnythingCoordinatorScreen2xDataCollectionModeTest;
 
   void CreateAndRegisterEntriesForExistingWebContents(

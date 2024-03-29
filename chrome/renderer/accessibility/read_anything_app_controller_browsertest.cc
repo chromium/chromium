@@ -340,6 +340,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool IsReadAloudEnabled() { return controller_->IsReadAloudEnabled(); }
 
+  bool IsWebUIToolbarEnabled() { return controller_->IsWebUIToolbarEnabled(); }
+
   bool IsLeafNode(ui::AXNodeID ax_node_id) {
     return controller_->IsLeafNode(ax_node_id);
   }
@@ -400,6 +402,14 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 
   scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   EXPECT_TRUE(IsReadAloudEnabled());
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsWebUIToolbarEnabled) {
+  EXPECT_FALSE(IsWebUIToolbarEnabled());
+
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kReadAnythingWebUIToolbar);
+  EXPECT_TRUE(IsWebUIToolbarEnabled());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Theme) {

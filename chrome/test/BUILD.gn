@@ -5622,7 +5622,6 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
       "../browser/ui/webui/profile_helper_browsertest.cc",
-      "../browser/ui/webui/side_panel/read_anything/read_anything_app_views_toolbar_browsertest.cc",
       "../browser/upgrade_detector/get_installed_version_lacros_browsertest.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
       "../browser/web_applications/app_service/web_apps_chromeos_browsertest.cc",
