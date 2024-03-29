@@ -19,11 +19,16 @@
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(RTC_USE_H265)
+#include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
+#endif  // BUILDFLAG(RTC_USE_H265)
 
 namespace base {
 class SequencedTaskRunner;
@@ -79,6 +84,10 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
       WTF::CrossThreadOnceClosure error_callback_for_testing) {
     error_callback_for_testing_ = std::move(error_callback_for_testing);
   }
+#if BUILDFLAG(RTC_USE_H265)
+  void SetH265ParameterSetsTrackerForTesting(
+      std::unique_ptr<H265ParameterSetsTracker> tracker);
+#endif
 
  private:
   class Impl;

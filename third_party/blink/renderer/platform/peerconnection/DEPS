@@ -51,5 +51,9 @@ specific_include_rules = {
     ],
     "resolution_monitor_unittest.cc" : [
         "+media/filters/ivf_parser.h",
+    ],
+    "h265_parameter_sets_tracker_fuzzer.cc" : [
+        "+third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h",
+        "+third_party/blink/renderer/platform/testing/fuzzed_data_provider.h",
     ]
 }

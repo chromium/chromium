@@ -84,6 +84,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
+    "RTC_USE_H265=$rtc_use_h265",
     "ENABLE_RUST_CRASH=$enable_rust_crash",
     "USE_FONTATIONS_BACKEND=$use_typeface_fontations",
   ]
