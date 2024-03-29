@@ -104,11 +104,6 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   return self;
 }
 
-- (void)updatePrimaryActionButton {
-  UpdatePrimaryButton(_primaryButton, _didReachBottom,
-                      _selectedSearchEngineButton != nil);
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -427,6 +422,13 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
     _didReachBottom = YES;
     [self updatePrimaryActionButton];
   }
+}
+
+// Update the primary action button based on whether the user has scrolled to
+// the bottom and whether they have selected a row.
+- (void)updatePrimaryActionButton {
+  UpdatePrimaryButton(_primaryButton, _didReachBottom,
+                      _selectedSearchEngineButton != nil);
 }
 
 #pragma mark - UITextViewDelegate

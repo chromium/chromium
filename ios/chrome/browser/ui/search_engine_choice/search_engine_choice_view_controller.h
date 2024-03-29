@@ -37,10 +37,6 @@
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Update the primary action button based on whether the user has scrolled to
-// the bottom and whether they have selected a row.
-- (void)updatePrimaryActionButton;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
