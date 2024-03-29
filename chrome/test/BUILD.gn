@@ -3046,10 +3046,6 @@ if (!is_android) {
           "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
         ]
         deps += [ "../browser/enterprise/connectors/analysis:features" ]
-
-        if (is_chromeos) {
-          deps += [ "//chromeos/components/mgs:test_support" ]
-        }
       }
     }
 

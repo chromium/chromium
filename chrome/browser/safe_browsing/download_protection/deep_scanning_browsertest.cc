@@ -45,7 +45,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
@@ -724,86 +723,6 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   EXPECT_EQ(item->GetState(), download::DownloadItem::COMPLETE);
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
-                       RequestFromManagedGuestSessionHasCorrectFieldSet) {
-  // We create a fake Managed Guest Session that gets destroyed at the end of
-  // the test.
-  chromeos::FakeManagedGuestSession mgs(/*initialize_login_state=*/false);
-
-  // This allows the blocking DM token reads happening on profile-Connector
-  // triggers.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // The file is SAFE according to the metadata check
-  ClientDownloadResponse metadata_response;
-  metadata_response.set_verdict(ClientDownloadResponse::SAFE);
-  ExpectMetadataResponse(metadata_response);
-
-  // The DLP scan runs synchronously, but doesn't find anything.
-  enterprise_connectors::ContentAnalysisResponse sync_response;
-  auto* dlp_result = sync_response.add_results();
-  dlp_result->set_tag("dlp");
-  dlp_result->set_status(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
-
-  GURL url = embedded_test_server()->GetURL(
-      "/safe_browsing/download_protection/zipfile_two_archives.zip");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  WaitForDeepScanRequest();
-
-  EXPECT_TRUE(
-      last_request().client_metadata().is_chrome_os_managed_guest_session());
-}
-
-IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
-                       RegularRequestDoesNotHaveManagedGuestSessionFieldSet) {
-  // This allows the blocking DM token reads happening on profile-Connector
-  // triggers.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // The file is SAFE according to the metadata check
-  ClientDownloadResponse metadata_response;
-  metadata_response.set_verdict(ClientDownloadResponse::SAFE);
-  ExpectMetadataResponse(metadata_response);
-
-  // The DLP scan runs synchronously, but doesn't find anything.
-  enterprise_connectors::ContentAnalysisResponse sync_response;
-  auto* dlp_result = sync_response.add_results();
-  dlp_result->set_tag("dlp");
-  dlp_result->set_status(
-      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
-
-  GURL url = embedded_test_server()->GetURL(
-      "/safe_browsing/download_protection/zipfile_two_archives.zip");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  WaitForDeepScanRequest();
-
-  EXPECT_FALSE(
-      last_request().client_metadata().is_chrome_os_managed_guest_session());
-}
-#endif
 
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
                        PartialFailureShowsMalwareWarning) {

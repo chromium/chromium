@@ -164,7 +164,8 @@ std::unique_ptr<ClientMetadata> GetBasicClientMetadata() {
   if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     auto metadata = std::make_unique<ClientMetadata>();
 
-    metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
+    metadata->mutable_profile()->set_is_chrome_os_managed_guest_session(
+        IsManagedGuestSession());
     return metadata;
   } else {
     return nullptr;
@@ -610,7 +611,8 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
   }
 
   if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    metadata->set_is_chrome_os_managed_guest_session(IsManagedGuestSession());
+    metadata->mutable_profile()->set_is_chrome_os_managed_guest_session(
+        IsManagedGuestSession());
   }
 
   bool include_device_info =
