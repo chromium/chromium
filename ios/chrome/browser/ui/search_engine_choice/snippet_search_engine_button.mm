@@ -29,7 +29,7 @@ constexpr CGFloat kRadioButtonSize = 24.;
 // The size of the radio button image.
 constexpr CGFloat kRadioButtonImageSize = 20.;
 // Upper vertical margin for name label in the button.
-constexpr CGFloat kUpperVerticalMargin = 17.;
+constexpr CGFloat kUpperVerticalMargin = 10.;
 // Lower vertical margine for the snippet label in the button.
 constexpr CGFloat kLowerVerticalMargin = 10.;
 // Horizontal margin between elements in the button.
@@ -177,7 +177,7 @@ UILabel* SnippetLabel() {
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kBorderHorizontalMargin],
       [_faviconContainerView.centerYAnchor
-          constraintEqualToAnchor:_nameLabel.centerYAnchor],
+          constraintEqualToAnchor:self.centerYAnchor],
       [_faviconContainerView.widthAnchor
           constraintEqualToConstant:kFaviconContainerViewSize],
       [_faviconContainerView.heightAnchor
@@ -228,8 +228,7 @@ UILabel* SnippetLabel() {
       [_chevronButton.heightAnchor
           constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.widthAnchor constraintEqualToConstant:kChevronButtonSize],
-      [_chevronButton.centerYAnchor
-          constraintEqualToAnchor:_nameLabel.centerYAnchor],
+      [_chevronButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
       [_chevronButton.trailingAnchor
           constraintEqualToAnchor:verticalSeparator.leadingAnchor
                          constant:-kChevronButtonHorizontalMargin],
@@ -237,7 +236,7 @@ UILabel* SnippetLabel() {
       [verticalSeparator.heightAnchor
           constraintEqualToAnchor:_nameLabel.heightAnchor],
       [verticalSeparator.centerYAnchor
-          constraintEqualToAnchor:_nameLabel.centerYAnchor],
+          constraintEqualToAnchor:self.centerYAnchor],
       [verticalSeparator.widthAnchor
           constraintEqualToConstant:kSeparatorThickness],
       [verticalSeparator.trailingAnchor
@@ -245,7 +244,7 @@ UILabel* SnippetLabel() {
                          constant:-kInnerHorizontalMargin],
       // Radio button.
       [_radioButtonImageView.centerYAnchor
-          constraintEqualToAnchor:_nameLabel.centerYAnchor],
+          constraintEqualToAnchor:self.centerYAnchor],
       [_radioButtonImageView.widthAnchor
           constraintEqualToConstant:kRadioButtonSize],
       [_radioButtonImageView.heightAnchor
