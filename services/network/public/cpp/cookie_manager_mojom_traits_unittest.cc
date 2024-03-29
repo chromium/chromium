@@ -398,6 +398,33 @@ TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
   EXPECT_TRUE(copied.PartitionKey()->from_script());
 }
 
+TEST(CookieManagerTraitsTest, Roundtrips_AncestorChainBit) {
+  struct {
+    net::CookiePartitionKey key;
+    bool expected_third_party;
+  } cases[]{
+      {net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://toplevelsite.com"),
+           net::CookiePartitionKey::AncestorChainBit::kCrossSite),
+       true},
+      {net::CookiePartitionKey::FromURLForTesting(
+           GURL("https://toplevelsite.com"),
+           net::CookiePartitionKey::AncestorChainBit::kSameSite),
+       false},
+  };
+
+  for (auto tc : cases) {
+    net::CookiePartitionKey copied =
+        net::CookiePartitionKey::FromURLForTesting(GURL(""));
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKey>(
+        tc.key, copied));
+    // IsThirdParty() is used to access the value of the ancestor chain bit in
+    // net::CookiePartitionKey.
+    EXPECT_EQ(tc.key.IsThirdParty(), copied.IsThirdParty());
+    EXPECT_EQ(tc.key.IsThirdParty(), tc.expected_third_party);
+  };
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeyCollection) {
   {
     net::CookiePartitionKeyCollection original;

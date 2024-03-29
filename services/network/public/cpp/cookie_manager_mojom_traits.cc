@@ -623,13 +623,35 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   return true;
 }
 
-// TODO (crbug.com/326062384) Add cross-site ancestor chain bit field
-//  to this struct to match the addition of the cross-site
-//  ancestor chain bit in net/cookies/cookie_partition_key.cc.
+bool EnumTraits<network::mojom::AncestorChainBit,
+                net::CookiePartitionKey::AncestorChainBit>::
+    FromMojom(network::mojom::AncestorChainBit input) {
+  switch (input) {
+    case network::mojom::AncestorChainBit::kSameSite:
+      return false;
+    case network::mojom::AncestorChainBit::kCrossSite:
+      return true;
+  }
+  NOTREACHED();
+  return true;
+}
+
+network::mojom::AncestorChainBit EnumTraits<
+    network::mojom::AncestorChainBit,
+    net::CookiePartitionKey::AncestorChainBit>::ToMojom(bool cross_site) {
+  return cross_site ? network::mojom::AncestorChainBit::kCrossSite
+                    : network::mojom::AncestorChainBit::kSameSite;
+}
+
 bool StructTraits<network::mojom::CookiePartitionKeyDataView,
                   net::CookiePartitionKey>::
     Read(network::mojom::CookiePartitionKeyDataView partition_key,
          net::CookiePartitionKey* out) {
+  bool has_cross_site_ancestor =
+      EnumTraits<network::mojom::AncestorChainBit,
+                 net::CookiePartitionKey::AncestorChainBit>::
+          FromMojom(partition_key.ancestor_chain_bit());
+
   if (partition_key.from_script()) {
     *out = net::CookiePartitionKey::FromScript().value();
     return true;
@@ -641,8 +663,11 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   std::optional<base::UnguessableToken> nonce;
   if (!partition_key.ReadNonce(&nonce))
     return false;
+
   *out = net::CookiePartitionKey::FromWire(
-      site, net::CookiePartitionKey::AncestorChainBit::kCrossSite, nonce);
+      site,
+      net::CookiePartitionKey::BoolToAncestorChainBit(has_cross_site_ancestor),
+      nonce);
   return true;
 }
 

@@ -206,6 +206,13 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
 };
 
 template <>
+struct EnumTraits<network::mojom::AncestorChainBit,
+                  net::CookiePartitionKey::AncestorChainBit> {
+  static network::mojom::AncestorChainBit ToMojom(bool input);
+  static bool FromMojom(network::mojom::AncestorChainBit input);
+};
+
+template <>
 struct StructTraits<network::mojom::CookiePartitionKeyDataView,
                     net::CookiePartitionKey> {
   static const net::SchemefulSite& site(const net::CookiePartitionKey& cpk) {
@@ -218,6 +225,13 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
   static const std::optional<base::UnguessableToken>& nonce(
       const net::CookiePartitionKey& cpk) {
     return cpk.nonce();
+  }
+
+  static network::mojom::AncestorChainBit ancestor_chain_bit(
+      const net::CookiePartitionKey& cpk) {
+    return EnumTraits<
+        network::mojom::AncestorChainBit,
+        net::CookiePartitionKey::AncestorChainBit>::ToMojom(cpk.IsThirdParty());
   }
 
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,

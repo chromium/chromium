@@ -7,6 +7,18 @@ module network.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
+  // An enumerated value representing whether any frame in the PartitionKey's
+  // ancestor chain (including the top-level document's site) is cross-site with
+  // the current frame. These values are persisted to disk. Entries should not
+  // be renumbered and numeric values should never be reused.
+  enum AncestorChainBit {
+    // All frames in the ancestor chain are pairwise same-site.
+    kSameSite = 0,
+    // At least one frame in the ancestor chain is cross-site with
+    // the current frame.
+    kCrossSite = 1,
+  };
+
 struct CookiePartitionKey {
   SchemefulSite site;
 
@@ -16,6 +28,8 @@ struct CookiePartitionKey {
   bool from_script = false;
 
   mojo_base.mojom.UnguessableToken? nonce;
+
+  AncestorChainBit ancestor_chain_bit = AncestorChainBit.kCrossSite;
 };
 
 struct CookiePartitionKeyCollection {

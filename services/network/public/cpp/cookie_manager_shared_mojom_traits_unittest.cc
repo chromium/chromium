@@ -30,6 +30,28 @@ TEST(CookieManagerSharedMojomTraitsTest, SerializeAndDeserialize) {
   }
 }
 
+TEST(CookieManagerSharedMojomTraitsTest,
+     SerializeAndDeserializeCookiePartitionKey) {
+  std::vector<net::CookiePartitionKey> keys = {
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://origin.com")),
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://origin.com"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()),
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://origin.com"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite),
+  };
+  for (auto key : keys) {
+    net::CookiePartitionKey copied =
+        net::CookiePartitionKey::FromURLForTesting(GURL(""));
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<network::mojom::CookiePartitionKey>(
+            key, copied));
+    EXPECT_EQ(key, copied);
+  }
+}
+
 TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieInclusionStatus) {
   // This status + warning combo doesn't really make sense. It's just an
   // arbitrary selection of values to test the serialization/deserialization.
