@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "aida_client.h"
@@ -540,7 +541,7 @@ class DevToolsUIBindings::NetworkResourceLoader
     response_headers_ = response_head.headers;
   }
 
-  void OnDataReceived(base::StringPiece chunk,
+  void OnDataReceived(std::string_view chunk,
                       base::OnceClosure resume) override {
     base::Value chunkValue;
 
@@ -801,8 +802,8 @@ void DevToolsUIBindings::DispatchProtocolMessage(
   if (!frontend_host_)
     return;
 
-  base::StringPiece message_sp(reinterpret_cast<const char*>(message.data()),
-                               message.size());
+  std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
+                              message.size());
   if (message_sp.length() < kMaxMessageChunkSize) {
     CallClientMethod("DevToolsAPI", "dispatchMessage", base::Value(message_sp));
     return;

@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 
 #include <map>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -471,7 +472,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ParseBrowserInfo(
   }
   const std::string* browser_name = value_dict->FindString("Browser");
   if (browser_name) {
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+    std::vector<std::string_view> parts = base::SplitStringPiece(
         *browser_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (parts.size() == 2) {
       browser->version_ = parts[1];
@@ -591,7 +592,7 @@ std::string DevToolsDeviceDiscovery::RemoteBrowser::GetId() {
 DevToolsDeviceDiscovery::RemoteBrowser::ParsedVersion
 DevToolsDeviceDiscovery::RemoteBrowser::GetParsedVersion() {
   ParsedVersion result;
-  for (const base::StringPiece& part : base::SplitStringPiece(
+  for (std::string_view part : base::SplitStringPiece(
            version_, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     int value = 0;
     base::StringToInt(part, &value);

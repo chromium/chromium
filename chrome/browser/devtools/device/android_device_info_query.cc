@@ -4,9 +4,10 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -123,9 +124,8 @@ void MapProcessesToPackages(const std::string& response,
   //
   // USER PID PPID VSIZE RSS WCHAN PC ? NAME
   //
-  for (const base::StringPiece& line :
-       base::SplitStringPiece(response, "\n", base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
+  for (std::string_view line : base::SplitStringPiece(
+           response, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> fields =
         base::SplitString(line, " \r", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -148,9 +148,8 @@ StringMap MapSocketsToProcesses(const std::string& response) {
   // We need to find records with paths starting from '@' (abstract socket)
   // and containing the channel pattern ("_devtools_remote").
   StringMap socket_to_pid;
-  for (const base::StringPiece& line :
-       base::SplitStringPiece(response, "\n", base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
+  for (std::string_view line : base::SplitStringPiece(
+           response, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> fields =
         base::SplitString(line, " \r", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
@@ -178,16 +177,15 @@ StringMap MapSocketsToProcesses(const std::string& response) {
   return socket_to_pid;
 }
 
-gfx::Size ParseScreenSize(base::StringPiece str) {
-  std::vector<base::StringPiece> pairs =
-      base::SplitStringPiece(str, "-", base::KEEP_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
+gfx::Size ParseScreenSize(std::string_view str) {
+  std::vector<std::string_view> pairs = base::SplitStringPiece(
+      str, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (pairs.size() != 2)
     return gfx::Size();
 
   int width;
   int height;
-  std::vector<base::StringPiece> numbers =
+  std::vector<std::string_view> numbers =
       base::SplitStringPiece(pairs[1].substr(1, pairs[1].size() - 2), ",",
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (numbers.size() != 2 ||
@@ -199,9 +197,8 @@ gfx::Size ParseScreenSize(base::StringPiece str) {
 }
 
 gfx::Size ParseWindowPolicyResponse(const std::string& response) {
-  for (const base::StringPiece& line :
-      base::SplitStringPiece(response, "\r", base::KEEP_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY)) {
+  for (std::string_view line : base::SplitStringPiece(
+           response, "\r", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     size_t pos = line.find(kScreenSizePrefix);
     if (pos != base::StringPiece::npos) {
       return ParseScreenSize(
@@ -221,12 +218,11 @@ StringMap MapIdsToUsers(const std::string& response) {
   //     Created: +3d4h35m1s139ms ago
   //     Last logged in: +17m26s287ms ago
   StringMap id_to_username;
-  for (const base::StringPiece& line :
-       base::SplitStringPiece(response, "\r", base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
+  for (std::string_view line : base::SplitStringPiece(
+           response, "\r", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     size_t pos = line.find(kUserInfoPrefix);
     if (pos != std::string::npos) {
-      base::StringPiece fields = line.substr(pos + strlen(kUserInfoPrefix));
+      std::string_view fields = line.substr(pos + strlen(kUserInfoPrefix));
       size_t first_pos = fields.find_first_of(":");
       size_t last_pos = fields.find_last_of(":");
       if (first_pos != std::string::npos && last_pos != std::string::npos) {

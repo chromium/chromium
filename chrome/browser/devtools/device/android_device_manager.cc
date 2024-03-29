@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -189,7 +190,7 @@ class HttpRequest {
     std::string crlf = "\r\n";
     std::string colon = ": ";
 
-    std::vector<base::StringPiece> pieces = {requestLine, crlf};
+    std::vector<std::string_view> pieces = {requestLine, crlf};
     for (const auto& header_and_value : headers) {
       pieces.insert(pieces.end(), {header_and_value.first, colon,
                                    header_and_value.second, crlf});
@@ -240,7 +241,7 @@ class HttpRequest {
           header_size += 4;
           headers = base::MakeRefCounted<net::HttpResponseHeaders>(
               net::HttpUtil::AssembleRawHeaders(
-                  base::StringPiece(response_.data(), header_size)));
+                  std::string_view(response_.data(), header_size)));
 
           int expected_body_size = 0;
 

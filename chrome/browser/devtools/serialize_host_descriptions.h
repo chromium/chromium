@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_DEVTOOLS_SERIALIZE_HOST_DESCRIPTIONS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 // DevToolsAgentHost description to be serialized by SerializeHostDescriptions.
@@ -24,6 +24,6 @@ struct HostDescriptionNode {
 // injected into a list keyed |child_key| in the parent's dictionary.
 base::Value::List SerializeHostDescriptions(
     std::vector<HostDescriptionNode> hosts,
-    base::StringPiece child_key);
+    std::string_view child_key);
 
 #endif  // CHROME_BROWSER_DEVTOOLS_SERIALIZE_HOST_DESCRIPTIONS_H_

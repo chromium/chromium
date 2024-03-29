@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "aida_client.h"
@@ -1800,7 +1801,7 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
     decoded.push_back(std::move(temp));
   }
 
-  std::vector<base::StringPiece> cert_string_piece;
+  std::vector<std::string_view> cert_string_piece;
   for (const auto& str : decoded)
     cert_string_piece.push_back(str);
   scoped_refptr<net::X509Certificate> cert =

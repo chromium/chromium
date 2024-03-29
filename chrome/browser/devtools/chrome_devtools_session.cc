@@ -5,7 +5,9 @@
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 
 #include <memory>
+#include <string_view>
 #include <type_traits>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
@@ -104,7 +106,7 @@ ChromeDevToolsSession::ChromeDevToolsSession(
 ChromeDevToolsSession::~ChromeDevToolsSession() = default;
 
 base::HistogramBase::Sample GetCommandUmaId(
-    const base::StringPiece command_name) {
+    const std::string_view command_name) {
   return static_cast<base::HistogramBase::Sample>(
       base::HashMetricName(command_name));
 }
@@ -117,7 +119,7 @@ void ChromeDevToolsSession::HandleCommand(
   crdtp::UberDispatcher::DispatchResult dispatched =
       dispatcher_.Dispatch(dispatchable);
 
-  auto command_uma_id = GetCommandUmaId(base::StringPiece(
+  auto command_uma_id = GetCommandUmaId(std::string_view(
       reinterpret_cast<const char*>(dispatchable.Method().begin()),
       dispatchable.Method().size()));
   std::string client_type = client_channel_->GetClient()->GetTypeForMetrics();
