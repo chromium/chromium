@@ -10448,6 +10448,29 @@
             ]
         }
     ],
+    "LCPPMultipleKey": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "lcpp_multiple_key_max_path_length": "15"
+                    },
+                    "enable_features": [
+                        "LCPPMultipleKey"
+                    ]
+                }
+            ]
+        }
+    ],
     "LCPTimingPredictorPrerender2": [
         {
             "platforms": [
