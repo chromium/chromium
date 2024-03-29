@@ -31,7 +31,6 @@ ScopedOSInfoOverride::UniqueOsInfo ScopedOSInfoOverride::CreateInfoOfType(
   switch (type) {
     case Type::kWin11Pro:
     case Type::kWin11Home:
-    case Type::kWin11HomeN:
       version_info.dwMajorVersion = 10;
       version_info.dwMinorVersion = 0;
       version_info.dwBuildNumber = 22000;
@@ -45,9 +44,8 @@ ScopedOSInfoOverride::UniqueOsInfo ScopedOSInfoOverride::CreateInfoOfType(
       system_info.dwNumberOfProcessors = 1;
       system_info.dwAllocationGranularity = 8;
 
-      os_type = type == Type::kWin11Home    ? PRODUCT_HOME_BASIC
-                : type == Type::kWin11HomeN ? PRODUCT_HOME_BASIC_N
-                                            : PRODUCT_PROFESSIONAL;
+      os_type =
+          type == Type::kWin11Home ? PRODUCT_HOME_BASIC : PRODUCT_PROFESSIONAL;
       break;
     case Type::kWinServer2022:
       version_info.dwMajorVersion = 10;
