@@ -13,6 +13,9 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 
 InternalInputDevicesEventBlocker::InternalInputDevicesEventBlocker() {

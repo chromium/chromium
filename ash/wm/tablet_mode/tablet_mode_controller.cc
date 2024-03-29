@@ -59,6 +59,9 @@
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 
 namespace {
