@@ -35,7 +35,7 @@ std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile);
-  const std::vector<std::unique_ptr<TemplateURL>> choices =
+  const TemplateURL::TemplateURLVector choices =
       search_engine_choice_dialog_service->GetSearchEngines();
 
   for (const auto& choice : choices) {

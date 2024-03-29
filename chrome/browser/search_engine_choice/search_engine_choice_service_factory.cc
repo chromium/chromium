@@ -10,24 +10,19 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_process.h"
 #include "components/variations/service/variations_service.h"
-#endif
 
 namespace search_engines {
 namespace {
 std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
     content::BrowserContext* context) {
   int variations_country_id = country_codes::kCountryIDUnknown;
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   if (g_browser_process->variations_service()) {
     variations_country_id =
         country_codes::CountryStringToCountryID(base::ToUpperASCII(
             g_browser_process->variations_service()->GetLatestCountry()));
   }
-#endif
 
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
   return std::make_unique<SearchEngineChoiceService>(*profile.GetPrefs(),

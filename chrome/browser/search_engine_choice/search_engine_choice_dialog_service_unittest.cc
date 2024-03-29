@@ -111,6 +111,21 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
     return std::make_unique<DialogTestBrowserWindow>();
   }
 
+  SearchEngineChoiceDialogService* GetSearchEngineChoiceDialogService(
+      bool force_fetch_search_engines = false) {
+    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+        SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+
+    if (force_fetch_search_engines) {
+      CHECK(search_engine_choice_dialog_service);
+
+      // Fetch the search engines to load the choice screen data in the service.
+      search_engine_choice_dialog_service->GetSearchEngines();
+    }
+
+    return search_engine_choice_dialog_service;
+  }
+
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
@@ -160,7 +175,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_F(SearchEngineChoiceDialogServiceTest, HandleLearnMoreLinkClicked) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+      GetSearchEngineChoiceDialogService();
 
   search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
@@ -187,7 +202,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, HandleLearnMoreLinkClicked) {
 
 TEST_F(SearchEngineChoiceDialogServiceTest, CanShowDialog) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+      GetSearchEngineChoiceDialogService();
   ASSERT_TRUE(search_engine_choice_dialog_service);
 
   // The `DialogTestBrowserWindow` reports a {0,0} size window.
@@ -201,7 +216,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, CanShowDialog) {
 
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyDialogOpened) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+      GetSearchEngineChoiceDialogService();
   ASSERT_TRUE(search_engine_choice_dialog_service);
 
   search_engine_choice_dialog_service->NotifyDialogOpened(browser(),
@@ -217,8 +232,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyDialogOpened) {
 
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-  ASSERT_TRUE(search_engine_choice_dialog_service);
+      GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
 
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
@@ -260,8 +274,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Unknown) {
           std::make_unique<TemplateURL>(template_url_data)));
 
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-  ASSERT_TRUE(search_engine_choice_dialog_service);
+      GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
 
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::kMaxPrepopulatedEngineID + 1,
@@ -280,7 +293,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Unknown) {
 TEST_F(SearchEngineChoiceDialogServiceTest,
        DoNotDisplayDialogIfPolicyIsSetDynamically) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+      GetSearchEngineChoiceDialogService();
   ASSERT_TRUE(search_engine_choice_dialog_service);
 
   SetUserSelectedDefaultSearchProvider(
@@ -295,7 +308,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {
       /*created_by_policy=*/true);
 
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+      GetSearchEngineChoiceDialogService();
   EXPECT_FALSE(search_engine_choice_dialog_service);
 }
 
@@ -396,7 +409,7 @@ TEST_P(SearchEngineListCountryOverrideParametrizedTest,
 TEST_F(SearchEngineChoiceDialogServiceTest,
        ServiceNotInitializedInChromeForTesting) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+      GetSearchEngineChoiceDialogService();
   ASSERT_EQ(search_engine_choice_dialog_service, nullptr);
 }
 #endif

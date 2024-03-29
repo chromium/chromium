@@ -816,6 +816,34 @@ TemplateURLService::GetTemplateURLsForChoiceScreen() {
   return result;
 }
 
+std::unique_ptr<search_engines::ChoiceScreenData>
+TemplateURLService::GetChoiceScreenData() {
+  OwnedTemplateURLVector owned_template_urls;
+  bool was_current_default_inserted = false;
+
+  // We call `GetPrepopulatedEngines` instead of
+  // `GetSearchProvidersUsingLoadedEngines` because the latter will return the
+  // list of search engines that might have been modified by the user (by
+  // changing the engine's keyword in settings for example).
+  // Changing this will cause issues in the icon generation behavior that's
+  // handled by `generate_search_engine_icons.py`.
+  std::vector<std::unique_ptr<TemplateURLData>> engines =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          prefs_, search_engine_choice_service_,
+          /*default_search_provider_index=*/nullptr,
+          /*include_current_default=*/true, /*template_url_service=*/this,
+          /*was_current_default_inserted=*/&was_current_default_inserted);
+  for (const auto& engine : engines) {
+    owned_template_urls.push_back(std::make_unique<TemplateURL>(*engine));
+  }
+
+  return std::make_unique<search_engines::ChoiceScreenData>(
+      std::move(owned_template_urls),
+      search_engine_choice_service_->GetCountryId(),
+      /*list_is_modified_by_current_default=*/was_current_default_inserted,
+      search_terms_data());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TemplateURLService::OwnedTemplateURLDataVector
 TemplateURLService::GetTemplateURLsForCountry(const std::string& country_code) {

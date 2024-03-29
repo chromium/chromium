@@ -10893,6 +10893,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/constrained_window",
       "//components/content_settings/browser",
       "//components/content_settings/core/test:test_support",
+      "//components/country_codes",
       "//components/custom_handlers",
       "//components/embedder_support",
       "//components/enterprise:test_support",

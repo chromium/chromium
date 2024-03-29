@@ -217,6 +217,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}"
+    enum="OmniboxSearchEngineType" expires_after="2024-08-04">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    With its other per-index variants, records information about the positions
+    of all search engines on the choice screen. Specifically, this one records
+    that a given search engine was shown at index {Index} of the choice screen.
+
+    This set of histograms is recorded at the moment a choice is made, which is
+    expected to happen at most once per profile. To avoid adversely impacting
+    pseudonymity property of UMA logs, this will not be logged if the country
+    associated with the current metrics session does not match the country used
+    to determine the list of options to show on the screen.
+
+    This metric is inteded to be consumed via raw histogram analysis instead of
+    via the UMA dashboard. See
+    http://go/chrome-choice-screen-positions-histogram-design for more info.
+  </summary>
+  <token key="Index">
+    <variant name="0" summary="0"/>
+    <variant name="1" summary="1"/>
+    <variant name="2" summary="2"/>
+    <variant name="3" summary="3"/>
+    <variant name="4" summary="4"/>
+    <variant name="5" summary="5"/>
+    <variant name="6" summary="6"/>
+    <variant name="7" summary="7"/>
+  </token>
+</histogram>
+
 <histogram name="Search.ChoiceWipeReason" enum="SearchEngineChoiceWipeReason"
     expires_after="2024-11-30">
   <owner>droger@chromium.org</owner>

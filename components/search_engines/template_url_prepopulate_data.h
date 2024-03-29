@@ -34,6 +34,9 @@ extern const int kMaxPrepopulatedEngineID;
 
 // The maximum number of prepopulated search engines that can be returned in
 // any of the EEA countries by `GetPrepopulatedEngines()`.
+//
+// Note: If this is increased, please also increase the declared variant count
+// for the `Search.ChoiceScreenShowedEngineAt.Index{Index}` histogram.
 inline constexpr size_t kMaxEeaPrepopulatedEngines = 8;
 
 // The maximum number of prepopulated search engines that can be returned in
@@ -55,12 +58,15 @@ int GetDataVersion(PrefService* prefs);
 // `include_current_default` should be true and `template_url_service` should be
 // non-null if we want the current default search engine to be present at the
 // top of the returned list if it's not already there.
+// If `was_current_default_inserted` is provided, it will be updated to reflect
+// whether `include_current_default` had an effect on the output.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     size_t* default_search_provider_index,
     bool include_current_default = false,
-    TemplateURLService* template_url_service = nullptr);
+    TemplateURLService* template_url_service = nullptr,
+    bool* was_current_default_inserted = nullptr);
 
 // Returns the prepopulated search engine with the given |prepopulated_id|
 // from the profile country's known prepopulated search engines, or `nullptr`

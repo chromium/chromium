@@ -7,13 +7,15 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
-#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -22,8 +24,10 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/eea_countries_ids.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -56,6 +60,9 @@ const char kSearchEngineChoiceScreenEventsHistogram[] =
 const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
     "Search.ChoiceScreenDefaultSearchEngineType";
 
+const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[] =
+    "Search.ChoiceScreenShowedEngineAt.Index%d";
+
 const char kSearchEngineChoiceWipeReasonHistogram[] = "Search.ChoiceWipeReason";
 
 const char kSearchEngineChoiceRepromptHistogram[] = "Search.ChoiceReprompt";
@@ -71,6 +78,34 @@ const char kSearchEngineChoiceUnexpectedIdHistogram[] =
 
 const char kSearchEngineChoiceIsDefaultProviderAddedToChoicesHistogram[] =
     "Search.ChoiceDebug.IsDefaultProviderAddedToChoices";
+
+ChoiceScreenDisplayState::ChoiceScreenDisplayState(
+    std::vector<SearchEngineType> search_engines,
+    int country_id,
+    bool list_is_modified_by_current_default)
+    : search_engines(std::move(search_engines)),
+      country_id(country_id),
+      list_is_modified_by_current_default(list_is_modified_by_current_default) {
+}
+
+ChoiceScreenDisplayState::~ChoiceScreenDisplayState() = default;
+
+ChoiceScreenData::ChoiceScreenData(
+    TemplateURL::OwnedTemplateURLVector owned_template_urls,
+    int country_id,
+    bool list_is_modified_by_current_default,
+    const SearchTermsData& search_terms_data)
+    : search_engines_(std::move(owned_template_urls)),
+      display_state_(ChoiceScreenDisplayState(
+          base::ToVector(
+              search_engines_,
+              [&search_terms_data](const std::unique_ptr<TemplateURL>& t_url) {
+                return t_url->GetEngineType(search_terms_data);
+              }),
+          country_id,
+          list_is_modified_by_current_default)) {}
+
+ChoiceScreenData::~ChoiceScreenData() = default;
 
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
@@ -122,6 +157,19 @@ void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram, engine_type,
       SEARCH_ENGINE_MAX);
+}
+
+void RecordChoiceScreenPositions(
+    const std::vector<SearchEngineType>& displayed_search_engines) {
+  for (int i = 0; i < static_cast<int>(displayed_search_engines.size()); ++i) {
+    // Using `UmaHistogramSparse()` instead of `UmaHistogramEnumeration()` as
+    // it is more space efficient when logging just one value (in most cases)
+    // for each index.
+    base::UmaHistogramSparse(
+        base::StringPrintf(
+            kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, i),
+        displayed_search_engines[i]);
+  }
 }
 
 void RecordUnexpectedSearchProvider(const TemplateURLData& data) {

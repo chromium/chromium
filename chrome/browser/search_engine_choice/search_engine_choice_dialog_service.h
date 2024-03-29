@@ -24,6 +24,7 @@ class Browser;
 
 namespace search_engines {
 
+class ChoiceScreenData;
 enum class SearchEngineChoiceScreenConditions;
 
 // Profile specific data related to the search engine choice.
@@ -109,7 +110,7 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // ones and will not be affected by changes in search engine details from the
   // settings page.
   // Virtual to be able to mock in tests.
-  virtual std::vector<std::unique_ptr<TemplateURL>> GetSearchEngines();
+  virtual TemplateURL::TemplateURLVector GetSearchEngines();
 
   // Disables the display of the Search Engine Choice dialog for testing. When
   // `dialog_disabled` is true, `CanShowDialog` will return false.
@@ -157,6 +158,11 @@ class SearchEngineChoiceDialogService : public KeyedService {
 
   // To know whether the choice was made during the Profile Picker or not.
   bool choice_made_in_profile_picker_ = false;
+
+  // Caches data backing the choice screens, shared across all of the choice
+  // screens dialogs shown by this profile.
+  // It gets lazily populated the first time something tries to get it.
+  std::unique_ptr<search_engines::ChoiceScreenData> choice_screen_data_;
 
   // The `KeyedService` lifetime is expected to exceed the profile's.
   const raw_ref<Profile> profile_;

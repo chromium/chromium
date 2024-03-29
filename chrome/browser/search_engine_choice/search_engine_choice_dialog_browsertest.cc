@@ -496,8 +496,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
   // Choose the first search engine to close the dialog.
-  std::unique_ptr<TemplateURL> first_search_engine =
-      std::move(service->GetSearchEngines().at(0));
+  TemplateURL* first_search_engine = service->GetSearchEngines().at(0);
   service->NotifyChoiceMade(first_search_engine->prepopulate_id(),
                             EntryPoint::kDialog);
 }

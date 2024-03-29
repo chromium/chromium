@@ -53,6 +53,7 @@ class TemplateUrlServiceAndroid;
 
 namespace search_engines {
 class SearchEngineChoiceService;
+class ChoiceScreenData;
 }
 
 namespace syncer {
@@ -286,9 +287,14 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns the list of prepopulated template URLs for the current country
   // shuffled for display in a search engine choice screen.
-  // TODO (b/282656014): Update the returned list of search engines to comply
-  // with choice screen requirements.
+  // DEPRECATED: Prefer using `GetChoiceScreenData()`.
+  // TODO(crbug.com/325015554): Remove iOS usage.
   OwnedTemplateURLVector GetTemplateURLsForChoiceScreen();
+
+  // Returns key information needed to show a search engine choice screen, like
+  // the template URLs for the engines to show. See
+  // `search_engines::ChoiceScreenData` for more details.
+  std::unique_ptr<search_engines::ChoiceScreenData> GetChoiceScreenData();
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the list prepopulated template URLs for `country_code`.

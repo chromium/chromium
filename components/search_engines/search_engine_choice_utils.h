@@ -6,14 +6,17 @@
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/template_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class PrefService;
+class SearchTermsData;
 struct TemplateURLData;
 
 namespace search_engines {
@@ -22,6 +25,7 @@ extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
 extern const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[];
+extern const char kSearchEngineChoiceScreenShowedEngineAtHistogramPattern[];
 extern const char kSearchEngineChoiceWipeReasonHistogram[];
 extern const char kSearchEngineChoiceRepromptHistogram[];
 extern const char kSearchEngineChoiceRepromptWildcardHistogram[];
@@ -141,6 +145,60 @@ enum class RepromptResult {
   kMaxValue = kRecentChoice,
 };
 
+struct ChoiceScreenDisplayState {
+ public:
+  ChoiceScreenDisplayState(std::vector<SearchEngineType> search_engines,
+                           int country_id,
+                           bool list_is_modified_by_current_default);
+  ~ChoiceScreenDisplayState();
+
+  // `SearchEngineType`s of the search engines displayed on the choice screen,
+  // listed in an order matching their display order.
+  // Note that the screen shows items from a list specific for each EEA
+  // country, and these items are randomized before they are presented.
+  const std::vector<SearchEngineType> search_engines;
+
+  // The country used when generating the list. It should be the country
+  // used to determine the set of search engines to show for the current
+  // profile.
+  const int country_id;
+
+  // Whether the current default search engine was inserted in the list or
+  // affected it in another way. It indicates that we are in some sub-optimal
+  // and not fully supported state. Ideally the choice screen should not have
+  // been triggered at all.
+  const bool list_is_modified_by_current_default;
+};
+
+// Contains basic information about the search engine choice screen, notably
+// the list of actual search engines to show, and other metadata associated
+// with how it was determined.
+class ChoiceScreenData {
+ public:
+  ChoiceScreenData(TemplateURL::OwnedTemplateURLVector owned_template_urls,
+                   int country_id,
+                   bool list_is_modified_by_current_default,
+                   const SearchTermsData& search_terms_data);
+
+  ChoiceScreenData(const ChoiceScreenData&) = delete;
+  ChoiceScreenData& operator=(const ChoiceScreenData&) = delete;
+
+  ~ChoiceScreenData();
+
+  const TemplateURL::OwnedTemplateURLVector& search_engines() const {
+    return search_engines_;
+  }
+
+  const ChoiceScreenDisplayState& display_state() const {
+    return display_state_;
+  }
+
+ private:
+  const TemplateURL::OwnedTemplateURLVector search_engines_;
+
+  const ChoiceScreenDisplayState display_state_;
+};
+
 // The state of the search engine choice country command line override.
 enum class SearchEngineCountryListOverride {
   // Display all the search engines used in the EEA region.
@@ -181,6 +239,15 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
 // Records the type of the default search engine that was chosen by the user
 // in the search engine choice screen or in the settings page.
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type);
+
+// Records the positions of search engines in a choice screen. Intended to be
+// recorded when a choice happens, so that we emit it at most once per choice
+// "scope". For more info, please see
+// http://go/chrome-choice-screen-positions-histogram-design (Google-internal).
+// Don't call this directly. Instead, go through
+// `SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState()`.
+void RecordChoiceScreenPositions(
+    const std::vector<SearchEngineType>& displayed_search_engines);
 
 // For debugging purposes, record the ID of the current default search engine
 // that does not exist in the prepopulated search providers data.

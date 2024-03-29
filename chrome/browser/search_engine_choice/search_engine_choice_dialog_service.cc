@@ -174,6 +174,8 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
       break;
   }
   search_engines::RecordChoiceScreenEvent(event);
+  search_engine_choice_service_->MaybeRecordChoiceScreenDisplayState(
+      choice_screen_data_->display_state());
 }
 
 void SearchEngineChoiceDialogService::NotifyDialogOpened(
@@ -263,9 +265,18 @@ bool SearchEngineChoiceDialogService::IsShowingDialog(Browser* browser) {
   return base::Contains(browsers_with_open_dialogs_, browser);
 }
 
-std::vector<std::unique_ptr<TemplateURL>>
+TemplateURL::TemplateURLVector
 SearchEngineChoiceDialogService::GetSearchEngines() {
-  return template_url_service_->GetTemplateURLsForChoiceScreen();
+  if (!choice_screen_data_) {
+    choice_screen_data_ = template_url_service_->GetChoiceScreenData();
+  }
+
+  TemplateURLService::TemplateURLVector result;
+  for (const auto& turl : choice_screen_data_->search_engines()) {
+    result.push_back(turl.get());
+  }
+
+  return result;
 }
 
 search_engines::SearchEngineChoiceScreenConditions

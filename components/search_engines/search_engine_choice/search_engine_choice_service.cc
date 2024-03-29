@@ -148,6 +148,7 @@ SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
                                                      int variations_country_id)
     : profile_prefs_(profile_prefs),
       variations_country_id_(variations_country_id) {
+  // TODO(crbug.com/325015554): If there are cached logs, try to send them now.
   PreprocessPrefsForReprompt();
 }
 
@@ -342,6 +343,44 @@ void SearchEngineChoiceService::RecordChoiceMade(
     DVLOG(1) << "Choice made, removing profile tag.";
     profile_prefs_->ClearPref(prefs::kDefaultSearchProviderChoicePending);
   }
+}
+
+void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
+    const ChoiceScreenDisplayState& display_state) const {
+  if (!CanLogChoiceScreenDisplayState(display_state)) {
+    // TODO(crbug.com/325015554): Persist the display state for a limited time,
+    // maybe we would be able to send it later.
+    return;
+  }
+
+  RecordChoiceScreenPositions(display_state.search_engines);
+}
+
+bool SearchEngineChoiceService::CanLogChoiceScreenDisplayState(
+    const ChoiceScreenDisplayState& display_state) const {
+  if (display_state.list_is_modified_by_current_default) {
+    // This typically indicates that we have an extra search engine added to the
+    // usual ones. This should be very rare (see histogram data from
+    // `RecordIsDefaultProviderAddedToChoices()`) and might point to some corner
+    // case we might have not handled correctly. To avoid messing up the main
+    // metrics, we don't record positions here.
+    return false;
+  }
+
+  if (!IsEeaChoiceCountry(display_state.country_id)) {
+    // Tests or command line can force this, but we want to avoid polluting the
+    // sparse histograms with unwanted country data.
+    return false;
+  }
+
+  if (display_state.country_id != variations_country_id_) {
+    // Not recording if adding this data, which can be used as a proxy for the
+    // profile country, would add new hard to control location info to a logs
+    // session.
+    return false;
+  }
+
+  return true;
 }
 
 void SearchEngineChoiceService::PreprocessPrefsForReprompt() {

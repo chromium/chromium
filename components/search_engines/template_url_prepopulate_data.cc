@@ -197,7 +197,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     size_t* default_search_provider_index,
     bool include_current_default,
-    TemplateURLService* template_url_service) {
+    TemplateURLService* template_url_service,
+    bool* was_current_default_inserted) {
   // If there is a set of search engines in the preferences file, it overrides
   // the built-in set.
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
@@ -228,6 +229,11 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
                                           default_search_engine->data()));
         inserted_default = true;
       }
+      if (was_current_default_inserted != nullptr) {
+        *was_current_default_inserted = inserted_default;
+      }
+      // TODO(b/325015554): Pull this higher in the stack, where recording some
+      // histograms would be more expected.
       search_engines::RecordIsDefaultProviderAddedToChoices(inserted_default);
     }
   }

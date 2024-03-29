@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
@@ -102,6 +103,17 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
 
   ~SearchEngineChoiceServiceTest() override = default;
 
+  void InitService(int variation_country_id = country_codes::kCountryIDUnknown,
+                   bool force_reset = false) {
+    if (!force_reset) {
+      // If something refers to the existing instance, expect to run into
+      // issues!
+      CHECK(!search_engine_choice_service_);
+    }
+    search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
+        pref_service_, variation_country_id);
+  }
+
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
@@ -118,8 +130,7 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
   }
   search_engines::SearchEngineChoiceService& search_engine_choice_service() {
     if (!search_engine_choice_service_) {
-      search_engine_choice_service_ =
-          std::make_unique<SearchEngineChoiceService>(pref_service_);
+      InitService();
     }
 
     return CHECK_DEREF(search_engine_choice_service_.get());
@@ -1023,6 +1034,138 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_RemovedPrepopulated) {
   EXPECT_EQ(pref_service()->GetString(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
             version_info::GetVersionNumber());
+}
+
+TemplateURL::OwnedTemplateURLVector
+OwnedTemplateURLVectorFromPrepopulatedEngines(
+    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+        engines) {
+  TemplateURL::OwnedTemplateURLVector result;
+  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine : engines) {
+    result.push_back(std::make_unique<TemplateURL>(
+        *TemplateURLDataFromPrepopulatedEngine(*engine)));
+  }
+  return result;
+}
+
+TEST_F(SearchEngineChoiceServiceTest, MaybeRecordChoiceScreenDisplayState) {
+  InitService(kBelgiumCountryId, true);
+  ChoiceScreenData choice_screen_data(
+      OwnedTemplateURLVectorFromPrepopulatedEngines(
+          {&TemplateURLPrepopulateData::google,
+           &TemplateURLPrepopulateData::bing,
+           &TemplateURLPrepopulateData::yahoo}),
+      kBelgiumCountryId,
+      /*list_is_modified_by_current_default=*/false, SearchTermsData());
+
+  base::HistogramTester histogram_tester;
+  search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
+      choice_screen_data.display_state());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
+      SEARCH_ENGINE_GOOGLE, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 1),
+      SEARCH_ENGINE_BING, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
+      SEARCH_ENGINE_YAHOO, 1);
+}
+
+TEST_F(SearchEngineChoiceServiceTest,
+       MaybeRecordChoiceScreenDisplayState_NoopWithCurrentDefault) {
+  ChoiceScreenData choice_screen_data(
+      OwnedTemplateURLVectorFromPrepopulatedEngines(
+          {&TemplateURLPrepopulateData::google,
+           &TemplateURLPrepopulateData::bing,
+           &TemplateURLPrepopulateData::yahoo}),
+      kBelgiumCountryId,
+      /*list_is_modified_by_current_default=*/true, SearchTermsData());
+
+  base::HistogramTester histogram_tester;
+  search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
+      choice_screen_data.display_state());
+
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 1),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 3),
+      0);
+}
+
+TEST_F(SearchEngineChoiceServiceTest,
+       MaybeRecordChoiceScreenDisplayState_NoopUnwantedCountry) {
+  auto engines = {&TemplateURLPrepopulateData::google,
+                  &TemplateURLPrepopulateData::bing,
+                  &TemplateURLPrepopulateData::yahoo};
+  base::HistogramTester histogram_tester;
+
+  {
+    // Unknown country.
+    InitService(country_codes::kCountryIDUnknown, /*force_reset=*/true);
+    ChoiceScreenData choice_screen_data(
+        OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
+        country_codes::kCountryIDUnknown,
+        /*list_is_modified_by_current_default=*/false, SearchTermsData());
+    search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
+        choice_screen_data.display_state());
+  }
+
+  {
+    // Non-EEA country.
+    const int kUsaCountryId = country_codes::CountryStringToCountryID("US");
+    InitService(kUsaCountryId, /*force_reset=*/true);
+    ChoiceScreenData choice_screen_data(
+        OwnedTemplateURLVectorFromPrepopulatedEngines(engines), kUsaCountryId,
+        /*list_is_modified_by_current_default=*/false, SearchTermsData());
+    search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
+        choice_screen_data.display_state());
+  }
+
+  {
+    // Mismatch between the variations and choice screen data country.
+    InitService(country_codes::CountryStringToCountryID("DE"),
+                /*force_reset=*/true);
+    ChoiceScreenData choice_screen_data(
+        OwnedTemplateURLVectorFromPrepopulatedEngines(engines),
+        kBelgiumCountryId,
+        /*list_is_modified_by_current_default=*/false, SearchTermsData());
+    search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
+        choice_screen_data.display_state());
+  }
+
+  // None of the above should have logged anything.
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 0),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 1),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 2),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StringPrintf(
+          kSearchEngineChoiceScreenShowedEngineAtHistogramPattern, 3),
+      0);
 }
 
 // Test that the user is not reprompted is the reprompt parameter is not a valid

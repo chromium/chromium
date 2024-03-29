@@ -52,8 +52,28 @@ class MockSearchEngineChoiceDialogService
             *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
                 profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
-    ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
-      std::vector<std::unique_ptr<TemplateURL>> choices;
+    ON_CALL(*this, GetSearchEngines).WillByDefault([&]() {
+      TemplateURL::TemplateURLVector choices;
+      for (auto& choice : GetSearchEnginesInternal()) {
+        choices.push_back(choice.get());
+      }
+      return choices;
+    });
+  }
+  ~MockSearchEngineChoiceDialogService() override = default;
+
+  static std::unique_ptr<KeyedService> Create(
+      content::BrowserContext* context) {
+    return std::make_unique<
+        testing::NiceMock<MockSearchEngineChoiceDialogService>>(
+        Profile::FromBrowserContext(context));
+  }
+
+  MOCK_METHOD(TemplateURL::TemplateURLVector, GetSearchEngines, (), (override));
+
+ private:
+  const TemplateURL::OwnedTemplateURLVector& GetSearchEnginesInternal() {
+    if (choices_.empty()) {
       auto choice = TemplateURLData();
 
       // Current design is built around having 8 items, but the max is defined
@@ -75,24 +95,14 @@ class MockSearchEngineChoiceDialogService
           // Uses the default generic favicon.
           choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
         }
-        choices.push_back(std::make_unique<TemplateURL>(choice));
+        choices_.push_back(std::make_unique<TemplateURL>(choice));
       }
-      return choices;
-    });
-  }
-  ~MockSearchEngineChoiceDialogService() override = default;
+    }
 
-  static std::unique_ptr<KeyedService> Create(
-      content::BrowserContext* context) {
-    return std::make_unique<
-        testing::NiceMock<MockSearchEngineChoiceDialogService>>(
-        Profile::FromBrowserContext(context));
+    return choices_;
   }
 
-  MOCK_METHOD(std::vector<std::unique_ptr<TemplateURL>>,
-              GetSearchEngines,
-              (),
-              (override));
+  TemplateURL::OwnedTemplateURLVector choices_;
 };
 
 struct TestParam {
