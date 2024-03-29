@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*id=*/std::nullopt,
       /*name=*/std::nullopt, /*src=*/std::nullopt,
       /*reasons=*/
-      {MatchesDetailedReason("related-active-contents",
+      {MatchesDetailedReason("non-trivial-browsing-context-group",
                              /*source=*/std::nullopt),
        MatchesDetailedReason("masked", /*source=*/std::nullopt)},
       MatchesSameOriginDetails(

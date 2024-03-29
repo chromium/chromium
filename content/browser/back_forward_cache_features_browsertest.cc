@@ -5013,7 +5013,7 @@ class BackForwardCacheBrowserTestWithSupportedFeatures
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "supported_features",
-                              "broadcastchannel,keyboard-lock");
+                              "broadcastchannel,keyboardlock");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

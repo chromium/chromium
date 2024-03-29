@@ -31,33 +31,35 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebTransportSticky:
       return {"webtransport", "WebTransport used"};
     case WebSchedulerTrackedFeature::kWebRTC:
-      return {"webrtc", "WebRTC live connection"};
+      return {"rtc", "WebRTC live connection"};
     case WebSchedulerTrackedFeature::kWebRTCSticky:
-      return {"webrtc", "WebRTC used"};
+      return {"rtc", "WebRTC used"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
-      return {"cache-control-no-cache",
+      return {"response-cache-control-no-cache",
               "main resource has Cache-Control: No-Cache"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
-      return {"cache-control-no-store",
+      return {"response-cache-control-no-store",
               "main resource has Cache-Control: No-Store"};
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
-      return {"cache-control-no-cache",
+      return {"response-cache-control-no-cache",
               "subresource has Cache-Control: No-Cache"};
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
-      return {"cache-control-no-store",
+      return {"response-cache-control-no-store",
               "subresource has Cache-Control: No-Store"};
     case WebSchedulerTrackedFeature::kContainsPlugins:
-      return {"contains-plugins", "page contains plugins"};
+      return {"plugins", "page contains plugins"};
     case WebSchedulerTrackedFeature::kDocumentLoaded:
       return {"document-loaded", "document loaded"};
     case WebSchedulerTrackedFeature::kSharedWorker:
-      return {"shared-worker", "Shared worker present"};
+      return {"sharedworker", "Shared worker present"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
       return {"fetch", "outstanding network request (fetch)"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
-      return {"outstanding-network", "outstanding network request (XHR)"};
+      return {"outstanding-network-request",
+              "outstanding network request (XHR)"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
-      return {"outstanding-network", "outstanding network request (others)"};
+      return {"outstanding-network-request",
+              "outstanding network request (others)"};
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
       return {"midi", "requested midi permission"};
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
@@ -71,7 +73,7 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kBroadcastChannel:
       return {"broadcastchannel", "requested broadcast channel permission"};
     case WebSchedulerTrackedFeature::kWebXR:
-      return {"webxr", "WebXR"};
+      return {"webxrdevice", "WebXR"};
     case WebSchedulerTrackedFeature::kWebLocks:
       return {"lock", "WebLocks"};
     case WebSchedulerTrackedFeature::kWebHID:
@@ -79,7 +81,7 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebShare:
       return {"webshare", "WebShare"};
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
-      return {"storage-access", "requested storage access permission"};
+      return {"storageaccess", "requested storage access permission"};
     case WebSchedulerTrackedFeature::kWebNfc:
       return {"webnfc", "WebNfc"};
     case WebSchedulerTrackedFeature::kPrinting:
@@ -87,41 +89,41 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebDatabase:
       return {"web-database", "WebDatabase"};
     case WebSchedulerTrackedFeature::kPictureInPicture:
-      return {"picture-in-picture", "PictureInPicture"};
+      return {"pictureinpicturewindow", "PictureInPicture"};
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
-      return {"speech-recognizer", "SpeechRecognizer"};
+      return {"speechrecognition", "SpeechRecognizer"};
     case WebSchedulerTrackedFeature::kIdleManager:
-      return {"idle-manager", "IdleManager"};
+      return {"idledetector", "IdleManager"};
     case WebSchedulerTrackedFeature::kPaymentManager:
-      return {"payment-manager", "PaymentManager"};
+      return {"paymentrequest", "PaymentManager"};
     case WebSchedulerTrackedFeature::kKeyboardLock:
-      return {"keyboard-lock", "KeyboardLock"};
+      return {"keyboardlock", "KeyboardLock"};
     case WebSchedulerTrackedFeature::kWebOTPService:
-      return {"sms", "SMSService"};
+      return {"otpcredential", "SMSService"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
-      return {"outstanding-network",
+      return {"outstanding-network-request",
               "outstanding network request (direct socket)"};
     case WebSchedulerTrackedFeature::kInjectedJavascript:
       return {"injected-javascript", "External javascript injected"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return {"injected-stylesheet", "External systesheet injected"};
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
-      return {"keepalive-request", "requests with keepalive set"};
+      return {"response-keep-alive", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
       return {"Dummy", "Dummy for testing"};
     case WebSchedulerTrackedFeature::
         kJsNetworkRequestReceivedCacheControlNoStoreResource:
-      return {"cache-control-no-store",
+      return {"response-cache-control-no-store",
               "JavaScript network request received Cache-Control: no-store "
               "resource"};
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
-      return {"indexed-db-event", "IndexedDB event is pending"};
+      return {"idbversionchangeevent", "IndexedDB event is pending"};
     case WebSchedulerTrackedFeature::kWebSerial:
       return {"webserial", "Serial port open"};
     case WebSchedulerTrackedFeature::kSmartCard:
-      return {"smart-card", "SmartCardContext used"};
+      return {"smartcardconnection", "SmartCardContext used"};
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
-      return {"media-stream", "page has live MediaStreamTrack"};
+      return {"mediastream", "page has live MediaStreamTrack"};
     case WebSchedulerTrackedFeature::kUnloadHandler:
       return {"unload-handler", "page contains unload handler"};
     case WebSchedulerTrackedFeature::kParserAborted:

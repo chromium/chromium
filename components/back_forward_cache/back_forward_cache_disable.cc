@@ -46,9 +46,9 @@ std::string ReasonIdToReportString(DisabledReasonId reason_id) {
     case DisabledReasonId::kExtensionSentMessageToCachedFrame:
       return "extension-messaging";
     case DisabledReasonId::kModalDialog:
-      return "modal-dialog";
+      return "modals";
     case DisabledReasonId::kPermissionRequestManager:
-      return "permission-request-manager";
+      return "pending-permission-request";
     default:
       return "masked";
   }
