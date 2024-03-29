@@ -4726,7 +4726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.MessageCenter.Scroll.PresentationTime.MaxLatency"
-    units="ms" expires_after="2024-04-16">
+    units="ms" expires_after="2025-04-16">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -5036,7 +5036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotificationView.ExpandButton.ClickAction"
-    enum="ExpandButtonClickAction" expires_after="2024-04-30">
+    enum="ExpandButtonClickAction" expires_after="2025-04-30">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6260,7 +6260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PrivacyIndicators.NumberOfRepeatedShows" units="shows"
-    expires_after="2024-03-24">
+    expires_after="2025-03-24">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -7959,7 +7959,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness"
-    units="%" expires_after="2024-04-20">
+    units="%" expires_after="2025-04-20">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -7971,7 +7971,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.VideoConference.ReturnToAppPanel.BoundsChange.AnimationSmoothness"
-    units="%" expires_after="2024-04-20">
+    units="%" expires_after="2025-04-20">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -7982,7 +7982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConference.{ViewName}.FadeIn.AnimationSmoothness"
-    units="%" expires_after="2024-04-20">
+    units="%" expires_after="2025-04-20">
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -8018,7 +8018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.VideoConferenceTray.StopScreenShareButton.Click"
-    enum="BooleanClicked" expires_after="2024-03-16">
+    enum="BooleanClicked" expires_after="2025-03-16">
   <owner>leandre@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
