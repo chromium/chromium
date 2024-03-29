@@ -109,12 +109,6 @@ export class SettingsAppearancePageElement extends
 
       isWallpaperPolicyControlled_: {type: Boolean, value: true},
 
-      showColorSchemeMode_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
-
       colorSchemeModeOptions_: {
         readOnly: true,
         type: Array,
@@ -242,7 +236,6 @@ export class SettingsAppearancePageElement extends
   private defaultZoom_: number;
   private isWallpaperPolicyControlled_: boolean;
   private fontSizeOptions_: DropdownMenuOptionList;
-  private showColorSchemeMode_: boolean;
   private colorSchemeModeOptions_:
       Array<{value: ColorSchemeMode, name: string}>;
   private selectedColorSchemeMode_: ColorSchemeMode|undefined;

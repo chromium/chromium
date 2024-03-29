@@ -280,7 +280,6 @@ suite('AppearanceHandler', function() {
     assertFalse(isVisible(appearancePage.$.colorSchemeModeRow));
 
     colorSchemeHandler.reset();
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
     createAppearancePage();
     await colorSchemeHandler.whenCalled('initializeColorSchemeMode');
 

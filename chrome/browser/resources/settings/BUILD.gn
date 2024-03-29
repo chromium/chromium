@@ -412,10 +412,8 @@ build_webui("build") {
   ]
 
   if (!is_chromeos_ash) {
-    ts_deps += [
-      "//ui/webui/resources/cr_components/customize_themes:build_ts",
-      "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
-    ]
+    ts_deps +=
+        [ "//ui/webui/resources/cr_components/theme_color_picker:build_ts" ]
   } else {
     ts_deps += [ "//ash/webui/common/resources:build_ts" ]
   }

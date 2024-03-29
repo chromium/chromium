@@ -29,18 +29,9 @@
     overflow-y: hidden;
   }
 
-  cr-customize-themes,
   cr-theme-color-picker,
   cr-profile-avatar-selector {
     margin-bottom: 10px;
-  }
-
-  #themeSelector {
-    --selected-border: 9px; /* Selected border per side: 4.5px*/
-    --cr-customize-themes-grid-gap: calc(var(--icon-grid-gap) -
-        var(--selected-border));
-    --cr-customize-themes-icon-size: calc(var(--icon-size) +
-        var(--selected-border));
   }
 
   cr-theme-color-picker {
@@ -87,13 +78,7 @@
 <div class="cr-row manage-profile-section">
   <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
   <div class="content grid-container">
-    <template is="dom-if" if="[[isChromeRefresh2023_]]">
-      <cr-theme-color-picker columns="6"></cr-theme-color-picker>
-    </template>
-    <template is="dom-if" if="[[!isChromeRefresh2023_]]">
-      <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
-      </cr-customize-themes>
-    </template>
+    <cr-theme-color-picker columns="6"></cr-theme-color-picker>
  </div>
 </div>
 <div class="cr-row manage-profile-section">
