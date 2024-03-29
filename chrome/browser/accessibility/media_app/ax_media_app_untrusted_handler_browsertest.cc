@@ -73,33 +73,6 @@ constexpr float kTestPageHeight = 8.0f;
 // pages are needed, more characters can be added.
 constexpr std::string_view kTestPageIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-// Create fake page metadata with pages of the same size positioned
-// (kTestPageWidth + kTestPageGap) unit spaced apart.
-std::vector<PageMetadataPtr> CreateFakePageMetadata(const uint64_t num_pages) {
-  EXPECT_LE(static_cast<size_t>(num_pages), kTestPageIds.size())
-      << "Can't make more than " << kTestPageIds.size() << " pages.";
-  std::vector<PageMetadataPtr> fake_page_metadata;
-  for (uint64_t i = 0; i < num_pages; ++i) {
-    PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
-    page->id = std::format("Page{}", kTestPageIds[i]);
-    page->rect =
-        gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageGap * i + kTestPageHeight * i,
-                   kTestPageWidth, kTestPageHeight);
-    fake_page_metadata.push_back(std::move(page));
-  }
-  return fake_page_metadata;
-}
-
-std::vector<PageMetadataPtr> ClonePageMetadataPtrs(
-    const std::vector<PageMetadataPtr>& metadata) {
-  std::vector<PageMetadataPtr> fake_page_metadata;
-  for (const PageMetadataPtr& page : metadata) {
-    PageMetadataPtr cloned_page = mojo::Clone(page);
-    fake_page_metadata.push_back(std::move(cloned_page));
-  }
-  return fake_page_metadata;
-}
-
 class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  public:
   AXMediaAppUntrustedHandlerTest()
@@ -137,11 +110,13 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
   }
 
  protected:
-  void WaitForOcringPages(uint64_t number_of_pages) const {
-    for (uint64_t i = 0; i < number_of_pages; ++i) {
-      handler_->FlushForTesting();
-    }
-  }
+  // Create fake page metadata with pages of the same size positioned(
+  // kTestPageWidth + kTestPageGap) unit spaced apart.
+  std::vector<PageMetadataPtr> CreateFakePageMetadata(
+      const uint64_t num_pages) const;
+  std::vector<PageMetadataPtr> ClonePageMetadataPtrs(
+      const std::vector<PageMetadataPtr>& metadata) const;
+  void WaitForOcringPages(uint64_t number_of_pages) const;
 
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<TestAXMediaAppUntrustedHandler> handler_;
@@ -153,6 +128,41 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+std::vector<PageMetadataPtr>
+AXMediaAppUntrustedHandlerTest::CreateFakePageMetadata(
+    const uint64_t num_pages) const {
+  EXPECT_LE(static_cast<size_t>(num_pages), kTestPageIds.size())
+      << "Can't make more than " << kTestPageIds.size() << " pages.";
+  std::vector<PageMetadataPtr> fake_page_metadata;
+  for (uint64_t i = 0; i < num_pages; ++i) {
+    PageMetadataPtr page = ash::media_app_ui::mojom::PageMetadata::New();
+    page->id = std::format("Page{}", kTestPageIds[i]);
+    page->rect =
+        gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageGap * i + kTestPageHeight * i,
+                   kTestPageWidth, kTestPageHeight);
+    fake_page_metadata.push_back(std::move(page));
+  }
+  return fake_page_metadata;
+}
+
+std::vector<PageMetadataPtr>
+AXMediaAppUntrustedHandlerTest::ClonePageMetadataPtrs(
+    const std::vector<PageMetadataPtr>& metadata) const {
+  std::vector<PageMetadataPtr> fake_page_metadata;
+  for (const PageMetadataPtr& page : metadata) {
+    PageMetadataPtr cloned_page = mojo::Clone(page);
+    fake_page_metadata.push_back(std::move(cloned_page));
+  }
+  return fake_page_metadata;
+}
+
+void AXMediaAppUntrustedHandlerTest::WaitForOcringPages(
+    uint64_t number_of_pages) const {
+  for (uint64_t i = 0; i < number_of_pages; ++i) {
+    handler_->FlushForTesting();
+  }
+}
 
 }  // namespace
 
