@@ -383,7 +383,7 @@ GridSet::GridSet(wtf_size_t track_count,
     // Argument for 'fit-content' is a <percentage> that couldn't be resolved to
     // a definite <length>, normalize to 'minmax(auto, max-content)'.
     if (is_available_size_indefinite &&
-        track_size.FitContentTrackBreadth().IsPercent()) {
+        track_size.FitContentTrackBreadth().IsPercentOrCalc()) {
       track_size = GridTrackSize(Length::Auto(), Length::MaxContent());
     }
   } else {
