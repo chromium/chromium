@@ -735,20 +735,14 @@ bool AXTreeSerializer<AXSourceNode,
       // subtrees for both the old and new parent.
       out_update->node_id_to_clear = tree_->GetId(lca);
     }
-    // TODO(accessibility): convert to a CHECK(), because invalid or detached
-    // nodes should never be present in the source tree. See CL:5383976;
-    if (tree_->GetId(lca) == kInvalidAXNodeID) {
-      lca = nullptr;
-    }
-  }
-
-  // First serialization for this tree, after a changed root, or after a
-  // Reset():use the root for the LCA and create the client root.
-  if (!lca) {
+  } else {
+    // First serialization for this tree, after a changed root, or after a
+    // Reset():use the root for the LCA and create the client root.
     lca = tree_->GetRoot();
     CreateClientRoot(lca);
   }
 
+  CHECK(tree_->GetId(lca) != kInvalidAXNodeID);
   if (!SerializeChangedNodes(lca, out_update, out_error)) {
     return false;
   }
