@@ -304,15 +304,14 @@ RunContentProcess(ContentMainParams params,
     }
 
 #if BUILDFLAG(IS_WIN)
-    // Route stdio to parent console (if any) or create one.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableLogging)) {
-      base::RouteStdioToConsole(/*create_console_if_not_found*/ true);
-    } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                   switches::kHeadless)) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kHeadless)) {
       // When running in headless mode we want stdio routed however if
       // console does not exist we should not create one.
       base::RouteStdioToConsole(/*create_console_if_not_found*/ false);
+    } else if (command_line->HasSwitch(switches::kEnableLogging)) {
+      // Route stdio to parent console (if any) or create one.
+      base::RouteStdioToConsole(/*create_console_if_not_found*/ true);
     }
 #endif
 
