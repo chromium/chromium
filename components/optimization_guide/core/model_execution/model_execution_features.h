@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace optimization_guide {
@@ -35,8 +36,13 @@ BASE_DECLARE_FEATURE(kExperimentalAIIPHPromoRampUp);
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 
 // Checks if the provided `feature` is graduated from experimental AI settings.
+bool IsGraduatedFeature(UserVisibleFeatureKey feature);
+// TODO: crbug.com/331306557 - Cleanup after migration.
 bool IsGraduatedFeature(proto::ModelExecutionFeature feature);
 
+const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
+    UserVisibleFeatureKey feature);
+// TODO: crbug.com/331306557 - Cleanup after migration.
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature);
 
