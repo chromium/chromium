@@ -409,8 +409,7 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
   SitePermissionsHelper permissions_helper(browser_->profile());
   auto* permissions_manager = PermissionsManager::Get(browser_->profile());
   auto current_site_access = permissions_manager->GetUserSiteAccess(
-      *GetExtension(browser_, extension_id),
-      GetActiveWebContents()->GetLastCommittedURL());
+      *extension, web_contents->GetLastCommittedURL());
   PermissionsManager::ExtensionSiteAccess extension_site_access =
       permissions_manager->GetSiteAccess(*extension,
                                          web_contents->GetLastCommittedURL());
