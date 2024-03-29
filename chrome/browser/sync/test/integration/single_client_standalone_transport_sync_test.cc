@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   syncer::ModelTypeSet bad_types =
       base::Difference(GetSyncService(0)->GetActiveDataTypes(),
                        AllowedTypesInStandaloneTransportMode());
-  EXPECT_TRUE(bad_types.Empty())
+  EXPECT_TRUE(bad_types.empty())
       << syncer::ModelTypeSetToDebugString(bad_types);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   syncer::ModelTypeSet bad_types =
       base::Difference(GetSyncService(0)->GetActiveDataTypes(),
                        AllowedTypesInStandaloneTransportMode());
-  EXPECT_TRUE(bad_types.Empty())
+  EXPECT_TRUE(bad_types.empty())
       << syncer::ModelTypeSetToDebugString(bad_types);
 
   // Turn Sync-the-feature on.

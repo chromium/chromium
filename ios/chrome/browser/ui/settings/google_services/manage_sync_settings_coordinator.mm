@@ -590,7 +590,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   if (self.signOutFlowInProgress) {
     return;
   }
-  if (!self.syncService->GetDisableReasons().Empty()) {
+  if (!self.syncService->GetDisableReasons().empty()) {
     [self closeManageSyncSettings];
   }
 }

@@ -302,7 +302,7 @@ void QueryBuilder::ValidateQuery() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(params_);
   CHECK(!params_->contexts.IsEmpty());
-  CHECK(!params_->resource_types.Empty());
+  CHECK(!params_->resource_types.empty());
 }
 
 }  // namespace resource_attribution

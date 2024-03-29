@@ -298,7 +298,7 @@ TEST_F(SyncServiceImplTest, SuccessfulInitialization) {
   InitializeService();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }
@@ -307,7 +307,7 @@ TEST_F(SyncServiceImplTest, SuccessfulLocalBackendInitialization) {
   InitializeServiceWithLocalSyncBackend();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }
@@ -329,7 +329,7 @@ TEST_F(SyncServiceImplTest, NeedsConfirmation) {
   InitializeService();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
 
   // Sync should immediately start up in transport mode.
   base::RunLoop().RunUntilIdle();
@@ -427,7 +427,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS Ash, the first setup is marked as complete automatically.
@@ -456,7 +456,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   // Sync-the-feature is considered on.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_TRUE(service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(service()->IsSyncFeatureActive());
 }
@@ -1158,7 +1158,7 @@ TEST_F(SyncServiceImplTest, ResetLocalSyncData) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_TRUE(service()->IsSyncFeatureEnabled());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1209,7 +1209,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // details.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   // Since ChromeOS doesn't support signout and so the account is still there
   // and available, Sync will restart in standalone transport mode.
   base::RunLoop().RunUntilIdle();
@@ -1238,7 +1238,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1429,21 +1429,21 @@ TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
   InitializeServiceWithLocalSyncBackend();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // The transport should continue active even if kSyncManaged becomes true.
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // Setting kSyncManaged back to false should also make no difference.
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
 
-  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(service()->GetDisableReasons().empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }
@@ -1495,7 +1495,7 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   InitializeService();
   base::RunLoop().RunUntilIdle();
   std::unique_ptr<SyncServiceImpl> service = ShutdownAndReleaseService();
-  EXPECT_FALSE(service->GetDisableReasons().Empty());
+  EXPECT_FALSE(service->GetDisableReasons().empty());
 }
 
 TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {

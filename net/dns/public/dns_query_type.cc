@@ -17,7 +17,7 @@ bool IsAddressType(DnsQueryType dns_query_type) {
 }
 
 bool HasAddressType(DnsQueryTypeSet dns_query_types) {
-  DCHECK(!dns_query_types.Empty());
+  DCHECK(!dns_query_types.empty());
   DCHECK(!dns_query_types.Has(DnsQueryType::UNSPECIFIED));
   return dns_query_types.Has(DnsQueryType::A) ||
          dns_query_types.Has(DnsQueryType::AAAA);

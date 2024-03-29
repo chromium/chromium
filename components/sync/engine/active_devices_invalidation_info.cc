@@ -58,7 +58,7 @@ bool ActiveDevicesInvalidationInfo::IsSingleClientForTypes(
     return false;
   }
 
-  return Intersection(types, all_interested_data_types_).Empty();
+  return Intersection(types, all_interested_data_types_).empty();
 }
 
 bool ActiveDevicesInvalidationInfo::
@@ -70,7 +70,7 @@ bool ActiveDevicesInvalidationInfo::
 
   return Intersection(types,
                       GetAllInterestedDataTypesForStandaloneInvalidations())
-      .Empty();
+      .empty();
 }
 
 bool ActiveDevicesInvalidationInfo::IsSingleClientWithOldInvalidationsForTypes(
@@ -79,7 +79,7 @@ bool ActiveDevicesInvalidationInfo::IsSingleClientWithOldInvalidationsForTypes(
     return false;
   }
 
-  return Intersection(types, old_invalidations_interested_data_types_).Empty();
+  return Intersection(types, old_invalidations_interested_data_types_).empty();
 }
 
 std::vector<std::string>
@@ -88,7 +88,7 @@ ActiveDevicesInvalidationInfo::GetFcmRegistrationTokensForInterestedClients(
   std::vector<std::string> fcm_tokens;
   for (const auto& fcm_token_with_data_types :
        fcm_token_and_interested_data_types_) {
-    if (Intersection(types, fcm_token_with_data_types.second).Empty()) {
+    if (Intersection(types, fcm_token_with_data_types.second).empty()) {
       continue;
     }
     if (fcm_tokens.size() >= kMaxFcmRegistrationTokens) {

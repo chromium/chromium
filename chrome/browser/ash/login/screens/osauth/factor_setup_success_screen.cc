@@ -88,7 +88,7 @@ bool FactorSetupSuccessScreen::MaybeSkip(WizardContext& wizard_context) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
-  if (wizard_context.knowledge_factor_setup.modified_factors.Empty()) {
+  if (wizard_context.knowledge_factor_setup.modified_factors.empty()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

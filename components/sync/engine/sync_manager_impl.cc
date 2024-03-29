@@ -455,7 +455,7 @@ void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   const ModelTypeSet types_to_refresh =
       Intersection(types, model_type_registry_->GetConnectedTypes());
 
-  if (!types_to_refresh.Empty()) {
+  if (!types_to_refresh.empty()) {
     scheduler_->ScheduleLocalRefreshRequest(types_to_refresh);
   }
 }

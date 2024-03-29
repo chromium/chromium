@@ -46,7 +46,7 @@ namespace {
 // Returns whether the user needs to enter a passphrase or enable sync to make
 // tab sync work.
 bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
-  if (!sync_service->GetDisableReasons().Empty()) {
+  if (!sync_service->GetDisableReasons().empty()) {
     return true;
   }
 

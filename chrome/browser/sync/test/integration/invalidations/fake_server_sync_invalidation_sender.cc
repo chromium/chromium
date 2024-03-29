@@ -62,7 +62,7 @@ void FakeServerSyncInvalidationSender::OnCommit(
     // Send the invalidation only for interested types.
     const syncer::ModelTypeSet invalidated_data_types =
         Intersection(committed_model_types, token_and_data_types.second);
-    if (invalidated_data_types.Empty()) {
+    if (invalidated_data_types.empty()) {
       continue;
     }
 

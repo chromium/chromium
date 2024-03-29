@@ -35,7 +35,7 @@ bool SyncService::IsSyncFeatureEnabled() const {
 }
 
 bool SyncService::CanSyncFeatureStart() const {
-  return GetDisableReasons().Empty() &&
+  return GetDisableReasons().empty() &&
 #if BUILDFLAG(IS_CHROMEOS_ASH)
          !GetUserSettings()->IsSyncFeatureDisabledViaDashboard() &&
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

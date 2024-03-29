@@ -24,7 +24,7 @@ size_t LargeSparseEnum() {
   // TestEnumSparseSet::All() does not compile as constexpr because there are
   // more than 64 possible values.
   constexpr auto set = TestEnumSparseSet::All();  // expected-error {{constexpr variable 'set' must be initialized by a constant expression}}
-  return set.Size();
+  return set.size();
 }
 
 }  // namespace

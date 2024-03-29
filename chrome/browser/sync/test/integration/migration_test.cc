@@ -172,7 +172,7 @@ class MigrationTest : public SyncTest {
                         TriggerMethod trigger_method) {
     // Make sure migration hasn't been triggered prematurely.
     for (int i = 0; i < num_clients(); ++i) {
-      ASSERT_TRUE(migration_watchers_[i]->GetMigratedTypes().Empty());
+      ASSERT_TRUE(migration_watchers_[i]->GetMigratedTypes().empty());
     }
 
     // Phase 1: Trigger the migrations on the server.

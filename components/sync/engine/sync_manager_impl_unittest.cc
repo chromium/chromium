@@ -257,12 +257,12 @@ TEST_F(SyncManagerImplTest, ShouldSetHasPendingInvalidations) {
 
   sync_manager()->SetHasPendingInvalidations(
       BOOKMARKS, /*has_pending_invalidations=*/true);
-  EXPECT_EQ(status.invalidated_data_types.Size(), 1u);
+  EXPECT_EQ(status.invalidated_data_types.size(), 1u);
   EXPECT_TRUE(status.invalidated_data_types.Has(BOOKMARKS));
 
   sync_manager()->SetHasPendingInvalidations(
       BOOKMARKS, /*has_pending_invalidations=*/false);
-  EXPECT_TRUE(status.invalidated_data_types.Empty());
+  EXPECT_TRUE(status.invalidated_data_types.empty());
 }
 
 }  // namespace

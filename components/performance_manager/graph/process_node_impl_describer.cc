@@ -50,7 +50,7 @@ std::string ContentTypeToString(ProcessNode::ContentType content_type) {
 std::string HostedProcessTypesToString(
     ProcessNode::ContentTypes hosted_content_types) {
   std::vector<std::string> content_types_vector;
-  content_types_vector.reserve(hosted_content_types.Size());
+  content_types_vector.reserve(hosted_content_types.size());
   for (ProcessNode::ContentType content_type : hosted_content_types)
     content_types_vector.push_back(ContentTypeToString(content_type));
 

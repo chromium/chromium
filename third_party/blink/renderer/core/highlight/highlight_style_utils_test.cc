@@ -248,7 +248,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
       HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor));
 #else
   // Selection uses explicit default colors.
-  EXPECT_TRUE(selection_paint_style.properties_using_current_color.Empty());
+  EXPECT_TRUE(selection_paint_style.properties_using_current_color.empty());
 #endif
 }
 

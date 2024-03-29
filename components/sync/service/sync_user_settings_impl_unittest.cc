@@ -158,11 +158,11 @@ TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
   // Sanity check: signed-in there are selected types.
   SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
   ASSERT_FALSE(
-      MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().Empty());
+      MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().empty());
 
   // But signed out there are none.
   SetSyncAccountState(SyncPrefs::SyncAccountState::kNotSignedIn);
-  EXPECT_TRUE(MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().Empty());
+  EXPECT_TRUE(MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().empty());
 }
 
 TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {

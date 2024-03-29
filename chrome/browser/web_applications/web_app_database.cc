@@ -485,7 +485,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_name(web_app.untranslated_name());
 
-  DCHECK(!web_app.sources_.Empty() || web_app.is_uninstalling());
+  DCHECK(!web_app.sources_.empty() || web_app.is_uninstalling());
   local_data->mutable_sources()->set_system(
       web_app.sources_.Has(WebAppManagement::kSystem));
   local_data->mutable_sources()->set_policy(
@@ -996,7 +996,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   sources.PutOrRemove(WebAppManagement::kApsDefault,
                       local_data.sources().aps_default());
 
-  if (sources.Empty() && !local_data.is_uninstalling()) {
+  if (sources.empty() && !local_data.is_uninstalling()) {
     DLOG(ERROR) << "WebApp proto parse error: no source in sources field, "
                    "and is_uninstalling isn't true.";
     return nullptr;

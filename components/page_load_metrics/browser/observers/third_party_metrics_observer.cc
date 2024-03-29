@@ -315,7 +315,7 @@ void ThirdPartyMetricsObserver::OnTimingUpdate(
     }
   }
 
-  if (!newly_recorded_event_types.Empty()) {
+  if (!newly_recorded_event_types.empty()) {
     if (recorded_frame_events == recorded_frames_.end()) {
       recorded_frames_[subframe_rfh] = newly_recorded_event_types;
     } else {

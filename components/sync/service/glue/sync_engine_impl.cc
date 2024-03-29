@@ -301,7 +301,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
 }
 
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
-  DCHECK(Difference(params.to_download, ProtocolTypes()).Empty());
+  DCHECK(Difference(params.to_download, ProtocolTypes()).empty());
 
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoPurgeDisabledTypes,

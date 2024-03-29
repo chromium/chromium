@@ -255,7 +255,7 @@ base::Value::Dict NetLogResults(const HostCache::Entry& results) {
 std::vector<IPEndPoint> FilterAddresses(std::vector<IPEndPoint> addresses,
                                         DnsQueryTypeSet query_types) {
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
-  DCHECK(!query_types.Empty());
+  DCHECK(!query_types.empty());
 
   const AddressFamily want_family =
       HostResolver::DnsQueryTypeSetToAddressFamily(query_types);

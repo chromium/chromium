@@ -134,7 +134,7 @@ HostResolverMdnsTask::HostResolverMdnsTask(MDnsClient* mdns_client,
                                            std::string hostname,
                                            DnsQueryTypeSet query_types)
     : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
-  CHECK(!query_types.Empty());
+  CHECK(!query_types.empty());
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
 
   static constexpr DnsQueryTypeSet kUnwantedQueries = {DnsQueryType::HTTPS};

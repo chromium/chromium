@@ -219,7 +219,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 // Updates the enabled state of the Save in Account button
 - (void)updateButtonEnabledState {
   syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  self.consumer.validationButtonEnabled = selectedModelTypes.Size() > 0;
+  self.consumer.validationButtonEnabled = selectedModelTypes.size() > 0;
 }
 
 #pragma mark - BulkUploadMutator
@@ -255,7 +255,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   // don’t formally require authentication. This is because, if the
   // authentication fails, those other types are not saved either.
   int authentification_identifier =
-      (selectedModelTypes.Size() == 1)
+      (selectedModelTypes.size() == 1)
           ? IDS_IOS_BULK_UPLOAD_PASSWORD_AUTHENTIFY_MESSAGE
           : IDS_IOS_BULK_UPLOAD_PASSWORD_AND_OTHER_TYPE_AUTHENTIFY_MESSAGE;
   [_reauthenticationModule

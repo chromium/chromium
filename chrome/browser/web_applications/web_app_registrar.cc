@@ -815,7 +815,7 @@ bool WebAppRegistrar::IsInstalled(const webapps::AppId& app_id) const {
   WebAppManagementTypes sources_except_sync = web_app->GetSources();
   sources_except_sync.Remove(WebAppManagement::kSync);
   return !(web_app->is_from_sync_and_pending_installation() &&
-           sources_except_sync.Empty());
+           sources_except_sync.empty());
 }
 
 bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {

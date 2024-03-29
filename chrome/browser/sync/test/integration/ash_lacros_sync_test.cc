@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
   syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
 
   // No browser types should be selectable in Ash now.
-  EXPECT_TRUE(user_settings->GetRegisteredSelectableTypes().Empty());
+  EXPECT_TRUE(user_settings->GetRegisteredSelectableTypes().empty());
 
   // But all the OS types should be selectable.
   EXPECT_EQ(user_settings->GetRegisteredSelectableOsTypes(),

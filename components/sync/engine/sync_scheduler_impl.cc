@@ -248,7 +248,7 @@ void SyncSchedulerImpl::ScheduleConfiguration(
   DCHECK(!pending_configure_params_);
 
   // Only reconfigure if we have types to download.
-  if (!types_to_download.Empty()) {
+  if (!types_to_download.empty()) {
     // Cache configuration parameters since TrySyncCycleJob() posts a task.
     pending_configure_params_ = std::make_unique<ConfigurationParams>(
         origin, types_to_download, std::move(ready_task));
@@ -319,7 +319,7 @@ void SyncSchedulerImpl::ScheduleLocalNudge(ModelType type) {
 
 void SyncSchedulerImpl::ScheduleLocalRefreshRequest(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!types.Empty());
+  DCHECK(!types.empty());
 
   SDVLOG(2) << "Scheduling sync because of local refresh request for "
             << ModelTypeSetToDebugString(types);

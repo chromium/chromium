@@ -96,7 +96,7 @@ TEST_F(WebViewSyncClientTest, CreateModelTypeControllers) {
     ASSERT_TRUE(allowed_types.Has(model_type_controller->type()));
     allowed_types.Remove(model_type_controller->type());
   }
-  EXPECT_TRUE(allowed_types.Empty());
+  EXPECT_TRUE(allowed_types.empty());
 }
 
 }  // namespace ios_web_view

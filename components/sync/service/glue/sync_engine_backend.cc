@@ -182,7 +182,7 @@ void SyncEngineBackend::DoInitialize(
 
   LoadAndConnectNigoriController();
 
-  ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().Empty()
+  ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().empty()
                                ? CONFIGURE_REASON_NEW_CLIENT
                                : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
 
@@ -355,7 +355,7 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
 
   // Update the enabled types for the bridge and sync manager.
   const ModelTypeSet enabled_types = sync_manager_->GetConnectedTypes();
-  DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
+  DCHECK(Difference(enabled_types, ProtocolTypes()).empty());
 
   const ModelTypeSet failed_types =
       Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());

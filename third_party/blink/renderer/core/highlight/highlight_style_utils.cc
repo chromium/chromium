@@ -536,7 +536,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
 void HighlightStyleUtils::ResolveColorsFromPreviousLayer(
     HighlightTextPaintStyle& text_style,
     const HighlightTextPaintStyle& previous_layer_style) {
-  if (text_style.properties_using_current_color.Empty()) {
+  if (text_style.properties_using_current_color.empty()) {
     return;
   }
 

@@ -236,7 +236,7 @@ void PrivacyHubNotificationController::RemoveSoftwareSwitchNotification(
     }
     case Sensor::kMicrophone: {
       RemoveSensor(sensor);
-      if (!sensors_.Empty()) {
+      if (!sensors_.empty()) {
         combined_notification_->Update();
       } else {
         combined_notification_->Hide();
@@ -292,7 +292,7 @@ void PrivacyHubNotificationController::ShowHardwareSwitchNotification(
   switch (sensor) {
     case Sensor::kMicrophone: {
       RemoveSensor(sensor);
-      if (!sensors_.Empty()) {
+      if (!sensors_.empty()) {
         combined_notification_->Update();
       } else {
         // As the hardware switch notification for microphone will be displayed

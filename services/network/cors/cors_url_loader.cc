@@ -888,7 +888,7 @@ void CorsURLLoader::StartRequest() {
     preflight_mode_.Put(
         PreflightController::PreflightType::kPrivateNetworkAccess);
   }
-  CHECK(!preflight_mode_.Empty());
+  CHECK(!preflight_mode_.empty());
 
   // Since we're doing a preflight, we won't reuse the original request. Cancel
   // it now to free up the socket.

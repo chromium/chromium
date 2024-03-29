@@ -1882,7 +1882,7 @@ CreateNotRestoredExplanation(
        not_restored_reasons) {
     if (not_restored_reason ==
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
-      DCHECK(!blocklisted_features.Empty());
+      DCHECK(!blocklisted_features.empty());
       for (blink::scheduler::WebSchedulerTrackedFeature feature :
            blocklisted_features) {
         // Details are not always present for blocklisted features, because the

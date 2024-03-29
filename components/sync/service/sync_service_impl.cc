@@ -378,7 +378,7 @@ void SyncServiceImpl::Initialize() {
 
   ModelTypeSet data_types_to_track =
       Intersection(GetRegisteredDataTypes(), ProtocolTypes());
-  if (!data_types_to_track.Empty()) {
+  if (!data_types_to_track.empty()) {
     download_status_recorder_ = std::make_unique<DownloadStatusRecorder>(
         this,
         base::BindOnce(&SyncServiceImpl::OnDownloadStatusRecorderFinished,
@@ -514,7 +514,7 @@ void SyncServiceImpl::CredentialsChanged() {
 }
 
 bool SyncServiceImpl::IsEngineAllowedToRun() const {
-  return GetDisableReasons().Empty() && !auth_manager_->IsSyncPaused();
+  return GetDisableReasons().empty() && !auth_manager_->IsSyncPaused();
 }
 
 void SyncServiceImpl::OnProtocolEvent(const ProtocolEvent& event) {
@@ -1634,7 +1634,7 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
     types.Remove(SESSIONS);
   }
 
-  if (!data_type_manager_->GetDataTypesWithPermanentErrors().Empty() &&
+  if (!data_type_manager_->GetDataTypesWithPermanentErrors().empty() &&
       base::FeatureList::IsEnabled(
           kSyncUnsubscribeFromTypesWithPermanentErrors)) {
     // Unsubscribe from data types with permanent errors. Types which are
@@ -1913,7 +1913,7 @@ GetAllNodesRequestHelper::GetAllNodesRequestHelper(
     : awaiting_types_(requested_types), callback_(std::move(callback)) {}
 
 GetAllNodesRequestHelper::~GetAllNodesRequestHelper() {
-  if (!awaiting_types_.Empty()) {
+  if (!awaiting_types_.empty()) {
     DLOG(WARNING)
         << "GetAllNodesRequest deleted before request was fulfilled.  "
         << "Missing types are: " << ModelTypeSetToDebugString(awaiting_types_);
@@ -1936,7 +1936,7 @@ void GetAllNodesRequestHelper::OnReceivedNodesForType(
   // Remember that this part of the request is satisfied.
   awaiting_types_.Remove(type);
 
-  if (awaiting_types_.Empty()) {
+  if (awaiting_types_.empty()) {
     std::move(callback_).Run(std::move(result_accumulator_));
   }
 }
@@ -2018,7 +2018,7 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
 
   // TODO(crbug.com/1425026): check whether this works when local sync is
   // enabled.
-  if (!GetDisableReasons().Empty() || !GetPreferredDataTypes().Has(type)) {
+  if (!GetDisableReasons().empty() || !GetPreferredDataTypes().Has(type)) {
     DVLOG(1)
         << "Sync or " << ModelTypeToDebugString(type)
         << " is disabled hence updates won't be downloaded from the server";
@@ -2360,7 +2360,7 @@ SyncServiceImpl::DownloadStatusRecorder::DownloadStatusRecorder(
       data_types_to_track_(data_types_to_track) {
   CHECK(sync_service_);
   CHECK(on_finished_callback_);
-  CHECK(!data_types_to_track_.Empty());
+  CHECK(!data_types_to_track_.empty());
   sync_service_->AddObserver(this);
   startup_metrics_timer_.Start(
       FROM_HERE, kRecordDownloadStatusTimeout, this,
@@ -2380,7 +2380,7 @@ void SyncServiceImpl::DownloadStatusRecorder::OnStateChanged(
 
   // |data_types_to_track_| must not be empty if |on_finished_callback_| deletes
   // the current object.
-  CHECK(!data_types_to_track_.Empty());
+  CHECK(!data_types_to_track_.empty());
 
   // Types which reached kUpToDate or kError download status. These types will
   // be removed from tracked data types.
@@ -2409,8 +2409,8 @@ void SyncServiceImpl::DownloadStatusRecorder::OnStateChanged(
   }
   data_types_to_track_.RemoveAll(types_to_remove_from_tracking);
 
-  if (data_types_to_track_.Empty()) {
-    if (!sync_service_->GetActiveDataTypes().Empty()) {
+  if (data_types_to_track_.empty()) {
+    if (!sync_service_->GetActiveDataTypes().empty()) {
       // This histogram will be reported at most once per browser session only
       // if there is at least one active data type (to exclude cases when sync
       // is disabled).

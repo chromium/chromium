@@ -1066,7 +1066,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
 
 TEST_F(PrefServiceSyncableChromeOsTest, IsPrefRegistered) {
   CreatePrefService();
-  EXPECT_TRUE(GetRegisteredModelTypes(kUnsyncedPreferenceName).Empty());
+  EXPECT_TRUE(GetRegisteredModelTypes(kUnsyncedPreferenceName).empty());
   EXPECT_EQ(ModelTypeSet({syncer::PREFERENCES}),
             GetRegisteredModelTypes(kBrowserPrefName));
   EXPECT_EQ(ModelTypeSet({syncer::PRIORITY_PREFERENCES}),

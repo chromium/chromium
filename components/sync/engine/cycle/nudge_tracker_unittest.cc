@@ -379,7 +379,7 @@ TEST_F(NudgeTrackerTest, IsGetUpdatesRequired_Throttling_Backoff) {
 TEST_F(NudgeTrackerTest, NoTypesBlocked) {
   EXPECT_FALSE(nudge_tracker_.IsAnyTypeBlocked());
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(SESSIONS));
-  EXPECT_TRUE(nudge_tracker_.GetBlockedTypes().Empty());
+  EXPECT_TRUE(nudge_tracker_.GetBlockedTypes().empty());
 }
 
 // Tests throttling-related getter functions when some types are throttled.
@@ -393,14 +393,14 @@ TEST_F(NudgeTrackerTest, ThrottleAndUnthrottle) {
   EXPECT_TRUE(nudge_tracker_.IsAnyTypeBlocked());
   EXPECT_TRUE(IsTypeThrottled(SESSIONS));
   EXPECT_TRUE(IsTypeThrottled(PREFERENCES));
-  EXPECT_FALSE(nudge_tracker_.GetBlockedTypes().Empty());
+  EXPECT_FALSE(nudge_tracker_.GetBlockedTypes().empty());
   EXPECT_EQ(throttle_length, nudge_tracker_.GetTimeUntilNextUnblock());
 
   nudge_tracker_.UpdateTypeThrottlingAndBackoffState();
 
   EXPECT_FALSE(nudge_tracker_.IsAnyTypeBlocked());
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(SESSIONS));
-  EXPECT_TRUE(nudge_tracker_.GetBlockedTypes().Empty());
+  EXPECT_TRUE(nudge_tracker_.GetBlockedTypes().empty());
 }
 
 // Tests backoff-related getter functions when some types are backed off.
@@ -414,14 +414,14 @@ TEST_F(NudgeTrackerTest, BackoffAndUnbackoff) {
   EXPECT_TRUE(nudge_tracker_.IsAnyTypeBlocked());
   EXPECT_TRUE(IsTypeBackedOff(SESSIONS));
   EXPECT_TRUE(IsTypeBackedOff(PREFERENCES));
-  EXPECT_FALSE(nudge_tracker_.GetBlockedTypes().Empty());
+  EXPECT_FALSE(nudge_tracker_.GetBlockedTypes().empty());
   EXPECT_EQ(backoff_length, nudge_tracker_.GetTimeUntilNextUnblock());
 
   nudge_tracker_.UpdateTypeThrottlingAndBackoffState();
 
   EXPECT_FALSE(nudge_tracker_.IsAnyTypeBlocked());
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(SESSIONS));
-  EXPECT_TRUE(nudge_tracker_.GetBlockedTypes().Empty());
+  EXPECT_TRUE(nudge_tracker_.GetBlockedTypes().empty());
 }
 
 TEST_F(NudgeTrackerTest, OverlappingThrottleIntervals) {

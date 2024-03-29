@@ -187,8 +187,8 @@ class PrivacyHubNotificationTextTest
   std::u16string ExpectedText(
       std::initializer_list<std::u16string> app_names = {}) {
     CHECK_LE(app_names.size(), 2ULL);
-    CHECK_GT(sensors_.Size(), 0ULL);
-    CHECK_LE(sensors_.Size(), 2ULL);
+    CHECK_GT(sensors_.size(), 0ULL);
+    CHECK_LE(sensors_.size(), 2ULL);
     const bool microphone =
         sensors_.Has(SensorDisabledNotificationDelegate::Sensor::kMicrophone);
     const bool camera =

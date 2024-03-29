@@ -90,7 +90,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
 
   // Create a main frame in a first process.
   auto process_node_1 = CreateNode<ProcessNodeImpl>();
-  EXPECT_TRUE(process_node_1->GetHostedContentTypes().Empty());
+  EXPECT_TRUE(process_node_1->GetHostedContentTypes().empty());
   auto main_frame_node =
       CreateFrameNodeAutoId(process_node_1.get(), page_node.get());
 
@@ -103,7 +103,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
 
   // Create a child frame node in another process.
   auto process_node_2 = CreateNode<ProcessNodeImpl>();
-  EXPECT_TRUE(process_node_2->GetHostedContentTypes().Empty());
+  EXPECT_TRUE(process_node_2->GetHostedContentTypes().empty());
   auto child_frame_node = CreateFrameNodeAutoId(
       process_node_2.get(), page_node.get(), main_frame_node.get());
 

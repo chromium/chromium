@@ -74,7 +74,7 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
               switches::kSyncUseFCMRegistrationTokensList)) {
         all_fcm_registration_tokens.push_back(device->fcm_registration_token());
       }
-    } else if (!device->interested_data_types().Empty()) {
+    } else if (!device->interested_data_types().empty()) {
       // An empty FCM registration token may be set for old clients, and for
       // modern clients supporting sync standalone invalidatoins if there was an
       // error during FCM registration. This does not matter in this case since

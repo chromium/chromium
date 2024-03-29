@@ -121,7 +121,7 @@ base::FieldTrialParams FeatureTestParams::ToFieldTrialParams() const {
 
   // Add the default params.
   base::Value::Dict dict;
-  if (!supported_processes.Empty()) {
+  if (!supported_processes.empty()) {
     // Explicitly disable profiling by default, so that only the processes
     // given in `supported_processes` will be enabled.
     dict.Set("is-supported", false);

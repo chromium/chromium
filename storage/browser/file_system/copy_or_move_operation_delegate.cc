@@ -406,7 +406,7 @@ class SnapshotCopyOrMoveImpl
 
     OnCopyOrMoveFileProgress(file_info.size);
 
-    if (options_.Empty()) {
+    if (options_.empty()) {
       RunAfterTouchFile(std::move(callback), base::File::FILE_OK);
       return;
     }
@@ -739,7 +739,7 @@ class StreamCopyOrMoveImpl
       return;
     }
 
-    if (options_.Empty()) {
+    if (options_.empty()) {
       RunAfterTouchFile(std::move(callback), base::File::FILE_OK);
       return;
     }
@@ -1129,7 +1129,7 @@ void CopyOrMoveOperationDelegate::ProcessDirectory(const FileSystemURL& src_url,
 void CopyOrMoveOperationDelegate::PostProcessDirectory(
     const FileSystemURL& src_url,
     StatusCallback callback) {
-  if (options_.Empty()) {
+  if (options_.empty()) {
     PostProcessDirectoryAfterTouchFile(src_url, std::move(callback),
                                        base::File::FILE_OK);
     return;

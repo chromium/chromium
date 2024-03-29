@@ -237,11 +237,11 @@ base::Value::Dict HostResolverDnsTask::NetLogDnsTaskTimeoutParams() {
 
 DnsQueryTypeSet HostResolverDnsTask::MaybeDisableAdditionalQueries(
     DnsQueryTypeSet types) {
-  DCHECK(!types.Empty());
+  DCHECK(!types.empty());
   DCHECK(!types.Has(DnsQueryType::UNSPECIFIED));
 
   // No-op if the caller explicitly requested this one query type.
-  if (types.Size() == 1) {
+  if (types.size() == 1) {
     return types;
   }
 
@@ -253,7 +253,7 @@ DnsQueryTypeSet HostResolverDnsTask::MaybeDisableAdditionalQueries(
       httpssvc_metrics_.emplace(secure_);
     }
   }
-  DCHECK(!types.Empty());
+  DCHECK(!types.empty());
   return types;
 }
 

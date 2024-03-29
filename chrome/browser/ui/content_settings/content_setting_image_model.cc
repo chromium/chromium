@@ -967,7 +967,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
 
   // If neither the microphone nor the camera stream was accessed then no icon
   // is displayed in the omnibox.
-  if (state_.Empty()) {
+  if (state_.empty()) {
     return false;
   }
 

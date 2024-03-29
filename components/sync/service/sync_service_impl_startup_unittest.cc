@@ -635,7 +635,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   component_factory()->AllowFakeEngineInitCompletion(false);
   SignInWithoutSyncConsent();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(sync_service()->GetDisableReasons().Empty());
+  EXPECT_TRUE(sync_service()->GetDisableReasons().empty());
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
             sync_service()->GetTransportState());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());

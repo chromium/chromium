@@ -1024,7 +1024,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   // as well.
   if (!Intersection(banned_features,
                     GetDisallowedForCacheControlNoStoreFeatures())
-           .Empty()) {
+           .empty()) {
     banned_features.Put(
         WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
     // Record the feature usage in `rfh`. This is needed because all
@@ -1037,7 +1037,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     rfh->RecordBackForwardCacheDisablingReason(
         WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
   }
-  if (!banned_features.Empty()) {
+  if (!banned_features.empty()) {
     if (!ShouldIgnoreBlocklists()) {
       MarkNoWithMultipleFeatures(&result, rfh, banned_features);
     }
@@ -1061,7 +1061,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   WebSchedulerTrackedFeatures banned_features = Intersection(
       GetDisallowedFeatures(RequestedFeatures::kAll, kNotInCCNSContext),
       rfh->GetBackForwardCacheDisablingFeatures());
-  if (!banned_features.Empty() && !ShouldIgnoreBlocklists()) {
+  if (!banned_features.empty() && !ShouldIgnoreBlocklists()) {
     if (requested_features == RequestedFeatures::kAll ||
         (requested_features == RequestedFeatures::kAllIfAcked &&
          rfh->render_view_host()->DidReceiveBackForwardCacheAck())) {

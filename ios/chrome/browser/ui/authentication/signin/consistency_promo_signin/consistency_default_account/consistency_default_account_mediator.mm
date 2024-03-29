@@ -53,7 +53,7 @@ NSString* GetPromoLabelString(
       // This could check `sync_types_disabled_by_policy` only for the types
       // mentioned in the regular string, but don't bother.
       return sync_transport_disabled_by_policy ||
-                     !sync_types_disabled_by_policy.Empty()
+                     !sync_types_disabled_by_policy.empty()
                  ? l10n_util::GetNSString(
                        IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL)
                  : l10n_util::GetNSString(
@@ -62,7 +62,7 @@ NSString* GetPromoLabelString(
       // This could check `sync_types_disabled_by_policy` only for the types
       // mentioned in the regular string, but don't bother.
       return sync_transport_disabled_by_policy ||
-                     !sync_types_disabled_by_policy.Empty()
+                     !sync_types_disabled_by_policy.empty()
                  ? nil
                  : l10n_util::GetNSString(
                        IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
@@ -71,7 +71,7 @@ NSString* GetPromoLabelString(
       // was easier to hide it than come up with new strings. In the future, we
       // could tweak the card strings and return nil here.
       DUMP_WILL_BE_CHECK(!sync_transport_disabled_by_policy &&
-                         sync_types_disabled_by_policy.Empty());
+                         sync_types_disabled_by_policy.empty());
       return l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:

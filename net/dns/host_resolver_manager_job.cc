@@ -112,16 +112,16 @@ bool HostResolverManager::JobKey::operator==(const JobKey& other) const {
 }
 
 HostCache::Key HostResolverManager::JobKey::ToCacheKey(bool secure) const {
-  if (query_types.Size() != 1) {
+  if (query_types.size() != 1) {
     // This function will produce identical cache keys for `JobKey` structs
     // that differ only in their (non-singleton) `query_types` fields. When we
     // enable new query types, this behavior could lead to subtle bugs. That
     // is why the following DCHECK restricts the allowable query types.
     DCHECK(Difference(query_types, {DnsQueryType::A, DnsQueryType::AAAA,
                                     DnsQueryType::HTTPS})
-               .Empty());
+               .empty());
   }
-  const DnsQueryType query_type_for_key = query_types.Size() == 1
+  const DnsQueryType query_type_for_key = query_types.size() == 1
                                               ? *query_types.begin()
                                               : DnsQueryType::UNSPECIFIED;
   absl::variant<url::SchemeHostPort, std::string> host_for_cache;

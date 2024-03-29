@@ -119,7 +119,7 @@ std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
   for (const syncer::UserSelectableType type : types_set) {
     syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, type);
   }
-  if (types_set.Size() > 0) {
+  if (types_set.size() > 0) {
     return base::StringPrintf(kDisabledSyncTypesLogFormat, policy_name.c_str(),
                               UserSelectableTypeSetToString(types_set).c_str());
   }

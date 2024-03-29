@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
                   current_frame_host())
                   ->GetBackForwardCacheDisablingFeatures()
-                  .Empty());
+                  .empty());
 
   // Use a broadcast channel in the frame.
   EXPECT_TRUE(ExecJs(current_frame_host(),

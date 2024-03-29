@@ -132,7 +132,7 @@ void BackendMigrator::OnConfigureDoneImpl(
       Intersection(result.requested_types, to_migrate_);
   // This intersection check is to determine if our disable request
   // was interrupted by a user changing preferred types.
-  if (state_ == DISABLING_TYPES && !intersection.Empty()) {
+  if (state_ == DISABLING_TYPES && !intersection.empty()) {
     SDVLOG(1) << "Disable request interrupted by user changing types";
     RestartMigration();
     return;

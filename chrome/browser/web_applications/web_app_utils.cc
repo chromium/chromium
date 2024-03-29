@@ -570,7 +570,7 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(
     WebAppManagementTypes specified_sources) {
   bool has_any_specified_sources = sources.HasAny(specified_sources);
   bool has_no_other_sources =
-      base::Difference(sources, specified_sources).Empty();
+      base::Difference(sources, specified_sources).empty();
   return has_any_specified_sources && has_no_other_sources;
 }
 

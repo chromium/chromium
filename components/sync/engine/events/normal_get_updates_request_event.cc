@@ -55,14 +55,14 @@ std::string NormalGetUpdatesRequestEvent::GetType() const {
 std::string NormalGetUpdatesRequestEvent::GetDetails() const {
   std::string details;
 
-  if (!nudged_types_.Empty()) {
+  if (!nudged_types_.empty()) {
     if (!details.empty())
       details.append("\n");
     details.append(base::StringPrintf(
         "Nudged types: %s", ModelTypeSetToDebugString(nudged_types_).c_str()));
   }
 
-  if (!notified_types_.Empty()) {
+  if (!notified_types_.empty()) {
     if (!details.empty())
       details.append("\n");
     details.append(
@@ -70,7 +70,7 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
                            ModelTypeSetToDebugString(notified_types_).c_str()));
   }
 
-  if (!refresh_requested_types_.Empty()) {
+  if (!refresh_requested_types_.empty()) {
     if (!details.empty())
       details.append("\n");
     details.append(base::StringPrintf(

@@ -76,16 +76,16 @@ base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types) {
       Union(Union(control_types, high_priority_types), low_priority_types));
 
   base::queue<ModelTypeSet> result;
-  if (!control_types.Empty()) {
+  if (!control_types.empty()) {
     result.push(control_types);
   }
-  if (!high_priority_types.Empty()) {
+  if (!high_priority_types.empty()) {
     result.push(high_priority_types);
   }
-  if (!regular_types.Empty()) {
+  if (!regular_types.empty()) {
     result.push(regular_types);
   }
-  if (!low_priority_types.Empty()) {
+  if (!low_priority_types.empty()) {
     result.push(low_priority_types);
   }
 
@@ -526,7 +526,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
   // just now (i.e. initial sync was just completed for them).
   downloaded_types_.PutAll(succeeded_configuration_types);
 
-  if (!failed_configuration_types.Empty()) {
+  if (!failed_configuration_types.empty()) {
     DataTypeStatusTable::TypeErrorMap errors;
     for (ModelType type : failed_configuration_types) {
       SyncError error(FROM_HERE, SyncError::DATATYPE_ERROR,
@@ -591,12 +591,12 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   disabled_types.PutAll(crypto_types);
   disabled_types.PutAll(unready_types);
 
-  DCHECK(Intersection(active_types, disabled_types).Empty());
+  DCHECK(Intersection(active_types, disabled_types).empty());
 
   ModelTypeSet types_to_download = Difference(active_types, downloaded_types_);
   // Commit-only types never require downloading.
   types_to_download.RemoveAll(CommitOnlyTypes());
-  if (!types_to_download.Empty()) {
+  if (!types_to_download.empty()) {
     types_to_download.PutAll(ControlTypes());
   }
 
@@ -618,9 +618,9 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   types_to_purge.RemoveAll(inactive_types);
   types_to_purge.RemoveAll(unready_types);
 
-  DCHECK(Intersection(active_types, types_to_purge).Empty());
+  DCHECK(Intersection(active_types, types_to_purge).empty());
 
-  DCHECK(Intersection(downloaded_types_, crypto_types).Empty());
+  DCHECK(Intersection(downloaded_types_, crypto_types).empty());
 
   DVLOG(1) << "Types " << ModelTypeSetToDebugString(types_to_download)
            << " added; calling ConfigureDataTypes";

@@ -253,7 +253,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateFCMRegistrationToken) {
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
   InitializeProvider();
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().empty());
 
   const ModelTypeSet kTypes = {BOOKMARKS};
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())

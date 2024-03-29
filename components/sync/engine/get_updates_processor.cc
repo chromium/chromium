@@ -245,7 +245,7 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
   DVLOG(2) << SyncerProtoUtil::ClientToServerResponseDebugString(
       update_response);
 
-  if (!partial_failure_data_types.Empty()) {
+  if (!partial_failure_data_types.empty()) {
     request_types->RemoveAll(partial_failure_data_types);
   }
 
@@ -310,12 +310,12 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
 
   TypeSyncEntityMap updates_by_type;
   PartitionUpdatesByType(gu_response, gu_types, &updates_by_type);
-  DCHECK_EQ(gu_types.Size(), updates_by_type.size());
+  DCHECK_EQ(gu_types.size(), updates_by_type.size());
 
   TypeToIndexMap progress_index_by_type;
   PartitionProgressMarkersByType(gu_response, gu_types,
                                  &progress_index_by_type);
-  if (gu_types.Size() != progress_index_by_type.size()) {
+  if (gu_types.size() != progress_index_by_type.size()) {
     NOTREACHED() << "Missing progress markers in GetUpdates response.";
     return SyncerError::ProtocolViolationError();
   }

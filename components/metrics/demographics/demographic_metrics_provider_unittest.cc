@@ -74,7 +74,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // TestSyncService by default behaves as everything enabled/active.
         sync_service_ = std::make_unique<syncer::TestSyncService>();
 
-        CHECK(sync_service_->GetDisableReasons().Empty());
+        CHECK(sync_service_->GetDisableReasons().empty());
         CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
                  sync_service_->GetTransportState());
         break;
@@ -84,7 +84,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // Mimic the user signing out from content are (sync paused).
         sync_service_->SetPersistentAuthError();
 
-        CHECK(sync_service_->GetDisableReasons().Empty());
+        CHECK(sync_service_->GetDisableReasons().empty());
         CHECK_EQ(syncer::SyncService::TransportState::PAUSED,
                  sync_service_->GetTransportState());
         break;
@@ -95,7 +95,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         CHECK(sync_service_->GetUserSettings()->GetSelectedTypes().Has(
             syncer::UserSelectableType::kPreferences));
         CHECK(!sync_service_->IsSyncFeatureEnabled());
-        CHECK(sync_service_->GetDisableReasons().Empty());
+        CHECK(sync_service_->GetDisableReasons().empty());
         CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
                  sync_service_->GetTransportState());
         break;

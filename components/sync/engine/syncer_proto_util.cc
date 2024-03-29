@@ -291,7 +291,7 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
       should_report_success = true;
       break;
     case THROTTLED:
-      if (sync_protocol_error.error_data_types.Empty()) {
+      if (sync_protocol_error.error_data_types.empty()) {
         DLOG(WARNING) << "Client fully throttled by syncer.";
         cycle->delegate()->OnThrottled(GetThrottleDelay(response));
       } else {
@@ -314,7 +314,7 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
       break;
     case PARTIAL_FAILURE:
       // This only happens when partial backoff during GetUpdates.
-      if (!sync_protocol_error.error_data_types.Empty()) {
+      if (!sync_protocol_error.error_data_types.empty()) {
         DLOG(WARNING)
             << "Some types got partial failure by syncer during GetUpdates.";
         cycle->delegate()->OnTypesBackedOff(

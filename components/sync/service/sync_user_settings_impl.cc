@@ -242,7 +242,7 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     if (!base::Intersection(registered_model_types_,
                             UserSelectableTypeToAllModelTypes(type))
-             .Empty()) {
+             .empty()) {
       registered_types.Put(type);
     }
   }
@@ -290,7 +290,7 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     if (!base::Intersection(registered_model_types_,
                             UserSelectableOsTypeToAllModelTypes(type))
-             .Empty()) {
+             .empty()) {
       registered_types.Put(type);
     }
   }
@@ -447,7 +447,7 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
     // AUTOFILL_WALLET_CREDENTIAL being listed as AlwaysEncryptedUserTypes().
     preferred_types.Remove(syncer::AUTOFILL_WALLET_CREDENTIAL);
   }
-  return !Intersection(preferred_types, encrypted_types).Empty();
+  return !Intersection(preferred_types, encrypted_types).empty();
 }
 
 std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {

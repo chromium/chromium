@@ -245,14 +245,14 @@ bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
                       {Reason::kCacheControlNoStore,
                        Reason::kCacheControlNoStoreCookieModified,
                        Reason::kCacheControlNoStoreHTTPOnlyCookieModified})
-        .Empty();
+        .empty();
   } else {
-    return not_restored_reasons_.Empty();
+    return not_restored_reasons_.empty();
   }
 }
 
 bool BackForwardCacheCanStoreDocumentResult::CanRestore() const {
-  return not_restored_reasons_.Empty();
+  return not_restored_reasons_.empty();
 }
 
 const BlockListedFeatures

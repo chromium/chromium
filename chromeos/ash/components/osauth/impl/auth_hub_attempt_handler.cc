@@ -69,7 +69,7 @@ void AuthHubAttemptHandler::PrepareForShutdown(base::OnceClosure callback) {
 
 void AuthHubAttemptHandler::OnFactorsChecked(AuthFactorsSet available_factors,
                                              AuthFactorsSet failed_factors) {
-  DCHECK(Intersection(available_factors, failed_factors).Empty());
+  DCHECK(Intersection(available_factors, failed_factors).empty());
   // TODO(b/286814076): Refine this strategy.
   // All factors can be split into 4 groups, according to initial_factors_ and
   // two parameters passed:
@@ -91,7 +91,7 @@ void AuthHubAttemptHandler::OnFactorsChecked(AuthFactorsSet available_factors,
 
   AuthFactorsSet failed_initial =
       Intersection(initial_factors_, failed_factors);
-  bool same_factor_list = new_factors.Empty() && removed_factors.Empty();
+  bool same_factor_list = new_factors.empty() && removed_factors.empty();
 
   if (same_factor_list) {
     for (AshAuthFactor f : failed_initial) {

@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
             syncer::SyncService::TransportState::ACTIVE);
   const syncer::ModelTypeSet active_types =
       GetSyncService(0)->GetActiveDataTypes();
-  ASSERT_FALSE(active_types.Empty());
+  ASSERT_FALSE(active_types.empty());
 
   // Enter the "Sync paused" state.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
   EXPECT_FALSE(GetSyncService(0)->IsEngineInitialized());
 
   // The active data types should now be empty.
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Empty());
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
 
   // Clear the "Sync paused" state again.
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();

@@ -113,7 +113,7 @@ TEST(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
 
 TEST(ModelTypeTest, ModelTypesSubsetsSanity) {
   // UserTypes and ControlTypes shouldn't overlap.
-  EXPECT_TRUE(Intersection(UserTypes(), ControlTypes()).Empty());
+  EXPECT_TRUE(Intersection(UserTypes(), ControlTypes()).empty());
 
   // UserTypes should contain all *UserTypes.
   EXPECT_TRUE(UserTypes().HasAll(AlwaysPreferredUserTypes()));
@@ -123,14 +123,14 @@ TEST(ModelTypeTest, ModelTypesSubsetsSanity) {
 
   // Low-prio types and high-prio types shouldn't overlap.
   EXPECT_TRUE(
-      Intersection(LowPriorityUserTypes(), HighPriorityUserTypes()).Empty());
+      Intersection(LowPriorityUserTypes(), HighPriorityUserTypes()).empty());
 
   // The always-encrypted types should be encryptable.
   EXPECT_TRUE(EncryptableUserTypes().HasAll(AlwaysEncryptedUserTypes()));
 
   // Commit-only types are meant for consumption on the server, and so should
   // not be encryptable (with a custom passphrase).
-  EXPECT_TRUE(Intersection(CommitOnlyTypes(), EncryptableUserTypes()).Empty());
+  EXPECT_TRUE(Intersection(CommitOnlyTypes(), EncryptableUserTypes()).empty());
 }
 
 TEST(ModelTypeTest, ModelTypeSetFromSpecificsFieldNumberList) {

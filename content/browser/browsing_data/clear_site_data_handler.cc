@@ -322,7 +322,7 @@ bool ClearSiteDataHandler::ParseHeader(
     output_types += input_type;
   }
 
-  if (clear_site_data_types->Empty() && storage_buckets_to_remove->empty()) {
+  if (clear_site_data_types->empty() && storage_buckets_to_remove->empty()) {
     delegate->AddMessage(current_url, "No recognized types specified.",
                          blink::mojom::ConsoleMessageLevel::kError);
     LogEvent(CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES);

@@ -391,7 +391,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
         ReportCorruptionStatus::kSourceInvalidDestinationSites);
   }
 
-  if (!corruption_causes.Empty()) {
+  if (!corruption_causes.empty()) {
     return base::unexpected(
         ReportCorruptionStatusSetAndIds(corruption_causes, source_id));
   }
@@ -1650,7 +1650,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       break;
   }
 
-  if (!corruptions.status_set.Empty()) {
+  if (!corruptions.status_set.empty()) {
     corruptions.status_set.Put(ReportCorruptionStatus::kAnyFieldCorrupted);
     return base::unexpected(std::move(corruptions));
   }

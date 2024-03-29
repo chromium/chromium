@@ -557,7 +557,7 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
   }
 
   // Show the confirmation prompt if there is data pending upload.
-  bool should_show_confirmation_prompt = !unsynced_datatypes.Empty();
+  bool should_show_confirmation_prompt = !unsynced_datatypes.empty();
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
       base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
                      reauth_access_point, profile_signout_source,

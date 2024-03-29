@@ -283,7 +283,7 @@ base::Value::Dict SellerCapabilitiesToDict(
       dict.Set(origin.Serialize(), SellerCapabilitiesToList(capabilities));
     }
   }
-  if (!all_sellers_capabilities.Empty()) {
+  if (!all_sellers_capabilities.empty()) {
     dict.Set("*", SellerCapabilitiesToList(all_sellers_capabilities));
   }
   return dict;
@@ -936,7 +936,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     if (group.size_groups) {
       dict.Set("sizeGroups", SizeGroupsToDict(*group.size_groups));
     }
-    if (!group.auction_server_request_flags.Empty()) {
+    if (!group.auction_server_request_flags.empty()) {
       dict.Set(
           "auctionServerRequestFlags",
           AuctionServerRequestFlagsToList(group.auction_server_request_flags));

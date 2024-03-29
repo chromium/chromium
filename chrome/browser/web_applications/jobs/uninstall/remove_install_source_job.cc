@@ -26,7 +26,7 @@ enum class Action {
 
 Action GetAction(const WebAppManagementTypes& sources,
                  const WebAppManagementTypes& sources_to_remove) {
-  if (sources.Empty()) {
+  if (sources.empty()) {
     // TODO(crbug.com/1427340): Return a different UninstallResultCode
     // for this case and log it in metrics.
     return Action::kRemoveApp;

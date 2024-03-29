@@ -303,7 +303,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // data type, otherwise the sign-out is triggered without dialog.
 - (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::ModelTypeSet)set {
   [self allowUserInteraction];
-  if (!set.Empty()) {
+  if (!set.empty()) {
     for (syncer::ModelType type : set) {
       base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
                                     syncer::ModelTypeHistogramValue(type));

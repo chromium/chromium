@@ -138,7 +138,7 @@ SyncState GetSyncFeatureState(syncer::SyncService* sync_service) {
   } else if (!sync_service->CanSyncFeatureStart()) {
     // Sync engine is off.
     return SyncState::kSyncOff;
-  } else if (sync_service->GetUserSettings()->GetSelectedTypes().Empty()) {
+  } else if (sync_service->GetUserSettings()->GetSelectedTypes().empty()) {
     // User has deselected all sync data types.
     // With pre-MICE, the sync status should be SyncState::kSyncEnabled to show
     // the same value than the sync toggle.

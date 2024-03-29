@@ -10,7 +10,7 @@
 MigrationWaiter::MigrationWaiter(syncer::ModelTypeSet expected_types,
                                  MigrationWatcher* watcher)
     : watcher_(watcher), expected_types_(expected_types) {
-  DCHECK(!expected_types_.Empty());
+  DCHECK(!expected_types_.empty());
   watcher_->set_migration_waiter(this);
 }
 

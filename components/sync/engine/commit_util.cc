@@ -43,7 +43,7 @@ void AddClientConfigParamsToMessage(
         fcm_registration_tokens_for_interested_clients,
     sync_pb::CommitMessage* message) {
   sync_pb::ClientConfigParams* config_params = message->mutable_config_params();
-  DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
+  DCHECK(Difference(enabled_types, ProtocolTypes()).empty());
   for (ModelType type : enabled_types) {
     int field_number = GetSpecificsFieldNumberFromModelType(type);
     config_params->mutable_enabled_type_ids()->Add(field_number);

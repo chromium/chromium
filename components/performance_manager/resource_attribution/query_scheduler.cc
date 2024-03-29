@@ -171,7 +171,7 @@ void QueryScheduler::RequestResults(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Send out a measurement request for each resource type. The BarrierCallback
   // will invoke OnResultsReceived when all have responded.
-  const size_t num_requests = query_params.resource_types.Size();
+  const size_t num_requests = query_params.resource_types.size();
   auto barrier_callback = base::BarrierCallback<QueryResultMap>(
       num_requests, base::BindOnce(&QueryScheduler::OnResultsReceived,
                                    weak_factory_.GetWeakPtr(),

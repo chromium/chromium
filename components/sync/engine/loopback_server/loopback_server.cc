@@ -365,7 +365,7 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
         response->add_migrated_data_type_id(
             GetSpecificsFieldNumberFromModelType(type));
       }
-    } else if (!throttled_datatypes_in_request.Empty()) {
+    } else if (!throttled_datatypes_in_request.empty()) {
       DLOG(WARNING) << "Throttled datatypes: "
                     << ModelTypeSetToDebugString(
                            throttled_datatypes_in_request);
@@ -699,7 +699,7 @@ bool LoopbackServer::HandleCommitRequest(
   if (observer_for_tests_)
     observer_for_tests_->OnCommit(committed_model_types);
 
-  return throttled_datatypes_in_request->Empty();
+  return throttled_datatypes_in_request->empty();
 }
 
 void LoopbackServer::ClearServerData() {

@@ -105,7 +105,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, Initializing) {
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
-  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   CreateRecorder();
 
@@ -171,7 +171,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
-  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   CreateRecorder();
 
@@ -216,7 +216,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
-  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   // Once the recorder gets created, it should record the pre-existing state,
   // which is "undefined".

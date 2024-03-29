@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistoryNonGmailSyncTest,
   SignInAndSetAccountInfo(/*is_managed=*/true);
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Empty());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().empty());
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
 }
 

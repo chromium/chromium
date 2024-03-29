@@ -331,11 +331,11 @@ std::string DataTypeToString(Operand::DataType data_type) {
 std::string DataTypeConstraintToString(
     const DataTypeConstraintSet& constraint_set) {
   std::vector<std::string> data_types;
-  data_types.reserve(constraint_set.Size());
+  data_types.reserve(constraint_set.size());
   for (auto data_type : constraint_set) {
     data_types.push_back(DataTypeToString(data_type));
   }
-  return base::JoinString(data_types, /* saperator */ ",");
+  return base::JoinString(data_types, /*separator=*/",");
 }
 
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(

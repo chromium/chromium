@@ -84,7 +84,7 @@ AuthFactorPresenceCache::~AuthFactorPresenceCache() = default;
 void AuthFactorPresenceCache::StoreFactorPresenceCache(AuthAttemptVector vector,
                                                        AuthFactorsSet factors) {
   if (user_manager::UserManager::Get()->IsEphemeralAccountId(vector.account)) {
-    if (factors.Empty()) {
+    if (factors.empty()) {
       return;
     }
   }

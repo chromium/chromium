@@ -353,7 +353,7 @@ void WebApp::RemoveSource(WebAppManagement::Type source) {
 }
 
 bool WebApp::HasAnySources() const {
-  return !sources_.Empty();
+  return !sources_.empty();
 }
 
 bool WebApp::HasOnlySource(WebAppManagement::Type source) const {

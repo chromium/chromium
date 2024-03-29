@@ -272,7 +272,7 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
         BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
     auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
         BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
-    ASSERT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
+    ASSERT_TRUE(Intersection(disallowed_features, allowed_features).empty());
     for (auto feature : Union(disallowed_features, allowed_features)) {
       combined_features.emplace(static_cast<uint64_t>(feature));
     }

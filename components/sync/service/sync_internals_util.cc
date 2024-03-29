@@ -143,7 +143,7 @@ class SectionList {
 
 std::string GetDisableReasonsString(
     SyncService::DisableReasonSet disable_reasons) {
-  if (disable_reasons.Empty()) {
+  if (disable_reasons.empty()) {
     return "None";
   }
   std::vector<std::string> reason_strings;

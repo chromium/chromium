@@ -215,7 +215,7 @@ class SyncEngineImplTest : public testing::Test {
     DCHECK(fake_manager_);
 
     if (expect_success) {
-      EXPECT_TRUE(engine_types_.Empty());
+      EXPECT_TRUE(engine_types_.empty());
       engine_types_ = fake_manager_->GetConnectedTypes();
       ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes)
           .WillByDefault(Return(engine_types_));
@@ -239,7 +239,7 @@ class SyncEngineImplTest : public testing::Test {
     params.reason = CONFIGURE_REASON_RECONFIGURATION;
     ModelTypeSet enabled_types = Difference(enabled_types_, unready_types);
     params.to_download = Difference(enabled_types, engine_types_);
-    if (!params.to_download.Empty()) {
+    if (!params.to_download.empty()) {
       params.to_download.Put(NIGORI);
     }
     params.to_purge = Difference(engine_types_, enabled_types_);
@@ -334,12 +334,12 @@ TEST_F(SyncEngineImplTest, Restart) {
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
   InitializeBackend();
-  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().Empty());
+  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().empty());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 
   ModelTypeSet ready_types = ConfigureDataTypes();
   EXPECT_EQ(enabled_types_, ready_types);
-  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().Empty());
+  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().empty());
   EXPECT_EQ(enabled_types_, fake_manager_->InitialSyncEndedTypes());
 }
 
@@ -360,7 +360,7 @@ TEST_F(SyncEngineImplTest, DisableTypes) {
   // Only those datatypes disabled should be cleaned. Nothing should be
   // downloaded.
   EXPECT_EQ(enabled_types_, ready_types);
-  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().Empty());
+  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().empty());
 }
 
 TEST_F(SyncEngineImplTest, AddTypes) {
@@ -422,7 +422,7 @@ TEST_F(SyncEngineImplTest, NewlySupportedTypes) {
 
   // Does nothing.
   InitializeBackend();
-  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().Empty());
+  EXPECT_TRUE(fake_manager_->GetAndResetDownloadedTypes().empty());
   EXPECT_EQ(old_types, fake_manager_->InitialSyncEndedTypes());
 
   // Downloads and applies the new types (plus nigori).

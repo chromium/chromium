@@ -252,7 +252,7 @@ TEST_F(SyncToSigninMigrationTest, SyncPaused) {
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
-  ASSERT_TRUE(sync_service_.GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
 
   const std::string gaia_id = sync_service_.GetAccountInfo().gaia;
   const std::string email = sync_service_.GetAccountInfo().email;
@@ -512,7 +512,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
   sync_service_.SetHasSyncConsent(false);
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
-  ASSERT_TRUE(sync_service_.GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
 
   // Save the above state to prefs.
   RecordStateToPrefs();
@@ -584,7 +584,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
-  ASSERT_TRUE(sync_service_.GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
 
   // Save the above state to prefs.
   RecordStateToPrefs();
@@ -631,7 +631,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
-  ASSERT_TRUE(sync_service_.GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());
 
   // Save the above state to prefs.
   RecordStateToPrefs();

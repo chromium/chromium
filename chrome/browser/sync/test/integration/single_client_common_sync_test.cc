@@ -141,10 +141,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // unnecessary GetUpdates requests after browser restart.
   EXPECT_TRUE(Difference(get_updates_observer.GetAllOrigins(),
                          get_updates_origins_to_exclude)
-                  .Empty());
+                  .empty());
   EXPECT_TRUE(
       Difference(get_updates_observer.GetUpdatedTypes(), types_to_exclude)
-          .Empty())
+          .empty())
       << "Updated data types: " << get_updates_observer.GetUpdatedTypes();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

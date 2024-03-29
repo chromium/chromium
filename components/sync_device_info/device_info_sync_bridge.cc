@@ -859,7 +859,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   const ModelTypeSet new_data_types =
       Difference(current_info->interested_data_types(),
                  previous_device_info.interested_data_types());
-  if (new_interested_data_types_callback_ && !new_data_types.Empty()) {
+  if (new_interested_data_types_callback_ && !new_data_types.empty()) {
     device_info_synced_callback_list_.push_back(
         base::BindOnce(new_interested_data_types_callback_, new_data_types));
   }

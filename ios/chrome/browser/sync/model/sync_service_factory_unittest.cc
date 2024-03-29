@@ -127,7 +127,7 @@ TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
   const syncer::ModelTypeSet default_types = DefaultDatatypes();
-  EXPECT_EQ(default_types.Size(), types.Size());
+  EXPECT_EQ(default_types.size(), types.size());
   for (syncer::ModelType type : default_types) {
     EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
   }

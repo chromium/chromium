@@ -60,7 +60,7 @@ class ModelTypeRegistryTest : public ::testing::Test {
 };
 
 TEST_F(ModelTypeRegistryTest, ConnectDataTypes) {
-  EXPECT_TRUE(registry()->GetConnectedTypes().Empty());
+  EXPECT_TRUE(registry()->GetConnectedTypes().empty());
 
   registry()->ConnectDataType(THEMES, MakeDataTypeActivationResponse(
                                           MakeInitialModelTypeState(THEMES)));

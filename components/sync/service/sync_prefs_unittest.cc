@@ -584,7 +584,7 @@ TEST_F(SyncPrefsTest,
   // kPasswords should be disabled.
   UserSelectableTypeSet selected_types =
       sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_);
-  ASSERT_FALSE(selected_types.Empty());
+  ASSERT_FALSE(selected_types.empty());
   EXPECT_FALSE(selected_types.Has(UserSelectableType::kPasswords));
 
   // User tries to enable kPasswords.

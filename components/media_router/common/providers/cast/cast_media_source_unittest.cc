@@ -35,7 +35,7 @@ TEST(CastMediaSourceTest, FromCastURLWithDefaults) {
   ASSERT_EQ(1u, source->app_infos().size());
   const CastAppInfo& app_info = source->app_infos()[0];
   EXPECT_EQ("ABCDEFAB", app_info.app_id);
-  EXPECT_TRUE(app_info.required_capabilities.Empty());
+  EXPECT_TRUE(app_info.required_capabilities.empty());
   EXPECT_EQ(std::nullopt, source->target_playout_delay());
   EXPECT_EQ(true, source->site_requested_audio_capture());
   EXPECT_EQ(cast_channel::VirtualConnectionType::kStrong,

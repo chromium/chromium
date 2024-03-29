@@ -50,7 +50,7 @@ TestSyncService::~TestSyncService() = default;
 
 void TestSyncService::SetDisableReasons(DisableReasonSet disable_reasons) {
   disable_reasons_ = disable_reasons;
-  if (!disable_reasons_.Empty()) {
+  if (!disable_reasons_.empty()) {
     transport_state_ = TransportState::DISABLED;
   } else if (transport_state_ == TransportState::DISABLED) {
     transport_state_ = TransportState::ACTIVE;

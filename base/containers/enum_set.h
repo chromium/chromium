@@ -300,13 +300,9 @@ class EnumSet {
 
   // Returns true iff our set is empty.
   bool empty() const { return !enums_.any(); }
-  // TODO(thestig): Replace with empty().
-  bool Empty() const { return empty(); }
 
   // Returns how many values our set has.
   size_t size() const { return enums_.count(); }
-  // TODO(thestig): Replace with size().
-  size_t Size() const { return size(); }
 
   // Returns an iterator pointing to the first element (if any).
   Iterator begin() const { return Iterator(enums_); }
