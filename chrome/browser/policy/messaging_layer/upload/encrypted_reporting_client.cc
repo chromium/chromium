@@ -49,6 +49,15 @@ namespace reporting {
 
 namespace {
 
+// UMA that reflects events upload count: samples number of times a single event
+// is sent to the server. Per-event count is incremented every time an event is
+// sent, and the metrics sample is recorded once the event is confirmed by the
+// server (and thus won't be sent anymore). Expected to be 1 for the majority of
+// the events, although minor duplication is allowed. This counter is inexact,
+// since it may be reset in rare cases uploader memory usage reaches its limit -
+// tracked by Browser.ERP.UploadMemoryUsagePercent metrics.
+constexpr char kEventsUploadCount[] = "Browser.ERP.EventsUploadCount";
+
 // Returns `true` if HTTP response code indicates an irrecoverable error.
 bool IsIrrecoverableError(int response_code) {
   return response_code >= ::net::HTTP_BAD_REQUEST &&
@@ -148,6 +157,12 @@ struct UploadState {
   // Total memory reservation for all cached records.
   ScopedReservation scoped_reservation;
 
+  // Upload counters per sequence id. Incremented every time an event is sent to
+  // server, sampled in UMA and removed from map once the event is confirmed or
+  // if the state is reset.
+  // UMA is expected to see counter of 1 for the majority of events.
+  base::flat_map<int64_t /*sequence_id*/, size_t> upload_counters;
+
   // Highest sequence id that has been successfully sent to server
   // (but not confirmed, so it remains in `cached_records_`). Events until
   // `last_sequence_id` (inclusive) are not sent to the server.
@@ -189,10 +204,20 @@ UploadState* GetState(Priority priority, int64_t generation_id) {
 }
 
 // Removes confirmed events from cache.
-void RemoveConfirmedEventFromCache(UploadState* state) {
+void RemoveConfirmedEventsFromCache(UploadState* state) {
   // Remove no longer needed events from cache.
   while (!state->cached_records.empty() &&
          state->cached_records.begin()->first <= state->last_sequence_id) {
+    // Sample upload counter.
+    if (const auto it =
+            state->upload_counters.find(state->cached_records.begin()->first);
+        it != state->upload_counters.end()) {
+      base::UmaHistogramCustomCounts(kEventsUploadCount, /*sample=*/it->second,
+                                     /*min=*/1, /*exclusive_max=*/20,
+                                     /*buckets=*/20);
+      state->upload_counters.erase(it);
+    }
+    // Remove record from cache.
     state->cached_records.erase(state->cached_records.begin());
   }
   // Reduce reserved memory.
@@ -215,11 +240,13 @@ void BuildPayload(
     ScopedReservation scoped_reservation,
     base::OnceCallback<void(std::optional<base::Value::Dict> /*payload_result*/,
                             ScopedReservation /*scoped_reservation*/,
-                            int64_t /*last_sequence_id*/)> create_job_cb) {
+                            int64_t /*last_sequence_id*/,
+                            uint64_t /*events_to_send*/)> create_job_cb) {
   // Prepare request builder.
   UploadEncryptedReportingRequestBuilder request_builder{
       is_generation_guid_required, need_encryption_key, config_file_version};
   // Copy records to it, as long as memory reservation allows.
+  uint64_t events_to_send = 0u;
   for (const auto& [seq_id, record] : records) {
     // Skip records that already have been sent to server.
     if (seq_id <= last_sequence_id) {
@@ -240,6 +267,7 @@ void BuildPayload(
     // Make a copy of the record and hand it over to the builder.
     request_builder.AddRecord(EncryptedRecord(record), record_reservation);
     scoped_reservation.HandOver(record_reservation);
+    ++events_to_send;
   }
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
@@ -247,7 +275,7 @@ void BuildPayload(
   // Build payload and create job.
   std::move(create_job_cb)
       .Run(request_builder.Build(), std::move(scoped_reservation),
-           last_sequence_id);
+           last_sequence_id, events_to_send);
 }
 
 // Manages reporting payload sizes of single uploads via UMA.
@@ -424,6 +452,12 @@ void EncryptedReportingClient::UploadReport(
       record.Clear();
       continue;
     }
+    if (record.sequence_information().sequencing_id() <=
+        state->last_sequence_id) {
+      // Record has already been uploaded.
+      record.Clear();
+      continue;
+    }
     const auto [it, success] = state->cached_records.insert(std::make_pair(
         record.sequence_information().sequencing_id(), std::move(record)));
     if (!success) {
@@ -496,7 +530,8 @@ void EncryptedReportingClient::CreateUploadJob(
     ResponseCallback callback,
     std::optional<base::Value::Dict> payload_result,
     ScopedReservation scoped_reservation,
-    int64_t last_sequence_id) {
+    int64_t last_sequence_id,
+    uint64_t events_to_send) {
   if (!self) {
     std::move(callback).Run(base::unexpected(
         Status(error::UNAVAILABLE, "Client has been destructed")));
@@ -559,6 +594,23 @@ void EncryptedReportingClient::CreateUploadJob(
                                 state->job.reset();
                               },
                               priority, generation_id));
+
+  // Store or increment upload counter for every event included in the upload.
+  for (const auto& [sequence_id, _] : state->cached_records) {
+    if (sequence_id <= last_sequence_id) {
+      continue;  // Older event, not included.
+    }
+    if (events_to_send == 0u) {
+      break;  // All events accounted for.
+    }
+    --events_to_send;
+    // Set or increment uploads counter of the event.
+    const auto [it, inserted] =
+        state->upload_counters.try_emplace(sequence_id, 1u);
+    if (!inserted) {
+      ++(it->second);
+    }
+  }
 }
 
 // static
@@ -649,7 +701,7 @@ void EncryptedReportingClient::OnReportUploadCompleted(
         response_parser.force_confirm_flag()) {
       state->last_sequence_id = last_sequence_id;
     }
-    RemoveConfirmedEventFromCache(state);
+    RemoveConfirmedEventsFromCache(state);
   }
   // Forward results to the pending callback.
   std::move(callback).Run(std::move(response_parser));

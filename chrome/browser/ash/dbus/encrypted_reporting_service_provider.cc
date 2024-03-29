@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,6 +45,11 @@ namespace {
 
 static constexpr uint64_t kDefaultMemoryAllocation =
     64u * 1024uLL * 1024uLL;  // 64 MiB by default
+
+// UMA name for memory usage by uploads.
+// The memory is logged as a `used` percent of `total`. Recorded every time we
+// receive a new upload request. Expected to be well below 100%.
+constexpr char kUploadMemoryUsage[] = "Browser.ERP.UploadMemoryUsagePercent";
 
 void SendStatusAsResponse(
     std::unique_ptr<dbus::Response> response,
@@ -229,6 +235,13 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
 
   ::reporting::ScopedReservation scoped_reservation(serialized_request_buf_size,
                                                     memory_resource_);
+
+  // Update UMA on actual memory usage.
+  base::UmaHistogramPercentage(
+      kUploadMemoryUsage,
+      static_cast<int>(memory_resource_->GetUsed() * 100uL /
+                       memory_resource_->GetTotal()));  // Never zero.
+
   if (!scoped_reservation.reserved()) {
     ::reporting::Status status{::reporting::error::RESOURCE_EXHAUSTED,
                                "UploadEncryptedRecordRequest has exhausted "

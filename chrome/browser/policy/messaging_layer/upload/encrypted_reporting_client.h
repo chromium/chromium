@@ -161,7 +161,8 @@ class EncryptedReportingClient {
       ResponseCallback callback,
       std::optional<base::Value::Dict> payload_result,
       ScopedReservation scoped_reservation,
-      int64_t last_sequence_id);
+      int64_t last_sequence_id,
+      uint64_t events_to_send);
 
   // Callback for encrypted report upload requests.
   static void OnReportUploadCompleted(
