@@ -29,6 +29,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
@@ -343,28 +344,21 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
     return false;
   }
 
-  constexpr int kBufferSize = 1024 * 1024;
-  // Ensures the buffer is deallocated at function exit.
-  std::unique_ptr<char[]> buffer_deleter(new char[kBufferSize]);
-  char* const buffer = buffer_deleter.get();
+  constexpr size_t kBufferSize = 1024 * 1024;
+  auto buffer = base::HeapArray<uint8_t>::Uninit(kBufferSize);
 
   while (max_bytes > 0) {
-    // The static_cast<int> is safe because kBufferSize is int, and both values
-    // are non-negative. So, the minimum is guaranteed to fit in int.
-    const int read_size =
-        static_cast<int>(std::min<int64_t>(max_bytes, kBufferSize));
-    DCHECK_GE(read_size, 0);
-    DCHECK_LE(read_size, kBufferSize);
-
-    const int read_bytes = file.ReadAtCurrentPos(buffer, read_size);
-    if (read_bytes < 0) {
+    const size_t read_size = base::checked_cast<size_t>(
+        std::min<uint64_t>(static_cast<uint64_t>(max_bytes), buffer.size()));
+    std::optional<size_t> read_bytes =
+        file.ReadAtCurrentPos(buffer.first(read_size));
+    if (!read_bytes.has_value()) {
       return false;
     }
-    if (read_bytes == 0) {
+    if (read_bytes.value() == 0) {
       break;
     }
-
-    max_bytes -= read_bytes;
+    max_bytes -= read_bytes.value();
   }
 
   return true;
