@@ -95,7 +95,7 @@ function ensure_user_dir {
 # Build command arguments
 function build_args {
   ARGS="--user-data-dir=${USER_DATA_DIR} \
-    --enable-wayland-server --ash-debug-shortcuts \
+    --enable-wayland-server --ash-debug-shortcuts --overview-button-for-tests \
     --enable-ui-devtools --ash-dev-shortcuts --login-manager \
     --lacros-chrome-additional-args=--gpu-sandbox-start-early \
     --login-profile=user --lacros-mojo-socket-for-testing=$LACROS_SOCK_FILE \
@@ -160,7 +160,7 @@ function start_lacros_chrome {
     -s ${LACROS_SOCK_FILE} \
     ${LACROS_BUILD_DIR}/chrome \
     --user-data-dir=${lacros_user_data_dir} \
-    --enable-ui-devtools --gpu-sandbox-start-early --overview-button-for-tests
+    --enable-ui-devtools --gpu-sandbox-start-early
 }
 
 # Start wayland client binary on ash-chrome
