@@ -819,149 +819,9 @@ DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
 
 DCLayerTree::VisualTree::~VisualTree() = default;
 
-bool DCLayerTree::VisualTree::BuildTreeDefault(
+bool DCLayerTree::VisualTree::BuildTree(
     const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
     bool needs_rebuild_visual_tree) {
-  DCHECK(!base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
-  CHECK(subtree_map_.empty());
-  // Grow or shrink list of visual subtrees to match pending overlays.
-  size_t old_visual_subtrees_size = visual_subtrees_.size();
-  if (old_visual_subtrees_size != overlays.size()) {
-    needs_rebuild_visual_tree = true;
-  }
-
-  // Visual for root surface. Cache it to add DelegatedInk visual if needed.
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> root_surface_visual;
-  bool needs_commit = false;
-  std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
-  visual_subtrees.resize(overlays.size());
-  // Build or update visual subtree for each overlay.
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    const bool is_root_plane = overlays[i]->z_order == 0;
-    if (!is_root_plane && overlays[i]->overlay_image) {
-      TRACE_EVENT2(
-          "gpu", "DCLayerTree::VisualTree::UpdateOverlay", "image_type",
-          DCLayerOverlayTypeToString(overlays[i]->overlay_image->type()),
-          "size", overlays[i]->content_rect.size().ToString());
-    }
-
-    IUnknown* dcomp_visual_content =
-        overlays[i]->overlay_image
-            ? overlays[i]->overlay_image->dcomp_visual_content()
-            : nullptr;
-    // Find matching subtree for each overlay. If subtree is found, move it
-    // from visual subtrees of previous frame to visual subtrees of this frame.
-    auto it = std::find_if(
-        visual_subtrees_.begin(), visual_subtrees_.end(),
-        [dcomp_visual_content](const std::unique_ptr<VisualSubtree>& subtree) {
-          return subtree &&
-                 subtree->dcomp_visual_content() == dcomp_visual_content;
-        });
-    if (it == visual_subtrees_.end()) {
-      // This overlay's visual content does not present in the old visual tree.
-      // Instantiate a new visual subtree.
-      visual_subtrees[i] = std::make_unique<VisualSubtree>();
-      visual_subtrees[i]->set_z_order(overlays[i]->z_order);
-      needs_rebuild_visual_tree = true;
-    } else {
-      // Move visual subtree from the old subtrees to new subtrees.
-      visual_subtrees[i] = std::move(*it);
-      if (visual_subtrees[i]->z_order() != overlays[i]->z_order) {
-        visual_subtrees[i]->set_z_order(overlays[i]->z_order);
-        // Z-order is a property of the root visual's child list, not any
-        // property on the subtree's nodes. If it changes, we need to rebuild
-        // the tree.
-        needs_rebuild_visual_tree = true;
-      }
-    }
-
-    const uint64_t dcomp_surface_serial =
-        overlays[i]->overlay_image.has_value()
-            ? overlays[i]->overlay_image->dcomp_surface_serial()
-            : 0;
-    const gfx::Size image_size = overlays[i]->overlay_image.has_value()
-                                     ? overlays[i]->overlay_image->size()
-                                     : gfx::Size();
-
-    // Only get a background color surface if we have a non-transparent
-    // background color.
-    IDCompositionSurface* background_color_surface = nullptr;
-    if (overlays[i]->background_color &&
-        overlays[i]->background_color->fA != 0.0) {
-      background_color_surface =
-          dc_layer_tree_->solid_color_surface_pool_->GetSolidColorSurface(
-              overlays[i]->background_color.value());
-      if (!background_color_surface) {
-        DLOG(ERROR) << "Could not get solid color surface.";
-        return false;
-      }
-    }
-
-    // We don't need to set |needs_rebuild_visual_tree| here since that is only
-    // needed when the root visual's children need to be reordered. |Update|
-    // only affects the subtree for each child, so only a commit is needed in
-    // this case.
-    needs_commit |= visual_subtrees[i]->Update(
-        dc_layer_tree_->dcomp_device_.Get(), dcomp_visual_content,
-        dcomp_surface_serial, image_size, overlays[i]->content_rect,
-        background_color_surface,
-        overlays[i]->background_color.value_or(SkColors::kTransparent),
-        overlays[i]->quad_rect, overlays[i]->nearest_neighbor_filter,
-        overlays[i]->transform, overlays[i]->rounded_corner_bounds,
-        overlays[i]->opacity, overlays[i]->clip_rect);
-
-    // Zero z_order represents root layer.
-    if (overlays[i]->z_order == 0) {
-      // Verify we have single root visual layer.
-      DCHECK(!root_surface_visual);
-      root_surface_visual = visual_subtrees[i]->content_visual();
-    }
-  }
-  // Update visual_subtrees_ with new values.
-  visual_subtrees_ = std::move(visual_subtrees);
-
-  // Note: needs_rebuild_visual_tree might be set in this method,
-  // |DCLayerTree::CommitAndClearPendingOverlays|, and can also be set in
-  // |DCLayerTree::SetDelegatedInkTrailStartPoint| to add a delegated ink visual
-  // into the root surface's visual.
-  if (needs_rebuild_visual_tree) {
-    TRACE_EVENT0(
-        "gpu", "DCLayerTree::CommitAndClearPendingOverlays::ReBuildVisualTree");
-
-    // Rebuild root visual's child list.
-    dc_layer_tree_->dcomp_root_visual_->RemoveAllVisuals();
-
-    for (size_t i = 0; i < visual_subtrees_.size(); ++i) {
-      // We call AddVisual with insertAbove FALSE and referenceVisual nullptr
-      // which is equivalent to saying that the visual should be below no
-      // other visual, or in other words it should be above all other visuals.
-      dc_layer_tree_->dcomp_root_visual_->AddVisual(
-          visual_subtrees_[i]->container_visual(), FALSE, nullptr);
-    }
-
-    if (root_surface_visual) {
-      dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
-          root_surface_visual.Get());
-    }
-
-    needs_commit = true;
-  }
-
-  if (needs_commit) {
-    TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
-    HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Commit failed with error 0x" << std::hex << hr;
-      return false;
-    }
-  }
-  return true;
-}
-
-bool DCLayerTree::VisualTree::BuildTreeOptimized(
-    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-    bool needs_rebuild_visual_tree) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
   // For optimized tree |needs_rebuild_visual_tree| means that we may need to
   // add/re-add a delegated ink visual into the root surface's visual.
   // TODO(http://crbug.com/1380822): Clean up needs_rebuild_visual_tree
@@ -1428,31 +1288,19 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  bool status = BuildVisualTreeHelper(overlays, needs_rebuild_visual_tree_);
+  if (!visual_tree_) {
+    visual_tree_ = std::make_unique<VisualTree>(this);
+  }
+
+  const bool status =
+      visual_tree_->BuildTree(overlays, needs_rebuild_visual_tree_);
+
   needs_rebuild_visual_tree_ = false;
 
   // Clean up excess surfaces so the pool will not grow unbounded.
   solid_color_surface_pool_->TrimAfterCommit();
 
   return status;
-}
-
-bool DCLayerTree::BuildVisualTreeHelper(
-    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-    bool needs_rebuild_visual_tree) {
-  const bool use_visual_tree_optimization =
-      base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization);
-
-  if (!visual_tree_) {
-    visual_tree_ = std::make_unique<VisualTree>(this);
-  }
-
-  if (use_visual_tree_optimization) {
-    return visual_tree_->BuildTreeOptimized(overlays,
-                                            needs_rebuild_visual_tree);
-  } else {
-    return visual_tree_->BuildTreeDefault(overlays, needs_rebuild_visual_tree);
-  }
 }
 
 bool DCLayerTree::ScheduleDCLayer(

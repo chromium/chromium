@@ -667,7 +667,6 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
 // TODO(crbug.com/1519186): Change this test to check whether delegated
 // ink still works when root_surface_visual does not exist.
 TEST_F(DCompPresenterTest, BuildTreeNoCrashWithRootSurfaceVisualNull) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDCompVisualTreeOptimization));
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(
           gfx::PointF(12, 12), /*diameter=*/3, SK_ColorBLACK,
