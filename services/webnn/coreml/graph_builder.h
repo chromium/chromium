@@ -93,32 +93,52 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForBinary(
       const mojom::ElementWiseBinary& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
+      const mojom::Transpose& operation,
+      CoreML::Specification::MILSpec::Block& block);
   // Add constants as immediate values in the model file.
+  void AddConstantImmediateValue(CoreML::Specification::MILSpec::Block& block,
+                                 std::string_view name,
+                                 mojom::Operand::DataType data_type,
+                                 base::span<const uint32_t> dimensions,
+                                 base::span<const uint8_t> value);
   void AddConstantImmediateValue(uint32_t constant_id,
                                  CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
-  void AddConstantFileValue(uint32_t constant_id, uint64_t offset,
-                            const mojom::Operand& operand,
+  void AddConstantFileValue(uint32_t constant_id,
+                            uint64_t offset,
                             CoreML::Specification::MILSpec::Block& block);
 
   // Helpers
   [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   PopulateFeatureDescription(
-      uint64_t operand_id, const mojom::Operand& operand,
-      CoreML::Specification::FeatureDescription& feature_description);
+      uint64_t operand_id,
+      ::CoreML::Specification::FeatureDescription& feature_description);
 
   // MILSpec::Program's Function, Block, Operation's inputs/outputs could be
   // defined as NamedValueType.
   void PopulateNamedValueType(
-      uint64_t operand_id, const mojom::Operand& operand,
+      uint64_t operand_id,
+      CoreML::Specification::MILSpec::NamedValueType& named_value_type);
+  void PopulateNamedValueType(
+      std::string_view name,
+      CoreML::Specification::MILSpec::DataType mil_data_type,
+      base::span<const uint32_t> dimensions,
       CoreML::Specification::MILSpec::NamedValueType& named_value_type);
   void PopulateValueType(const mojom::Operand& operand,
                          CoreML::Specification::MILSpec::ValueType& value_type);
-
+  void PopulateValueType(CoreML::Specification::MILSpec::DataType mil_data_type,
+                         base::span<const uint32_t> dimensions,
+                         CoreML::Specification::MILSpec::ValueType& value_type);
+  // Update the `id_to_op_input_info_map_` to be used by ops later.
+  void UpdateCoreMLInputInfoMap(uint64_t operand_id);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   SetupMlPackageDirStructure();
 
+  std::string GetCoreMLNameFromOperand(uint64_t operand_id);
+  std::string GetCoreMLNameForParam(uint64_t operand_id,
+                                    std::string_view param_name);
   // A reference to the WebNN compute graph that `this` instance is converting
   // to CoreML model. The creator of `this` must ensure the GraphInfo reference
   // passed into `CreateAndBuild()` is valid for as long as `this` exists.
