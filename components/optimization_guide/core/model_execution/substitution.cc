@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
+#include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 
 namespace optimization_guide {
@@ -112,6 +113,9 @@ class StringBuilder {
   Error ResolveArg(const google::protobuf::MessageLite& request,
                    const proto::StringArg& candidate);
 
+  Error ResolveRangeExpr(const google::protobuf::MessageLite& request,
+                         const proto::RangeExpr& expr);
+
   Error ResolveProtoField(const google::protobuf::MessageLite& request,
                           const proto::ProtoField& field);
 
@@ -130,17 +134,37 @@ StringBuilder::Error StringBuilder::ResolveProtoField(
   return Error::OK;
 }
 
+StringBuilder::Error StringBuilder::ResolveRangeExpr(
+    const google::protobuf::MessageLite& request,
+    const proto::RangeExpr& expr) {
+  std::vector<std::string> vals;
+  auto it = GetProtoRepeated(&request, expr.proto_field());
+  if (!it) {
+    return Error::FAILED;
+  }
+  for (const auto* msg : *it) {
+    Error error = ResolveSubstitutedString(*msg, expr.expr());
+    if (error != Error::OK) {
+      return error;
+    }
+  }
+  return Error::OK;
+}
+
 StringBuilder::Error StringBuilder::ResolveArg(
     const google::protobuf::MessageLite& request,
     const proto::StringArg& candidate) {
-  if (candidate.has_raw_string()) {
-    out_ << candidate.raw_string();
-    return Error::OK;
+  switch (candidate.arg_case()) {
+    case proto::StringArg::kRawString:
+      out_ << candidate.raw_string();
+      return Error::OK;
+    case proto::StringArg::kProtoField:
+      return ResolveProtoField(request, candidate.proto_field());
+    case proto::StringArg::kRangeExpr:
+      return ResolveRangeExpr(request, candidate.range_expr());
+    case proto::StringArg::ARG_NOT_SET:
+      return Error::FAILED;
   }
-  if (candidate.has_proto_field()) {
-    return ResolveProtoField(request, candidate.proto_field());
-  }
-  return Error::FAILED;
 }
 
 StringBuilder::Error StringBuilder::ResolveSubstitution(

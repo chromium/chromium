@@ -116,10 +116,24 @@ def GenerateProtoDescriptors(out, includes, messages: list[Message]):
     out.write('\n')
     out.write('namespace {\n')
     _GetProtoValue.GenPrivate(out, messages)
+    _GetProtoRepeated.GenPrivate(out, messages)
     _SetProtoValue.GenPrivate(out, messages)
     out.write('}  // namespace\n\n')
     _GetProtoValue.GenPublic(out)
+    _GetProtoRepeated.GenPublic(out)
     _SetProtoValue.GenPublic(out)
+    _NestedMessageIteratorGet.GenPublic(out, messages)
+    out.write("""\
+      NestedMessageIterator::NestedMessageIterator(
+            const google::protobuf::MessageLite* parent,
+            int32_t tag_number,
+            int32_t field_size,
+            int32_t offset) :
+          parent_(parent),
+          tag_number_(tag_number),
+          field_size_(field_size),
+          offset_(offset) {}
+      """)
     out.write('}  // namespace optimization_guide\n')
     out.write('\n')
 
@@ -195,6 +209,92 @@ class _GetProtoValue:
             else:
                 raise Error()
             out.write('return value;\n')
+        out.write('}\n')  # End case
+
+
+class _NestedMessageIteratorGet:
+    """Namespace class for NestedMessageIterator::Get method builders."""
+
+    @classmethod
+    def GenPublic(cls, out, messages: list[Message]):
+        out.write('const google::protobuf::MessageLite* '
+                  'NestedMessageIterator::Get() const {\n')
+        for msg in messages:
+            cls._IfMsg(out, msg)
+        out.write('  NOTREACHED();\n')
+        out.write('  return nullptr;\n')
+        out.write('}\n')
+
+    @classmethod
+    def _IfMsg(cls, out, msg: Message):
+        out.write(f'if (parent_->GetTypeName() == "{msg.type_name}") {{\n')
+        out.write('switch (tag_number_) {\n')
+        for field in msg.fields:
+            if field.type == Type.MESSAGE and field.is_repeated:
+                cls._FieldCase(out, msg, field)
+        out.write('}\n')  # End switch
+        out.write('}\n\n')  # End if statement
+
+    @classmethod
+    def _FieldCase(cls, out, msg: Message, field: Field):
+        cast_msg = f'static_cast<const {msg.cpp_name}*>(parent_)'
+        out.write(f'case {field.tag_number}: {{\n')
+        out.write(f'return &{cast_msg}->{field.name}(offset_);\n')
+        out.write('}\n')  # End case
+
+
+class _GetProtoRepeated:
+    """Namespace class for GetProtoRepeated method builders."""
+
+    @classmethod
+    def GenPublic(cls, out):
+        out.write("""
+          std::optional<NestedMessageIterator> GetProtoRepeated(
+              const google::protobuf::MessageLite* msg,
+              const proto::ProtoField& proto_field) {
+            return GetProtoRepeated(msg, proto_field, /*index=*/0);
+          }
+          """)
+
+    @classmethod
+    def GenPrivate(cls, out, messages: list[Message]):
+        out.write("""\
+          std::optional<NestedMessageIterator> GetProtoRepeated(
+              const google::protobuf::MessageLite* msg,
+              const proto::ProtoField& proto_field,
+              int32_t index) {
+            if (index >= proto_field.proto_descriptors_size()) {
+              return std::nullopt;
+            }
+            int32_t tag_number =
+                proto_field.proto_descriptors(index).tag_number();
+          """)
+
+        for msg in messages:
+            cls._IfMsg(out, msg)
+        out.write('return std::nullopt;\n')
+        out.write('}\n\n')  # End function
+
+    @classmethod
+    def _IfMsg(cls, out, msg: Message):
+        out.write(f'if (msg->GetTypeName() == "{msg.type_name}") {{\n')
+        out.write('switch (tag_number) {\n')
+        for field in msg.fields:
+            if field.type == Type.MESSAGE:
+                cls._FieldCase(out, msg, field)
+        out.write('}\n')  # End switch
+        out.write('}\n\n')  # End if statement
+
+    @classmethod
+    def _FieldCase(cls, out, msg: Message, field: Field):
+        field_expr = f'static_cast<const {msg.cpp_name}*>(msg)->{field.name}()'
+        out.write(f'case {field.tag_number}: {{\n')
+        if field.is_repeated:
+            out.write(f'return NestedMessageIterator('
+                      f'msg, tag_number, {field_expr}.size(), 0);\n')
+        else:
+            out.write(f'return GetProtoRepeated('
+                      f'&{field_expr}, proto_field, index+1);\n')
         out.write('}\n')  # End case
 
 

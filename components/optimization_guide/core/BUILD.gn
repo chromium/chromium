@@ -122,6 +122,7 @@ if (build_with_tflite_lib) {
 component("features") {
   sources = [
     "insertion_ordered_set.h",
+    "model_execution/feature_keys.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",
@@ -131,11 +132,8 @@ component("features") {
     "optimization_guide_prefs.h",
     "optimization_guide_switches.cc",
     "optimization_guide_switches.h",
-    "model_execution/feature_keys.h",
   ]
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -592,6 +590,7 @@ action("on_device_model_execution_proto_generator") {
   inputs = [
     "$root_gen_dir/components/optimization_guide/proto/compose.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/string_value.descriptor",
+    "$root_gen_dir/components/optimization_guide/proto/tab_organization.descriptor",
   ]
   outputs = [ output_proto_descriptors_cc_file ]
 
@@ -600,6 +599,7 @@ action("on_device_model_execution_proto_generator") {
         rebase_path(output_proto_descriptors_cc_file, root_build_dir),
     "--include=\"components/optimization_guide/proto/features/compose.pb.h\"",
     "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
+    "--include=\"components/optimization_guide/proto/features/tab_organization.pb.h\"",
   ]
   foreach(file, inputs) {
     args += [
@@ -611,6 +611,7 @@ action("on_device_model_execution_proto_generator") {
   deps = [
     "//components/optimization_guide/proto:compose_proto_descriptor",
     "//components/optimization_guide/proto:string_value_proto_descriptor",
+    "//components/optimization_guide/proto:tab_organization_proto_descriptor",
     "//third_party/protobuf:py_proto_runtime",
   ]
 }

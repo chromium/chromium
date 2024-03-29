@@ -36,10 +36,19 @@ message StringSubstitution {
   repeated StringArg candidates = 1;
 }
 
+message RangeExpr {
+  // Reference to the a repeated field to range over.
+  ProtoField proto_field = 1;
+
+  // The expression to evaluate for each field entry.
+  SubstitutedString expr = 2;
+}
+
 message StringArg {
   oneof arg {
     string raw_string = 1;
     ProtoField proto_field = 2;
+    RangeExpr range_expr = 4;
   }
 
   // TODO(b/302402959): Add support for max number of characters to apply.
