@@ -5,7 +5,6 @@
 #include "chromecast/renderer/feature_manager_on_associated_interface.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
@@ -16,34 +15,12 @@
 namespace chromecast {
 FeatureManagerOnAssociatedInterface::FeatureManagerOnAssociatedInterface(
     content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame), configured_(false) {
-  registry_.AddInterface<shell::mojom::FeatureManager>(base::BindRepeating(
-      &FeatureManagerOnAssociatedInterface::OnFeatureManagerAssociatedRequest,
-      base::Unretained(this)));
-}
+    : FeatureManager(render_frame) {}
 
 FeatureManagerOnAssociatedInterface::~FeatureManagerOnAssociatedInterface() {}
 
-bool FeatureManagerOnAssociatedInterface::OnAssociatedInterfaceRequestForFrame(
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  return registry_.TryBindInterface(interface_name, handle);
-}
-
-void FeatureManagerOnAssociatedInterface::OnDestruct() {
-  delete this;
-}
-
-void FeatureManagerOnAssociatedInterface::ConfigureFeatures(
-    std::vector<chromecast::shell::mojom::FeaturePtr> features) {
-  if (configured_)
-    return;
-  configured_ = true;
-  for (auto& feature : features) {
-    // If we want to add enabled/disabled status to FeaturePtr, we can overlap
-    // previous setting via [] operator
-    features_map_[feature->name] = std::move(feature);
-  }
+void FeatureManagerOnAssociatedInterface::ConfigureFeaturesInternal() {
+  FeatureManager::ConfigureFeaturesInternal();
 
   if (FeatureEnabled(feature::kEnableTrackControlAppRendererFeatureUse)) {
     std::string app_id("MissingAppId");
@@ -69,25 +46,6 @@ void FeatureManagerOnAssociatedInterface::ConfigureFeatures(
     new CastContentSettingsClient(render_frame(), app_id,
                                   allow_insecure_content);
   }
-}
-
-void FeatureManagerOnAssociatedInterface::OnFeatureManagerAssociatedRequest(
-    mojo::PendingAssociatedReceiver<shell::mojom::FeatureManager>
-        pending_receiver) {
-  receivers_.Add(this, std::move(pending_receiver));
-}
-
-bool FeatureManagerOnAssociatedInterface::FeatureEnabled(
-    const std::string& feature) const {
-  return base::Contains(features_map_, feature);
-}
-
-const chromecast::shell::mojom::FeaturePtr&
-FeatureManagerOnAssociatedInterface::GetFeature(
-    const std::string& feature) const {
-  auto itor = features_map_.find(feature);
-  DCHECK(itor != features_map_.end());
-  return itor->second;
 }
 
 }  // namespace chromecast

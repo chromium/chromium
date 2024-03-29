@@ -38,7 +38,7 @@ RuntimeServiceImpl::RuntimeServiceImpl(
       metrics_recorder_(this) {
   heartbeat_timer_.SetTaskRunner(task_runner_);
   metrics_recorder_service_.emplace(
-      &metrics_recorder_, &*action_recorder_,
+      &metrics_recorder_, &action_recorder_,
       base::BindRepeating(&RuntimeServiceImpl::RecordMetrics,
                           weak_factory_.GetWeakPtr()),
       kDefaultMetricsReportInterval);
@@ -142,7 +142,6 @@ cast_receiver::Status RuntimeServiceImpl::Stop() {
   if (metrics_recorder_service_) {
     metrics_recorder_service_->OnCloseSoon(base::DoNothing());
     metrics_recorder_service_.reset();
-    action_recorder_.reset();
   }
 
   if (grpc_server_) {
@@ -518,7 +517,6 @@ void RuntimeServiceImpl::OnMetricsRecorderServiceStopped(
   DVLOG(2) << "MetricsRecorderService stopped";
   metrics_recorder_service_.reset();
   metrics_recorder_stub_.reset();
-  action_recorder_.reset();
 
   reactor->Write(cast::runtime::StopMetricsRecorderResponse());
 }

@@ -116,8 +116,8 @@ class RuntimeServiceImpl final
 
   // Allows metrics, histogram, action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.
+  CastRuntimeActionRecorder action_recorder_;
   CastRuntimeMetricsRecorder metrics_recorder_;
-  std::optional<CastRuntimeActionRecorder> action_recorder_;
 
   std::optional<cast::utils::GrpcServer> grpc_server_;
   std::optional<cast::metrics::MetricsRecorderServiceStub>

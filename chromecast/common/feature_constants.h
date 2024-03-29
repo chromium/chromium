@@ -52,8 +52,12 @@ extern const char kCastCoreRendererFeatures[];
 extern const char kCastCoreEnforceFeaturePermissions[];
 extern const char kCastCoreFeaturePermissions[];
 extern const char kCastCoreFeaturePermissionOrigins[];
+extern const char kCastCoreAllowMediaAccess[];
+extern const char kCastCoreForce720p[];
 extern const char kCastCoreIsAudioOnly[];
 extern const char kCastCoreIsRemoteControlMode[];
+extern const char kCastCoreLogJsConsoleMessages[];
+extern const char kCastCoreTurnOnScreen[];
 
 }  // namespace feature
 }  // namespace chromecast
