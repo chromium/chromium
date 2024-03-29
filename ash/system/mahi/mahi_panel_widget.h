@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_PANEL_WIDGET_H_
 #define ASH_SYSTEM_MAHI_MAHI_PANEL_WIDGET_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ui/views/view_observer.h"
@@ -33,6 +35,10 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
   // Notifies observers through the UI controller that availability for a
   // content refresh has changed.
   void NotifyRefreshAvailabilityChanged(bool available);
+
+  // Sends `question` to the backend. `current_panel_content` determines if the
+  // `question` is regarding the current content displayed on the panel.
+  void SendQuestion(const std::u16string& question, bool current_panel_content);
 
  private:
   // views::ViewObserver:

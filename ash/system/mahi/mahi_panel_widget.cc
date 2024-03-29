@@ -95,6 +95,11 @@ void MahiPanelWidget::NotifyRefreshAvailabilityChanged(bool available) {
   ui_controller_.NotifyRefreshAvailabilityChanged(available);
 }
 
+void MahiPanelWidget::SendQuestion(const std::u16string& question,
+                                   bool current_panel_content) {
+  ui_controller_.SendQuestion(question, current_panel_content);
+}
+
 void MahiPanelWidget::OnViewVisibilityChanged(views::View* observed_view,
                                               views::View* starting_view) {
   CHECK_EQ(observed_view, refresh_view_);

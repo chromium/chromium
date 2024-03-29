@@ -158,9 +158,24 @@ void MahiManagerImpl::OnContextMenuClicked(
   switch (context_menu_request->action_type) {
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
-    case MahiContextMenuActionType::kQA:
-      // TODO(b/318565610): Update the behaviour of kOutline and kQA
+      // TODO(b/318565610): Update the behaviour of kOutline.
       OpenMahiPanel(context_menu_request->display_id);
+      return;
+    case MahiContextMenuActionType::kQA:
+      OpenMahiPanel(context_menu_request->display_id);
+
+      // Ask question.
+      // TODO(b/331837721): `MahiManagerImpl` should own an instance of
+      // `MahiUiController` and use it to answer question here. This
+      // functionality shouldn't need to be routed through the widget. We also
+      // need to add unit test logic for this after the refactor.
+      if (!context_menu_request->question) {
+        return;
+      }
+
+      static_cast<MahiPanelWidget*>(mahi_panel_widget_.get())
+          ->SendQuestion(context_menu_request->question.value(),
+                         /*current_panel_content=*/true);
       return;
     case MahiContextMenuActionType::kSettings:
       // TODO(b/318565610): Update the behaviour of kSettings
