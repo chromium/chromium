@@ -51,7 +51,7 @@ BASE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadEsbPromoFeature,
              "IPH_DownloadEsbPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHExperimentalAIPromoFeature,
              "IPH_ExperimentalAIPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
