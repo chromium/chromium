@@ -6,7 +6,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -28,7 +27,6 @@
       {
         "timestamp": "86390000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -51,7 +49,6 @@
       {
         "timestamp": "86400000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -75,7 +72,6 @@
         "timestamp": "86401000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -99,7 +95,6 @@
         "timestamp": "86401001",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -120,7 +115,6 @@
         "timestamp": "86402000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://another-reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -141,7 +135,6 @@
       {
         "timestamp": "172801000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -169,7 +162,6 @@
       {
         "timestamp": "174801999",
         "registration_request": {
-          "attribution_src_url": "https://another-reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -192,7 +184,6 @@
       {
         "timestamp": "259201000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
         },
         "responses": [

@@ -8,7 +8,6 @@
       {
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -31,7 +30,6 @@
       {
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://example.reporter.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -51,7 +49,6 @@
       // do not match.
       {
         "registration_request": {
-          "attribution_src_url": "https://example.reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [

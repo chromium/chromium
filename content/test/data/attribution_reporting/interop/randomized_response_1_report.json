@@ -6,7 +6,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -32,7 +31,6 @@
       {
         "timestamp": "172800001",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [

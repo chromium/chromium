@@ -11,7 +11,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://example.source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -34,7 +33,6 @@
         "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://example.source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -55,7 +53,6 @@
       {
         "timestamp": "2000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination1.test"
         },
         "responses": [
@@ -78,7 +75,6 @@
         "timestamp": "3000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -103,7 +99,6 @@
         "timestamp": "3001",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -127,7 +122,6 @@
         "timestamp": "3002",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -153,7 +147,6 @@
         "timestamp": "3003",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://sub.reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -177,7 +170,6 @@
       {
         "timestamp": "4000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -200,7 +192,6 @@
         "timestamp": "5000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -220,7 +211,6 @@
       {
         "timestamp": "6000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -243,7 +233,6 @@
         "timestamp": "7000",
         "registration_request": {
           "context_origin": "https://source2.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -263,7 +252,6 @@
       {
         "timestamp": "8000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -286,7 +274,6 @@
         "timestamp": "9000",
         "registration_request": {
           "context_origin": "https://source2.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -305,7 +292,6 @@
       {
         "timestamp": "10000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -328,7 +314,6 @@
         "timestamp": "86401000",
         "registration_request": {
           "context_origin": "https://source1.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -348,7 +333,6 @@
       {
         "timestamp": "86402000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination3.test"
         },
         "responses": [

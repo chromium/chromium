@@ -6,7 +6,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -32,7 +31,6 @@
         "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -58,7 +56,6 @@
         // rounded up to 1 hour (3600 s).
         "timestamp": "1900000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -84,7 +81,6 @@
         // 3,600,000 ms = 1 hour = clamped event_report_window value.
         "timestamp": "3590000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -108,7 +104,6 @@
         // Should result in an event-level report in the first window.
         "timestamp": "3600000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -132,7 +127,6 @@
         // Should not result in an event-level report.
         "timestamp": "3700000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -156,7 +150,6 @@
         // Should result in an event-level report in the last window.
         "timestamp": "1209600000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -181,7 +174,6 @@
         // clamped to 1296000 s.
         "timestamp": "1296000000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [

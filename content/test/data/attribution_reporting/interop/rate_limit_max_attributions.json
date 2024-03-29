@@ -9,7 +9,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://example.source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -34,7 +33,6 @@
       {
         "timestamp": "1000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -66,7 +64,6 @@
         "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -95,7 +92,6 @@
       {
         "timestamp": "3000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -112,7 +108,6 @@
       {
         "timestamp": "3001",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -135,7 +130,6 @@
       {
         "timestamp": "3002",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -161,7 +155,6 @@
       {
         "timestamp": "3003",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -185,7 +178,6 @@
       {
         "timestamp": "3004",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -214,7 +206,6 @@
       {
         "timestamp": "3100",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://another-destination.test"
         },
         "responses": [
@@ -237,7 +228,6 @@
         "timestamp": "4000",
         "registration_request": {
           "context_origin": "https://another-source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -257,7 +247,6 @@
       {
         "timestamp": "5000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -279,7 +268,6 @@
         "timestamp": "8000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://example.reporter.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -298,7 +286,6 @@
         "timestamp": "8001",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -318,7 +305,6 @@
       {
         "timestamp": "8500",
         "registration_request": {
-          "attribution_src_url": "https://example.reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -341,7 +327,6 @@
       {
         "timestamp": "9000",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -364,7 +349,6 @@
         "timestamp": "10000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -384,7 +368,6 @@
       {
         "timestamp": "11000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -409,7 +392,6 @@
       {
         "timestamp": "2592000000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [

@@ -95,10 +95,9 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
 
   constexpr char kJson[] = R"json({"registrations": [
     {
-      "timestamp": "1643235573123",
+      "timestamp": "100",
       "registration_request": {
         "Attribution-Reporting-Eligible": "navigation-source",
-        "attribution_src_url": "https://a.r.test",
         "context_origin": "https://a.s.test"
       },
       "responses": [{
@@ -110,22 +109,30 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
       }]
     },
     {
-      "timestamp": "1643235574123",
+      "timestamp": "101",
       "registration_request": {
         "Attribution-Reporting-Eligible": "event-source",
-        "attribution_src_url": "https://b.r.test",
         "context_origin": "https://b.s.test",
       },
-      "responses": [{
-        "url": "https://b.r.test",
-        "randomized_response": [{
-          "trigger_data": 5,
-          "report_window_index": 1
-        }],
-        "response": {
-          "Attribution-Reporting-Register-Source": "!!!"
+      "responses": [
+        {
+          "url": "https://b.r.test",
+          "randomized_response": [{
+            "trigger_data": 5,
+            "report_window_index": 1
+          }],
+          "response": {
+            "Attribution-Reporting-Register-Source": "!!!"
+          }
+        },
+        {
+          "url": "https://c.r.test",
+          "timestamp": "102",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": "***"
+          }
         }
-      }]
+      ]
     }
   ]})json";
 
@@ -134,10 +141,9 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
   ASSERT_OK_AND_ASSIGN(
       auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
 
-  const base::Time kExpectedTime1 =
-      kOffsetTime + base::Milliseconds(1643235573123);
-  const base::Time kExpectedTime2 =
-      kOffsetTime + base::Milliseconds(1643235574123);
+  const base::Time kExpectedTime1 = kOffsetTime + base::Milliseconds(100);
+  const base::Time kExpectedTime2 = kOffsetTime + base::Milliseconds(101);
+  const base::Time kExpectedTime3 = kOffsetTime + base::Milliseconds(102);
 
   const int64_t kExpectedRequestId1 = 0;
   const int64_t kExpectedRequestId2 = 1;
@@ -182,7 +188,11 @@ TEST(AttributionInteropParserTest, ValidRegistrationsParse) {
                                         .window_index = 1,
                                     }))),
                           Field(&Response::debug_permission, false)))),
-          AllOf(SimulationEventTimeIs(kExpectedTime2),
+          AllOf(SimulationEventTimeIs(kExpectedTime3),
+                ResponseIs(
+                    Field(&Response::reporting_origin,
+                          *SuitableOrigin::Deserialize("https://c.r.test")))),
+          AllOf(SimulationEventTimeIs(kExpectedTime3),
                 EndRequestIs(RequestIdIs(kExpectedRequestId2)))));
 }
 
@@ -227,20 +237,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["registrations"][0]["registration_request"]["attribution_src_url"]: must be a valid, secure origin)",
-        R"json({"registrations": [{
-          "registration_request": {}
-        }]})json",
-    },
-    {
-        R"(["registrations"][0]["registration_request"]["attribution_src_url"]: must be a valid, secure origin)",
-        R"json({"registrations": [{
-          "registration_request": {
-            "attribution_src_url": "http://r.test"
-          }
-        }]})json",
-    },
-    {
         R"(["registrations"][0]["registration_request"]["context_origin"]: must be a valid, secure origin)",
         R"json({"registrations": [{
           "registration_request": {}
@@ -259,7 +255,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           }
         }]})json",
@@ -269,21 +264,9 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": ""
-        }]})json",
-    },
-    {
-        R"(["registrations"][0]["responses"]: must have size 1)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{}, {}]
         }]})json",
     },
     {
@@ -291,10 +274,32 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [""]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][1]["timestamp"]: must be an integer number of milliseconds)",
+        R"json({"registrations": [{
+          "timestamp": "1",
+          "registration_request": {
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{}, {}]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][1]["timestamp"]: must be greater than previous time)",
+        R"json({"registrations": [{
+          "timestamp": "1",
+          "registration_request": {
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [
+            {"url": "https://b.test", "response": {}, "timestamp": "2"},
+            {"url": "https://c.test", "response": {}, "timestamp": "2"}
+          ]
         }]})json",
     },
     {
@@ -302,7 +307,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{"randomized_response": 1}]
@@ -313,7 +317,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{"randomized_response": [1]}]
@@ -324,7 +327,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{"randomized_response": [{"trigger_data": "1"}]}]
@@ -335,7 +337,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{"randomized_response": [{"report_window_index": -1}]}]
@@ -346,23 +347,9 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{}]
-        }]})json",
-    },
-    {
-        R"(["registrations"][0]["responses"][0]["url"]: must match https://a.r.test)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://b.r.test"
-          }]
         }]})json",
     },
     {
@@ -370,7 +357,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{
@@ -383,7 +369,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
           "responses": [{
@@ -417,7 +402,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "timestamp": "1",
             "registration_request": {
               "context_origin": "https://a.d1.test",
-              "attribution_src_url": "https://a.r.test"
             },
             "responses": [{
               "url": "https://a.r.test",
@@ -430,7 +414,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "timestamp": "0",
             "registration_request": {
               "context_origin": "https://a.d1.test",
-              "attribution_src_url": "https://a.r.test"
             },
             "responses": [{
               "url": "https://a.r.test",

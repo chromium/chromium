@@ -6,7 +6,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://trigger.test",
-          "attribution_src_url": "https://reporter.test/register-trigger"
         },
         "responses": [
           {
@@ -22,7 +21,6 @@
         "timestamp": "1",
         "registration_request": {
           "context_origin": "https://trigger.test",
-          "attribution_src_url": "https://reporter.test/register-trigger"
         },
         "responses": [
           {

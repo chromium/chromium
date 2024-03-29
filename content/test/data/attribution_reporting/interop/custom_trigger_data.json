@@ -6,7 +6,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -26,7 +25,6 @@
       {
         "timestamp": "1",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -49,7 +47,6 @@
       {
         "timestamp": "2",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -73,7 +70,6 @@
         "timestamp": "3",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -94,7 +90,6 @@
         "timestamp": "4",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -117,7 +112,6 @@
         "timestamp": "5",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -140,7 +134,6 @@
         "timestamp": "6",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -163,7 +156,6 @@
         "timestamp": "7",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -189,7 +181,6 @@
         "timestamp": "8",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -210,7 +201,6 @@
         "timestamp": "9",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -231,7 +221,6 @@
         "timestamp": "10",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -252,7 +241,6 @@
         "timestamp": "11",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -275,7 +263,6 @@
         "timestamp": "12",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -296,7 +283,6 @@
       {
         "timestamp": "13",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [

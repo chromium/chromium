@@ -47,7 +47,6 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 using ::network::mojom::AttributionReportingEligibility;
 
-constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
 constexpr char kEligibleKey[] = "Attribution-Reporting-Eligible";
 constexpr char kPayloadKey[] = "payload";
 constexpr char kRegistrationRequestKey[] = "registration_request";
@@ -56,6 +55,7 @@ constexpr char kReportUrlKey[] = "report_url";
 constexpr char kReportsKey[] = "reports";
 constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
+constexpr char kTimestampKey[] = "timestamp";
 
 using Context = absl::variant<base::StringPiece, size_t>;
 using ContextPath = std::vector<Context>;
@@ -280,8 +280,7 @@ class AttributionInteropParser {
 
   void ParseListOfDicts(
       base::Value* values,
-      base::FunctionRef<void(base::Value::Dict)> parse_element,
-      size_t expected_size = 0) {
+      base::FunctionRef<void(base::Value::Dict)> parse_element) {
     if (!values) {
       *Error() << "must be present";
       return;
@@ -290,11 +289,6 @@ class AttributionInteropParser {
     base::Value::List* list = values->GetIfList();
     if (!list) {
       *Error() << "must be a list";
-      return;
-    }
-
-    if (expected_size > 0 && list->size() != expected_size) {
-      *Error() << "must have size " << expected_size;
       return;
     }
 
@@ -309,35 +303,20 @@ class AttributionInteropParser {
     }
   }
 
-  void VerifyReportingOrigin(const base::Value::Dict& dict,
-                             const SuitableOrigin& reporting_origin) {
-    static constexpr char kUrlKey[] = "url";
-    std::optional<SuitableOrigin> origin = ParseOrigin(dict, kUrlKey);
-    if (has_error_) {
-      return;
-    }
-    if (*origin != reporting_origin) {
-      auto context = PushContext(kUrlKey);
-      *Error() << "must match " << reporting_origin.Serialize();
-    }
-  }
-
   void ParseRegistration(base::Value::Dict dict,
                          std::vector<AttributionSimulationEvent>& events,
                          int64_t request_id) {
     const base::Time time =
-        ParseTime(dict, /*key=*/"timestamp",
+        ParseTime(dict, kTimestampKey,
                   /*previous_time=*/events.empty() ? base::Time::Min()
                                                    : events.back().time,
                   /*strictly_greater=*/true);
 
     std::optional<SuitableOrigin> context_origin;
-    std::optional<SuitableOrigin> reporting_origin;
     AttributionReportingEligibility eligibility;
 
     ParseDict(dict, kRegistrationRequestKey, [&](base::Value::Dict reg_req) {
       context_origin = ParseOrigin(reg_req, "context_origin");
-      reporting_origin = ParseOrigin(reg_req, kAttributionSrcUrlKey);
       eligibility = ParseEligibility(reg_req);
     });
 
@@ -349,17 +328,27 @@ class AttributionInteropParser {
         time, AttributionSimulationEvent::StartRequest(
                   request_id, std::move(*context_origin), eligibility));
 
+    std::optional<base::Time> default_response_time = time;
+
     {
       auto context = PushContext(kResponsesKey);
       ParseListOfDicts(
-          dict.Find(kResponsesKey),
-          [&](base::Value::Dict response) {
-            VerifyReportingOrigin(response, *reporting_origin);
+          dict.Find(kResponsesKey), [&](base::Value::Dict response) {
+            auto reporting_origin = ParseOrigin(response, "url");
 
             const bool debug_permission = ParseDebugPermission(response);
 
             attribution_reporting::RandomizedResponse randomized_response =
                 ParseRandomizedResponse(response);
+
+            // The timestamp is required for all but the first response. If
+            // omitted on the first response, it defaults to the registration
+            // time.
+            base::Time response_time = ParseTime(
+                response, kTimestampKey, events.back().time,
+                /*strictly_greater=*/!default_response_time.has_value(),
+                default_response_time);
+            default_response_time = std::nullopt;
 
             if (has_error_) {
               return;
@@ -386,17 +375,19 @@ class AttributionInteropParser {
                   }
 
                   events.emplace_back(
-                      time, AttributionSimulationEvent::Response(
-                                request_id, std::move(*reporting_origin),
-                                builder.Build(), std::move(randomized_response),
-                                debug_permission));
+                      response_time,
+                      AttributionSimulationEvent::Response(
+                          request_id, std::move(*reporting_origin),
+                          builder.Build(), std::move(randomized_response),
+                          debug_permission));
 
                 });
-          },
-          /*expected_size=*/1);
+          });
     }
 
-    events.emplace_back(time,
+    // The request ends at the time of the last response, if any; otherwise it
+    // ends at the registration time.
+    events.emplace_back(events.back().time,
                         AttributionSimulationEvent::EndRequest(request_id));
   }
 
@@ -460,22 +451,26 @@ class AttributionInteropParser {
   base::Time ParseTime(const base::Value::Dict& dict,
                        base::StringPiece key,
                        base::Time previous_time,
-                       bool strictly_greater) {
+                       bool strictly_greater,
+                       std::optional<base::Time> if_absent = std::nullopt) {
     auto context = PushContext(key);
+    base::Time time;
 
-    const std::string* v = dict.FindString(key);
-    int64_t milliseconds;
-
-    if (v && base::StringToInt64(*v, &milliseconds)) {
-      base::Time time = offset_time_ + base::Milliseconds(milliseconds);
-      if (!time.is_null() && !time.is_inf()) {
-        if (strictly_greater && time <= previous_time) {
-          *Error() << "must be greater than previous time";
-        } else if (!strictly_greater && time < previous_time) {
-          *Error() << "must be greater than or equal to previous time";
-        }
-        return time;
+    if (const std::string* v = dict.FindString(key)) {
+      if (int64_t milliseconds; base::StringToInt64(*v, &milliseconds)) {
+        time = offset_time_ + base::Milliseconds(milliseconds);
       }
+    } else if (if_absent.has_value()) {
+      time = *if_absent;
+    }
+
+    if (!time.is_null() && !time.is_inf()) {
+      if (strictly_greater && time <= previous_time) {
+        *Error() << "must be greater than previous time";
+      } else if (!strictly_greater && time < previous_time) {
+        *Error() << "must be greater than or equal to previous time";
+      }
+      return time;
     }
 
     *Error() << "must be an integer number of milliseconds since the Unix "

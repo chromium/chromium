@@ -9,7 +9,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://a.source.test",
-          "attribution_src_url": "https://a.reporter.test",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -29,7 +28,6 @@
         "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://b.source.test",
-          "attribution_src_url": "https://a.reporter.test",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -49,7 +47,6 @@
         "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://b.source.test",
-          "attribution_src_url": "https://b.reporter.test",
           "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
@@ -68,7 +65,6 @@
       {
         "timestamp": "3000",
         "registration_request": {
-          "attribution_src_url": "https://a.reporter.test",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -90,7 +86,6 @@
       {
         "timestamp": "4000",
         "registration_request": {
-          "attribution_src_url": "https://b.reporter.test",
           "context_origin": "https://destination.test"
         },
         "responses": [

@@ -46,9 +46,6 @@ and triggers.
         "timestamp": "123",
 
         "registration_request": {
-          // Required URL specified in the attributionsrc registration.
-          "attribution_src_url": "https://reporting.example",
-
           // Required origin on which to register.
           "context_origin": "https://context.example",
 
@@ -58,8 +55,7 @@ and triggers.
           "Attribution-Reporting-Eligible": "navigation-source"
         },
 
-        // List of URLs and the corresponding responses. Currently only allows
-        // one.
+        // List of URLs and the corresponding responses.
         "responses": [
           {
             // Required URL from which the response was sent.
@@ -68,6 +64,11 @@ and triggers.
             // Whether the registration will be processed with debug permission
             // enabled. Defaults to false.
             "debug_permission": true,
+
+            // Optional for the first response in the list, but required for all
+            // subsequent ones. If absent, defaults to the registration's
+            // timestamp.
+            "timestamp": "456",
 
             // If present and non-null, the source's randomized response,
             // consisting of zero of more fake reports. Defaults to null. Length

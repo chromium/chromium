@@ -9,7 +9,6 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
           "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
@@ -34,7 +33,6 @@
         // Should result in an event-level report in the first window.
         "timestamp": "1000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -58,7 +56,6 @@
         // Should result in an event-level report in the second window.
         "timestamp": "21601000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -82,7 +79,6 @@
         // Should not result in an event-level report.
         "timestamp": "43201000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [

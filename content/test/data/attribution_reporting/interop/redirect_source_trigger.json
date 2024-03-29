@@ -1,0 +1,82 @@
+{
+  "description": "redirect source trigger",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://context.test",
+          "Attribution-Reporting-Eligible": "event-source, trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            // Ensure that the correct auxiliary data is associated with the
+            // correct response.
+            "debug_permission": true,
+            "randomized_response": [],
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://context.test",
+                "source_event_id": "123"
+              }
+            }
+          },
+          {
+            "timestamp": "1",
+            "url": "https://reporter2.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://context.test",
+                "source_event_id": "456"
+              }
+            }
+          },
+          {
+            "timestamp": "2",
+            "url": "https://reporter2.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+           "body": {
+              "attribution_destination": "https://context.test",
+              "source_event_id": "123",
+              "source_site": "https://context.test"
+           },
+           "type": "source-noised"
+        }],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://context.test",
+          "randomized_trigger_rate": 0.0000025,
+          "scheduled_report_time": "2592000",
+          "source_event_id": "456",
+          "source_type": "event",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "2592000001"
+      }
+    ]
+  }
+}
