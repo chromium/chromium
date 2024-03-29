@@ -4,6 +4,7 @@
 
 #include "media/formats/mp4/box_definitions.h"
 
+#include <bitset>
 #include <memory>
 #include <utility>
 
@@ -1843,6 +1844,10 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
   } else if (format == FOURCC_DTSX) {
     RCHECK_MEDIA_LOGGED(reader->ReadChild(&udts), reader->media_log(),
                         "Failure parsing DtsUhdSpecificBox (udts)");
+    std::bitset<32> ch_bitset(udts.dtsx.GetChannelMask());
+    RCHECK_MEDIA_LOGGED(channelcount == ch_bitset.count(), reader->media_log(),
+                        "DTSX AudioSampleEntry channel count mismatches "
+                        "DtsUhdSpecificBox ChannelMask channel count");
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
