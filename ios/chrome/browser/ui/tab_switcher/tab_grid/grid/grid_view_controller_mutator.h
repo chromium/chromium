@@ -21,8 +21,8 @@
 // Removes the given `itemID` to the selected item lists.
 - (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID;
 
-// Notifies the model to close a specific item id.
-- (void)closeItemID:(web::WebStateID)itemID;
+// Notifies the model to close a specific item identifier.
+- (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier;
 
 @end
 

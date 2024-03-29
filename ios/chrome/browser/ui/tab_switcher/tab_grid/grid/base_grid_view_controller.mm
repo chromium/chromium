@@ -1032,7 +1032,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - GridCellDelegate
 
 - (void)closeButtonTappedForCell:(GridCell*)cell {
-  [self.mutator closeItemID:cell.itemIdentifier.tabSwitcherItem.identifier];
   // Record when a tab is closed via the X.
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseControlTapped"));
@@ -1040,12 +1039,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCloseControlTappedDuringSearch"));
   }
+  [self.mutator closeItemWithIdentifier:cell.itemIdentifier];
 }
 
 #pragma mark - GroupGridCellDelegate
 
 - (void)closeButtonTappedForGroupCell:(GroupGridCell*)cell {
-  // TODO(crbug.com/1501837): Add the group closing in the mutator.
+  // TODO(crbug.com/1513165): Add the closing metrics for groups.
+  [self.mutator closeItemWithIdentifier:cell.itemIdentifier];
 }
 
 #pragma mark - SuggestedActionsViewControllerDelegate

@@ -470,8 +470,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   // No-op
 }
 
-- (void)closeItemID:(web::WebStateID)itemID {
-  [self closeItemWithID:itemID];
+- (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
+  CHECK(identifier.type == GridItemType::Tab);
+  [self closeItemWithID:identifier.tabSwitcherItem.identifier];
 }
 
 @end

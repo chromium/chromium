@@ -1341,6 +1341,40 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   }
 }
 
+// Closes all the tabs (webStates) in a given `group` and deletes the `group`
+// from the `webStateList`.
+- (void)closeTabsAndDeleteGroup:(const TabGroup*)group {
+  [self.gridConsumer setPageIdleStatus:NO];
+  if (_webStateList->ContainsGroup(group)) {
+    CloseAllWebStatesInGroup(*_webStateList, group,
+                             WebStateList::CLOSE_USER_ACTION);
+    return;
+  }
+
+  GridItemIdentifier* identifierToRemove =
+      [GridItemIdentifier groupIdentifier:group withWebStateList:_webStateList];
+
+  // `group` is not in the set of groups of the `_webStateList`, so `group`
+  // should be a search result from a different window. Since this item is not
+  // from the current browser, no UI updates will be sent to the current grid.
+  // Notify the current grid consumer about the change.
+  [self.consumer removeItemWithIdentifier:identifierToRemove
+                   selectedItemIdentifier:nil];
+
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(self.browserState);
+  Browser* browser = GetBrowserForGroup(browserList, group,
+                                        self.browserState->IsOffTheRecord());
+
+  // If this group is still associated with another browser, remove it from the
+  // associated web state list.
+  if (browser) {
+    WebStateList* groupWebStateList = browser->GetWebStateList();
+    CloseAllWebStatesInGroup(*groupWebStateList, group,
+                             WebStateList::CLOSE_USER_ACTION);
+  }
+}
+
 // Inserts `item` before the item at `nextItemIndex`.
 - (void)insertItem:(GridItemIdentifier*)item beforeIndex:(int)nextItemIndex {
   GridItemIdentifier* nextItemIdentifier;
@@ -1506,8 +1540,20 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   [self configureToolbarsButtons];
 }
 
-- (void)closeItemID:(web::WebStateID)itemID {
-  [self closeItemWithID:itemID];
+- (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
+  switch (identifier.type) {
+    case GridItemType::Tab:
+      [self closeItemWithID:identifier.tabSwitcherItem.identifier];
+      break;
+    case GridItemType::Group: {
+      const TabGroup* group = identifier.tabGroupItem.tabGroup;
+      [self closeTabsAndDeleteGroup:group];
+      break;
+    }
+    case GridItemType::SuggestedActions:
+      NOTREACHED();
+      break;
+  }
 }
 
 #pragma mark - BaseGridMediatorItemProvider
