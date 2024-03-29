@@ -4,11 +4,12 @@
 
 #include "chrome/updater/app/app_install.h"
 
+#include <windows.h>
+
 #include <ocidl.h>
 #include <olectl.h>
 #include <shldisp.h>
 #include <shlobj.h>
-#include <windows.h>
 #include <winhttp.h>
 #include <wrl/client.h>
 
@@ -58,6 +59,7 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/manifest_util.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/update_client_errors.h"
@@ -773,9 +775,10 @@ void AppInstallControllerImpl::StateChange(
 void AppInstallControllerImpl::LoadLogo(const std::string& app_id,
                                         HWND progress_hwnd) {
   std::wstring url = base::SysUTF8ToWide(base::StringPrintf(
-      "%s%s.bmp",
+      "%s%s.bmp?lang=%s",
       CreateExternalConstants()->AppLogoURL().possibly_invalid_spec().c_str(),
-      base::EscapeUrlEncodedData(app_id, false).c_str()));
+      base::EscapeUrlEncodedData(app_id, false).c_str(),
+      base::WideToUTF8(GetPreferredLanguage()).c_str()));
   if (url.empty()) {
     VLOG(1) << __func__ << "No url specified";
     return;
