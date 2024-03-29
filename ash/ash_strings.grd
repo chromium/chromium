@@ -1750,10 +1750,10 @@ Style notes:
         Off
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT" meaning="This describes the strength of background blur for a video conferencing background. In this case, `light` refers to the level of intensity, so this is a slight blur." desc="Text for background blur 'light' setting, in the VC bubble.">
-        Light
+        Light Blur
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL" meaning="This describes the strength of background blur for a video conferencing background. In this case, `full` refers to the level of intensity, so this is a full-strength, strongly blurred background." desc="Text 'full' is a synonym of the background blur 'maximum' setting, in the VC bubble.">
-        Full
+        Full Blur
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE" desc="Text for background blur 'Image' setting, in the VC bubble.">
         Image
