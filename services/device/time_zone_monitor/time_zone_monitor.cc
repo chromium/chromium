@@ -69,7 +69,8 @@ std::string TimeZoneMonitor::GetTimeZoneId(const icu::TimeZone& zone) {
 void TimeZoneMonitor::AddClient(
     mojo::PendingRemote<device::mojom::TimeZoneMonitorClient> client) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  clients_.Add(std::move(client));
+  auto id = clients_.Add(std::move(client));
+  clients_.Get(id)->OnTimeZoneChange(GetTimeZoneId(*timezone_));
 }
 
 }  // namespace device
