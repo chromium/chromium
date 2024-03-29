@@ -75,22 +75,21 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
       featuresList_: {
         type: Array,
         value: [
-          {name: 'Nearby Presence', value: FeatureValues.NEARBY_PRESENCE},
+          {name: 'Nearby Infra', value: FeatureValues.NEARBY_INFRA},
           {name: 'Nearby Share', value: FeatureValues.NEARBY_SHARE},
-          {name: 'Nearby Connections', value: FeatureValues.NEARBY_CONNECTIONS},
           {name: 'Fast Pair', value: FeatureValues.FAST_PAIR},
         ],
       },
 
-      nearbyPresenceActionList_: {
+      nearbyInfraActionList_: {
         type: Array,
         value: [
-          {name: 'Start Scan', value: ActionValues.START_SCAN},
-          {name: 'Stop Scan', value: ActionValues.STOP_SCAN},
-          {name: 'Sync Credentials', value: ActionValues.SYNC_CREDENTIALS},
-          {name: 'First time flow', value: ActionValues.FIRST_TIME_FLOW},
+          {name: 'NP: Start Scan', value: ActionValues.START_SCAN},
+          {name: 'NP: Stop Scan', value: ActionValues.STOP_SCAN},
+          {name: 'NP: Sync Credentials', value: ActionValues.SYNC_CREDENTIALS},
+          {name: 'NP: First time flow', value: ActionValues.FIRST_TIME_FLOW},
           {
-            name: 'Send Update Credentials Message',
+            name: 'NP: Send Update Credentials Message',
             value: ActionValues.SEND_UPDATE_CREDENTIALS_MESSAGE,
           },
         ],
@@ -111,11 +110,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
         value: [
           {name: 'Reset Nearby Share', value: ActionValues.RESET_NEARBY_SHARE},
         ],
-      },
-
-      nearbyConnectionsActionList_: {
-        type: Array,
-        value: () => [],
       },
 
       fastPairActionList_: {
@@ -147,8 +141,7 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
         type: FeatureValues,
         value: [
           FeatureValues.NEARBY_SHARE,
-          FeatureValues.NEARBY_CONNECTIONS,
-          FeatureValues.NEARBY_PRESENCE,
+          FeatureValues.NEARBY_INFRA,
           FeatureValues.FAST_PAIR,
         ],
       },
@@ -157,9 +150,8 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
 
   private npDiscoveredDevicesList_: PresenceDevice[];
   private featuresList_: SelectOption[];
-  private nearbyPresenceActionList_: SelectOption[];
+  private nearbyInfraActionList_: SelectOption[];
   private nearbyShareActionList_: SelectOption[];
-  private nearbyConnectionsActionList_: SelectOption[];
   private fastPairActionList_: SelectOption[];
   private actionsSelectList_: SelectOption[];
   private logList_: LogMessage[];
@@ -195,7 +187,7 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
     this.addWebUiListener(
         'presence-device-lost',
         (device: PresenceDevice) => this.onPresenceDeviceLost_(device));
-    this.set('actionsSelectList_', this.nearbyPresenceActionList_);
+    this.set('actionsSelectList_', this.nearbyInfraActionList_);
 
     this.logProvider_ = {
       messageAddedEventName: 'log-message-added',
@@ -220,11 +212,8 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
 
     if (actionGroup) {
       switch (Number(actionGroup.value)) {
-        case FeatureValues.NEARBY_PRESENCE:
-          this.set('actionsSelectList_', this.nearbyPresenceActionList_);
-          break;
-        case FeatureValues.NEARBY_CONNECTIONS:
-          this.set('actionsSelectList_', this.nearbyConnectionsActionList_);
+        case FeatureValues.NEARBY_INFRA:
+          this.set('actionsSelectList_', this.nearbyInfraActionList_);
           break;
         case FeatureValues.NEARBY_SHARE:
           this.set('actionsSelectList_', this.nearbyShareActionList_);

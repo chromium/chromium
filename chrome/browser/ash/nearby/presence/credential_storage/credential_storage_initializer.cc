@@ -54,7 +54,7 @@ void CredentialStorageInitializer::OnInitialized(bool initialization_success) {
   // metrics post-MVP to understand the failure rate and if we need to
   // handle the failure case.
   if (!initialization_success) {
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": failed to initialize credential storage.";
   }
 }

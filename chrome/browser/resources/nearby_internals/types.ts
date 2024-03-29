@@ -8,9 +8,8 @@
  */
 export enum FeatureValues {
   NEARBY_SHARE = 0,
-  NEARBY_CONNECTIONS = 1,
-  NEARBY_PRESENCE = 2,
-  FAST_PAIR = 3,
+  NEARBY_INFRA = 1,
+  FAST_PAIR = 2,
 }
 
 /**

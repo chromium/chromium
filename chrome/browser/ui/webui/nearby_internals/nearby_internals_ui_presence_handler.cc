@@ -146,7 +146,7 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter(
         nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC,
@@ -169,7 +169,7 @@ void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": NearbyPresenceService was retrieved successfully";
     service->UpdateCredentials();
   }
@@ -181,7 +181,7 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
   if (service) {
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": NearbyPresenceService was retrieved successfully";
     auto* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
 
@@ -206,7 +206,7 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
   if (status ==
       ash::nearby::presence::NearbyPresenceService::StatusCode::kAbslOk) {
     scan_session_ = std::move(scan_session);
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": ScanSession remote successfully returned and bound.";
   } else {
     // TODO(b/276307539): Pass error status back to WebUI.
@@ -216,7 +216,7 @@ void NearbyInternalsPresenceHandler::OnScanStarted(
 
 void NearbyInternalsPresenceHandler::
     OnNearbyPresenceCredentialManagerInitialized() {
-  CD_LOG(VERBOSE, Feature::NP) << __func__;
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA) << __func__;
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
@@ -245,7 +245,7 @@ void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
 void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
     const base::Value::List& args) {
   // TODO(b/276642472): Add connect functionality.
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Connection attempt for device with endpoint id: "
       << args[0].GetString();
 }

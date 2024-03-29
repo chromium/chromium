@@ -44,7 +44,7 @@ std::string TxPowerLevelToName(api::ble_v2::TxPowerLevel tx_power_level) {
 }  // namespace
 
 BleV2Medium::BleV2Medium() {
-  CD_LOG(WARNING, Feature::NC)
+  CD_LOG(WARNING, Feature::NEARBY_INFRA)
       << __func__ << " BleV2Medium default constructor not implemented yet.";
 }
 
@@ -55,7 +55,7 @@ BleV2Medium::BleV2Medium(
 }
 
 BleV2Medium::~BleV2Medium() {
-  CD_LOG(WARNING, Feature::NC)
+  CD_LOG(WARNING, Feature::NEARBY_INFRA)
       << __func__ << " BleV2Medium destructor not implemented yet.";
 }
 
@@ -72,7 +72,7 @@ bool BleV2Medium::StartAdvertising(
             it->second.data(), it->second.data() + it->second.size())) +
         (std::next(it) == advertising_data.service_data.end() ? "}" : "}, ");
   }
-  CD_LOG(INFO, Feature::NC)
+  CD_LOG(INFO, Feature::NEARBY_INFRA)
       << __func__
       << "BLE_v2 StartAdvertising: "
          "advertising_data.is_extended_advertisement="
@@ -87,9 +87,10 @@ bool BleV2Medium::StartAdvertising(
     // Nearby Connections is expected to pass us extended advertisements without
     // first checking if we have support. In that case we are expected to return
     // false.
-    CD_LOG(WARNING, Feature::NC) << __func__
-                                 << " Extended advertising is not supported, "
-                                    "not registering extended adv.";
+    CD_LOG(WARNING, Feature::NEARBY_INFRA)
+        << __func__
+        << " Extended advertising is not supported, "
+           "not registering extended adv.";
     return false;
   }
 
@@ -129,7 +130,7 @@ bool BleV2Medium::StartAdvertising(
       // Return early when failing to register an advertisement, even if
       // there are multiple sets of advertising data, as Nearby Connections
       // expects all advertisements to be registered on success.
-      CD_LOG(WARNING, Feature::NC)
+      CD_LOG(WARNING, Feature::NEARBY_INFRA)
           << __func__ << " Failed to register advertisement.";
       // TODO(b/316395848): Log failure reasons.
       return false;
@@ -148,7 +149,7 @@ bool BleV2Medium::StartAdvertising(
         std::move(entry.second));
   }
 
-  CD_LOG(INFO, Feature::NC) << __func__ << " Started advertising.";
+  CD_LOG(INFO, Feature::NEARBY_INFRA) << __func__ << " Started advertising.";
   return true;
 }
 
@@ -161,7 +162,7 @@ std::unique_ptr<BleV2Medium::AdvertisingSession> BleV2Medium::StartAdvertising(
 }
 
 bool BleV2Medium::StopAdvertising() {
-  CD_LOG(INFO, Feature::NC)
+  CD_LOG(INFO, Feature::NEARBY_INFRA)
       << __func__ << " Clearing registered advertisements.";
   registered_advertisements_map_.clear();
   return true;
@@ -371,7 +372,7 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
   }
 
   if (device.is_null()) {
-    CD_LOG(WARNING, Feature::NC) << __func__ << " Device is empty.";
+    CD_LOG(WARNING, Feature::NEARBY_INFRA) << __func__ << " Device is empty.";
     return;
   }
 
@@ -420,7 +421,7 @@ void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
       // through the IDs.
       auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
       if (!ble_peripheral) {
-        CD_LOG(WARNING, Feature::NC)
+        CD_LOG(WARNING, Feature::NEARBY_INFRA)
             << __func__ << " Can't find previously discovered ble peripheral.";
         continue;
       }

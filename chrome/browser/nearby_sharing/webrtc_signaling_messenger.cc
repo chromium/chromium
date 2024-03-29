@@ -27,7 +27,7 @@ void WebRtcSignalingMessenger::SendMessage(
   chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
       request = BuildSendRequest(self_id, peer_id, std::move(location_hint));
 
-  CD_LOG(VERBOSE, Feature::NC)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": self_id=" << self_id << ", peer_id=" << peer_id
       << ", request_id=" << request.header().request_id()
       << ", message size=" << message.size();

@@ -106,8 +106,7 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
   if (session_id_or_status.ok()) {
     session_id = *session_id_or_status;
   } else {
-    // TODO(b/277819923): Change logging to presence specific logs.
-    CD_LOG(ERROR, Feature::NP)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << __func__ << ": Error starting scan, status was: "
         << session_id_or_status.status();
     std::move(callback).Run(
@@ -199,7 +198,7 @@ void NearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
 }
 
 void NearbyPresence::OnScanSessionDisconnect(uint64_t scan_session_id) {
-  CD_LOG(VERBOSE, Feature::NP) << __func__;
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA) << __func__;
   presence_client_->StopScan(scan_session_id);
   session_id_to_scan_session_map_.erase(scan_session_id);
   session_id_to_results_callback_map_.erase(scan_session_id);

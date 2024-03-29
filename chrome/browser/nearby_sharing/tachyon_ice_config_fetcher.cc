@@ -156,13 +156,13 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader,
   RecordResultMetric(status);
 
   if (!status.IsSuccess()) {
-    CD_LOG(ERROR, Feature::NC)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << "TachyonIceConfigFetcher (request_id=" << request_id << ") "
         << status << " " << status.GetResultCodeForMetrics();
     return false;
   }
 
-  CD_LOG(VERBOSE, Feature::NC)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << "TachyonIceConfigFetcher (request_id=" << request_id
       << ") GetIceServers succeeded";
   return true;
@@ -231,7 +231,7 @@ void TachyonIceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
   // If a previous request cached the ICE servers and the expiration time hasn't
   // lapsed, return a copy of the cached servers immediately.
   if (ice_server_cache_ && ice_server_cache_expiration_ >= base::Time::Now()) {
-    CD_LOG(VERBOSE, Feature::NC)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << "TachyonIceConfigFetcher returning cached ice servers";
     std::move(callback).Run(CloneIceServerList(*ice_server_cache_));
     RecordCacheHitMetric(/*cache_hit=*/true);
@@ -249,7 +249,7 @@ void TachyonIceConfigFetcher::GetIceServersWithToken(
     GetIceServersCallback callback,
     const std::string& token) {
   if (token.empty()) {
-    CD_LOG(ERROR, Feature::NC)
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
         << "TachyonIceConfigFetcher failed to fetch OAuth access token, "
            "returning default ICE servers";
     std::move(callback).Run(GetDefaultIceServers());
@@ -275,7 +275,7 @@ void TachyonIceConfigFetcher::GetIceServersWithToken(
   url_loader->AttachStringForUpload(request.SerializeAsString(),
                                     "application/x-protobuf");
 
-  CD_LOG(VERBOSE, Feature::NC)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__
       << ": Requesting ICE Servers from Tachyon (request_id=" << request_id
       << ")";
@@ -300,7 +300,7 @@ void TachyonIceConfigFetcher::OnIceServersResponse(
   sharing::LogWebRtcIceConfigFetched(ice_servers.size());
 
   if (ice_servers.empty()) {
-    CD_LOG(VERBOSE, Feature::NC)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << "TachyonIceConfigFetcher (request_id=" << request_id
         << ") empty response, returning default ICE servers";
     ice_servers = GetDefaultIceServers();
@@ -316,8 +316,9 @@ TachyonIceConfigFetcher::ParseIceServersResponse(
   std::vector<sharing::mojom::IceServerPtr> servers_mojo;
   tachyon_proto::GetICEServerResponse response;
   if (!response.ParseFromString(serialized_proto)) {
-    CD_LOG(ERROR, Feature::NC) << __func__ << ": (request_id=" << request_id
-                               << ") Failed to parse response";
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
+        << __func__ << ": (request_id=" << request_id
+        << ") Failed to parse response";
     return servers_mojo;
   }
 

@@ -597,7 +597,7 @@ void NearbyConnections::RequestConnectionV3(
   const std::string& endpoint_id = remote_device->endpoint_id;
 
   if (base::Contains(endpoint_id_to_presence_device_map, endpoint_id)) {
-    CD_LOG(INFO, Feature::NP)
+    CD_LOG(INFO, Feature::NEARBY_INFRA)
         << __func__ << "PresenceDevice already exists in map.";
   } else {
     std::unique_ptr<presence::PresenceDevice> presence_device =

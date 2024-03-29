@@ -165,15 +165,16 @@ void NearbyPresenceServiceImpl::UpdateCredentials() {
   // flow has already occurred, and we can move forward with updating
   // credentials.
   if (credential_manager_) {
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__ << ": Initiating updating credentials.";
     credential_manager_->UpdateCredentials();
     return;
   }
 
-  CD_LOG(VERBOSE, Feature::NP) << __func__
-                               << ": Attempted to update credentials, but "
-                                  "CredentialManager was not yet initialized.";
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
+      << __func__
+      << ": Attempted to update credentials, but "
+         "CredentialManager was not yet initialized.";
 
   // Otherwise, initialize a `CredentialManager` before updating credentials.
   Initialize(
@@ -211,19 +212,20 @@ void NearbyPresenceServiceImpl::OnDeviceLost(mojom::PresenceDevicePtr device) {
 
 void NearbyPresenceServiceImpl::OnMessageReceived(
     base::flat_map<std::string, std::string> message) {
-  CD_LOG(VERBOSE, Feature::NP)
+  CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": Push notification message recieved.";
   if ((message.at(push_notification::kNotificationClientIdKey) ==
        kNearbyPresencePushNotificationClientId) &&
       (message.at(push_notification::kNotificationTypeIdKey) ==
        kNearbyPresencePushNotificationTypeId)) {
     // TODO(b/319286048): Check for action specific information.
-    CD_LOG(ERROR, Feature::NP) << __func__
-                               << ": Push notification message is correctly "
-                                  "formatted. Updating credentials now.";
+    CD_LOG(ERROR, Feature::NEARBY_INFRA)
+        << __func__
+        << ": Push notification message is correctly "
+           "formatted. Updating credentials now.";
     UpdateCredentials();
   } else {
-    CD_LOG(VERBOSE, Feature::NP)
+    CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
         << __func__
         << ": Push notification message is malformed. Discarding message.";
   }
