@@ -25,6 +25,7 @@
 // clang-format off
 const char* enum_names[] = {
   COLOR_IDS
+  COMPONENTS_COLOR_IDS
   CHROME_COLOR_IDS
 };
 // clang-format on
