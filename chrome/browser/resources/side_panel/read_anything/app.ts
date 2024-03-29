@@ -265,9 +265,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     previouslySpokenIndex: 0,
   };
 
-  // The node id of the first text node that should be used by Read Aloud.
-  // -1 if the node is not set.
-  firstTextNodeSetForReadAloud = -1;
+  // If the node id of the first text node that should be used by Read Aloud
+  // has been set. This is null if the id has not been set.
+  firstTextNodeSetForReadAloud: number|null = null;
 
   rate: number = 1;
 
@@ -420,7 +420,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // which can be computationally expensive.
     // However, since updateContent may be called after speech starts playing,
     // don't call InitAXPosition from here to avoid interrupting current speech.
-    if (this.firstTextNodeSetForReadAloud < 0) {
+    if (!this.firstTextNodeSetForReadAloud) {
       this.firstTextNodeSetForReadAloud = nodeId;
     }
 
@@ -489,7 +489,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   updateContent() {
     // Each time we rebuild the subtree, we should clear the node id of the
     // first text node.
-    this.firstTextNodeSetForReadAloud = -1;
+    this.firstTextNodeSetForReadAloud = null;
     const container = this.$.container;
 
     // Remove all children from container. Use `replaceChildren` rather than
@@ -867,7 +867,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       // TODO(crbug.com/1474951): There should be a way to use AXPosition so
       // that this step can be skipped.
-      if (this.firstTextNodeSetForReadAloud > 0) {
+      if (this.firstTextNodeSetForReadAloud) {
         chrome.readingMode.initAxPositionWithNode(
             this.firstTextNodeSetForReadAloud);
         this.highlightAndPlayMessage();

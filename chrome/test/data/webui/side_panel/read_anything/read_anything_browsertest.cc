@@ -133,6 +133,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
+                       ReadAloud_UpdateContentSelectionPDF) {
+  RunSidePanelTest(
+      "side_panel/read_anything/read_aloud_update_content_selection_pdf.js",
+      "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudHighlight) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_highlighting_test.js",
                    "mocha.run()");
