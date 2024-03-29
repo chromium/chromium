@@ -83,10 +83,10 @@ std::string PpdPathInServingRoot(std::string_view ppd_basename) {
   return base::StrCat({"ppds_for_metadata_v3/", ppd_basename});
 }
 
-// Zebra printers that support ZPL contain "Zebra" and "ZPL" in the
-// IEEE 1284 device id make and model.
+// Zebra printers that support ZPL contain "Zebra" (or "Zebra Technologies") and
+// "ZPL" in the IEEE 1284 device id make and model.
 bool SupportsGenericZebraPPD(const PrinterSearchData& search_data) {
-  return search_data.printer_id.make() == "Zebra" &&
+  return search_data.printer_id.make().starts_with("Zebra") &&
          base::Contains(search_data.printer_id.model(), "ZPL");
 }
 

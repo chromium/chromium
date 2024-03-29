@@ -1185,6 +1185,15 @@ TEST_F(PpdProviderTest, GenericZebraPpdResolution) {
 
   task_environment_.RunUntilIdle();
 
+  // Some Zebra printers use a different manufacturer.  Test that.
+  search_data.printer_id.set_make("Zebra Technologies");
+
+  provider->ResolvePpdReference(
+      search_data, base::BindOnce(&PpdProviderTest::CaptureResolvePpdReference,
+                                  base::Unretained(this)));
+
+  task_environment_.RunUntilIdle();
+
   // No ZPL in the model name, so this PPD will not be found.
   search_data.printer_id.set_model("ZTC label printer 4000");
   provider->ResolvePpdReference(
@@ -1193,10 +1202,11 @@ TEST_F(PpdProviderTest, GenericZebraPpdResolution) {
 
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(2UL, captured_resolve_ppd_references_.size());
+  ASSERT_EQ(3UL, captured_resolve_ppd_references_.size());
 
   EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_references_[0].code);
-  EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_references_[1].code);
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_references_[1].code);
+  EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_references_[2].code);
 }
 
 TEST_F(PpdProviderTest, RemotePpdFetchedFromUrlIfAvailable) {
