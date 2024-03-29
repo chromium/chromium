@@ -345,6 +345,10 @@ message DeviceRegisterRequest {
 
     // PSM terminated due to an error.
     PSM_RESULT_ERROR = 3;
+
+    // PSM check was skipped, as the device is going through Flex Auto
+    // Enrollment after legacy state determination.
+    PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT = 4;
   }
   optional PsmExecutionResult psm_execution_result = 19;
 
