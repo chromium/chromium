@@ -93,21 +93,21 @@ void InteractiveBrowserTestApi::EnableWebUICodeCoverage() {
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::Screenshot(
     ElementSpecifier element,
     const std::string& screenshot_name,
-    const std::string& baseline) {
+    const std::string& baseline_cl) {
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("Screenshot( \"%s\", \"%s\" )",
                                             screenshot_name.c_str(),
-                                            baseline.c_str()));
+                                            baseline_cl.c_str()));
   ui::test::internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveBrowserTestApi* test, std::string screenshot_name,
-         std::string baseline, ui::InteractionSequence* seq,
+         std::string baseline_cl, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
-            el, screenshot_name, baseline);
+            el, screenshot_name, baseline_cl);
         test->test_impl().HandleActionResult(seq, el, "Screenshot", result);
       },
-      base::Unretained(this), screenshot_name, baseline));
+      base::Unretained(this), screenshot_name, baseline_cl));
   return builder;
 }
 

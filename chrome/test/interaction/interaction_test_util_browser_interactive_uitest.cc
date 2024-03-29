@@ -44,7 +44,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kDownloadsPageElementId, std::string(), "3924454"));
+      Screenshot(kDownloadsPageElementId, /*screenshot_name=*/std::string(),
+                 /*baseline_cl=*/"3924454"));
 }
 
 // This test checks that we can attach to a WebUI that is not embedded in a tab.
@@ -97,7 +98,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
           base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
                                          ui::TrackedElement* element) {
             const auto result = InteractionTestUtilBrowser::CompareScreenshot(
-                element, std::string(), "3664291");
+                element, /*screenshot_name=*/std::string(),
+                /*baseline_cl=*/"3664291");
             EXPECT_THAT(
                 result,
                 testing::AnyOf(ui::test::ActionResult::kSucceeded,

@@ -546,7 +546,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipInteractiveTest,
       WaitForShow(
           MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
       Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,
-                 "MemorySaverResourceView", "5280502"));
+                 /*screenshot_name=*/"MemorySaverResourceView",
+                 /*baseline_cl=*/"5280502"));
 }
 
 class MemorySaverFaviconTreatmentTest
@@ -585,5 +586,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
                  return views::AsViewClass<views::View>(GetTabIcon(0));
                })),
       WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
-      Screenshot(kFirstTabFavicon, "FadeSmallFaviconOnDiscard", "4786929"));
+      Screenshot(kFirstTabFavicon,
+                 /*screenshot_name=*/"FadeSmallFaviconOnDiscard",
+                 /*baseline_cl=*/"4786929"));
 }

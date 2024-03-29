@@ -273,7 +273,7 @@ Browser* InteractionTestUtilBrowser::GetBrowserFromContext(
 ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     ui::TrackedElement* element,
     const std::string& screenshot_name,
-    const std::string& baseline) {
+    const std::string& baseline_cl) {
   views::View* view = nullptr;
   if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
     view = view_el->view();
@@ -295,7 +295,7 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     return ui::test::ActionResult::kKnownIncompatible;
   }
 
-  PixelTestUi pixel_test_ui(view, screenshot_name, baseline);
+  PixelTestUi pixel_test_ui(view, screenshot_name, baseline_cl);
   ui::test::ActionResult result = pixel_test_ui.VerifyUiWithResult();
   if (result == ui::test::ActionResult::kKnownIncompatible) {
     LOG(WARNING) << "Current platform does not support pixel tests.";

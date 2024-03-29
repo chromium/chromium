@@ -80,14 +80,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   void EnableWebUICodeCoverage();
 
   // Takes a screenshot of the specified element, with name `screenshot_name`
-  // (may be empty for tests that take only one screenshot) and `baseline`,
+  // (may be empty for tests that take only one screenshot) and `baseline_cl`,
   // which should be set to match the CL number when a screenshot should change.
   //
   // Currently, is somewhat unreliable for WebUI embedded in bubbles or dialogs
   // (e.g. Tab Search dropdown) but should work fairly well in most other cases.
   [[nodiscard]] StepBuilder Screenshot(ElementSpecifier element,
                                        const std::string& screenshot_name,
-                                       const std::string& baseline);
+                                       const std::string& baseline_cl);
 
   struct CurrentBrowser {};
   struct AnyBrowser {};

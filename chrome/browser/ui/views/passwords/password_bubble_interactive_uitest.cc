@@ -991,21 +991,21 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
       GetController()->BypassUserAuthtForTesting();
   auto setup_passwords = [this]() { SetupManagingPasswords(); };
 
-  RunTestSequence(Do(setup_passwords),
-                  PressButton(kPasswordsOmniboxKeyIconElementId),
-                  WaitForShow(ManagePasswordsView::kTopView),
-                  EnsurePresent(ManagePasswordsListView::kTopView),
-                  NameChildViewByType<RichHoverButton>(
-                      ManagePasswordsListView::kTopView, kFirstCredentialsRow),
-                  PressButton(kFirstCredentialsRow),
-                  WaitForShow(ManagePasswordsDetailsView::kTopView),
-                  EnsureNotPresent(ManagePasswordsListView::kTopView),
-                  // Screenshots are supposed only on Windows.
-                  SetOnIncompatibleAction(
-                      OnIncompatibleAction::kIgnoreAndContinue,
-                      "Screenshot can only run in pixel_tests on Windows."),
-                  Screenshot(ManagePasswordsDetailsView::kTopView,
-                             std::string(), "5189779"));
+  RunTestSequence(
+      Do(setup_passwords), PressButton(kPasswordsOmniboxKeyIconElementId),
+      WaitForShow(ManagePasswordsView::kTopView),
+      EnsurePresent(ManagePasswordsListView::kTopView),
+      NameChildViewByType<RichHoverButton>(ManagePasswordsListView::kTopView,
+                                           kFirstCredentialsRow),
+      PressButton(kFirstCredentialsRow),
+      WaitForShow(ManagePasswordsDetailsView::kTopView),
+      EnsureNotPresent(ManagePasswordsListView::kTopView),
+      // Screenshots are supposed only on Windows.
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(ManagePasswordsDetailsView::kTopView,
+                 /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1033,7 +1033,8 @@ IN_PROC_BROWSER_TEST_F(
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(ManagePasswordsView::kFooterId, std::string(), "5189779"));
+      Screenshot(ManagePasswordsView::kFooterId,
+                 /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
 class PasswordBubbleWithManagePasswordButtonInteractiveUiTest
@@ -1083,21 +1084,21 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
       GetController()->BypassUserAuthtForTesting();
   auto setup_passwords = [this]() { SetupManagingPasswords(); };
 
-  RunTestSequence(Do(setup_passwords),
-                  PressButton(kPasswordsOmniboxKeyIconElementId),
-                  WaitForShow(ManagePasswordsView::kTopView),
-                  EnsurePresent(ManagePasswordsListView::kTopView),
-                  NameChildViewByType<RichHoverButton>(
-                      ManagePasswordsListView::kTopView, kFirstCredentialsRow),
-                  PressButton(kFirstCredentialsRow),
-                  WaitForShow(ManagePasswordsDetailsView::kTopView),
-                  EnsureNotPresent(ManagePasswordsListView::kTopView),
-                  // Screenshots are supposed only on Windows.
-                  SetOnIncompatibleAction(
-                      OnIncompatibleAction::kIgnoreAndContinue,
-                      "Screenshot can only run in pixel_tests on Windows."),
-                  Screenshot(ManagePasswordsDetailsView::kTopView,
-                             std::string(), "5314579"));
+  RunTestSequence(
+      Do(setup_passwords), PressButton(kPasswordsOmniboxKeyIconElementId),
+      WaitForShow(ManagePasswordsView::kTopView),
+      EnsurePresent(ManagePasswordsListView::kTopView),
+      NameChildViewByType<RichHoverButton>(ManagePasswordsListView::kTopView,
+                                           kFirstCredentialsRow),
+      PressButton(kFirstCredentialsRow),
+      WaitForShow(ManagePasswordsDetailsView::kTopView),
+      EnsureNotPresent(ManagePasswordsListView::kTopView),
+      // Screenshots are supposed only on Windows.
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(ManagePasswordsDetailsView::kTopView,
+                 /*screenshot_name=*/std::string(), /*baseline_cl=*/"5314579"));
 }
 
 class SharedPasswordsNotificationBubbleInteractiveUiTest
@@ -1119,7 +1120,7 @@ auto SharedPasswordsNotificationBubbleInteractiveUiTest::
           SharedPasswordsNotificationView::kTopView, kRootViewName,
           [](views::View* view) { return view->GetWidget()->GetRootView(); }),
       Screenshot(kRootViewName,
-                 /*screenshot_name=*/std::string(), baseline));
+                 /*screenshot_name=*/std::string(), /*baseline_cl=*/baseline));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedPasswordsNotificationBubbleInteractiveUiTest,

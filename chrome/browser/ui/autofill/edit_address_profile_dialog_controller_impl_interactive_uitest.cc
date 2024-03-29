@@ -106,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
       InAnyContext(Steps(
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
-          Screenshot(EditAddressProfileView::kTopViewId, "editor", "4846629"),
+          Screenshot(EditAddressProfileView::kTopViewId,
+                     /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
           WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
       EnsureClosedWithDecisionAndProfile(

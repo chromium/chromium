@@ -96,14 +96,16 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveWithEdit) {
       ShowInitBubble(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSuppressedScreenshotError),
-      Screenshot(SaveAddressProfileView::kTopViewId, "save_popup", "4535916"),
+      Screenshot(SaveAddressProfileView::kTopViewId,
+                 /*screenshot_name=*/"save_popup", /*baseline_cl=*/"4535916"),
       PressButton(SaveAddressProfileView::kEditButtonViewId),
 
       // The editor popup resides in a different context on MacOS.
       InAnyContext(
           Steps(WaitForShow(EditAddressProfileView::kTopViewId),
-                Screenshot(EditAddressProfileView::kTopViewId, "edit_popup",
-                           "4535916"),
+                Screenshot(EditAddressProfileView::kTopViewId,
+                           /*screenshot_name=*/"edit_popup",
+                           /*baseline_cl=*/"4535916"),
                 PressButton(views::DialogClientView::kCancelButtonElementId))),
 
       WaitForShow(SaveAddressProfileView::kTopViewId),
@@ -133,15 +135,17 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, SaveCloseAndOpenAgain) {
       ShowInitBubble(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSuppressedScreenshotError),
-      Screenshot(SaveAddressProfileView::kTopViewId, "save_popup", "4535916"),
+      Screenshot(SaveAddressProfileView::kTopViewId,
+                 /*screenshot_name=*/"save_popup", /*baseline_cl=*/"4535916"),
 
       PressButton(views::BubbleFrameView::kCloseButtonElementId),
       // Make sure the popup gets closed before subsequent reopening.
       EnsureNotPresent(SaveAddressProfileView::kTopViewId),
 
       ShowInitBubble(),
-      Screenshot(SaveAddressProfileView::kTopViewId, "reopened_save_popup",
-                 "4535916"));
+      Screenshot(SaveAddressProfileView::kTopViewId,
+                 /*screenshot_name=*/"reopened_save_popup",
+                 /*baseline_cl=*/"4535916"));
 }
 
 IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, NoCrashesOnTabClose) {
@@ -173,15 +177,17 @@ IN_PROC_BROWSER_TEST_F(UpdateAddressProfileTest, UpdateThroughEdit) {
       ShowInitBubble(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSuppressedScreenshotError),
-      Screenshot(UpdateAddressProfileView::kTopViewId, "update_popup",
-                 "4535916"),
+      Screenshot(UpdateAddressProfileView::kTopViewId,
+                 /*screenshot_name=*/"update_popup",
+                 /*baseline_cl=*/"4535916"),
       PressButton(UpdateAddressProfileView::kEditButtonViewId),
 
       // The editor popup resides in a different context on MacOS.
       InAnyContext(
           Steps(WaitForShow(EditAddressProfileView::kTopViewId),
-                Screenshot(EditAddressProfileView::kTopViewId, "edit_popup",
-                           "4535916"),
+                Screenshot(EditAddressProfileView::kTopViewId,
+                           /*screenshot_name=*/"edit_popup",
+                           /*baseline_cl=*/"4535916"),
                 PressButton(views::DialogClientView::kCancelButtonElementId))),
 
       WaitForShow(UpdateAddressProfileView::kTopViewId),
@@ -210,15 +216,17 @@ IN_PROC_BROWSER_TEST_F(UpdateAccountAddressProfileTest, UpdateThroughEdit) {
       ShowInitBubble(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSuppressedScreenshotError),
-      Screenshot(UpdateAddressProfileView::kTopViewId, "update_popup",
-                 "4535916"),
+      Screenshot(UpdateAddressProfileView::kTopViewId,
+                 /*screenshot_name=*/"update_popup",
+                 /*baseline_cl=*/"4535916"),
       PressButton(UpdateAddressProfileView::kEditButtonViewId),
 
       // The editor popup resides in a different context on MacOS.
       InAnyContext(
           Steps(WaitForShow(EditAddressProfileView::kTopViewId),
-                Screenshot(EditAddressProfileView::kTopViewId, "edit_popup",
-                           "4535916"),
+                Screenshot(EditAddressProfileView::kTopViewId,
+                           /*screenshot_name=*/"edit_popup",
+                           /*baseline_cl=*/"4535916"),
                 PressButton(views::DialogClientView::kCancelButtonElementId))),
 
       WaitForShow(UpdateAddressProfileView::kTopViewId),
@@ -260,8 +268,9 @@ IN_PROC_BROWSER_TEST_F(MigrateToProfileAddressProfileTest, SaveWithEdit) {
       // The editor popup resides in a different context on MacOS.
       InAnyContext(
           Steps(WaitForShow(EditAddressProfileView::kTopViewId),
-                Screenshot(EditAddressProfileView::kTopViewId, "edit_popup",
-                           "4535916"),
+                Screenshot(EditAddressProfileView::kTopViewId,
+                           /*screenshot_name=*/"edit_popup",
+                           /*baseline_cl=*/"4535916"),
                 PressButton(views::DialogClientView::kCancelButtonElementId))),
 
       WaitForShow(SaveAddressProfileView::kTopViewId),
@@ -312,15 +321,17 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressProfileTest, MAYBE_AddAddressAccept) {
       ShowInitBubble(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSuppressedScreenshotError),
-      Screenshot(AddNewAddressBubbleView::kTopViewId, "add_new_address_popup",
-                 "5358737"),
+      Screenshot(AddNewAddressBubbleView::kTopViewId,
+                 /*screenshot_name=*/"add_new_address_popup",
+                 /*baseline_cl=*/"5358737"),
       PressButton(views::DialogClientView::kOkButtonElementId),
 
       // The editor popup resides in a different context on MacOS.
       InAnyContext(Steps(
           WaitForShow(EditAddressProfileView::kTopViewId),
-          Screenshot(EditAddressProfileView::kTopViewId, "edit_popup",
-                     "5358737"),
+          Screenshot(EditAddressProfileView::kTopViewId,
+                     /*screenshot_name=*/"edit_popup",
+                     /*baseline_cl=*/"5358737"),
           PressButton(views::DialogClientView::kOkButtonElementId),
           WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
 

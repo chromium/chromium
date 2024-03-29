@@ -56,12 +56,13 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, GetBrowserFromContext) {
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
-  RunTestSequence(
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kSkipPixelTestsReason),
-      // This adds a callback that calls
-      // InteractionTestUtilBrowser::CompareScreenshot().
-      Screenshot(kToolbarAppMenuButtonElementId, "AppMenuButton", "3924454"));
+  RunTestSequence(SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
+                  // This adds a callback that calls
+                  // InteractionTestUtilBrowser::CompareScreenshot().
+                  Screenshot(kToolbarAppMenuButtonElementId,
+                             /*screenshot_name=*/"AppMenuButton",
+                             /*baseline_cl=*/"3924454"));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
@@ -73,13 +74,15 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithTitle1URL);
 
-  RunTestSequence(InstrumentTab(kWebContentsElementId),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  NavigateWebContents(kWebContentsElementId, url),
-                  // This adds a callback that calls
-                  // InteractionTestUtilBrowser::CompareScreenshot().
-                  Screenshot(kWebContentsElementId, std::string(), "3924454"));
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      NavigateWebContents(kWebContentsElementId, url),
+      // This adds a callback that calls
+      // InteractionTestUtilBrowser::CompareScreenshot().
+      Screenshot(kWebContentsElementId, /*screenshot_name=*/std::string(),
+                 /*baseline_cl=*/"3924454"));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, ConfirmOmnibox) {

@@ -91,8 +91,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
       WaitForShow(kPerformanceButton), FlushEvents(),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               kSkipPixelTestsReason),
-      Screenshot(kPerformanceButton, "BatterySaverActiveToolbarButton",
-                 "5053929"));
+      Screenshot(kPerformanceButton,
+                 /*screenshot_name=*/"BatterySaverActiveToolbarButton",
+                 /*baseline_cl=*/"5053929"));
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceSidePanelInteractiveTest,
