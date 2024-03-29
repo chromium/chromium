@@ -417,11 +417,9 @@ export function createRoutes(): OsSettingsRoutes {
   }
 
   // Personalization section.
-  if (!isGuest()) {
-    r.PERSONALIZATION = createSection(
-        r.BASIC, routesMojom.PERSONALIZATION_SECTION_PATH,
-        Section.kPersonalization);
-  }
+  r.PERSONALIZATION = createSection(
+      r.BASIC, routesMojom.PERSONALIZATION_SECTION_PATH,
+      Section.kPersonalization);
 
   // Apps section.
   r.APPS = createSection(r.BASIC, routesMojom.APPS_SECTION_PATH, Section.kApps);
