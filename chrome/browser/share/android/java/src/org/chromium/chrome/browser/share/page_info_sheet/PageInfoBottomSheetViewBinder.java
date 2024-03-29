@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.share.page_info_sheet;
 
 import android.view.View;
 
+import androidx.constraintlayout.widget.ConstraintSet;
+
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetProperties.PageInfoState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,6 +26,32 @@ class PageInfoBottomSheetViewBinder {
                     currentState != PageInfoState.INITIALIZING ? View.VISIBLE : View.GONE;
             int visibleWhenSuccessful =
                     currentState == PageInfoState.SUCCESS ? View.VISIBLE : View.GONE;
+
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(view);
+            if (currentState == PageInfoState.INITIALIZING) {
+                // On the initializing state constrain the contents container to the bottom of the
+                // sheet.
+                constraintSet.connect(
+                        view.mContentsContainer.getId(),
+                        ConstraintSet.BOTTOM,
+                        ConstraintSet.PARENT_ID,
+                        ConstraintSet.BOTTOM);
+                constraintSet.applyTo(view);
+                view.mContentsContainer.setBackgroundResource(
+                        R.drawable.page_info_bottom_sheet_loading_background);
+            } else {
+                // On all other states constrain the contents container to the bottom of the
+                // feedback area, leaving space for mAcceptButton and mCancelButton.
+                constraintSet.connect(
+                        view.mContentsContainer.getId(),
+                        ConstraintSet.BOTTOM,
+                        R.id.feedback_area_bottom_barrier,
+                        ConstraintSet.BOTTOM);
+                constraintSet.applyTo(view);
+                view.mContentsContainer.setBackgroundResource(
+                        R.drawable.page_info_bottom_sheet_content_background);
+            }
 
             // Views only shown when initializing.
             view.mLoadingIndicator.setVisibility(visibleWhenInitializing);

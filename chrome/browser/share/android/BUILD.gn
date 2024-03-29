@@ -13,6 +13,8 @@ android_resources("java_resources") {
     "java/res/drawable/ink_highlighter.xml",
     "java/res/drawable/link.xml",
     "java/res/drawable/link_off.xml",
+    "java/res/drawable/page_info_bottom_sheet_content_background.xml",
+    "java/res/drawable/page_info_bottom_sheet_loading_background.xml",
     "java/res/drawable/preview_icon_border_background.xml",
     "java/res/drawable/qrcode_background.xml",
     "java/res/drawable/save_icon.xml",

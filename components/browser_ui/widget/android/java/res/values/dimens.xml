@@ -206,4 +206,11 @@ found in the LICENSE file.
     <!-- Min height required to satisfy the min touch target size-->
     <dimen name="switch_pre_scale_min_height">60dp</dimen>
     <dimen name="switch_with_text_min_height">@dimen/min_touch_target_size</dimen>
+
+    <!-- Default values for GradientParagraphLoadingIndicator. -->
+    <item type="integer" name="loading_text_line_count">3</item>
+    <dimen name="loading_text_line_height">14dp</dimen>
+    <dimen name="loading_text_line_spacing">6dp</dimen>
+    <item type="fraction" format="fraction" name="loading_text_last_line_width_fraction">50%</item>
+
 </resources>

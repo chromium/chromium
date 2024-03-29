@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.page_info_sheet;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -13,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.widget.MaterialProgressBar;
 import org.chromium.ui.widget.ChromeImageButton;
 
 class PageInfoBottomSheetView extends ConstraintLayout {
@@ -24,10 +24,11 @@ class PageInfoBottomSheetView extends ConstraintLayout {
     Button mAcceptButton;
     Button mCancelButton;
     ChromeImageButton mBackButton;
-    android.view.View mFeedbackDivider;
+    View mFeedbackDivider;
+    View mContentsContainer;
     ChromeImageButton mPositiveFeedbackButton;
     ChromeImageButton mNegativeFeedbackButton;
-    MaterialProgressBar mLoadingIndicator;
+    View mLoadingIndicator;
 
     public PageInfoBottomSheetView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -47,10 +48,9 @@ class PageInfoBottomSheetView extends ConstraintLayout {
         mCancelButton = findViewById(R.id.cancel_button);
         mBackButton = findViewById(R.id.back_button);
         mFeedbackDivider = findViewById(R.id.feedback_divider);
+        mContentsContainer = findViewById(R.id.contents_container);
         mPositiveFeedbackButton = findViewById(R.id.positive_feedback_button);
         mNegativeFeedbackButton = findViewById(R.id.negative_feedback_button);
-        mLoadingIndicator = (MaterialProgressBar) findViewById(R.id.loading_indicator);
-
-        mLoadingIndicator.setIndeterminate(true);
+        mLoadingIndicator = findViewById(R.id.loading_indicator);
     }
 }

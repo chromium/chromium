@@ -125,4 +125,11 @@ found in the LICENSE file.
             <enum name="hard" value="2" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="GradientParagraphLoadingView">
+        <attr name="numberOfLines" format="integer"/>
+        <attr name="lineHeight" format="dimension"/>
+        <attr name="lineSpacing" format="dimension"/>
+        <attr name="lastLineWidthFraction" format="fraction"/>
+    </declare-styleable>
 </resources>

@@ -61,26 +61,56 @@ found in the LICENSE file.
       app:constraint_referenced_ids="handlebar_bottom_guideline"/>
 
   <!-- Container for the main contents of the sheet. It surrounds id/summary_text and the feedback area with a rounded corner background. -->
-  <!-- TODO(salg): fix bottom margin while loading. -->
   <View
       android:id="@+id/contents_container"
       android:layout_width="0dp"
       android:layout_height="0dp"
-      android:background="@drawable/rounded_corner_card"
+      android:background="@drawable/page_info_bottom_sheet_content_background"
       app:layout_constraintTop_toBottomOf="@id/header_bottom_barrier"
       app:layout_constraintBottom_toTopOf="@id/feedback_area_bottom_barrier"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
 
-  <!-- TODO(salg): replace with custom animation.-->
-  <org.chromium.components.browser_ui.widget.MaterialProgressBar
+  <androidx.constraintlayout.widget.Group
       android:id="@+id/loading_indicator"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:constraint_referenced_ids="loading_paragraph_1, loading_paragraph_2, loading_paragraph_3" />
+
+  <!-- TODO(salg): Remove each loading paragraph individually as text populates. -->
+  <org.chromium.components.browser_ui.widget.GradientParagraphLoadingView
+      android:id="@+id/loading_paragraph_1"
       android:layout_width="match_parent"
       android:layout_height="@dimen/page_info_loading_indicator_height"
-      android:layout_margin="@dimen/page_info_sheet_content_margin"
+      android:layout_marginTop="16dp"
+      android:layout_marginHorizontal="16dp"
+      app:lastLineWidthFraction="45%"
       app:layout_constraintTop_toTopOf="@id/header_bottom_barrier"
       app:layout_constraintStart_toStartOf="@id/contents_container"
+      app:layout_constraintEnd_toEndOf="@id/contents_container"/>
+  <org.chromium.components.browser_ui.widget.GradientParagraphLoadingView
+      android:id="@+id/loading_paragraph_2"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/page_info_loading_indicator_height"
+      android:layout_marginTop="16dp"
+      android:layout_marginHorizontal="16dp"
+      app:lastLineWidthFraction="83%"
+      app:layout_constraintTop_toBottomOf="@id/loading_paragraph_1"
+      app:layout_constraintStart_toStartOf="@id/contents_container"
       app:layout_constraintEnd_toEndOf="@id/contents_container" />
+  <org.chromium.components.browser_ui.widget.GradientParagraphLoadingView
+      android:id="@+id/loading_paragraph_3"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/page_info_loading_indicator_height"
+      android:layout_marginTop="16dp"
+      android:layout_marginBottom="20dp"
+      android:layout_marginHorizontal="16dp"
+      app:lastLineWidthFraction="56%"
+      app:layout_constraintTop_toBottomOf="@id/loading_paragraph_2"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="@id/contents_container"
+      app:layout_constraintEnd_toEndOf="@id/contents_container" />
+
   <TextView
       android:id="@+id/summary_text"
       android:layout_width="match_parent"
@@ -111,7 +141,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       app:barrierDirection="bottom"
       app:barrierMargin="16dp"
-      app:constraint_referenced_ids="loading_indicator, summary_text"/>
+      app:constraint_referenced_ids="summary_text"/>
 
   <!-- Feedback area, contains a text and two buttons. -->
   <TextView
