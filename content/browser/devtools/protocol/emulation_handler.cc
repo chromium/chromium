@@ -12,8 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/idle/idle_manager_impl.h"
@@ -157,6 +159,7 @@ Response EmulationHandler::Disable() {
   prefers_reduced_motion_ = "";
   prefers_reduced_transparency_ = "";
   sensor_overrides_.clear();
+  ClearDevicePostureOverride();
   return Response::Success();
 }
 
@@ -935,6 +938,27 @@ void EmulationHandler::UpdateDeviceEmulationStateForHost(
   } else {
     frame_widget->DisableDeviceEmulation();
   }
+}
+
+Response EmulationHandler::SetDevicePostureOverride(
+    std::unique_ptr<protocol::Emulation::DevicePosture> posture) {
+  ASSIGN_OR_RETURN(blink::mojom::DevicePostureType posture_type,
+                   DevicePostureTypeFromString(posture->GetType()));
+  device_posture_emulation_enabled_ = true;
+  GetWebContents()
+      ->GetDevicePostureProvider()
+      ->OverrideDevicePostureForEmulation(posture_type);
+  return Response::Success();
+}
+
+Response EmulationHandler::ClearDevicePostureOverride() {
+  if (device_posture_emulation_enabled_) {
+    device_posture_emulation_enabled_ = false;
+    GetWebContents()
+        ->GetDevicePostureProvider()
+        ->DisableDevicePostureOverrideForEmulation();
+  }
+  return Response::Success();
 }
 
 void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,

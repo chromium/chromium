@@ -1,0 +1,5 @@
+Test the Device Posture API change event handler.
+Initial Device Posture Type: continuous
+Updated Device Posture Type from change event: folded
+Updated Device Posture Type from change event: continuous
+

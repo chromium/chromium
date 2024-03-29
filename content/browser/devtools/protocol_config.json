@@ -39,6 +39,9 @@
                   "setSensorOverrideEnabled",
                   "setSensorOverrideReadings",
 
+                  "setDevicePostureOverride",
+                  "clearDevicePostureOverride",
+
                   "setIdleOverride",
                   "clearIdleOverride",
                   "setGeolocationOverride",

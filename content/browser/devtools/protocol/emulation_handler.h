@@ -137,6 +137,10 @@ class EmulationHandler : public DevToolsDomainHandler,
   void UpdateDeviceEmulationStateForHost(
       RenderWidgetHostImpl* render_widget_host);
 
+  Response SetDevicePostureOverride(
+      std::unique_ptr<protocol::Emulation::DevicePosture> posture) override;
+  Response ClearDevicePostureOverride() override;
+
   bool touch_emulation_enabled_;
   std::string touch_emulation_configuration_;
   bool device_emulation_enabled_;
@@ -162,6 +166,9 @@ class EmulationHandler : public DevToolsDomainHandler,
   base::flat_map<device::mojom::SensorType,
                  std::unique_ptr<ScopedVirtualSensorForDevTools>>
       sensor_overrides_;
+
+  // True when SetDevicePostureOverride() has been called.
+  bool device_posture_emulation_enabled_ = false;
 
   RenderFrameHostImpl* host_;
 

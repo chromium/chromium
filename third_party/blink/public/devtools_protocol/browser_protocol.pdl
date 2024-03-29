@@ -4159,7 +4159,20 @@ domain Emulation
       experimental optional DisplayFeature displayFeature
       # If set, the posture of a foldable device. If not set the posture is set
       # to continuous.
-      experimental optional DevicePosture devicePosture
+      # Deprecated, use Emulation.setDevicePostureOverride.
+      experimental deprecated optional DevicePosture devicePosture
+
+  # Start reporting the given posture value to the Device Posture API.
+  # This override can also be set in setDeviceMetricsOverride().
+  experimental command setDevicePostureOverride
+    parameters
+      DevicePosture posture
+
+  # Clears a device posture override set with either setDeviceMetricsOverride()
+  # or setDevicePostureOverride() and starts using posture information from the
+  # platform again.
+  # Does nothing if no override is set.
+  experimental command clearDevicePostureOverride
 
   experimental command setScrollbarsHidden
     parameters

@@ -31,6 +31,11 @@ class DevicePostureProviderImpl final
       mojo::PendingReceiver<blink::mojom::DevicePostureProvider> receiver);
   DevicePosturePlatformProvider* platform_provider() const;
 
+  // DevicePostureProvider implementation.
+  void OverrideDevicePostureForEmulation(
+      blink::mojom::DevicePostureType posture) override;
+  void DisableDevicePostureOverrideForEmulation() override;
+
  private:
   // DevicePostureClient implementation.
   void OnDevicePostureChanged(
@@ -40,9 +45,6 @@ class DevicePostureProviderImpl final
   void AddListenerAndGetCurrentPosture(
       mojo::PendingRemote<blink::mojom::DevicePostureClient> client,
       AddListenerAndGetCurrentPostureCallback callback) override;
-  void OverrideDevicePostureForEmulation(
-      blink::mojom::DevicePostureType posture) override;
-  void DisableDevicePostureOverrideForEmulation() override;
 
   void OnRemoteDisconnect(mojo::RemoteSetElementId);
 
