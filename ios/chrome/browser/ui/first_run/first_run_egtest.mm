@@ -392,6 +392,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)]) {
     config.features_enabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
+    config.features_enabled.push_back(
+        switches::kUseSystemCapabilitiesForMinorModeRestrictions);
   }
 
   return config;

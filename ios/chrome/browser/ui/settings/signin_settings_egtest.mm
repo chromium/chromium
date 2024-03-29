@@ -55,6 +55,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
             (testSigninWithNoAccountOnDeviceWithUnknownCapabilities)]) {
     config.features_enabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
+    config.features_enabled.push_back(
+        switches::kUseSystemCapabilitiesForMinorModeRestrictions);
   }
   return config;
 }
