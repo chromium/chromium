@@ -74,7 +74,7 @@ interface CrosHealthdRoutinesService {
 
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 5, NextIndex: 18
+// NextMinVersion: 6, NextIndex: 19
 [Stable, Extensible]
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -114,6 +114,8 @@ union RoutineArgument {
   [MinVersion=4] CameraAvailabilityRoutineArgument camera_availability@16;
   // Arguments to create a urandom routine.
   [MinVersion=4] UrandomRoutineArgument urandom@17;
+  // Arguments to create a network bandwidth routine.
+  [MinVersion=5] NetworkBandwidthRoutineArgument network_bandwidth@18;
 };
 
 // This routine checks whether there is any memory problem by
@@ -342,6 +344,12 @@ struct UrandomRoutineArgument {
   mojo_base.mojom.TimeDelta? exec_duration@0;
 };
 
+// This routine checks the network bandwidth and report the speed info.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct NetworkBandwidthRoutineArgument {};
+
 // Interface exposed to clients for controlling a routine.
 //
 // Error Handling:
@@ -419,9 +427,46 @@ struct RoutineStateInitialized {};
 
 // Routine is currently running.
 //
-// NextMinVersion: 1, NextIndex: 0
+// NextMinVersion: 2, NextIndex: 1
 [Stable]
-struct RoutineStateRunning {};
+struct RoutineStateRunning {
+  [MinVersion=1] RoutineRunningInfo? info@0;
+};
+
+// Routine running info. Note that not every routine provides info during the
+// running state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+union RoutineRunningInfo {
+  // Default field is required by extensible unions for backward compatibility.
+  // Any unrecognized Mojo field will deserialize to this field. Don't use this.
+  [Default] bool unrecognizedArgument @0;
+  // Running info of network bandwidth routine.
+  NetworkBandwidthRoutineRunningInfo network_bandwidth@1;
+};
+
+// Running info regarding network bandwidth routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct NetworkBandwidthRoutineRunningInfo {
+  // The type of test that routine is running.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum Type {
+    [Default] kUnmappedEnumField = 0,
+    // Routine is running download test.
+    kDownload = 1,
+    // Routine is running upload test.
+    kUpload = 2,
+  };
+  Type type@0;
+
+  // The current network speed in Kbps.
+  double speed_kbps@1;
+};
 
 // Routine is currently waiting.
 //
@@ -534,7 +579,7 @@ struct RoutineStateFinished {
 
 // Details about a finished routine.
 //
-// NextMinVersion: 1, NextIndex: 10
+// NextMinVersion: 2, NextIndex: 11
 [Stable, Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
@@ -558,6 +603,8 @@ union RoutineDetail {
   BluetoothPairingRoutineDetail bluetooth_pairing@8;
   // Details of a completed camera availability routine.
   CameraAvailabilityRoutineDetail camera_availability@9;
+  // Details of a completed network bandwidth routine.
+  [MinVersion=1] NetworkBandwidthRoutineDetail network_bandwidth@10;
 };
 
 // Details regarding memory routine.
@@ -907,4 +954,15 @@ struct FanRoutineDetail {
   array<uint8> failed_fan_ids@1;
   // Whether the number of fan probed is matched.
   HardwarePresenceStatus fan_count_status@2;
+};
+
+// Details regarding network bandwidth routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct NetworkBandwidthRoutineDetail {
+  // Average download speed in Kbit/s.
+  double download_speed_kbps@0;
+  // Average upload speed in Kbit/s.
+  double upload_speed_kbps@1;
 };

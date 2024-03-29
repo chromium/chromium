@@ -76,6 +76,7 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kBluetoothScanning:
     case healthd::RoutineDetail::Tag::kBluetoothPairing:
     case healthd::RoutineDetail::Tag::kCameraAvailability:
+    case healthd::RoutineDetail::Tag::kNetworkBandwidth:
       // The actual value of unrecognizedArgument should not be used. Assign an
       // arbitrary value to it.
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
