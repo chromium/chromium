@@ -1,3 +1,5 @@
+# Unless you want a specific reviewer's expertise, send to the email below.
+chrome-dev-infra-reviewers@google.com
 # This is reserved for people that are comfortable with Chromium builders
 # and understand the implications of changing their configurations.
 bpastene@chromium.org
