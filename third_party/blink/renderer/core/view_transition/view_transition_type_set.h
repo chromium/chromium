@@ -44,6 +44,7 @@ class CORE_EXPORT ViewTransitionTypeSet
   String At(wtf_size_t index) const { return types_.at(index); }
   bool IsEmpty() const { return types_.empty(); }
   static bool IsValidType(const String& value);
+  void Append(const Vector<String>& types);
 
  protected:
   void AddInternal(const String&);

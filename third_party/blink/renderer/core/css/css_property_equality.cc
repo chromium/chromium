@@ -1307,6 +1307,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kSymbols:
     case CSSPropertyID::kSyntax:
     case CSSPropertyID::kSystem:
+    case CSSPropertyID::kTypes:
     case CSSPropertyID::kUnicodeRange:
       return true;
 

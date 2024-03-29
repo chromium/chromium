@@ -248,7 +248,8 @@ void ViewTransitionSupplement::StartTransition(
   DCHECK(!transition_)
       << "SkipTransition() should finish existing |transition_|";
   transition_ = ViewTransition::CreateForSnapshotForNavigation(
-      &document, navigation_id, std::move(callback), this);
+      &document, navigation_id, std::move(callback), cross_document_types_,
+      this);
 
   auto* page_swap_event = MakeGarbageCollected<PageSwapEvent>(
       document, std::move(params), transition_->GetScriptDelegate());
@@ -327,12 +328,15 @@ ViewTransitionSupplement::TakePendingRequests() {
 }
 
 void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
-    bool cross_document_enabled) {
+    bool cross_document_enabled,
+    const Vector<String>& types) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled());
+  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled() || types.empty());
   SetCrossDocumentOptIn(
       cross_document_enabled
           ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
           : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
+  cross_document_types_ = types;
 }
 
 void ViewTransitionSupplement::WillInsertBody() {
@@ -373,6 +377,8 @@ ViewTransitionSupplement::ResolveCrossDocumentViewTransition() {
     CHECK(!ViewTransitionUtils::GetTransition(*GetSupplementable()));
     return nullptr;
   }
+
+  transition_->InitTypes(cross_document_types_);
 
   // TODO(https://crbug.com/1502628): This is where types from the used
   // @view-transition should be applied.

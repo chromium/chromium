@@ -18,6 +18,8 @@ class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
 
   const CSSValue* GetNavigation() const;
 
+  const Vector<String>& GetTypes() const { return types_; }
+
   StyleRuleViewTransition* Copy() const {
     return MakeGarbageCollected<StyleRuleViewTransition>(*this);
   }
@@ -30,6 +32,7 @@ class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
  private:
   Member<const CascadeLayer> layer_;
   Member<const CSSValue> navigation_;
+  Vector<String> types_;
 };
 
 template <>

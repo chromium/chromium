@@ -7251,6 +7251,12 @@
       runtime_flag: "ViewTransitionOnNavigation",
     },
     {
+      name: "types",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "ViewTransitionTypes",
+    },
+    {
       name: "inset-area",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",

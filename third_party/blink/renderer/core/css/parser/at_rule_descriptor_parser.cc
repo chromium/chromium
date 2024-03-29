@@ -480,6 +480,23 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
           css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(
               range);
       break;
+    case AtRuleDescriptorID::Types: {
+      CSSValueList* types = CSSValueList::CreateSpaceSeparated();
+      parsed_value = types;
+      while (!range.AtEnd()) {
+        range.ConsumeWhitespace();
+        if (range.Peek().Id() == CSSValueID::kNone) {
+          return nullptr;
+        }
+        CSSCustomIdentValue* ident =
+            css_parsing_utils::ConsumeCustomIdent(range, context);
+        if (!ident || ident->Value().StartsWith("-ua-")) {
+          return nullptr;
+        }
+        types->Append(*ident);
+      }
+      break;
+    }
     default:
       break;
   }

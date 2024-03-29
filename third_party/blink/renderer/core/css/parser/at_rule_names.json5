@@ -79,6 +79,9 @@
       name: "navigation",
     },
     {
+      name: "types",
+    },
+    {
       name: "size-adjust",
     },
     {

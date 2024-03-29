@@ -76,6 +76,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
       Document*,
       const viz::NavigationId& navigation_id,
       ViewTransitionStateCallback,
+      const Vector<String>& types,
       Delegate*);
 
   // Creates a ViewTransition using cached state from the previous Document
@@ -98,6 +99,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                  Document*,
                  const viz::NavigationId& navigation_id,
                  ViewTransitionStateCallback,
+                 const Vector<String>& types,
                  Delegate*);
   // Navigation-initiated from-snapshot constructor.
   ViewTransition(PassKey, Document*, ViewTransitionState, Delegate*);
@@ -258,6 +260,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void NotifyDOMCallbackFinished(bool success);
 
   ViewTransitionTypeSet* Types();
+
+  void InitTypes(const Vector<String>&);
 
  private:
   friend class ViewTransitionTest;

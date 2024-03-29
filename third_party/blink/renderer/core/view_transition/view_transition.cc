@@ -145,11 +145,7 @@ ViewTransition::ViewTransition(PassKey,
           *document->GetExecutionContext(),
           *this,
           update_dom_callback)) {
-  if (RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-    types_ = MakeGarbageCollected<ViewTransitionTypeSet>(
-        this, types.value_or(Vector<String>()));
-  }
-
+  InitTypes(types.value_or(Vector<String>()));
   if (auto* originating_element = document_->documentElement()) {
     originating_element->ActiveViewTransitionStateChanged();
     if (types_ && !types_->IsEmpty()) {
@@ -178,15 +174,17 @@ ViewTransition* ViewTransition::CreateForSnapshotForNavigation(
     Document* document,
     const viz::NavigationId& navigation_id,
     ViewTransitionStateCallback callback,
+    const Vector<String>& types,
     Delegate* delegate) {
   return MakeGarbageCollected<ViewTransition>(
-      PassKey(), document, navigation_id, std::move(callback), delegate);
+      PassKey(), document, navigation_id, std::move(callback), types, delegate);
 }
 
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
                                const viz::NavigationId& navigation_id,
                                ViewTransitionStateCallback callback,
+                               const Vector<String>& types,
                                Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kForSnapshot),
@@ -203,6 +201,7 @@ ViewTransition::ViewTransition(PassKey,
           *this)) {
   TRACE_EVENT0("blink", "ViewTransition::ViewTransition - CreatedForSnapshot");
   DCHECK(transition_state_callback_);
+  InitTypes(types);
   ProcessCurrentState();
 }
 
@@ -631,6 +630,12 @@ void ViewTransition::ProcessCurrentState() {
 ViewTransitionTypeSet* ViewTransition::Types() {
   CHECK(types_);
   return types_;
+}
+
+void ViewTransition::InitTypes(const Vector<String>& types) {
+  if (RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
+    types_ = MakeGarbageCollected<ViewTransitionTypeSet>(this, types);
+  }
 }
 
 void ViewTransition::Trace(Visitor* visitor) const {

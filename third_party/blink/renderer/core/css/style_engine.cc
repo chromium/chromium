@@ -2399,7 +2399,9 @@ void StyleEngine::UpdateViewTransitionOptIn() {
 
   // TODO(https://crbug.com/1463966): This will likely need to change to a
   // CSSValueList if we want to support multiple tokens as a trigger.
+  Vector<String> types;
   if (view_transition_rule_) {
+    types = view_transition_rule_->GetTypes();
     if (const CSSValue* value = view_transition_rule_->GetNavigation()) {
       cross_document_enabled =
           To<CSSIdentifierValue>(value)->GetValueID() == CSSValueID::kAuto;
@@ -2407,7 +2409,7 @@ void StyleEngine::UpdateViewTransitionOptIn() {
   }
 
   ViewTransitionSupplement::From(GetDocument())
-      ->OnViewTransitionsStyleUpdated(cross_document_enabled);
+      ->OnViewTransitionsStyleUpdated(cross_document_enabled, types);
 }
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {

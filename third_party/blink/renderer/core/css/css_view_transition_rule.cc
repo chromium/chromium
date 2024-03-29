@@ -49,6 +49,10 @@ String CSSViewTransitionRule::navigation() const {
   return String();
 }
 
+Vector<String> CSSViewTransitionRule::types() const {
+  return view_transition_rule_->GetTypes();
+}
+
 void CSSViewTransitionRule::Reattach(StyleRuleBase* rule) {
   CHECK(rule);
   view_transition_rule_ = To<StyleRuleViewTransition>(rule);

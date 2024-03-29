@@ -843,6 +843,7 @@ enum CSSSampleId {
     kReadingOrderItems = 787,
     kPositionAnchor = 788,
     kPositionVisibility = 789,
+    kTypes = 790,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
