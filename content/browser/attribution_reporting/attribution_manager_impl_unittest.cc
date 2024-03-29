@@ -220,7 +220,7 @@ class MockCookieChecker : public AttributionCookieChecker {
     origins_with_debug_cookie_set_.insert(std::move(origin));
   }
 
-  void DeferCallbacks() { defer_callbacks_ = true; }
+  void DeferCallbacks(bool defer = true) { defer_callbacks_ = defer; }
 
   void RunNextDeferredCallback(bool is_debug_cookie_set) {
     if (!callbacks_.empty()) {
@@ -2788,6 +2788,7 @@ TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
   // should be stored.
   for (size_t i = 0; i <= kMaxPendingEvents; i++) {
     cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/true);
+    task_environment_.RunUntilIdle();
   }
 
   std::vector<StoredSource> sources = StoredSources();
@@ -3634,6 +3635,30 @@ TEST_F(AttributionManagerImplTest, RegistrationHeaderErrorDebugReport) {
     histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric,
                                   /*sample=*/28, allowed);
   }
+}
+
+// Regression test for http://crbug.com/331915077. This test will fail flakily
+// if the manager's queue processing uses reentrant calls.
+TEST_F(AttributionManagerImplTest, OsQueueNotReentrant) {
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state(
+      AttributionOsLevelManager::ApiState::kEnabled);
+
+  const GURL kRegistrationUrl1("https://r1.test/x");
+
+  const auto kTopLevelOrigin1 = url::Origin::Create(GURL("https://o1.test"));
+
+  cookie_checker_->DeferCallbacks();
+
+  for (int i = 0; i < 5; ++i) {
+    attribution_manager_->HandleOsRegistration(OsRegistration(
+        {OsRegistrationItem(kRegistrationUrl1, /*debug_reporting=*/false)},
+        kTopLevelOrigin1, AttributionInputEvent(),
+        /*is_within_fenced_frame=*/false, kFrameId, kOsReportTypes));
+    cookie_checker_->DeferCallbacks(false);
+  }
+
+  cookie_checker_->RunNextDeferredCallback(true);
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace content

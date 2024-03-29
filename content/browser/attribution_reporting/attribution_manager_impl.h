@@ -182,7 +182,7 @@ class CONTENT_EXPORT AttributionManagerImpl
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   void MaybeEnqueueEvent(SourceOrTriggerRFH);
-  void ProcessEvents();
+  void PrepareNextEvent();
   void ProcessNextEvent(bool registration_allowed, bool is_debug_cookie_set);
   void StoreSource(StorableSource source);
   void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
