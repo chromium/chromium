@@ -28,6 +28,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -528,7 +529,7 @@ TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
   auto* const back_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton);
-  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   // Assert that the views to be tested exist.
@@ -586,7 +587,7 @@ TEST_F(MahiPanelViewTest, ScrollViewContentsDynamicSize) {
   EXPECT_EQ(summary_outlines_section->height(),
             scroll_view_contents->GetPreferredSize().height());
 
-  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
   question_textfield->SetText(u"input");
 
@@ -625,7 +626,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   const std::u16string answer1(u"test answer1");
@@ -694,7 +695,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
 // Tests that the question textfield does not process empty or blank inputs.
 TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
   // Question textfield is initially empty.
-  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
   ASSERT_TRUE(question_textfield);
   EXPECT_TRUE(question_textfield->GetText().empty());
@@ -722,7 +723,7 @@ TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
 // the provided text.
 TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
   // Set a text in the textfield with leading and trailing whitespace.
-  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
   ASSERT_TRUE(question_textfield);
   question_textfield->SetText(u"   leading and trailing   ");
@@ -781,7 +782,7 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
                                          std::move(callback));
             });
 
-    auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+    auto* const question_textfield = views::AsViewClass<views::Textfield>(
         panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
     ASSERT_TRUE(question_textfield);
     question_textfield->SetText(u"fake question");
@@ -944,7 +945,7 @@ TEST_F(MahiPanelViewTest, RefreshSummaryContents_TransitionToSummaryView) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
   const auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   // Transition to Q&A view by asking a question.

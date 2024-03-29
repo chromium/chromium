@@ -16,7 +16,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
-#include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_question_answer_view.h"
@@ -47,10 +46,12 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -78,9 +79,10 @@ constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
 constexpr int kSourceRowSpacing = 8;
 
 // Ask Question container constants.
-constexpr gfx::Insets kAskQuestionContainerInteriorMargin = gfx::Insets(2);
+constexpr gfx::Insets kAskQuestionContainerInteriorMargin =
+    gfx::Insets::VH(2, 8);
 constexpr int kAskQuestionContainerCornerRadius = 8;
-constexpr int kAskQuestionContainerSpacing = 8;
+constexpr int kAskQuestionContainerChildSpacing = 8;
 
 // The below constants for the feedback buttons and cutout dimensions refer to
 // the following spec, where an order is designated for the first, second, and
@@ -112,6 +114,24 @@ constexpr SkScalar kCutoutConcaveRadius = 12.f;
 // icon. Subtract that padding from the expected space between the two icons.
 // NOTE: Changes to the feedback buttons' size will affect this constant.
 constexpr int kFeedbackButtonSpacing = kFeedbackButtonIconPaddingBetween - 4;
+
+// Sets focus ring for `question_textfield`. Insets need to be negative so it
+// can exceed the textfield bounds and cover the entire container.
+void InstallTextfieldFocusRing(views::View* question_textfield,
+                               views::View* send_button) {
+  int focus_ring_left_inset = -1 * (kAskQuestionContainerInteriorMargin.left());
+  int focus_ring_right_inset =
+      -1 * (kAskQuestionContainerInteriorMargin.right() +
+            kAskQuestionContainerChildSpacing +
+            send_button->GetPreferredSize().width());
+  views::FocusRing::Install(question_textfield);
+  views::FocusRing::Get(question_textfield)
+      ->SetColorId(ui::kColorSysStateFocusRing);
+  views::InstallRoundRectHighlightPathGenerator(
+      question_textfield,
+      gfx::Insets::TLBR(0, focus_ring_left_inset, 0, focus_ring_right_inset),
+      kAskQuestionContainerCornerRadius);
+}
 
 // Options for a feedback button.
 enum FeedbackType {
@@ -450,28 +470,29 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
             layout->SetDefault(
                 views::kMarginsKey,
-                gfx::Insets::VH(0, kAskQuestionContainerSpacing));
+                gfx::Insets::VH(0, kAskQuestionContainerChildSpacing));
           }))
           .Build());
 
-  question_textfield_ = ask_question_container->AddChildView(
-      std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
-  question_textfield_->SetID(mahi_constants::ViewId::kQuestionTextfield);
-  question_textfield_->SetBackgroundEnabled(false);
-  // TODO(b/319264190): Replace string.
-  question_textfield_->SetPlaceholderText(u"Ask a question.");
-  question_textfield_->SetFontList(
-      TypographyProvider::Get()->ResolveTypographyToken(
-          TypographyToken::kCrosAnnotation1));
-  question_textfield_->SetTextColorId(cros_tokens::kCrosSysSecondary);
-  question_textfield_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width=*/true));
-  question_textfield_->set_controller(this);
-
   ask_question_container->AddChildView(
+      views::Builder<views::Textfield>()
+          .CopyAddressTo(&question_textfield_)
+          .SetID(mahi_constants::ViewId::kQuestionTextfield)
+          .SetBackgroundEnabled(false)
+          .SetBorder(nullptr)
+          // TODO(b/319264190): Replace string.
+          .SetPlaceholderText(u"Ask a question.")
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation1))
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(views::FlexSpecification(
+                           views::LayoutOrientation::kHorizontal,
+                           views::MinimumFlexSizeRule::kPreferred,
+                           views::MaximumFlexSizeRule::kUnbounded)))
+          .SetController(this)
+          .Build());
+
+  auto* send_button = ask_question_container->AddChildView(
       IconButton::Builder()
           .SetViewId(mahi_constants::ViewId::kAskQuestionSendButton)
           .SetType(IconButton::Type::kSmallFloating)
@@ -482,6 +503,9 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
           // TODO(b/319264190): Replace string.
           .SetAccessibleName(u"Send")
           .Build());
+
+  question_textfield_->RemoveHoverEffect();
+  InstallTextfieldFocusRing(question_textfield_, send_button);
 
   auto footer_row = std::make_unique<views::BoxLayoutView>();
   footer_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);

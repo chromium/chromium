@@ -17,13 +17,13 @@
 namespace views {
 class ImageView;
 class Label;
+class Textfield;
 }  // namespace views
 
 namespace ash {
 
 class MahiQuestionAnswerView;
 class SummaryOutlinesSection;
-class SystemTextfield;
 
 // The code for Mahi main panel view. This view is placed within
 // `MahiPanelWidget`.
@@ -67,7 +67,7 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   raw_ptr<views::Label> content_title_;
   raw_ptr<MahiQuestionAnswerView> question_answer_view_;
   raw_ptr<SummaryOutlinesSection> summary_outlines_section_;
-  raw_ptr<SystemTextfield> question_textfield_;
+  raw_ptr<views::Textfield> question_textfield_;
 
   base::WeakPtrFactory<MahiPanelView> weak_ptr_factory_{this};
 };
