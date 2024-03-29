@@ -3554,7 +3554,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="100Percent_8MinMax"
       label="Progressive scan @ 100%, 8 frequency bins."/>
   <suffix name="FullScan" label="Using WPA_supplicant to scan."/>
-  <affected-histogram name="Network.Shill.TimeToDrop"/>
   <affected-histogram name="Network.Shill.WiFi.ScanResult"/>
   <affected-histogram name="Network.Shill.Wifi.TimeToConnect"/>
   <affected-histogram name="Network.Shill.Wifi.TimeToJoin"/>

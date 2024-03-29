@@ -2449,17 +2449,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Cellular.TimeOnline" units="seconds"
-    expires_after="2024-07-28">
-  <owner>ejcaruso@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric sampling the time spent using cellular to transport
-    data. These data are mostly useful when summed and compared to TimeOnline
-    for other network technologies (e.g. WiFi vs Cellular).
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Cellular.TimeToConfig" units="ms"
     expires_after="2024-07-28">
   <owner>ejcaruso@chromium.org</owner>
@@ -2619,19 +2608,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS connection manager service errors for ethernet interface. NOTE:
     This metric was updated in M101. Data prior to that may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Ethernet.TimeOnline" units="seconds"
-    expires_after="2024-12-31">
-  <owner>hugobenichi@google.com</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric sampling the time spent using Ethernet to transport
-    data. These data are mostly useful when summed and compared to TimeOnline
-    for other network technologies (e.g. WiFi vs Cellular).
-
-    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
   </summary>
 </histogram>
 
@@ -3023,18 +2999,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.TimeToDrop" units="seconds"
-    expires_after="2021-12-01">
-  <owner>stevenjb@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network stability metric sampling the time in seconds between the
-    networking going online to going offline. Offline events due to device
-    shutdown or suspend are ignored (along with the online time before that
-    offline event).
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Vpn.Driver" enum="VPNDriver"
     expires_after="2024-12-31">
   <owner>jiejiang@chromium.org</owner>
@@ -3108,20 +3072,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS network usage metric sampled on each successful VPN connection that
     tracks the remote authentication method.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Vpn.TimeOnline" units="seconds"
-    expires_after="2024-12-31">
-  <owner>jiejiang@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric sampling the time spent using VPN to transport data.
-    These data are mostly useful when summed and compared to TimeOnline for
-    other network technologies (e.g. WiFi vs Cellular). A sample is emitted
-    every time the system transitions from primary connectivity through a VPN to
-    some other type of connectivity. The value of the sample is the time delta
-    in seconds from the instant the system transitioned to VPN connectivity.
   </summary>
 </histogram>
 
@@ -4133,17 +4083,6 @@ chromium-metrics-reviews@google.com.
     timer starts when a rekey is initiated and stops once a connection failure
     is reported or another rekey is initiated. The metric is only reported if
     the timer is stopped by a connection failure within 180 seconds.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.TimeOnline" units="seconds"
-    expires_after="2024-12-31">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric sampling the time spent using WiFi to transport
-    data. These data are mostly useful when summed and compared to TimeOnline
-    for other network technologies (e.g. WiFi vs Cellular).
   </summary>
 </histogram>
 
