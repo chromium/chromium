@@ -200,11 +200,8 @@ ClientSharedImage::ClientSharedImage(
           GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
               std::move(handle_info.handle),
               handle_info.size,
-              // Only single planar buffer formats are supported currently.
-              // Multiplanar will be supported when Multiplanar SharedImages are
-              // fully implemented.
-              viz::SinglePlaneSharedImageFormatToBufferFormat(
-                  handle_info.format),
+              viz::SharedImageFormatToBufferFormatRestrictedUtils::
+                  ToBufferFormat(handle_info.format),
               handle_info.buffer_usage,
               base::DoNothing())),
       sii_holder_(std::move(sii_holder)) {
