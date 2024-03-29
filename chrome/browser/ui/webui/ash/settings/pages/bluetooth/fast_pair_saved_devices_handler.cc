@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/base64.h"
@@ -14,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/cross_device/logging/logging.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -74,7 +74,7 @@ void FastPairSavedDevicesHandler::RegisterMessages() {
 
 void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
     const base::Value::List& args) {
-  QP_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::FP) << __func__;
   std::vector<uint8_t> account_key;
   base::HexStringToBytes(args[0].GetString(), &account_key);
   quick_pair::FastPairRepository::Get()->DeleteAssociatedDeviceByAccountKey(
@@ -84,13 +84,14 @@ void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
 }
 
 void FastPairSavedDevicesHandler::OnSavedDeviceDeleted(bool success) {
-  QP_LOG(INFO) << __func__ << ": " << (success ? "success" : "failed");
+  CD_LOG(INFO, Feature::FP)
+      << __func__ << ": " << (success ? "success" : "failed");
   quick_pair::RecordSavedDevicesRemoveResult(/*success=*/success);
 }
 
 void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
     const base::Value::List& args) {
-  QP_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::FP) << __func__;
   AllowJavascript();
 
   // If the page is already loading, we ignore any new requests to load the
@@ -109,18 +110,20 @@ void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
 void FastPairSavedDevicesHandler::OnGetSavedDevices(
     nearby::fastpair::OptInStatus status,
     std::vector<nearby::fastpair::FastPairDevice> devices) {
-  QP_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::FP) << __func__;
 
   // The JavaScript WebUI layer needs an enum to stay in sync with the
   // nearby::fastpair::OptInStatus enum from ash/quick_pair/proto/enums.proto
   // to properly handle this message.
   FireWebUIListener(kOptInStatusMessage, base::Value(static_cast<int>(status)));
-  QP_LOG(VERBOSE) << __func__ << ": Sending opt-in status of " << status;
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Sending opt-in status of " << status;
 
   // If the device list is empty, we communicate it to the settings page to
   // stop the loading UX screen.
   if (devices.empty()) {
-    QP_LOG(VERBOSE) << __func__ << ": No devices saved to the user's account";
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__ << ": No devices saved to the user's account";
     base::Value::List saved_devices_list;
     quick_pair::RecordSavedDevicesCount(
         /*num_devices=*/saved_devices_list.size());
@@ -151,7 +154,7 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   }
 
   if (image_byte_strings.empty()) {
-    QP_LOG(VERBOSE) << __func__ << ": no device images";
+    CD_LOG(VERBOSE, Feature::FP) << __func__ << ": no device images";
     DecodingUrlsFinished();
     return;
   }
@@ -191,7 +194,7 @@ void FastPairSavedDevicesHandler::SaveImageAsBase64(
 }
 
 void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
-  QP_LOG(VERBOSE) << __func__;
+  CD_LOG(VERBOSE, Feature::FP) << __func__;
 
   // We initialize a list of the saved devices that we will parse with the
   // decoded urls we have.
@@ -232,7 +235,7 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
   quick_pair::RecordSavedDevicesCount(
       /*num_devices=*/saved_devices_list.size());
   FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
-  QP_LOG(VERBOSE) << __func__ << ": Sending device list";
+  CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Sending device list";
   base::TimeDelta total_load_time =
       base::TimeTicks::Now() - loading_start_time_;
   quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
