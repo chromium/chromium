@@ -147,6 +147,11 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
+const char kAutofillStickyInfobarName[] = "Sticky Autofill Infobar";
+const char kAutofillStickyInfobarDescription[] =
+    "Makes the Address Infobar sticky to only dismiss on navigation from user "
+    "gesture.";
+
 const char kAutofillSuggestServerCardInsteadOfLocalCardName[] =
     "Suggest Server card instead of Local card for deduped cards";
 const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =

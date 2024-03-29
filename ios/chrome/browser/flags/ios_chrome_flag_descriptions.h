@@ -127,6 +127,10 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 
+// Title and description for the flag that makes the autofill infobars sticky.
+extern const char kAutofillStickyInfobarName[];
+extern const char kAutofillStickyInfobarDescription[];
+
 // Title and description for the flag to suggest Server card instead of a
 // deduped Local card.
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];

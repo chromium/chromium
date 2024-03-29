@@ -1587,9 +1587,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)},
     {"autofill-enable-prefetching-risk-data-for-retrieval",
      flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
-     flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalDescription,
+     flag_descriptions::
+         kAutofillEnablePrefetchingRiskDataForRetrievalDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
+    {"autofill-sticky-infobar", flag_descriptions::kAutofillStickyInfobarName,
+     flag_descriptions::kAutofillStickyInfobarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAutofillStickyInfobarIos)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
