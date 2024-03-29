@@ -7,7 +7,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
+#import "ui/base/device_form_factor.h"
 
 @interface SearchEngineChoiceLearnMoreCoordinator () <
     UIAdaptivePresentationControllerDelegate,
@@ -28,10 +30,20 @@
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
   // Need to set `modalPresentationStyle` otherwise, UIKit ignores the value.
-  if (self.presentationFormSheet) {
+  if (self.forcePresentationFormSheet) {
     navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   } else {
-    navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    ui::DeviceFormFactor deviceFormFactor = ui::GetDeviceFormFactor();
+    if (deviceFormFactor == ui::DEVICE_FORM_FACTOR_PHONE) {
+      navigationController.modalPresentationStyle =
+          UIModalPresentationPageSheet;
+    } else {
+      navigationController.modalPresentationStyle =
+          UIModalPresentationFormSheet;
+      navigationController.preferredContentSize =
+          CGSizeMake(kIPadSearchEngineChoiceScreenPreferredWidth,
+                     kIPadSearchEngineChoiceScreenPreferredHeight);
+    }
   }
   navigationController.presentationController.delegate = self;
   UISheetPresentationController* presentationController =

@@ -24,9 +24,13 @@
     delegate;
 
 // If `YES`, the view controller is presented with UIModalPresentationFormSheet,
-// otherwise teh view controller is presented with UIModalPresentationPageSheet.
+// otherwise the view controller is presented:
+//  + For iPhone: UIModalPresentationPageSheet
+//  + For iPad: UIModalPresentationFormSheet, using
+//         kIPadSearchEngineChoiceScreenPreferredWidth
+//         kIPadSearchEngineChoiceScreenPreferredHeight.
 // The value has to be set before `start` is called.
-@property(nonatomic, assign) BOOL presentationFormSheet;
+@property(nonatomic, assign) BOOL forcePresentationFormSheet;
 
 @end
 

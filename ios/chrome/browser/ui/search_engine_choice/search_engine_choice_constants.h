@@ -11,6 +11,13 @@
 extern const CGFloat kFaviconImageViewSize;
 extern const CGFloat kFaviconImageViewRadius;
 
+// Preferred width and height of the Search Engine Choice screen on iPad.
+// We prefer to set a prefferred content size to avoid cases when the view is
+// too big which leads to too much white space and unnecessary chevrons. This
+// may need to be adjusted if the layout of the choice screen changes.
+extern const CGFloat kIPadSearchEngineChoiceScreenPreferredWidth;
+extern const CGFloat kIPadSearchEngineChoiceScreenPreferredHeight;
+
 // Accessibility identifier for the choice screen title.
 extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
 // Prefix for the SnippetSearchEngineButton accessibility identifier.
