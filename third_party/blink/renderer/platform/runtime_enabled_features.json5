@@ -3762,11 +3762,6 @@
       base_feature: "none",
     },
     {
-      // crbug.com/331680200
-      name: "TextAlignJustifyBidiIsolate",
-      status: "stable",
-    },
-    {
       // crbug.com/1008951
       name: "TextDecoratingBox",
       status: "stable",

@@ -36,7 +36,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -154,27 +153,13 @@ class PLATFORM_EXPORT Character {
            c == kZeroWidthNonJoinerCharacter || c == kZeroWidthJoinerCharacter;
   }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
-    if (c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
-        c == kObjectReplacementCharacter) {
-      return true;
-    }
-    if (RuntimeEnabledFeatures::TextAlignJustifyBidiIsolateEnabled()) {
-      return IsDefaultIgnorable(c);
-    } else {
-      return c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
-             (c >= kLeftToRightMarkCharacter &&
-              c <= kRightToLeftMarkCharacter) ||
-             (c >= kLeftToRightEmbedCharacter &&
-              c <= kRightToLeftOverrideCharacter) ||
-             c == kZeroWidthNoBreakSpaceCharacter;
-    }
-  }
-  // https://unicode.org/reports/tr44/#Default_Ignorable_Code_Point
-  static bool IsDefaultIgnorable(UChar32 c) {
-    if (c < 0x0100) {
-      return c == kSoftHyphenCharacter;
-    }
-    return u_hasBinaryProperty(c, UCHAR_DEFAULT_IGNORABLE_CODE_POINT);
+    return c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
+           c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
+           (c >= kLeftToRightMarkCharacter && c <= kRightToLeftMarkCharacter) ||
+           (c >= kLeftToRightEmbedCharacter &&
+            c <= kRightToLeftOverrideCharacter) ||
+           c == kZeroWidthNoBreakSpaceCharacter ||
+           c == kObjectReplacementCharacter;
   }
   static bool CanTextDecorationSkipInk(UChar32);
   static bool CanReceiveTextEmphasis(UChar32);
