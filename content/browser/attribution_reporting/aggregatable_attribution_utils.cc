@@ -134,18 +134,43 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
 void AttributionLogicLastTouch(Partition& partition, 
         base::flat_map<std::string, std::vector<absl::uint128>>& trigger_keypieces_per_source) {
 
-  // for (uint64_t i=attribution_window.epoch_start(); i<=attribution_window.epoch_end(); i++) {
-  //   for (auto& pair : epoch_sources_count[i]) {
-  //     auto& source_key_piece = pair.first;
-  //     auto count = pair.second;
+  auto& attribution_window = partition.attribution_window;
+  auto& sources_per_epoch = partition.sources_per_epoch;
+  
+  std::optional<StoredSource*> latest_source;
 
-  //     auto it = source_counts.find(source_key_piece);
-  //     if (it == source_counts.end()) {
-  //       source_counts[source_key_piece] = count;
-  //     }
-  //     source_counts[source_key_piece] += count;
-  //   }
-  // }
+  for (uint64_t i=attribution_window.epoch_end(); 
+          i>= attribution_window.epoch_start(); i--) {
+    
+    auto it = sources_per_epoch.find(i);
+    if (it != sources_per_epoch.end()) {
+      // Obtaining latest source (we fetched them in order from the database)
+        if (!sources_per_epoch[i].empty()) {
+          latest_source = sources_per_epoch[i].back();
+          // Keep latest source to display in user logs 
+          partition.logging_source = latest_source;
+        }
+      // Stop searching for more sources in other epochs
+      break;
+    }
+  }
+
+  // Populate partition.report_value_pairs[*].report for all source_keys
+  if (latest_source.has_value()) {
+      auto aggregation_keys = (*latest_source)->aggregation_keys().keys();
+      for (auto& pair : aggregation_keys) {
+        auto& source_key = pair.first;
+        auto& source_keypiece = pair.second;
+        auto& report_value_pair = partition.report_value_pairs[source_key];
+        auto& trigger_keypieces = trigger_keypieces_per_source[source_key];
+
+        // Extend the source key_pieces for source_key
+        for (auto& trigger_keypiece : trigger_keypieces) {
+          source_keypiece |= trigger_keypiece;
+        }
+        report_value_pair.report.emplace_back(source_keypiece, report_value_pair.value);      
+    }
+  }
 }
 
 void AttributionLogicUniform(Partition& partition,
@@ -171,6 +196,8 @@ void AttributionLogicUniform(Partition& partition,
 
     // Count occurrences per source keypiece across all epochs
     for (StoredSource* source : sources_per_epoch[i]) {
+      // Keep latest source to display in user logs 
+      partition.logging_source = source;
       auto aggregation_keys = source->aggregation_keys().keys();
       for (auto& pair : aggregation_keys) {
         auto& source_key = pair.first;

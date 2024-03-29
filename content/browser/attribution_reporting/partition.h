@@ -41,6 +41,7 @@ class CONTENT_EXPORT Partition {
   const std::string attribution_logic;
   base::flat_map<std::string, ReportValuePair> report_value_pairs;
   base::flat_map<uint64_t, std::vector<StoredSource*>> sources_per_epoch;
+  std::optional<StoredSource*> logging_source;
 
 };
 
