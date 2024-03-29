@@ -4363,6 +4363,7 @@ TEST_F(SnapGroupTest, SnapToReplaceBasic) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_FALSE(split_view_controller()->InSplitViewMode());
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
@@ -4372,6 +4373,10 @@ TEST_F(SnapGroupTest, SnapToReplaceBasic) {
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Verify that split view remains inactive to avoid split view specific
+  // behaviors such as auto-snap or showing cannot snap toast.
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
 // Tests that if a third window is snapped via any method except the window
@@ -4447,7 +4452,6 @@ TEST_F(SnapGroupTest, SnapToReplaceWithRatioMargin) {
   EXPECT_GT(std::abs(*WindowState::Get(w3.get())->snap_ratio() -
                      chromeos::kOneThirdSnapRatio),
             kSnapToReplaceRatioDiffThreshold);
-  VerifySplitViewOverviewSession(w4.get());
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w4.get(), w2.get()));
   EXPECT_FALSE(

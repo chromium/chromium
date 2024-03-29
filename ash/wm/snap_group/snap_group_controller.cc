@@ -127,6 +127,10 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
 bool SnapGroupController::OnSnappingWindow(
     aura::Window* to_be_snapped_window,
     WindowSnapActionSource snap_action_source) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return false;
+  }
+
   // TODO(b/331305840): Come up with an API to retrieve the snapped window on
   // the same side as the `to_be_snapped_window` to simplify the logic.
   SnapGroup* group_to_replace = GetSnapGroupForGivenWindow(

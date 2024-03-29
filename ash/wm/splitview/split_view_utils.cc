@@ -934,12 +934,9 @@ bool CanStartSplitViewOverviewSessionInClamshell(
                 ->split_view_overview_session();
   }
 
-  // With `kSnapGroup` disabled: Skip starting 'SplitViewOverviewSession' if a
-  // fully visible window exists on the opposite side.
-  // With 'kSnapGroup' enabled: Let the 'SnapGroupController' determine whether
-  // to snap-to-replace based on the opposite window's visibility and snap ratio
-  // difference. Otherwise, always start a 'SplitViewOverviewSession'."
-  if (!SnapGroupController::Get() && GetOppositeVisibleSnappedWindow(window)) {
+  // Skip starting `SplitViewOverviewSession` if a fully visible window snapped
+  // on the opposite side.
+  if (GetOppositeVisibleSnappedWindow(window)) {
     return false;
   }
 

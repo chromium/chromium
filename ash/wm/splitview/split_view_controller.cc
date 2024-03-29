@@ -2212,6 +2212,11 @@ void SplitViewController::OnWindowSnapped(
   if (auto* snap_group_controller = SnapGroupController::Get();
       snap_group_controller &&
       snap_group_controller->OnSnappingWindow(window, snap_action_source)) {
+    // End split view is needed due to the inconsistent checks between
+    // `ShouldConsiderWindowForFasterSplitView()` and
+    // `CanStartSplitViewOverviewSessionInClamshell()`.
+    // TODO(b/331965553): Have consistent checks between the two APIs.
+    EndSplitView(EndReason::kSnapGroups);
     return;
   }
 

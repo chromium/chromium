@@ -154,15 +154,14 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
     return false;
   }
 
-  WindowState* window_state = WindowState::Get(window);
   auto* split_view_controller = SplitViewController::Get(window);
-
   if (!split_view_controller->InSplitViewMode()) {
     // A window may be activated during mid-drag, during which split view is not
     // active yet.
     return false;
   }
 
+  WindowState* window_state = WindowState::Get(window);
   const SplitViewController::State state = split_view_controller->state();
   // If `window` is floated on top of 2 already snapped windows (this can
   // happen after floating a window, starting split view, and activating
