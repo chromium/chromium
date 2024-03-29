@@ -482,7 +482,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1871208020102129563">Proksi je podešen da koristi fiksne proksi servere, a ne URL adresu .pac skripte.</translation>
 <translation id="1871284979644508959">Obavezno polje</translation>
 <translation id="1871739799120352748">Cena je visoka</translation>
-<translation id="1874224422119691492">Možete da promenite da li ćete koristiti zaključavanje ekrana za popunjavanje lozinki u: <ph name="SETTINGS" /></translation>
+<translation id="1874224422119691492">Možete da promenite da li ćete koristiti otključavanje ekrana za popunjavanje lozinki u: <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Fioka za slike</translation>
 <translation id="1875512691959384712">Google upitnici</translation>
 <translation id="1876399092304384674">Prema datumu</translation>
@@ -841,7 +841,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="255002559098805027">Host <ph name="HOST_NAME" /> je poslao nevažeći odgovor.</translation>
 <translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
 <translation id="2552246211866555379">Razglednica</translation>
-<translation id="2552295903035773204">Od sada koristi zaključavanje ekrana za potvrdu kartica</translation>
+<translation id="2552295903035773204">Od sada koristi otključavanje ekrana za potvrdu kartica</translation>
 <translation id="2552532158894206888">desni taster</translation>
 <translation id="2553853292994445426">Proverite podešavanja za bezbedan DNS. Možda ste konfigurisali bezbedan DNS server sa kojim ne uspevate da se povežete.</translation>
 <translation id="255497580849974774">Neka uređaj bude povezan sa punjačem tokom ažuriranja.</translation>
@@ -973,7 +973,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2878197950673342043">Presavijanje u obliku postera</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879233115503670140">Važi do <ph name="DATE" />.</translation>
-<translation id="2879694782644540289">da koristi zaključavanje ekrana za popunjavanje lozinki</translation>
+<translation id="2879694782644540289">da koristi otključavanje ekrana za popunjavanje lozinki</translation>
 <translation id="2881276955470682203">Želite li da sačuvate karticu?</translation>
 <translation id="2882949212241984732">Dvostruko presavijanje u obliku prozora</translation>
 <translation id="2891963978019740012">Vaš pretraživač u Chrome-u</translation>
@@ -1226,7 +1226,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3375754925484257129">Pokreni Chrome proveru bezbednosti</translation>
 <translation id="3377144306166885718">Server koristi zastarelu verziju TLS-a.</translation>
 <translation id="3377188786107721145">Greška pri raščlanjivanju smernica</translation>
-<translation id="3377736046129930310">Koristite zaključavanje ekrana za bržu potvrdu kartica</translation>
+<translation id="3377736046129930310">Koristite otključavanje ekrana za bržu potvrdu kartica</translation>
 <translation id="3378612801784846695">Teme su zasnovane na nedavnoj istoriji pregledanja i sajtovi ih koriste za prikazivanje personalizovanih oglasa uz zaštitu vašeg identiteta</translation>
 <translation id="3380365263193509176">Nepoznata greška</translation>
 <translation id="3380864720620200369">ID klijenta:</translation>
@@ -1311,7 +1311,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3528171143076753409">Sertifikat servera nije pouzdan.</translation>
 <translation id="3528485271872257980">Tamnobraon</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Najmanje 1 stavka na sinhronizovanim uređajima}=1{1 stavka (i još stavki na sinhronizovanim uređajima)}one{# stavka (i još stavki na sinhronizovanim uređajima)}few{# stavke (i još stavki na sinhronizovanim uređajima)}other{# stavki (i još stavki na sinhronizovanim uređajima)}}</translation>
-<translation id="3531366304259615706">Koristite zaključavanje ekrana</translation>
+<translation id="3531366304259615706">Koristite otključavanje ekrana</translation>
 <translation id="3531780078352352885">Radni listovi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi da koristi mikrofon</translation>
 <translation id="3533328374079021623">5. poštansko sanduče</translation>
@@ -1843,7 +1843,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4543072026714825470">Da biste sledeći put platili brže, sačuvajte karticu i adresu za obračun na Google nalogu</translation>
 <translation id="4546730006268514143">Vreme za prenos je isteklo</translation>
 <translation id="455113658016510503">A9</translation>
-<translation id="4556069465387849460">Koristite zaključavanje ekrana za popunjavanje lozinki</translation>
+<translation id="4556069465387849460">Koristite otključavanje ekrana za popunjavanje lozinki</translation>
 <translation id="4557573143631562971">Osiguranje doma</translation>
 <translation id="4558551763791394412">Pokušajte da onemogućite dodatke.</translation>
 <translation id="4566017918361049074">Rekreacija na otvorenom</translation>
@@ -2604,7 +2604,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6061154937977953833">Rvanje</translation>
 <translation id="6062937464449575061">Opozovi praćenje cene</translation>
 <translation id="6063415549109819824">Kućne finansije</translation>
-<translation id="6064217302520318294">Zaključavanje ekrana</translation>
+<translation id="6064217302520318294">Otključavanje ekrana</translation>
 <translation id="6080696365213338172">Pristupali ste sadržaju pomoću sertifikata koji je obezbedio administrator. Administrator može da presretne podatke koje obezbedite domenu <ph name="DOMAIN" />.</translation>
 <translation id="6085149458302186532">Nalepnice (u boji)</translation>
 <translation id="6087312102907839798">Srodne pretrage</translation>
@@ -4186,7 +4186,7 @@ Dodatni detalji:
 <translation id="9128870381267983090">Povezivanje sa mrežom</translation>
 <translation id="9131119348384879525">Želite da snimate poverljiv sadržaj?</translation>
 <translation id="9133861214150761123">Računovodstvo i revizija</translation>
-<translation id="9133985615769429248">Ako delite ovaj uređaj sa drugima, možete da koristite zaključavanje ekrana da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
+<translation id="9133985615769429248">Ako delite ovaj uređaj sa drugima, možete da koristite otključavanje ekrana da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
 <translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />, virtuelna kartica</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9137248913990643158">Prijavite se u Chrome pre korišćenja ove aplikacije.</translation>
