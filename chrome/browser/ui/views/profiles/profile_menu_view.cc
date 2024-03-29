@@ -740,8 +740,10 @@ void ProfileMenuView::BuildSyncInfo() {
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
+  Profile* profile = browser()->profile();
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+          switches::ExplicitBrowserSigninPhase::kFull) &&
+      !profile->IsGuestSession()) {
     AddFeatureButton(
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
         base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
@@ -749,7 +751,6 @@ void ProfileMenuView::BuildFeatureButtons() {
         vector_icons::kEditChromeRefreshIcon);
   }
 
-  Profile* profile = browser()->profile();
   bool has_unconsented_account = HasUnconstentedProfile(profile);
   if (has_unconsented_account && !IsSyncPaused(profile)) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
