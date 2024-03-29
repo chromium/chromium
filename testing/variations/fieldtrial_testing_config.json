@@ -16008,6 +16008,27 @@
     "SafeBrowsingHashPrefixRealTimeLookups": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl": "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingHashPrefixRealTimeLookups"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
                 "android"
             ],
             "experiments": [
