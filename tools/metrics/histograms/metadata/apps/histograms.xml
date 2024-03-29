@@ -2239,7 +2239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FullRestoreTabCount" units="count"
-    expires_after="2024-06-20">
+    expires_after="2025-03-25">
   <owner>sammiequon@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <summary>
@@ -2248,11 +2248,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.FullRestoreWindowCount" units="count"
-    expires_after="2024-08-25">
+<histogram name="Apps.FullRestoreWindowCount2" units="count"
+    expires_after="2025-03-25">
   <owner>sammiequon@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
-  <summary>Records the number of windows restored by full restore.</summary>
+  <summary>
+    Records the number of windows restored by full restore. Records 0 if the
+    full restore file is empty, but we chose the always or ask every time
+    options. Records nothing if the do not restore option was picked.
+  </summary>
 </histogram>
 
 <histogram

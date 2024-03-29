@@ -21,6 +21,7 @@
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_test_api.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -123,6 +124,9 @@ class PineBrowserTest : public InProcessBrowserTest {
     prefs->SetBoolean(prefs::kShouldShowPineOnboarding, false);
   }
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
@@ -156,6 +160,8 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsers) {
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+
+  histogram_tester_.ExpectBucketCount("Apps.FullRestoreWindowCount2", 2, 1);
 }
 
 // Creates SWAs that will be restored in the main test.

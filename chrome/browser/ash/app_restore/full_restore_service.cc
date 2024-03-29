@@ -73,6 +73,11 @@ namespace {
 constexpr char kForceFullRestoreAndSessionRestoreAfterCrash[] =
     "force-full-restore-and-session-restore-after-crash";
 
+constexpr char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
+constexpr char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
+constexpr char kFullRestoreWindowCountHistogramName[] =
+    "Apps.FullRestoreWindowCount2";
+
 // If the reboot occurred due to DeviceScheduledRebootPolicy, change the title
 // to notify the user that the device was rebooted by the administrator.
 int GetRestoreNotificationTitleId(Profile* profile) {
@@ -107,8 +112,6 @@ const char kRestoreNotificationId[] = "restore_notification";
 const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
-const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
-const char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
 
 bool MaybeCreateFullRestoreServiceForLacros() {
   // Full restore for Lacros depends on BrowserAppInstanceRegistry to save and
@@ -276,6 +279,22 @@ void FullRestoreService::Init(bool& show_notification) {
   RestoreOption restore_pref = static_cast<RestoreOption>(
       prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
+
+  // Record the window count from the full restore file, unless the option is do
+  // not restore.
+  if (restore_pref != RestoreOption::kDoNotRestore) {
+    ::app_restore::RestoreData* restore_data =
+        app_launch_handler_->restore_data();
+    if (!restore_data) {
+      base::UmaHistogramCounts100(kFullRestoreWindowCountHistogramName, 0);
+    } else {
+      auto [window_count, tab_count, total_count] =
+          ::app_restore::GetWindowAndTabCount(*restore_data);
+      base::UmaHistogramCounts100(kFullRestoreWindowCountHistogramName,
+                                  window_count);
+    }
+  }
+
   switch (restore_pref) {
     case RestoreOption::kAlways:
       Restore();
