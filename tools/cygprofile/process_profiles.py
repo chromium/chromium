@@ -488,8 +488,8 @@ class ProfileManager:
     # This is a sanity check to ensure the number of race-related
     # inconsistencies is small.
     if total_calls_count != count:
-      logging.warn('Instrumentation missed calls! %u != %u', total_calls_count,
-                   count)
+      logging.warning('Instrumentation missed calls! %u != %u',
+                      total_calls_count, count)
       assert abs(total_calls_count - count) < 3, (
           'Instrumentation call count differs by too much.')
 
