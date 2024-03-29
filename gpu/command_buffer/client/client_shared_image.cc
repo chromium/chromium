@@ -38,15 +38,17 @@ static bool allow_external_sampling_without_native_buffers_for_testing = false;
 uint32_t ComputeTextureTargetForSharedImage(
     SharedImageMetadata metadata,
     gfx::GpuMemoryBufferType client_gmb_type) {
-  bool client_side_native_buffer_used =
-      client_gmb_type != gfx::EMPTY_BUFFER &&
-      client_gmb_type != gfx::SHARED_MEMORY_BUFFER;
-
 #if BUILDFLAG(IS_IOS)
   // The target to use on IOS is always GL_TEXTURE_2D, regardless of whether
   // native buffers are being used or not.
   return GL_TEXTURE_2D;
-#elif BUILDFLAG(IS_MAC)
+#endif
+
+  bool client_side_native_buffer_used =
+      client_gmb_type != gfx::EMPTY_BUFFER &&
+      client_gmb_type != gfx::SHARED_MEMORY_BUFFER;
+
+#if BUILDFLAG(IS_MAC)
   // Check for IOSurfaces being used.
   // NOTE: WebGPU usage on Mac results in SharedImages being backed by
   // IOSurfaces.
