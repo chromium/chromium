@@ -229,9 +229,6 @@ class GPU_EXPORT ClientSharedImage
                     const SyncToken& sync_token,
                     uint32_t texture_target);
 
-  // Initializes `texture_target_`.
-  void SetTextureTarget(bool client_side_native_buffer_used);
-
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;

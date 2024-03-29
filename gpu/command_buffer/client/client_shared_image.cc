@@ -20,8 +20,45 @@ namespace {
 
 static bool allow_external_sampling_without_native_buffers_for_testing = false;
 
-bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
-  return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
+// Computes the texture target to use for a SharedImage that was created with
+// `metadata` and the given type of GpuMemoryBuffer(Handle) supplied by the
+// client (which will be gfx::EmptyBuffer if the client did not supply a
+// GMB/GMBHandle). Conceptually:
+// * On Mac the native buffer target is required if either (1) the client
+//   gave a native buffer or (2) the usages require a native buffer.
+// * On all other platforms the native buffer target is required iff external
+//   sampling is being used, which is dictated by the format of the SharedImage.
+uint32_t ComputeTextureTargetForSharedImage(
+    SharedImageMetadata metadata,
+    gfx::GpuMemoryBufferType client_gmb_type) {
+  bool client_side_native_buffer_used =
+      client_gmb_type != gfx::EMPTY_BUFFER &&
+      client_gmb_type != gfx::SHARED_MEMORY_BUFFER;
+
+#if BUILDFLAG(IS_MAC)
+  // NOTE: WebGPU usage on Mac results in SharedImages being backed by
+  // IOSurfaces.
+  uint32_t usages_requiring_native_buffer = SHARED_IMAGE_USAGE_SCANOUT |
+                                            SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  bool uses_native_buffer = client_side_native_buffer_used ||
+                            (metadata.usage & usages_requiring_native_buffer);
+
+  return uses_native_buffer ? GetPlatformSpecificTextureTarget()
+                            : GL_TEXTURE_2D;
+#else
+  bool uses_external_sampler = metadata.format.PrefersExternalSampler() ||
+                               metadata.format.IsLegacyMultiplanar();
+
+  // The client should configure an SI to use external sampling only if they
+  // have provided a native buffer to back that SI.
+  CHECK(!uses_external_sampler || client_side_native_buffer_used ||
+        allow_external_sampling_without_native_buffers_for_testing);
+
+  return uses_external_sampler ? GetPlatformSpecificTextureTarget()
+                               : GL_TEXTURE_2D;
+#endif
 }
 
 }  // namespace
@@ -115,7 +152,7 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
-  SetTextureTarget(GMBIsNative(gmb_type));
+  texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -173,7 +210,8 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
-  SetTextureTarget(GMBIsNative(gpu_memory_buffer_->GetType()));
+  texture_target_ = ComputeTextureTargetForSharedImage(
+      metadata_, gpu_memory_buffer_->GetType());
 }
 
 ClientSharedImage::~ClientSharedImage() = default;
@@ -206,40 +244,6 @@ uint32_t ClientSharedImage::GetTextureTarget() {
   CHECK(texture_target_);
 #endif
   return texture_target_;
-}
-
-void ClientSharedImage::SetTextureTarget(bool client_side_native_buffer_used) {
-  // This function should only be called if `texture_target_` has not yet been
-  // initialized.
-  CHECK(!texture_target_);
-
-  // On Mac, the platform-specific texture target is required if this
-  // SharedImage is backed by a native buffer. On other platforms, the
-  // platform-specific target is required if external sampling is used.
-#if BUILDFLAG(IS_MAC)
-  // NOTE: WebGPU usage on Mac results in SharedImages being backed by
-  // IOSurfaces.
-  uint32_t usages_requiring_native_buffer = SHARED_IMAGE_USAGE_SCANOUT |
-                                            SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-
-  bool uses_native_buffer = client_side_native_buffer_used ||
-                            (usage() & usages_requiring_native_buffer);
-
-  texture_target_ =
-      uses_native_buffer ? GetPlatformSpecificTextureTarget() : GL_TEXTURE_2D;
-#else
-  bool uses_external_sampler =
-      format().PrefersExternalSampler() || format().IsLegacyMultiplanar();
-
-  // The client should configure an SI to use external sampling only if they
-  // have provided a native buffer to back that SI.
-  CHECK(!uses_external_sampler || client_side_native_buffer_used ||
-        allow_external_sampling_without_native_buffers_for_testing);
-
-  texture_target_ = uses_external_sampler ? GetPlatformSpecificTextureTarget()
-                                          : GL_TEXTURE_2D;
-#endif
 }
 
 uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
