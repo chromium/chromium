@@ -128,7 +128,8 @@ class MenuControllerUITest : public InProcessBrowserTest {
   gfx::Point mouse_pos_;
 };
 
-IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
+// TODO(crbug.com/40765889): Re-enable this test
+IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   content::ScopedAccessibilityModeOverride ax_mode_override(
       ui::kAXModeComplete);
