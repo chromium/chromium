@@ -62,6 +62,10 @@ export function isInputDeviceSettingsSplitEnabled(): boolean {
   return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
 }
 
+export function isDisplayBrightnessControlInSettingsEnabled(): boolean {
+  return loadTimeData.getBoolean('enableDisplayBrightnessControlInSettings');
+}
+
 // Kerberos page
 export function isKerberosEnabled(): boolean {
   return loadTimeData.getBoolean('isKerberosEnabled');

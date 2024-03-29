@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/system/brightness/brightness_controller_chromeos.h"
+#include "ash/system/brightness_control_delegate.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -123,6 +127,32 @@ class FakeDisplayBrightnessSettingsObserver
   base::OnceClosure quit_callback_;
 };
 
+class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
+ public:
+  FakeBrightnessControlDelegate() = default;
+
+  FakeBrightnessControlDelegate(const FakeBrightnessControlDelegate&) = delete;
+  FakeBrightnessControlDelegate& operator=(
+      const FakeBrightnessControlDelegate&) = delete;
+
+  ~FakeBrightnessControlDelegate() override = default;
+
+  void HandleBrightnessDown() override {}
+  void HandleBrightnessUp() override {}
+  void SetBrightnessPercent(double percent, bool gradual) override {
+    brightness_percent_ = percent;
+  }
+  void GetBrightnessPercent(
+      base::OnceCallback<void(std::optional<double>)> callback) override {
+    std::move(callback).Run(brightness_percent_);
+  }
+
+  double brightness_percent() const { return brightness_percent_; }
+
+ private:
+  double brightness_percent_;
+};
+
 }  // namespace
 
 class DisplaySettingsProviderTest : public ChromeAshTestBase {
@@ -135,6 +165,8 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
     provider_ = std::make_unique<DisplaySettingsProvider>();
+    brightness_control_delegate_ =
+        std::make_unique<FakeBrightnessControlDelegate>();
   }
 
   void TearDown() override {
@@ -148,7 +180,9 @@ class DisplaySettingsProviderTest : public ChromeAshTestBase {
 
  protected:
   std::unique_ptr<DisplaySettingsProvider> provider_;
+  std::unique_ptr<FakeBrightnessControlDelegate> brightness_control_delegate_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test the behavior when the tablet mode status has changed. The tablet mode is
@@ -429,6 +463,50 @@ TEST_F(DisplaySettingsProviderTest, DisplayBrightnessSettingsObservation) {
   // The brightness value that the observer received should match the brightness
   // from the provider's observer.
   EXPECT_EQ(brightness_percent, fake_observer.current_brightness());
+}
+
+// Test the behavior when setting the internal display screen brightness (when
+// the feature flag is disabled).
+TEST_F(DisplaySettingsProviderTest,
+       SetInternalDisplayScreenBrightness_FeatureDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      ash::features::kEnableBrightnessControlInSettings);
+
+  // Set the brightness with a sentinel value, so we can test that the
+  // brightness doesn't change if the feature flag is disabled.
+  double brightness_before_setting = 50.0;
+  brightness_control_delegate_->SetBrightnessPercent(brightness_before_setting,
+                                                     false);
+
+  provider_->SetBrightnessControlDelegateForTesting(
+      brightness_control_delegate_.get());
+
+  double new_brightness_percent = 33.3;
+  provider_->SetInternalDisplayScreenBrightness(new_brightness_percent);
+
+  // When feature flag is disabled, setting the brightness has no effect.
+  EXPECT_EQ(brightness_before_setting,
+            brightness_control_delegate_->brightness_percent());
+}
+
+// Test the behavior when setting the internal display screen brightness (when
+// the feature flag is enabled).
+TEST_F(DisplaySettingsProviderTest,
+       SetInternalDisplayScreenBrightness_FeatureEnabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(
+      ash::features::kEnableBrightnessControlInSettings);
+  provider_->SetBrightnessControlDelegateForTesting(
+      brightness_control_delegate_.get());
+
+  double brightness_percent = 33.3;
+  provider_->SetInternalDisplayScreenBrightness(brightness_percent);
+
+  // The BrightnessControlDelegate should have been called with the new
+  // brightness percent.
+  EXPECT_EQ(brightness_percent,
+            brightness_control_delegate_->brightness_percent());
 }
 
 }  // namespace ash::settings

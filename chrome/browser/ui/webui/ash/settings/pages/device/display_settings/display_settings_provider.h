@@ -8,6 +8,11 @@
 #include <map>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
+#include "ash/system/brightness_control_delegate.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/id_type.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -27,6 +32,7 @@ using DisplayId = base::IdType64<display::Display>;
 class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
                                 public TabletModeObserver,
                                 public display::DisplayManagerObserver,
+                                public ash::ShellObserver,
                                 public display::DisplayObserver,
                                 public chromeos::PowerManagerClient::Observer {
  public:
@@ -73,6 +79,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
 
   void SetShinyPerformance(bool enabled) override;
 
+  void SetInternalDisplayScreenBrightness(double percent) override;
+
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 
@@ -87,9 +95,24 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
 
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
+
+  void SetBrightnessControlDelegateForTesting(
+      raw_ptr<BrightnessControlDelegate> delegate) {
+    brightness_control_delegate_ = delegate;
+  }
+
  private:
   void OnGetInitialBrightness(ObserveDisplayBrightnessSettingsCallback callback,
                               std::optional<double> percent);
+
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
+
+  // Maintain a reference to BrightnessControlDelegate so that we can test
+  // behavior of methods in this class that interact with it.
+  raw_ptr<BrightnessControlDelegate> brightness_control_delegate_;
 
   mojo::RemoteSet<mojom::TabletModeObserver> tablet_mode_observers_;
 

@@ -124,4 +124,7 @@ interface DisplaySettingsProvider {
 
   // Allows users to set the higher performance mode for display features.
   SetShinyPerformance(bool enabled);
+
+  // Sets the screen brightness of the internal display.
+  SetInternalDisplayScreenBrightness(double percent);
 };

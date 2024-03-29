@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/display/display_prefs.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -53,6 +54,17 @@ const std::string GetUserOverrideDefaultSettingsHistogramName(
 }  // namespace
 
 DisplaySettingsProvider::DisplaySettingsProvider() {
+  if (Shell::HasInstance()) {
+    shell_observation_.Observe(ash::Shell::Get());
+  }
+
+  if (Shell::HasInstance() && Shell::Get()->brightness_control_delegate()) {
+    brightness_control_delegate_ = Shell::Get()->brightness_control_delegate();
+  } else {
+    LOG(WARNING) << "DisplaySettingsProvider: Shell not available, did not "
+                    "save BrightnessControlDelegate.";
+  }
+
   if (TabletMode::Get()) {
     TabletMode::Get()->AddObserver(this);
   }
@@ -88,6 +100,14 @@ DisplaySettingsProvider::~DisplaySettingsProvider() {
       power_manager_client->RemoveObserver(this);
     }
   }
+}
+
+void DisplaySettingsProvider::OnShellDestroying() {
+  // Explicitly nullify the pointer to BrightnessControlDelegate before it's
+  // destroyed to avoid a dangling pointer.
+  brightness_control_delegate_ = nullptr;
+
+  shell_observation_.Reset();
 }
 
 void DisplaySettingsProvider::BindInterface(
@@ -134,12 +154,16 @@ void DisplaySettingsProvider::OnGetInitialBrightness(
 void DisplaySettingsProvider::ObserveDisplayBrightnessSettings(
     mojo::PendingRemote<mojom::DisplayBrightnessSettingsObserver> observer,
     ObserveDisplayBrightnessSettingsCallback callback) {
+  if (!brightness_control_delegate_) {
+    LOG(ERROR) << "DisplaySettingsProvider: Expected BrightnessControlDelegate "
+                  "to be non-null when adding an observer.";
+    return;
+  }
+
   display_brightness_settings_observers_.Add(std::move(observer));
 
-  BrightnessControlDelegate* brightness_control_delegate =
-      Shell::Get()->brightness_control_delegate();
   // Get the current screen brightness and run the callback with that value.
-  brightness_control_delegate->GetBrightnessPercent(
+  brightness_control_delegate_->GetBrightnessPercent(
       base::BindOnce(&DisplaySettingsProvider::OnGetInitialBrightness,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -257,6 +281,22 @@ void DisplaySettingsProvider::ScreenBrightnessChanged(
   for (auto& observer : display_brightness_settings_observers_) {
     observer->OnDisplayBrightnessChanged(change.percent());
   }
+}
+
+void DisplaySettingsProvider::SetInternalDisplayScreenBrightness(
+    double percent) {
+  if (!features::IsBrightnessControlInSettingsEnabled()) {
+    return;
+  }
+
+  if (!brightness_control_delegate_) {
+    LOG(ERROR) << "DisplaySettingsProvider: Expected BrightnessControlDelegate "
+                  "to be non-null when setting the internal display screen "
+                  "brightness.";
+    return;
+  }
+
+  brightness_control_delegate_->SetBrightnessPercent(percent, /*gradual=*/true);
 }
 
 }  // namespace ash::settings

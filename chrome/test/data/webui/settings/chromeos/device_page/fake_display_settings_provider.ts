@@ -109,6 +109,15 @@ export class FakeDisplaySettingsProvider implements
   }
 
   // Implement DisplaySettingsProviderInterface.
+  setInternalDisplayScreenBrightness(percent: number): void {
+    this.brightnessPercent = percent;
+  }
+
+  getInternalDisplayScreenBrightness(): number {
+    return this.brightnessPercent;
+  }
+
+  // Implement DisplaySettingsProviderInterface.
   recordChangingDisplaySettings(
       type: DisplaySettingsType, value: DisplaySettingsValue) {
     let histogram: Map<DisplaySettingsType, number>;

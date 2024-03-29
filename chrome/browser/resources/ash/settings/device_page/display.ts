@@ -28,6 +28,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -35,7 +36,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isDisplayBrightnessControlInSettingsEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
@@ -214,6 +215,16 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
       currentInternalScreenBrightness_: {type: Number, value: 0},
 
+      brightnessSliderMin_: {
+        type: Number,
+        value: 5,
+      },
+
+      brightnessSliderMax_: {
+        type: Number,
+        value: 100,
+      },
+
       isDisplayPerformanceEnabled_: {
         type: Boolean,
         value: false,
@@ -284,6 +295,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   primaryDisplayId: string;
   selectedDisplay?: DisplayUnitInfo;
   private browserProxy_: DevicePageBrowserProxy;
+  private brightnessSliderMax_: number;
+  private brightnessSliderMin_: number;
   private currentInternalScreenBrightness_: number;
   private currentRoute_: Route|null;
   private currentSelectedModeIndex_: number;
@@ -908,9 +921,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns true if display brightness controls should be shown for |display|.
    */
   private showBrightnessControls_(display: DisplayUnitInfo): boolean {
-    return loadTimeData.getBoolean(
-               'enableDisplayBrightnessControlInSettings') &&
-        display.isInternal;
+    return isDisplayBrightnessControlInSettingsEnabled() && display.isInternal;
   }
 
   /**
@@ -1166,6 +1177,25 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
         .then(() => this.setPropertiesCallback_());
     this.displaySettingsProvider.recordChangingDisplaySettings(
         DisplaySettingsType.kPrimaryDisplay, createDisplayValue({}));
+  }
+
+  /**
+   * Handles the event when the display brightness slider changes value.
+   */
+  private onDisplayBrightnessSliderChanged_(): void {
+    if (!isDisplayBrightnessControlInSettingsEnabled()) {
+      return;
+    }
+
+    const brightnessSliderValue =
+        strictQuery('#brightnessSlider', this.shadowRoot, CrSliderElement)
+            .value;
+    // Clamp the brightness value between 5 and 100 inclusive.
+    const newBrightness = Math.max(
+        this.brightnessSliderMin_,
+        Math.min(brightnessSliderValue, this.brightnessSliderMax_));
+    this.displaySettingsProvider.setInternalDisplayScreenBrightness(
+        newBrightness);
   }
 
   /**

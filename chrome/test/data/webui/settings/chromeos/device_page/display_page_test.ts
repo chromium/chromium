@@ -11,10 +11,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {FakeSystemDisplay} from '../fake_system_display.js';
 
-import {getFakePrefs} from './device_page_test_util.js';
+import {getFakePrefs, pressArrowLeft, pressArrowRight, simulateSliderClicked} from './device_page_test_util.js';
 import {FakeDisplaySettingsProvider} from './fake_display_settings_provider.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
@@ -1019,6 +1020,125 @@ suite('<settings-display>', () => {
 
         // The slider should update to the new brightness.
         assertEquals(displayBrightnessSlider.value, adjustedBrightness);
+      });
+
+  test(
+      'Display brightness set pref value from slider, flag enabled',
+      async () => {
+        loadTimeData.overrideValues(
+            {enableDisplayBrightnessControlInSettings: true});
+        await initPage();
+
+        // Set up the internal display.
+        addDisplay(1);
+        fakeSystemDisplay.onDisplayChanged.callListeners();
+        await fakeSystemDisplay.getInfoCalled.promise;
+        await fakeSystemDisplay.getLayoutCalled.promise;
+        assertEquals(1, displayPage.displays.length);
+        flush();
+
+        // Before adjust the slider, the value in FakeDisplaySettingsProvider
+        // should be equal to the default.
+        assertEquals(
+            displaySettingsProvider.getInternalDisplayScreenBrightness(), 0);
+
+        const displayBrightnessSlider =
+            displayPage.shadowRoot!.querySelector<CrSliderElement>(
+                '#brightnessSlider');
+        assertTrue(!!displayBrightnessSlider);
+
+        // Test clicking to near-min brightness case.
+        const minimumBrightnessPercent = 5;
+        const nearMinimumPercent = minimumBrightnessPercent + 1;
+        await simulateSliderClicked(
+            displayBrightnessSlider, nearMinimumPercent,
+            /*minimumValue=*/ minimumBrightnessPercent);
+        // Round to nearest integer for comparison to avoid precision issues
+        // (e.g. 6.000001) that don't affect real-world behavior.
+        let roundedBrightness = Math.round(
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        assertEquals(nearMinimumPercent, roundedBrightness);
+
+        // Test clicking to max brightness case.
+        const maxOutputBrightnessPercent = 100;
+        await simulateSliderClicked(
+            displayBrightnessSlider, maxOutputBrightnessPercent,
+            /*minimumValue=*/ minimumBrightnessPercent);
+        assertEquals(
+            maxOutputBrightnessPercent,
+            displaySettingsProvider.getInternalDisplayScreenBrightness(),
+        );
+
+        // Test clicking to non-boundary brightness case.
+        const nonBoundaryOutputBrightnessPercent = 31;
+        await simulateSliderClicked(
+            displayBrightnessSlider, nonBoundaryOutputBrightnessPercent,
+            /*minimumValue=*/ minimumBrightnessPercent);
+        // Round to nearest integer for comparison to avoid precision issues
+        // (e.g. 30.9999) that don't affect real-world behavior.
+        roundedBrightness = Math.round(
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        assertEquals(nonBoundaryOutputBrightnessPercent, roundedBrightness);
+
+        // Ensure value clamps to min.
+        displayBrightnessSlider.value = 0;
+        await flushTasks();
+        const sliderValueChangedPromise =
+            eventToPromise('cr-slider-value-changed', displayBrightnessSlider);
+        displayBrightnessSlider.dispatchEvent(
+            new CustomEvent('cr-slider-value-changed'));
+        await sliderValueChangedPromise;
+        assertEquals(
+            minimumBrightnessPercent,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+
+        // Ensure value clamps to max.
+        displayBrightnessSlider.value = 101;
+        await flushTasks();
+        displayBrightnessSlider.dispatchEvent(
+            new CustomEvent('cr-slider-value-changed'));
+        await sliderValueChangedPromise;
+        assertEquals(
+            maxOutputBrightnessPercent,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+
+        // Set the value to somewhere in the middle.
+        const expectedBrightnessValue = 77;
+        displayBrightnessSlider.value = expectedBrightnessValue;
+        displayBrightnessSlider.dispatchEvent(
+            new CustomEvent('cr-slider-value-changed'));
+
+        const increment = 10;
+        // Ensure slider keys work with increments.
+        assertEquals(
+            expectedBrightnessValue,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        pressArrowRight(displayBrightnessSlider);
+        assertEquals(
+            expectedBrightnessValue + increment,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        pressArrowRight(displayBrightnessSlider);
+        assertEquals(
+            expectedBrightnessValue + (2 * increment),
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        pressArrowRight(displayBrightnessSlider);
+        assertEquals(
+            maxOutputBrightnessPercent,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        // Pressing right arrow when the brightness is already at maximum should
+        // maintain the same level.
+        pressArrowRight(displayBrightnessSlider);
+        assertEquals(
+            maxOutputBrightnessPercent,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        pressArrowLeft(displayBrightnessSlider);
+        assertEquals(
+            maxOutputBrightnessPercent - increment,
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
+        pressArrowLeft(displayBrightnessSlider);
+        assertEquals(
+            maxOutputBrightnessPercent - (2 * increment),
+            displaySettingsProvider.getInternalDisplayScreenBrightness());
       });
 
 });
