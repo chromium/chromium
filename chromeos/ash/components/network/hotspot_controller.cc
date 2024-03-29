@@ -68,7 +68,9 @@ void HotspotController::EnableHotspot(HotspotControlCallback callback) {
       return;
     }
     current_enable_request_->enable_latency_timer = base::ElapsedTimer();
-    CheckTetheringReadiness();
+    hotspot_capabilities_provider_->CheckTetheringReadiness(
+        base::BindOnce(&HotspotController::OnCheckTetheringReadiness,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -108,19 +110,6 @@ void HotspotController::RemoveObserver(Observer* observer) {
 
 bool HotspotController::HasObserver(Observer* observer) const {
   return observer_list_.HasObserver(observer);
-}
-
-void HotspotController::CheckTetheringReadiness() {
-  if (hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status !=
-      hotspot_config::mojom::HotspotAllowStatus::kAllowed) {
-    CompleteEnableRequest(
-        hotspot_config::mojom::HotspotControlResult::kNotAllowed);
-    return;
-  }
-
-  hotspot_capabilities_provider_->CheckTetheringReadiness(
-      base::BindOnce(&HotspotController::OnCheckTetheringReadiness,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HotspotController::OnCheckTetheringReadiness(
