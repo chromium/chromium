@@ -45,6 +45,10 @@ constexpr int kLabelButtonHeight = 32;
 constexpr int kLabelButtonMinWidth = 80;
 constexpr gfx::Insets kLabelButtonBorderInsets = gfx::Insets::VH(6, 16);
 
+// Icon + label buttons' layout parameters.
+constexpr gfx::Insets kIconLabelButtonMargins = gfx::Insets(8);
+constexpr int kIconLabelSpacing = 6;
+
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -235,8 +239,8 @@ IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
       label_(AddChildView(std::make_unique<views::Label>(text))) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/gfx::Insets::VH(8, 16),
-      /*between_child_spacing=*/8));
+      /*inside_border_insets=*/kIconLabelButtonMargins,
+      /*between_child_spacing=*/kIconLabelSpacing));
 
   DCHECK(icon);
   image_view_->SetImage(ui::ImageModel::FromImageGenerator(
