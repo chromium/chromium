@@ -135,6 +135,19 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="StructuredMetrics.OnExternalMetricsCollectedDuration"
+    units="microseconds" expires_after="2025-03-20">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    Messures the duration of
+    AshStructuredMetricsRecorder::OnExternalMetricsCollected in microseconds.
+    Measuring to collect information about potential UI jankiness this function
+    is causing.
+  </summary>
+</histogram>
+
 <histogram name="StructuredMetrics.Reporting.ActualUploadInterval"
     units="minutes" expires_after="2024-09-15">
   <owner>andrewbregger@google.com</owner>

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/metrics/structured/ash_event_storage.h"
@@ -122,6 +123,8 @@ void AshStructuredMetricsRecorder::OnSystemProfileInitialized() {
 
 void AshStructuredMetricsRecorder::OnExternalMetricsCollected(
     const EventsProto& events) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "StructuredMetrics.OnExternalMetricsCollectedDuration");
   DCHECK(base::CurrentUIThread::IsSet());
   if (!recording_enabled()) {
     return;
