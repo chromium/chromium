@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -24,6 +25,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -84,6 +86,19 @@ class NearbyShareCertificateManagerImplTest
     NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(
         &cert_store_factory_);
 
+    mock_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    ON_CALL(*mock_adapter_, GetAddress()).WillByDefault([this] {
+      return bluetooth_mac_address_;
+    });
+    ON_CALL(*mock_adapter_, IsPresent()).WillByDefault([this] {
+      return is_bluetooth_adapter_present_;
+    });
+    ON_CALL(*mock_adapter_, IsPowered()).WillByDefault([this] {
+      return is_bluetooth_adapter_powered_;
+    });
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
+
     // Set default device data.
     local_device_data_manager_->SetDeviceName(
         GetNearbyShareTestMetadata().device_name());
@@ -92,6 +107,23 @@ class NearbyShareCertificateManagerImplTest
     local_device_data_manager_->SetIconUrl(
         GetNearbyShareTestMetadata().icon_url());
     SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
+  }
+
+  ~NearbyShareCertificateManagerImplTest() override = default;
+
+  void TearDown() override {
+    cert_manager_->RemoveObserver(this);
+    ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
+    NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(nullptr);
+  }
+
+  void InitCertificateManager(bool use_floss) {
+    if (use_floss) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {floss::features::kFlossEnabled},
+          /*disabled_features=*/{});
+    }
 
     cert_manager_ = NearbyShareCertificateManagerImpl::Factory::Create(
         local_device_data_manager_.get(), contact_manager_.get(),
@@ -129,25 +161,7 @@ class NearbyShareCertificateManagerImplTest
     PopulatePrivateCertificates();
     PopulatePublicCertificates();
 
-    mock_adapter_ =
-        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-    ON_CALL(*mock_adapter_, GetAddress()).WillByDefault([this] {
-      return bluetooth_mac_address_;
-    });
-    ON_CALL(*mock_adapter_, IsPresent()).WillByDefault([this] {
-      return is_bluetooth_adapter_present_;
-    });
-    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
-
     visibility_count_ = (isSelfShareEnabled()) ? 3u : 2u;
-  }
-
-  ~NearbyShareCertificateManagerImplTest() override = default;
-
-  void TearDown() override {
-    cert_manager_->RemoveObserver(this);
-    ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
-    NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
   bool isSelfShareEnabled() {
@@ -160,6 +174,17 @@ class NearbyShareCertificateManagerImplTest
 
   void SetBluetoothAdapterIsPresent(bool is_present) {
     is_bluetooth_adapter_present_ = is_present;
+  }
+
+  void SetBluetoothAdapterIsPowered(bool is_powered, bool notify) {
+    is_bluetooth_adapter_powered_ = is_powered;
+
+    if (notify) {
+      for (auto& observer : mock_adapter_->GetObservers()) {
+        observer.AdapterPoweredChanged(mock_adapter_.get(),
+                                       is_bluetooth_adapter_powered_);
+      }
+    }
   }
 
   // NearbyShareCertificateManager::Observer:
@@ -460,6 +485,7 @@ class NearbyShareCertificateManagerImplTest
     }
   }
 
+  base::HistogramTester histogram_tester_;
   raw_ptr<FakeNearbyShareCertificateStorage, DanglingUntriaged> cert_store_;
   raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged>
       private_cert_exp_scheduler_;
@@ -470,6 +496,7 @@ class NearbyShareCertificateManagerImplTest
   raw_ptr<ash::nearby::FakeNearbyScheduler, DanglingUntriaged>
       download_scheduler_;
   bool is_bluetooth_adapter_present_ = true;
+  bool is_bluetooth_adapter_powered_ = true;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   size_t num_public_certs_downloaded_notifications_ = 0;
@@ -495,6 +522,7 @@ class NearbyShareCertificateManagerImplTest
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        EncryptPrivateCertificateMetadataKey) {
+  InitCertificateManager(/*use_floss=*/false);
   // No valid certificates exist.
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
@@ -540,6 +568,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 }
 
 TEST_P(NearbyShareCertificateManagerImplTest, SignWithPrivateCertificate) {
+  InitCertificateManager(/*use_floss=*/false);
   NearbySharePrivateCertificate private_certificate =
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kAllContacts);
@@ -562,6 +591,7 @@ TEST_P(NearbyShareCertificateManagerImplTest, SignWithPrivateCertificate) {
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        HashAuthenticationTokenWithPrivateCertificate) {
+  InitCertificateManager(/*use_floss=*/false);
   NearbySharePrivateCertificate private_certificate =
       GetNearbyShareTestPrivateCertificate(
           nearby_share::mojom::Visibility::kAllContacts);
@@ -583,6 +613,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        GetDecryptedPublicCertificateSuccess) {
+  InitCertificateManager(/*use_floss=*/false);
   std::optional<NearbyShareDecryptedPublicCertificate> decrypted_pub_cert;
   cert_manager_->GetDecryptedPublicCertificate(
       metadata_encryption_keys_[0],
@@ -601,6 +632,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        GetDecryptedPublicCertificateCertNotFound) {
+  InitCertificateManager(/*use_floss=*/false);
   auto private_cert = NearbySharePrivateCertificate(
       nearby_share::mojom::Visibility::kAllContacts, t0,
       GetNearbyShareTestMetadata());
@@ -619,6 +651,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        GetDecryptedPublicCertificateGetPublicCertificatesFailure) {
+  InitCertificateManager(/*use_floss=*/false);
   std::optional<NearbyShareDecryptedPublicCertificate> decrypted_pub_cert;
   cert_manager_->GetDecryptedPublicCertificate(
       metadata_encryption_keys_[0],
@@ -632,6 +665,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesImmediateRequest) {
+  InitCertificateManager(/*use_floss=*/false);
   size_t prev_num_requests = download_scheduler_->num_immediate_requests();
   cert_manager_->DownloadPublicCertificates();
   EXPECT_EQ(download_scheduler_->num_immediate_requests(),
@@ -640,30 +674,35 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesSuccess) {
+  InitCertificateManager(/*use_floss=*/false);
   DownloadPublicCertificatesFlow(/*num_pages=*/2,
                                  DownloadPublicCertificatesResult::kSuccess);
 }
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesTimeout) {
+  InitCertificateManager(/*use_floss=*/false);
   DownloadPublicCertificatesFlow(/*num_pages=*/2,
                                  DownloadPublicCertificatesResult::kTimeout);
 }
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesRPCFailure) {
+  InitCertificateManager(/*use_floss=*/false);
   DownloadPublicCertificatesFlow(/*num_pages=*/2,
                                  DownloadPublicCertificatesResult::kHttpError);
 }
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        DownloadPublicCertificatesStoreFailure) {
+  InitCertificateManager(/*use_floss=*/false);
   DownloadPublicCertificatesFlow(
       /*num_pages=*/2, DownloadPublicCertificatesResult::kStorageError);
 }
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ValidCertificates) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(private_certificates_);
 
   cert_manager_->Start();
@@ -674,6 +713,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadSuccess) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -686,6 +726,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadFailure) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -698,6 +739,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RevokePrivateCertificates_OnContactsUploaded) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_manager_->Start();
 
   // Destroy and recreate private certificates if contact data has changed since
@@ -726,6 +768,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_OnLocalDeviceMetadataChanged) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_manager_->Start();
 
   // Destroy and recreate private certificates if any metadata fields change.
@@ -750,6 +793,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ExpiredCertificate) {
+  InitCertificateManager(/*use_floss=*/false);
   // First certificates are expired;
   FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
   cert_store_->ReplacePrivateCertificates(private_certificates_);
@@ -763,6 +807,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidDeviceName) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -778,6 +823,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_BluetoothAdapterNotPresent) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -792,6 +838,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidBluetoothMacAddress) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -807,6 +854,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_MissingFullNameAndIconUrl) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -830,6 +878,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_MissingAccountName) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
@@ -851,6 +900,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RemoveExpiredPublicCertificates_Success) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_manager_->Start();
 
   // The public certificate expiration scheduler notifies the certificate
@@ -871,6 +921,7 @@ TEST_P(NearbyShareCertificateManagerImplTest,
 
 TEST_P(NearbyShareCertificateManagerImplTest,
        RemoveExpiredPublicCertificates_Failure) {
+  InitCertificateManager(/*use_floss=*/false);
   cert_manager_->Start();
 
   // The public certificate expiration scheduler notifies the certificate
@@ -887,6 +938,78 @@ TEST_P(NearbyShareCertificateManagerImplTest,
       .Run(/*success=*/false);
   EXPECT_EQ(1u, public_cert_exp_scheduler_->handled_results().size());
   EXPECT_FALSE(public_cert_exp_scheduler_->handled_results().back());
+}
+
+// Regression test b/315277593. Private certificates were refreshed when the
+// Adapter was powered off, which on Floss, meant that no address was available.
+// This causes failures in the Metadata generation. To resolve this, prevent
+// private certificate refresh until the adapter is ready, which on Floss,
+// means waiting for it to become powered on.
+//
+// TODO(b/331869121): Add test coverage for the case when the
+// Bluetooth adapter acquisition is triggered after the private certificate
+// refresh is requested. The expected behavior is that `OnGetDevice()` stores
+// the pending request to fresh the private certificates until the adapter is
+// acquired.
+TEST_F(NearbyShareCertificateManagerImplTest,
+       NoPrivateCertificateRefreshIfFlossAdapterIsNotPoweredOn) {
+  InitCertificateManager(/*use_floss=*/true);
+  cert_store_->ReplacePrivateCertificates(
+      std::vector<NearbySharePrivateCertificate>());
+
+  // The adapter returns an empty BT address and is powered off to simulate
+  // the state of the Floss adapter being off.
+  SetBluetoothMacAddress(std::string());
+  SetBluetoothAdapterIsPowered(/*is_powered=*/false, /*notify=*/false);
+
+  cert_manager_->Start();
+  private_cert_exp_scheduler_->InvokeRequestCallback();
+
+  // Expect that the certificates were not generated yet; the Adapter was not
+  // ready to refresh the private certificates, so the `cert_manager_` waits
+  // until the adapter is ready.
+  EXPECT_EQ(0u, private_cert_exp_scheduler_->handled_results().size());
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Share.Certificates.Manager."
+      "BluetoothMacAddressPresentForPrivateCertificateCreation",
+      0);
+
+  // Simulate the adapter being powered on, and the address being available
+  // now, to replicate the behavior on Floss.
+  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
+  SetBluetoothAdapterIsPowered(/*is_powered=*/true, /*notify=*/true);
+
+  // Expect success because the Adapter is ready now since it is powered on,
+  // and the address is available.
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Share.Certificates.Manager."
+      "BluetoothMacAddressPresentForPrivateCertificateCreation",
+      /*bucket: success=*/true, 1);
+  EXPECT_TRUE(private_cert_exp_scheduler_->handled_results().back());
+  EXPECT_EQ(1u, private_cert_exp_scheduler_->handled_results().size());
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       PrivateCertificateRefreshIfBlueZAdapterIsNotPoweredOn) {
+  InitCertificateManager(/*use_floss=*/false);
+  cert_store_->ReplacePrivateCertificates(
+      std::vector<NearbySharePrivateCertificate>());
+
+  // The adapter returns a valid BT address when powered off to simulate
+  // the state of the BlueZ adapter being off.
+  SetBluetoothAdapterIsPowered(/*is_powered=*/false, /*notify=*/false);
+
+  cert_manager_->Start();
+  private_cert_exp_scheduler_->InvokeRequestCallback();
+
+  // Expect success because the `cert_manager_` does not need to wait for
+  // the adapter to be on, since on BlueZ, the address remains available.
+  histogram_tester_.ExpectUniqueSample(
+      "Nearby.Share.Certificates.Manager."
+      "BluetoothMacAddressPresentForPrivateCertificateCreation",
+      /*bucket: success=*/true, 1);
+  EXPECT_TRUE(private_cert_exp_scheduler_->handled_results().back());
+  EXPECT_EQ(1u, private_cert_exp_scheduler_->handled_results().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(NearbyShareCertificateManagerImplTest,
