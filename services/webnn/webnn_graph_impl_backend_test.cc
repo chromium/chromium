@@ -4835,6 +4835,349 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemm) {
   }
 }
 
+template <typename T>
+struct GruTester {
+  struct GruAttributes {
+    std::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> recurrent_bias_operand_id;
+    std::optional<uint64_t> initial_hidden_state_operand_id;
+    bool reset_after = true;
+    bool return_sequence = false;
+    mojom::RecurrentNetworkDirection direction =
+        mojom::RecurrentNetworkDirection::kForward;
+    mojom::Gru::GruWeightLayout layout = mojom::Gru::GruWeightLayout::kZrn;
+    std::vector<Activation> activations{
+        Activation{.kind = mojom::Activation::Tag::kSigmoid},
+        Activation{.kind = mojom::Activation::Tag::kTanh}};
+  };
+
+  OperandInfo<T> input;
+  OperandInfo<T> weight;
+  OperandInfo<T> recurrent_weight;
+  uint32_t steps;
+  uint32_t hidden_size;
+  std::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> recurrent_bias;
+  std::optional<OperandInfo<T>> initial_hidden_state;
+  GruAttributes attributes;
+  std::vector<OperandInfo<T>> outputs;
+
+  void Test(BuildAndComputeExpectation expectation =
+                BuildAndComputeExpectation::kSuccess) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", weight.dimensions, weight.type);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", recurrent_weight.dimensions, recurrent_weight.type);
+
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    if (recurrent_bias.has_value()) {
+      attributes.recurrent_bias_operand_id = builder.BuildInput(
+          "recurrentBias", recurrent_bias->dimensions, recurrent_bias->type);
+    }
+    if (initial_hidden_state.has_value()) {
+      attributes.initial_hidden_state_operand_id = builder.BuildConstant(
+          initial_hidden_state->dimensions, initial_hidden_state->type,
+          base::as_bytes(base::make_span(initial_hidden_state->values)));
+    }
+
+    std::vector<uint64_t> output_operand_ids;
+    output_operand_ids.reserve(outputs.size());
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      const auto& output = outputs[i];
+      output_operand_ids.push_back(builder.BuildOutput(
+          "output" + base::NumberToString(i), output.dimensions, output.type));
+    }
+
+    builder.BuildGru(input_operand_id, weight_operand_id,
+                     recurrent_weight_operand_id, std::move(output_operand_ids),
+                     steps, hidden_size, std::move(attributes));
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"weight", VectorToBigBuffer(weight.values)});
+    named_inputs.insert(
+        {"recurrentWeight", VectorToBigBuffer(recurrent_weight.values)});
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    if (recurrent_bias.has_value()) {
+      named_inputs.insert(
+          {"recurrentBias", VectorToBigBuffer(recurrent_bias->values)});
+    }
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs, expectation);
+
+    if (expectation == BuildAndComputeExpectation::kSuccess) {
+      for (size_t i = 0; i < outputs.size(); ++i) {
+        VerifyIsEqual(
+            std::move(named_outputs["output" + base::NumberToString(i)]),
+            outputs[i]);
+      }
+    }
+  }
+};
+
+// Test building and computing a graph with single operator gru.
+TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
+  // Test gru without bias and initial hidden state.
+  {
+    const uint32_t steps = 1;
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    const uint32_t num_directions = 1;
+    GruTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size},
+                   .values = std::vector<float>(
+                       num_directions * 3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(
+                                 num_directions * 3 * hidden_size * hidden_size,
+                                 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size},
+                     .values = {-30., -30., -30., -30., -30., -210., -210.,
+                                -210., -210., -210., -552., -552., -552., -552.,
+                                -552.}}}}
+        .Test();
+  }
+  // Test gru with number directions = 2.
+  {
+    const uint32_t steps = 1;
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    const uint32_t num_directions = 2;
+    GruTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size},
+                   .values = std::vector<float>(
+                       num_directions * 3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(
+                                 num_directions * 3 * hidden_size * hidden_size,
+                                 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes = {.direction = mojom::RecurrentNetworkDirection::kBoth,
+                       .activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size},
+                     .values = {-30.,  -30.,  -30.,  -30.,  -30.,  -210.,
+                                -210., -210., -210., -210., -552., -552.,
+                                -552., -552., -552., -30.,  -30.,  -30.,
+                                -30.,  -30.,  -210., -210., -210., -210.,
+                                -210., -552., -552., -552., -552., -552.}}}}
+        .Test();
+  }
+  // Test gru with steps = 2.
+  {
+    const uint32_t steps = 2;
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    const uint32_t num_directions = 2;
+    GruTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8,
+                             9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size},
+                   .values = std::vector<float>(
+                       num_directions * 3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(
+                                 num_directions * 3 * hidden_size * hidden_size,
+                                 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes = {.direction = mojom::RecurrentNetworkDirection::kBoth,
+                       .activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size},
+                     .values = {6.,  6.,  6.,  6.,  6.,  15., 15., 15.,
+                                15., 15., 24., 24., 24., 24., 24., 6.,
+                                6.,  6.,  6.,  6.,  15., 15., 15., 15.,
+                                15., 24., 24., 24., 24., 24.}}}}
+        .Test();
+  }
+  // Test gru with bias and recurrentbias.
+  {
+    const uint32_t steps = 1;
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    const uint32_t num_directions = 1;
+    GruTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size},
+                   .values = std::vector<float>(
+                       num_directions * 3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(
+                                 num_directions * 3 * hidden_size * hidden_size,
+                                 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {num_directions, 3 * hidden_size},
+                               .values = std::vector<float>(
+                                   num_directions * 3 * hidden_size, 1)},
+        .recurrent_bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {num_directions, 3 * hidden_size},
+                               .values = std::vector<float>(
+                                   num_directions * 3 * hidden_size, 0)},
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size},
+                     .values = {-42., -42., -42., -42., -42., -240., -240.,
+                                -240., -240., -240., -600., -600., -600., -600.,
+                                -600.}}}}
+        .Test();
+  }
+  // Test gru with bias and initial hidden state.
+  {
+    const uint32_t steps = 1;
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    const uint32_t num_directions = 1;
+    GruTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size},
+                   .values = std::vector<float>(
+                       num_directions * 3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(
+                                 num_directions * 3 * hidden_size * hidden_size,
+                                 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {num_directions, 3 * hidden_size},
+                               .values = std::vector<float>(
+                                   num_directions * 3 * hidden_size, 1)},
+        .initial_hidden_state =
+            OperandInfo<float>{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {num_directions, batch_size, hidden_size},
+                .values = std::vector<float>(
+                    num_directions * batch_size * hidden_size, 1)},
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {num_directions, batch_size, hidden_size},
+                     .values = {-725., -725., -725., -725., -725., -2399.,
+                                -2399., -2399., -2399., -2399., -5045., -5045.,
+                                -5045., -5045., -5045.}}}}
+        .Test();
+  }
+  // Test gru with return_sequence = true;
+  {
+    const uint32_t steps = 1;
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    const uint32_t num_directions = 1;
+    GruTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {num_directions, 3 * hidden_size, input_size},
+                   .values = std::vector<float>(
+                       num_directions * 3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {num_directions, 3 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(
+                                 num_directions * 3 * hidden_size * hidden_size,
+                                 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {num_directions, 3 * hidden_size},
+                               .values = std::vector<float>(
+                                   num_directions * 3 * hidden_size, 1)},
+        .recurrent_bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {num_directions, 3 * hidden_size},
+                               .values = std::vector<float>(
+                                   num_directions * 3 * hidden_size, 0)},
+        .initial_hidden_state =
+            OperandInfo<float>{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {num_directions, batch_size, hidden_size},
+                .values = std::vector<float>(
+                    num_directions * batch_size * hidden_size, 1)},
+        .attributes = {.return_sequence = true,
+                       .activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs =
+            {{.type = mojom::Operand::DataType::kFloat32,
+              .dimensions = {num_directions, batch_size, hidden_size},
+              .values = {-725., -725., -725., -725., -725., -2399., -2399.,
+                         -2399., -2399., -2399., -5045., -5045., -5045., -5045.,
+                         -5045.}},
+             {.type = mojom::Operand::DataType::kFloat32,
+              .dimensions = {steps, num_directions, batch_size, hidden_size},
+              .values = {-725., -725., -725., -725., -725., -2399., -2399.,
+                         -2399., -2399., -2399., -5045., -5045., -5045., -5045.,
+                         -5045.}}}}
+        .Test();
+  }
+}
+
 // Test building and computing a graph with three gemm operations.
 //    [input_a] [input_b] [input_a] [input_b]
 //           \    /                \    /

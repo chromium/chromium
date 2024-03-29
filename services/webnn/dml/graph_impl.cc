@@ -2023,6 +2023,319 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   return base::ok();
 }
 
+// Append an identity node to the input node output. Return the node output of
+// the identity operator if it's successfully created, otherwise return a
+// nullptr.
+const NodeOutput* AppendIdentityNode(GraphBuilder& graph_builder,
+                                     const NodeOutput* input) {
+  CHECK(input);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  TensorDesc identity_tensor_desc(input_tensor_desc.GetDataType(),
+                                  DML_TENSOR_FLAG_NONE,
+                                  input_tensor_desc.GetDimensions());
+  const OperatorNode* identity =
+      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          input_tensor_desc, identity_tensor_desc, input, graph_builder);
+
+  return identity ? graph_builder.CreateNodeOutput(
+                        identity, std::move(identity_tensor_desc))
+                  : nullptr;
+}
+
+// This helper checks if the input node output is a constant operand, if so,
+// append an identity node to the input node output by calling
+// `AppendIdentityNode`, otherwise do nothing and return `input` directly.
+const NodeOutput* AppendIdentityToConstantOperand(GraphBuilder& graph_builder,
+                                                  const NodeOutput* input) {
+  CHECK(input);
+  // Do nothing if the input is without the DML_TENSOR_FLAG_OWNED_BY_DML flag.
+  if (!(input->GetTensorDesc().GetFlags() & DML_TENSOR_FLAG_OWNED_BY_DML)) {
+    return input;
+  }
+  // Append an identity node if the input is with the
+  // DML_TENSOR_FLAG_OWNED_BY_DML flag. For certain operators like lstm and
+  // gru, their input tensors don't support this flag and an identity is needed
+  // to remove it.
+  return AppendIdentityNode(graph_builder, input);
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::GruPtr& gru,
+    mojom::GraphInfoPtr& graph_info,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    uint64_t& next_operand_id) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, gru->input_operand_id);
+  // Since the InputTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
+  // flag, add an identity operator to change the input type:
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc
+  const std::string append_identity_error =
+      "Failed to create identity operator to implement gru operation.";
+  if ((input = AppendIdentityToConstantOperand(graph_builder, input)) ==
+      nullptr) {
+    return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                 append_identity_error);
+  }
+  TensorDesc input_tensor_desc = input->GetTensorDesc();
+  // The input tensor shape is `[steps, batch_size, input_size]`, while DirectML
+  // expects the shape to be `[1, steps, batch_size, input_size]`.
+  input_tensor_desc.EnsureMinimumRank(/*rank=*/4,
+                                      TensorDesc::Alignment::kTrailing);
+
+  const NodeOutput* weight =
+      GetNodeOutputForOperand(id_to_node_output_map, gru->weight_operand_id);
+  // Since the WeightTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
+  // flag, add an identity operator to change the input type:
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc
+  if ((weight = AppendIdentityToConstantOperand(graph_builder, weight)) ==
+      nullptr) {
+    return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                 append_identity_error);
+  }
+  TensorDesc weight_tensor_desc = weight->GetTensorDesc();
+  // The weight tensor shape is `[num_directions, 3 * hidden_size,
+  // input_size]`, while DirectML expects the shape to be `[1, num_directions,
+  // 3 * hidden_size, input_size]`.
+  weight_tensor_desc.EnsureMinimumRank(/*rank*/ 4,
+                                       TensorDesc::Alignment::kTrailing);
+
+  const NodeOutput* recurrent_weight = GetNodeOutputForOperand(
+      id_to_node_output_map, gru->recurrent_weight_operand_id);
+  // Since the RecurrenceTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
+  // flag, add an identity operator to change the input type:
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc
+  if ((recurrent_weight = AppendIdentityToConstantOperand(
+           graph_builder, recurrent_weight)) == nullptr) {
+    return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                 append_identity_error);
+  }
+  TensorDesc recurrent_weight_tensor_desc = recurrent_weight->GetTensorDesc();
+  // The recurrent weight tensor shape is `[num_directions, 3 * hidden_size,
+  // hidden_size]`, while DirectML expects the shape to be `[1, num_directions,
+  // 3 * hidden_size, hidden_size]`.
+  recurrent_weight_tensor_desc.EnsureMinimumRank(
+      /*rank=*/4, TensorDesc::Alignment::kTrailing);
+
+  std::vector<const NodeOutput*> inputs{input, weight, recurrent_weight};
+
+  const OperandPtr& input_operand = id_to_operand_map.at(gru->input_operand_id);
+  const Operand::DataType data_type = input_operand->data_type;
+
+  std::optional<TensorDesc> concatenated_bias_tensor_desc;
+  if (!gru->bias_operand_id.has_value() &&
+      !gru->recurrent_bias_operand_id.has_value()) {
+    // Use a nullptr to indicate there is no input edge for BiasTensor.
+    inputs.push_back(nullptr);
+  } else {
+    // The DirectML bias tensor is the concatenation of bias and recurrent bias
+    // (if bidirectional). Get or create the node output of bias and recurrent
+    // bias for the following concat operation.
+    std::optional<const NodeOutput*> zero_bias;
+    if (!gru->bias_operand_id.has_value() ||
+        !gru->recurrent_bias_operand_id.has_value()) {
+      uint64_t zero_bias_operand_id = BuildConstantOperandForFloatValue(
+          graph_info, next_operand_id, data_type, /*rank*/ 1,
+          /*default bias*/ 0);
+      uint32_t bias_input_index =
+          CreateInputNode(id_to_operand_map, zero_bias_operand_id,
+                          graph_builder, id_to_node_output_map);
+      CHECK(constant_id_to_input_index_map
+                .try_emplace(zero_bias_operand_id, bias_input_index)
+                .second);
+      zero_bias =
+          GetNodeOutputForOperand(id_to_node_output_map, zero_bias_operand_id);
+    }
+
+    const NodeOutput* bias =
+        gru->bias_operand_id.has_value()
+            ? GetOptionalNodeOutputForOperand(id_to_node_output_map,
+                                              gru->bias_operand_id)
+            : zero_bias.value();
+    const NodeOutput* recurrent_bias =
+        gru->recurrent_bias_operand_id.has_value()
+            ? GetOptionalNodeOutputForOperand(id_to_node_output_map,
+                                              gru->recurrent_bias_operand_id)
+            : zero_bias.value();
+
+    const uint32_t num_directions =
+        gru->direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+    uint32_t hidden_size = gru->hidden_size;
+    // 3 * hidden_size has been verified.
+    auto checked_three_times_hidden_size =
+        base::MakeCheckedNum(hidden_size) * 3;
+    CHECK(checked_three_times_hidden_size.IsValid());
+    // The half bias dimensions is [1, 1, num_directions, 3 * hidden_size].
+    const std::array<uint32_t, 4> half_bias_dimensions = {
+        1, 1, num_directions, checked_three_times_hidden_size.ValueOrDie()};
+    TensorDesc bias_tensor_desc = bias->GetTensorDesc();
+    // The bias tensor shape is either [1] or [direction_count, 3 *
+    // hidden_size], which can be broadcasted to [1, 1, direction_count, 3 *
+    // hidden_size] as DirectML requires.
+    bias_tensor_desc.BroadcastTo(half_bias_dimensions);
+    TensorDesc recurrent_bias_tensor_desc = recurrent_bias->GetTensorDesc();
+    recurrent_bias_tensor_desc.BroadcastTo(half_bias_dimensions);
+    std::array<DML_TENSOR_DESC, 2> concat_input_tensor_descs = {
+        bias_tensor_desc.GetDMLTensorDesc(),
+        recurrent_bias_tensor_desc.GetDMLTensorDesc()};
+
+    // The DirectML bias dimensions is [1, 1, num_directions, 6 * hidden_size].
+    // Ideally, 6 * hidden_size validation should be part of the spec and
+    // validated for all backends. Spec issue tracked on
+    // https://github.com/webmachinelearning/webnn/issues/625.
+    auto checked_six_times_hidden_size = base::MakeCheckedNum(hidden_size) * 6;
+    if (!checked_six_times_hidden_size.IsValid()) {
+      return CreateUnexpectedError(
+          mojom::Error::Code::kUnknownError,
+          "The hidden size is too large for gru operator.");
+    }
+    std::vector<uint32_t> concatenated_bias_dimensions = {
+        1, 1, num_directions, checked_six_times_hidden_size.ValueOrDie()};
+    concatenated_bias_tensor_desc = TensorDesc(
+        GetTensorDataType(data_type), std::move(concatenated_bias_dimensions));
+
+    DML_JOIN_OPERATOR_DESC concat_operator_desc{
+        .InputCount = concat_input_tensor_descs.size(),
+        .InputTensors = concat_input_tensor_descs.data(),
+        .OutputTensor = &concatenated_bias_tensor_desc->GetDMLTensorDesc(),
+        .Axis = 3};
+    std::array<const NodeOutput*, 2> bias_outputs = {bias, recurrent_bias};
+    const OperatorNode* concat_node = graph_builder.CreateOperatorNode(
+        DML_OPERATOR_JOIN, &concat_operator_desc, bias_outputs);
+    if (!concat_node) {
+      return CreateUnexpectedError(
+          mojom::Error::Code::kUnknownError,
+          "Failed to create concat operator to implement gru operation.");
+    }
+    const NodeOutput* concatenated_bias = graph_builder.CreateNodeOutput(
+        concat_node, concatenated_bias_tensor_desc.value(), 0);
+    inputs.push_back(concatenated_bias);
+  }
+
+  std::optional<TensorDesc> initial_hidden_state_tensor_desc;
+  if (gru->initial_hidden_state_operand_id.has_value()) {
+    const NodeOutput* initial_hidden_state = GetNodeOutputForOperand(
+        id_to_node_output_map, gru->initial_hidden_state_operand_id.value());
+    // Since the HiddenInitTensor doesn't support the
+    // DML_TENSOR_FLAG_OWNED_BY_DML flag, add an identity operator to change the
+    // input type:
+    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc
+    if ((initial_hidden_state = AppendIdentityToConstantOperand(
+             graph_builder, initial_hidden_state)) == nullptr) {
+      return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                   append_identity_error);
+    }
+    initial_hidden_state_tensor_desc = initial_hidden_state->GetTensorDesc();
+    // The initial hidden state tensor shape is `[num_directions, batch_size,
+    // hidden_size]`, while DirectML expects the shape to be `[1,
+    // num_directions, batch_size, hidden_size]`.
+    initial_hidden_state_tensor_desc->EnsureMinimumRank(
+        /*rank*/ 4, TensorDesc::Alignment::kTrailing);
+    inputs.push_back(initial_hidden_state);
+  } else {
+    // Use a nullptr to indicate there is no input edge for HiddenInitTensor.
+    inputs.push_back(nullptr);
+  }
+
+  // Use a nullptr to indicate all sequences in the batch have length
+  // seq_length:
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc
+  inputs.push_back(nullptr);
+
+  const std::vector<uint64_t>& output_ids = gru->output_operand_ids;
+  const uint64_t output_hidden_state_id = output_ids[0];
+  TensorDesc output_hidden_state_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_hidden_state_id);
+  // The output hidden state tensor shape is `[num_directions, batch_size,
+  // hidden_size]`, while DirectML expects the shape to be `[1, num_directions,
+  // batch_size, hidden_size]`.
+  output_hidden_state_tensor_desc.EnsureMinimumRank(
+      /*rank*/ 4, TensorDesc::Alignment::kTrailing);
+
+  std::optional<uint64_t> output_sequence_id;
+  std::optional<TensorDesc> output_sequence_tensor_desc;
+  if (gru->return_sequence) {
+    CHECK_EQ(output_ids.size(), 2u);
+    output_sequence_id = output_ids[1];
+    output_sequence_tensor_desc =
+        CreateOutputTensorDesc(id_to_operand_map, output_sequence_id.value());
+  }
+
+  if (gru->layout != mojom::Gru::GruWeightLayout::kZrn) {
+    return CreateUnexpectedError(
+        mojom::Error::Code::kNotSupportedError,
+        "The gru weight layout (rzn) is not supported.");
+  }
+
+  const std::vector<mojom::ActivationPtr>& activations = gru->activations;
+  CHECK_EQ(activations.size(), 2u);
+  std::vector<ActivationOperatorDesc> activation_operator_descs;
+  activation_operator_descs.reserve(activations.size());
+  for (const auto& activation : activations) {
+    auto create_activation_result = CreateActivationOperatorDesc(activation);
+    if (!create_activation_result.has_value()) {
+      return base::unexpected(std::move(create_activation_result.error()));
+    }
+    activation_operator_descs.push_back(
+        std::move(create_activation_result.value()));
+  }
+  // For bidirectional, activations must be provided f() and g() for forward
+  // followed by f() and g() for backwards.
+  if (gru->direction == mojom::RecurrentNetworkDirection::kBoth) {
+    activation_operator_descs.push_back(activation_operator_descs[0]);
+    activation_operator_descs.push_back(activation_operator_descs[1]);
+  }
+  std::vector<DML_OPERATOR_DESC> activation_dml_descs;
+  activation_dml_descs.reserve(activation_operator_descs.size());
+  base::ranges::transform(
+      activation_operator_descs, std::back_inserter(activation_dml_descs),
+      [](const auto& activation_operator_desc) {
+        return activation_operator_desc.GetActivationDmlDesc();
+      });
+
+  DML_GRU_OPERATOR_DESC gru_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .WeightTensor = &weight_tensor_desc.GetDMLTensorDesc(),
+      .RecurrenceTensor = &recurrent_weight_tensor_desc.GetDMLTensorDesc(),
+      .BiasTensor = GetOptionalDmlTensorDescPtr(concatenated_bias_tensor_desc),
+      .HiddenInitTensor =
+          GetOptionalDmlTensorDescPtr(initial_hidden_state_tensor_desc),
+      .SequenceLengthsTensor = nullptr,
+      .OutputSequenceTensor =
+          GetOptionalDmlTensorDescPtr(output_sequence_tensor_desc),
+      .OutputSingleTensor = &output_hidden_state_tensor_desc.GetDMLTensorDesc(),
+      .ActivationDescCount = static_cast<uint32_t>(activation_dml_descs.size()),
+      .ActivationDescs = activation_dml_descs.data(),
+      .Direction = MojoRecurrentNetworkDirectionToDml(gru->direction),
+      .LinearBeforeReset = !gru->reset_after};
+
+  const OperatorNode* gru_node =
+      graph_builder.CreateOperatorNode(DML_OPERATOR_GRU, &gru_desc, inputs);
+  if (!gru_node) {
+    return CreateUnexpectedError(mojom::Error::Code::kUnknownError,
+                                 "Failed to create gru operator.");
+  }
+
+  const NodeOutput* output_hidden_state = graph_builder.CreateNodeOutput(
+      gru_node, output_hidden_state_tensor_desc, /*output_index*/ 1);
+  CHECK(id_to_node_output_map
+            .try_emplace(output_hidden_state_id, output_hidden_state)
+            .second);
+
+  if (gru->return_sequence) {
+    const NodeOutput* output_sequence = graph_builder.CreateNodeOutput(
+        gru_node, output_sequence_tensor_desc.value(), /*output_index*/ 0);
+    CHECK(id_to_node_output_map
+              .try_emplace(output_sequence_id.value(), output_sequence)
+              .second);
+  }
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSigmoid(
     const IdToOperandMap& id_to_operand_map,
     const mojom::HardSigmoidPtr& hard_sigmoid,
@@ -2319,43 +2632,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLinear(
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
-}
-
-// Append an identity node to the input node output, return the node output of
-// the identity operator if it's successfully created, otherwise return a
-// nullptr.
-const NodeOutput* AppendIdentityNode(GraphBuilder& graph_builder,
-                                     const NodeOutput* input) {
-  CHECK(input);
-  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
-  TensorDesc identity_tensor_desc(input_tensor_desc.GetDataType(),
-                                  DML_TENSOR_FLAG_NONE,
-                                  input_tensor_desc.GetDimensions());
-  const OperatorNode* identity =
-      CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                          DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          input_tensor_desc, identity_tensor_desc, input, graph_builder);
-
-  return identity ? graph_builder.CreateNodeOutput(
-                        identity, std::move(identity_tensor_desc))
-                  : nullptr;
-}
-
-// This helper checks if the input node output is a constant operand, if so,
-// append an identity node to the input node output by calling
-// `AppendIdentityNode`, otherwise do nothing and return `input` directly.
-const NodeOutput* AppendIdentityToConstantOperand(GraphBuilder& graph_builder,
-                                                  const NodeOutput* input) {
-  CHECK(input);
-  // Do nothing if the input is without the DML_TENSOR_FLAG_OWNED_BY_DML flag.
-  if (!(input->GetTensorDesc().GetFlags() & DML_TENSOR_FLAG_OWNED_BY_DML)) {
-    return input;
-  }
-  // Append an identity node if the input is with the
-  // DML_TENSOR_FLAG_OWNED_BY_DML flag. For certain operators like lstm and
-  // gru, their input tensors don't support this flag and an identity is needed
-  // to remove it.
-  return AppendIdentityNode(graph_builder, input);
 }
 
 // `LstmType` must be `mojom::Lstm` or `mojom::LstmCell`.
@@ -3643,6 +3919,13 @@ void GraphImpl::CreateAndBuild(
         create_operator_result =
             CreateOperatorNodeForGemm(id_to_operand_map, operation->get_gemm(),
                                       graph_builder, id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kGru: {
+        create_operator_result = CreateOperatorNodeForGru(
+            id_to_operand_map, operation->get_gru(), graph_info, graph_builder,
+            id_to_node_output_map, constant_id_to_input_index_map,
+            next_operand_id);
         break;
       }
       case mojom::Operation::Tag::kHardSigmoid: {
