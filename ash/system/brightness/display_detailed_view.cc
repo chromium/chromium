@@ -73,10 +73,19 @@ DisplayDetailedView::DisplayDetailedView(
   tile_container->AddChildView(night_light_controller->CreateTile());
   tile_container->AddChildView(dark_mode_controller->CreateTile());
 
+  bool has_visible_tiles = false;
+
   // Set `PreferredSize` to (1,1) so the `FlexLayout` allocates the same width
   // for the child tiles based on their equal weights.
   for (auto tile : tile_container->children()) {
     tile->SetPreferredSize(gfx::Size(1, 1));
+    if (tile->GetVisible()) {
+      has_visible_tiles = true;
+    }
+  }
+
+  if (!has_visible_tiles) {
+    tile_container->SetVisible(false);
   }
 
   // Transfer ownership so the controllers won't die while the page is open.
