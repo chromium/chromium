@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/user_education/browser_tutorial_service.h"
+#include "chrome/browser/user_education/recent_session_observer.h"
 #include "chrome/browser/user_education/recent_session_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -87,6 +88,8 @@ class UserEducationService : public KeyedService {
                                           const base::Feature& feature);
 
  private:
+  friend class UserEducationServiceFactory;
+
   user_education::TutorialRegistry tutorial_registry_;
   user_education::HelpBubbleFactoryRegistry help_bubble_factory_registry_;
   user_education::FeaturePromoRegistry feature_promo_registry_;
@@ -100,6 +103,7 @@ class UserEducationService : public KeyedService {
   std::unique_ptr<user_education::NewBadgeRegistry> new_badge_registry_;
   std::unique_ptr<user_education::NewBadgeController> new_badge_controller_;
   std::unique_ptr<RecentSessionTracker> recent_session_tracker_;
+  std::unique_ptr<RecentSessionObserver> recent_session_observer_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

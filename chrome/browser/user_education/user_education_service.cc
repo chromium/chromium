@@ -50,12 +50,15 @@ UserEducationService::UserEducationService(
             std::make_unique<user_education::NewBadgePolicy>());
   }
 
-  // Only create the recent session tracker if recent session tracking is
-  // allowed (default).
   if (base::FeatureList::IsEnabled(kAllowRecentSessionTracking)) {
+    // Only create the recent session tracker if recent session tracking is
+    // allowed (default).
     recent_session_tracker_ = std::make_unique<RecentSessionTracker>(
         feature_promo_session_manager_, *feature_promo_storage_service_,
         *feature_promo_storage_service_);
+  } else {
+    // If the feature is disabled, ensure that we clear any old data.
+    feature_promo_storage_service_->ResetRecentSessionData();
   }
 }
 

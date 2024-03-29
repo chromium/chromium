@@ -39,10 +39,12 @@ class StubIdleObserver : public user_education::FeaturePromoIdleObserver {
 
 }  // namespace
 
-// This is found in chrome/browser/ui/user_education, so extern the factory
-// method to create the default idle observer type.
+// These are found in chrome/browser/ui/user_education, so extern the factory
+// methods to create the necessary objects.
 extern std::unique_ptr<user_education::FeaturePromoIdleObserver>
 CreatePollingIdleObserver();
+extern std::unique_ptr<RecentSessionObserver> CreateRecentSessionObserver(
+    Profile& profile);
 
 UserEducationServiceFactory* UserEducationServiceFactory::GetInstance() {
   static base::NoDestructor<UserEducationServiceFactory> instance;
@@ -74,14 +76,26 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
     content::BrowserContext* context,
     bool disable_idle_polling) {
   Profile* const profile = Profile::FromBrowserContext(context);
+
+  // Create the user education service.
   auto result = std::make_unique<UserEducationService>(
       std::make_unique<BrowserFeaturePromoStorageService>(profile),
       ProfileAllowsUserEducation(profile));
+
+  // Set up the session manager.
   result->feature_promo_session_manager().Init(
       &result->feature_promo_storage_service(),
       disable_idle_polling ? std::make_unique<StubIdleObserver>()
                            : CreatePollingIdleObserver(),
       std::make_unique<user_education::FeaturePromoIdlePolicy>());
+
+  // Possibly install a session observer. This isn't public, since it's
+  // self-contained and mostly for tracking state.
+  if (result->recent_session_tracker()) {
+    result->recent_session_observer_ = CreateRecentSessionObserver(*profile);
+    result->recent_session_observer_->Init(*result->recent_session_tracker());
+  }
+
   return result;
 }
 

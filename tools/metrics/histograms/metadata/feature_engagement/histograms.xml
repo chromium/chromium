@@ -812,6 +812,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UserEducation.Session.LongTermCount" units="count"
+    expires_after="2024-09-21">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of recent
+    sessions in the &quot;long-term&quot; window, which defaults to 21 days.
+    This helps us understand how frequently new sessions are triggered.
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.Session.ShortTermCount" units="count"
+    expires_after="2024-09-21">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    When a new User Education session starts, records the number of recent
+    sessions in the &quot;short-term&quot; window, which defaults to 7 days.
+    This helps us understand how frequently new sessions are triggered.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
