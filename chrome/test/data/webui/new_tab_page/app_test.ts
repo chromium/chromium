@@ -1144,8 +1144,7 @@ suite('NewTabPageAppTest', () => {
             // Customize chrome button is expanded and its icon has a
             // non-white color.
             assertNotEquals(
-                32,
-                $$<HTMLElement>(app, '#customizeButtonContainer')!.offsetWidth);
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
             assertNotStyle(
                 $$(app, '#customizeButton .customize-text')!, 'display',
                 'none');
@@ -1160,8 +1159,7 @@ suite('NewTabPageAppTest', () => {
 
             // Customize chrome button is collapsed and its icon is white.
             assertEquals(
-                32,
-                $$<HTMLElement>(app, '#customizeButtonContainer')!.offsetWidth);
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
             assertStyle(
                 $$(app, '#customizeButton .customize-icon')!,
                 'background-color', 'rgb(255, 255, 255)');
@@ -1186,8 +1184,7 @@ suite('NewTabPageAppTest', () => {
 
       test('button has animation if the flag is enabled', () => {
         assertNotStyle(
-            $$(app, '#wallpaperSearchButtonContainer')!, 'animation-name',
-            'none');
+            $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
         assertNotStyle(
             $$(app, '#wallpaperSearchButton .customize-icon')!,
             'animation-name', 'none');
@@ -1299,9 +1296,7 @@ suite('NewTabPageAppTest', () => {
 
       test('clicking wallpaper search button collapses/expands it', () => {
         assertNotEquals(
-            32,
-            $$<HTMLElement>(
-                app, '#wallpaperSearchButtonContainer')!.offsetWidth);
+            32, $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
         assertNotStyle(
             $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
             'none');
@@ -1309,9 +1304,7 @@ suite('NewTabPageAppTest', () => {
         $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
 
         assertEquals(
-            32,
-            $$<HTMLElement>(
-                app, '#wallpaperSearchButtonContainer')!.offsetWidth);
+            32, $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
         assertStyle(
             $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
             'none');
@@ -1336,11 +1329,9 @@ suite('NewTabPageAppTest', () => {
                 'none');
             assertNotEquals(
                 32,
-                $$<HTMLElement>(
-                    app, '#wallpaperSearchButtonContainer')!.offsetWidth);
+                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
             assertEquals(
-                32,
-                $$<HTMLElement>(app, '#customizeButtonContainer')!.offsetWidth);
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
 
             // Create and set theme.
             const theme = createTheme(true);
@@ -1364,38 +1355,31 @@ suite('NewTabPageAppTest', () => {
                 'none');
             assertNotEquals(
                 32,
-                $$<HTMLElement>(
-                    app, '#wallpaperSearchButtonContainer')!.offsetWidth);
+                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
             assertEquals(
-                32,
-                $$<HTMLElement>(app, '#customizeButtonContainer')!.offsetWidth);
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
           });
 
       test(
           'button hides in accordance with callback router', async () => {
             // Both buttons shown.
+            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
             assertNotStyle(
-                $$(app, '#customizeButtonContainer')!, 'display', 'none');
-            assertNotStyle(
-                $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
+                $$(app, '#wallpaperSearchButton')!, 'display', 'none');
 
             callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
             await callbackRouterRemote.$.flushForTesting();
 
             // Wallpaper search button hides.
-            assertNotStyle(
-                $$(app, '#customizeButtonContainer')!, 'display', 'none');
-            assertStyle(
-                $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
+            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+            assertStyle($$(app, '#wallpaperSearchButton')!, 'display', 'none');
 
             callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
             await callbackRouterRemote.$.flushForTesting();
 
             // Wallpaper search button remains hidden.
-            assertNotStyle(
-                $$(app, '#customizeButtonContainer')!, 'display', 'none');
-            assertStyle(
-                $$(app, '#wallpaperSearchButtonContainer')!, 'display', 'none');
+            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+            assertStyle($$(app, '#wallpaperSearchButton')!, 'display', 'none');
           });
     });
 
@@ -1408,8 +1392,7 @@ suite('NewTabPageAppTest', () => {
 
       test('button has no animation if the flag is disabled', () => {
         assertStyle(
-            $$(app, '#wallpaperSearchButtonContainer')!, 'animation-name',
-            'none');
+            $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
         assertStyle(
             $$(app, '#wallpaperSearchButton .customize-icon')!,
             'animation-name', 'none');

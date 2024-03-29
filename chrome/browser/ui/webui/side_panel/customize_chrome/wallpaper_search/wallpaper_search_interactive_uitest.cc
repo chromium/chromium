@@ -74,14 +74,14 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
                        NTPWallpaperSearchButtonVisibilityDependsOnSettings) {
-  const DeepQuery kWallpaperSearchButtonContainer = {
-      "ntp-app", "#wallpaperSearchButtonContainer"};
+  const DeepQuery kWallpaperSearchButton = {"ntp-app",
+                                            "#wallpaperSearchButton"};
 
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHiddenEvent);
   StateChange wallpaper_search_button_hidden;
   wallpaper_search_button_hidden.type =
       StateChange::Type::kExistsAndConditionTrue;
-  wallpaper_search_button_hidden.where = kWallpaperSearchButtonContainer;
+  wallpaper_search_button_hidden.where = kWallpaperSearchButton;
   wallpaper_search_button_hidden.event = kElementHiddenEvent;
   wallpaper_search_button_hidden.test_function =
       "(el) => el.offsetParent === null";
@@ -101,8 +101,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
             WaitForWebContentsReady(kNewTabPageElementId,
                                     GURL(chrome::kChromeUINewTabPageURL))),
       // 2. Ensure the wallpaper search button is visible.
-      WaitForElementVisible(kNewTabPageElementId,
-                            kWallpaperSearchButtonContainer),
+      WaitForElementVisible(kNewTabPageElementId, kWallpaperSearchButton),
       // 3. Turn wallpaper search setting off.
       Do([=]() {
         browser()->profile()->GetPrefs()->SetInteger(
