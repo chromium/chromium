@@ -7292,7 +7292,7 @@
                 {
                     "name": "BrowserProcessOnly",
                     "params": {
-                        "quarantine_capacity_in_bytes": "1000000",
+                        "quarantine_capacity_in_bytes": "1048576",
                         "sampling_frequency": "100",
                         "target_processes": "browser_only"
                     },
