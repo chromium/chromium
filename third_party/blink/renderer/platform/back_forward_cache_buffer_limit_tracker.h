@@ -10,7 +10,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 

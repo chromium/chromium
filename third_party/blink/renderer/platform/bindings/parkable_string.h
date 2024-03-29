@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 // ParkableString represents a string that may be parked in memory, that it its
 // underlying memory address may change. Its content can be retrieved with the

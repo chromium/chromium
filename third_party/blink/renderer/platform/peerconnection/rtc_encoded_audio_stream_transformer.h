@@ -17,7 +17,6 @@
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace base {
