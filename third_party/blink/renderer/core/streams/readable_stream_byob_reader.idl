@@ -8,7 +8,7 @@
 ] interface ReadableStreamBYOBReader {
     [CallWith=ScriptState, RaisesException] constructor(ReadableStream stream);
 
-    [CallWith=ScriptState, RaisesException] Promise<ReadableStreamBYOBReadResult> read(ArrayBufferView view);
+    [CallWith=ScriptState, RaisesException] Promise<ReadableStreamReadResult> read(ArrayBufferView view);
     [CallWith=ScriptState, RaisesException] void releaseLock();
 };
 
