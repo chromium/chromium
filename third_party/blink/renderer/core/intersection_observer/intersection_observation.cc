@@ -156,18 +156,22 @@ void IntersectionObservation::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
 }
 
-bool IntersectionObservation::CanUseCachedRectsForTesting() const {
+bool IntersectionObservation::CanUseCachedRectsForTesting(
+    bool scroll_and_visibility_only) const {
   // This is to avoid the side effects of IntersectionGeometry.
   IntersectionGeometry::CachedRects cached_rects_copy = cached_rects_;
 
   std::optional<IntersectionGeometry::RootGeometry> root_geometry;
-  IntersectionGeometry geometry(observer_->root(), *target_,
-                                /* root_margin */ {},
-                                /* thresholds */ {0},
-                                /* target_margin */ {},
-                                /* scroll_margin */ {},
-                                /* flags */ 0, root_geometry,
-                                &cached_rects_copy);
+  IntersectionGeometry geometry(
+      observer_->root(), *target_,
+      /* root_margin */ {},
+      /* thresholds */ {0},
+      /* target_margin */ {},
+      /* scroll_margin */ {},
+      scroll_and_visibility_only
+          ? IntersectionGeometry::kScrollAndVisibilityOnly
+          : 0,
+      root_geometry, &cached_rects_copy);
 
   return geometry.CanUseCachedRectsForTesting();
 }
@@ -233,6 +237,9 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     // TODO(wangxianzhu): Let internal clients decide whether to respect
     // filters.
     geometry_flags |= IntersectionGeometry::kRespectFilters;
+  }
+  if (compute_flags & kScrollAndVisibilityOnly) {
+    geometry_flags |= IntersectionGeometry::kScrollAndVisibilityOnly;
   }
   return geometry_flags;
 }

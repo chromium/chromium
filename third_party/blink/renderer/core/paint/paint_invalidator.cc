@@ -258,11 +258,6 @@ bool PaintInvalidator::InvalidatePaint(
         tree_builder_context->fragment_context;
     UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
     UpdateLayoutShiftTracking(object, fragment_tree_builder_context, context);
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-        object.ShouldCheckLayoutForPaintInvalidation()) {
-      object.GetFrameView()->SetIntersectionObservationState(
-          LocalFrameView::kDesired);
-    }
   } else {
     context.old_paint_offset = context.fragment_data->PaintOffset();
   }
@@ -276,6 +271,14 @@ bool PaintInvalidator::InvalidatePaint(
        // Delay invalidation if the client has never been painted.
        reason == PaintInvalidationReason::kJustCreated))
     pending_delayed_paint_invalidations_.push_back(&object);
+
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      object.ShouldCheckLayoutForPaintInvalidation() &&
+      (IsLayoutPaintInvalidationReason(reason) ||
+       reason == PaintInvalidationReason::kJustCreated)) {
+    object.GetFrameView()->SetIntersectionObservationState(
+        LocalFrameView::kDesired);
+  }
 
   return reason != PaintInvalidationReason::kNone;
 }

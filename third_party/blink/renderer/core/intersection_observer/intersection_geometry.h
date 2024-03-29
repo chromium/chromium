@@ -52,12 +52,13 @@ class CORE_EXPORT IntersectionGeometry {
     // instead of BorderBoundingBox().
     kUseOverflowClipEdge = 1 << 5,
     kRespectFilters = 1 << 6,
+    kScrollAndVisibilityOnly = 1 << 7,
 
     // These flags will be computed
-    kShouldUseCachedRects = 1 << 7,
-    kRootIsImplicit = 1 << 8,
-    kDidComputeGeometry = 1 << 9,
-    kIsVisible = 1 << 10
+    kShouldUseCachedRects = 1 << 8,
+    kRootIsImplicit = 1 << 9,
+    kDidComputeGeometry = 1 << 10,
+    kIsVisible = 1 << 11,
   };
 
   struct RootGeometry {

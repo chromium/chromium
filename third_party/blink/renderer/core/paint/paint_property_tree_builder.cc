@@ -345,9 +345,11 @@ class FragmentPaintPropertyTreeBuilder {
   }
 
   void OnUpdateTransform(PaintPropertyChangeType change) {
-    properties_changed_.transform_changed =
-        std::max(properties_changed_.transform_changed, change);
-    properties_changed_.transform_change_is_scroll_translation_only = false;
+    if (change != PaintPropertyChangeType::kUnchanged) {
+      properties_changed_.transform_changed =
+          std::max(properties_changed_.transform_changed, change);
+      properties_changed_.transform_change_is_scroll_translation_only = false;
+    }
   }
   void OnUpdateScrollTranslation(PaintPropertyChangeType change) {
     properties_changed_.transform_changed =

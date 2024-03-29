@@ -221,6 +221,12 @@ class IntersectionObserverTest : public SimTest,
     EXPECT_EQ(LocalFrameView::kNotNeeded,
               frame_view->GetIntersectionObservationStateForTesting());
   }
+
+  bool CanUseCachedRects(const IntersectionObservation& observation) {
+    return observation.CanUseCachedRectsForTesting(
+        GetDocument().View()->GetIntersectionObservationStateForTesting() <=
+        LocalFrameView::kScrollAndVisibilityOnly);
+  }
 };
 
 class IntersectionObserverV2Test : public IntersectionObserverTest {
@@ -979,10 +985,6 @@ TEST_P(IntersectionObserverTest, RootMarginDevicePixelRatio) {
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return;
-  }
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1012,6 +1014,8 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   Element* target1 = GetDocument().getElementById(AtomicString("target1"));
   Element* target2 = GetDocument().getElementById(AtomicString("target2"));
   Element* target3 = GetDocument().getElementById(AtomicString("target3"));
+  // Ensure target3's ScrollTranslation node.
+  target3->parentElement()->scrollTo(0, 10);
 
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
@@ -1034,23 +1038,28 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
 
   IntersectionObservation* observation1 =
       target1->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation1));
   IntersectionObservation* observation2 =
       target2->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
   IntersectionObservation* observation3 =
       target3->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Generate initial notifications and populate cache
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_TRUE(CanUseCachedRects(*observation1));
   // observation2 can't use cached rects because the observer's root is not
   // the target's enclosing scroller.
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_FALSE(CanUseCachedRects(*observation3));
+  } else {
+    // This is incorrect.
+    EXPECT_TRUE(CanUseCachedRects(*observation3));
+  }
 
   // Scrolling the root should not invalidate.
   root->scrollTo(0, 100);
@@ -1058,11 +1067,15 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   target3->parentElement()->scrollTo(0, 100);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_TRUE(CanUseCachedRects(*observation1));
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_FALSE(CanUseCachedRects(*observation3));
+  } else {
+    // This is incorrect.
+    EXPECT_TRUE(CanUseCachedRects(*observation3));
+  }
 
-  // Generate initial notifications and populate cache
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
@@ -1072,10 +1085,14 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   target3->parentElement()->scrollTo(0, 200);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  // This is incorrect.
-  EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_TRUE(CanUseCachedRects(*observation1));
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_FALSE(CanUseCachedRects(*observation3));
+  } else {
+    // This is incorrect.
+    EXPECT_TRUE(CanUseCachedRects(*observation3));
+  }
 
   // Changing layout between root and target should invalidate.
   target1->parentElement()->SetInlineStyleProperty(CSSPropertyID::kMarginLeft,
@@ -1083,9 +1100,9 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   // Invalidation happens during compositing inputs update, so force it here.
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation1));
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Moving target2/target3 out from the subscroller should allow it to cache
   // rects.
@@ -1096,16 +1113,12 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_TRUE(CanUseCachedRects(*observation1));
+  EXPECT_TRUE(CanUseCachedRects(*observation2));
+  EXPECT_TRUE(CanUseCachedRects(*observation3));
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return;
-  }
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1157,23 +1170,27 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
 
   IntersectionObservation* observation1 =
       target1->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation1));
   IntersectionObservation* observation2 =
       target2->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
   IntersectionObservation* observation3 =
       target3->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Generate initial notifications and populate cache
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation1));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation1));
+  }
   // observation2 can't use cached rects because the observer's root is not
   // the target's enclosing scroller.
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Scrolling the root the first time creates a scroll translation node which
   // causes the invalidation.
@@ -1182,9 +1199,9 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   target3->parentElement()->scrollTo(0, 100);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation1));
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Generate initial notifications and populate cache
   Compositor().BeginFrame();
@@ -1196,9 +1213,9 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   target3->parentElement()->scrollTo(0, 200);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Changing layout between root and target should invalidate.
   target1->parentElement()->SetInlineStyleProperty(CSSPropertyID::kMarginLeft,
@@ -1206,9 +1223,9 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   // Invalidation happens during compositing inputs update, so force it here.
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
 
   // Moving target2/target3 out from the subscroller should allow it to cache
   // rects.
@@ -1219,16 +1236,18 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation1));
+    EXPECT_TRUE(CanUseCachedRects(*observation2));
+    EXPECT_TRUE(CanUseCachedRects(*observation3));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation1));
+    EXPECT_FALSE(CanUseCachedRects(*observation2));
+    EXPECT_FALSE(CanUseCachedRects(*observation3));
+  }
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return;
-  }
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1285,33 +1304,35 @@ TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
 
   IntersectionObservation* observation1 =
       target1->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation1));
   IntersectionObservation* observation2 =
       target2->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
   IntersectionObservation* observation3 =
       target3->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation3));
   IntersectionObservation* observation4 =
       target4->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation4->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation4));
 
   // Generate initial notifications and populate cache.
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation1));
+    EXPECT_FALSE(CanUseCachedRects(*observation2));
+    EXPECT_TRUE(CanUseCachedRects(*observation3));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation1));
+    EXPECT_FALSE(CanUseCachedRects(*observation2));
+    EXPECT_FALSE(CanUseCachedRects(*observation3));
+  }
   // scroller3 is an intermediate scroller between root and target4.
-  EXPECT_FALSE(observation4->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation4));
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return;
-  }
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1343,31 +1364,34 @@ TEST_P(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
       target->IntersectionObserverData()->GetObservationFor(*observer);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation));
 
   // Generate initial notifications and populate cache.
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation));
+  }
 
   // Change of opacity doesn't invalidate cached rects.
   container->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0.6");
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
-
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation));
+  }
   container->SetInlineStyleProperty(CSSPropertyID::kTransform,
                                     "translateY(20px)");
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation));
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsDisplayNone) {
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return;
-  }
-
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1396,12 +1420,16 @@ TEST_P(IntersectionObserverTest, CachedRectsDisplayNone) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation));
+  }
 
   target->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation));
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithFixedPosition) {
@@ -1435,23 +1463,33 @@ TEST_P(IntersectionObserverTest, CachedRectsWithFixedPosition) {
 
   IntersectionObservation* observation1 =
       fixed->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation1));
   IntersectionObservation* observation2 =
       child->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(CanUseCachedRects(*observation2));
 
   // Generate initial notifications and populate cache
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation1));
+    EXPECT_TRUE(CanUseCachedRects(*observation2));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation1));
+    EXPECT_FALSE(CanUseCachedRects(*observation2));
+  }
 
   GetDocument().domWindow()->scrollTo(0, 100);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(CanUseCachedRects(*observation1));
+    EXPECT_TRUE(CanUseCachedRects(*observation2));
+  } else {
+    EXPECT_FALSE(CanUseCachedRects(*observation1));
+    EXPECT_FALSE(CanUseCachedRects(*observation2));
+  }
 }
 
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateNotScrollable) {

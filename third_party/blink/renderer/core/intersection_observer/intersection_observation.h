@@ -78,7 +78,7 @@ class CORE_EXPORT IntersectionObservation final
 
   void Trace(Visitor*) const;
 
-  bool CanUseCachedRectsForTesting() const;
+  bool CanUseCachedRectsForTesting(bool scroll_and_visibility_only) const;
 
  private:
   bool ShouldCompute(unsigned flags) const;
