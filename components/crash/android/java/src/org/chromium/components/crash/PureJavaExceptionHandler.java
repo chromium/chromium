@@ -4,12 +4,14 @@
 
 package org.chromium.components.crash;
 
+import static org.chromium.base.JavaExceptionReporter.shouldReportThrowable;
+
 import org.jni_zero.CalledByNative;
 
 /**
  * This UncaughtExceptionHandler will upload the stacktrace when there is an uncaught exception.
  *
- * This happens before native is loaded, and will replace by JavaExceptionReporter after native
+ * <p>This happens before native is loaded, and will replace by JavaExceptionReporter after native
  * finishes loading.
  */
 public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler {
@@ -36,7 +38,7 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if (!mHandlingException && sIsEnabled) {
+        if (!mHandlingException && sIsEnabled && shouldReportThrowable(e)) {
             mHandlingException = true;
             reportJavaException(e);
         }
