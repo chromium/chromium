@@ -38,6 +38,11 @@ class WebStateID;
 // Dismisses presented popovers, if any.
 - (void)dismissPopovers;
 
+// Display the tab group creation menu for the given identifiers.
+- (void)showTabGroupCreationWithWithIdentifiers:
+            (const std::set<web::WebStateID>&)identifiers
+                                      incognito:(BOOL)incognito;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_MEDIATOR_DELEGATE_H_

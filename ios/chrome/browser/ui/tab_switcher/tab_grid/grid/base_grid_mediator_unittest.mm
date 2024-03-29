@@ -4,10 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "components/commerce/core/commerce_feature_list.h"
-#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -23,13 +21,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -545,196 +541,6 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
-}
-
-// Tests selecting a NTP with no existing groups. The option to add to a group
-// should be presented, the others would be disabled.
-TEST_P(BaseGridMediatorTest, NTPSelectedWithoutGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
-
-  ASSERT_EQ(3UL, consumer_.items.size());
-  browser_->GetWebStateList()->InsertWebState(
-      CreateFakeWebStateWithURL(GURL("about:newtab")));
-  ASSERT_EQ(4UL, consumer_.items.size());
-
-  [mediator_ selectTabsButtonTapped:nil];
-
-  // Simulate a user who tapped on the NTP.
-  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(3)];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
-
-  TabGridToolbarsConfiguration* configuration =
-      fake_toolbars_mediator_.configuration;
-  EXPECT_TRUE(configuration.selectAllButton);
-  EXPECT_TRUE(configuration.doneButton);
-  EXPECT_EQ(1u, configuration.selectedItemsCount);
-  EXPECT_TRUE(configuration.closeSelectedTabsButton);
-  EXPECT_TRUE(configuration.addToButton);
-
-  EXPECT_FALSE(configuration.shareButton);
-  EXPECT_FALSE(configuration.closeAllButton);
-  EXPECT_FALSE(configuration.newTabButton);
-  EXPECT_FALSE(configuration.searchButton);
-  EXPECT_FALSE(configuration.selectTabsButton);
-  EXPECT_FALSE(configuration.undoButton);
-  EXPECT_FALSE(configuration.deselectAllButton);
-  EXPECT_FALSE(configuration.cancelSearchButton);
-
-  ASSERT_EQ(3u, configuration.addToButtonMenu.children.count);
-  // Add to bookmark/reading list are disabled as it is a NTP.
-  UIMenuElement* addToBookmark = configuration.addToButtonMenu.children[1];
-  EXPECT_EQ(UIMenuElementAttributesDisabled,
-            base::apple::ObjCCast<UIAction>(addToBookmark).attributes);
-  UIMenuElement* addToReadingList = configuration.addToButtonMenu.children[1];
-  EXPECT_EQ(UIMenuElementAttributesDisabled,
-            base::apple::ObjCCast<UIAction>(addToReadingList).attributes);
-
-  // Even if there is a single option, it is displayed as an inlined menu.
-  UIMenuElement* addToGroupElement = configuration.addToButtonMenu.children[0];
-  ASSERT_TRUE([addToGroupElement isKindOfClass:UIMenu.class]);
-
-  UIMenu* addToGroupMenu = base::apple::ObjCCast<UIMenu>(addToGroupElement);
-  ASSERT_EQ(1u, addToGroupMenu.children.count);
-
-  UIMenuElement* addToGroup = addToGroupMenu.children[0];
-  EXPECT_TRUE([addToGroup isKindOfClass:UIAction.class]);
-
-  EXPECT_NSEQ(l10n_util::GetPluralNSStringF(
-                  IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1),
-              addToGroup.title);
-}
-
-// Tests selecting a tab with one existing group.
-TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
-
-  EXPECT_EQ(3UL, consumer_.items.size());
-
-  [mediator_ selectTabsButtonTapped:nil];
-  browser_->GetWebStateList()->CreateGroup(
-      {1}, tab_groups::TabGroupVisualData(u"My group",
-                                          tab_groups::TabGroupColorId::kBlue));
-
-  // Simulate a user who tapped on the NTP.
-  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(2)];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
-
-  TabGridToolbarsConfiguration* configuration =
-      fake_toolbars_mediator_.configuration;
-  EXPECT_TRUE(configuration.selectAllButton);
-  EXPECT_TRUE(configuration.doneButton);
-  EXPECT_EQ(1u, configuration.selectedItemsCount);
-  EXPECT_TRUE(configuration.closeSelectedTabsButton);
-  EXPECT_TRUE(configuration.addToButton);
-  EXPECT_TRUE(configuration.shareButton);
-
-  EXPECT_FALSE(configuration.closeAllButton);
-  EXPECT_FALSE(configuration.newTabButton);
-  EXPECT_FALSE(configuration.searchButton);
-  EXPECT_FALSE(configuration.selectTabsButton);
-  EXPECT_FALSE(configuration.undoButton);
-  EXPECT_FALSE(configuration.deselectAllButton);
-  EXPECT_FALSE(configuration.cancelSearchButton);
-
-  ASSERT_EQ(3u, configuration.addToButtonMenu.children.count);
-  // Even if there is a single option, it is displayed as an inlined menu.
-  UIMenuElement* addToGroupElement = configuration.addToButtonMenu.children[0];
-  ASSERT_TRUE([addToGroupElement isKindOfClass:UIMenu.class]);
-
-  UIMenu* addToGroupMenu = base::apple::ObjCCast<UIMenu>(addToGroupElement);
-  ASSERT_EQ(1u, addToGroupMenu.children.count);
-
-  UIMenuElement* addToGroupSubmenuElement = addToGroupMenu.children[0];
-  ASSERT_TRUE([addToGroupSubmenuElement isKindOfClass:UIMenu.class]);
-  UIMenu* addToGroupSubmenu =
-      base::apple::ObjCCast<UIMenu>(addToGroupSubmenuElement);
-  EXPECT_NSEQ(l10n_util::GetPluralNSStringF(
-                  IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP, 1),
-              addToGroupSubmenu.title);
-  ASSERT_EQ(2u, addToGroupSubmenu.children.count);
-
-  UIMenuElement* addToGroup = addToGroupSubmenu.children[0];
-  EXPECT_TRUE([addToGroup isKindOfClass:UIAction.class]);
-  EXPECT_NSEQ(l10n_util::GetNSString(
-                  IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU),
-              addToGroup.title);
-
-  UIMenuElement* groupsElement = addToGroupSubmenu.children[1];
-  ASSERT_TRUE([groupsElement isKindOfClass:UIMenu.class]);
-  UIMenu* groups = base::apple::ObjCCast<UIMenu>(groupsElement);
-  EXPECT_EQ(1u, groups.children.count);
-  EXPECT_NSEQ(@"My group", groups.children[0].title);
-}
-
-// Tests selecting a tab and a group with one existing group.
-TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
-
-  EXPECT_EQ(3UL, consumer_.items.size());
-
-  [mediator_ selectTabsButtonTapped:nil];
-  browser_->GetWebStateList()->CreateGroup(
-      {1}, tab_groups::TabGroupVisualData(u"My group",
-                                          tab_groups::TabGroupColorId::kBlue));
-
-  // Simulate a user who tapped on the NTP and on the group.
-  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(2)];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
-  item_to_tap = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(1)];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
-
-  TabGridToolbarsConfiguration* configuration =
-      fake_toolbars_mediator_.configuration;
-  EXPECT_TRUE(configuration.selectAllButton);
-  EXPECT_TRUE(configuration.doneButton);
-  EXPECT_EQ(2u, configuration.selectedItemsCount);
-  EXPECT_TRUE(configuration.closeSelectedTabsButton);
-  EXPECT_TRUE(configuration.addToButton);
-  EXPECT_TRUE(configuration.shareButton);
-
-  EXPECT_FALSE(configuration.closeAllButton);
-  EXPECT_FALSE(configuration.newTabButton);
-  EXPECT_FALSE(configuration.searchButton);
-  EXPECT_FALSE(configuration.selectTabsButton);
-  EXPECT_FALSE(configuration.undoButton);
-  EXPECT_FALSE(configuration.deselectAllButton);
-  EXPECT_FALSE(configuration.cancelSearchButton);
-
-  ASSERT_EQ(3u, configuration.addToButtonMenu.children.count);
-  // Even if there is a single option, it is displayed as an inlined menu.
-  UIMenuElement* addToGroupElement = configuration.addToButtonMenu.children[0];
-  ASSERT_TRUE([addToGroupElement isKindOfClass:UIMenu.class]);
-
-  UIMenu* addToGroupMenu = base::apple::ObjCCast<UIMenu>(addToGroupElement);
-  ASSERT_EQ(1u, addToGroupMenu.children.count);
-
-  UIMenuElement* addToGroupSubmenuElement = addToGroupMenu.children[0];
-  ASSERT_TRUE([addToGroupSubmenuElement isKindOfClass:UIMenu.class]);
-  UIMenu* addToGroupSubmenu =
-      base::apple::ObjCCast<UIMenu>(addToGroupSubmenuElement);
-  EXPECT_NSEQ(l10n_util::GetPluralNSStringF(
-                  IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP, 2),
-              addToGroupSubmenu.title);
-  ASSERT_EQ(2u, addToGroupSubmenu.children.count);
-
-  UIMenuElement* addToGroup = addToGroupSubmenu.children[0];
-  EXPECT_TRUE([addToGroup isKindOfClass:UIAction.class]);
-  EXPECT_NSEQ(l10n_util::GetNSString(
-                  IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU),
-              addToGroup.title);
-
-  UIMenuElement* groupsElement = addToGroupSubmenu.children[1];
-  ASSERT_TRUE([groupsElement isKindOfClass:UIMenu.class]);
-  UIMenu* groups = base::apple::ObjCCast<UIMenu>(groupsElement);
-  EXPECT_EQ(1u, groups.children.count);
-  EXPECT_NSEQ(@"My group", groups.children[0].title);
 }
 
 INSTANTIATE_TEST_SUITE_P(

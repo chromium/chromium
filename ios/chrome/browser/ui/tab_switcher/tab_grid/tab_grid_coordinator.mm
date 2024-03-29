@@ -1126,6 +1126,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.sharingCoordinator = nil;
 }
 
+- (void)showTabGroupCreationWithWithIdentifiers:
+            (const std::set<web::WebStateID>&)identifiers
+                                      incognito:(BOOL)incognito {
+  CHECK(IsTabGroupInGridEnabled())
+      << "You should not be able to create a new tab group outside the Tab "
+         "Groups experiment.";
+  if (incognito) {
+    [_incognitoGridCoordinator showTabGroupCreationForTabs:identifiers];
+  } else {
+    [_regularGridCoordinator showTabGroupCreationForTabs:identifiers];
+  }
+}
+
 #pragma mark - GridCoordinatorAudience
 
 - (void)incognitoGridDidChange {

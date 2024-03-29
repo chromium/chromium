@@ -24,14 +24,14 @@ class WebStateID;
 
 // The items in the grid (groups and tabs).
 @property(nonatomic, strong, readonly)
-    NSSet<GridItemIdentifier*>* itemsIdentifiers;
+    NSMutableSet<GridItemIdentifier*>* itemsIdentifiers;
 
 // Number of tabs in the grid (regular tab cell and number of tabs in a group
 // cell).
 @property(nonatomic, readonly) NSUInteger tabsCount;
 
 // The count of shareable items.
-@property(nonatomic, readonly) NSUInteger sharableTabsCount;
+@property(nonatomic, readonly) NSUInteger sharableItemsCount;
 
 // The designated initializer with a non nil `webStateList`.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -51,11 +51,8 @@ class WebStateID;
 // Checks whether a `GridItemIdentifier` is in `itemsIdentifiers`
 - (BOOL)containItem:(GridItemIdentifier*)item;
 
-// Returns a const set of shareable tabs.
-- (const std::set<web::WebStateID>&)sharableTabs;
-
-// Computes and return the list of all selected tabs.
-- (std::set<web::WebStateID>)allTabs;
+// Returns a const set of shareable items.
+- (const std::set<web::WebStateID>&)sharableItems;
 
 // Returns the URLs of all the selected tabs (regular tabs and tabs in groups)
 // in the grid.

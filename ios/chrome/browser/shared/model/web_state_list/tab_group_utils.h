@@ -18,7 +18,7 @@ std::set<const TabGroup*> GetAllGroupsForBrowserState(
     ChromeBrowserState* browser_state);
 
 // Move the web state associated with `web_state_identifier` to
-// `destination_group`, potentially moving the web state to a different window.
+// `destination_group`, potentially moving the web state to a different windnow.
 void MoveTabToGroup(web::WebStateID web_state_identifier,
                     const TabGroup* destination_group,
                     ChromeBrowserState* browser_state);
