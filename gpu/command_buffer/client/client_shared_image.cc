@@ -26,8 +26,15 @@ static bool allow_external_sampling_without_native_buffers_for_testing = false;
 // GMB/GMBHandle). Conceptually:
 // * On Mac the native buffer target is required if either (1) the client
 //   gave a native buffer or (2) the usages require a native buffer.
-// * On all other platforms the native buffer target is required iff external
-//   sampling is being used, which is dictated by the format of the SharedImage.
+// * On all other platforms except iOS the native buffer target is required iff
+//   external sampling is being used, which is dictated by the format of the
+//   SharedImage. Notes:
+//   * External sampling is not used on iOS.
+//   * Fuchsia does not support import of external images to GL for usage with
+//     external sampling.  The ClientSharedImage's texture target must be 0 in
+//     the case where external sampling would be used to signal this lack of
+//     support to the //media code, which detects the lack of support *based on*
+//     on the texture target being 0.
 uint32_t ComputeTextureTargetForSharedImage(
     SharedImageMetadata metadata,
     gfx::GpuMemoryBufferType client_gmb_type) {
@@ -35,7 +42,12 @@ uint32_t ComputeTextureTargetForSharedImage(
       client_gmb_type != gfx::EMPTY_BUFFER &&
       client_gmb_type != gfx::SHARED_MEMORY_BUFFER;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_IOS)
+  // The target to use on IOS is always GL_TEXTURE_2D, regardless of whether
+  // native buffers are being used or not.
+  return GL_TEXTURE_2D;
+#elif BUILDFLAG(IS_MAC)
+  // Check for IOSurfaces being used.
   // NOTE: WebGPU usage on Mac results in SharedImages being backed by
   // IOSurfaces.
   uint32_t usages_requiring_native_buffer = SHARED_IMAGE_USAGE_SCANOUT |
@@ -48,16 +60,25 @@ uint32_t ComputeTextureTargetForSharedImage(
   return uses_native_buffer ? GetPlatformSpecificTextureTarget()
                             : GL_TEXTURE_2D;
 #else
+  // Check for external sampling.
   bool uses_external_sampler = metadata.format.PrefersExternalSampler() ||
                                metadata.format.IsLegacyMultiplanar();
 
+  if (!uses_external_sampler) {
+    return GL_TEXTURE_2D;
+  }
+
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
-  CHECK(!uses_external_sampler || client_side_native_buffer_used ||
+  CHECK(client_side_native_buffer_used ||
         allow_external_sampling_without_native_buffers_for_testing);
 
-  return uses_external_sampler ? GetPlatformSpecificTextureTarget()
-                               : GL_TEXTURE_2D;
+  // See the note at the top of this function wrt Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+  return 0;
+#else
+  return GL_TEXTURE_EXTERNAL_OES;
+#endif
 #endif
 }
 
