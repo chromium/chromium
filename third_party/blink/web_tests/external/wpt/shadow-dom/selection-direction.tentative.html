@@ -61,7 +61,7 @@ test(() => {
     assert_equals(getSelection().direction, 'backward');
 }, 'direction returns "backward" when there is a forward selection that crosses shadow boundaries');
 
-async_test(t => {
+promise_test(async () => {
     container.innerHTML = 'hello, world';
     const doubleClick = new test_driver.Actions()
       .pointerMove(0, 0, container.firstChild)
@@ -70,19 +70,17 @@ async_test(t => {
       .pointerDown()
       .pointerUp()
       .send();
+    await doubleClick;
 
-    doubleClick.then(function() {
-      const sel = getSelection();
-      assert_equals(sel.anchorNode, container.firstChild);
-      assert_equals(sel.anchorOffset, 0);
-      assert_equals(sel.focusNode, container.firstChild);
-      assert_equals(sel.focusOffset, 5); // hello
-      assert_equals(sel.direction, 'none');
-      t.done();
-    });
+    const sel = getSelection();
+    assert_equals(sel.anchorNode, container.firstChild);
+    assert_equals(sel.anchorOffset, 0);
+    assert_equals(sel.focusNode, container.firstChild);
+    assert_equals(sel.focusOffset, 5); // hello
+    assert_equals(sel.direction, 'none');
 }, 'direction returns "none" when there is a double click selection(directionless)');
 
-async_test(t => {
+promise_test(async () => {
     container.innerHTML = 'hello, world';
     const tripleClick = new test_driver.Actions()
       .pointerMove(0, 0, container.firstChild)
@@ -93,16 +91,14 @@ async_test(t => {
       .pointerDown()
       .pointerUp()
       .send();
+    await tripleClick;
 
-    tripleClick.then(function() {
-      const sel = getSelection();
-      assert_equals(sel.anchorNode, container);
-      assert_equals(sel.anchorOffset, 0);
-      assert_equals(sel.focusNode, container);
-      assert_equals(sel.focusOffset, 1);
-      assert_equals(sel.direction, 'none');
-      t.done();
-    });
+    const sel = getSelection();
+    assert_equals(sel.anchorNode, container);
+    assert_equals(sel.anchorOffset, 0);
+    assert_equals(sel.focusNode, container);
+    assert_equals(sel.focusOffset, 1);
+    assert_equals(sel.direction, 'none');
 }, 'direction returns "none" when there is a triple click selection(directionless)');
 </script>
 </body>
