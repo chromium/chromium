@@ -24,6 +24,7 @@ source_set("app_install") {
   deps = [
     "//components/services/app_service",
     "//services/network/public/cpp",
+    "//ui/gfx:native_widget_types",
   ]
 }
 
@@ -163,6 +164,8 @@ source_set("browser_tests") {
     ":proto",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/chromeos/crosapi:test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -182,8 +185,6 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/web_applications",

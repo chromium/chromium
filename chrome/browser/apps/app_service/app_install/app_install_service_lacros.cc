@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_service_lacros.h"
 
+#include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -15,10 +16,15 @@ AppInstallServiceLacros::AppInstallServiceLacros() = default;
 
 AppInstallServiceLacros::~AppInstallServiceLacros() = default;
 
-void AppInstallServiceLacros::InstallApp(AppInstallSurface surface,
-                                         PackageId package_id,
-                                         base::OnceClosure callback) {
+void AppInstallServiceLacros::InstallApp(
+    AppInstallSurface surface,
+    PackageId package_id,
+    std::optional<base::UnguessableToken> anchor_window,
+    base::OnceClosure callback) {
   auto params = crosapi::mojom::InstallAppParams::New();
+  if (anchor_window.has_value()) {
+    params->window_id = anchor_window.value();
+  }
   params->surface = [&] {
     using Surface = crosapi::mojom::InstallAppParams::Surface;
     switch (surface) {

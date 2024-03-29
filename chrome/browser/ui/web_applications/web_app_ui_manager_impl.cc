@@ -470,7 +470,10 @@ content::WebContents* WebAppUiManagerImpl::CreateNewTab() {
   NavigateParams params(profile_, GURL(url::kAboutBlankURL),
                         ui::PAGE_TRANSITION_FROM_API);
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
-  return handle->GetWebContents();
+  if (handle) {
+    return handle->GetWebContents();
+  }
+  return nullptr;
 }
 
 bool WebAppUiManagerImpl::IsWebContentsActiveTabInBrowser(

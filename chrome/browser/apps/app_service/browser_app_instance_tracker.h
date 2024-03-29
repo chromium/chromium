@@ -109,6 +109,9 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   void OnAppUpdate(const AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
+  // Remove `browser` from internal tracking.
+  void RemoveBrowserForTesting(Browser* browser);
+
  private:
   class WebContentsObserver;
   friend class BrowserAppInstanceRegistry;

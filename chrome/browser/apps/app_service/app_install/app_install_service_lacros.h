@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_LACROS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_LACROS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 
 namespace apps {
@@ -20,6 +23,7 @@ class AppInstallServiceLacros : public AppInstallService {
   // AppInstallService:
   void InstallApp(AppInstallSurface surface,
                   PackageId package_id,
+                  std::optional<base::UnguessableToken> anchor_window,
                   base::OnceClosure callback) override;
 };
 

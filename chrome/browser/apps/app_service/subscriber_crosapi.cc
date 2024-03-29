@@ -10,9 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -22,6 +24,7 @@
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace apps {
 
@@ -232,8 +235,14 @@ void SubscriberCrosapi::InstallApp(crosapi::mojom::InstallAppParamsPtr params,
       return false;
     }
 
+    std::optional<gfx::NativeWindow> window;
+    if (params->window_id.has_value()) {
+      window = proxy_->BrowserAppInstanceRegistry()->GetWindowByInstanceId(
+          params->window_id.value());
+    }
+
     proxy_->AppInstallService().InstallApp(
-        surface.value(), std::move(package_id).value(),
+        surface.value(), std::move(package_id).value(), window,
         base::BindOnce(
             [](InstallAppCallback callback) {
               std::move(callback).Run(crosapi::mojom::AppInstallResult::New());

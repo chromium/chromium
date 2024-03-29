@@ -35,6 +35,7 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace apps {
 
@@ -120,9 +121,11 @@ AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
 
 AppInstallServiceAsh::~AppInstallServiceAsh() = default;
 
-void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
-                                      PackageId package_id,
-                                      base::OnceClosure callback) {
+void AppInstallServiceAsh::InstallApp(
+    AppInstallSurface surface,
+    PackageId package_id,
+    std::optional<gfx::NativeWindow> anchor_window,
+    base::OnceClosure callback) {
   if (InstallAppCallbackForTesting()) {
     std::move(InstallAppCallbackForTesting()).Run(package_id);
   }
@@ -137,10 +140,18 @@ void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
   CHECK(package_id.app_type() == AppType::kWeb ||
         package_id.app_type() == AppType::kBorealis);
 
+  // Observe for `anchor_window` being destroyed during async work.
+  std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
+  if (anchor_window) {
+    anchor_window_tracker = views::NativeWindowTracker::Create(*anchor_window);
+  }
+
   FetchAppInstallData(
-      package_id, base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
-                                 weak_ptr_factory_.GetWeakPtr(), surface,
-                                 package_id, std::move(callback)));
+      package_id,
+      base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
+                     weak_ptr_factory_.GetWeakPtr(), surface, package_id,
+                     anchor_window, std::move(anchor_window_tracker),
+                     std::move(callback)));
 }
 
 void AppInstallServiceAsh::InstallAppHeadless(
@@ -227,6 +238,8 @@ void AppInstallServiceAsh::PerformInstallHeadless(
 void AppInstallServiceAsh::ShowDialogAndInstall(
     AppInstallSurface surface,
     PackageId expected_package_id,
+    std::optional<gfx::NativeWindow> anchor_window,
+    std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
     base::OnceClosure callback,
     std::optional<AppInstallData> data) {
   std::optional<AppInstallResult> result =
@@ -265,9 +278,13 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
             webapps::AppId expected_app_id = GetAppId(data->package_id);
             base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
                 ash::app_install::AppInstallDialog::CreateDialog();
-            // TODO(crbug.com/1488697): Install the app.
+            gfx::NativeWindow parent =
+                anchor_window.has_value() &&
+                        !anchor_window_tracker->WasNativeWindowDestroyed()
+                    ? anchor_window.value()
+                    : nullptr;
             dialog->Show(
-                nullptr, std::move(args), expected_app_id,
+                parent, std::move(args), expected_app_id,
                 base::BindOnce(&AppInstallServiceAsh::InstallIfDialogAccepted,
                                weak_ptr_factory_.GetWeakPtr(), surface,
                                expected_package_id, std::move(data).value(),

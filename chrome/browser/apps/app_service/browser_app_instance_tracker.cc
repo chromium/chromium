@@ -350,6 +350,12 @@ void BrowserAppInstanceTracker::OnAppRegistryCacheWillBeDestroyed(
   app_registry_cache_observer_.Reset();
 }
 
+void BrowserAppInstanceTracker::RemoveBrowserForTesting(Browser* browser) {
+  tracked_browsers_.erase(browser);
+  app_window_instances_.erase(browser);
+  window_instances_.erase(browser);
+}
+
 void BrowserAppInstanceTracker::OnTabStripModelChangeInsert(
     Browser* browser,
     const TabStripModelChange::Insert& insert,

@@ -17,6 +17,8 @@
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_install/arc_app_installer.h"
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/views/native_window_tracker.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH));
 
@@ -38,6 +40,7 @@ class AppInstallServiceAsh : public AppInstallService {
   // AppInstallService:
   void InstallApp(AppInstallSurface surface,
                   PackageId package_id,
+                  std::optional<gfx::NativeWindow> anchor_window,
                   base::OnceClosure callback) override;
 
   void InstallAppHeadless(
@@ -65,10 +68,13 @@ class AppInstallServiceAsh : public AppInstallService {
                               base::OnceCallback<void(bool success)> callback,
                               std::optional<AppInstallData> data);
 
-  void ShowDialogAndInstall(AppInstallSurface surface,
-                            PackageId expected_package_id,
-                            base::OnceClosure callback,
-                            std::optional<AppInstallData> data);
+  void ShowDialogAndInstall(
+      AppInstallSurface surface,
+      PackageId expected_package_id,
+      std::optional<gfx::NativeWindow> anchor_window,
+      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
+      base::OnceClosure callback,
+      std::optional<AppInstallData> data);
   void InstallIfDialogAccepted(
       AppInstallSurface surface,
       PackageId expected_package_id,

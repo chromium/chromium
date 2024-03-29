@@ -78,7 +78,17 @@ void NavigateAndTriggerInstallDialogCommand::StartWithLock(
   // specify an initiator origin.
   load_url_params.initiator_origin = url::Origin::Create(origin_url_);
 
-  web_contents_ = ui_manager_->CreateNewTab()->GetWeakPtr();
+  content::WebContents* new_tab = ui_manager_->CreateNewTab();
+  if (!new_tab) {
+    // Browser may be shutting down.
+    // TODO(b/331691742): Avoid starting commands when the browser is shutting
+    // down.
+    CompleteAndSelfDestruct(
+        CommandResult::kFailure,
+        NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    return;
+  }
+  web_contents_ = new_tab->GetWeakPtr();
   url_loader_->LoadUrl(
       std::move(load_url_params), web_contents_.get(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,

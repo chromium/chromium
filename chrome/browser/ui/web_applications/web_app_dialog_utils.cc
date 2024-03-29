@@ -103,7 +103,7 @@ void OnManifestFetchedShowCrosDialog(
   }
 
   dialog_handle->Show(
-      initiator_web_contents->GetNativeView(), std::move(args),
+      initiator_web_contents->GetTopLevelNativeWindow(), std::move(args),
       web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id),
       base::BindOnce(
           [](std::unique_ptr<WebAppInstallInfo> web_app_info,

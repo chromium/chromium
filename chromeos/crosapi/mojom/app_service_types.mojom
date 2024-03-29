@@ -644,6 +644,7 @@ enum ControllerRegistrationResult {
 
 
 // Represents parameters for installing an app.
+// Next version: 2
 [Stable]
 struct InstallAppParams {
   // Represents the origin of the installation.
@@ -661,6 +662,11 @@ struct InstallAppParams {
 
   // Represents which package_id to fetch from Almanac to be installed.
   string? package_id@1;
+
+  // Instance ID of a parent window to anchor the app install dialog to. If not
+  // provided or a corresponding window is not found, the app install dialog is
+  // created without anchoring to a parent.
+  [MinVersion=1] mojo_base.mojom.UnguessableToken? window_id@2;
 };
 
 // Represents the result of an InstallApp() request.

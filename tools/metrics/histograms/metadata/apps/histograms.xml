@@ -289,6 +289,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppInstallParentWindowFound" enum="Boolean"
+    expires_after="2025-01-19">
+  <owner>alancutter@chromium.org</owner>
+  <owner>cros-web-apps-infra-team@google.com</owner>
+  <summary>
+    Records the result of attempting to find a parent window for the spawned
+    AppInstallDialog when attempting to install an app from an almanac:// URL in
+    Lacros.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
     enum="AppInstallResult" expires_after="2024-07-03">
   <owner>tsergeant@chromium.org</owner>

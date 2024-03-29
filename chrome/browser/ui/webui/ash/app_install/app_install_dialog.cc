@@ -15,6 +15,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
+#include "ui/aura/window.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
@@ -66,6 +67,7 @@ void AppInstallDialog::Show(
       base::UTF8ToUTF16(dialog_args_->description),
       webapps::kMaximumDescriptionLength, gfx::CHARACTER_BREAK));
 
+  this->set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
   this->ShowSystemDialog(parent);
 }
 
