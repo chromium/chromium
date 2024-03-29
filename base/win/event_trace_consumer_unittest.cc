@@ -8,6 +8,8 @@
 
 #include <objbase.h>
 
+#include <initguid.h>
+
 #include <iterator>
 #include <list>
 
@@ -22,8 +24,6 @@
 #include "base/win/event_trace_provider.h"
 #include "base/win/scoped_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <initguid.h>  // NOLINT - has to be last
 
 namespace base {
 namespace win {

@@ -4,8 +4,11 @@
 
 #include "base/files/memory_mapped_file.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
+#include <winnt.h>
 
 #include <limits>
 #include <string>
@@ -15,9 +18,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/pe_image.h"
-
-#include <windows.h>
-#include <winnt.h>  // NOLINT(build/include_order)
 
 namespace base {
 
