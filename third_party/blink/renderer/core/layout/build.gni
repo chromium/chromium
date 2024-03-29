@@ -427,6 +427,7 @@ blink_core_sources_layout = [
   "list/list_marker.h",
   "list/unpositioned_list_marker.cc",
   "list/unpositioned_list_marker.h",
+  "line_clamp_data.h",
   "logical_box_fragment.cc",
   "logical_box_fragment.h",
   "logical_fragment.h",

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
+#include "third_party/blink/renderer/core/layout/line_clamp_data.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
@@ -56,6 +57,51 @@ struct InflowChildData {
   MarginStrut margin_strut;
   BoxStrut margins;
   bool is_pushed_by_floats = false;
+};
+
+struct BlockLineClampData {
+  DISALLOW_NEW();
+
+  explicit BlockLineClampData(LineClampData line_clamp_data)
+      : data(line_clamp_data) {}
+
+  std::optional<int> LinesUntilClamp() const { return data.LinesUntilClamp(); }
+
+  bool IsPastClampPoint() const { return data.IsPastClampPoint(); }
+
+  bool ShouldRelayoutWithNoForcedTruncate() const {
+    return LinesUntilClamp() == 0 &&
+           intrinsic_block_size_when_clamped.has_value();
+  }
+
+  void UpdateLinesFromStyle(int lines_until_clamp) {
+    if (data.state == LineClampData::kDontTruncate) {
+      return;
+    }
+
+    data.state = LineClampData::kEnabled;
+    data.lines_until_clamp = lines_until_clamp;
+  }
+
+  void UpdateAfterLayout(int lines_until_clamp,
+                         LayoutUnit logical_block_offset) {
+    if (data.state != LineClampData::kEnabled) {
+      return;
+    }
+
+    data.lines_until_clamp = lines_until_clamp;
+    if (data.lines_until_clamp <= 0 &&
+        !intrinsic_block_size_when_clamped.has_value()) {
+      intrinsic_block_size_when_clamped = logical_block_offset;
+    }
+  }
+
+  LineClampData data;
+
+  // If set, one of the lines was clamped and this is the intrinsic size of the
+  // block element at the time of the clamp. Can only be set if
+  // data.state == kEnabled.
+  std::optional<LayoutUnit> intrinsic_block_size_when_clamped;
 };
 
 // A class for general block layout (e.g. a <div> with no special style).
@@ -408,6 +454,8 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Intrinsic block size based on child layout and containment.
   LayoutUnit intrinsic_block_size_;
 
+  BlockLineClampData line_clamp_data_;
+
   // The line box index at which we ran out of space. This where we'll actually
   // end up breaking, unless we determine that we should break earlier in order
   // to satisfy the widows request.
@@ -439,20 +487,6 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // If the `text-box-trim` is effective for block-start/end edges.
   bool should_text_box_trim_start_ : 1;
   bool should_text_box_trim_end_ : 1;
-
-  // If true, ignore the line-clamp property as truncation wont be required.
-  bool ignore_line_clamp_ : 1;
-
-  // If this is within a -webkit-line-clamp context.
-  bool is_line_clamp_context_ : 1;
-
-  // If set, this is the number of lines until a clamp. A value of 1 indicates
-  // the current line should be clamped. This may go negative.
-  std::optional<int> lines_until_clamp_;
-
-  // If set, one of the lines was clamped and this is the intrinsic size at the
-  // time of the clamp.
-  std::optional<LayoutUnit> intrinsic_block_size_when_clamped_;
 };
 
 }  // namespace blink

@@ -153,7 +153,8 @@ std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
   const LayoutUnit available_width = line_opportunity.AvailableInlineSize();
   LineBreakResults normal_lines(node, space);
   const wtf_size_t max_lines = MaxLinesToBisectForBalance();
-  const int lines_until_clamp = space.LinesUntilClamp().value_or(0);
+  const int lines_until_clamp =
+      space.GetLineClampData().LinesUntilClamp().value_or(0);
   if (lines_until_clamp > 0 &&
       static_cast<unsigned>(lines_until_clamp) <= max_lines) {
     if (lines_until_clamp == 1) {

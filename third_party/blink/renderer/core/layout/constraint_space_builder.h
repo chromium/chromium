@@ -480,24 +480,15 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
                                                  section_index);
   }
 
-  void SetIsLineClampContext(bool is_line_clamp_context) {
-    DCHECK(!is_new_fc_);
+  void SetLineClampData(LineClampData data) {
 #if DCHECK_IS_ON()
-    DCHECK(!is_line_clamp_context_set_);
-    is_line_clamp_context_set_ = true;
-#endif
-    if (is_line_clamp_context)
-      space_.EnsureRareData()->is_line_clamp_context = true;
-  }
-
-  void SetLinesUntilClamp(const std::optional<int>& clamp) {
-#if DCHECK_IS_ON()
-    DCHECK(!is_lines_until_clamp_set_);
-    is_lines_until_clamp_set_ = true;
+    DCHECK(!is_line_clamp_data_set_);
+    is_line_clamp_data_set_ = true;
 #endif
     DCHECK(!is_new_fc_);
-    if (clamp)
-      space_.EnsureRareData()->SetLinesUntilClamp(*clamp);
+    if (data.state != LineClampData::kDisabled) {
+      space_.EnsureRareData()->SetLineClampData(data);
+    }
   }
 
   void SetShouldTextBoxTrimStart() {
@@ -583,10 +574,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool is_table_cell_column_index_set_ = false;
   bool is_table_cell_with_collapsed_borders_set_ = false;
   bool is_custom_layout_data_set_ = false;
-  bool is_lines_until_clamp_set_ = false;
+  bool is_line_clamp_data_set_ = false;
   bool is_table_row_data_set_ = false;
   bool is_table_section_data_set_ = false;
-  bool is_line_clamp_context_set_ = false;
   bool is_grid_layout_subtree_set_ = false;
 
   bool to_constraint_space_called_ = false;

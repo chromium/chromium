@@ -83,7 +83,8 @@ void ScoreLineBreaker::OptimalBreakPoints(const LeadingFloats& leading_floats,
       node_, LineBreakerMode::kContent, GetConstraintSpace(),
       LineLayoutOpportunity(line_width), leading_floats, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
-  const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
+  const int lines_until_clamp =
+      space_.GetLineClampData().LinesUntilClamp().value_or(0);
   for (;;) {
     LineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);

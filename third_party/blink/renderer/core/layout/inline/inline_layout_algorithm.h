@@ -111,6 +111,8 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                                    const LogicalLineItems& line_box,
                                    const FontHeight& line_box_metrics);
 
+  bool ShouldLineClamp(const LineInfo*) const;
+
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;
 

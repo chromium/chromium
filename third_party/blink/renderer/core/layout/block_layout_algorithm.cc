@@ -251,15 +251,13 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params),
       previous_result_(params.previous_result),
       column_spanner_path_(params.column_spanner_path),
+      line_clamp_data_(params.space.GetLineClampData()),
       fit_all_lines_(false),
       is_resuming_(IsBreakInside(params.break_token)),
       abort_when_bfc_block_offset_updated_(false),
       has_break_opportunity_before_next_child_(false),
       should_text_box_trim_start_(params.space.ShouldTextBoxTrimStart()),
-      should_text_box_trim_end_(params.space.ShouldTextBoxTrimEnd()),
-      ignore_line_clamp_(false),
-      is_line_clamp_context_(params.space.IsLineClampContext()),
-      lines_until_clamp_(params.space.LinesUntilClamp()) {
+      should_text_box_trim_end_(params.space.ShouldTextBoxTrimEnd()) {
   container_builder_.SetExclusionSpace(params.space.GetExclusionSpace());
 
   // If this node has a column spanner inside, we'll force it to stay within the
@@ -529,7 +527,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
       return RelayoutAndBreakEarlier(&algorithm_with_break);
     }
     case LayoutResult::kNeedsRelayoutWithNoForcedTruncateAtLineClamp:
-      DCHECK(!ignore_line_clamp_);
+      DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kEnabled);
       return RelayoutIgnoringLineClamp();
     case LayoutResult::kDisableFragmentation:
       DCHECK(GetConstraintSpace().HasBlockFragmentation());
@@ -584,7 +582,8 @@ NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
                                container_builder_.InitialFragmentGeometry(),
                                GetConstraintSpace(), GetBreakToken(), nullptr);
   BlockLayoutAlgorithm algorithm_ignoring_line_clamp(params);
-  algorithm_ignoring_line_clamp.ignore_line_clamp_ = true;
+  algorithm_ignoring_line_clamp.line_clamp_data_.data.state =
+      LineClampData::kDontTruncate;
   BoxFragmentBuilder& new_builder =
       algorithm_ignoring_line_clamp.container_builder_;
   new_builder.SetBoxType(container_builder_.GetBoxType());
@@ -652,9 +651,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   }
 
   if (Style().IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
-    is_line_clamp_context_ = true;
-    if (!ignore_line_clamp_)
-      lines_until_clamp_ = Style().LineClamp();
+    line_clamp_data_.UpdateLinesFromStyle(Style().LineClamp());
   } else if (Style().HasLineClamp()) {
     UseCounter::Count(Node().GetDocument(),
                       WebFeature::kWebkitLineClampWithoutWebkitBox);
@@ -927,8 +924,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   }
 
   if (UNLIKELY(constraint_space.IsNewFormattingContext() &&
-               !ignore_line_clamp_ && lines_until_clamp_ == 0 &&
-               intrinsic_block_size_when_clamped_)) {
+               line_clamp_data_.ShouldRelayoutWithNoForcedTruncate())) {
     // Truncation of the last line was forced, but there are no lines after the
     // truncated line. Rerun layout without forcing truncation. This is only
     // done if line-clamp was specified on the element as the element containing
@@ -1022,10 +1018,11 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
 
   // If line clamping occurred, the intrinsic block-size comes from the
   // intrinsic block-size at the time of the clamp.
-  if (intrinsic_block_size_when_clamped_) {
+  if (line_clamp_data_.intrinsic_block_size_when_clamped) {
     DCHECK(container_builder_.BfcBlockOffset());
     intrinsic_block_size_ =
-        *intrinsic_block_size_when_clamped_ + block_end_border_padding;
+        *line_clamp_data_.intrinsic_block_size_when_clamped +
+        block_end_border_padding;
     end_margin_strut = MarginStrut();
   } else if (block_end_border_padding ||
              previous_inflow_position->self_collapsing_child_had_clearance ||
@@ -1235,7 +1232,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
   if (constraint_space.IsNewFormattingContext()) {
     container_builder_.SetExclusionSpace(ExclusionSpace());
   } else {
-    container_builder_.SetLinesUntilClamp(lines_until_clamp_);
+    container_builder_.SetLinesUntilClamp(line_clamp_data_.LinesUntilClamp());
   }
 
   if (constraint_space.UseFirstLineStyle()) {
@@ -1272,12 +1269,14 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     return false;
 
   wtf_size_t max_lines = 0;
-  if (lines_until_clamp_) {
+  if (std::optional<int> lines_until_clamp =
+          line_clamp_data_.LinesUntilClamp()) {
     // There is an additional logic for the last clamped line. Reuse only up to
     // before that to use the same logic.
-    if (*lines_until_clamp_ <= 1)
+    if (*lines_until_clamp <= 1) {
       return false;
-    max_lines = *lines_until_clamp_ - 1;
+    }
+    max_lines = *lines_until_clamp - 1;
   }
 
   const auto& children = container_builder_.Children();
@@ -1303,10 +1302,10 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   DCHECK(container_builder_.BfcBlockOffset());
 
   DCHECK_GT(result.line_count, 0u);
-  DCHECK(!max_lines || result.line_count <= max_lines);
-  if (lines_until_clamp_) {
-    DCHECK_GT(*lines_until_clamp_, static_cast<int>(result.line_count));
-    lines_until_clamp_ = *lines_until_clamp_ - result.line_count;
+  if (max_lines) {
+    DCHECK(result.line_count <= max_lines);
+    DCHECK_EQ(line_clamp_data_.data.state, LineClampData::kEnabled);
+    line_clamp_data_.data.lines_until_clamp -= result.line_count;
   }
 
   // |AddPreviousItems| may have added more than one lines. Propagate baselines
@@ -2358,17 +2357,9 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   // Update |lines_until_clamp_| from the LayoutResult.
-  if (lines_until_clamp_) {
-    lines_until_clamp_ = layout_result->LinesUntilClamp();
-
-    if (lines_until_clamp_ <= 0 &&
-        !intrinsic_block_size_when_clamped_.has_value()) {
-      // If line-clamping occurred save the intrinsic block-size, as this
-      // becomes the final intrinsic block-size.
-      intrinsic_block_size_when_clamped_ =
-          previous_inflow_position->logical_block_offset;
-    }
-  }
+  line_clamp_data_.UpdateAfterLayout(
+      layout_result->LinesUntilClamp(),
+      previous_inflow_position->logical_block_offset);
 
   if (UNLIKELY(should_text_box_trim_start_ || should_text_box_trim_end_)) {
     if (layout_result->IsTextBoxTrimApplied()) {
@@ -3046,8 +3037,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
       builder.SetAdjoiningObjectTypes(
           container_builder_.GetAdjoiningObjectTypes());
     }
-    builder.SetIsLineClampContext(is_line_clamp_context_);
-    builder.SetLinesUntilClamp(lines_until_clamp_);
+    builder.SetLineClampData(line_clamp_data_.data);
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
 
@@ -3105,8 +3095,9 @@ void BlockLayoutAlgorithm::PropagateBaselineFromLineBox(
     return;
 
   // Skip over the line-box if we are past our clamp point.
-  if (lines_until_clamp_ && *lines_until_clamp_ <= 0)
+  if (line_clamp_data_.IsPastClampPoint()) {
     return;
+  }
 
   if (UNLIKELY(line_box.IsBlockInInline())) {
     // Block-in-inline may have different first/last baselines.
@@ -3147,8 +3138,9 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   }
 
   // Skip over the block if we are past our clamp point.
-  if (lines_until_clamp_ && *lines_until_clamp_ <= 0)
+  if (line_clamp_data_.IsPastClampPoint()) {
     return;
+  }
 
   const auto& physical_fragment = To<PhysicalBoxFragment>(child);
   LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
