@@ -42,9 +42,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   registry->RegisterIntegerPref(kLastClearBrowsingDataTab, 0);
-  registry->RegisterBooleanPref(
-      kPreferencesMigratedToBasic, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 }  // namespace browsing_data::prefs

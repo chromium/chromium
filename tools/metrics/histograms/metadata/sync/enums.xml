@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="(obsolete) DeleteTimePeriod"/>
   <int value="24" label="(obsolete) DeleteTimePeriodBasic"/>
   <int value="25" label="LastClearBrowsingDataTime"/>
-  <int value="26" label="PreferencesMigratedToBasic"/>
+  <int value="26" label="(obsolete) PreferencesMigratedToBasic"/>
   <int value="27" label="PriceEmailNotificationsEnabled"/>
   <int value="28" label="Font"/>
   <int value="29" label="(obsolete) OfferReaderMode"/>

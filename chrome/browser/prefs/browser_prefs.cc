@@ -1023,6 +1023,10 @@ constexpr char kTrackingProtectionSentimentSurveyStartTime[] =
 constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
     "tracking_protection.tracking_protection_sentiment_survey_end_time";
 
+// Deprecated 03/2024
+constexpr char kPreferencesMigratedToBasic[] =
+    "browser.clear_data.preferences_migrated_to_basic";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1453,6 +1457,9 @@ void RegisterProfilePrefsForMigration(
                              base::Time());
   registry->RegisterTimePref(kTrackingProtectionSentimentSurveyEndTime,
                              base::Time());
+
+  // Deprecated 03/2024.
+  registry->RegisterBooleanPref(kPreferencesMigratedToBasic, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2739,6 +2746,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyGroup);
   profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyStartTime);
   profile_prefs->ClearPref(kTrackingProtectionSentimentSurveyEndTime);
+
+  // Added 03/2024
+  profile_prefs->ClearPref(kPreferencesMigratedToBasic);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

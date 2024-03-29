@@ -64,7 +64,7 @@ enum {
   // kDeleteTimePeriod = 23, (no longer synced)
   // kDeleteTimePeriodBasic = 24, (no longer synced)
   kLastClearBrowsingDataTime = 25,
-  kPreferencesMigratedToBasic = 26,
+  // kPreferencesMigratedToBasic = 26, (deprecated)
   kPriceEmailNotificationsEnabled = 27,
   kFont = 28,
   // kOfferReaderMode = 29, (deprecated)
@@ -148,9 +148,6 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {browsing_data::prefs::kLastClearBrowsingDataTime,
          {syncable_prefs_ids::kLastClearBrowsingDataTime, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
-        {browsing_data::prefs::kPreferencesMigratedToBasic,
-         {syncable_prefs_ids::kPreferencesMigratedToBasic, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {commerce::kPriceEmailNotificationsEnabled,
          {syncable_prefs_ids::kPriceEmailNotificationsEnabled,

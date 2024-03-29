@@ -184,6 +184,10 @@ const char kObsoleteAccountStorageNewFeatureIconImpressions[] =
 const char kObsoleteAccountStorageNoticeShown[] =
     "password_manager.account_storage_notice_shown";
 
+// Deprecated 03/2024.
+constexpr char kPreferencesMigratedToBasic[] =
+    "browser.clear_data.preferences_migrated_to_basic";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -778,6 +782,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kObsoleteAccountStorageNewFeatureIconImpressions, 0);
 
   registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
+
+  registry->RegisterBooleanPref(kPreferencesMigratedToBasic, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -975,6 +981,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 03/2024.
   prefs->ClearPref(kObsoleteAccountStorageNoticeShown);
+
+  // Added 03/2024
+  prefs->ClearPref(kPreferencesMigratedToBasic);
 }
 
 void MigrateObsoleteUserDefault() {
