@@ -28,7 +28,7 @@
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "components/supervised_user/core/common/buildflags.h"
+#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_api_component_factory.h"
@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
@@ -66,11 +67,6 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
@@ -92,11 +88,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
   supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service = nullptr;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user_settings_service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state);
-#endif
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForBrowserState(
+              browser_state);
 
   sync_bookmarks::BookmarkSyncService* local_or_syncable_bookmark_sync_service =
       ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
@@ -270,7 +264,6 @@ IOSChromeSyncClient::GetSyncApiComponentFactory() {
 }
 
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForBrowserState(
@@ -278,7 +271,6 @@ bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
   if (supervised_user_settings_service) {
     return supervised_user_settings_service->IsCustomPassphraseAllowed();
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return true;
 }
 

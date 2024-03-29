@@ -17,7 +17,6 @@
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#import "components/supervised_user/core/common/buildflags.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/service/sync_service.h"
@@ -49,6 +48,7 @@
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/ios_chrome_sync_client.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
@@ -63,11 +63,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 namespace {
 
 std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
@@ -225,11 +220,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 

@@ -22,7 +22,6 @@
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#import "components/supervised_user/core/common/buildflags.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/user_prefs/user_prefs.h"
@@ -152,13 +151,10 @@ void TestChromeBrowserState::Init() {
 
   BrowserStateDependencyManager::GetInstance()
       ->CreateBrowserStateServicesForTest(this);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // `SupervisedUserSettingsService` needs to be initialized for SyncService.
   SupervisedUserSettingsServiceFactory::GetForBrowserState(this)->Init(
       GetStatePath(), GetIOTaskRunner().get(),
       /*load_synchronously=*/true);
-#endif
 }
 
 bool TestChromeBrowserState::IsOffTheRecord() const {

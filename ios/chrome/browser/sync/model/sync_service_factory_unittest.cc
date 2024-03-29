@@ -10,7 +10,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -80,11 +79,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::READING_LIST);
     // TODO(crbug.com/919489) Add SECURITY_EVENTS data type once it is enabled.
     datatypes.Put(syncer::SESSIONS);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
