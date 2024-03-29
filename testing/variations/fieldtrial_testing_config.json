@@ -17170,6 +17170,21 @@
             ]
         }
     ],
+    "ScreencastForceEnableServerSideSpeechRecognition": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "ForceEnableServerSideSpeechRecognitionForDev"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreencastServerBasedUSMLocales": [
         {
             "platforms": [
