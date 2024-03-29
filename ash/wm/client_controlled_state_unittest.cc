@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -1590,7 +1591,7 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
                                          base::Milliseconds(10), /*steps=*/1);
   EXPECT_TRUE(window()->layer()->GetAnimator()->is_animating());
 
-  // Bounds change should be blocked while animating.
+  // Client-requested bounds change should be blocked while animating.
   const auto start_bounds = window()->GetBoundsInScreen();
   const gfx::Rect client_requested_bounds(0, 0, 256, 256);
   state()->set_bounds_locally(true);
@@ -1610,6 +1611,21 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   widget()->SetBounds(client_requested_bounds);
   state()->set_bounds_locally(false);
   EXPECT_EQ(window()->GetBoundsInScreen(), tucked_bounds);
+
+  // Rotation should update the bounds.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Display::ROTATE_90, display::Display::RotationSource::USER);
+  // Manually call the rotation animation callback here as the animator is only
+  // used when a wallpaper is set, and there is no easy way to fake a wallpaper
+  // in ash_unittests.
+  float_controller->OnScreenRotationAnimationFinished(
+      Shell::GetPrimaryRootWindowController()->GetScreenRotationAnimator(),
+      /*canceled=*/false);
+  EXPECT_FALSE(window()->IsVisible());
+  EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window()));
+  EXPECT_EQ(FloatController::GetFloatWindowTabletBounds(window()),
+            window()->GetBoundsInScreen());
 
   // Test untucking.
   float_controller->MaybeUntuckFloatedWindowForTablet(window());

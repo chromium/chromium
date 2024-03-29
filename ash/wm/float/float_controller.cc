@@ -969,6 +969,13 @@ void FloatController::OnScreenRotationAnimationFinished(
                     window, chromeos::FloatStartLocation::kBottomRight);
       const SetBoundsWMEvent event(bounds);
       WindowState::Get(window)->OnWMEvent(&event);
+
+      // When a window is tucked, ash has full control over the bounds.
+      if (IsFloatedWindowTuckedForTablet(window)) {
+        TabletModeWindowState::UpdateWindowPosition(
+            WindowState::Get(window),
+            WindowState::BoundsChangeAnimationType::kNone);
+      }
     }
   }
 }
