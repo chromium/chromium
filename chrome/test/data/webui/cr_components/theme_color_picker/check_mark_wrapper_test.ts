@@ -6,7 +6,7 @@ import 'chrome://resources/cr_components/theme_color_picker/check_mark_wrapper.j
 
 import type {CheckMarkWrapperElement} from 'chrome://resources/cr_components/theme_color_picker/check_mark_wrapper.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('CheckMarkWrapperTest', () => {
   let checkMarkWrapperElement: CheckMarkWrapperElement;
@@ -18,13 +18,15 @@ suite('CheckMarkWrapperTest', () => {
     document.body.appendChild(checkMarkWrapperElement);
   });
 
-  test('renders check mark if checked', () => {
+  test('renders check mark if checked', async () => {
     checkMarkWrapperElement.checked = true;
+    await microtasksFinished();
     assertTrue(isVisible(checkMarkWrapperElement.$.svg));
   });
 
-  test('does not render check mark if not checked', () => {
+  test('does not render check mark if not checked', async () => {
     checkMarkWrapperElement.checked = false;
+    await microtasksFinished();
     assertFalse(isVisible(checkMarkWrapperElement.$.svg));
   });
 });

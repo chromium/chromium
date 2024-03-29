@@ -4,7 +4,7 @@
 
 import {LitElement, PropertyValues} from 'lit/index.js';
 
-type ElementCache = Record<string, HTMLElement>;
+type ElementCache = Record<string, HTMLElement|SVGElement>;
 
 // Converts a 'nameLikeThis' to 'name-like-this'.
 function toDashCase(name: string): string {
@@ -32,7 +32,7 @@ export class CrLitElement extends LitElement {
     // element (never removed).
     const self = this;
     this.$ = new Proxy({}, {
-      get(cache: ElementCache, id: string): HTMLElement {
+      get(cache: ElementCache, id: string): HTMLElement|SVGElement {
         if (!self.hasUpdated && !self.isConnected) {
           throw new Error(`CrLitElement ${
               self.tagName} $ dictionary accessed before element is connected at least once.`);
