@@ -37,6 +37,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -160,8 +161,11 @@ unsigned Character::ExpansionOpportunityCount(
         count++;
         is_after_expansion = true;
         continue;
+      } else if (!RuntimeEnabledFeatures::
+                     TextAlignJustifyBidiIsolateEnabled() ||
+                 !IsDefaultIgnorable(character)) {
+        is_after_expansion = false;
       }
-      is_after_expansion = false;
     }
   } else {
     for (size_t i = characters.size(); i > 0; --i) {
@@ -181,8 +185,11 @@ unsigned Character::ExpansionOpportunityCount(
         count++;
         is_after_expansion = true;
         continue;
+      } else if (!RuntimeEnabledFeatures::
+                     TextAlignJustifyBidiIsolateEnabled() ||
+                 !IsDefaultIgnorable(character)) {
+        is_after_expansion = false;
       }
-      is_after_expansion = false;
     }
   }
   return count;
