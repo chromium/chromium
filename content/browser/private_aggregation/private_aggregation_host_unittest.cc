@@ -601,7 +601,7 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
       remote.BindNewPipeAndPassReceiver()));
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
       too_many_contributions;
-  for (int i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
+  for (size_t i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
        ++i) {
     too_many_contributions.push_back(
         blink::mojom::AggregatableReportHistogramContribution::New(
@@ -624,9 +624,8 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
       1);
 
   ASSERT_TRUE(validated_request);
-  EXPECT_EQ(
-      validated_request->payload_contents().contributions.size(),
-      static_cast<size_t>(PrivateAggregationHost::kMaxNumberOfContributions));
+  EXPECT_EQ(validated_request->payload_contents().contributions.size(),
+            PrivateAggregationHost::kMaxNumberOfContributions);
 }
 
 TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {

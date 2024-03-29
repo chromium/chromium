@@ -4,6 +4,8 @@
 
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 
+#include <stddef.h>
+
 #include <iterator>
 #include <map>
 #include <optional>
@@ -15,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -238,17 +241,22 @@ void PrivateAggregationHost::ContributeToHistogram(
     return;
   }
 
+  using Contribution = blink::mojom::AggregatableReportHistogramContribution;
+  using ContributionPtr =
+      blink::mojom::AggregatableReportHistogramContributionPtr;
+
+  base::span<ContributionPtr> incoming_ptrs{contribution_ptrs};
+  std::vector<Contribution>& accepted =
+      receiver_set_.current_context()->contributions;
+
   // Null pointers should fail mojo validation.
-  CHECK(base::ranges::none_of(
-            contribution_ptrs,
-            [](const blink::mojom::AggregatableReportHistogramContributionPtr&
-                   contribution_ptr) { return contribution_ptr.is_null(); }),
+  CHECK(base::ranges::none_of(incoming_ptrs, &ContributionPtr::is_null),
         base::NotFatalUntil::M128);
 
-  if (base::ranges::any_of(
-          contribution_ptrs,
-          [](const blink::mojom::AggregatableReportHistogramContributionPtr&
-                 contribution_ptr) { return contribution_ptr->value < 0; })) {
+  if (base::ranges::any_of(incoming_ptrs,
+                           [](const ContributionPtr& contribution) {
+                             return contribution->value < 0;
+                           })) {
     mojo::ReportBadMessage("Negative value encountered");
     CloseCurrentPipe(PipeResult::kNegativeValue);
     return;
@@ -258,23 +266,16 @@ void PrivateAggregationHost::ContributeToHistogram(
   // potentially merging contributions with the same bucket (although that
   // should probably be done after budgeting).
 
-  bool too_many_contributions =
-      contribution_ptrs.size() +
-          receiver_set_.current_context()->contributions.size() >
-      kMaxNumberOfContributions;
-  if (too_many_contributions) {
+  CHECK_LE(accepted.size(), kMaxNumberOfContributions);
+  const size_t num_remaining = kMaxNumberOfContributions - accepted.size();
+
+  if (incoming_ptrs.size() > num_remaining) {
     receiver_set_.current_context()->too_many_contributions = true;
-    const int num_to_copy =
-        kMaxNumberOfContributions -
-        receiver_set_.current_context()->contributions.size();
-    CHECK_GE(num_to_copy, 0);
-    contribution_ptrs.resize(num_to_copy);
+    incoming_ptrs = incoming_ptrs.first(num_remaining);
   }
-  base::ranges::transform(
-      contribution_ptrs,
-      std::back_inserter(receiver_set_.current_context()->contributions),
-      [](const blink::mojom::AggregatableReportHistogramContributionPtr&
-             contribution_ptr) { return std::move(*contribution_ptr); });
+
+  base::ranges::transform(incoming_ptrs, std::back_inserter(accepted),
+                          &ContributionPtr::operator*);
 }
 
 AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(

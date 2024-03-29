@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_HOST_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_HOST_H_
 
+#include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -74,7 +76,7 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   // The maximum number of contributions that can go in an `AggregatableReport`.
   // Aligns with `attribution_reporting::kMaxAggregationKeysPerSource`.
-  static constexpr int kMaxNumberOfContributions = 20;
+  static constexpr size_t kMaxNumberOfContributions = 20;
 
   // The maximum allowed context_id string length.
   static constexpr int kMaxContextIdLength = 64;
