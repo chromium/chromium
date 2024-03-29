@@ -395,11 +395,12 @@ class BlinkPerfAccessibility(_BlinkPerfBenchmark):
     options.AppendExtraBrowserArgs(['--force-renderer-accessibility=complete'])
 
 
-@benchmark.Info(
-    component='Blink>Bindings',
-    emails=['jbroman@chromium.org', 'yukishiino@chromium.org',
-            'haraken@chromium.org'],
-    documentation_url='https://bit.ly/blink-perf-benchmarks')
+@benchmark.Info(component='Blink>Bindings',
+                emails=[
+                    'jbroman@chromium.org', 'japhet@chromium.org',
+                    'haraken@chromium.org'
+                ],
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfBindings(_BlinkPerfBenchmark):
   SUBDIR = 'bindings'
   TAGS = _BlinkPerfBenchmark.TAGS + ['all']
