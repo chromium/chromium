@@ -21,10 +21,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
-#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
-#include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -93,27 +90,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-
   // Features the background page does not need to query:
   if (web_ui->GetWebContents()->GetVisibleURL().path() != "/background") {
-    // Flags for showing or hiding educational content about some feature.
-    auto* editor_mediator =
-        ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
-            profile);
-    source->AddBoolean(
-        "isEditorSwitchAllowed",
-        editor_mediator != nullptr && editor_mediator->IsAllowedForUse());
-    source->AddBoolean(
-        "isSeaPenAllowed",
-        ash::features::IsSeaPenEnabled() &&
-            ash::personalization_app::IsEligibleForSeaPen(profile));
-    source->AddBoolean(
-        "isVcBackgroundReplaceAllowed",
-        ash::features::IsVcBackgroundReplaceEnabled() &&
-            ash::personalization_app::IsEligibleForSeaPen(profile));
-
     // By default, querying the feature flag is what marks a Finch study as
     // active for a client. For features that only happen when the user is
     // actively browsing the help app (such as UI-only features), avoid querying
@@ -141,6 +119,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                                chromeos::features::kCrosWebAppInstallDialog));
   }
 
+  Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();
 
   bool is_scalable_iph_available =
