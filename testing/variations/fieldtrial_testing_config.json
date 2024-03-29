@@ -7978,6 +7978,36 @@
             ]
         }
     ],
+    "GamingPerksStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Notification_20240320",
+                    "params": {
+                        "IPH_ScalableIphGaming_availability": ">=0",
+                        "IPH_ScalableIphGaming_event_1": "name:ScalableIphGameWindowOpened;comparator:>0;window:365;storage:365",
+                        "IPH_ScalableIphGaming_event_trigger": "name:IphScalableIphGamingEventTrigger;comparator:==0;window:365;storage:365",
+                        "IPH_ScalableIphGaming_event_used": "name:IphScalableIphGamingEventUsed;comparator:any;window:365;storage:365",
+                        "IPH_ScalableIphGaming_session_rate": "<1",
+                        "IPH_ScalableIphGaming_x_CustomButtonActionType": "PerksMinecraftRealms2023",
+                        "IPH_ScalableIphGaming_x_CustomConditionTriggerEvent": "ScalableIphUnlocked",
+                        "IPH_ScalableIphGaming_x_CustomNotificationBodyText": "",
+                        "IPH_ScalableIphGaming_x_CustomNotificationButtonText": "Get perk",
+                        "IPH_ScalableIphGaming_x_CustomNotificationId": "scalable_iph_gaming",
+                        "IPH_ScalableIphGaming_x_CustomNotificationImageType": "Minecraft",
+                        "IPH_ScalableIphGaming_x_CustomNotificationTitle": "Get 3 months of Minecraft Realms+ at no cost on your Chromebook",
+                        "IPH_ScalableIphGaming_x_CustomUiType": "Notification"
+                    },
+                    "enable_features": [
+                        "IPH_ScalableIphGaming"
+                    ]
+                }
+            ]
+        }
+    ],
     "GenGpuDiskCacheKeyPrefixInGpuService": [
         {
             "platforms": [

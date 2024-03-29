@@ -240,9 +240,26 @@ class ScalableIphBrowserTestFlagOff
 
 class ScalableIphBrowserTestNoIph
     : public ash::CustomizableTestEnvBrowserTestBase {
+ public:
+  ScalableIphBrowserTestNoIph() {
+    // Disable all IPH feature flags to avoid one of them get enabled by
+    // fieldtrial testing config. Fieldtrial testing config won't flip a
+    // flag if it's already force-enabled/disabled. Convert it to a vector
+    // of `FeatureRef`. `ScalableIph` cannot depend on it as it's in base::test.
+    std::vector<base::test::FeatureRef> disabled_features_refs;
+    const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+        disabled_features =
+            scalable_iph::ScalableIph::GetFeatureListConstantForTesting();
+    for (auto feature : disabled_features) {
+      disabled_features_refs.push_back(base::test::FeatureRef(*feature));
+    }
+
+    scoped_feature_list_.InitWithFeatures({ash::features::kScalableIph},
+                                          disabled_features_refs);
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kScalableIph};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ScalableIphBrowserTestGame : public ScalableIphBrowserTest {

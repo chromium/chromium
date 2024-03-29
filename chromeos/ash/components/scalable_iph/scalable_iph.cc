@@ -773,6 +773,12 @@ void ScalableIph::OverrideTaskRunnerForTesting(
   EnsureTimerStarted();
 }
 
+const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+ScalableIph::GetFeatureListConstantForTesting() {
+  CHECK_IS_TEST();
+  return GetFeatureListConstant();
+}
+
 bool ScalableIph::ShouldPinHelpAppToShelf() {
   return ash::features::AreHelpAppWelcomeTipsEnabled();
 }

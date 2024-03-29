@@ -170,6 +170,9 @@ class ScalableIph : public KeyedService,
   // Returns true if the help app should be pinned to the bottom shelf.
   bool ShouldPinHelpAppToShelf();
 
+  static const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+  GetFeatureListConstantForTesting();
+
  private:
   void EnsureTimerStarted();
   void RecordTimeTickEvent();
