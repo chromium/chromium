@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@ namespace ash {
 // This threshold determines if a new window can replace an existing one snapped
 // on the same side within a snap group, based on the difference in their snap
 // ratios.
-// TODO(michelefan): This is a placeholder value. We will work with UX to
-// fianlize the threshold.
-constexpr float kSnapToReplaceRatioDiffThreshold = 0.1f;
+constexpr float kSnapToReplaceRatioDiffThreshold = 0.12f;
 
 }  // namespace ash
 
