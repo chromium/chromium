@@ -64,6 +64,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+  void OnCommit(const std::optional<syncer::ModelError>& error);
 
   base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};
 };

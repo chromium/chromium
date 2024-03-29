@@ -12,8 +12,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/entity_change.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,6 +64,59 @@ void VerifySpecificsAgainstIndex(sync_pb::CompareSpecifics* compare_specifics,
 std::string GetName(uint64_t idx) {
   return base::StringPrintf("%s_%s", kInitName[idx].c_str(),
                             kInitUuid[idx].c_str());
+}
+
+sync_pb::CompareSpecifics BuildCompareSpecifics(
+    const std::string& uuid,
+    int64_t creation_time_micros_epoch,
+    int64_t update_time_micros_epoch,
+    const std::string& name,
+    const std::vector<const std::string> urls) {
+  sync_pb::CompareSpecifics specifics;
+  specifics.set_uuid(uuid);
+  specifics.set_creation_time_unix_epoch_micros(creation_time_micros_epoch);
+  specifics.set_update_time_unix_epoch_micros(update_time_micros_epoch);
+  specifics.set_name(name);
+
+  for (auto& url : urls) {
+    sync_pb::ComparisonData* compare_data = specifics.add_data();
+    compare_data->set_url(url);
+  }
+  return specifics;
+}
+
+const sync_pb::CompareSpecifics kCompareSpecifics[] = {
+    BuildCompareSpecifics("abba",
+                          1000,
+                          1001,
+                          "my first set",
+                          {"https://foo.com", "https://bar.com"}),
+    BuildCompareSpecifics("baab",
+                          2000,
+                          2001,
+                          "my next set",
+                          {"https://some-url.com", "https://another-url.com"})};
+
+syncer::EntityData MakeEntityData(const sync_pb::CompareSpecifics& specifics) {
+  syncer::EntityData entity_data;
+  *entity_data.specifics.mutable_compare() = specifics;
+  entity_data.name = base::StringPrintf("%s_%s", specifics.name().c_str(),
+                                        specifics.uuid().c_str());
+
+  return entity_data;
+}
+
+void VerifyCompareSpecifics(const sync_pb::CompareSpecifics& expected,
+                            const sync_pb::CompareSpecifics& actual) {
+  EXPECT_EQ(expected.uuid(), actual.uuid());
+  EXPECT_EQ(expected.creation_time_unix_epoch_micros(),
+            actual.creation_time_unix_epoch_micros());
+  EXPECT_EQ(expected.update_time_unix_epoch_micros(),
+            actual.update_time_unix_epoch_micros());
+  EXPECT_EQ(expected.name(), actual.name());
+  for (int i = 0; i < expected.data_size(); i++) {
+    EXPECT_EQ(expected.data()[i].url(), actual.data()[i].url());
+  }
 }
 
 }  // namespace
@@ -112,6 +168,53 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
             },
             &loop));
     loop.Run();
+  }
+
+  std::map<std::string, sync_pb::CompareSpecifics> GetAllStoreData() {
+    base::RunLoop loop;
+    std::map<std::string, sync_pb::CompareSpecifics> storage_key_to_specifics;
+    bridge_->store_->ReadAllData(base::BindOnce(
+        [](base::RunLoop* loop,
+           std::map<std::string, sync_pb::CompareSpecifics>*
+               storage_key_to_specifics,
+           const std::optional<syncer::ModelError>& error,
+           std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
+          for (auto& record : *data_records.get()) {
+            sync_pb::CompareSpecifics specifics;
+            specifics.ParseFromString(record.value);
+            storage_key_to_specifics->emplace(specifics.uuid(), specifics);
+          }
+          loop->Quit();
+        },
+        &loop, &storage_key_to_specifics));
+    loop.Run();
+
+    return storage_key_to_specifics;
+  }
+
+  void VerifySpecificsExists(
+      const sync_pb::CompareSpecifics& compare_specifics) {
+    std::map<std::string, sync_pb::CompareSpecifics> store_data =
+        GetAllStoreData();
+    EXPECT_TRUE(store_data.find(compare_specifics.uuid()) != store_data.end());
+    EXPECT_TRUE(entries().find(compare_specifics.uuid()) != entries().end());
+    VerifyCompareSpecifics(compare_specifics,
+                           store_data.find(compare_specifics.uuid())->second);
+    VerifyCompareSpecifics(compare_specifics,
+                           entries().find(compare_specifics.uuid())->second);
+  }
+
+  void VerifySpecificsNonExistence(
+      const sync_pb::CompareSpecifics& compare_specifics) {
+    std::map<std::string, sync_pb::CompareSpecifics> store_data =
+        GetAllStoreData();
+    EXPECT_TRUE(store_data.find(compare_specifics.uuid()) == store_data.end());
+    EXPECT_TRUE(entries().find(compare_specifics.uuid()) == entries().end());
+  }
+
+  void VerifyEntriesAndStoreSize(uint64_t expected_size) {
+    EXPECT_EQ(expected_size, GetAllStoreData().size());
+    EXPECT_EQ(expected_size, entries().size());
   }
 
   ProductSpecificationsSyncBridge::CompareSpecificsEntries& entries() {
@@ -194,6 +297,90 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestGetDataForDebugging) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestAdd) {
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(syncer::EntityChange::CreateAdd(
+      kCompareSpecifics[0].uuid(), MakeEntityData(kCompareSpecifics[0])));
+  add_changes.push_back(syncer::EntityChange::CreateAdd(
+      kCompareSpecifics[1].uuid(), MakeEntityData(kCompareSpecifics[1])));
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+
+  VerifySpecificsNonExistence(kCompareSpecifics[0]);
+  VerifySpecificsNonExistence(kCompareSpecifics[1]);
+  VerifyEntriesAndStoreSize(3);
+  bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                       std::move(add_changes));
+
+  VerifySpecificsExists(kCompareSpecifics[0]);
+  VerifySpecificsExists(kCompareSpecifics[1]);
+  VerifyEntriesAndStoreSize(5);
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestApplyUpdateLaterTimestamp) {
+  syncer::EntityChangeList update_changes;
+  sync_pb::CompareSpecifics earlier_specifics = entries().begin()->second;
+  sync_pb::CompareSpecifics later_specifics = earlier_specifics;
+  later_specifics.set_update_time_unix_epoch_micros(
+      later_specifics.update_time_unix_epoch_micros() +
+      base::Time::kMillisecondsPerDay);
+
+  update_changes.push_back(syncer::EntityChange::CreateUpdate(
+      later_specifics.uuid(), MakeEntityData(later_specifics)));
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+
+  VerifySpecificsExists(earlier_specifics);
+  VerifyEntriesAndStoreSize(3);
+  bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                       std::move(update_changes));
+
+  VerifySpecificsExists(later_specifics);
+  VerifyEntriesAndStoreSize(3);
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestApplyUpdateEarlierTimestamp) {
+  base::RunLoop run_loop;
+  syncer::EntityChangeList update_changes;
+  sync_pb::CompareSpecifics expected_unchanged_specifics =
+      entries().begin()->second;
+  sync_pb::CompareSpecifics earlier_specifics = entries().begin()->second;
+  earlier_specifics.set_update_time_unix_epoch_micros(
+      earlier_specifics.update_time_unix_epoch_micros() -
+      base::Time::kMillisecondsPerDay);
+
+  update_changes.push_back(syncer::EntityChange::CreateUpdate(
+      earlier_specifics.uuid(), MakeEntityData(earlier_specifics)));
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+
+  VerifySpecificsExists(expected_unchanged_specifics);
+  VerifyEntriesAndStoreSize(3);
+  bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                       std::move(update_changes));
+
+  VerifySpecificsExists(expected_unchanged_specifics);
+  VerifyEntriesAndStoreSize(3);
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestDelete) {
+  base::RunLoop run_loop;
+  syncer::EntityChangeList update_changes;
+  sync_pb::CompareSpecifics deleted_specifics = entries().begin()->second;
+
+  update_changes.push_back(
+      syncer::EntityChange::CreateDelete(deleted_specifics.uuid()));
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+
+  VerifySpecificsExists(deleted_specifics);
+  VerifyEntriesAndStoreSize(3);
+  bridge().ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                       std::move(update_changes));
+  VerifySpecificsNonExistence(deleted_specifics);
+  VerifyEntriesAndStoreSize(2);
 }
 
 }  // namespace commerce

@@ -12,6 +12,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/compare_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -50,14 +51,48 @@ std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // TODO(b/329519487) implement
-  return {};
+  DCHECK(entries_.empty());
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_changes));
 }
 std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  // TODO(b/329519488) implement
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    const sync_pb::CompareSpecifics& specifics =
+        change->data().specifics.compare();
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+        entries_.emplace(change->storage_key(), specifics);
+        batch->WriteData(change->storage_key(), specifics.SerializeAsString());
+        break;
+      case syncer::EntityChange::ACTION_UPDATE: {
+        auto local_specifics = entries_.find(change->storage_key());
+        if (local_specifics != entries_.end()) {
+          // Overwrite if specifics from sync are more recent.
+          if (specifics.update_time_unix_epoch_micros() >
+              local_specifics->second.update_time_unix_epoch_micros()) {
+            entries_[change->storage_key()] = specifics;
+            batch->WriteData(change->storage_key(),
+                             specifics.SerializeAsString());
+          }
+        }
+        break;
+      }
+      case syncer::EntityChange::ACTION_DELETE:
+        entries_.erase(change->storage_key());
+        batch->DeleteData(change->storage_key());
+        break;
+    }
+  }
+  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(&ProductSpecificationsSyncBridge::OnCommit,
+                     weak_ptr_factory_.GetWeakPtr()));
   return {};
 }
 
@@ -135,6 +170,13 @@ void ProductSpecificationsSyncBridge::OnReadAllMetadata(
   }
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+}
+
+void ProductSpecificationsSyncBridge::OnCommit(
+    const std::optional<syncer::ModelError>& error) {
+  if (error) {
+    change_processor()->ReportError(*error);
+  }
 }
 
 }  // namespace commerce
