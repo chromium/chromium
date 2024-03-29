@@ -6,7 +6,6 @@ import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import './strings.m.js';
 
 import type {KeyValuePairEntry} from '/shared/key_value_pair_viewer/key_value_pair_entry.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -36,7 +35,6 @@ export class SystemAppElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
-      title_: String,
     };
   }
 
@@ -45,8 +43,6 @@ export class SystemAppElement extends PolymerElement {
   private isLacrosEnabled_: boolean;
   // </if>
   private loading_: boolean;
-  private showFeedbackInfo_: boolean;
-  private title_: string;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -57,17 +53,7 @@ export class SystemAppElement extends PolymerElement {
     // </if>
 
     this.loading_ = true;
-    this.showFeedbackInfo_ = (new URLSearchParams(window.location.search))
-                                 .has('showFeedbackInfo', 'true');
-    let logs: SystemLog[];
-    if (this.showFeedbackInfo_) {
-      logs = await BrowserProxyImpl.getInstance().requestFeedbackSystemInfo();
-      this.title_ = loadTimeData.getString('feedbackInfoTitle');
-    } else {
-      logs = await BrowserProxyImpl.getInstance().requestSystemInfo();
-      this.title_ = loadTimeData.getString('aboutSysTitle');
-    }
-    document.title = this.title_;
+    const logs = await BrowserProxyImpl.getInstance().requestSystemInfo();
     this.entries_ = logs.map((log: SystemLog) => {
       return {
         key: log.statName,

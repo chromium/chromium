@@ -11,7 +11,7 @@ export class TestAboutSysBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'requestFeedbackSystemInfo', 'requestSystemInfo',
+      'requestSystemInfo',
       // <if expr="chromeos_ash">
       'isLacrosEnabled', 'openLacrosSystemPage',
       // </if>
@@ -20,11 +20,6 @@ export class TestAboutSysBrowserProxy extends TestBrowserProxy implements
 
   setSystemLogs(logs: SystemLog[]) {
     this.systemLogs = logs;
-  }
-
-  requestFeedbackSystemInfo() {
-    this.methodCalled('requestFeedbackSystemInfo');
-    return Promise.resolve(this.systemLogs);
   }
 
   requestSystemInfo() {

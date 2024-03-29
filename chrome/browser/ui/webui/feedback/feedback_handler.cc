@@ -126,7 +126,7 @@ void FeedbackHandler::HandleShowAutofillMetadataInfo(
 
 void FeedbackHandler::HandleShowSystemInfo(const base::Value::List& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
-                GURL(chrome::kChromeUIFeedbackSystemInfoUrl),
+                ChildPageURL("html/system_info.html"),
                 l10n_util::GetStringUTF16(IDS_FEEDBACK_SYSINFO_PAGE_TITLE));
 }
 

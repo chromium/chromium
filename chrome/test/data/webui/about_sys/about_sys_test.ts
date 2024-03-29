@@ -43,32 +43,6 @@ suite('AboutSystemTest', function() {
   });
 
   test('AboutSystemInfoTitleTest', function() {
-    const expectedTitle = loadTimeData.getString('aboutSysTitle');
-    assertEquals(expectedTitle, document.title);
-    assertEquals(expectedTitle, app.$.title.textContent);
-    assertEquals(loadTimeData.getString('aboutSysTitle'), document.title);
-  });
-});
-
-suite('FeedbackSysInfoTest', function() {
-  let app: SystemAppElement;
-  let browserProxy: TestAboutSysBrowserProxy;
-
-  setup(async function() {
-    browserProxy = new TestAboutSysBrowserProxy();
-    browserProxy.setSystemLogs(SYSTEM_LOGS);
-    BrowserProxyImpl.setInstance(browserProxy);
-    app = await createSystemAppElement();
-  });
-
-  test('RequestFeedbackSystemInfoTest', function() {
-    return browserProxy.whenCalled('requestFeedbackSystemInfo');
-  });
-
-  test('FeedbackSystemInfoTitleTest', function() {
-    const expectedTitle = loadTimeData.getString('feedbackInfoTitle');
-    assertEquals(expectedTitle, document.title);
-    assertEquals(expectedTitle, app.$.title.textContent);
-    assertEquals(loadTimeData.getString('feedbackInfoTitle'), document.title);
+    assertEquals(loadTimeData.getString('title'), app.$.title.textContent);
   });
 });

@@ -10,7 +10,6 @@ export interface SystemLog {
 }
 
 export interface BrowserProxy {
-  requestFeedbackSystemInfo(): Promise<SystemLog[]>;
   requestSystemInfo(): Promise<SystemLog[]>;
 
   // <if expr="chromeos_ash">
@@ -20,10 +19,6 @@ export interface BrowserProxy {
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
-  requestFeedbackSystemInfo() {
-    return sendWithPromise('requestFeedbackSystemInfo');
-  }
-
   requestSystemInfo() {
     return sendWithPromise('requestSystemInfo');
   }

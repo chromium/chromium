@@ -14,6 +14,7 @@ build_webui("build") {
   static_files = [
     "feedback.html",
     "html/autofill_metadata_info.html",
+    "html/system_info.html",
     "images/2x/button_butter_bar_close_hover.png",
     "images/2x/button_butter_bar_close.png",
     "images/2x/button_butter_bar_close_pressed.png",
@@ -25,6 +26,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "autofill_metadata_app.ts",
+    "system_info_app.ts",
   ]
 
   non_web_component_files = [
