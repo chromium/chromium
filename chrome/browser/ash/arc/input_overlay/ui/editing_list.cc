@@ -135,6 +135,9 @@ class EditingList::AddContainerButton : public views::Button {
     add_button_ = AddChildView(std::make_unique<views::LabelButton>(callback));
     // Ignore `add_button_` for the screen reader.
     add_button_->GetViewAccessibility().SetIsIgnored(true);
+    // Never focus on `add_button_` since it is redundant with the
+    // `AddContainerButton` (b/331643468).
+    add_button_->SetFocusBehavior(FocusBehavior::NEVER);
     add_button_->SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysPrimary, kAddButtonCornerRadius));
     add_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 6)));
@@ -145,16 +148,11 @@ class EditingList::AddContainerButton : public views::Button {
                                        /*icon_size=*/20));
     add_button_->SetImageCentered(true);
 
-    // Set up focus rings.
+    // Set up focus ring.
     views::HighlightPathGenerator::Install(
         this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                   gfx::Insets(), kAddContainerCornerRadius));
-    views::HighlightPathGenerator::Install(
-        add_button_, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                         gfx::Insets(), kAddButtonCornerRadius));
-
     UpdateFocusRingOnThemeChanged(this);
-    UpdateFocusRingOnThemeChanged(add_button_);
   }
 
   AddContainerButton(const AddContainerButton&) = delete;
