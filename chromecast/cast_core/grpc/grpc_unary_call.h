@@ -127,7 +127,7 @@ class GrpcUnaryCall : public GrpcCall<TGrpcStub, TRequest> {
       } else {
         std::move(response_callback_).Run(status);
       }
-      delete this;
+      ReactorBase::DeleteThis();
     }
 
     using AsyncStubCall = base::OnceCallback<void(grpc::ClientContext*,

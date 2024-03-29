@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -37,13 +38,13 @@ class RuntimeServiceImpl final
   // |application_client| and |web_service| are expected to persist for the
   // lifetime of this instance.
   RuntimeServiceImpl(cast_receiver::ContentBrowserClientMixins& browser_mixins,
-                     CastWebService& web_service,
-                     std::string runtime_id,
-                     std::string runtime_service_endpoint);
+                     CastWebService& web_service);
   ~RuntimeServiceImpl() override;
 
   // Starts and stops the runtime service, including the gRPC completion queue.
   cast_receiver::Status Start();
+  cast_receiver::Status Start(std::string_view runtime_id,
+                              std::string_view runtime_service_endpoint);
   cast_receiver::Status Stop();
 
   // CastRuntimeMetricsRecorder::EventBuilderFactory overrides:
@@ -88,9 +89,8 @@ class RuntimeServiceImpl final
       cast_receiver::Status status);
   void SendHeartbeat();
   void OnHeartbeatSent(
-      cast::utils::GrpcStatusOr<
-          cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor*>
-          reactor_or);
+      grpc::Status status,
+      cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor* reactor);
   void RecordMetrics(cast::metrics::RecordRequest request,
                      CastRuntimeMetricsRecorderService::RecordCompleteCallback
                          record_complete_callback);
@@ -102,8 +102,7 @@ class RuntimeServiceImpl final
       cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
           reactor);
 
-  const std::string runtime_id_;
-  const std::string runtime_service_endpoint_;
+  void ResetGrpcServices();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

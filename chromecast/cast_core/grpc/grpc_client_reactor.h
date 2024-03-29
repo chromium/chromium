@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/cast_core/grpc/grpc_call_options.h"
 
 namespace cast {
@@ -27,7 +28,6 @@ namespace utils {
 template <typename TRequest, typename TUnderlyingReactor>
 class GrpcClientReactor : public TUnderlyingReactor {
  public:
-  GrpcClientReactor() = default;
   ~GrpcClientReactor() override = default;
 
   // Copy and move are deleted.
@@ -47,12 +47,22 @@ class GrpcClientReactor : public TUnderlyingReactor {
 
  protected:
   explicit GrpcClientReactor(TRequest request, GrpcCallOptions options)
-      : request_(std::move(request)), options_(std::move(options)) {}
+      : request_(std::move(request)),
+        options_(std::move(options)),
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+
+  void DeleteThis() {
+    // Client reactors must be deleted asynchronously to avoid a crash in debug
+    // builds caused absl::Mutex assert on "unlocking a mutex after dtor"
+    // triggered by the ClientContext mutex in TryCancel call.
+    task_runner_->DeleteSoon(FROM_HERE, this);
+  }
 
  private:
   grpc::ClientContext context_;
   TRequest request_;
   GrpcCallOptions options_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace utils

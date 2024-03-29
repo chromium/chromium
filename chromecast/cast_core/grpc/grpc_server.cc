@@ -27,9 +27,7 @@ static void StopGrpcServer(
     std::unique_ptr<ServerReactorTracker> server_reactor_tracker,
     int64_t timeout_ms,
     base::OnceClosure server_stopped_callback) {
-  LOG(INFO) << "Shutting down gRPC server with "
-            << server_reactor_tracker->active_reactor_count()
-            << " active reactors: " << *server_reactor_tracker;
+  LOG(INFO) << "Shutting down gRPC server";
 
   // The gRPC Reactors are owned by the gRPC framework and are 'pending'
   // unless Reactor::Finish or similar (StartWriteAndFinish) API is called.
@@ -42,9 +40,7 @@ static void StopGrpcServer(
 
   // As mentioned above, all the pending reactors are now cancelled and must
   // be destroyed by the ServerReactorTracker.
-  DCHECK_EQ(server_reactor_tracker->active_reactor_count(), 0UL)
-      << "Not all reactors were cancelled: " << *server_reactor_tracker;
-  LOG(INFO) << "All active reactors are finished";
+  server_reactor_tracker.reset();
 
   // Finish server shutdown.
   server->Wait();
@@ -75,6 +71,7 @@ grpc::Status GrpcServer::Start(const std::string& endpoint) {
     return grpc::Status(grpc::StatusCode::INTERNAL,
                         "can't start gRPC server on " + endpoint);
   }
+  LOG(INFO) << "Grpc server started: " << endpoint;
   return grpc::Status::OK;
 }
 

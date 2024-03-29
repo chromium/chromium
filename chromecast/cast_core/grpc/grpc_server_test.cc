@@ -4,6 +4,7 @@
 #include "chromecast/cast_core/grpc/grpc_server.h"
 
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "chromecast/cast_core/grpc/status_matchers.h"
 #include "chromecast/cast_core/grpc/test_service.castcore.pb.h"
@@ -21,6 +22,8 @@ class GrpcServerTest : public ::testing::Test {
   const std::string endpoint_ =
       "unix-abstract:cast-uds-" +
       base::Uuid::GenerateRandomV4().AsLowercaseString();
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(GrpcServerTest, FailedStartReturnsError) {

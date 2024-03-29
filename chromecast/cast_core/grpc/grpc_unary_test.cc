@@ -29,7 +29,6 @@ namespace {
 using ::cast::test::StatusIs;
 
 const auto kEventTimeout = base::Seconds(1);
-const auto kServerManualStopTimeout = base::Milliseconds(100);
 const auto kServerStopTimeout = base::Milliseconds(100);
 
 class GrpcUnaryTest : public ::testing::Test {
@@ -98,26 +97,41 @@ TEST_F(GrpcUnaryTest, SyncUnaryCallReturnsErrorStatus) {
 
 TEST_F(GrpcUnaryTest, SyncUnaryCallCancelledIfServerIsStopped) {
   GrpcServer server;
-  base::WaitableEvent server_stopped_event;
+  base::WaitableEvent request_received_event{
+      base::WaitableEvent::ResetPolicy::AUTOMATIC};
+  SimpleServiceHandler::SimpleCall::Reactor* reactor;
   server.SetHandler<SimpleServiceHandler::SimpleCall>(
       base::BindLambdaForTesting(
           [&](TestRequest request,
-              SimpleServiceHandler::SimpleCall::Reactor* reactor) {
-            // Stop the server to trigger call cancellation.
-            server.Stop(kServerManualStopTimeout.InMilliseconds(),
-                        base::BindLambdaForTesting(
-                            [&]() { server_stopped_event.Signal(); }));
+              SimpleServiceHandler::SimpleCall::Reactor* r) {
+            reactor = r;
+            request_received_event.Signal();
           }));
   ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
+  // Need to run the client request in a separate thread, so that the main test
+  // thread can continue handling the case.
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        SimpleServiceStub stub(endpoint_);
+        auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
+        call.request().set_foo("test_foo");
+        auto response = std::move(call).Invoke();
+        CU_ASSERT_OK(response);
+      }));
+  ASSERT_TRUE(request_received_event.TimedWait(kEventTimeout));
+  // Allow first request to pass.
+  reactor->Write(TestResponse());
+
+  test::StopGrpcServer(server, kServerStopTimeout);
+
+  // Server should not be available any more.
   SimpleServiceStub stub(endpoint_);
   auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
   call.request().set_foo("test_foo");
   auto response = std::move(call).Invoke();
   ASSERT_THAT(response, StatusIs(grpc::StatusCode::UNAVAILABLE));
-
-  // Need to wait for server to fully stop.
-  ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
+  ASSERT_FALSE(request_received_event.IsSignaled());
 }
 
 TEST_F(GrpcUnaryTest, AsyncUnaryCallSucceeds) {
@@ -177,31 +191,37 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallReturnsErrorStatus) {
 
 TEST_F(GrpcUnaryTest, AsyncUnaryCallCancelledIfServerIsStopped) {
   GrpcServer server;
-  base::WaitableEvent server_stopped_event;
+  base::WaitableEvent request_received_event;
   server.SetHandler<SimpleServiceHandler::SimpleCall>(
       base::BindLambdaForTesting(
           [&](TestRequest request,
               SimpleServiceHandler::SimpleCall::Reactor* reactor) {
-            // Stop the server to trigger call cancellation.
-            server.Stop(kServerManualStopTimeout.InMilliseconds(),
-                        base::BindLambdaForTesting(
-                            [&]() { server_stopped_event.Signal(); }));
+            reactor->Write(TestResponse());
+            request_received_event.Signal();
           }));
   ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   SimpleServiceStub stub(endpoint_);
   auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
   call.request().set_foo("test_foo");
-  base::WaitableEvent response_received_event;
+  base::WaitableEvent response_received_event{
+      base::WaitableEvent::ResetPolicy::AUTOMATIC};
   std::move(call).InvokeAsync(
+      base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
+        CU_ASSERT_OK(response);
+        response_received_event.Signal();
+      }));
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+
+  test::StopGrpcServer(server, kServerStopTimeout);
+
+  auto call1 = stub.CreateCall<SimpleServiceStub::SimpleCall>();
+  std::move(call1).InvokeAsync(
       base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
         ASSERT_THAT(response, StatusIs(grpc::StatusCode::UNAVAILABLE));
         response_received_event.Signal();
       }));
   ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
-
-  // Need to wait for server to fully stop.
-  ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
 }
 
 TEST_F(GrpcUnaryTest, SyncUnaryCallSucceedsExtra) {
@@ -227,29 +247,21 @@ TEST_F(GrpcUnaryTest, SyncUnaryCallSucceedsExtra) {
   test::StopGrpcServer(server, kServerStopTimeout);
 }
 
-// Cancelling a streaming call from the client side results in a race condition
-// between two threads, one deletes the ClientContext while the other releases
-// the mutex in that ClientContext. Problem is not always manifested as it's a
-// timing issue between scheduled threads in the EventManager. Hence, the tsan
-// config is disabled for this test.
-#ifndef THREAD_SANITIZER
-
-// TODO(b/259123902): Enable as gRPC framework is synced.
-TEST_F(GrpcUnaryTest, DISABLED_AsyncUnaryCallCancelledByClient) {
+TEST_F(GrpcUnaryTest,
+       AsyncUnaryCallCancelledByClientAndDestroyedBeforeServerShutdown) {
   GrpcServer server;
+  SimpleServiceHandler::SimpleCall::Reactor* cancelled_reactor;
   base::WaitableEvent request_received_event;
   server.SetHandler<SimpleServiceHandler::SimpleCall>(
       base::BindLambdaForTesting(
-          [&](TestRequest request,
-              SimpleServiceHandler::SimpleCall::Reactor* reactor) {
-            EXPECT_EQ(request.foo(), "test_foo");
+          [&](TestRequest, SimpleServiceHandler::SimpleCall::Reactor* r) {
+            cancelled_reactor = r;
             request_received_event.Signal();
           }));
   ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
 
   SimpleServiceStub stub(endpoint_);
   auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
-  call.request().set_foo("test_foo");
   base::WaitableEvent response_received_event;
   auto context = std::move(call).InvokeAsync(
       base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
@@ -261,11 +273,53 @@ TEST_F(GrpcUnaryTest, DISABLED_AsyncUnaryCallCancelledByClient) {
   context.Cancel();
   ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
 
+  // Actually sleep to allow gRPC framework to propagate the cancellation to the
+  // server side and mark the reactor cancelled.
+  ASSERT_TRUE(
+      test::WaitForPredicate(kEventTimeout, base::BindLambdaForTesting([&]() {
+                               return cancelled_reactor->is_done();
+                             })));
+
+  // This releases the cancelled reactor on the server side and destroys it.
+  cancelled_reactor->Write(TestResponse());
+  ASSERT_TRUE(
+      test::WaitForPredicate(kEventTimeout, base::BindLambdaForTesting([&]() {
+                               return server.active_reactor_count() == 0;
+                             })));
+  ASSERT_EQ(server.active_reactor_count(), 0u);
+
   test::StopGrpcServer(server, kServerStopTimeout);
-  task_environment_.RunUntilIdle();
 }
 
-#endif  // THREAD_SANITIZER
+TEST_F(GrpcUnaryTest,
+       AsyncUnaryCallCancelledByClientAndLeftActiveDuringServerShutdown) {
+  GrpcServer server;
+  base::WaitableEvent request_received_event;
+  server.SetHandler<SimpleServiceHandler::SimpleCall>(
+      base::BindLambdaForTesting(
+          [&](TestRequest, SimpleServiceHandler::SimpleCall::Reactor*) {
+            request_received_event.Signal();
+          }));
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
+
+  SimpleServiceStub stub(endpoint_);
+  auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
+  base::WaitableEvent response_received_event;
+  auto context = std::move(call).InvokeAsync(
+      base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
+        ASSERT_THAT(response, StatusIs(grpc::StatusCode::CANCELLED));
+        response_received_event.Signal();
+      }));
+  ASSERT_TRUE(request_received_event.TimedWait(kEventTimeout));
+
+  context.Cancel();
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+
+  CHECK_EQ(server.active_reactor_count(), 1u);
+
+  // All active reactors will be destroyed after this call.
+  test::StopGrpcServer(server, kServerStopTimeout);
+}
 
 }  // namespace
 }  // namespace utils

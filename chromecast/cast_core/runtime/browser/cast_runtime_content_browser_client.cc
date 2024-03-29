@@ -160,15 +160,8 @@ void CastRuntimeContentBrowserClient::Observer::OnStreamingResolutionChanged(
 
 void CastRuntimeContentBrowserClient::InitializeCoreComponents(
     CastWebService* web_service) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string runtime_id =
-      command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
-  std::string runtime_service_path =
-      command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
-
   runtime_service_ = std::make_unique<RuntimeServiceImpl>(
-      *cast_browser_client_mixins_, *web_service, runtime_id,
-      runtime_service_path);
+      *cast_browser_client_mixins_, *web_service);
 }
 
 }  // namespace chromecast

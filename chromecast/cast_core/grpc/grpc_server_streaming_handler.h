@@ -47,7 +47,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
 
     using OnRequestCallback = base::RepeatingCallback<void(TRequest, Reactor*)>;
     using WritesAvailableCallback =
-        base::RepeatingCallback<void(GrpcStatusOr<Reactor*>)>;
+        base::RepeatingCallback<void(grpc::Status, Reactor*)>;
 
     template <typename... Args>
     explicit Reactor(OnRequestCallback on_request_callback, Args&&... args)
@@ -89,7 +89,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
           << "Server streaming call can only be finished with a status";
       if (!status.ok() && writes_available_callback_) {
         // A signal that the caller has aborted the streaming session.
-        writes_available_callback_.Run(status);
+        writes_available_callback_.Run(status, nullptr);
       }
       Finish(status);
     }
@@ -97,13 +97,12 @@ class GrpcServerStreamingHandler : public GrpcHandler {
     void OnResponseDone(const grpc::Status& status) override {
       DCHECK(writes_available_callback_)
           << "Writes available callback must be set";
-      writes_available_callback_.Run(status.ok() ? GrpcStatusOr<Reactor*>(this)
-                                                 : status);
+      writes_available_callback_.Run(status, status.ok() ? this : nullptr);
     }
 
     void OnRequestDone(GrpcStatusOr<TRequest> request) override {
       if (!request.ok()) {
-        Finish(request.status());
+        FinishWriting(nullptr, request.status());
         return;
       }
 

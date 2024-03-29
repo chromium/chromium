@@ -22,6 +22,8 @@ namespace utils {
 template <typename TRequest, typename TResponse>
 class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
  public:
+  using RequestType = TRequest;
+
   GrpcServerReactor(const std::string& name,
                     grpc::CallbackServerContext* context)
       : name_(name), context_(context) {}
@@ -33,13 +35,20 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
   GrpcServerReactor& operator=(const GrpcServerReactor&) = delete;
   GrpcServerReactor& operator=(GrpcServerReactor&&) = delete;
 
+  // Flags that the reactor is done (finished or cancelled).
+  virtual bool is_done() = 0;
+
   // Set of overloaded methods to write responses or status to the clients.
   // Writes a status. No writes can be done after this call.
   void Write(const grpc::Status& status) { FinishWriting(nullptr, status); }
 
   // Writes a defined response.
   void Write(TResponse response = TResponse()) {
-    DCHECK(!response_byte_buffer_) << "Writing is already in progress";
+    if (response_byte_buffer_) {
+      LOG(ERROR) << "Writing is already in progress or reactor is cancelled";
+      OnWriteDone(false);
+      return;
+    }
     DVLOG(1) << "Writing response: " << name();
     response_byte_buffer_.emplace();
     Serialize(response, *response_byte_buffer_);
@@ -54,8 +63,11 @@ class GrpcServerReactor : public grpc::ServerGenericBidiReactor {
  protected:
   // Starts reading a request.
   void ReadRequest() {
-    DCHECK(!request_byte_buffer_)
-        << "Reading is already in progress: " << name();
+    if (request_byte_buffer_) {
+      LOG(ERROR) << "Reading is already in progress: " << name();
+      OnReadDone(false);
+      return;
+    }
     DVLOG(1) << "Reading request: " << name();
     request_byte_buffer_.emplace();
     StartRead(&*request_byte_buffer_);
