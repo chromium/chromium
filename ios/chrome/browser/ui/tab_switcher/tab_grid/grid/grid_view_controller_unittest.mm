@@ -179,7 +179,7 @@ TEST_P(BaseGridViewControllerTest, InsertItem) {
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
   [view_controller_
                   insertItem:[[GridItemIdentifier alloc] initWithTabItem:item]
-                     atIndex:2
+                beforeItemID:nil
       selectedItemIdentifier:[[GridItemIdentifier alloc] initWithTabItem:item]];
   EXPECT_EQ(3U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(2U, view_controller_.selectedIndex);
@@ -341,7 +341,7 @@ TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
         [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
     [view_controller_
                     insertItem:[[GridItemIdentifier alloc] initWithTabItem:item]
-                       atIndex:0
+                  beforeItemID:nil
         selectedItemIdentifier:[[GridItemIdentifier alloc]
                                    initWithTabItem:selectedItem]];
     // Spin the runloop to make sure that the visible cells are updated.

@@ -447,21 +447,25 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
-      GridItemIdentifier* selectItemWithIdentifier =
-          GetActiveNonPinnedIdentifier(webStateList);
       if ([self isPinnedWebState:insertChange.index()]) {
-        [self.consumer selectItemWithIdentifier:selectItemWithIdentifier];
+        [self.consumer selectItemWithIdentifier:GetActiveNonPinnedIdentifier(
+                                                    webStateList)];
         break;
       }
-      web::WebState* insertedWebState = insertChange.inserted_web_state();
-      NSUInteger itemIndex =
-          [self itemIndexFromWebStateListIndex:insertChange.index()];
-      [self.consumer insertItem:[GridItemIdentifier
-                                    tabIdentifier:insertedWebState]
-                         atIndex:itemIndex
-          selectedItemIdentifier:selectItemWithIdentifier];
 
-      _scopedWebStateObservation->AddObservation(insertedWebState);
+      if (insertChange.group()) {
+        GridItemIdentifier* groupIdentifier =
+            [GridItemIdentifier groupIdentifier:insertChange.group()
+                               withWebStateList:webStateList];
+        [self.consumer replaceItem:groupIdentifier
+               withReplacementItem:groupIdentifier];
+      } else {
+        web::WebState* insertedWebState = insertChange.inserted_web_state();
+        [self insertItem:[GridItemIdentifier tabIdentifier:insertedWebState]
+             beforeIndex:insertChange.index() + 1];
+
+        _scopedWebStateObservation->AddObservation(insertedWebState);
+      }
       break;
     }
     case WebStateListChange::Type::kGroupCreate: {
@@ -473,14 +477,12 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           [GridItemIdentifier groupIdentifier:currentGroup
                              withWebStateList:webStateList];
 
-      const int startingWebStateIndex =
-          webStateList->GetGroupRange(currentGroup).range_begin();
-      GridItemIdentifier* selectedIdentifier =
-          GetActiveNonPinnedIdentifier(webStateList);
-
-      [self.consumer insertItem:groupItemIdentifier
-                         atIndex:(NSUInteger)startingWebStateIndex
-          selectedItemIdentifier:selectedIdentifier];
+      [self insertItem:groupItemIdentifier
+           beforeIndex:webStateList
+                           ->GetGroupRange(
+                               groupItemIdentifier.tabGroupItem.tabGroup)
+                           .range_end() +
+                       1];
       break;
     }
     case WebStateListChange::Type::kGroupVisualDataUpdate: {
@@ -1230,11 +1232,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
                      selectedItemIdentifier:selectedItemIdentifier];
     _scopedWebStateObservation->RemoveObservation(webState);
   } else {
-    NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-    [self.consumer insertItem:[GridItemIdentifier tabIdentifier:webState]
-                       atIndex:itemIndex
-        selectedItemIdentifier:selectedItemIdentifier];
-
+    [self insertItem:[GridItemIdentifier tabIdentifier:webState]
+         beforeIndex:index + 1];
     _scopedWebStateObservation->AddObservation(webState);
   }
 }
@@ -1340,6 +1339,26 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       MoveTabToGroup(webStateID, group, _browserState);
     }
   }
+}
+
+// Inserts `item` before the item at `nextItemIndex`.
+- (void)insertItem:(GridItemIdentifier*)item beforeIndex:(int)nextItemIndex {
+  GridItemIdentifier* nextItemIdentifier;
+  if (self.webStateList->ContainsIndex(nextItemIndex)) {
+    const TabGroup* group =
+        self.webStateList->GetGroupOfWebStateAt(nextItemIndex);
+    if (group) {
+      nextItemIdentifier =
+          [GridItemIdentifier groupIdentifier:group
+                             withWebStateList:self.webStateList];
+    } else {
+      nextItemIdentifier = [GridItemIdentifier
+          tabIdentifier:self.webStateList->GetWebStateAt(nextItemIndex)];
+    }
+  }
+  [self.consumer insertItem:item
+                beforeItemID:nextItemIdentifier
+      selectedItemIdentifier:GetActiveNonPinnedIdentifier(self.webStateList)];
 }
 
 #pragma mark - TabGridPageMutator

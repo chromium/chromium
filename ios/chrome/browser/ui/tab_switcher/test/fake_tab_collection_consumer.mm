@@ -33,9 +33,11 @@
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
-                   atIndex:(NSUInteger)index
+              beforeItemID:(GridItemIdentifier*)nextItemIdentifier
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
-  _items.insert(_items.begin() + index, item.tabSwitcherItem.identifier);
+  _items.insert(std::find(std::begin(_items), std::end(_items),
+                          nextItemIdentifier.tabSwitcherItem.identifier),
+                item.tabSwitcherItem.identifier);
   _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
 }
 

@@ -29,11 +29,13 @@ class WebStateID;
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
-// Tells the consumer to insert `item` at `index` and update the selected item
-// identifier to be `selectedItemIdentifier`. It's an error if `item`'s
-// duplicates an item already passed to the consumer (and not yet removed).
+// Tells the consumer to insert `item` before the given `nextItemIdentifier` and
+// update the selected item identifier to be `selectedItemIdentifier`. It's an
+// error if `item`'s duplicates an item already passed to the consumer (and not
+// yet removed). `nextItemIdentifier` can be nul, `item` will be append to the
+// end of the section.
 - (void)insertItem:(GridItemIdentifier*)item
-                   atIndex:(NSUInteger)index
+              beforeItemID:(GridItemIdentifier*)nextItemIdentifier
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
 // Tells the consumer to remove the item with identifier `removedItem` and

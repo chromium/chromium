@@ -293,8 +293,14 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
       web::WebState* insertedWebState = insertChange.inserted_web_state();
+      int nextItemIndex = insertChange.index() + 1;
+      GridItemIdentifier* nextItemIdentifier;
+      if (webStateList->ContainsIndex(nextItemIndex)) {
+        nextItemIdentifier = [GridItemIdentifier
+            tabIdentifier:webStateList->GetWebStateAt(nextItemIndex)];
+      }
       [_consumer insertItem:[GridItemIdentifier tabIdentifier:insertedWebState]
-                         atIndex:insertChange.index()
+                    beforeItemID:nextItemIdentifier
           selectedItemIdentifier:nil];
 
       _scopedWebStateObservation->AddObservation(insertedWebState);

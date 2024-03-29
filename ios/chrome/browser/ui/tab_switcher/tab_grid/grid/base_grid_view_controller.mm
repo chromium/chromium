@@ -1130,7 +1130,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
-                   atIndex:(NSUInteger)index
+              beforeItemID:(GridItemIdentifier*)nextItemIdentifier
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
   if (_mode == TabGridModeSearch) {
     // Prevent inserting items while viewing search results.
@@ -1142,12 +1142,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
         [weakSelf
             applyModelAndViewUpdatesForInsertionOfItem:item
-                                               atIndex:index
+                                          beforeItemID:nextItemIdentifier
                                 selectedItemIdentifier:selectedItemIdentifier
                                               snapshot:snapshot];
       }
       completion:^{
-        [weakSelf modelAndViewUpdatesForInsertionDidCompleteAtIndex:index];
+        [weakSelf
+            modelAndViewUpdatesForInsertionDidCompleteForItemIdentifier:item];
       }];
 }
 
@@ -1357,9 +1358,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateVisibleCellIdentifiers];
 }
 
-// Makes the required changes to the data source when a new item is inserted.
+// Makes the required changes to the data source when a new item is inserted
+// before the given `nextItemIdentifier`. If `nextItemIdentifier` is nil,
+// `item` is append at the end of the section.
 - (void)applyModelAndViewUpdatesForInsertionOfItem:(GridItemIdentifier*)item
-                                           atIndex:(NSUInteger)index
+                                      beforeItemID:(GridItemIdentifier*)
+                                                       nextItemIdentifier
                             selectedItemIdentifier:
                                 (GridItemIdentifier*)selectedItemIdentifier
                                           snapshot:(GridSnapshot*)snapshot {
@@ -1378,12 +1382,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Consistency check: `item`'s ID is not in the collection view.
   CHECK(![self.diffableDataSource indexPathForItemIdentifier:item]);
 
-  // Store the identifier of the current item at the given index, if any, prior
-  // to model updates.
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:index
-                                               inSection:section];
-  GridItemIdentifier* previousItemIdentifier =
-      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
   self.selectedItemIdentifier = selectedItemIdentifier;
   if (item.type == GridItemType::Tab) {
     self.lastInsertedItemID = item.tabSwitcherItem.identifier;
@@ -1391,15 +1389,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     self.lastInsertedItemID = web::WebStateID();
   }
 
-  // The snapshot API doesn't provide a way to insert at a given index (that's
-  // its purpose actually), only before/after an existing item, or by
-  // appending to an existing section.
-  // If the new item is taking the spot of an existing item, insert the new
-  // one before it. Otherwise (if the section is empty, or the new index is
-  // the new last position), append at the end of the section.
-  if (previousItemIdentifier) {
+  if (nextItemIdentifier) {
     [snapshot insertItemsWithIdentifiers:@[ item ]
-                beforeItemWithIdentifier:previousItemIdentifier];
+                beforeItemWithIdentifier:nextItemIdentifier];
   } else {
     [snapshot appendItemsWithIdentifiers:@[ item ]
                intoSectionWithIdentifier:kGridOpenTabsSectionIdentifier];
@@ -1407,21 +1399,21 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 // Makes the required changes when a new item has been inserted.
-- (void)modelAndViewUpdatesForInsertionDidCompleteAtIndex:(NSUInteger)index {
+- (void)modelAndViewUpdatesForInsertionDidCompleteForItemIdentifier:
+    (GridItemIdentifier*)item {
+  NSIndexPath* index =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
   NSInteger numberOfTabs = [self numberOfTabs];
   [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
 
-  // Check `index` boundaries in order to filter out possible race conditions
-  // while mutating the collection.
-  if (index == NSNotFound ||
-      static_cast<NSInteger>(index) >= [self numberOfTabs]) {
+  if (!index) {
     return;
   }
 
   [self.collectionView
-      scrollToItemAtIndexPath:CreateIndexPath(index)
+      scrollToItemAtIndexPath:index
              atScrollPosition:UICollectionViewScrollPositionCenteredVertically
                      animated:YES];
 }
