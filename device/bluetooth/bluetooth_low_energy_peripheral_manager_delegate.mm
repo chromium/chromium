@@ -31,8 +31,8 @@ class BluetoothLowEnergyPeripheralManagerBridge {
   }
 
  private:
-  // TODO(https://crbug.com/330009945): Fix this two dangling dangling pointer.
-  // They are dangling on mac_chromium_10.15_rel_ng during
+  // TODO(https://crbug.com/330009945): Fix this dangling dangling pointer.
+  // It is dangling on mac_chromium_10.15_rel_ng during
   // ChromeDriverSecureContextTest.testRemoveAllCredentials test.
   raw_ptr<BluetoothLowEnergyAdvertisementManagerMac,
           AcrossTasksDanglingUntriaged>
