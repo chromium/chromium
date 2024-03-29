@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] X AudioContext.destination.numberOfOutputs is not equal to 1. Got 0.
+  assert_true: expected true got false
+[FAIL] < [test] 1 out of 12 assertions were failed.
+  assert_true: expected true got false
+[FAIL] # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

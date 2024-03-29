@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] add float32 large inputs
+  promise_test: Unhandled rejection with value: object "RangeError: Invalid string length"
 [FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Pow only supports scalar operand b."
 [FAIL] pow float32 1D base tensor and 1D integer exponent tensor

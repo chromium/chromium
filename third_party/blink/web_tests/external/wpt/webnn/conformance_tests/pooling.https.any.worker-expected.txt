@@ -7,6 +7,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
 [FAIL] averagePool2d float32 4D tensor options.windowDimensions
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] global averagePool2d float32 4D tensor all positive options.windowDimensions
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
 [FAIL] averagePool2d float32 4D tensor options.padding
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
 [FAIL] averagePool2d float32 4D tensor options.strides

@@ -1,16 +1,6 @@
 This is a testharness.js-based test.
-Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] aria-label undefined on img w/ alt
-  assert_equals: <img alt="alt" aria-label="undefined" data-expectedlabel="alt" data-testname="aria-label undefined on img w/ alt" class="ex"> expected "alt" but got "undefined"
-[FAIL] aria-label undefined on img w/o alt
-  assert_equals: <img aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/o alt" class="ex"> expected "" but got "undefined"
-[FAIL] aria-label undefined on img w/ empty alt
-  assert_equals: <img alt="" aria-label="undefined" data-expectedlabel="" data-testname="aria-label undefined on img w/ empty alt" class="ex"> expected "" but got "undefined"
-[FAIL] aria-label undefined on img w/o alt but w/ title
-  assert_equals: <img aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/o alt but w/ title" class="ex"> expected "title" but got "undefined"
-[FAIL] aria-label undefined on img w/ empty alt but w/ title
-  assert_equals: <img alt="" aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/ empty alt but w/ title" class="ex"> expected "title" but got "undefined"
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label
-  assert_equals: <button aria-labelledby="span4" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label" class="ex">\n  <span id="span4">\n    <span id="span5" style="visibility:hidden;">label</span>\n  </span>\n  x\n</button> expected "foo" but got "label"
+  assert_equals: <button aria-labelledby="span5" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label" class="ex">\n  <span id="span5">\n    <span id="span6" style="visibility:hidden;">label</span>\n  </span>\n  x\n</button> expected "foo" but got ""
 Harness: the test ran to completion.
 
