@@ -661,6 +661,13 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     }
   }
 
+  // TODO(benjamin.beaudry): Uncomment DCHECK once https://crbug.com/331840469
+  // is fixed.
+  // DCHECK(event_type != ax::mojom::Event::kLiveRegionChanged ||
+  //        GetDelegate()->IsWebContent() || IsUIAControl())
+  //     << "For views, the LiveRegionChanged event should only be fired on
+  //     nodes that are UIA controls.";
+
   if (event_type == ax::mojom::Event::kValueChanged ||
       event_type == ax::mojom::Event::kLiveRegionCreated ||
       event_type == ax::mojom::Event::kLiveRegionChanged) {
@@ -7567,12 +7574,14 @@ bool AXPlatformNodeWin::IsUIAControl() const {
 
   // TODO(accessibility): This condition is very wide - it returns true for most
   // elements, except the ones that are explicitly invisible/ignored and not
-  // focusable. We might want to revisit this implementation to match the specs:
+  // focusable, and the ones that are expected to fire live region events. We
+  // might want to revisit this implementation to match the specs:
   // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-treeoverview#control-view.
   //
   // Also, should we really have a different implementation for Views than for
   // web content?
-  return !(IsInvisibleOrIgnored() && !IsFocusable());
+  return !(IsInvisibleOrIgnored() && !IsFocusable()) ||
+         GetRole() == ax::mojom::Role::kStatus;
 }
 
 std::optional<LONG> AXPlatformNodeWin::ComputeUIALandmarkType() const {
