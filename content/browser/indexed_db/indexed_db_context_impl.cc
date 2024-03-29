@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -31,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_features.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -122,11 +124,13 @@ bool ShardingEnabled() {
 }
 
 // Creates a task runner suitable for use either as the main IDB thread or for a
-// backing store.
+// backing store. See https://crbug.com/329221141 for notes on task priority.
 scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::USER_BLOCKING,
+       base::FeatureList::IsEnabled(base::kUseUtilityThreadGroup)
+           ? base::TaskPriority::USER_BLOCKING
+           : base::TaskPriority::USER_VISIBLE,
        // BLOCK_SHUTDOWN to support clearing session-only storage.
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }
