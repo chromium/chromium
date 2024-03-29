@@ -17,7 +17,7 @@ TEST_F(GridItemIdentifierTest, Tab) {
   TabSwitcherItem* tab_switcher_item =
       [[TabSwitcherItem alloc] initWithIdentifier:web_state_id];
   GridItemIdentifier* item_identifier =
-      [GridItemIdentifier tabIdentifier:tab_switcher_item];
+      [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item];
 
   EXPECT_EQ(item_identifier.type, GridItemType::Tab);
   EXPECT_NSEQ(item_identifier.tabSwitcherItem, tab_switcher_item);
@@ -38,11 +38,11 @@ TEST_F(GridItemIdentifierTest, TabEqualTab) {
   TabSwitcherItem* tab_switcher_item_1 =
       [[TabSwitcherItem alloc] initWithIdentifier:web_state_id];
   GridItemIdentifier* item_identifier_1 =
-      [GridItemIdentifier tabIdentifier:tab_switcher_item_1];
+      [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item_1];
   TabSwitcherItem* tab_switcher_item_2 =
       [[TabSwitcherItem alloc] initWithIdentifier:web_state_id];
   GridItemIdentifier* item_identifier_2 =
-      [GridItemIdentifier tabIdentifier:tab_switcher_item_2];
+      [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item_2];
 
   EXPECT_NSEQ(item_identifier_1, item_identifier_2);
   EXPECT_EQ(item_identifier_1.hash, item_identifier_2.hash);
@@ -54,12 +54,12 @@ TEST_F(GridItemIdentifierTest, TabNotEqualTab) {
   TabSwitcherItem* tab_switcher_item_1 =
       [[TabSwitcherItem alloc] initWithIdentifier:web_state_id_1];
   GridItemIdentifier* item_identifier_1 =
-      [GridItemIdentifier tabIdentifier:tab_switcher_item_1];
+      [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item_1];
   web::WebStateID web_state_id_2 = web::WebStateID::FromSerializedValue(43);
   TabSwitcherItem* tab_switcher_item_2 =
       [[TabSwitcherItem alloc] initWithIdentifier:web_state_id_2];
   GridItemIdentifier* item_identifier_2 =
-      [GridItemIdentifier tabIdentifier:tab_switcher_item_2];
+      [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item_2];
 
   EXPECT_NSNE(item_identifier_1, item_identifier_2);
   EXPECT_NE(item_identifier_1.hash, item_identifier_2.hash);
@@ -73,7 +73,7 @@ TEST_F(GridItemIdentifierTest, TabNotEqualSuggestedAction) {
   TabSwitcherItem* tab_switcher_item =
       [[TabSwitcherItem alloc] initWithIdentifier:web_state_id];
   GridItemIdentifier* tab_item_identifier =
-      [GridItemIdentifier tabIdentifier:tab_switcher_item];
+      [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item];
   GridItemIdentifier* suggested_actions_item_identifier =
       [GridItemIdentifier suggestedActionsIdentifier];
 
@@ -106,7 +106,7 @@ TEST_F(GridItemIdentifierTest, HashingLikeNSNumber) {
     TabSwitcherItem* tab_switcher_item =
         [[TabSwitcherItem alloc] initWithIdentifier:web_state_id];
     GridItemIdentifier* tab_item_identifier =
-        [GridItemIdentifier tabIdentifier:tab_switcher_item];
+        [[GridItemIdentifier alloc] initWithTabItem:tab_switcher_item];
 
     EXPECT_EQ(tab_item_identifier.hash, @(web_state_id.identifier()).hash);
   }

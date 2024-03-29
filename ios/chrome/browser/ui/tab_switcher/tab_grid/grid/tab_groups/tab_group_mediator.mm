@@ -99,9 +99,7 @@
   if (webStateIndex != WebStateList::kInvalidIndex &&
       self.webStateList->GetGroupOfWebStateAt(webStateIndex) == _tabGroup) {
     web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
-    TabSwitcherItem* selectedItem =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-    identifier = [GridItemIdentifier tabIdentifier:selectedItem];
+    identifier = [GridItemIdentifier tabIdentifier:webState];
   }
 
   [self.consumer populateItems:CreateTabItems(

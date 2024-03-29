@@ -1648,7 +1648,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   CHECK(cell);
   CHECK(item);
   GridItemIdentifier* groupItemIdentifier =
-      [GridItemIdentifier groupIdentifier:item];
+      [[GridItemIdentifier alloc] initWithGroupItem:item];
   cell.delegate = self;
   cell.theme = self.theme;
   cell.itemIdentifier = groupItemIdentifier;
@@ -1683,15 +1683,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
               atIndex:(NSUInteger)index {
   CHECK(cell);
   CHECK(item);
+  GridItemIdentifier* itemIdentifier =
+      [[GridItemIdentifier alloc] initWithTabItem:item];
   cell.delegate = self;
   cell.theme = self.theme;
-  cell.itemIdentifier = [GridItemIdentifier tabIdentifier:item];
+  cell.itemIdentifier = itemIdentifier;
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
-    if ([self.gridProvider
-            isItemSelected:[GridItemIdentifier tabIdentifier:item]]) {
+    if ([self.gridProvider isItemSelected:itemIdentifier]) {
       cell.state = GridCellStateEditingSelected;
     } else {
       cell.state = GridCellStateEditingUnselected;
@@ -1870,8 +1871,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Returns the IndexPath of the item having the `ID`.
 - (NSIndexPath*)indexPathForID:(web::WebStateID)ID {
-  GridItemIdentifier* lookupItemIdentifier = [GridItemIdentifier
-      tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:ID]];
+  TabSwitcherItem* tabItem = [[TabSwitcherItem alloc] initWithIdentifier:ID];
+  GridItemIdentifier* lookupItemIdentifier =
+      [[GridItemIdentifier alloc] initWithTabItem:tabItem];
   return
       [self.diffableDataSource indexPathForItemIdentifier:lookupItemIdentifier];
 }

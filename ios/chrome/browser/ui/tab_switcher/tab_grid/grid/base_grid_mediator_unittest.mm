@@ -106,11 +106,9 @@ TEST_P(BaseGridMediatorTest, DragAndDropClosedItem) {
   browser_->GetWebStateList()->InsertWebState(
       std::move(web_state), WebStateList::InsertionParams::AtIndex(1));
 
-  TabSwitcherItem* item_to_select =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:web_state_ptr];
   [mediator_ switchToMode:TabGridModeSelection];
   [mediator_
-      addToSelectionItemID:[GridItemIdentifier tabIdentifier:item_to_select]];
+      addToSelectionItemID:[GridItemIdentifier tabIdentifier:web_state_ptr]];
 
   browser_->GetWebStateList()->CloseWebStateAt(1,
                                                WebStateList::CLOSE_USER_ACTION);
@@ -500,9 +498,9 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
   [mediator_ selectTabsButtonTapped:nil];
 
   // Simulate a user who tapped on a tab.
-  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(1)];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
+  [mediator_ userTappedOnItemID:[GridItemIdentifier
+                                    tabIdentifier:browser_->GetWebStateList()
+                                                      ->GetWebStateAt(1)]];
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
@@ -534,9 +532,9 @@ TEST_P(BaseGridMediatorTest, NoToolbarUpdateNotSelected) {
   [mediator_ currentlySelectedGrid:NO];
 
   // Simulate a user who tapped on a tab.
-  TabSwitcherItem* item_to_tap = [[WebStateTabSwitcherItem alloc]
-      initWithWebState:browser_->GetWebStateList()->GetWebStateAt(1)];
-  [mediator_ userTappedOnItemID:[GridItemIdentifier tabIdentifier:item_to_tap]];
+  [mediator_ userTappedOnItemID:[GridItemIdentifier
+                                    tabIdentifier:browser_->GetWebStateList()
+                                                      ->GetWebStateAt(1)]];
 
   // No update on the configuration as the mediator is no longer selected.
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);

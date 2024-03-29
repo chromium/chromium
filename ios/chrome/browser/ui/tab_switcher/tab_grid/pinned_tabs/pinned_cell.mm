@@ -215,7 +215,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   if (pinnedItemIdentifier.valid()) {
     TabSwitcherItem* item =
         [[TabSwitcherItem alloc] initWithIdentifier:pinnedItemIdentifier];
-    self.itemIdentifier = [GridItemIdentifier tabIdentifier:item];
+    self.itemIdentifier = [[GridItemIdentifier alloc] initWithTabItem:item];
   } else {
     self.itemIdentifier = nil;
   }

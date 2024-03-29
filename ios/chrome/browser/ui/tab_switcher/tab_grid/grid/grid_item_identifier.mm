@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/item_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
 
 @implementation GridItemIdentifier {
@@ -14,27 +15,49 @@
   NSUInteger _hash;
 }
 
-+ (instancetype)tabIdentifier:(TabSwitcherItem*)item {
-  GridItemIdentifier* identifier = [[self alloc] init];
-  identifier->_type = GridItemType::Tab;
-  identifier->_tabSwitcherItem = item;
-  identifier->_hash = GetHashForTabSwitcherItem(item);
-  return identifier;
++ (instancetype)tabIdentifier:(web::WebState*)webState {
+  return [[self alloc] initWithTabItem:[[WebStateTabSwitcherItem alloc]
+                                           initWithWebState:webState]];
 }
 
-+ (instancetype)groupIdentifier:(TabGroupItem*)item {
-  GridItemIdentifier* identifier = [[self alloc] init];
-  identifier->_type = GridItemType::Group;
-  identifier->_tabGroupItem = item;
-  identifier->_hash = GetHashForTabGroupItem(item);
-  return identifier;
++ (instancetype)groupIdentifier:(const TabGroup*)group
+               withWebStateList:(WebStateList*)webStateList {
+  return [[self alloc]
+      initWithGroupItem:[[TabGroupItem alloc] initWithTabGroup:group
+                                                  webStateList:webStateList]];
 }
 
 + (instancetype)suggestedActionsIdentifier {
-  GridItemIdentifier* identifier = [[self alloc] init];
-  identifier->_type = GridItemType::SuggestedActions;
-  identifier->_hash = 0;
-  return identifier;
+  return [[self alloc] initForSuggestedAction];
+}
+
+- (instancetype)initWithTabItem:(TabSwitcherItem*)item {
+  self = [super init];
+  if (self) {
+    _type = GridItemType::Tab;
+    _tabSwitcherItem = item;
+    _hash = GetHashForTabSwitcherItem(item);
+  }
+  return self;
+}
+
+- (instancetype)initWithGroupItem:(TabGroupItem*)item {
+  self = [super init];
+  if (self) {
+    _type = GridItemType::Group;
+    _tabGroupItem = item;
+    _hash = GetHashForTabGroupItem(item);
+  }
+  return self;
+}
+
+- (instancetype)initForSuggestedAction {
+  self = [super init];
+  if (self) {
+    _type = GridItemType::SuggestedActions;
+    _hash = 0;
+  }
+  return self;
 }
 
 #pragma mark - NSObject

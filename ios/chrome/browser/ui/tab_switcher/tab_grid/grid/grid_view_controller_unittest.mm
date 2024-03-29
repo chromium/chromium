@@ -121,11 +121,12 @@ class BaseGridViewControllerTest : public RootViewControllerTest,
         [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
 
     NSArray* items = @[
-      [GridItemIdentifier tabIdentifier:item_a],
-      [GridItemIdentifier tabIdentifier:item_b],
+      [[GridItemIdentifier alloc] initWithTabItem:item_a],
+      [[GridItemIdentifier alloc] initWithTabItem:item_b],
     ];
     [view_controller_ populateItems:items
-             selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item_a]];
+             selectedItemIdentifier:[[GridItemIdentifier alloc]
+                                        initWithTabItem:item_a]];
     delegate_ = [[FakeGridViewControllerDelegate alloc] init];
     delegate_.itemCount = 2;
     view_controller_.delegate = delegate_;
@@ -159,8 +160,10 @@ TEST_P(BaseGridViewControllerTest, InitializeItems) {
   web::WebStateID newItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
-  [view_controller_ populateItems:@[ [GridItemIdentifier tabIdentifier:item] ]
-           selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item]];
+  [view_controller_
+               populateItems:@[ [[GridItemIdentifier alloc]
+                                 initWithTabItem:item] ]
+      selectedItemIdentifier:[[GridItemIdentifier alloc] initWithTabItem:item]];
   EXPECT_EQ(newItemID, IdentifierForIndex(0));
   EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
@@ -174,9 +177,10 @@ TEST_P(BaseGridViewControllerTest, InsertItem) {
   web::WebStateID newItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
-  [view_controller_ insertItem:[GridItemIdentifier tabIdentifier:item]
-                       atIndex:2
-        selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item]];
+  [view_controller_
+                  insertItem:[[GridItemIdentifier alloc] initWithTabItem:item]
+                     atIndex:2
+      selectedItemIdentifier:[[GridItemIdentifier alloc] initWithTabItem:item]];
   EXPECT_EQ(3U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(2U, view_controller_.selectedIndex);
   EXPECT_EQ(3U, delegate_.itemCount);
@@ -191,9 +195,10 @@ TEST_P(BaseGridViewControllerTest, RemoveItem) {
   TabSwitcherItem* item_b =
       [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
 
-  [view_controller_
-      removeItemWithIdentifier:[GridItemIdentifier tabIdentifier:item_a]
-        selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item_b]];
+  [view_controller_ removeItemWithIdentifier:[[GridItemIdentifier alloc]
+                                                 initWithTabItem:item_a]
+                      selectedItemIdentifier:[[GridItemIdentifier alloc]
+                                                 initWithTabItem:item_b]];
   EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);
   EXPECT_EQ(1U, delegate_.itemCount);
@@ -205,8 +210,8 @@ TEST_P(BaseGridViewControllerTest, SelectItem) {
       [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_
-      selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item_b]];
+  [view_controller_ selectItemWithIdentifier:[[GridItemIdentifier alloc]
+                                                 initWithTabItem:item_b]];
   EXPECT_EQ(1U, view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -219,8 +224,8 @@ TEST_P(BaseGridViewControllerTest, SelectNonexistentItem) {
 
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
-  [view_controller_
-      selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item]];
+  [view_controller_ selectItemWithIdentifier:[[GridItemIdentifier alloc]
+                                                 initWithTabItem:item]];
   EXPECT_EQ(base::checked_cast<NSUInteger>(NSNotFound),
             view_controller_.selectedIndex);
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -236,8 +241,9 @@ TEST_P(BaseGridViewControllerTest, ReplaceItem) {
       [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
-  [view_controller_ replaceItem:[GridItemIdentifier tabIdentifier:item_a]
-            withReplacementItem:[GridItemIdentifier tabIdentifier:item]];
+  [view_controller_
+              replaceItem:[[GridItemIdentifier alloc] initWithTabItem:item_a]
+      withReplacementItem:[[GridItemIdentifier alloc] initWithTabItem:item]];
   EXPECT_EQ(newItemID, IdentifierForIndex(0));
   EXPECT_EQ(2U, delegate_.itemCount);
 }
@@ -257,9 +263,10 @@ TEST_P(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
   OCMStub([mock_item title]).andReturn(@"NEW-ITEM-TITLE");
   TabSwitcherItem* itemForReplace =
       [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
-  [view_controller_
-              replaceItem:[GridItemIdentifier tabIdentifier:itemForReplace]
-      withReplacementItem:[GridItemIdentifier tabIdentifier:itemForReplace]];
+  [view_controller_ replaceItem:[[GridItemIdentifier alloc]
+                                    initWithTabItem:itemForReplace]
+            withReplacementItem:[[GridItemIdentifier alloc]
+                                    initWithTabItem:itemForReplace]];
   NSString* identifier_cell_a =
       [NSString stringWithFormat:@"%@0", kGridCellIdentifierPrefix];
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -282,8 +289,9 @@ TEST_P(BaseGridViewControllerTest, ReplaceItemNotFound) {
   web::WebStateID notFoundItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:notFoundItemID];
-  [view_controller_ replaceItem:[GridItemIdentifier tabIdentifier:item]
-            withReplacementItem:[GridItemIdentifier tabIdentifier:item]];
+  [view_controller_
+              replaceItem:[[GridItemIdentifier alloc] initWithTabItem:item]
+      withReplacementItem:[[GridItemIdentifier alloc] initWithTabItem:item]];
   EXPECT_NE(notFoundItemID, IdentifierForIndex(0));
   EXPECT_NE(notFoundItemID, IdentifierForIndex(1));
   EXPECT_EQ(2U, delegate_.itemCount);
@@ -332,9 +340,10 @@ TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
     TabSwitcherItem* selectedItem =
         [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
     [view_controller_
-                    insertItem:[GridItemIdentifier tabIdentifier:item]
+                    insertItem:[[GridItemIdentifier alloc] initWithTabItem:item]
                        atIndex:0
-        selectedItemIdentifier:[GridItemIdentifier tabIdentifier:selectedItem]];
+        selectedItemIdentifier:[[GridItemIdentifier alloc]
+                                   initWithTabItem:selectedItem]];
     // Spin the runloop to make sure that the visible cells are updated.
     base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
     visibleCellsCount = view_controller_.collectionView.visibleCells.count;
@@ -345,8 +354,9 @@ TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:web::WebStateID::NewUnique()];
   // Do not crash due to cell being nil.
-  [view_controller_ replaceItem:[GridItemIdentifier tabIdentifier:item_b]
-            withReplacementItem:[GridItemIdentifier tabIdentifier:item]];
+  [view_controller_
+              replaceItem:[[GridItemIdentifier alloc] initWithTabItem:item_b]
+      withReplacementItem:[[GridItemIdentifier alloc] initWithTabItem:item]];
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BaseGridViewControllerTest);

@@ -142,9 +142,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   if (!active_web_state) {
     return nil;
   }
-  TabSwitcherItem* item =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:active_web_state];
-  return [GridItemIdentifier tabIdentifier:item];
+  return [GridItemIdentifier tabIdentifier:active_web_state];
 }
 
 }  // namespace
@@ -327,10 +325,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
   // Get the identifier to remove.
   web::WebState* detachedWebState = detachChange.detached_web_state();
-  TabSwitcherItem* itemToRemove =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:detachedWebState];
   GridItemIdentifier* identifierToRemove =
-      [GridItemIdentifier tabIdentifier:itemToRemove];
+      [GridItemIdentifier tabIdentifier:detachedWebState];
 
   // Get the selected identifier.
   GridItemIdentifier* selectedIdentifier =
@@ -376,32 +372,25 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           web::WebState* currentWebState =
               _webStateList->GetWebStateAt(selectionOnlyChange.index());
 
-          TabSwitcherItem* tabItemToAddToGroup =
-              [[WebStateTabSwitcherItem alloc]
-                  initWithWebState:currentWebState];
           GridItemIdentifier* tabIdentifierToAddToGroup =
-              [GridItemIdentifier tabIdentifier:tabItemToAddToGroup];
+              [GridItemIdentifier tabIdentifier:currentWebState];
 
           GridItemIdentifier* selectedIdentifier =
               GetActiveNonPinnedIdentifier(webStateList);
           [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
                            selectedItemIdentifier:selectedIdentifier];
         } else {
-          TabGroupItem* oldGroupItem =
-              [[TabGroupItem alloc] initWithTabGroup:oldGroup
-                                        webStateList:_webStateList];
           GridItemIdentifier* oldGroupIdentifier =
-              [GridItemIdentifier groupIdentifier:oldGroupItem];
+              [GridItemIdentifier groupIdentifier:oldGroup
+                                 withWebStateList:_webStateList];
           [self.consumer replaceItem:oldGroupIdentifier
                  withReplacementItem:oldGroupIdentifier];
         }
 
         if (newGroup) {
-          TabGroupItem* newGroupItem =
-              [[TabGroupItem alloc] initWithTabGroup:newGroup
-                                        webStateList:_webStateList];
           GridItemIdentifier* newGroupIdentifier =
-              [GridItemIdentifier groupIdentifier:newGroupItem];
+              [GridItemIdentifier groupIdentifier:newGroup
+                                 withWebStateList:_webStateList];
 
           [self.consumer replaceItem:newGroupIdentifier
                  withReplacementItem:newGroupIdentifier];
@@ -442,12 +431,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       }
       web::WebState* replacedWebState = replaceChange.replaced_web_state();
       web::WebState* insertedWebState = replaceChange.inserted_web_state();
-      TabSwitcherItem* oldItem =
-          [[WebStateTabSwitcherItem alloc] initWithWebState:replacedWebState];
-      TabSwitcherItem* newItem =
-          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      [self.consumer replaceItem:[GridItemIdentifier tabIdentifier:oldItem]
-             withReplacementItem:[GridItemIdentifier tabIdentifier:newItem]];
+      [self.consumer replaceItem:[GridItemIdentifier
+                                     tabIdentifier:replacedWebState]
+             withReplacementItem:[GridItemIdentifier
+                                     tabIdentifier:insertedWebState]];
 
       _scopedWebStateObservation->RemoveObservation(replacedWebState);
       _scopedWebStateObservation->AddObservation(insertedWebState);
@@ -463,11 +450,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
         break;
       }
       web::WebState* insertedWebState = insertChange.inserted_web_state();
-      TabSwitcherItem* item =
-          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
       NSUInteger itemIndex =
           [self itemIndexFromWebStateListIndex:insertChange.index()];
-      [self.consumer insertItem:[GridItemIdentifier tabIdentifier:item]
+      [self.consumer insertItem:[GridItemIdentifier
+                                    tabIdentifier:insertedWebState]
                          atIndex:itemIndex
           selectedItemIdentifier:selectItemWithIdentifier];
 
@@ -479,11 +465,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           change.As<WebStateListChangeGroupCreate>();
 
       const TabGroup* currentGroup = groupCreateChange.created_group();
-      TabGroupItem* groupItem =
-          [[TabGroupItem alloc] initWithTabGroup:currentGroup
-                                    webStateList:webStateList];
       GridItemIdentifier* groupItemIdentifier =
-          [GridItemIdentifier groupIdentifier:groupItem];
+          [GridItemIdentifier groupIdentifier:currentGroup
+                             withWebStateList:webStateList];
 
       const int startingWebStateIndex =
           webStateList->GetGroupRange(currentGroup).range_begin();
@@ -498,11 +482,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     case WebStateListChange::Type::kGroupVisualDataUpdate: {
       const WebStateListChangeGroupVisualDataUpdate& visualDataChange =
           change.As<WebStateListChangeGroupVisualDataUpdate>();
-      TabGroupItem* groupItem = [[TabGroupItem alloc]
-          initWithTabGroup:visualDataChange.updated_group()
-              webStateList:webStateList];
       GridItemIdentifier* groupItemIdentifier =
-          [GridItemIdentifier groupIdentifier:groupItem];
+          [GridItemIdentifier groupIdentifier:visualDataChange.updated_group()
+                             withWebStateList:webStateList];
       [self.consumer replaceItem:groupItemIdentifier
              withReplacementItem:groupItemIdentifier];
 
@@ -514,15 +496,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     case WebStateListChange::Type::kGroupDelete: {
       const WebStateListChangeGroupDelete& groupDeleteChange =
           change.As<WebStateListChangeGroupDelete>();
-      TabGroupItem* group = [[TabGroupItem alloc]
-          initWithTabGroup:groupDeleteChange.deleted_group()
-              webStateList:_webStateList];
-
-      // An additional layer check for group nullability.
-      CHECK(group);
 
       GridItemIdentifier* groupItemIdentifier =
-          [GridItemIdentifier groupIdentifier:group];
+          [GridItemIdentifier groupIdentifier:groupDeleteChange.deleted_group()
+                             withWebStateList:_webStateList];
       GridItemIdentifier* selectedIdentifier =
           GetActiveNonPinnedIdentifier(webStateList);
       [self.consumer removeItemWithIdentifier:groupItemIdentifier
@@ -538,10 +515,10 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       [self.consumer selectItemWithIdentifier:nil];
       return;
     }
-    TabSwitcherItem* item = [[WebStateTabSwitcherItem alloc]
-        initWithWebState:status.new_active_web_state];
     [self.consumer
-        selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item]];
+        selectItemWithIdentifier:[GridItemIdentifier
+                                     tabIdentifier:status
+                                                       .new_active_web_state]];
   }
 }
 
@@ -573,9 +550,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  GridItemIdentifier* item =
-      [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
-                                            initWithWebState:webState]];
+  GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
   [self.consumer replaceItem:item withReplacementItem:item];
 }
 
@@ -596,9 +571,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    GridItemIdentifier* item =
-        [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
-                                              initWithWebState:webState]];
+    GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
     [self.consumer replaceItem:item withReplacementItem:item];
   }
 }
@@ -709,10 +682,9 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     // In search mode, the consumer doesn't have any information about the
     // selected item. So even if the active WebState is the same as the one that
     // is being selected, make sure that the consumer updates its selected item.
-    TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:selectedWebState];
     [self.consumer
-        selectItemWithIdentifier:[GridItemIdentifier tabIdentifier:item]];
+        selectItemWithIdentifier:[GridItemIdentifier
+                                     tabIdentifier:selectedWebState]];
     return;
   } else {
     base::RecordAction(
@@ -811,7 +783,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
       [[TabSwitcherItem alloc] initWithIdentifier:itemID];
 
   GridItemIdentifier* identifierToRemove =
-      [GridItemIdentifier tabIdentifier:itemToRemove];
+      [[GridItemIdentifier alloc] initWithTabItem:itemToRemove];
 
   // `index` is `WebStateList::kInvalidIndex`, so `itemID` should be a search
   // result from a different window. Since this item is not from the current
@@ -855,10 +827,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           WebStateSearchCriteria{.identifier = itemID,
                                  .pinned_state = PinnedState::kNonPinned});
       if (index != WebStateList::kInvalidIndex) {
-        TabSwitcherItem* itemToRemove = [[WebStateTabSwitcherItem alloc]
-            initWithWebState:webStateList->GetWebStateAt(index)];
-        GridItemIdentifier* identifierToRemove =
-            [GridItemIdentifier tabIdentifier:itemToRemove];
+        GridItemIdentifier* identifierToRemove = [GridItemIdentifier
+            tabIdentifier:webStateList->GetWebStateAt(index)];
         [_selectedEditingItems removeItem:identifierToRemove];
         webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
       }
@@ -908,11 +878,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           if (IsTabGroupInGridEnabled()) {
             for (const TabGroup* group : browserResults.tab_groups) {
               GridItemIdentifier* item = [GridItemIdentifier
-                  groupIdentifier:
-                      [[TabGroupItem alloc]
-                          initWithTabGroup:group
-                              webStateList:browserResults.browser
-                                               ->GetWebStateList()]];
+                   groupIdentifier:group
+                  withWebStateList:browserResults.browser->GetWebStateList()];
               if (browserResults.browser == self.browser) {
                 [currentBrowserItems addObject:item];
               } else {
@@ -922,9 +889,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
           }
 
           for (web::WebState* webState : browserResults.web_states) {
-            GridItemIdentifier* item = [GridItemIdentifier
-                tabIdentifier:[[WebStateTabSwitcherItem alloc]
-                                  initWithWebState:webState]];
+            GridItemIdentifier* item =
+                [GridItemIdentifier tabIdentifier:webState];
 
             if (browserResults.browser == self.browser) {
               [currentBrowserItems addObject:item];
@@ -1254,18 +1220,14 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   GridItemIdentifier* selectedItemIdentifier =
       GetActiveNonPinnedIdentifier(self.webStateList);
   if ([self isPinnedWebState:index]) {
-    TabSwitcherItem* itemToRemove =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
     GridItemIdentifier* identifierToRemove =
-        [GridItemIdentifier tabIdentifier:itemToRemove];
+        [GridItemIdentifier tabIdentifier:webState];
     [self.consumer removeItemWithIdentifier:identifierToRemove
                      selectedItemIdentifier:selectedItemIdentifier];
     _scopedWebStateObservation->RemoveObservation(webState);
   } else {
-    TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
     NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-    [self.consumer insertItem:[GridItemIdentifier tabIdentifier:item]
+    [self.consumer insertItem:[GridItemIdentifier tabIdentifier:webState]
                        atIndex:itemIndex
         selectedItemIdentifier:selectedItemIdentifier];
 

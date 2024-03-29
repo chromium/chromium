@@ -14,9 +14,7 @@ NSArray<GridItemIdentifier*>* CreateTabItems(WebStateList* web_state_list,
   NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
   for (int index : range) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    TabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
-    [items addObject:[GridItemIdentifier tabIdentifier:item]];
+    [items addObject:[GridItemIdentifier tabIdentifier:web_state]];
   }
   return items;
 }
@@ -32,19 +30,15 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
     DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     const TabGroup* tab_group = web_state_list->GetGroupOfWebStateAt(i);
     if (tab_group) {
-      TabGroupItem* group_item =
-          [[TabGroupItem alloc] initWithTabGroup:tab_group
-                                    webStateList:web_state_list];
-      [items addObject:[GridItemIdentifier groupIdentifier:group_item]];
+      [items addObject:[GridItemIdentifier groupIdentifier:tab_group
+                                          withWebStateList:web_state_list]];
 
       // Skip the webStates that belong to `group_item`.
       incrementer = web_state_list->GetGroupRange(tab_group).count();
 
     } else {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      TabSwitcherItem* item =
-          [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
-      [items addObject:[GridItemIdentifier tabIdentifier:item]];
+      [items addObject:[GridItemIdentifier tabIdentifier:web_state]];
       incrementer = 1;
     }
   }

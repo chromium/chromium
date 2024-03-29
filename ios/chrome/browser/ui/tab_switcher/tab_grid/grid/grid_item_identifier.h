@@ -10,6 +10,15 @@
 @class TabSwitcherItem;
 @class TabGroupItem;
 
+#ifdef __cplusplus
+class TabGroup;
+class WebStateList;
+
+namespace web {
+class WebState;
+}
+#endif
+
 // Different types of items identified by an ItemIdentifier.
 enum class GridItemType : NSUInteger {
   Tab,
@@ -35,10 +44,19 @@ enum class GridItemType : NSUInteger {
 // Only valid when itemType is ItemTypeGroup.
 @property(nonatomic, readonly) TabGroupItem* tabGroupItem;
 
-// Use factory methods to create item identifiers.
-+ (instancetype)tabIdentifier:(TabSwitcherItem*)item;
-+ (instancetype)groupIdentifier:(TabGroupItem*)item;
+// Convenience factory methods to create identifier and its sub-item based on
+// the raw data.
+#ifdef __cplusplus
++ (instancetype)tabIdentifier:(web::WebState*)webState;
++ (instancetype)groupIdentifier:(const TabGroup*)group
+               withWebStateList:(WebStateList*)webStateList;
+#endif
 + (instancetype)suggestedActionsIdentifier;
+
+- (instancetype)initWithTabItem:(TabSwitcherItem*)item
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithGroupItem:(TabGroupItem*)item NS_DESIGNATED_INITIALIZER;
+- (instancetype)initForSuggestedAction NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -55,9 +55,7 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
             });
 
   for (web::WebState* web_state : web_states) {
-    WebStateTabSwitcherItem* item =
-        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
-    [items addObject:[GridItemIdentifier tabIdentifier:item]];
+    [items addObject:[GridItemIdentifier tabIdentifier:web_state]];
   }
   return items;
 }
@@ -209,9 +207,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  GridItemIdentifier* item =
-      [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
-                                            initWithWebState:webState]];
+  GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
   [_consumer replaceItem:item withReplacementItem:item];
 }
 
@@ -241,9 +237,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    GridItemIdentifier* item =
-        [GridItemIdentifier tabIdentifier:[[WebStateTabSwitcherItem alloc]
-                                              initWithWebState:webState]];
+    GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
     [_consumer replaceItem:item withReplacementItem:item];
   }
 }
@@ -260,12 +254,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
-  TabSwitcherItem* itemToRemove =
-      [[WebStateTabSwitcherItem alloc] initWithWebState:detachedWebState];
-
-  [_consumer
-      removeItemWithIdentifier:[GridItemIdentifier tabIdentifier:itemToRemove]
-        selectedItemIdentifier:nil];
+  [_consumer removeItemWithIdentifier:[GridItemIdentifier
+                                          tabIdentifier:detachedWebState]
+               selectedItemIdentifier:nil];
 
   _scopedWebStateObservation->RemoveObservation(detachedWebState);
 }
@@ -302,9 +293,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       const WebStateListChangeInsert& insertChange =
           change.As<WebStateListChangeInsert>();
       web::WebState* insertedWebState = insertChange.inserted_web_state();
-      TabSwitcherItem* item =
-          [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
-      [_consumer insertItem:[GridItemIdentifier tabIdentifier:item]
+      [_consumer insertItem:[GridItemIdentifier tabIdentifier:insertedWebState]
                          atIndex:insertChange.index()
           selectedItemIdentifier:nil];
 
