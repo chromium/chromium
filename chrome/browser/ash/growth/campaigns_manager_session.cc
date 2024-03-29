@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
 
 namespace {
@@ -97,10 +98,22 @@ void CampaignsManagerSession::OnSessionStateChanged() {
 
 void CampaignsManagerSession::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
+  // No state changes. Ignore the update.
+  if (!update.StateChanged()) {
+    return;
+  }
 
   auto app_id = update.AppId();
+
+  if (app_id == app_constants::kChromeAppId ||
+      app_id == app_constants::kAshDebugBrowserAppId ||
+      app_id == app_constants::kLacrosAppId) {
+    // TODO: b/331975665 - handle browser app with URL targeting.
+    return;
+  }
+
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
 
   if (update.IsCreation()) {
     campaigns_manager->SetOpenedApp(app_id);
