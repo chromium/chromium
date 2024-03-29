@@ -258,10 +258,10 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = '';
     // Left click queries autocomplete when matches are not showing.
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+
+    const args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -282,9 +282,8 @@ suite('NewTabPageRealboxTest', () => {
     // Left click does not query autocomplete when matches are showing.
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
-      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-    });
+    await testProxy.handler.whenCalled('onFocusChanged');
+    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
 
     // Hide the matches by focusing out.
     matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
@@ -297,9 +296,8 @@ suite('NewTabPageRealboxTest', () => {
     // Right click does not query autocomplete.
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 1}));
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
-      assertEquals(2, testProxy.handler.getCallCount('onFocusChanged'));
-    });
+    await testProxy.handler.whenCalled('onFocusChanged');
+    assertEquals(2, testProxy.handler.getCallCount('onFocusChanged'));
 
     // Left click does not query autocomplete when input is non-empty.
     realbox.$.input.value = '   ';
@@ -313,19 +311,17 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.focus();
     assertEquals(realbox.$.input, getDeepActiveElement());
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
-      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-    });
+    await testProxy.handler.whenCalled('onFocusChanged');
+    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
   });
 
   test('tabbing into empty input queries autocomplete', async () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -366,10 +362,9 @@ suite('NewTabPageRealboxTest', () => {
       cancelable: true,
       key: 'Tab',
     }));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -388,10 +383,9 @@ suite('NewTabPageRealboxTest', () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -431,10 +425,9 @@ suite('NewTabPageRealboxTest', () => {
       cancelable: true,
       key: 'ArrowDown',
     }));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertTrue(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertTrue(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
@@ -442,10 +435,9 @@ suite('NewTabPageRealboxTest', () => {
     // Query matches.
     realbox.$.input.value = 'hello';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -485,10 +477,9 @@ suite('NewTabPageRealboxTest', () => {
       cancelable: true,
       key: 'ArrowDown',
     }));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
@@ -508,10 +499,9 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'he';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -520,10 +510,9 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'h';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertTrue(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertTrue(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -531,10 +520,9 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'he';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -546,10 +534,9 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'hel';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertTrue(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertTrue(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -557,10 +544,9 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'hell';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -570,10 +556,9 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.setSelectionRange(0, 0);  // Move caret to beginning.
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertTrue(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertTrue(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -583,10 +568,9 @@ suite('NewTabPageRealboxTest', () => {
     const inputEvent = new InputEvent('input', {isComposing: true});
     realbox.$.input.dispatchEvent(inputEvent);
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertTrue(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertTrue(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -596,17 +580,15 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.value = 'h';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     realbox.$.input.value = '';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
-    await testProxy.handler.whenCalled('stopAutocomplete').then((args) => {
-      assertTrue(args.clearResult);
-    });
+    args = await testProxy.handler.whenCalled('stopAutocomplete');
+    assertTrue(args.clearResult);
   });
 
   //============================================================================
@@ -616,10 +598,9 @@ suite('NewTabPageRealboxTest', () => {
   test('autocomplete response', async () => {
     realbox.$.input.value = '      hello world';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    const args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     const matches = [
@@ -654,10 +635,9 @@ suite('NewTabPageRealboxTest', () => {
   test('autocomplete response with inline autocompletion', async () => {
     realbox.$.input.value = 'hello ';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), realbox.$.input.value);
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    let args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), realbox.$.input.value);
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
 
     testProxy.handler.reset();
@@ -716,10 +696,9 @@ suite('NewTabPageRealboxTest', () => {
     end = realbox.$.input.selectionEnd!;
     assertEquals('orld', realbox.$.input.value.substring(start, end));
 
-    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-      assertEquals(decodeString16(args.input), 'hello w');
-      assertFalse(args.preventInlineAutocomplete);
-    });
+    args = await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(decodeString16(args.input), 'hello w');
+    assertFalse(args.preventInlineAutocomplete);
     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
@@ -942,12 +921,11 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(shiftEnter.defaultPrevented);
 
     // Navigates to the first match.
-    await testProxy.handler.whenCalled('openAutocompleteMatch').then((args) => {
-      assertEquals(0, args.line);
-      assertEquals(matches[0]!.destinationUrl.url, args.url.url);
-      assertTrue(args.areMatchesShowing);
-      assertTrue(args.shiftKey);
-    });
+    const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, args.line);
+    assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+    assertTrue(args.areMatchesShowing);
+    assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
@@ -1019,13 +997,12 @@ suite('NewTabPageRealboxTest', () => {
         assertTrue(shiftEnter.defaultPrevented);
 
         // Navigates to the first match.
-        await testProxy.handler.whenCalled('openAutocompleteMatch')
-            .then((args) => {
-              assertEquals(0, args.line);
-              assertEquals(matches[0]!.destinationUrl.url, args.url.url);
-              assertFalse(args.areMatchesShowing);
-              assertTrue(args.shiftKey);
-            });
+        const args =
+            await testProxy.handler.whenCalled('openAutocompleteMatch');
+        assertEquals(0, args.line);
+        assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+        assertFalse(args.areMatchesShowing);
+        assertTrue(args.shiftKey);
         assertEquals(
             1, testProxy.handler.getCallCount('openAutocompleteMatch'));
       });
@@ -1191,12 +1168,11 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
 
     // Navigates to the first match immediately without further user action.
-    await testProxy.handler.whenCalled('openAutocompleteMatch').then((args) => {
-      assertEquals(0, args.line);
-      assertEquals(matches[0]!.destinationUrl.url, args.url.url);
-      assertTrue(args.areMatchesShowing);
-      assertTrue(args.shiftKey);
-    });
+    const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, args.line);
+    assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+    assertTrue(args.areMatchesShowing);
+    assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
@@ -1238,12 +1214,11 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(shiftEnter.defaultPrevented);
 
     // Navigates to the first match is selected.
-    await testProxy.handler.whenCalled('openAutocompleteMatch').then((args) => {
-      assertEquals(0, args.line);
-      assertEquals(matches[0]!.destinationUrl.url, args.url.url);
-      assertTrue(args.areMatchesShowing);
-      assertTrue(args.shiftKey);
-    });
+    const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, args.line);
+    assertEquals(matches[0]!.destinationUrl.url, args.url.url);
+    assertTrue(args.areMatchesShowing);
+    assertTrue(args.shiftKey);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
@@ -1341,10 +1316,8 @@ suite('NewTabPageRealboxTest', () => {
     });
     realbox.$.input.dispatchEvent(shiftDeleteEvent);
     assertTrue(shiftDeleteEvent.defaultPrevented);
-    await testProxy.handler.whenCalled('deleteAutocompleteMatch')
-        .then((args) => {
-          assertEquals(1, args.line);
-        });
+    const args = await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+    assertEquals(1, args.line);
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
   });
 
@@ -1373,10 +1346,8 @@ suite('NewTabPageRealboxTest', () => {
 
     // Remove the first match.
     matchEls[0]!.$.remove.click();
-    await testProxy.handler.whenCalled('deleteAutocompleteMatch')
-        .then((args) => {
-          assertEquals(0, args.line);
-        });
+    let args = await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+    assertEquals(0, args.line);
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
 
     testProxy.handler.reset();
@@ -1419,10 +1390,8 @@ suite('NewTabPageRealboxTest', () => {
     });
     realbox.$.input.dispatchEvent(shiftDeleteEvent);
     assertTrue(shiftDeleteEvent.defaultPrevented);
-    await testProxy.handler.whenCalled('deleteAutocompleteMatch')
-        .then((args) => {
-          assertEquals(0, args.line);
-        });
+    args = await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+    assertEquals(0, args.line);
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
 
     matches = [createSearchMatch()];
@@ -1542,9 +1511,8 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.focus();
     realbox.$.input.value = 'hello';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
-    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
-      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-    });
+    await testProxy.handler.whenCalled('onFocusChanged');
+    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
 
     const matches = [createSearchMatch(), createUrlMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
@@ -1634,9 +1602,8 @@ suite('NewTabPageRealboxTest', () => {
 
     // Changing match selection doesn't result in another onFocusChanged call
     // because focus is for the whole realbox (including input container).
-    await testProxy.handler.whenCalled('onFocusChanged').then(() => {
-      assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
-    });
+    await testProxy.handler.whenCalled('onFocusChanged');
+    assertEquals(1, testProxy.handler.getCallCount('onFocusChanged'));
   });
 
   test('focus indicator', async () => {
@@ -2051,10 +2018,9 @@ suite('NewTabPageRealboxTest', () => {
       key: ' ',
     }));
 
-    await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility')
-        .then((args) => {
-          assertEquals(100, args.suggestionGroupId);
-        });
+    let args =
+        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
+    assertEquals(100, args.suggestionGroupId);
     assertEquals(
         1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
 
@@ -2067,10 +2033,9 @@ suite('NewTabPageRealboxTest', () => {
     // Hide the second match by clicking the toggle button.
     toggleButtonEl.click();
 
-    await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility')
-        .then((args) => {
-          assertEquals(100, args.suggestionGroupId);
-        });
+    args =
+        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
+    assertEquals(100, args.suggestionGroupId);
     assertEquals(
         1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
 
@@ -2082,10 +2047,9 @@ suite('NewTabPageRealboxTest', () => {
 
     // Show the second match by clicking the header.
     headerEl.click();
-    await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility')
-        .then((args) => {
-          assertEquals(100, args.suggestionGroupId);
-        });
+    args =
+        await testProxy.handler.whenCalled('toggleSuggestionGroupIdVisibility');
+    assertEquals(100, args.suggestionGroupId);
     assertEquals(
         1, testProxy.handler.getCallCount('toggleSuggestionGroupIdVisibility'));
     // Second match is visible again.
@@ -2308,12 +2272,11 @@ suite('NewTabPageRealboxTest', () => {
     pedalEl.dispatchEvent(leftClick);
     assertTrue(leftClick.defaultPrevented);
 
-    await testProxy.handler.whenCalled('executeAction').then((args) => {
-      assertTrue(args.ctrlKey);
-      assertEquals(0, args.line);
-      assertEquals(args.mouseButton, 1);
-      assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
-    });
+    const args = await testProxy.handler.whenCalled('executeAction');
+    assertTrue(args.ctrlKey);
+    assertEquals(0, args.line);
+    assertEquals(args.mouseButton, 1);
+    assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
   });
 
@@ -2364,11 +2327,10 @@ suite('NewTabPageRealboxTest', () => {
     pedalElClear.dispatchEvent(leftClick);
     assertTrue(leftClick.defaultPrevented);
 
-    await testProxy.handler.whenCalled('executeAction').then((args) => {
-      assertEquals(1, args.line);
-      assertEquals(args.mouseButton, 0);
-      assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
-    });
+    let args = await testProxy.handler.whenCalled('executeAction');
+    assertEquals(1, args.line);
+    assertEquals(args.mouseButton, 0);
+    assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
 
     const pedalElTab =
@@ -2378,11 +2340,10 @@ suite('NewTabPageRealboxTest', () => {
     pedalElTab.dispatchEvent(leftClick);
     assertTrue(leftClick.defaultPrevented);
 
-    await testProxy.handler.whenCalled('executeAction').then((args) => {
-      assertEquals(1, args.line);
-      assertEquals(args.mouseButton, 0);
-      assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
-    });
+    args = await testProxy.handler.whenCalled('executeAction');
+    assertEquals(1, args.line);
+    assertEquals(args.mouseButton, 0);
+    assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
     assertEquals(2, testProxy.handler.getCallCount('executeAction'));
   });
 
@@ -2410,10 +2371,9 @@ suite('NewTabPageRealboxTest', () => {
     });
     realbox.$.input.dispatchEvent(arrowDownEvent);
 
-    await testProxy.handler.whenCalled('onNavigationLikely').then((args) => {
-      assertEquals(0, args.line);
-      assertEquals(
-          NavigationPredictor.kUpOrDownArrowButton, args.navigationPredictor);
-    });
+    const args = await testProxy.handler.whenCalled('onNavigationLikely');
+    assertEquals(0, args.line);
+    assertEquals(
+        NavigationPredictor.kUpOrDownArrowButton, args.navigationPredictor);
   });
 });
