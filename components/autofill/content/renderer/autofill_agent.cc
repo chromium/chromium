@@ -796,7 +796,7 @@ void AutofillAgent::TriggerSuggestions(
     if (WebElement content_editable =
             form_util::GetContentEditableByRendererId(field_id);
         !content_editable.IsNull()) {
-      ShowSuggestionsForContentEditable(content_editable);
+      ShowSuggestionsForContentEditable(content_editable, trigger_source);
     }
   }
 }
@@ -1058,7 +1058,8 @@ void AutofillAgent::ShowSuggestions(
 }
 
 void AutofillAgent::ShowSuggestionsForContentEditable(
-    const blink::WebElement& element) {
+    const blink::WebElement& element,
+    AutofillSuggestionTriggerSource trigger_source) {
   std::optional<FormData> form = form_util::FindFormForContentEditable(element);
   if (!form) {
     return;
@@ -1066,9 +1067,8 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   CHECK_EQ(form->fields.size(), 1u);
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     is_popup_possibly_visible_ = true;
-    autofill_driver->AskForValuesToFill(
-        *form, form->fields[0], form->fields[0].bounds,
-        mojom::AutofillSuggestionTriggerSource::kContentEditableClicked);
+    autofill_driver->AskForValuesToFill(*form, form->fields[0],
+                                        form->fields[0].bounds, trigger_source);
   }
 }
 
@@ -1470,7 +1470,9 @@ void AutofillAgent::HandleFocusChangeComplete(
   //   false since at the preceding DidReceiveLeftMouseDownOrGestureTapInNode()
   //   call `node.Focused()` was false.
   if (!focused_element.IsNull()) {
-    ShowSuggestionsForContentEditable(focused_element);
+    ShowSuggestionsForContentEditable(
+        focused_element,
+        AutofillSuggestionTriggerSource::kContentEditableClicked);
   }
 }
 

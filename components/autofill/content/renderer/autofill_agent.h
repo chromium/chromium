@@ -350,7 +350,9 @@ class AutofillAgent : public content::RenderFrameObserver,
                        AutofillSuggestionTriggerSource trigger_source);
 
   // Shows Autofill suggestions for `element` if `element` is a contenteditable.
-  void ShowSuggestionsForContentEditable(const blink::WebElement& element);
+  void ShowSuggestionsForContentEditable(
+      const blink::WebElement& element,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Queries the browser for Autocomplete and Autofill suggestions for the given
   // `element`.
