@@ -10,6 +10,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "url/gurl.h"
 
+namespace {
+GURL GetUrl() {
+  return GURL(chrome::kChromeUIExtendedUpdatesDialogURL);
+}
+}  // namespace
+
 namespace ash::extended_updates {
 
 ExtendedUpdatesDialog::~ExtendedUpdatesDialog() = default;
@@ -26,12 +32,10 @@ void ExtendedUpdatesDialog::Show() {
 
 ExtendedUpdatesDialog* ExtendedUpdatesDialog::Get() {
   return static_cast<ExtendedUpdatesDialog*>(
-      SystemWebDialogDelegate::FindInstance(
-          chrome::kChromeUIExtendedUpdatesDialogURL));
+      SystemWebDialogDelegate::FindInstance(GetUrl().spec()));
 }
 
 ExtendedUpdatesDialog::ExtendedUpdatesDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIExtendedUpdatesDialogURL),
-                              std::u16string()) {}
+    : SystemWebDialogDelegate(GetUrl(), std::u16string()) {}
 
 }  // namespace ash::extended_updates
