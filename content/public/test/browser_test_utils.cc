@@ -885,6 +885,11 @@ void PwnCommitIPC(WebContents* web_contents,
   new CommitOriginInterceptor(web_contents, target_url, new_url, new_origin);
 }
 
+bool CanCommitURLForTesting(int child_id, const GURL& url) {
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  return policy->CanCommitURL(child_id, url);
+}
+
 void SimulateUnresponsiveRenderer(WebContents* web_contents,
                                   RenderWidgetHost* widget) {
   static_cast<WebContentsImpl*>(web_contents)

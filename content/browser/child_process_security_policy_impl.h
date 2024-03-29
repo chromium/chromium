@@ -160,7 +160,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantRequestOrigin(int child_id, const url::Origin& origin) override;
   void GrantRequestScheme(int child_id, const std::string& scheme) override;
   bool CanRequestURL(int child_id, const GURL& url) override;
-  bool CanCommitURL(int child_id, const GURL& url) override;
   bool CanReadFile(int child_id, const base::FilePath& file) override;
   bool CanCreateReadWriteFile(int child_id,
                               const base::FilePath& file) override;
@@ -238,6 +237,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       int child_id,
       const IsolationContext& isolation_context,
       const UrlInfo& url_info);
+
+  // Whether the process is allowed to commit a document from the given URL.
+  // This is more restrictive than CanRequestURL, since CanRequestURL allows
+  // requests that might lead to cross-process navigations or external protocol
+  // handlers. Used primarily as a helper for CanCommitOriginAndUrl and thus not
+  // exposed publicly.
+  bool CanCommitURL(int child_id, const GURL& url);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the

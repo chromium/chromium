@@ -319,6 +319,11 @@ void PwnCommitIPC(WebContents* web_contents,
                   const GURL& new_url,
                   const url::Origin& new_origin);
 
+// Test helper to check the content-internal CanCommitURL() method on
+// ChildProcessSecurityPolicy, determining whether a particular process is
+// allowed to commit a navigation to `url`.
+bool CanCommitURLForTesting(int child_id, const GURL& url);
+
 // Causes the specified web_contents to issue an OnUnresponsiveRenderer event
 // to its observers.
 void SimulateUnresponsiveRenderer(WebContents* web_contents,

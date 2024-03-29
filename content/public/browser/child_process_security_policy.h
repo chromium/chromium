@@ -88,14 +88,15 @@ class ChildProcessSecurityPolicy {
 
   // Determine whether the process has the capability to request the URL.
   // Before servicing a child process's request for a URL, the content layer
-  // calls this method to determine whether it is safe.
+  // calls this method to determine whether it is safe. CanRequestURL() allows
+  // for requests that might lead to cross-process navigations or external
+  // protocol handlers.
+  //
+  // Note that this check is different from checking whether a document with
+  // the given URL can be committed in a process; that latter check is more
+  // restrictive and is performed within //content (see
+  // ChildProcessSecurityPolicyImpl::CanCommitURL).
   virtual bool CanRequestURL(int child_id, const GURL& url) = 0;
-
-  // Whether the process is allowed to commit a document from the given URL.
-  // This is more restrictive than CanRequestURL, since CanRequestURL allows
-  // requests that might lead to cross-process navigations or external protocol
-  // handlers.
-  virtual bool CanCommitURL(int child_id, const GURL& url) = 0;
 
   // These methods verify whether or not the child process has been granted
   // permissions perform these functions on |file|.
