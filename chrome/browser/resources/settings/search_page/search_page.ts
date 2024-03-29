@@ -56,8 +56,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
        */
       searchEngines_: Array,
 
-      // Whether the `SearchEngineChoice` or `SearchEngineChoiceFre` features
-      // are enabled or not.
+      // Whether the `SearchEngineChoiceTrigger` feature is enabled.
       searchEngineChoiceSettingsUi_: {
         type: Boolean,
         value() {

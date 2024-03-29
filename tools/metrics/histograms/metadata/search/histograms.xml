@@ -172,8 +172,8 @@ chromium-metrics-reviews@google.com.
     Records the type of the default search engine that was chosen by the user.
     Recorded the first time a user in the EEA region changes their default
     search engine in the search engine choice screen or in the settings page
-    with the SearchEngineChoice or SearchEngineChoiceFre feature enabled. The
-    enum is shared with Search.DefaultSearchProviderType2.
+    with the SearchEngineChoiceTrigger feature enabled. The enum is shared with
+    Search.DefaultSearchProviderType2.
   </summary>
 </histogram>
 
