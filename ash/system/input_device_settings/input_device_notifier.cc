@@ -24,7 +24,6 @@
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "device/bluetooth/floss/floss_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -35,11 +34,6 @@ namespace ash {
 namespace {
 
 using DeviceId = InputDeviceSettingsController::DeviceId;
-
-// The floss bluetooth handler adds a fake mouse device to the system with the
-// following properties. It is filted out based on the name and vid/pid.
-const char kFlossExtraMouseName[] = "VIRTUAL_SUSPEND_UHID";
-constexpr VendorProductId kFlossExtraMouseVidPid = {0x0000, 0x0000};
 
 bool AreOnLoginScreen() {
   auto status = Shell::Get()->session_controller()->login_status();
@@ -374,14 +368,6 @@ std::vector<ui::InputDevice>
 InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>::GetUpdatedDeviceList() {
   auto mice = ui::DeviceDataManager::GetInstance()->GetMouseDevices();
   std::erase_if(mice, [](const auto& mouse) {
-    if (floss::features::IsFlossEnabled()) {
-      if (kFlossExtraMouseVidPid ==
-              VendorProductId{mouse.vendor_id, mouse.product_id} &&
-          mouse.name == kFlossExtraMouseName) {
-        return true;
-      }
-    }
-
     // Some I2C touchpads falsely claim to be mice, see b/205272718
     // By filtering out internal mice, i2c touchpads are prevented from being in
     // the "mouse" category in settings.
