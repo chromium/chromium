@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -282,7 +283,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
     (TabGridToolbarsConfiguration*)configuration {
   NSUInteger selectedItemsCount = _selectedEditingItems.tabsCount;
   NSUInteger selectedShareableItemsCount =
-      _selectedEditingItems.sharableItemsCount;
+      _selectedEditingItems.sharableTabsCount;
 
   BOOL allItemsSelected =
       static_cast<int>(selectedItemsCount) ==
@@ -293,12 +294,15 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   configuration.doneButton = YES;
   configuration.closeSelectedTabsButton = selectedItemsCount > 0;
   configuration.shareButton = selectedShareableItemsCount > 0;
-  configuration.addToButton = selectedShareableItemsCount > 0;
+  if (IsTabGroupInGridEnabled()) {
+    configuration.addToButton = selectedItemsCount > 0;
+  } else {
+    configuration.addToButton = selectedShareableItemsCount > 0;
+  }
   configuration.selectedItemsCount = selectedItemsCount;
 
-  configuration.addToButtonMenu = [UIMenu
-      menuWithChildren:[self addToButtonMenuElementsForItems:
-                                 [_selectedEditingItems sharableItems]]];
+  configuration.addToButtonMenu =
+      [UIMenu menuWithChildren:[self addToButtonMenuElements]];
 }
 
 - (void)displayActiveTab {
@@ -1264,13 +1268,8 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   return CreateTabDragItem(webState);
 }
 
-- (BOOL)isIncognitoBrowser {
-  return static_cast<BOOL>(self.browserState->IsOffTheRecord());
-}
-
 // Returns the menu to display when the Add To button is selected for `items`.
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
-    (const std::set<web::WebStateID>&)itemIDs {
+- (NSArray<UIMenuElement*>*)addToButtonMenuElements {
   if (!self.browser) {
     return nil;
   }
@@ -1282,10 +1281,32 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
 
   __weak BaseGridMediator* weakSelf = self;
 
+  if (IsTabGroupInGridEnabled()) {
+    auto addToGroupBlock = ^(const TabGroup* group) {
+      [weakSelf addSelectedElementsToGroup:group];
+    };
+    UIMenuElement* addToGroup = [actionFactory
+        menuToAddTabToGroupWithGroups:GetAllGroupsForBrowserState(_browserState)
+                         numberOfTabs:_selectedEditingItems.tabsCount
+                                block:addToGroupBlock];
+    [actions addObject:[UIMenu menuWithTitle:@""
+                                       image:nil
+                                  identifier:nil
+                                     options:UIMenuOptionsDisplayInline
+                                    children:@[ addToGroup ]]];
+  }
+
   // Copy the set of items, so that the following block can use it.
-  std::set<web::WebStateID> itemIDsCopy = itemIDs;
+  std::set<web::WebStateID> shareableTabsCopy =
+      [_selectedEditingItems sharableTabs];
+
+  UIAction* addToReadingListAction =
+      [actionFactory actionToAddToReadingListWithBlock:^{
+        [weakSelf addItemsWithIDsToReadingList:shareableTabsCopy];
+      }];
+
   UIAction* bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
-    [weakSelf addItemsWithIDsToBookmarks:itemIDsCopy];
+    [weakSelf addItemsWithIDsToBookmarks:shareableTabsCopy];
   }];
   // Bookmarking can be disabled from prefs (from an enterprise policy),
   // if that's the case grey out the option in the menu.
@@ -1295,31 +1316,30 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   if (!isEditBookmarksEnabled) {
     bookmarkAction.attributes = UIMenuElementAttributesDisabled;
   }
-
-  if (IsTabGroupInGridEnabled()) {
-    ProceduralBlock createTabGroupActionBlock = ^{
-      BOOL incognito = [weakSelf isIncognitoBrowser];
-      [weakSelf.delegate showTabGroupCreationWithWithIdentifiers:itemIDsCopy
-                                                       incognito:incognito];
-    };
-    UIAction* addToNewTabGroupAction = [actionFactory
-        actionToAddTabsToNewGroupWithTabsNumber:itemIDs.size()
-                                      inSubmenu:NO
-                                          block:createTabGroupActionBlock];
-    [actions addObject:[UIMenu menuWithTitle:@""
-                                       image:nil
-                                  identifier:nil
-                                     options:UIMenuOptionsDisplayInline
-                                    children:@[ addToNewTabGroupAction ]]];
+  if (shareableTabsCopy.size() == 0) {
+    addToReadingListAction.attributes = UIMenuElementAttributesDisabled;
+    bookmarkAction.attributes = UIMenuElementAttributesDisabled;
   }
 
-  [actions addObject:[actionFactory actionToAddToReadingListWithBlock:^{
-             [weakSelf addItemsWithIDsToReadingList:itemIDsCopy];
-           }]];
-
+  [actions addObject:addToReadingListAction];
   [actions addObject:bookmarkAction];
 
   return actions;
+}
+
+// Adds all the current selected elements to `group`. Pass nullptr to add to a
+// new group.
+- (void)addSelectedElementsToGroup:(const TabGroup*)group {
+  std::set<web::WebStateID> selectedTabs = [_selectedEditingItems allTabs];
+  if (group == nullptr) {
+    [self.dispatcher showTabGroupCreationForTabs:selectedTabs];
+  } else {
+    WebStateList::ScopedBatchOperation lock =
+        self.webStateList->StartBatchOperation();
+    for (web::WebStateID webStateID : selectedTabs) {
+      MoveTabToGroup(webStateID, group, _browserState);
+    }
+  }
 }
 
 #pragma mark - TabGridPageMutator
@@ -1410,7 +1430,7 @@ GridItemIdentifier* GetActiveNonPinnedIdentifier(WebStateList* web_state_list) {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs",
-                              _selectedEditingItems.sharableItemsCount);
+                              _selectedEditingItems.sharableTabsCount);
   [self.delegate baseGridMediator:self
                         shareURLs:[_selectedEditingItems selectedTabsURLs]
                            anchor:sender];
