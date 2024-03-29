@@ -5719,6 +5719,7 @@ data/back_forward_cache/page_with_dedicated_worker.html
 data/back_forward_cache/page_with_dedicated_worker_and_importscripts.html
 data/back_forward_cache/page_with_dedicated_worker_and_webtransport.html
 data/back_forward_cache/page_with_hung_iframe.html
+data/back_forward_cache/page_with_iframes_without_attributes.html
 data/back_forward_cache/page_with_indexedDB.html
 data/back_forward_cache/page_with_indexedDB.js
 data/back_forward_cache/page_with_non_existing_image.html

@@ -57,11 +57,13 @@
 namespace blink {
 
 namespace {
-// Cut down |value| if too long and return empty string if null. This is used to
-// convert the HTML attributes to report to the browser.
+// Cut down |value| if too long . This is used to convert the HTML attributes
+// to report to the browser.
 String ConvertToReportValue(const AtomicString& value) {
   if (value.IsNull()) {
-    return g_empty_string;
+    // If the value is null, report null so that it can be distinguishable from
+    // an empty string.
+    return String();
   }
   static constexpr size_t kMaxLengthToReport = 1024;
   return value.GetString().Left(kMaxLengthToReport);

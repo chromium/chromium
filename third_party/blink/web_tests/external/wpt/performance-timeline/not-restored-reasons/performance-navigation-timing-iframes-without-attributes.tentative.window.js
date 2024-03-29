@@ -10,8 +10,8 @@
 
 'use strict';
 
-// Ensure that cross-origin subtree's reasons are not exposed to
-// notRestoredReasons.
+// Ensure that empty attributes are reported as empty strings and missing
+// attributes are reported as null.
 promise_test(async t => {
   const rcHelper = new RemoteContextHelper();
   // Open a window with noopener so that BFCache will work.
@@ -27,19 +27,38 @@ promise_test(async t => {
         scripts: [],
         headers: [],
       },
-      /*attributes=*/ {id: 'test-id'},
+      /*attributes=*/ {id: '', name: ''},
+  );
+  const rc2_child = await rc1.addIframe(
+    /*extraConfig=*/ {
+      origin: 'HTTP_REMOTE_ORIGIN',
+      scripts: [],
+      headers: [],
+    },
+    /*attributes=*/ {},
+  );
+  const rc3_child = await rc1.addIframe(
+    /*extraConfig=*/ {},
+    /*attributes=*/ {},
+  );
+  const rc4_child = await rc1.addIframe(
+    /*extraConfig=*/ {},
+    /*attributes=*/ {id: '', name: ''},
   );
   // Use WebSocket to block BFCache.
-  await useWebSocket(rc1_child);
+  await useWebSocket(rc1);
   const rc1_child_url = await rc1_child.executeScript(() => {
     return location.href;
   });
-  // Add a child to the iframe.
-  const rc1_grand_child = await rc1_child.addIframe();
-  const rc1_grand_child_url = await rc1_grand_child.executeScript(() => {
+  const rc2_child_url = await rc2_child.executeScript(() => {
     return location.href;
   });
-
+  const rc3_child_url = await rc3_child.executeScript(() => {
+    return location.href;
+  });
+  const rc4_child_url = await rc4_child.executeScript(() => {
+    return location.href;
+  });
   // Check the BFCache result and the reported reasons.
   await assertBFCacheEligibility(rc1, /*shouldRestoreFromBFCache=*/ false);
   await assertNotRestoredReasonsEquals(
@@ -48,13 +67,37 @@ promise_test(async t => {
       /*src=*/ null,
       /*id=*/ null,
       /*name=*/ null,
-      /*reasons=*/[{'reason': "masked"}],
+      /*reasons=*/[{'reason': 'websocket'}],
       /*children=*/[{
         'url': null,
         'src': rc1_child_url,
-        'id': 'test-id',
+        // Id and name should be empty.
+        'id': '',
+        'name': '',
+        'reasons': null,
+        'children': null
+      }, {
+        'url': null,
+        'src': rc2_child_url,
+        // Id and name should be null.
+        'id': null,
         'name': null,
         'reasons': null,
         'children': null
+      },{
+        'url': rc3_child_url,
+        'src': rc3_child_url,
+        // Id and name should be null.
+        'id': null,
+        'name': null,
+        'reasons': [],
+        'children': []
+      }, {
+        'url': rc4_child_url,
+        'src': rc4_child_url,
+        'id': '',
+        'name': '',
+        'reasons': [],
+        'children': []
       }]);
 });

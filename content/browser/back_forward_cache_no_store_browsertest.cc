@@ -957,7 +957,7 @@ IN_PROC_BROWSER_TEST_P(
                     {}, {}, {}, FROM_HERE);
 
   auto subframe_result = MatchesNotRestoredReasons(
-      /*id=*/"", /*name=*/"", /*src=*/url_a_no_store.spec(),
+      /*id=*/std::nullopt, /*name=*/std::nullopt, /*src=*/url_a_no_store.spec(),
       /*reasons=*/
       {MatchesDetailedReason("response-cache-control-no-store",
                              /*source=*/std::nullopt)},
