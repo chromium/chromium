@@ -78,8 +78,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
 
   ~ScriptPromiseUntyped() = default;
 
-  ScriptPromise<IDLAny> Then(v8::Local<v8::Function> on_fulfilled,
-                             v8::Local<v8::Function> on_rejected = {});
   ScriptPromise<IDLAny> Then(ScriptFunction* on_fulfilled,
                              ScriptFunction* on_rejected = nullptr);
 

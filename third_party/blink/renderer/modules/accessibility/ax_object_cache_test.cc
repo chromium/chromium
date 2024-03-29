@@ -291,7 +291,7 @@ TEST_F(AXViewTransitionTest, TransitionPseudoNotRelevant) {
 
   MockFunctionScope funcs(script_state);
   auto* view_transition_callback =
-      V8ViewTransitionCallback::Create(funcs.ExpectCall());
+      V8ViewTransitionCallback::Create(funcs.ExpectCall()->V8Function());
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
       script_state, GetDocument(), view_transition_callback, exception_state);

@@ -975,15 +975,12 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
     // <spec step="7"> If report errors is true, then upon rejection of
     // evaluationPromise with reason, report the exception given by reason
     // for script.</spec>
-    v8::Local<v8::Function> callback_failure =
-        MakeGarbageCollected<ScriptFunction>(
-            script_state,
-            MakeGarbageCollected<ModuleEvaluationRejectionCallback>())
-            ->V8Function();
+    auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
+        script_state,
+        MakeGarbageCollected<ModuleEvaluationRejectionCallback>());
     // Add a rejection handler to report back errors once the result
     // promise is rejected.
-    result.GetPromise(script_state)
-        .Then(v8::Local<v8::Function>(), callback_failure);
+    result.GetPromise(script_state).Then(nullptr, callback_failure);
   }
 
   // <spec step="8">Clean up after running script with settings.</spec>

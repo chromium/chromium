@@ -49,10 +49,9 @@ struct StubScriptFunction : public GarbageCollected<StubScriptFunction> {
 
   // The returned ScriptFunction can outlive the StubScriptFunction,
   // but it should not be called after the StubScriptFunction dies.
-  v8::Local<v8::Function> GetFunction(ScriptState* script_state) {
+  ScriptFunction* GetFunction(ScriptState* script_state) {
     return MakeGarbageCollected<ScriptFunction>(
-               script_state, MakeGarbageCollected<ScriptFunctionImpl>(this))
-        ->V8Function();
+        script_state, MakeGarbageCollected<ScriptFunctionImpl>(this));
   }
 
   size_t CallCount() { return call_count_; }

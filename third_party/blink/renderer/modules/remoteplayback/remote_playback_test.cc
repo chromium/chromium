@@ -244,7 +244,8 @@ TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
   MockFunctionScope funcs(scope.GetScriptState());
 
   V8RemotePlaybackAvailabilityCallback* availability_callback =
-      V8RemotePlaybackAvailabilityCallback::Create(funcs.ExpectNoCall());
+      V8RemotePlaybackAvailabilityCallback::Create(
+          funcs.ExpectNoCall()->V8Function());
 
   remote_playback
       .watchAvailability(scope.GetScriptState(), availability_callback,
@@ -327,7 +328,8 @@ TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
   MockFunctionScope funcs(scope.GetScriptState());
 
   V8RemotePlaybackAvailabilityCallback* availability_callback =
-      V8RemotePlaybackAvailabilityCallback::Create(funcs.ExpectNoCall());
+      V8RemotePlaybackAvailabilityCallback::Create(
+          funcs.ExpectNoCall()->V8Function());
 
   remote_playback
       .watchAvailability(scope.GetScriptState(), availability_callback,

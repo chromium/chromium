@@ -105,11 +105,13 @@ MockVideoEncoder* CreateMockEncoder(ScriptState* script_state,
                                                 exception_state);
 }
 
-VideoEncoderInit* CreateInit(v8::Local<v8::Function> output_callback,
-                             v8::Local<v8::Function> error_callback) {
+VideoEncoderInit* CreateInit(ScriptFunction* output_callback,
+                             ScriptFunction* error_callback) {
   auto* init = MakeGarbageCollected<VideoEncoderInit>();
-  init->setOutput(V8EncodedVideoChunkOutputCallback::Create(output_callback));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
+  init->setOutput(
+      V8EncodedVideoChunkOutputCallback::Create(output_callback->V8Function()));
+  init->setError(
+      V8WebCodecsErrorCallback::Create(error_callback->V8Function()));
   return init;
 }
 

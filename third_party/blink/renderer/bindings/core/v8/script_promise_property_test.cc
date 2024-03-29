@@ -151,18 +151,15 @@ class ScriptPromisePropertyTestBase {
 
   void Gc() { ThreadState::Current()->CollectAllGarbageForTesting(); }
 
-  v8::Local<v8::Function> NotReached(ScriptState* script_state) {
+  ScriptFunction* NotReached(ScriptState* script_state) {
     return MakeGarbageCollected<ScriptFunction>(
-               script_state, MakeGarbageCollected<NotReachedFunction>())
-        ->V8Function();
+        script_state, MakeGarbageCollected<NotReachedFunction>());
   }
-  v8::Local<v8::Function> Stub(ScriptState* script_state,
-                               ScriptValue& value,
-                               size_t& call_count) {
+  ScriptFunction* Stub(ScriptState* script_state,
+                       ScriptValue& value,
+                       size_t& call_count) {
     return MakeGarbageCollected<ScriptFunction>(
-               script_state,
-               MakeGarbageCollected<StubFunction>(value, call_count))
-        ->V8Function();
+        script_state, MakeGarbageCollected<StubFunction>(value, call_count));
   }
 
   ScriptValue Wrap(DOMWrapperWorld& world,

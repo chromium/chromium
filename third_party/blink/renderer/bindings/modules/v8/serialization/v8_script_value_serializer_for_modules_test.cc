@@ -336,17 +336,15 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
       MakeGarbageCollected<ScriptPromiseResolver<IDLType>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   resolver->Promise().Then(
-      (MakeGarbageCollected<ScriptFunction>(
-           script_state, MakeGarbageCollected<WebCryptoResultAdapter<T>>(
-                             std::move(function))))
-          ->V8Function(),
-      (MakeGarbageCollected<ScriptFunction>(
-           script_state,
-           MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
-               WTF::BindRepeating([](DOMException* exception) {
-                 CHECK(false) << "crypto operation failed";
-               }))))
-          ->V8Function());
+      MakeGarbageCollected<ScriptFunction>(
+          script_state,
+          MakeGarbageCollected<WebCryptoResultAdapter<T>>(std::move(function))),
+      MakeGarbageCollected<ScriptFunction>(
+          script_state,
+          MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
+              WTF::BindRepeating([](DOMException* exception) {
+                CHECK(false) << "crypto operation failed";
+              }))));
   return result->Result();
 }
 

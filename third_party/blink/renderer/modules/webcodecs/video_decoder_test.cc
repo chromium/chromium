@@ -102,10 +102,10 @@ class VideoDecoderTest : public testing::Test {
 
   VideoDecoderInit* CreateVideoDecoderInit(MockFunctionScope& mock_functions) {
     auto* init = MakeGarbageCollected<VideoDecoderInit>();
-    init->setOutput(
-        V8VideoFrameOutputCallback::Create(mock_functions.ExpectNoCall()));
-    init->setError(
-        V8WebCodecsErrorCallback::Create(mock_functions.ExpectNoCall()));
+    init->setOutput(V8VideoFrameOutputCallback::Create(
+        mock_functions.ExpectNoCall()->V8Function()));
+    init->setError(V8WebCodecsErrorCallback::Create(
+        mock_functions.ExpectNoCall()->V8Function()));
     return init;
   }
 

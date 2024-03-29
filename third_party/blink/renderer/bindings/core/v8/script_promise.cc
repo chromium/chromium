@@ -112,19 +112,17 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
     Member<PromiseAllHandler> handler_;
   };
 
-  v8::Local<v8::Function> CreateFulfillFunction(ScriptState* script_state,
-                                                wtf_size_t index) {
+  ScriptFunction* CreateFulfillFunction(ScriptState* script_state,
+                                        wtf_size_t index) {
     return MakeGarbageCollected<ScriptFunction>(
-               script_state, MakeGarbageCollected<AdapterFunction>(
-                                 AdapterFunction::kFulfilled, index, this))
-        ->V8Function();
+        script_state, MakeGarbageCollected<AdapterFunction>(
+                          AdapterFunction::kFulfilled, index, this));
   }
 
-  v8::Local<v8::Function> CreateRejectFunction(ScriptState* script_state) {
+  ScriptFunction* CreateRejectFunction(ScriptState* script_state) {
     return MakeGarbageCollected<ScriptFunction>(
-               script_state, MakeGarbageCollected<AdapterFunction>(
-                                 AdapterFunction::kRejected, 0, this))
-        ->V8Function();
+        script_state, MakeGarbageCollected<AdapterFunction>(
+                          AdapterFunction::kRejected, 0, this));
   }
 
   void OnFulfilled(wtf_size_t index, const ScriptValue& value) {
@@ -180,46 +178,37 @@ ScriptPromiseUntyped::ScriptPromiseUntyped(const ScriptPromiseUntyped& other) {
   promise_ = other.promise_;
 }
 
-ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(
-    v8::Local<v8::Function> on_fulfilled,
-    v8::Local<v8::Function> on_rejected) {
+ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
+                                                 ScriptFunction* on_rejected) {
   if (promise_.IsEmpty())
     return ScriptPromise<IDLAny>();
 
   v8::Local<v8::Promise> promise = promise_.V8Value().As<v8::Promise>();
 
-  if (on_fulfilled.IsEmpty() && on_rejected.IsEmpty())
+  if (!on_fulfilled && !on_rejected) {
     return ScriptPromise<IDLAny>::FromV8Promise(script_state_, promise);
+  }
 
   v8::Local<v8::Promise> result_promise;
-  if (on_rejected.IsEmpty()) {
-    if (!promise->Then(script_state_->GetContext(), on_fulfilled)
+  if (!on_rejected) {
+    if (!promise->Then(script_state_->GetContext(), on_fulfilled->V8Function())
              .ToLocal(&result_promise)) {
       return ScriptPromise<IDLAny>();
     }
-    return ScriptPromise<IDLAny>::FromV8Promise(script_state_, result_promise);
-  }
-
-  if (on_fulfilled.IsEmpty()) {
-    if (!promise->Catch(script_state_->GetContext(), on_rejected)
+  } else if (!on_fulfilled) {
+    if (!promise->Catch(script_state_->GetContext(), on_rejected->V8Function())
              .ToLocal(&result_promise)) {
       return ScriptPromise<IDLAny>();
     }
-    return ScriptPromise<IDLAny>::FromV8Promise(script_state_, result_promise);
-  }
-
-  if (!promise->Then(script_state_->GetContext(), on_fulfilled, on_rejected)
-           .ToLocal(&result_promise)) {
-    return ScriptPromise<IDLAny>();
+  } else {
+    if (!promise
+             ->Then(script_state_->GetContext(), on_fulfilled->V8Function(),
+                    on_rejected->V8Function())
+             .ToLocal(&result_promise)) {
+      return ScriptPromise<IDLAny>();
+    }
   }
   return ScriptPromise<IDLAny>::FromV8Promise(script_state_, result_promise);
-}
-
-ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
-                                                 ScriptFunction* on_rejected) {
-  const v8::Local<v8::Function> empty;
-  return Then(on_fulfilled ? on_fulfilled->V8Function() : empty,
-              on_rejected ? on_rejected->V8Function() : empty);
 }
 
 ScriptPromiseUntyped ScriptPromiseUntyped::CastUndefined(

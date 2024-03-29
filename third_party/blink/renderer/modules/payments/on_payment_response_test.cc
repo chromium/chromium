@@ -450,8 +450,7 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -485,8 +484,7 @@ TEST(OnPaymentResponseTest, CanRequestName) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -519,8 +517,7 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -553,8 +550,7 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -584,8 +580,7 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -619,8 +614,7 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -653,8 +647,7 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -687,8 +680,7 @@ TEST(OnPaymentResponseTest, EmailNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
