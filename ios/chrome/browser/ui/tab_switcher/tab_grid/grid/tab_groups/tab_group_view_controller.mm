@@ -199,6 +199,11 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   return NO;
 }
 
+- (void)navigationBar:(UINavigationBar*)navigationBar
+           didPopItem:(UINavigationItem*)item {
+  [_handler hideTabGroup];
+}
+
 #pragma mark - UIBarPositioningDelegate
 
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
