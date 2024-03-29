@@ -19,6 +19,10 @@ IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, AIFeedback) {
   RunTest("feedback/feedback_test.js", "runMochaSuite('AIFeedbackTest')");
 }
 
+IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, SeaPenFeedback) {
+  RunTest("feedback/feedback_test.js", "runMochaSuite('SeaPenFeedbackTest')");
+}
+
 IN_PROC_BROWSER_TEST_F(FeedbackBrowserTest, SystemInfo) {
   RunTest("feedback/system_info_test.js", "mocha.run()");
 }

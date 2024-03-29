@@ -162,8 +162,9 @@ export class FeedbackAppElement extends PolymerElement {
         isAiFlow && feedbackInfo.aiMetadata?.includes('from_sea_pen');
 
     if (isSeaPenFlow) {
-      this.getRequiredElement<HTMLInputElement>('#sys-info-checkbox').checked =
-          false;
+      this.getRequiredElement('#log-id-container').hidden = true;
+      this.getRequiredElement('#screenshot-container').hidden = true;
+      this.getRequiredElement('#sys-info-container').hidden = true;
     }
 
     const whenScreenshotUpdated = takeScreenshot().then((screenshotCanvas) => {
@@ -569,11 +570,16 @@ export class FeedbackAppElement extends PolymerElement {
       },
     ];
 
-    if (this.feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI) {
+    const isAiFlow: boolean =
+        this.feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI;
+    const isSeaPenFlow: boolean|undefined =
+        isAiFlow && this.feedbackInfo.aiMetadata?.includes('from_sea_pen');
+    if (isAiFlow) {
       this.feedbackInfo.isOffensiveOrUnsafe =
           this.getRequiredElement<HTMLInputElement>('#offensive-checkbox')
               .checked;
-      if (!this.getRequiredElement<HTMLInputElement>('#log-id-checkbox')
+      if (isSeaPenFlow ||
+          !this.getRequiredElement<HTMLInputElement>('#log-id-checkbox')
                .checked) {
         this.feedbackInfo.aiMetadata = undefined;
       }
@@ -590,7 +596,8 @@ export class FeedbackAppElement extends PolymerElement {
     let useHistograms = false;
     const checkbox =
         this.shadowRoot!.querySelector<HTMLInputElement>('#sys-info-checkbox');
-    if (checkbox != null && checkbox.checked) {
+    // SeaPen flow doesn't collect system info data.
+    if (checkbox != null && checkbox.checked && !isSeaPenFlow) {
       // Send histograms along with system info.
       useHistograms = true;
       useSystemInfo = true;
