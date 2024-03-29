@@ -703,13 +703,7 @@ void ServiceWorkerContainer::OnGetRegistrationForReady(
     WebServiceWorkerRegistrationObjectInfo info) {
   DCHECK_EQ(ready_->GetState(), ReadyProperty::kPending);
 
-  if (ready_->GetExecutionContext() &&
-      !ready_->GetExecutionContext()->IsContextDestroyed()) {
-    ready_->Resolve(
-        ServiceWorkerContainer::From(
-            *To<LocalDOMWindow>(ready_->GetExecutionContext()))
-            ->GetOrCreateServiceWorkerRegistration(std::move(info)));
-  }
+  ready_->Resolve(GetOrCreateServiceWorkerRegistration(std::move(info)));
 }
 
 }  // namespace blink

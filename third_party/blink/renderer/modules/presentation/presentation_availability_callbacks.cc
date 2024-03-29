@@ -33,17 +33,11 @@ PresentationAvailabilityCallbacks::~PresentationAvailabilityCallbacks() =
     default;
 
 void PresentationAvailabilityCallbacks::Resolve(bool value) {
-  if (!resolver_->GetExecutionContext() ||
-      resolver_->GetExecutionContext()->IsContextDestroyed())
-    return;
   resolver_->Resolve(
       PresentationAvailability::Take(resolver_.Get(), urls_, value));
 }
 
 void PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported() {
-  if (!resolver_->GetExecutionContext() ||
-      resolver_->GetExecutionContext()->IsContextDestroyed())
-    return;
   resolver_->Reject(CreateAvailabilityNotSupportedError());
 }
 

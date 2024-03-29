@@ -6,11 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_PROPERTY_H_
 
 #include "base/check_op.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
@@ -24,8 +22,7 @@ class ExecutionContext;
 template <typename IDLResolvedType, typename IDLRejectedType>
 class ScriptPromiseProperty final
     : public GarbageCollected<
-          ScriptPromiseProperty<IDLResolvedType, IDLRejectedType>>,
-      public ExecutionContextClient {
+          ScriptPromiseProperty<IDLResolvedType, IDLRejectedType>> {
  public:
   enum State {
     kPending,
@@ -37,8 +34,8 @@ class ScriptPromiseProperty final
   // the specified ExecutionContext for a property of 'holder'
   // (typically ScriptPromiseProperty should be a member of the
   // property holder).
-  ScriptPromiseProperty(ExecutionContext* execution_context)
-      : ExecutionContextClient(execution_context) {}
+  explicit ScriptPromiseProperty(ExecutionContext* execution_context)
+      : execution_context_(execution_context) {}
 
   ScriptPromiseProperty(const ScriptPromiseProperty&) = delete;
   ScriptPromiseProperty& operator=(const ScriptPromiseProperty&) = delete;
@@ -48,12 +45,7 @@ class ScriptPromiseProperty final
       return ScriptPromise<IDLResolvedType>();
     }
 
-    v8::HandleScope handle_scope(GetExecutionContext()->GetIsolate());
-    v8::Local<v8::Context> context = ToV8Context(GetExecutionContext(), world);
-    if (context.IsEmpty()) {
-      return ScriptPromise<IDLResolvedType>();
-    }
-    ScriptState* script_state = ScriptState::From(context);
+    ScriptState* script_state = ToScriptState(execution_context_.Get(), world);
 
     for (auto& promise : promises_) {
       if (promise.IsAssociatedWith(script_state)) {
@@ -66,7 +58,7 @@ class ScriptPromiseProperty final
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLResolvedType>>(
             script_state);
-    // ScriptPromiseResolverBase usually requires a caller to reject it before
+    // ScriptPromiseResolver usually requires a caller to reject it before
     // releasing, but ScriptPromiseProperty doesn't have such a requirement, so
     // suppress the check forcibly.
     resolver->SuppressDetachCheck();
@@ -146,15 +138,24 @@ class ScriptPromiseProperty final
     }
   }
 
-  void Trace(Visitor* visitor) const override {
+  void Trace(Visitor* visitor) const {
     TraceIfNeeded<MemberResolvedType>::Trace(visitor, resolved_);
     TraceIfNeeded<MemberRejectedType>::Trace(visitor, rejected_);
     visitor->Trace(resolvers_);
     visitor->Trace(promises_);
-    ExecutionContextClient::Trace(visitor);
+    visitor->Trace(execution_context_);
   }
 
   State GetState() const { return state_; }
+
+  // DEPRECATED. If client requires execution context, it should figure its own
+  // way to get one.
+  ExecutionContext* GetExecutionContext() {
+    if (!execution_context_ || execution_context_->IsContextDestroyed()) {
+      return nullptr;
+    }
+    return execution_context_.Get();
+  }
 
  private:
   using MemberResolvedType =
@@ -183,6 +184,7 @@ class ScriptPromiseProperty final
   // needed.
   HeapVector<Member<ScriptPromiseResolverBase>> resolvers_;
   HeapVector<ScriptPromiseUntyped> promises_;
+  WeakMember<ExecutionContext> const execution_context_;
 
   bool mark_as_handled_ = false;
 };
