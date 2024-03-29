@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <d3d11.h>
+#include <dxcore.h>
 #include <wrl.h>
 #include <memory>
 
@@ -15,11 +16,11 @@ namespace webnn::dml {
 
 class WebNNAdapterTest : public TestBase {};
 
-TEST_F(WebNNAdapterTest, GetInstance) {
-  // Test creating Adapter instance upon `GetInstance()` and release it if there
-  // are no references anymore.
+TEST_F(WebNNAdapterTest, GetGpuInstance) {
+  // Test creating Adapter instance upon `GetGpuInstance()` and release it if
+  // there are no references anymore.
   { EXPECT_TRUE(Adapter::GetInstanceForTesting().has_value()); }
-  EXPECT_EQ(Adapter::instance_, nullptr);
+  EXPECT_EQ(Adapter::gpu_instance_, nullptr);
 
   // Test two Adapters should share one instance.
   {
@@ -30,14 +31,35 @@ TEST_F(WebNNAdapterTest, GetInstance) {
     EXPECT_EQ(adapter1_creation_result.value(),
               adapter2_creation_result.value());
   }
-  EXPECT_EQ(Adapter::instance_, nullptr);
+  EXPECT_EQ(Adapter::gpu_instance_, nullptr);
+}
+
+TEST_F(WebNNAdapterTest, GetNpuInstance) {
+  // Skip if failed to get NPU instance since not all platforms support NPU.
+  SKIP_TEST_IF(!Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0).has_value());
+  // Test creating Adapter instance upon `GetNpuInstance()` and release it if
+  // there are no references anymore.
+  { EXPECT_TRUE(Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0).has_value()); }
+  EXPECT_EQ(Adapter::npu_instance_, nullptr);
+
+  // Test two Adapters should share one instance.
+  {
+    auto adapter1_creation_result =
+        Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0);
+    auto adapter2_creation_result =
+        Adapter::GetNpuInstance(DML_FEATURE_LEVEL_4_0);
+    ASSERT_TRUE(adapter1_creation_result.has_value());
+    ASSERT_TRUE(adapter2_creation_result.has_value());
+    EXPECT_EQ(adapter1_creation_result.value(),
+              adapter2_creation_result.value());
+  }
+  EXPECT_EQ(Adapter::npu_instance_, nullptr);
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
   auto adapter_creation_result = Adapter::GetInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());
   auto adapter = adapter_creation_result.value();
-  EXPECT_NE(adapter->dxgi_adapter(), nullptr);
   EXPECT_NE(adapter->d3d12_device(), nullptr);
   EXPECT_NE(adapter->dml_device(), nullptr);
   EXPECT_NE(adapter->command_queue(), nullptr);
@@ -86,8 +108,7 @@ TEST_F(WebNNAdapterTest,
   EXPECT_EQ(adapter_creation_result.error()->code,
             mojom::Error::Code::kNotSupportedError);
   EXPECT_EQ(adapter_creation_result.error()->message,
-            "DirectML: The DirectML feature level on this platform is lower "
-            "than the minimum required one.");
+            "DirectML: Unable to find a capable adapter.");
 }
 
 }  // namespace webnn::dml

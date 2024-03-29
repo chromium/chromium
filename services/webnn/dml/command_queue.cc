@@ -66,10 +66,12 @@ void CommandQueue::ScheduleCleanupForPendingWork(
 }
 
 CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
-                           ComPtr<ID3D12Fence> fence)
+                           ComPtr<ID3D12Fence> fence,
+                           D3D12_COMMAND_LIST_TYPE command_list_type)
     : base::win::ObjectWatcher::Delegate(),
       command_queue_(std::move(command_queue)),
-      fence_(std::move(fence)) {
+      fence_(std::move(fence)),
+      command_list_type_(command_list_type) {
   fence_event_.Set(CreateEvent(nullptr, /*bManualReset=*/FALSE,
                                /*bInitialState=*/FALSE, nullptr));
   CHECK(fence_event_.is_valid());
@@ -86,10 +88,12 @@ CommandQueue::~CommandQueue() {
 }
 
 // static
-scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
+scoped_refptr<CommandQueue> CommandQueue::Create(
+    ID3D12Device* d3d12_device,
+    D3D12_COMMAND_LIST_TYPE command_list_type) {
   ComPtr<ID3D12CommandQueue> command_queue;
   D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
-  command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+  command_queue_desc.Type = command_list_type;
   command_queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
   HRESULT hr = d3d12_device->CreateCommandQueue(&command_queue_desc,
                                                 IID_PPV_ARGS(&command_queue));
@@ -108,8 +112,8 @@ scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
     return nullptr;
   }
 
-  return base::WrapRefCounted(
-      new CommandQueue(std::move(command_queue), std::move(fence)));
+  return base::WrapRefCounted(new CommandQueue(
+      std::move(command_queue), std::move(fence), command_list_type));
 }
 
 HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {

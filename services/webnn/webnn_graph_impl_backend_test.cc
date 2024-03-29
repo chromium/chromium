@@ -62,7 +62,9 @@ void BuildAndCompute(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     base::flat_map<std::string, mojo_base::BigBuffer>& named_outputs,
     BuildAndComputeExpectation expectation =
-        BuildAndComputeExpectation::kSuccess) {
+        BuildAndComputeExpectation::kSuccess,
+    mojom::CreateContextOptions::Device device =
+        mojom::CreateContextOptions::Device::kGpu) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   mojo::Remote<mojom::WebNNGraph> webnn_graph_remote;
@@ -73,7 +75,9 @@ void BuildAndCompute(
   // Create the ContextImpl through context provider.
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
-      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+      mojom::CreateContextOptions::New(
+          device, mojom::CreateContextOptions::PowerPreference::kDefault),
+      create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   if (create_context_result->is_context_remote()) {
@@ -262,7 +266,8 @@ void WebNNGraphImplBackendTest::SetUp() {
        {"BuildAndComputeSingleOperatorGather", DML_FEATURE_LEVEL_3_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
-       {"BuildSingleOperatorGemm", DML_FEATURE_LEVEL_4_0},
+       {"BuildSingleOperatorGemmOnNpu", DML_FEATURE_LEVEL_4_0},
+       {"BuildSingleOperatorGemmOnGpu", DML_FEATURE_LEVEL_4_0},
        // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
        // DML_FEATURE_LEVEL_4_0.
        {"BuildAndComputeMultipleOperatorGemm", DML_FEATURE_LEVEL_4_0},
@@ -4708,7 +4713,8 @@ struct GemmTester {
   GemmAttributes attributes;
   OperandInfo<float> output;
 
-  void Test() {
+  void Test(mojom::CreateContextOptions::Device device =
+                mojom::CreateContextOptions::Device::kGpu) {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
     uint64_t input_a_operand_id =
@@ -4734,7 +4740,8 @@ struct GemmTester {
     base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
 
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
-                    named_outputs);
+                    named_outputs, BuildAndComputeExpectation::kSuccess,
+                    device);
 
     VerifyFloatDataIsEqual(
         GetFloatOutputData(std::move(named_outputs["output"]), output.type),
@@ -4742,8 +4749,23 @@ struct GemmTester {
   }
 };
 
-// Test building and computing a graph with single operator gemm.
-TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemm) {
+// Test building and computing a graph with single operator gemm on npu.
+TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemmOnNpu) {
+  // Test gemm without a third input.
+  GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 2},
+                                .values = {1, 2, 3, 4}},
+                    .input_b = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 2},
+                                .values = {1, 2, 3, 4}},
+                    .output = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {2, 2},
+                               .values = {7, 10, 15, 22}}}
+      .Test(mojom::CreateContextOptions::Device::kNpu);
+}
+
+// Test building and computing a graph with single operator gemm on gpu.
+TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorGemmOnGpu) {
   // Test gemm without a third input.
   {
     GemmTester<float>{.input_a = {.type = mojom::Operand::DataType::kFloat32,
@@ -5271,7 +5293,10 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   // Create the ContextImpl through context provider.
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote->CreateWebNNContext(
-      mojom::CreateContextOptions::New(), create_context_future.GetCallback());
+      mojom::CreateContextOptions::New(
+          mojom::CreateContextOptions::Device::kGpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
+      create_context_future.GetCallback());
   mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
   if (create_context_result->is_context_remote()) {

@@ -22,7 +22,8 @@ enum MLDevicePreference {
 // https://www.w3.org/TR/webnn/#enumdef-mldevicetype
 enum MLDeviceType {
   "cpu",
-  "gpu"
+  "gpu",
+  "npu"
 };
 
 enum MLPowerPreference {

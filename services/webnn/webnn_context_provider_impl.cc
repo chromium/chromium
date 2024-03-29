@@ -50,10 +50,10 @@ using webnn::mojom::CreateContextOptionsPtr;
 using webnn::mojom::WebNNContextProvider;
 
 #if BUILDFLAG(IS_WIN)
+constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN = DML_FEATURE_LEVEL_4_0;
+
 base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
     gpu::SharedContextState* shared_context_state) {
-  constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN =
-      DML_FEATURE_LEVEL_4_0;
   if (!shared_context_state) {
     // Unit tests do not pass in a SharedContextState, since a reference to
     // a GpuServiceImpl must be initialized to obtain a SharedContextState.
@@ -80,8 +80,8 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
   ComPtr<IDXGIAdapter> dxgi_adapter;
   // Asking for an adapter from IDXGIDevice is always expected to succeed.
   CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
-  return dml::Adapter::GetInstance(kMinDMLFeatureLevelForWebNN,
-                                   std::move(dxgi_adapter));
+  return dml::Adapter::GetGpuInstance(kMinDMLFeatureLevelForWebNN,
+                                      std::move(dxgi_adapter));
 }
 #endif
 
@@ -190,7 +190,25 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     return;
   }
 
-  auto adapter_creation_result = GetDmlGpuAdapter(shared_context_state_.get());
+  // Get the `Adapter` instance which is created for the adapter according to
+  // the device type. At the current stage, all `ContextImpl` share one instance
+  // for one device type.
+  base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr>
+      adapter_creation_result;
+  switch (options->device) {
+    case mojom::CreateContextOptions::Device::kCpu:
+      std::move(callback).Run(mojom::CreateContextResult::NewError(
+          dml::CreateError(mojom::Error::Code::kNotSupportedError,
+                           "The cpu device is not supported.")));
+      return;
+    case mojom::CreateContextOptions::Device::kGpu:
+      adapter_creation_result = GetDmlGpuAdapter(shared_context_state_.get());
+      break;
+    case mojom::CreateContextOptions::Device::kNpu:
+      adapter_creation_result =
+          dml::Adapter::GetNpuInstance(kMinDMLFeatureLevelForWebNN);
+      break;
+  }
   if (!adapter_creation_result.has_value()) {
     std::move(callback).Run(mojom::CreateContextResult::NewError(
         std::move(adapter_creation_result.error())));
@@ -202,9 +220,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       dml::CommandRecorder::Create(adapter->command_queue(),
                                    adapter->dml_device());
   if (!command_recorder) {
-    std::move(callback).Run(ToError<mojom::CreateContextResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to create a WebNN context."));
+    std::move(callback).Run(mojom::CreateContextResult::NewError(
+        dml::CreateError(mojom::Error::Code::kUnknownError,
+                         "Failed to create a WebNN context.")));
     DLOG(ERROR) << "Failed to open the command recorder.";
     return;
   }

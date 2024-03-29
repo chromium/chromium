@@ -57,6 +57,8 @@ TEST_F(WebNNCommandQueueTest, WaitSyncForGpuWorkCompleted) {
   EXPECT_EQ(command_queue->WaitSyncForTesting(), S_OK);
   EXPECT_EQ(command_allocator->Reset(), S_OK);
   EXPECT_EQ(command_list->Reset(command_allocator.Get(), nullptr), S_OK);
+  EXPECT_EQ(command_queue->GetCommandListType(),
+            D3D12_COMMAND_LIST_TYPE_DIRECT);
 }
 
 TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {

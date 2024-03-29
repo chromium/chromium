@@ -14,7 +14,7 @@ namespace webnn::dml {
 PlatformFunctions::PlatformFunctions() {
   // D3D12
   base::ScopedNativeLibrary d3d12_library(
-      std::move(base::LoadSystemLibrary(L"D3D12.dll")));
+      base::LoadSystemLibrary(L"D3D12.dll"));
   if (!d3d12_library.is_valid()) {
     DLOG(ERROR) << "Failed to load D3D12.dll.";
     return;
@@ -60,14 +60,41 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
+  // DXCore which is optional.
+  base::ScopedNativeLibrary dxcore_library(
+      base::LoadSystemLibrary(L"DXCore.dll"));
+  PlatformFunctions::DXCoreCreateAdapterFactoryProc
+      dxcore_create_adapter_factory_proc;
+  if (!dxcore_library.is_valid()) {
+    DLOG(WARNING) << "Failed to load DXCore.dll.";
+  } else {
+    dxcore_create_adapter_factory_proc =
+        reinterpret_cast<DXCoreCreateAdapterFactoryProc>(
+            dxcore_library.GetFunctionPointer("DXCoreCreateAdapterFactory"));
+    if (!dxcore_create_adapter_factory_proc) {
+      DLOG(WARNING) << "Failed to get DXCoreCreateAdapterFactory function.";
+    }
+  }
+
   // D3D12
   d3d12_library_ = std::move(d3d12_library);
   d3d12_create_device_proc_ = std::move(d3d12_create_device_proc);
   d3d12_get_debug_interface_proc_ = std::move(d3d12_get_debug_interface_proc);
+
+  // DXCore
+  if (dxcore_library.is_valid() && dxcore_create_adapter_factory_proc) {
+    dxcore_library_ = std::move(dxcore_library);
+    dxcore_create_adapter_factory_proc_ =
+        std::move(dxcore_create_adapter_factory_proc);
+  }
+
   // DirectML
   dml_library_ = std::move(dml_library);
+
   dml_create_device_proc_ = std::move(dml_create_device_proc);
 }
+
+PlatformFunctions::~PlatformFunctions() = default;
 
 // static
 PlatformFunctions* PlatformFunctions::GetInstance() {

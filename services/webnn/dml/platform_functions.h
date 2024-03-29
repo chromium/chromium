@@ -7,6 +7,7 @@
 
 #include <DirectML.h>
 #include <d3d12.h>
+#include <dxcore.h>
 #include <windows.h>
 
 #include "base/component_export.h"
@@ -32,15 +33,24 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
     return d3d12_get_debug_interface_proc_;
   }
 
+  using DXCoreCreateAdapterFactoryProc =
+      decltype(static_cast<STDMETHODIMP (*)(REFIID, void**)>(
+          DXCoreCreateAdapterFactory));
+  DXCoreCreateAdapterFactoryProc dxcore_create_adapter_factory_proc() const {
+    return dxcore_create_adapter_factory_proc_;
+  }
+
   using DmlCreateDeviceProc = decltype(DMLCreateDevice)*;
   DmlCreateDeviceProc dml_create_device_proc() const {
     return dml_create_device_proc_;
   }
 
+  bool IsDXCoreSupported() const { return dxcore_library_.is_valid(); }
+
  private:
   friend class base::NoDestructor<PlatformFunctions>;
   PlatformFunctions();
-  ~PlatformFunctions() = default;
+  ~PlatformFunctions();
 
   bool AllFunctionsLoaded();
 
@@ -48,6 +58,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   base::ScopedNativeLibrary d3d12_library_;
   D3d12CreateDeviceProc d3d12_create_device_proc_;
   D3d12GetDebugInterfaceProc d3d12_get_debug_interface_proc_;
+
+  // DXCore library can be null as it was missing in older Windows 10 versions.
+  // It's needed for Microsoft Compute Driver Model (MCDM) devices (NPUs) which
+  // are not enumerable via DXGI.
+  base::ScopedNativeLibrary dxcore_library_;
+  DXCoreCreateAdapterFactoryProc dxcore_create_adapter_factory_proc_ = nullptr;
+
   // DirectML
   base::ScopedNativeLibrary dml_library_;
   DmlCreateDeviceProc dml_create_device_proc_;

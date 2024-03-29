@@ -94,7 +94,11 @@ component("webnn_service") {
       "//ui/gl",
       "//ui/gl/init",
     ]
-    libs = [ "dxgi.lib" ]
+
+    libs = [
+      "dxgi.lib",
+      "dxguid.lib",
+    ]
   }
 
   if (is_mac) {

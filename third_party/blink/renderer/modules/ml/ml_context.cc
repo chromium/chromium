@@ -20,15 +20,31 @@ namespace blink {
 
 namespace {
 
-webnn::mojom::blink::PowerPreference ConvertBlinkPowerPreferenceToMojo(
+webnn::mojom::blink::CreateContextOptions::Device ConvertBlinkDeviceTypeToMojo(
+    const V8MLDeviceType& device_type_blink) {
+  switch (device_type_blink.AsEnum()) {
+    case V8MLDeviceType::Enum::kCpu:
+      return webnn::mojom::blink::CreateContextOptions::Device::kCpu;
+    case V8MLDeviceType::Enum::kGpu:
+      return webnn::mojom::blink::CreateContextOptions::Device::kGpu;
+    case V8MLDeviceType::Enum::kNpu:
+      return webnn::mojom::blink::CreateContextOptions::Device::kNpu;
+  }
+}
+
+webnn::mojom::blink::CreateContextOptions::PowerPreference
+ConvertBlinkPowerPreferenceToMojo(
     const V8MLPowerPreference& power_preference_blink) {
   switch (power_preference_blink.AsEnum()) {
     case V8MLPowerPreference::Enum::kAuto:
-      return webnn::mojom::blink::PowerPreference::kDefault;
+      return webnn::mojom::blink::CreateContextOptions::PowerPreference::
+          kDefault;
     case V8MLPowerPreference::Enum::kLowPower:
-      return webnn::mojom::blink::PowerPreference::kLowPower;
+      return webnn::mojom::blink::CreateContextOptions::PowerPreference::
+          kLowPower;
     case V8MLPowerPreference::Enum::kHighPerformance:
-      return webnn::mojom::blink::PowerPreference::kHighPerformance;
+      return webnn::mojom::blink::CreateContextOptions::PowerPreference::
+          kHighPerformance;
   }
 }
 
@@ -47,8 +63,10 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
   // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
   // TFLite, but that code path is currently only hit when asking a "gpu"
   // context for the sake of testing. This should be fixed.
-  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu ||
+      options->deviceType() == V8MLDeviceType::Enum::kNpu) {
     auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
+        ConvertBlinkDeviceTypeToMojo(options->deviceType()),
         ConvertBlinkPowerPreferenceToMojo(options->powerPreference()));
     ml->CreateWebNNContext(
         std::move(options_mojo),
@@ -211,7 +229,8 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
   // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
   // TFLite, but that code path is currently only hit when asking a "gpu"
   // context for the sake of testing. This should be fixed.
-  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
+  if (device_type_ == V8MLDeviceType::Enum::kGpu ||
+      device_type_ == V8MLDeviceType::Enum::kNpu) {
     return MLBufferMojo::Create(std::move(scoped_trace), script_state, this,
                                 descriptor, exception_state);
   }

@@ -2240,7 +2240,8 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   // TFLite, but that code path is currently only hit when asking a "gpu"
   // context for the sake of testing. Consider refactoring things to make this
   // situation a bit more sane.
-  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu ||
+      ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kNpu) {
     MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
                                   named_outputs, resolver);
     return promise;
