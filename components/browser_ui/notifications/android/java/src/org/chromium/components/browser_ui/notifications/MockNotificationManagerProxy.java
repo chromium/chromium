@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -187,7 +189,8 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
     public void deleteNotificationChannelGroup(String groupId) {}
 
     @Override
-    public List<? extends StatusBarNotificationProxy> getActiveNotifications() {
-        return getNotifications();
+    public void getActiveNotifications(
+            Callback<List<? extends StatusBarNotificationProxy>> callback) {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(getNotifications()));
     }
 }

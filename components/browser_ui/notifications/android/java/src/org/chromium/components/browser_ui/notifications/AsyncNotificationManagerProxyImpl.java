@@ -7,10 +7,8 @@ package org.chromium.components.browser_ui.notifications;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Callback;
@@ -20,6 +18,7 @@ import org.chromium.base.task.AsyncTask;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
@@ -65,7 +64,6 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 () -> mNotificationManager.cancelAll());
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
         runAsync(
@@ -73,7 +71,6 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 () -> mNotificationManager.createNotificationChannel(channel));
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
         runAsync(
@@ -82,7 +79,6 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 () -> mNotificationManager.createNotificationChannelGroup(channelGroup));
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
         runAsyncAndReply(
@@ -91,7 +87,6 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 callback);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
         runAsyncAndReply(
@@ -100,7 +95,6 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 callback);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannel(String id) {
         runAsync(
@@ -126,7 +120,6 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                                 notification.getNotification()));
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
         runAsyncAndReply(
@@ -135,13 +128,24 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
                 callback);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannelGroup(String groupId) {
         runAsync(
                 TraceEvent.scoped(
                         "AsyncNotificationManagerProxyImpl.deleteNotificationChannelGroup"),
                 () -> mNotificationManager.deleteNotificationChannelGroup(groupId));
+    }
+
+    @Override
+    public void getActiveNotifications(
+            Callback<List<? extends StatusBarNotificationProxy>> callback) {
+        runAsyncAndReply(
+                TraceEvent.scoped("AsyncNotificationManagerProxyImpl.getActiveNotifications"),
+                () ->
+                        mNotificationManager.getActiveNotifications().stream()
+                                .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
+                                .collect(Collectors.toList()),
+                callback);
     }
 
     /** Helper method to run an runnable inside a scoped event in background. */

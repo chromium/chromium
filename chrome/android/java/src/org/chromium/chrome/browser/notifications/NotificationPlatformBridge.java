@@ -48,8 +48,8 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -68,7 +68,6 @@ import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -99,11 +98,11 @@ public class NotificationPlatformBridge {
 
     private static NotificationPlatformBridge sInstance;
 
-    private static NotificationManagerProxy sNotificationManagerOverride;
+    private static BaseNotificationManagerProxy sNotificationManagerOverride;
 
     private final long mNativeNotificationPlatformBridge;
 
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
 
     private long mLastNotificationClickMs;
 
@@ -182,7 +181,7 @@ public class NotificationPlatformBridge {
      * @param notificationManager The notification manager instance to use instead of the system's.
      */
     static void overrideNotificationManagerForTesting(
-            NotificationManagerProxy notificationManager) {
+            BaseNotificationManagerProxy notificationManager) {
         sNotificationManagerOverride = notificationManager;
     }
 
@@ -192,7 +191,7 @@ public class NotificationPlatformBridge {
         if (sNotificationManagerOverride != null) {
             mNotificationManager = sNotificationManagerOverride;
         } else {
-            mNotificationManager = new NotificationManagerProxyImpl(context);
+            mNotificationManager = BaseNotificationManagerProxyFactory.create(context);
         }
 
         // This set will be reset to empty if the application process is killed and then restarted.
@@ -1259,17 +1258,18 @@ public class NotificationPlatformBridge {
         // TODO(crbug.com/1521432): Verify if we can/need to use the correct profile here.
         NotificationSuspender suspender =
                 new NotificationSuspender(ProfileManager.getLastUsedRegularProfile());
-        List<String> notificationIdsToCancel =
-                suspender.storeNotificationResourcesFromOrigins(
-                        Collections.singletonList(Uri.parse(identifyingAttributes.origin)));
-        NotificationUmaTracker.getInstance()
-                .recordSuspendedNotificationCountOnUnsubscribe(notificationIdsToCancel.size());
-
         mOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
         displayProvisionallyUnsubscribedNotification(identifyingAttributes);
+        suspender.storeNotificationResourcesFromOrigins(
+                Collections.singletonList(Uri.parse(identifyingAttributes.origin)),
+                (notificationIdsToCancel) -> {
+                    NotificationUmaTracker.getInstance()
+                            .recordSuspendedNotificationCountOnUnsubscribe(
+                                    notificationIdsToCancel.size());
 
-        notificationIdsToCancel.remove(identifyingAttributes.notificationId);
-        suspender.cancelNotificationsWithIds(notificationIdsToCancel);
+                    notificationIdsToCancel.remove(identifyingAttributes.notificationId);
+                    suspender.cancelNotificationsWithIds(notificationIdsToCancel);
+                });
     }
 
     /**

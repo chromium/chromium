@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -58,16 +59,17 @@ public class NotificationSuspender {
     /**
      * Suspends notifications from the given domains.
      *
-     * Suspending means storing the notification resources and canceling the Android notifications
-     * themselves, so that they can be re-displayed later.
+     * <p>Suspending means storing the notification resources and canceling the Android
+     * notifications themselves, so that they can be re-displayed later.
      *
      * @param fqdns The list of domain strings to suspend notifications from.
      */
     public void suspendNotificationsFromDomains(List<String> fqdns) {
-        List<String> storedNotificationIds =
-                storeNotificationResources(
-                        getActiveNotificationsForOrigins(getOriginsForDomains(fqdns)));
-        cancelNotificationsWithIds(storedNotificationIds);
+        getActiveNotificationsForOrigins(
+                getOriginsForDomains(fqdns),
+                (activeNotifications) -> {
+                    cancelNotificationsWithIds(storeNotificationResources(activeNotifications));
+                });
     }
 
     /**
@@ -77,10 +79,14 @@ public class NotificationSuspender {
      * <p>This allows re-displaying these notification later.
      *
      * @param notifications The origins for which all notification resources to store.
-     * @return The list of notificationIds for which resources were stored.
+     * @param callback The origins for which all notification resources to store.
      */
-    public List<String> storeNotificationResourcesFromOrigins(List<Uri> origins) {
-        return storeNotificationResources(getActiveNotificationsForOrigins(origins));
+    public void storeNotificationResourcesFromOrigins(
+            List<Uri> origins, Callback<List<String>> callback) {
+        getActiveNotificationsForOrigins(
+                origins,
+                (activeNotifications) ->
+                        callback.onResult(storeNotificationResources(activeNotifications)));
     }
 
     /**
@@ -179,28 +185,36 @@ public class NotificationSuspender {
         return origins;
     }
 
-    private List<NotificationWrapper> getActiveNotificationsForOrigins(List<Uri> origins) {
+    private void getActiveNotificationsForOrigins(
+            List<Uri> origins, Callback<List<NotificationWrapper>> callback) {
         List<NotificationWrapper> notifications = new ArrayList<>();
 
         if (origins.isEmpty()) {
-            return notifications;
+            callback.onResult(notifications);
+            return;
         }
 
-        for (NotificationManagerProxy.StatusBarNotificationProxy notification :
-                mNotificationManager.getActiveNotifications()) {
-            if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) continue;
-            String tag = notification.getTag();
-            String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
-            if (origin == null || !origins.contains(Uri.parse(origin))) continue;
-            NotificationMetadata metadata =
-                    new NotificationMetadata(
-                            NotificationUmaTracker.SystemNotificationType.SITES,
-                            tag,
-                            NotificationPlatformBridge.PLATFORM_ID);
-            notifications.add(new NotificationWrapper(notification.getNotification(), metadata));
-        }
-
-        return notifications;
+        mNotificationManager.getActiveNotifications(
+                (activeNotifications) -> {
+                    for (NotificationManagerProxy.StatusBarNotificationProxy notification :
+                            activeNotifications) {
+                        if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) {
+                            continue;
+                        }
+                        String tag = notification.getTag();
+                        String origin =
+                                NotificationPlatformBridge.getOriginFromNotificationTag(tag);
+                        if (origin == null || !origins.contains(Uri.parse(origin))) continue;
+                        NotificationMetadata metadata =
+                                new NotificationMetadata(
+                                        NotificationUmaTracker.SystemNotificationType.SITES,
+                                        tag,
+                                        NotificationPlatformBridge.PLATFORM_ID);
+                        notifications.add(
+                                new NotificationWrapper(notification.getNotification(), metadata));
+                    }
+                    callback.onResult(notifications);
+                });
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

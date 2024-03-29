@@ -4,11 +4,9 @@
 
 package org.chromium.components.browser_ui.notifications;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 
@@ -45,7 +43,6 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#createNotificationChannel(android.app.NotificationChannel)">
      *     https://developer.android.com/reference/android/app/NotificationManager#createNotificationChannel(android.app.NotificationChannel)</a>
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     void createNotificationChannel(NotificationChannel channel);
 
     /**
@@ -53,7 +50,6 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#createNotificationChannelGroup(android.app.NotificationChannelGroup)">
      *     https://developer.android.com/reference/android/app/NotificationManager#createNotificationChannelGroup(android.app.NotificationChannelGroup)</a>
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     void createNotificationChannelGroup(NotificationChannelGroup channelGroup);
 
     /**
@@ -61,7 +57,6 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannel(java.lang.String)">
      *     https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannel(java.lang.String)</a>
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     void deleteNotificationChannel(String id);
 
     /**
@@ -77,7 +72,6 @@ public interface BaseNotificationManagerProxy {
      *     href=https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannelGroup(java.lang.String)">
      *     https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannelGroup(java.lang.String)</a>
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     void deleteNotificationChannelGroup(String groupId);
 
     /**
@@ -85,7 +79,6 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannelGroups()">
      *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannelGroups()</a>
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback);
 
     /**
@@ -93,6 +86,28 @@ public interface BaseNotificationManagerProxy {
      *     href="https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()">
      *     https://developer.android.com/reference/android/app/NotificationManager#getNotificationChannels()</a>
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     void getNotificationChannels(Callback<List<NotificationChannel>> callback);
+
+    /**
+     * A proxy for Android's StatusBarNotification.
+     *
+     * <p>Instead of returning real StatusBarNotification instances through getActiveNotifications()
+     * below, we need this layer of indirection, as the constructor for creating real
+     * StatusBarNotification instances is deprecated for non-system apps, making life hard for the
+     * MockNotificationManagerProxy implementation.
+     */
+    interface StatusBarNotificationProxy {
+        int getId();
+
+        String getTag();
+
+        Notification getNotification();
+    }
+
+    /**
+     * @see <a
+     *     href="https://developer.android.com/reference/android/app/NotificationManager#getActiveNotifications()">
+     *     https://developer.android.com/reference/android/app/NotificationManager#getActiveNotifications()</a>
+     */
+    void getActiveNotifications(Callback<List<? extends StatusBarNotificationProxy>> callback);
 }
