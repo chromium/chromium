@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,13 +56,13 @@ class AppMenuHandlerImpl
     private final View mDecorView;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<Rect> mAppRect;
-
+    private ModelList mModelList;
+    private ListObserver<Void> mListObserver;
     private Callback<Integer> mTestOptionsItemSelectedListener;
 
     /**
-     * The resource id of the menu item to highlight when the menu next opens. A value of
-     * {@code null} means no item will be highlighted.  This value will be cleared after the menu is
-     * opened.
+     * The resource id of the menu item to highlight when the menu next opens. A value of {@code
+     * null} means no item will be highlighted. This value will be cleared after the menu is opened.
      */
     private Integer mHighlightMenuId;
 
@@ -101,6 +103,30 @@ class AppMenuHandlerImpl
 
         assert mHardwareButtonMenuAnchor != null
                 : "Using AppMenu requires to have menu_anchor_stub view";
+        mListObserver =
+                new ListObserver<Void>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        assert mModelList != null && mAppMenu != null;
+                        updateModelForHighlightAndClick(
+                                mModelList,
+                                mHighlightMenuId,
+                                mAppMenu,
+                                /* startIndex= */ index,
+                                /* withAssertions= */ false);
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        assert mModelList != null;
+                        updateModelForHighlightAndClick(
+                                mModelList,
+                                mHighlightMenuId,
+                                mAppMenu,
+                                /* startIndex= */ index,
+                                /* withAssertions= */ false);
+                    }
+                };
     }
 
     /** Called when the containing activity is being destroyed. */
@@ -187,14 +213,14 @@ class AppMenuHandlerImpl
         List<CustomViewBinder> customViewBinders = mDelegate.getCustomViewBinders();
         Map<CustomViewBinder, Integer> customViewTypeOffsetMap =
                 populateCustomViewBinderOffsetMap(customViewBinders, AppMenuItemType.NUM_ENTRIES);
-        ModelList modelList =
+        mModelList =
                 mDelegate.getMenuItems(
                         ((id) -> {
                             return getCustomItemViewType(
                                     id, customViewBinders, customViewTypeOffsetMap);
                         }),
                         this);
-
+        mModelList.addObserver(mListObserver);
         ContextThemeWrapper wrapper =
                 new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
 
@@ -207,9 +233,9 @@ class AppMenuHandlerImpl
             mAppMenu = new AppMenu(itemRowHeight, this, mContext.getResources());
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
-        setupModelForHighlightAndClick(modelList, mHighlightMenuId, mAppMenu);
-        ModelListAdapter adapter = new ModelListAdapter(modelList);
-        mAppMenu.updateMenu(modelList, adapter);
+        setupModelForHighlightAndClick(mModelList, mHighlightMenuId, mAppMenu);
+        ModelListAdapter adapter = new ModelListAdapter(mModelList);
+        mAppMenu.updateMenu(mModelList, adapter);
         registerViewBinders(
                 customViewBinders,
                 customViewTypeOffsetMap,
@@ -278,7 +304,12 @@ class AppMenuHandlerImpl
 
     @Override
     public void hideAppMenu() {
-        if (mAppMenu != null && mAppMenu.isShowing()) mAppMenu.dismiss();
+        if (mAppMenu != null && mAppMenu.isShowing()) {
+            mAppMenu.dismiss();
+            if (mModelList != null) {
+                mModelList.removeObserver(mListObserver);
+            }
+        }
     }
 
     @Override
@@ -431,16 +462,32 @@ class AppMenuHandlerImpl
 
     void setupModelForHighlightAndClick(
             ModelList modelList, Integer highlightedId, AppMenuClickHandler appMenuClickHandler) {
+        updateModelForHighlightAndClick(
+                modelList,
+                highlightedId,
+                appMenuClickHandler,
+                /* startIndex= */ 0,
+                /* withAssertions= */ true);
+    }
+
+    private void updateModelForHighlightAndClick(
+            ModelList modelList,
+            Integer highlightedId,
+            AppMenuClickHandler appMenuClickHandler,
+            int startIndex,
+            boolean withAssertions) {
         if (modelList == null) {
             return;
         }
 
-        for (int i = 0; i < modelList.size(); i++) {
+        for (int i = startIndex; i < modelList.size(); i++) {
             PropertyModel model = modelList.get(i).model;
-            // Not like other keys which is set by AppMenuPropertiesDelegateImpl, CLICK_HANDLER and
-            // HIGHLIGHTED should not be set yet.
-            assert model.get(AppMenuItemProperties.CLICK_HANDLER) == null;
-            assert !model.get(AppMenuItemProperties.HIGHLIGHTED);
+            if (withAssertions) {
+                // Not like other keys which is set by AppMenuPropertiesDelegateImpl, CLICK_HANDLER
+                // and HIGHLIGHTED should not be set yet.
+                assert model.get(AppMenuItemProperties.CLICK_HANDLER) == null;
+                assert !model.get(AppMenuItemProperties.HIGHLIGHTED);
+            }
             model.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
             model.set(AppMenuItemProperties.POSITION, i);
 
@@ -497,5 +544,10 @@ class AppMenuHandlerImpl
     /** @param reporter A means of reporting an exception without crashing. */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         AppMenu.setExceptionReporter(reporter);
+    }
+
+    @Nullable
+    ModelList getModelListForTesting() {
+        return mModelList;
     }
 }
