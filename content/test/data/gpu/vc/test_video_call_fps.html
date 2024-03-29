@@ -5,6 +5,15 @@ found in the LICENSE file.
 
 To change the number of videos, use rows and columns.
 Usage: test_video_call_fps.html?rows=2&columns=7
+
+With 1 video, the frame rate should be kept at the monitor refresh rate.
+With 4 videos which is assumed to be the video conference mode, the frame rate
+should drop and stay at 30 FPS after a short period of time.
+However, when we run the default test with 4 videos, We see the frame rate jumps
+after it drops to 30 FPS. The reasons for the frame rate to go up to the
+monitor refresh rate: (1) user interactions (mouse/keyboard inputs). (2) The
+restart of a video. The teddy bear videos used in the test are quite short, so
+it restarts quite often in the looping mode.
 -->
 <html>
 
