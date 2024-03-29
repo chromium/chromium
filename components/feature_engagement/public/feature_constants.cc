@@ -135,9 +135,6 @@ BASE_FEATURE(kIPHSidePanelGenericPinnableFeature,
 BASE_FEATURE(kIPHSideSearchAutoTriggeringFeature,
              "IPH_SideSearchAutoTriggering",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHSideSearchFeature,
-             "IPH_SideSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHSideSearchPageActionLabelFeature,
              "IPH_SideSearchPageActionLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);

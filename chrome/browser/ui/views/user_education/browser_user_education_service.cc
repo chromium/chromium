@@ -80,7 +80,6 @@ namespace {
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 const char kSavedTabGroupTutorialMetricPrefix[] = "SavedTabGroup";
 const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
-const char kSideSearchTutorialMetricPrefix[] = "SideSearch";
 const char kPasswordManagerTutorialMetricPrefix[] = "PasswordManager";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
@@ -602,14 +601,6 @@ void MaybeRegisterChromeFeaturePromos(
             .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
   }
 
-  // kIPHSideSearchFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForTutorialPromo(
-          feature_engagement::kIPHSideSearchFeature, kSideSearchButtonElementId,
-          IDS_SIDE_SEARCH_PROMO, kSideSearchTutorialId)
-          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
-          .SetBubbleIcon(kLightbulbOutlineIcon)));
-
   // kIPHTabOrganizationSuccessFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForToastPromo(
@@ -1074,38 +1065,6 @@ void MaybeRegisterChromeTutorials(
               .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
               .SetBubbleBodyText(IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY)
               .InAnyContext()));
-
-  {  // Side Search tutorial
-    auto side_search_tutorial =
-        TutorialDescription::Create<kSideSearchTutorialMetricPrefix>(
-            // 1st bubble appears and prompts users to open side search
-            BubbleStep(kSideSearchButtonElementId)
-                .SetBubbleBodyText(IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL)
-                .SetBubbleArrow(HelpBubbleArrow::kTopCenter),
-
-            // 2nd bubble appears and prompts users to open a link
-            BubbleStep(kSideSearchWebViewElementId)
-                .SetBubbleBodyText(IDS_SIDE_SEARCH_TUTORIAL_OPEN_A_LINK_TO_TAB)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
-
-            // Hidden step that detects a link is pressed
-            EventStep(kSideSearchResultsClickedCustomEventId,
-                      kSideSearchWebViewElementId),
-
-            // 3rd bubble appears and prompts users to press close button
-            BubbleStep(kSidePanelCloseButtonElementId)
-                .SetBubbleBodyText(IDS_SIDE_SEARCH_TUTORIAL_CLOSE_SIDE_PANEL)
-                .SetBubbleArrow(HelpBubbleArrow::kTopRight),
-
-            // Completion of the tutorial.
-            BubbleStep(kSideSearchButtonElementId)
-                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-                .SetBubbleBodyText(IDS_SIDE_SEARCH_PROMO)
-                .SetBubbleArrow(HelpBubbleArrow::kTopRight));
-    side_search_tutorial.can_be_restarted = true;
-    tutorial_registry.AddTutorial(kSideSearchTutorialId,
-                                  std::move(side_search_tutorial));
-  }
 
   // Password Manager tutorial
   tutorial_registry.AddTutorial(

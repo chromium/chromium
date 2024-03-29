@@ -109,18 +109,11 @@ void SideSearchIconView::UpdateImpl() {
   SetVisible(should_show);
 
   if (should_show && !was_visible) {
-    // Now IPH and action label share the same frontend triggering condition.
-    // Make sure we show IPH first if possible.
-    browser_view->MaybeShowFeaturePromo(
-        feature_engagement::kIPHSideSearchFeature);
     MaybeShowPageActionLabel();
   }
 
   if (!should_show) {
     HidePageActionLabel();
-    browser_view->CloseFeaturePromo(
-        feature_engagement::kIPHSideSearchFeature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
 

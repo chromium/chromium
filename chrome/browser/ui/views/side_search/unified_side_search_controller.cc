@@ -37,12 +37,6 @@ class SideSearchWebView : public views::WebView {
  public:
   using WebView::WebView;
 
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        kSideSearchResultsClickedCustomEventId, this);
-  }
-
   ~SideSearchWebView() override {
     if (!web_contents())
       return;
