@@ -241,6 +241,9 @@ public class IntentHandler {
     public static final String EXTRA_URL_DRAG_SOURCE =
             "org.chromium.chrome.browser.url_drag_source";
 
+    /** The id of a dragged tab that attempts to launch the intent. */
+    public static final String EXTRA_DRAGGED_TAB_ID = "org.chromium.chrome.browser.dragdrop.tab_id";
+
     /** A boolean to indicate whether the intent should launch the history page in Chrome. */
     public static final String EXTRA_OPEN_HISTORY = "org.chromium.chrome.browser.open_history";
 

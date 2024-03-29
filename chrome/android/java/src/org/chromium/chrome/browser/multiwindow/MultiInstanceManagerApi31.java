@@ -942,7 +942,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
      */
     @Override
     public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
-        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()
+                && !TabUiFeatureUtilities.isTabTearingEnabled()) return;
 
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);

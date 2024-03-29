@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.content.Intent;
 
-import org.chromium.chrome.browser.IntentHandler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
@@ -61,7 +61,7 @@ public class DragAndDropLauncherActivityUnitTest {
                 intent.getAction());
         assertNotNull(
                 "The intent creation timestamp should be saved.",
-                DragAndDropLauncherActivity.getLinkIntentCreationTimestampMs());
+                DragAndDropLauncherActivity.getIntentCreationTimestampMs());
         assertEquals(
                 "The intent class should be DragAndDropLauncherActivity.",
                 DragAndDropLauncherActivity.class.getName(),
@@ -111,6 +111,31 @@ public class DragAndDropLauncherActivityUnitTest {
     }
 
     @Test
+    public void testGetTabIntent_defaultWindowId() {
+        Intent intent =
+                DragAndDropLauncherActivity.getTabIntent(
+                        mContext, 1, MultiWindowUtils.INVALID_INSTANCE_ID);
+        assertEquals(
+                "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
+                DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
+                intent.getAction());
+        assertNotNull(
+                "The intent creation timestamp should be saved.",
+                DragAndDropLauncherActivity.getIntentCreationTimestampMs());
+        assertEquals(
+                "The intent class should be DragAndDropLauncherActivity.",
+                DragAndDropLauncherActivity.class.getName(),
+                intent.getComponent().getClassName());
+        Assert.assertFalse(
+                "Intent should not contain the EXTRA_WINDOW_ID.",
+                intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID));
+        assertEquals(
+                "The EXTRA_URL_SOURCE intent extra value should match.",
+                UrlIntentSource.TAB_IN_STRIP,
+                intent.getIntExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN));
+    }
+
+    @Test
     public void testIsIntentValid_invalidIntentAction() {
         Intent intent =
                 DragAndDropLauncherActivity.getLinkLauncherIntent(
@@ -133,7 +158,7 @@ public class DragAndDropLauncherActivityUnitTest {
                         mLinkUrl,
                         MultiWindowUtils.INVALID_INSTANCE_ID,
                         UrlIntentSource.LINK);
-        DragAndDropLauncherActivity.setLinkIntentCreationTimestampMs(null);
+        DragAndDropLauncherActivity.setIntentCreationTimestampMs(null);
         Assert.assertFalse(
                 "The intent creation timestamp is missing.",
                 DragAndDropLauncherActivity.isIntentValid(intent));

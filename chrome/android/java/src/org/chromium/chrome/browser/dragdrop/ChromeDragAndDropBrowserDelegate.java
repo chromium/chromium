@@ -148,11 +148,17 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
     }
 
     private @Nullable ClipData buildClipDataForTabTearing(Context context, Tab tab) {
-        Intent intent = createUrlIntent(tab.getUrl().getSpec(), UrlIntentSource.TAB_IN_STRIP);
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        ClipData.Item item = ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
-        return item == null ? null : new ClipData(null, mSupportedMimeTypes, item);
+        Intent intent =
+                DragAndDropLauncherActivity.getTabIntent(
+                        context, tab.getId(), MultiWindowUtils.INVALID_INSTANCE_ID);
+        if (intent != null) {
+            PendingIntent pendingIntent =
+                    PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+            ClipData.Item item =
+                    ClipDataItemBuilder.buildClipDataItemWithPendingIntent(pendingIntent);
+            return item == null ? null : new ClipData(null, mSupportedMimeTypes, item);
+        }
+        return null;
     }
 
     @Override
@@ -166,6 +172,8 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
             return originalFlag;
         }
 
+        // TODO (crbug/331276611): Do not add these flags if the dragged tab is the only tab in the
+        // window, to avoid creating a new window from this tab.
         return originalFlag
                 | ClipDataItemBuilder.DRAG_FLAG_GLOBAL_SAME_APPLICATION
                 | ClipDataItemBuilder.DRAG_FLAG_START_PENDING_INTENT_ON_UNHANDLED_DRAG;

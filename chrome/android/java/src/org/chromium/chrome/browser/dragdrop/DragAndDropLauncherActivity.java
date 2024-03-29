@@ -24,14 +24,16 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 
-/** A helper activity for routing Chrome link drag & drop launcher intents. */
+/** A helper activity for routing Chrome tab and link drag & drop launcher intents. */
+// TODO (crbug/331865433): Consider removing use of this trampoline activity.
 public class DragAndDropLauncherActivity extends Activity {
     static final String ACTION_DRAG_DROP_VIEW = "org.chromium.chrome.browser.dragdrop.action.VIEW";
     static final String LAUNCHED_FROM_LINK_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedLink";
+    static final String LAUNCHED_FROM_TAB_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedTab";
 
-    private static final long LINK_DROP_TIMEOUT_MS = 5 * TimeUtils.MILLISECONDS_PER_MINUTE;
-    private static Long sLinkIntentCreationTimestampMs;
-    private static Long sLinkDropTimeoutForTesting;
+    private static final long DROP_TIMEOUT_MS = 5 * TimeUtils.MILLISECONDS_PER_MINUTE;
+    private static Long sIntentCreationTimestampMs;
+    private static Long sDropTimeoutForTesting;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,12 +48,11 @@ public class DragAndDropLauncherActivity extends Activity {
         // Launch the intent in a new or existing ChromeTabbedActivity.
         intent.setClass(this, ChromeTabbedActivity.class);
         IntentUtils.addTrustedIntentExtras(intent);
-        RecordUserAction.record(LAUNCHED_FROM_LINK_USER_ACTION);
-        DragDropMetricUtils.recordTabDragDropType(getDragDropTypeFromIntent(intent));
+
+        recordLaunchMetrics(intent);
 
         // Launch the intent in an existing Chrome window, referenced by the EXTRA_WINDOW_ID intent
-        // extra, if required. This extra will be present when the maximum number of instances is
-        // open, to determine which window to open the link in.
+        // extra, if required.
         if (intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID)) {
             int windowId =
                     IntentUtils.safeGetIntExtra(
@@ -90,7 +91,33 @@ public class DragAndDropLauncherActivity extends Activity {
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setData(Uri.parse(urlString));
         intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, intentSrc);
-        DragAndDropLauncherActivity.setLinkIntentCreationTimestampMs(SystemClock.elapsedRealtime());
+        DragAndDropLauncherActivity.setIntentCreationTimestampMs(SystemClock.elapsedRealtime());
+        return intent;
+    }
+
+    /**
+     * Creates an intent from a tab dragged out of Chrome to move it to a new Chrome window.
+     *
+     * @param context The context used to retrieve the package name.
+     * @param tabId The ID of the dragged tab.
+     * @param windowId The window ID of the Chrome window in which the tab will be moved,
+     *     |MultiWindowUtils.INVALID_INSTANCE_ID| if the tab should be moved to a new window.
+     * @return The intent that will be used to move a dragged tab to a new Chrome instance.
+     */
+    public static Intent getTabIntent(Context context, int tabId, int windowId) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return null;
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        context.getApplicationContext(),
+                        windowId,
+                        /* preferNew= */ true,
+                        /* openAdjacently= */ true,
+                        /* addTrustedIntentExtras= */ false);
+        intent.setClass(context, DragAndDropLauncherActivity.class);
+        intent.setAction(DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW);
+        intent.putExtra(IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.TAB_IN_STRIP);
+        intent.putExtra(IntentHandler.EXTRA_DRAGGED_TAB_ID, tabId);
+        DragAndDropLauncherActivity.setIntentCreationTimestampMs(SystemClock.elapsedRealtime());
         return intent;
     }
 
@@ -102,42 +129,40 @@ public class DragAndDropLauncherActivity extends Activity {
      */
     @VisibleForTesting
     static boolean isIntentValid(Intent intent) {
-        // Exit early if the original intent action isn't for viewing a dragged link.
+        // Exit early if the original intent action isn't for viewing a dragged link/tab.
         assert ACTION_DRAG_DROP_VIEW.equals(intent.getAction()) : "The intent action is invalid.";
 
         // Exit early if the duration between the original intent creation and drop to launch the
         // activity exceeds the timeout.
-        return getLinkIntentCreationTimestampMs() != null
-                && (SystemClock.elapsedRealtime() - getLinkIntentCreationTimestampMs()
-                        <= getLinkDropTimeoutMs());
+        return getIntentCreationTimestampMs() != null
+                && (SystemClock.elapsedRealtime() - getIntentCreationTimestampMs()
+                        <= getDropTimeoutMs());
     }
 
     /**
-     * Sets the ClipData intent creation timestamp when a Chrome link drag starts.
+     * Sets the ClipData intent creation timestamp when a Chrome link/tab drag starts.
      *
      * @param timestamp The intent creation timestamp in milliseconds.
      */
-    static void setLinkIntentCreationTimestampMs(Long timestamp) {
-        sLinkIntentCreationTimestampMs = timestamp;
+    static void setIntentCreationTimestampMs(Long timestamp) {
+        sIntentCreationTimestampMs = timestamp;
     }
 
     /**
-     * @return The dragged link intent creation timestamp in milliseconds.
+     * @return The dragged link/tab intent creation timestamp in milliseconds.
      */
-    static Long getLinkIntentCreationTimestampMs() {
-        return sLinkIntentCreationTimestampMs;
+    static Long getIntentCreationTimestampMs() {
+        return sIntentCreationTimestampMs;
     }
 
     @VisibleForTesting
-    static Long getLinkDropTimeoutMs() {
-        return sLinkDropTimeoutForTesting == null
-                ? LINK_DROP_TIMEOUT_MS
-                : sLinkDropTimeoutForTesting;
+    static Long getDropTimeoutMs() {
+        return sDropTimeoutForTesting == null ? DROP_TIMEOUT_MS : sDropTimeoutForTesting;
     }
 
-    static void setLinkDropTimeoutMsForTesting(Long timeout) {
-        sLinkDropTimeoutForTesting = timeout;
-        ResettersForTesting.register(() -> sLinkDropTimeoutForTesting = null);
+    static void setDropTimeoutMsForTesting(Long timeout) {
+        sDropTimeoutForTesting = timeout;
+        ResettersForTesting.register(() -> sDropTimeoutForTesting = null);
     }
 
     @VisibleForTesting
@@ -150,5 +175,18 @@ public class DragAndDropLauncherActivity extends Activity {
             default:
                 return DragDropType.UNKNOWN_TO_NEW_INSTANCE;
         }
+    }
+
+    private static void recordLaunchMetrics(Intent intent) {
+        @UrlIntentSource
+        int intentSource =
+                IntentUtils.safeGetIntExtra(
+                        intent, IntentHandler.EXTRA_URL_DRAG_SOURCE, UrlIntentSource.UNKNOWN);
+        if (intentSource == UrlIntentSource.LINK) {
+            RecordUserAction.record(LAUNCHED_FROM_LINK_USER_ACTION);
+        } else if (intentSource == UrlIntentSource.TAB_IN_STRIP) {
+            RecordUserAction.record(LAUNCHED_FROM_TAB_USER_ACTION);
+        }
+        DragDropMetricUtils.recordTabDragDropType(getDragDropTypeFromIntent(intent));
     }
 }

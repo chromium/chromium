@@ -2422,6 +2422,18 @@ chromium-metrics-reviews@google.com.
       variants="ActivityIndexMismatchAssignmentState"/>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.DraggedTabOpenedNewWindow"
+    enum="Boolean" expires_after="2024-09-29">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Recorded when a new Chrome window is created from a dragged tab. The
+    histogram records true when the dragged tab is successfully reparented to
+    the new window, false when the reparenting of the dragged tab is not done.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta"
     units="ms" expires_after="2024-09-01">

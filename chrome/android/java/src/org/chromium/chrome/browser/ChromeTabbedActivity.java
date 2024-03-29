@@ -317,6 +317,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     static final String HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA =
             "Android.MultiWindowMode.MismatchedIndices.ActivityCreationTimeDelta";
 
+    public static final String HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW =
+            "Android.MultiWindowMode.DraggedTabOpenedNewWindow";
+
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
      */
@@ -1667,8 +1670,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mInactivityTracker.register(this.getLifecycleDispatcher());
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
+            boolean isLaunchingDraggedTab = false;
             if (getSavedInstanceState() == null && intent != null) {
-                if (!shouldIgnoreIntent()) isIntentWithEffect = maybeHandleUrlIntent(intent);
+                if (!shouldIgnoreIntent()) {
+                    isLaunchingDraggedTab = maybeLaunchDraggedTabInWindow(intent);
+                    isIntentWithEffect = maybeHandleUrlIntent(intent) || isLaunchingDraggedTab;
+                }
 
                 if (IntentUtils.isMainIntentFromLauncher(intent)) {
                     isMainIntentFromLauncher = true;
@@ -1683,9 +1690,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // are coming from night mode tab reparenting. In this case, reparenting happens
             // synchronously along with tab restoration so there are no tabs waiting for
             // reparenting like there are for other tab reparenting operations.
+            // Reparenting is also triggered when the intent launches the current window from a
+            // dragged tab.
             boolean hasTabWaitingForReparenting =
-                    AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
-                            && getSavedInstanceState() == null;
+                    (AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
+                                    && getSavedInstanceState() == null)
+                            || isLaunchingDraggedTab;
             mCreatedTabOnStartup =
                     getCurrentTabModel().getCount() > 0
                             || mTabModelOrchestrator.getRestoredTabCount() > 0
@@ -2109,6 +2119,29 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             HistoryManagerUtils.showHistoryManager(
                     this, getActivityTab(), getTabModelSelector().isIncognitoSelected());
         }
+    }
+
+    private boolean maybeLaunchDraggedTabInWindow(Intent intent) {
+        int draggedTabId =
+                IntentUtils.safeGetIntExtra(
+                        intent, IntentHandler.EXTRA_DRAGGED_TAB_ID, Tab.INVALID_TAB_ID);
+        if (draggedTabId == Tab.INVALID_TAB_ID) return false;
+
+        if (!IntentHandler.wasIntentSenderChrome(intent)) return false;
+        assert TabUiFeatureUtilities.isTabTearingEnabled()
+                : "The dragged tab id extra should be present only when tab tearing is enabled.";
+
+        if (mMultiInstanceManager == null) return false;
+
+        // |draggedTabId| is retrieved from the activity the tab is being dragged from.
+        Tab tab = TabWindowManagerSingleton.getInstance().getTabById(draggedTabId);
+        if (tab == null) {
+            RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, false);
+            return false;
+        }
+        mMultiInstanceManager.moveTabToWindow(this, tab, 0);
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
+        return true;
     }
 
     @Override
