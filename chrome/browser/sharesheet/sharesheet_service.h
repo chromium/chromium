@@ -95,36 +95,20 @@ class SharesheetService : public KeyedService {
                                    CloseCallback close_callback,
                                    ActionCleanupCallback cleanup_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  // |share_action_type| is set to null when testing, but should otherwise have
-  // a valid value.
   void OnBubbleClosed(gfx::NativeWindow native_window,
-                      const std::optional<ShareActionType>& share_action_type);
-
-  // OnTargetSelected is called by both apps and share actions.
-  // If |type| is kAction, expect |share_action_type| to have a valid
-  // ShareActionType. If |type| is kArcApp or kWebApp, expect |app_name|
-  // to contain a valid app name.
+                      const std::u16string& active_action);
   void OnTargetSelected(gfx::NativeWindow native_window,
+                        const std::u16string& target_name,
                         const TargetType type,
-                        const std::optional<ShareActionType>& share_action_type,
-                        const std::optional<std::u16string>& app_name,
                         apps::IntentPtr intent,
                         views::View* share_action_view);
-
-  // Only share actions, which have a |share_action_type|, call this function.
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
-                            const ShareActionType share_action_type);
-
+                            const std::u16string& active_action);
   // If the files to share contains a Google Drive hosted document, only the
   // drive share action will be shown.
   bool HasShareTargets(const apps::IntentPtr& intent);
-
   Profile* GetProfile();
-
-  // Only share actions, which have a |share_action_type|, are expected to have
-  // a vector icon. Return nullptr if |share_action_type| is null.
-  const gfx::VectorIcon* GetVectorIcon(
-      const std::optional<ShareActionType>& share_action_type);
+  const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
   // ==========================================================================
   // ========================== Testing APIs ==================================
@@ -179,9 +163,7 @@ class SharesheetService : public KeyedService {
       gfx::NativeWindow native_window);
   SharesheetServiceDelegator* GetDelegator(gfx::NativeWindow native_window);
 
-  void RecordUserActionMetrics(
-      const std::optional<ShareActionType>& share_action_type,
-      const std::optional<std::u16string>& app_name);
+  void RecordUserActionMetrics(const std::u16string& target_name);
   void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);
   // Makes |intent| related UMA recordings.
   void RecordShareDataMetrics(const apps::IntentPtr& intent);

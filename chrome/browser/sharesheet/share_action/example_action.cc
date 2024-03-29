@@ -18,10 +18,6 @@ ExampleAction::ExampleAction() {
 
 ExampleAction::~ExampleAction() = default;
 
-ShareActionType ExampleAction::GetActionType() const {
-  return ShareActionType::kExample;
-}
-
 const std::u16string ExampleAction::GetActionName() {
   return base::ASCIIToUTF16(name_);
 }

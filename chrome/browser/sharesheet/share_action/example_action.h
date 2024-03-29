@@ -19,7 +19,6 @@ class ExampleAction : public ShareAction {
   ExampleAction& operator=(const ExampleAction&) = delete;
 
   // ShareAction:
-  ShareActionType GetActionType() const override;
   const std::u16string GetActionName() override;
   const gfx::VectorIcon& GetActionIcon() override;
   void LaunchAction(SharesheetController* controller,

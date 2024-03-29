@@ -24,10 +24,6 @@ DriveShareAction::DriveShareAction() {}
 
 DriveShareAction::~DriveShareAction() = default;
 
-::sharesheet::ShareActionType DriveShareAction::GetActionType() const {
-  return ::sharesheet::ShareActionType::kDriveShare;
-}
-
 const std::u16string DriveShareAction::GetActionName() {
   return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL);
 }

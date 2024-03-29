@@ -84,16 +84,14 @@ class SharesheetServiceDelegator {
   // ======================== UI TO SHARESHEET SERVICE ========================
   // ==========================================================================
   // The following are called by the UI to communicate with the ShareService.
-  void OnBubbleClosed(const std::optional<ShareActionType>& share_action_type);
-  void OnTargetSelected(const TargetType type,
-                        const std::optional<ShareActionType>& share_action_type,
-                        const std::optional<std::u16string>& app_name,
+  void OnBubbleClosed(const std::u16string& active_action);
+  void OnTargetSelected(const std::u16string& target_name,
+                        const TargetType type,
                         apps::IntentPtr intent,
                         views::View* share_action_view);
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
-                            const ShareActionType share_action_type);
-  const gfx::VectorIcon* GetVectorIcon(
-      const std::optional<ShareActionType>& share_action_type);
+                            const std::u16string& active_action);
+  const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
  private:
   // Only used for ID purposes. NativeWindow will always outlive the
