@@ -65,7 +65,7 @@ namespace net {
 
 class CertVerifyResult;
 class DatagramClientSocket;
-struct HostResolverEndpointResult;
+struct ConnectionEndpointMetadata;
 class NetLog;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
@@ -587,7 +587,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
-      const HostResolverEndpointResult& endpoint_result,
+      const ConnectionEndpointMetadata& metadata,
       NetLog* net_log);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;

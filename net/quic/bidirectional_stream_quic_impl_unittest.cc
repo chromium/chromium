@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
@@ -555,7 +556,7 @@ class BidirectionalStreamQuicImplTest
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         NetLog::Get());
     session_->Initialize();
 

@@ -1297,7 +1297,7 @@ class WebSocketQuicStreamAdapterTest
         "CONNECTION_UNKNOWN", dns_start, dns_end,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         NetLog::Get());
 
     session_->Initialize();

@@ -1236,7 +1236,8 @@ int QuicSessionPool::CreateSessionSync(
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
-    const HostResolverEndpointResult& endpoint_result,
+    IPEndPoint peer_address,
+    ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
@@ -1245,21 +1246,20 @@ int QuicSessionPool::CreateSessionSync(
   TRACE_EVENT0(NetTracingCategory(), "QuicSessionPool::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
   // endpoint.
-  IPEndPoint addr = endpoint_result.ip_endpoints.front();
   std::unique_ptr<DatagramClientSocket> socket(
       CreateSocket(net_log.net_log(), net_log.source()));
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
-  int rv = ConfigureSocket(socket.get(), addr, *network,
+  int rv = ConfigureSocket(socket.get(), peer_address, *network,
                            key.session_key().socket_tag());
   if (rv != OK) {
     return rv;
   }
   bool closed_during_initialize = CreateSessionHelper(
       key, quic_version, cert_verify_flags, require_confirmation,
-      endpoint_result, dns_resolution_start_time, dns_resolution_end_time,
-      net_log, session, network, std::move(socket));
+      std::move(peer_address), std::move(metadata), dns_resolution_start_time,
+      dns_resolution_end_time, net_log, session, network, std::move(socket));
   if (closed_during_initialize) {
     DLOG(DFATAL) << "Session closed during initialize";
     *session = nullptr;
@@ -1276,7 +1276,8 @@ int QuicSessionPool::CreateSessionAsync(
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
-    const HostResolverEndpointResult& endpoint_result,
+    IPEndPoint peer_address,
+    ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
@@ -1285,21 +1286,21 @@ int QuicSessionPool::CreateSessionAsync(
   TRACE_EVENT0(NetTracingCategory(), "QuicSessionPool::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
   // endpoint.
-  IPEndPoint addr = endpoint_result.ip_endpoints.front();
   std::unique_ptr<DatagramClientSocket> socket(
       CreateSocket(net_log.net_log(), net_log.source()));
   DatagramClientSocket* socket_ptr = socket.get();
   CompletionOnceCallback connect_and_configure_callback = base::BindOnce(
       &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
       std::move(callback), key, quic_version, cert_verify_flags,
-      require_confirmation, endpoint_result, dns_resolution_start_time,
-      dns_resolution_end_time, net_log, session, network, std::move(socket));
+      require_confirmation, peer_address, std::move(metadata),
+      dns_resolution_start_time, dns_resolution_end_time, net_log, session,
+      network, std::move(socket));
 
   // If migrate_sessions_on_network_change_v2 is on, passing in
   // handles::kInvalidNetworkHandle will bind the socket to the default network.
   return ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
-                                   socket_ptr, addr, *network,
-                                   key.session_key().socket_tag());
+                                   socket_ptr, std::move(peer_address),
+                                   *network, key.session_key().socket_tag());
 }
 
 void QuicSessionPool::FinishCreateSession(
@@ -1308,7 +1309,8 @@ void QuicSessionPool::FinishCreateSession(
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
-    const HostResolverEndpointResult& endpoint_result,
+    IPEndPoint peer_address,
+    ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
@@ -1322,8 +1324,8 @@ void QuicSessionPool::FinishCreateSession(
   }
   bool closed_during_initialize = CreateSessionHelper(
       key, quic_version, cert_verify_flags, require_confirmation,
-      endpoint_result, dns_resolution_start_time, dns_resolution_end_time,
-      net_log, session, network, std::move(socket));
+      std::move(peer_address), std::move(metadata), dns_resolution_start_time,
+      dns_resolution_end_time, net_log, session, network, std::move(socket));
   if (closed_during_initialize) {
     DLOG(DFATAL) << "Session closed during initialize";
     *session = nullptr;
@@ -1340,7 +1342,8 @@ bool QuicSessionPool::CreateSessionHelper(
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
-    const HostResolverEndpointResult& endpoint_result,
+    IPEndPoint peer_address,
+    ConnectionEndpointMetadata metadata,
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
@@ -1349,7 +1352,6 @@ bool QuicSessionPool::CreateSessionHelper(
     std::unique_ptr<DatagramClientSocket> socket) {
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
   // endpoint.
-  IPEndPoint addr = endpoint_result.ip_endpoints.front();
   const quic::QuicServerId& server_id = key.server_id();
 
   if (params_.migrate_sessions_on_network_change_v2 &&
@@ -1393,9 +1395,10 @@ bool QuicSessionPool::CreateSessionHelper(
   QuicChromiumPacketWriter* writer =
       new QuicChromiumPacketWriter(socket.get(), task_runner_.get());
   quic::QuicConnection* connection = new quic::QuicConnection(
-      connection_id, quic::QuicSocketAddress(), ToQuicSocketAddress(addr),
-      helper_.get(), alarm_factory_.get(), writer, true /* owns_writer */,
-      quic::Perspective::IS_CLIENT, {quic_version}, connection_id_generator_);
+      connection_id, quic::QuicSocketAddress(),
+      ToQuicSocketAddress(peer_address), helper_.get(), alarm_factory_.get(),
+      writer, true /* owns_writer */, quic::Perspective::IS_CLIENT,
+      {quic_version}, connection_id_generator_);
   connection->set_keep_alive_ping_timeout(ping_timeout_);
   connection->SetMaxPacketLength(params_.max_packet_length);
 
@@ -1409,7 +1412,8 @@ bool QuicSessionPool::CreateSessionHelper(
   if (socket_performance_watcher_factory_) {
     socket_performance_watcher =
         socket_performance_watcher_factory_->CreateSocketPerformanceWatcher(
-            SocketPerformanceWatcherFactory::PROTOCOL_QUIC, addr.address());
+            SocketPerformanceWatcherFactory::PROTOCOL_QUIC,
+            peer_address.address());
   }
 
   // Wait for handshake confirmation before allowing streams to be created if
@@ -1434,8 +1438,7 @@ bool QuicSessionPool::CreateSessionHelper(
       std::move(crypto_config_handle),
       network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
-      std::move(socket_performance_watcher), endpoint_result,
-      net_log.net_log());
+      std::move(socket_performance_watcher), metadata, net_log.net_log());
 
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);

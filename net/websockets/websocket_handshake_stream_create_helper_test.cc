@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -510,7 +511,7 @@ class WebSocketHandshakeStreamCreateHelperTest
             base::DefaultTickClock::GetInstance(),
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             /*socket_performance_watcher=*/nullptr,
-            HostResolverEndpointResult(), NetLog::Get());
+            ConnectionEndpointMetadata(), NetLog::Get());
 
         session_->Initialize();
 

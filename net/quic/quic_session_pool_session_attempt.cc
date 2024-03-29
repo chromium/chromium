@@ -127,22 +127,18 @@ int QuicSessionPool::SessionAttempt::DoCreateSession() {
       NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, NetLogEventPhase::BEGIN,
       "require_confirmation", require_confirmation);
 
-  HostResolverEndpointResult endpoint_result;
-  endpoint_result.ip_endpoints.emplace_back(ip_endpoint_);
-  endpoint_result.metadata = metadata_;
-
   if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
     return pool()->CreateSessionAsync(
         base::BindOnce(&SessionAttempt::OnCreateSessionComplete,
                        weak_ptr_factory_.GetWeakPtr()),
         key(), quic_version_, cert_verify_flags_, require_confirmation,
-        endpoint_result, dns_resolution_start_time_, dns_resolution_end_time_,
-        net_log(), &session_, &network_);
+        ip_endpoint_, metadata_, dns_resolution_start_time_,
+        dns_resolution_end_time_, net_log(), &session_, &network_);
   }
   int rv = pool()->CreateSessionSync(
       key(), quic_version_, cert_verify_flags_, require_confirmation,
-      endpoint_result, dns_resolution_start_time_, dns_resolution_end_time_,
-      net_log(), &session_, &network_);
+      ip_endpoint_, metadata_, dns_resolution_start_time_,
+      dns_resolution_end_time_, net_log(), &session_, &network_);
 
   DVLOG(1) << "Created session on network: " << network_;
 

@@ -78,7 +78,6 @@ namespace net {
 class CertVerifier;
 class ClientSocketFactory;
 class HostResolver;
-struct HostResolverEndpointResult;
 class HttpServerProperties;
 class NetLog;
 class NetworkAnonymizationKey;
@@ -529,7 +528,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                         quic::ParsedQuicVersion quic_version,
                         int cert_verify_flags,
                         bool require_confirmation,
-                        const HostResolverEndpointResult& endpoint_result,
+                        IPEndPoint peer_address,
+                        ConnectionEndpointMetadata metadata,
                         base::TimeTicks dns_resolution_start_time,
                         base::TimeTicks dns_resolution_end_time,
                         const NetLogWithSource& net_log,
@@ -540,7 +540,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                          quic::ParsedQuicVersion quic_version,
                          int cert_verify_flags,
                          bool require_confirmation,
-                         const HostResolverEndpointResult& endpoint_result,
+                         IPEndPoint peer_address,
+                         ConnectionEndpointMetadata metadata,
                          base::TimeTicks dns_resolution_start_time,
                          base::TimeTicks dns_resolution_end_time,
                          const NetLogWithSource& net_log,
@@ -551,7 +552,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                            quic::ParsedQuicVersion quic_version,
                            int cert_verify_flags,
                            bool require_confirmation,
-                           const HostResolverEndpointResult& endpoint_result,
+                           IPEndPoint peer_address,
+                           ConnectionEndpointMetadata metadata,
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
                            const NetLogWithSource& net_log,
@@ -563,7 +565,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                            quic::ParsedQuicVersion quic_version,
                            int cert_verify_flags,
                            bool require_confirmation,
-                           const HostResolverEndpointResult& endpoint_result,
+                           IPEndPoint peer_address,
+                           ConnectionEndpointMetadata metadata,
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
                            const NetLogWithSource& net_log,

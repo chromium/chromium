@@ -28,6 +28,7 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -37,7 +38,6 @@
 #include "net/base/session_usage.h"
 #include "net/base/url_util.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
@@ -928,7 +928,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     const base::TickClock* tick_clock,
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
-    const HostResolverEndpointResult& endpoint_result,
+    const ConnectionEndpointMetadata& metadata,
     NetLog* net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
@@ -969,7 +969,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
           net_log_)),
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       path_validation_writer_delegate_(this, task_runner_),
-      ech_config_list_(endpoint_result.metadata.ech_config_list) {
+      ech_config_list_(metadata.ech_config_list) {
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(

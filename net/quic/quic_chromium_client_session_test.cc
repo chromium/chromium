@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -193,7 +194,7 @@ class QuicChromiumClientSessionTest
         "CONNECTION_UNKNOWN", base::TimeTicks::Now(), base::TimeTicks::Now(),
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         NetLog::Get());
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);
