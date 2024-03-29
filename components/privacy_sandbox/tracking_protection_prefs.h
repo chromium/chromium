@@ -95,6 +95,12 @@ inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
 inline constexpr char kBlockAll3pcToggleEnabled[] =
     "tracking_protection.block_all_3pc_toggle_enabled";
 
+// Synced boolean that indicates whether 3PC are allowed for a user post-3PCD.
+// Can only be set via the BlockThirdPartyCookies enterprise policy.
+// Takes precedence over kBlockAll3pcToggleEnabled.
+inline constexpr char kAllowAll3pcToggleEnabled[] =
+    "tracking_protection.allow_all_3pc_toggle_enabled";
+
 // Synced enum that indicates the level of tracking protection the user has
 // selected on the tracking protection page.
 inline constexpr char kTrackingProtectionLevel[] =
