@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
@@ -124,7 +123,6 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mTileCountChanged;
 
     private boolean mSnapshotTileGridChanged;
-    private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
 
     /**
@@ -213,7 +211,7 @@ public class NewTabPageLayout extends LinearLayout {
      * @param uiConfig UiConfig that provides display information about this view.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
      * @param uma {@link NewTabPageUma} object recording user metrics.
-     * @param isIncognito Whether the new tab page is in incognito mode.
+     * @param profile The {@link Profile} associated with the NTP.
      * @param windowAndroid An instance of a {@link WindowAndroid}
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      * @param isSurfacePolishOmniboxColorEnabled {@code true} if the NTP surface is polished and the
@@ -235,7 +233,7 @@ public class NewTabPageLayout extends LinearLayout {
             UiConfig uiConfig,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             NewTabPageUma uma,
-            boolean isIncognito,
+            Profile profile,
             WindowAndroid windowAndroid,
             boolean isSurfacePolishEnabled,
             boolean isSurfacePolishOmniboxColorEnabled,
@@ -247,10 +245,9 @@ public class NewTabPageLayout extends LinearLayout {
         mScrollDelegate = scrollDelegate;
         mManager = manager;
         mActivity = activity;
-        mProfile = ProfileManager.getLastUsedRegularProfile();
+        mProfile = profile;
         mUiConfig = uiConfig;
         mNewTabPageUma = uma;
-        mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
@@ -274,7 +271,8 @@ public class NewTabPageLayout extends LinearLayout {
         }
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
-        mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
+        mSearchBoxCoordinator.initialize(
+                lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
         if (isSurfacePolishEnabled) {
             int searchBoxHeightPolish =
                     getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);

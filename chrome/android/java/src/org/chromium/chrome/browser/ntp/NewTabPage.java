@@ -565,7 +565,7 @@ public class NewTabPage
                 mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher,
                 uma,
-                mTab.isIncognito(),
+                mTab.getProfile(),
                 windowAndroid,
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
