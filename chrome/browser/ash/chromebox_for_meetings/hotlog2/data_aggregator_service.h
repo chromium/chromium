@@ -59,6 +59,11 @@ class DataAggregatorService : public CfmObserver,
   DataAggregatorService();
   ~DataAggregatorService() override;
 
+  void AddLocalCommandSource(const std::string& command);
+  void BindLocalCommandSourceReceiver(
+      mojo::PendingReceiver<mojom::DataSource> pending_receiver,
+      const std::string& command);
+  void OnLocalCommandDisconnect(const std::string& command);
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();
   void EnqueueData(const std::string& source_name,
@@ -71,6 +76,9 @@ class DataAggregatorService : public CfmObserver,
   base::RepeatingTimer fetch_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Worker thread for locally created DataSources
+  scoped_refptr<base::SequencedTaskRunner> local_task_runner_;
 
   // Maps DataSource names to their remotes, for access convenience
   std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;

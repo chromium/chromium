@@ -7,6 +7,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace ash::cfm {
 
@@ -109,6 +110,44 @@ void DataAggregatorService::AddWatchDog(
   std::move(callback).Run(true /* success */);
 }
 
+void DataAggregatorService::AddLocalCommandSource(const std::string& command) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(data_source_map_.count(command) == 0)
+      << "Local command '" << command << "' was added twice.";
+
+  mojo::Remote<mojom::DataSource> remote;
+  local_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DataAggregatorService::BindLocalCommandSourceReceiver,
+                     base::Unretained(this),
+                     remote.BindNewPipeAndPassReceiver(), command));
+
+  remote.set_disconnect_handler(
+      base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
+                     base::Unretained(this), command));
+
+  data_source_map_[command] = std::move(remote);
+}
+
+void DataAggregatorService::BindLocalCommandSourceReceiver(
+    mojo::PendingReceiver<mojom::DataSource> pending_receiver,
+    const std::string& command) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<CommandSource>(command),
+                              std::move(pending_receiver), local_task_runner_);
+}
+
+void DataAggregatorService::OnLocalCommandDisconnect(
+    const std::string& command) {
+  // This is unlikely, but if one of our local remotes disconnects,
+  // just request to re-add it. The pointers in our local maps will
+  // be overridden, and the old objects will be destroyed.
+  LOG(WARNING) << "Local DataSource for '" << command << "' has disconnected; "
+               << "attempting to reconnect.";
+  data_source_map_.erase(command);
+  AddLocalCommandSource(command);
+}
+
 void DataAggregatorService::OnMojoDisconnect() {
   VLOG(3) << "mojom::DataAggregator disconnected";
 }
@@ -185,6 +224,15 @@ DataAggregatorService::DataAggregatorService()
 
   receivers_.set_disconnect_handler(base::BindRepeating(
       &DataAggregatorService::OnMojoDisconnect, base::Unretained(this)));
+
+  local_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+
+  // Add local command sources
+  std::vector<std::string> cmd_sources = {"ifconfig"};
+  for (const auto& cmd : cmd_sources) {
+    AddLocalCommandSource(cmd);
+  }
 
   StartFetchTimer();
 }

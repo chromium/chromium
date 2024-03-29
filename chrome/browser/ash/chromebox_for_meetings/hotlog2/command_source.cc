@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/command_source.h"
+
+#include "base/process/launch.h"
 #include "base/strings/string_split.h"
 
 namespace ash::cfm {
 
-CommandSource::CommandSource(std::string command) : command_(command) {
+CommandSource::CommandSource(const std::string& command) : command_(command) {
   command_split_ = base::SplitString(command, " ", base::KEEP_WHITESPACE,
                                      base::SPLIT_WANT_NONEMPTY);
 }
@@ -15,8 +17,14 @@ CommandSource::CommandSource(std::string command) : command_(command) {
 inline CommandSource::~CommandSource() = default;
 
 void CommandSource::Fetch(FetchCallback callback) {
-  // TODO: (b/326440931)
-  (void)callback;
+  std::string output;
+  base::GetAppOutputAndError(command_split_, &output);
+  std::vector<std::string> output_split = base::SplitString(
+      output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  // TODO(b/327020292): redact output
+  // TODO(b/326441003): serialize output
+  std::move(callback).Run(output_split);
 }
 
 void CommandSource::AddWatchDog(
