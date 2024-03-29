@@ -415,7 +415,7 @@ void RunRandomFakeReportsTest(const TriggerSpecs& specs,
             /*max_channel_capacity=*/std::numeric_limits<double>::infinity()));
     ASSERT_TRUE(response.response().has_value());
     auto [it, _] =
-        output_counts.try_emplace(*std::move(response).ResponseForTesting(), 0);
+        output_counts.try_emplace(std::move(*response.response()), 0);
     ++it->second;
   }
 
@@ -675,7 +675,6 @@ TEST(PrivacyMathTest, UnaryChannel) {
     EXPECT_EQ(
         RandomizedResponseData(
             /*rate=*/1,
-            /*channel_capacity=*/0,
             /*response=*/std::vector<FakeEventLevelReport>()),
         DoRandomizedResponse(
             test_case.trigger_specs, test_case.max_event_level_reports,

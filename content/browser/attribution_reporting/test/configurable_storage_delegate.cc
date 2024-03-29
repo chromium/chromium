@@ -139,9 +139,8 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
     return base::unexpected(attribution_reporting::RandomizedResponseError::
                                 kExceedsChannelCapacityLimit);
   }
-  double channel_capacity = 0;  // Not used by downstream code.
   return attribution_reporting::RandomizedResponseData(
-      randomized_response_rate_, channel_capacity, randomized_response_);
+      randomized_response_rate_, randomized_response_);
 }
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>

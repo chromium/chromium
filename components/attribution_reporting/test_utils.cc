@@ -192,8 +192,7 @@ std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport& r) {
 }
 
 std::ostream& operator<<(std::ostream& out, const RandomizedResponseData& r) {
-  out << "{rate=" << r.rate() << ",channel_capacity=" << r.channel_capacity()
-      << ",response=";
+  out << "{rate=" << r.rate() << ",response=";
 
   if (r.response().has_value()) {
     out << "[";

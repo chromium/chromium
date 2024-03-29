@@ -305,13 +305,13 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     ASSIGN_OR_RETURN(
-        const auto response,
+        auto response_data,
         AttributionStorageDelegateImpl::GetRandomizedResponse(
             source_type, trigger_specs, max_event_level_reports, epsilon));
 
     auto it = randomized_responses_.find(base::Time::Now());
     if (it == randomized_responses_.end()) {
-      return response;
+      return response_data;
     }
 
     // Avoid crashing in `AttributionStorageSql::StoreSource()` by returning an
@@ -325,9 +325,8 @@ class ControllableStorageDelegate : public AttributionStorageDelegateImpl {
                                   kExceedsChannelCapacityLimit);
     }
 
-    return attribution_reporting::RandomizedResponseData(
-        response.rate(), response.channel_capacity(),
-        std::exchange(it->second, std::nullopt));
+    response_data.response() = std::exchange(it->second, std::nullopt);
+    return response_data;
   }
 
   // TODO(apaseltiner): Allow null aggregatable reports to be configured in the

@@ -218,14 +218,11 @@ absl::uint128 GetNumStatesCached(const TriggerSpecs& specs,
 }  // namespace
 
 RandomizedResponseData::RandomizedResponseData(double rate,
-                                               double channel_capacity,
                                                RandomizedResponse response)
     : rate_(rate),
-      channel_capacity_(channel_capacity),
       response_(std::move(response)) {
   DCHECK_GE(rate_, 0);
   DCHECK_LE(rate_, 1);
-  DCHECK_GE(channel_capacity_, 0);
 }
 
 RandomizedResponseData::~RandomizedResponseData() = default;
@@ -564,8 +561,7 @@ DoRandomizedResponseWithCache(const TriggerSpecs& specs,
                        : internal::GetFakeReportsForSequenceIndex(
                              specs, max_reports, sequence_index, map);
   }
-  return RandomizedResponseData(rate, channel_capacity,
-                                std::move(fake_reports));
+  return RandomizedResponseData(rate, std::move(fake_reports));
 }
 
 }  // namespace internal

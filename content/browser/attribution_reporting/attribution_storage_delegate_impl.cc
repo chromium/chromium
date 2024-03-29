@@ -222,11 +222,15 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
-      return response;
+      break;
     case AttributionNoiseMode::kNone:
-      return attribution_reporting::RandomizedResponseData(
-          response.rate(), response.channel_capacity(), std::nullopt);
+      // TODO(apaseltiner): When noise is disabled, we shouldn't even bother
+      // generating the response in the first place.
+      response.response() = std::nullopt;
+      break;
   }
+
+  return response;
 }
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>

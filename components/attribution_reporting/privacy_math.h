@@ -53,7 +53,6 @@ enum class RandomizedResponseError {
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
  public:
   RandomizedResponseData(double rate,
-                         double channel_capacity,
                          RandomizedResponse);
 
   ~RandomizedResponseData();
@@ -65,18 +64,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
   RandomizedResponseData& operator=(RandomizedResponseData&&);
 
   double rate() const { return rate_; }
-  double channel_capacity() const { return channel_capacity_; }
 
   const RandomizedResponse& response() const { return response_; }
 
-  RandomizedResponse&& ResponseForTesting() && { return std::move(response_); }
+  RandomizedResponse& response() { return response_; }
 
   friend bool operator==(const RandomizedResponseData&,
                          const RandomizedResponseData&) = default;
 
  private:
   double rate_;
-  double channel_capacity_;
   RandomizedResponse response_;
 };
 
