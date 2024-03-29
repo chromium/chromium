@@ -585,8 +585,12 @@ void TabDragController::TabWasAdded() {
   // results in a confusing state if the user attempts to reattach. We could
   // allow this and update ourselves during the add, but this comes up
   // infrequently enough that it's not worth the complexity.
-  if (current_state_ == DragState::kDraggingWindow && !is_mutating_)
+  // Note: When we're in the kDraggingUsingSystemDragAndDrop state, this method
+  // being called means a tab was added to the source window of the drag. We
+  // don't need to cancel the drag in that case.
+  if (current_state_ == DragState::kDraggingWindow && !is_mutating_) {
     EndDrag(END_DRAG_COMPLETE);
+  }
 }
 
 void TabDragController::OnTabWillBeRemoved(content::WebContents* contents) {

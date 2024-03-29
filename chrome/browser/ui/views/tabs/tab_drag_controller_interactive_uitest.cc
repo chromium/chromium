@@ -3657,6 +3657,15 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        CancelOnNewTabWhenDragging) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
+  // Skip this test for fallback tab dragging, see the note in
+  // TabDragController::TabWasAdded() for more context.
+  views::Widget* widget = tab_strip->GetDragContext()->GetWidget();
+  if (base::FeatureList::IsEnabled(
+          features::kAllowWindowDragUsingSystemDragDrop) &&
+      !widget->IsMoveLoopSupported()) {
+    GTEST_SKIP() << "Not relevant for fallback tab dragging";
+  }
+
   AddTabsAndResetBrowser(browser(), 1);
 
   // Move to the first tab and drag it enough so that it detaches.
