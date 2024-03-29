@@ -5,7 +5,6 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_DIVIDER_VIEW_H_
 
-#include "ash/utility/cursor_setter.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -44,6 +43,7 @@ class SplitViewDividerView : public views::View,
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
 
   // views::ViewTargeterDelegate:
   bool DoesIntersectRect(const views::View* target,
@@ -79,10 +79,6 @@ class SplitViewDividerView : public views::View,
   raw_ptr<LayoutDividerController> controller_;
   raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;
   raw_ptr<SplitViewDivider, DanglingUntriaged> divider_;
-
-  // Securely updates the cursor.
-  // TODO(michelefan): Consider overriding `View::GetCursor`.
-  CursorSetter cursor_setter_;
 
   raw_ptr<IconButton> feedback_button_ = nullptr;
 

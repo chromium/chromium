@@ -11,7 +11,6 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/utility/cursor_setter.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -136,19 +135,12 @@ void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
 
   if (!feedback_button_ ||
       !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
-    // Set cursor type as the resize cursor when it's on the split view divider.
-    cursor_setter_.UpdateCursor(GetWidget()->GetNativeWindow()->GetRootWindow(),
-                                ui::mojom::CursorType::kColumnResize);
     // Show `feedback_button_` on mouse entered.
     RefreshFeedbackButton(/*visible=*/true);
   }
 }
 
 void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
-  // Since `notify_enter_exit_on_child_` in view.h is default to false, on mouse
-  // exit `this` the cursor will be reset.
-  cursor_setter_.ResetCursor();
-
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
   // Hide `feedback_button_` on mouse exited.
@@ -224,6 +216,12 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
   event->SetHandled();
+}
+
+ui::Cursor SplitViewDividerView::GetCursor(const ui::MouseEvent& event) {
+  return IsLayoutHorizontal(divider_->divider_widget()->GetNativeWindow())
+             ? ui::mojom::CursorType::kColumnResize
+             : ui::mojom::CursorType::kRowResize;
 }
 
 bool SplitViewDividerView::DoesIntersectRect(const views::View* target,

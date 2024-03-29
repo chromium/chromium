@@ -4139,6 +4139,72 @@ TEST_F(SnapGroupTest, CursorUpdateTest) {
   EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
+//  Tests that the cursor updates correctly after snap to replace. See
+//  regression at http://b/331240308
+TEST_F(SnapGroupTest, CursorUpdateAfterSnapToReplace) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Snapping `w3` on top of the snap group and expect the successful
+  // snap-to-replace.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  auto* divider = split_view_divider();
+  ASSERT_TRUE(divider->divider_widget());
+
+  auto divider_bounds = split_view_divider_bounds_in_screen();
+  auto outside_point = split_view_divider_bounds_in_screen().CenterPoint();
+  outside_point.Offset(-kSplitviewDividerShortSideLength * 5, 0);
+  EXPECT_FALSE(divider_bounds.Contains(outside_point));
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  cursor_manager->SetCursor(CursorType::kPointer);
+
+  // Test that the default cursor type when mouse is not hovered over the split
+  // view divider.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(outside_point);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
+
+  // Test that the cursor changed to resize cursor while hovering over the split
+  // view divider.
+  const auto delta_vector = gfx::Vector2d(0, -10);
+  const gfx::Point cached_hover_point =
+      divider_bounds.CenterPoint() + delta_vector;
+  event_generator->MoveMouseTo(cached_hover_point);
+  EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
+
+  // Test that after resizing, the cursor type is still the resize cursor.
+  event_generator->PressLeftButton();
+  const auto move_vector = gfx::Vector2d(20, 0);
+  event_generator->MoveMouseTo(cached_hover_point + move_vector);
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
+  EXPECT_EQ(split_view_divider_bounds_in_screen().CenterPoint() + delta_vector,
+            cached_hover_point + move_vector);
+
+  // Test that when hovering over the feedback button, the cursor type changed
+  // back to the default type.
+  SplitViewDividerView* divider_view =
+      split_view_divider()->divider_view_for_testing();
+  auto* feedback_button = divider_view->feedback_button_for_testing();
+  EXPECT_TRUE(feedback_button);
+  event_generator->MoveMouseTo(divider_view->feedback_button_for_testing()
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
+}
+
 // Tests the basic functionalities of multiple snap groups.
 TEST_F(SnapGroupTest, MultipleSnapGroups) {
   // Create the 1st snap group.
