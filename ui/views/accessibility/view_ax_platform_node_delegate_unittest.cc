@@ -497,14 +497,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetNameAndDescription) {
   EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
             ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
-  // Overriding the name and description without specifying the sources
-  // should set the sources to kAttribute and kAriaDescription respectively.
-  button_accessibility()->SetName("Button's Name",
-                                  ax::mojom::NameFrom::kAttribute);
-  EXPECT_EQ(button_accessibility()->GetName(), "Button's Name");
-  EXPECT_EQ(button_accessibility()->GetNameFrom(),
-            ax::mojom::NameFrom::kAttribute);
-
+  // Overriding the description without specifying the source
+  // should set the source kAriaDescription.
   button_accessibility()->SetDescription("Button's description");
   EXPECT_EQ(button_accessibility()->GetDescription(), "Button's description");
   EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),

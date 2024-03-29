@@ -201,10 +201,10 @@ class VIEWS_EXPORT ViewAccessibility {
   // * kTitle: Name from a title attribute or element (HTML or SVG).
   // * kValue: Name from a value attribute (e.g. button).
   // * kPopoverAttribute: Name from a tooltip-style popover.
-  void SetName(const std::string& name,
-               ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
-  void SetName(const std::u16string& name,
-               ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
+  void SetName(const std::string& name, ax::mojom::NameFrom name_from);
+  void SetName(const std::u16string& name, ax::mojom::NameFrom name_from);
+  void SetName(const std::string& name);
+  void SetName(const std::u16string& name);
 
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name

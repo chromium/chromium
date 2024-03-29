@@ -555,6 +555,16 @@ void ViewAccessibility::SetName(const std::u16string& name,
   SetName(string_name, name_from);
 }
 
+void ViewAccessibility::SetName(const std::string& name) {
+  SetName(name, static_cast<ax::mojom::NameFrom>(data_.GetIntAttribute(
+                    ax::mojom::IntAttribute::kNameFrom)));
+}
+
+void ViewAccessibility::SetName(const std::u16string& name) {
+  SetName(name, static_cast<ax::mojom::NameFrom>(data_.GetIntAttribute(
+                    ax::mojom::IntAttribute::kNameFrom)));
+}
+
 void ViewAccessibility::SetName(View& naming_view) {
   DCHECK_NE(view_, &naming_view);
 
