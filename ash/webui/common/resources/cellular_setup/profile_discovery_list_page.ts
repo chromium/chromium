@@ -21,6 +21,7 @@ import {ESimProfileProperties} from '//resources/mojo/chromeos/ash/services/cell
 import {NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {ProfileDiscoveryListItemElement} from './profile_discovery_list_item.js';
 import {getTemplate} from './profile_discovery_list_page.html.js';
 
 const ProfileDiscoveryListPageElementBase = I18nMixin(PolymerElement);
@@ -74,10 +75,11 @@ export class ProfileDiscoveryListPageElement extends
 
     const items =
         this.shadowRoot!.querySelectorAll('profile-discovery-list-item');
-    const item = items[0] as HTMLElement;
+    const item = items[0] as ProfileDiscoveryListItemElement;
     assert(items.length > 0);
     item.focus();
     item.setAttribute('selected', 'true');
+    this.selectedProfileProperties = item.profileProperties;
     return true;
   }
 

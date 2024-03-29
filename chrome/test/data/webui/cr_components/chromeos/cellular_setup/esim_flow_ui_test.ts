@@ -513,6 +513,18 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       await flushTasks();
       eSimPage.maybeFocusPageElement();
       await flushTasks();
+      assertEquals(eSimPage.forwardButtonLabel, 'Next');
+    }
+
+    async function deselectCellularProfile() {
+      assertTrue(!!profileDiscoveryPage);
+      const profileList =
+          profileDiscoveryPage.shadowRoot!.querySelector<IronListElement>(
+              '#profileList');
+      assertTrue(!!profileList);
+      assertTrue(!!profileList.items);
+      profileList.selectedItem = null;
+      await flushTasks();
     }
 
     async function skipDiscovery() {
@@ -561,7 +573,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     [1, 2].forEach(profileCount => {
       test(`Skip discovery flow (${profileCount} profiles)`, async function() {
         await setupWithProfiles(profileCount);
-
+        await deselectCellularProfile();
         await skipDiscovery();
         assertTrue(!!activationCodePage);
         await navigateForwardForInstall(activationCodePage);
@@ -575,6 +587,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
 
     test('Skip profile list manually', async function() {
       await setupWithProfiles(1);
+      await deselectCellularProfile();
       await skipProfileList();
       assertTrue(!!activationCodePage);
       await navigateForwardForInstall(activationCodePage);
@@ -625,7 +638,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
           'Navigate backwards from skip discovery flow with confirmation code',
           async function() {
             await setupWithProfiles(profileCount);
-
+            await deselectCellularProfile();
             await skipDiscovery();
 
             euicc.setProfileInstallResultForTest(
