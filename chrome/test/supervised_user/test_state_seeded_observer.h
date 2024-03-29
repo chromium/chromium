@@ -8,9 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
@@ -23,46 +27,70 @@ namespace supervised_user {
 // List of possible results of data seeding that can be expected in test
 // sequences.
 enum class ChromeTestStateSeedingResult {
-  kIntendedState = 0,
-  kPendingRpcResponse = 1,
-  kWaitingForBrowserToPickUpChanges = 2,
+  kIntendedState,
+  kWaitingForBrowserToPickUpChanges,
 };
 
-// Base class for test state observers that can alter the chrome browse state by
-// issuing an RPC to Google backends that are later picked up by browser and
-// used to configure the supervised user behaviors.
-//
-// ChromeTestStateObserver can:
-// * tell if the browser is already at intended state,
-// * issue RPC that changes that state if needed and wait until the state was
-// achieved.
+// Checks if the `family_member`'s browser filters `allowed_urls` and
+// `blocked_urls` by examining
+// SupervisedUserURLFilter::GetManualFilteringBehaviorForURL status for each
+// url.
+bool UrlFiltersAreConfigured(const FamilyMember& family_member,
+                             const std::vector<GURL>& allowed_urls,
+                             const std::vector<GURL>& blocked_urls);
+// Checks if the `family_member`'s browser has empty filters.
+bool UrlFiltersAreEmpty(const FamilyMember& family_member);
+
+void Delay(base::TimeDelta delay);
+
+// Expects successful backend response (HTTP 200) for the fetch, crashes
+// otherwise.
+template <class Response>
+void WaitForSuccessOrDie(std::unique_ptr<ProtoFetcher<Response>> fetcher) {
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+  fetcher->Start(base::BindLambdaForTesting(
+      [&](const ProtoFetcherStatus& status,
+          std::unique_ptr<Response> response) -> void {
+        CHECK(status.IsOk())
+            << "Test seeding failed with status: " << status.ToString();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Issues ResetChromeTestState RPC and expects that it will succeed.
+void IssueResetOrDie(const FamilyMember& parent, const FamilyMember& child);
+
+// Issues DefineChromeTestState RPC and expects that it will succeed.
+void IssueDefineTestStateOrDie(const FamilyMember& parent,
+                               const FamilyMember& child,
+                               const std::vector<GURL>& allowed_urls,
+                               const std::vector<GURL>& blocked_urls);
+
+// Base class for test state observers. They are waiting until the browser is in
+// the intended state. ChromeTestStateObserver assumes that the browser is not
+// in the intended state.
 class ChromeTestStateObserver
     : public ui::test::StateObserver<ChromeTestStateSeedingResult>,
       public SupervisedUserServiceObserver {
  public:
-  ChromeTestStateObserver() = delete;
-  ~ChromeTestStateObserver() override;
-
   // The expected state is verified on `child` browser; the RPC is issued by
   // `parent`.
-  ChromeTestStateObserver(const FamilyMember& parent,
-                          const FamilyMember& child);
+  ChromeTestStateObserver(std::string_view name, const FamilyMember& child);
   ChromeTestStateObserver(const ChromeTestStateObserver& other) = delete;
   ChromeTestStateObserver& operator=(const ChromeTestStateObserver& other) =
       delete;
+  ~ChromeTestStateObserver() override;
 
-  // Indicates whether the browser is in state that reflects requested state.
-  virtual bool InIntendedState() const = 0;
-
-  // Return initial state of the child browser from the prefs: kPending in case
-  // when the seeding is required, or kSuccessful when the state is ready.
+  // This observer should be used when state change is expected, and starts in
+  // ChromeTestStateSeedingResult::kWaitingForBrowserToPickUpChanges state.
   ChromeTestStateSeedingResult GetStateObserverInitialState() const override;
 
   // SupervisedUserServiceObserver
   void OnURLFilterChanged() override;
 
  protected:
-  virtual void StartRpc() const = 0;
+  virtual bool BrowserInIntendedState() = 0;
 
   // Asserts that the RPC was successful, but doesn't yet transition to
   // ChromeTestStateSeedingResult::kIntendedState, instead sets the current
@@ -71,21 +99,10 @@ class ChromeTestStateObserver
   void HandleRpcStatus(const supervised_user::ProtoFetcherStatus& status);
 
   const FamilyMember& child() const { return *child_; }
-  const FamilyMember& parent() const { return *parent_; }
-
- protected:
-  template <typename Response>
-  ProtoFetcher<Response>::Callback CreateCallback() {
-    return base::BindLambdaForTesting(
-        [this](const ProtoFetcherStatus& status,
-               std::unique_ptr<Response> response) -> void {
-          this->HandleRpcStatus(status);
-        });
-  }
 
  private:
-  // Requests are executed on behalf of `parent_`.
-  raw_ref<const FamilyMember> parent_;
+  // Unique name of this fetcher, for logging.
+  std::string name_;
   // Requests effects affect `child_` user.
   raw_ref<const FamilyMember> child_;
 };
@@ -94,69 +111,33 @@ class ChromeTestStateObserver
 // Filter level is intended to be `SAFE_SITES`.
 class DefineChromeTestStateObserver : public ChromeTestStateObserver {
  public:
-  ~DefineChromeTestStateObserver() override;
-
   // The expected state is verified on `child` browser; the RPC is issued by
   // `parent`.
-  DefineChromeTestStateObserver(const FamilyMember& parent,
-                                const FamilyMember& child,
+  DefineChromeTestStateObserver(const FamilyMember& child,
                                 const std::vector<GURL>& allowed_urls,
                                 const std::vector<GURL>& blocked_urls);
-
-  bool InIntendedState() const override;
+  ~DefineChromeTestStateObserver() override;
 
  protected:
-  void StartRpc() const override;
+  bool BrowserInIntendedState() override;
 
  private:
   static constexpr kidsmanagement::FilterLevel kFilterLevel{
       kidsmanagement::SAFE_SITES};
-
-  kidsmanagement::DefineChromeTestStateRequest CreateRequest() const;
-
-  // Returns true iff the `filter` correctly reflects the intended state of both
-  // `allowed_urls_` and `blocked_urls_`.
-  bool AllUrlsAreConfigured(SupervisedUserURLFilter& filter) const;
-
   const std::vector<GURL> allowed_urls_;
   const std::vector<GURL> blocked_urls_;
-
-  // Is mutable to satisfy ::StartRpc() const (called from
-  // ::GetStateObserverInitialState const).
-  mutable std::unique_ptr<
-      ProtoFetcher<kidsmanagement::DefineChromeTestStateResponse>>
-      fetcher_;
-
-  mutable ProtoFetcher<kidsmanagement::DefineChromeTestStateResponse>::Callback
-      callback_ =
-          CreateCallback<kidsmanagement::DefineChromeTestStateResponse>();
 };
 
 // Sets the browser state so that no urls are either allowed or blocked.
 class ResetChromeTestStateObserver : public ChromeTestStateObserver {
  public:
-  ~ResetChromeTestStateObserver() override;
-
   // The expected state is verified on `child` browser; the RPC is issued by
   // `parent`.
-  ResetChromeTestStateObserver(const FamilyMember& parent,
-                               const FamilyMember& child);
-
-  bool InIntendedState() const override;
+  explicit ResetChromeTestStateObserver(const FamilyMember& child);
+  ~ResetChromeTestStateObserver() override;
 
  protected:
-  void StartRpc() const override;
-
- private:
-  // Is mutable to satisfy ::StartRpc() const (called from
-  // ::GetStateObserverInitialState const).
-  mutable std::unique_ptr<
-      ProtoFetcher<kidsmanagement::ResetChromeTestStateResponse>>
-      fetcher_;
-
-  mutable ProtoFetcher<kidsmanagement::ResetChromeTestStateResponse>::Callback
-      callback_ =
-          CreateCallback<kidsmanagement::ResetChromeTestStateResponse>();
+  bool BrowserInIntendedState() override;
 };
 
 }  // namespace supervised_user

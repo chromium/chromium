@@ -222,42 +222,95 @@ struct FilterLevel {
 
 }  // namespace
 
-void ChromeTestStateObserver::HandleRpcStatus(
-    const supervised_user::ProtoFetcherStatus& status) {
-  CHECK(status.IsOk()) << "Test seeding failed with status: "
-                       << status.ToString();
+void Delay(base::TimeDelta delay) {
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+  base::OneShotTimer timer;
 
-  if (InIntendedState()) {
-    return OnStateObserverStateChanged(
-        ChromeTestStateSeedingResult::kIntendedState);
+  timer.Start(FROM_HERE, delay, &run_loop, &base::RunLoop::Quit);
+  run_loop.Run();
+}
+
+void IssueResetOrDie(const FamilyMember& parent, const FamilyMember& child) {
+  WaitForSuccessOrDie(
+      CreateFetcher<kidsmanagement::ResetChromeTestStateResponse>(
+          *parent.identity_manager(), parent.url_loader_factory(),
+          kidsmanagement::ResetChromeTestStateRequest(),
+          kResetChromeTestStateConfig, {child.GetAccountId().ToString()}));
+}
+
+void IssueDefineTestStateOrDie(const FamilyMember& parent,
+                               const FamilyMember& child,
+                               const std::vector<GURL>& allowed_urls,
+                               const std::vector<GURL>& blocked_urls) {
+  kidsmanagement::DefineChromeTestStateRequest request;
+  for (auto&& url : allowed_urls) {
+    AddWebsiteException(request, url, kidsmanagement::ALLOW);
+  }
+  for (auto&& url : blocked_urls) {
+    AddWebsiteException(request, url, kidsmanagement::BLOCK);
+  }
+  FilterLevel::WriteToRequest(request, kidsmanagement::SAFE_SITES);
+
+  WaitForSuccessOrDie(
+      CreateFetcher<kidsmanagement::ResetChromeTestStateResponse>(
+          *parent.identity_manager(), parent.url_loader_factory(), request,
+          kDefineChromeTestStateConfig, {child.GetAccountId().ToString()}));
+}
+
+bool UrlFiltersAreConfigured(const FamilyMember& family_member,
+                             const std::vector<GURL>& allowed_urls,
+                             const std::vector<GURL>& blocked_urls) {
+  SupervisedUserURLFilter* url_filter =
+      GetSupervisedUserService(family_member)->GetURLFilter();
+  CHECK(url_filter);
+
+  if (!FilterLevel::IsConfiguredForFamilyMember(family_member,
+                                                kidsmanagement::SAFE_SITES)) {
+    return false;
   }
 
-  return OnStateObserverStateChanged(
-      ChromeTestStateSeedingResult::kWaitingForBrowserToPickUpChanges);
+  for (const GURL& url : allowed_urls) {
+    if (!IsUrlConfigured(*url_filter, url, FilteringBehavior::kAllow)) {
+      LOG(WARNING) << url.spec()
+                   << " is not configured yet (requested: kAllow).";
+      return false;
+    }
+  }
+
+  for (const GURL& url : blocked_urls) {
+    if (!IsUrlConfigured(*url_filter, url, FilteringBehavior::kBlock)) {
+      LOG(WARNING) << url.spec()
+                   << " is not configured yet (requested: kBlock).";
+      return false;
+    }
+  }
+  return true;
+}
+
+bool UrlFiltersAreEmpty(const FamilyMember& family_member) {
+  return GetSupervisedUserService(family_member)
+      ->GetURLFilter()
+      ->IsManualHostsEmpty();
 }
 
 ChromeTestStateSeedingResult
 ChromeTestStateObserver::GetStateObserverInitialState() const {
-  if (InIntendedState()) {
-    return ChromeTestStateSeedingResult::kIntendedState;
-  }
-
-  StartRpc();
-  return ChromeTestStateSeedingResult::kPendingRpcResponse;
+  return ChromeTestStateSeedingResult::kWaitingForBrowserToPickUpChanges;
 }
 
 void ChromeTestStateObserver::OnURLFilterChanged() {
-  if (!InIntendedState()) {
+  if (!BrowserInIntendedState()) {
+    LOG(WARNING) << name_ << " " << child().GetAccountId()
+                 << " Not yet in the intended state";
     return;
   }
 
   OnStateObserverStateChanged(ChromeTestStateSeedingResult::kIntendedState);
 }
 
-ChromeTestStateObserver::ChromeTestStateObserver(const FamilyMember& parent,
+ChromeTestStateObserver::ChromeTestStateObserver(std::string_view name,
                                                  const FamilyMember& child)
-    : parent_(parent), child_(child) {
-  // Immediately start observing system changes.
+    : name_(name), child_(child) {
   GetSupervisedUserService(child)->AddObserver(this);
 }
 
@@ -266,19 +319,12 @@ ChromeTestStateObserver::~ChromeTestStateObserver() {
 }
 
 DefineChromeTestStateObserver::DefineChromeTestStateObserver(
-    const FamilyMember& parent,
     const FamilyMember& child,
     const std::vector<GURL>& allowed_urls,
     const std::vector<GURL>& blocked_urls)
-    : ChromeTestStateObserver(parent, child),
+    : ChromeTestStateObserver("DefineChromeTestStateObserver", child),
       allowed_urls_(allowed_urls),
-      blocked_urls_(blocked_urls),
-      fetcher_(CreateFetcher<kidsmanagement::DefineChromeTestStateResponse>(
-          *parent.identity_manager(),
-          parent.url_loader_factory(),
-          CreateRequest(),
-          kDefineChromeTestStateConfig,
-          {child.GetAccountId().ToString()})) {
+      blocked_urls_(blocked_urls) {
   for (auto&& gurl : allowed_urls) {
     CHECK(IsPlainUrl(gurl))
         << "Expected url with set protocol and no wildcards";
@@ -289,79 +335,15 @@ DefineChromeTestStateObserver::DefineChromeTestStateObserver(
   }
 }
 DefineChromeTestStateObserver::~DefineChromeTestStateObserver() = default;
-
-// System is in the intended state iff all requested urls have expected
-// filtering behaviour.
-bool DefineChromeTestStateObserver::InIntendedState() const {
-  SupervisedUserURLFilter* url_filter =
-      GetSupervisedUserService(child())->GetURLFilter();
-  CHECK(url_filter);
-  return FilterLevel::IsConfiguredForFamilyMember(child(), kFilterLevel) &&
-         AllUrlsAreConfigured(*url_filter);
-}
-
-bool DefineChromeTestStateObserver::AllUrlsAreConfigured(
-    SupervisedUserURLFilter& filter) const {
-  for (const GURL& url : allowed_urls_) {
-    if (!IsUrlConfigured(filter, url, FilteringBehavior::kAllow)) {
-      LOG(WARNING) << "DefineChromeTestStateObserver: " << url.spec()
-                   << " is not configured yet (requested: kAllow).";
-      return false;
-    }
-  }
-
-  for (const GURL& url : blocked_urls_) {
-    if (!IsUrlConfigured(filter, url, FilteringBehavior::kBlock)) {
-      LOG(WARNING) << "DefineChromeTestStateObserver: " << url.spec()
-                   << " is not configured yet (requested: kBlock).";
-      return false;
-    }
-  }
-
-  LOG(INFO) << "DefineChromeTestStateObserver: in intended state";
-  return true;
-}
-
-kidsmanagement::DefineChromeTestStateRequest
-DefineChromeTestStateObserver::CreateRequest() const {
-  kidsmanagement::DefineChromeTestStateRequest request;
-
-  for (auto&& url : allowed_urls_) {
-    AddWebsiteException(request, url, kidsmanagement::ALLOW);
-  }
-  for (auto&& url : blocked_urls_) {
-    AddWebsiteException(request, url, kidsmanagement::BLOCK);
-  }
-
-  FilterLevel::WriteToRequest(request, kFilterLevel);
-
-  return request;
-}
-
-void DefineChromeTestStateObserver::StartRpc() const {
-  fetcher_->Start(std::move(callback_));
+bool DefineChromeTestStateObserver::BrowserInIntendedState() {
+  return UrlFiltersAreConfigured(child(), allowed_urls_, blocked_urls_);
 }
 
 ResetChromeTestStateObserver::ResetChromeTestStateObserver(
-    const FamilyMember& parent,
     const FamilyMember& child)
-    : ChromeTestStateObserver(parent, child),
-      fetcher_(CreateFetcher<kidsmanagement::ResetChromeTestStateResponse>(
-          *parent.identity_manager(),
-          parent.url_loader_factory(),
-          kidsmanagement::ResetChromeTestStateRequest(),
-          kResetChromeTestStateConfig,
-          {child.GetAccountId().ToString()})) {}
+    : ChromeTestStateObserver("ResetChromeTestStateObserver", child) {}
 ResetChromeTestStateObserver::~ResetChromeTestStateObserver() = default;
-
-// System is in the intended state iff there are no manual hosts.
-bool ResetChromeTestStateObserver::InIntendedState() const {
-  return GetSupervisedUserService(child())
-      ->GetURLFilter()
-      ->IsManualHostsEmpty();
-}
-
-void ResetChromeTestStateObserver::StartRpc() const {
-  fetcher_->Start(std::move(callback_));
+bool ResetChromeTestStateObserver::BrowserInIntendedState() {
+  return UrlFiltersAreEmpty(child());
 }
 }  // namespace supervised_user
