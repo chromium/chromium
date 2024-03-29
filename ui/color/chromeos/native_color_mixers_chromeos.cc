@@ -16,6 +16,8 @@
 
 namespace ui {
 
+// Defines mappings for colors used in Ash and Lacros. Colors that
+// are only used in Ash are defined in //ash/style.
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
@@ -73,10 +75,6 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
       SkColorSetRGB(0x40, 0x67, 0x43));
   mixer[kColorCrosSysComplementVariant] = {dark_mode ? complement.get(30)
                                                      : complement.get(95)};
-
-  // TODO(b/291622042): Delete once Jelly is fully launched.
-  mixer[kColorNativeColor2] = {dark_mode ? gfx::kGoogleGreen400
-                                         : gfx::kGoogleGreen500};
 }
 
 }  // namespace ui

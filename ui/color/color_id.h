@@ -564,6 +564,7 @@
   E_CPONLY(kColorNativeColor1) \
   E_CPONLY(kColorNativeColor1Shade1) \
   E_CPONLY(kColorNativeColor1Shade2) \
+  E_CPONLY(kColorNativeColor2) \
   E_CPONLY(kColorNativeColor3) \
   E_CPONLY(kColorNativeColor4) \
   E_CPONLY(kColorNativeColor5) \
@@ -624,10 +625,7 @@
   E_CPONLY(kColorCrosSystemHighlightBorder1) \
   \
   E_CPONLY(kColorCrosSysPositive) \
-  E_CPONLY(kColorCrosSysComplementVariant) \
-  \
-  /* TODO(b/330381503): Move to Ash only once user is migrated. */ \
-  E_CPONLY(kColorNativeColor2)
+  E_CPONLY(kColorCrosSysComplementVariant)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNativeButtonBorder)\
