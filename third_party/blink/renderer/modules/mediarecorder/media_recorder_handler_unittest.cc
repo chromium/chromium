@@ -22,6 +22,7 @@
 #include "media/base/video_frame.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_audio_encoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -59,6 +60,7 @@ using ::testing::TestWithParam;
 using ::testing::ValuesIn;
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_os_info_override_win.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 #define HAS_AAC_ENCODER 1
 #endif
@@ -186,6 +188,18 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
   bool hasAudioRecorders() const {
     return !media_recorder_handler_->audio_recorders_.empty();
+  }
+
+  bool IsTargetAudioCodecSupported(const String& codecs) {
+    if (codecs.Find("mp4a.40.2") != kNotFound) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+      return media::MojoAudioEncoder::IsSupported(media::AudioCodec::kAAC);
+#else
+      return false;
+#endif
+    }
+
+    return true;
   }
 
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame) {
@@ -472,6 +486,10 @@ TEST_P(MediaRecorderHandlerTest, SupportsBitrateMode) {
   const String codecs(GetParam().codecs);
 
   if (!IsAv1CodecSupported(codecs)) {
+    return;
+  }
+
+  if (!IsTargetAudioCodecSupported(codecs)) {
     return;
   }
 
@@ -802,6 +820,10 @@ TEST_P(MediaRecorderHandlerTest, ActualMimeType) {
     return;
   }
 
+  if (!IsTargetAudioCodecSupported(codecs)) {
+    return;
+  }
+
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
@@ -1017,6 +1039,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
+        if (!IsTargetAudioCodecSupported(codec)) {
+          continue;
+        }
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1024,6 +1049,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     for (const auto& type : good_mp4_video_mime_types) {
       for (const auto& video_codec : good_mp4_video_codecs) {
         for (const auto& audio_codec : good_mp4_audio_codecs) {
+          if (!IsTargetAudioCodecSupported(audio_codec)) {
+            continue;
+          }
           String codecs = video_codec + "," + audio_codec;
           EXPECT_TRUE(
               media_recorder_handler_->CanSupportMimeType(type, codecs));
@@ -1066,6 +1094,9 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
     // success cases.
     for (const auto& type : good_mp4_audio_mime_types) {
       for (const auto& codec : good_mp4_audio_codecs) {
+        if (!IsTargetAudioCodecSupported(codec)) {
+          continue;
+        }
         EXPECT_TRUE(media_recorder_handler_->CanSupportMimeType(type, codec));
       }
     }
@@ -1147,6 +1178,29 @@ TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
 #endif
   }
 }
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_P(MediaRecorderHandlerIsSupportedTypeTestForMp4,
+       CanSupportAacCodecForWinNSku) {
+  if (!GetParam()) {
+    GTEST_SKIP();
+  }
+
+  {
+    base::test::ScopedOSInfoOverride scoped_os_info_override(
+        base::test::ScopedOSInfoOverride::Type::kWin11Home);
+    EXPECT_TRUE(
+        media_recorder_handler_->CanSupportMimeType("audio/mp4", "mp4a.40.2"));
+  }
+
+  {
+    base::test::ScopedOSInfoOverride scoped_os_info_override(
+        base::test::ScopedOSInfoOverride::Type::kWin11HomeN);
+    EXPECT_FALSE(
+        media_recorder_handler_->CanSupportMimeType("audio/mp4", "mp4a.40.2"));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,

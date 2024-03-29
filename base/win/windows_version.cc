@@ -159,7 +159,8 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
                DWORD os_type)
     : version_(Version::PRE_XP),
       wow_process_machine_(WowProcessMachine::kUnknown),
-      wow_native_machine_(WowNativeMachine::kUnknown) {
+      wow_native_machine_(WowNativeMachine::kUnknown),
+      os_type_(os_type) {
   version_number_.major = version_info.dwMajorVersion;
   version_number_.minor = version_info.dwMinorVersion;
   version_number_.build = version_info.dwBuildNumber;
@@ -333,6 +334,30 @@ std::string OSInfo::processor_model_name() {
     processor_model_name_ = WideToUTF8(value);
   }
   return processor_model_name_;
+}
+
+bool OSInfo::IsWindowsNSku() const {
+  switch (os_type_) {
+    case PRODUCT_BUSINESS_N:
+    case PRODUCT_CORE_N:
+    case PRODUCT_CORE_CONNECTED_N:
+    case PRODUCT_EDUCATION_N:
+    case PRODUCT_ENTERPRISE_N:
+    case PRODUCT_ENTERPRISE_S_N:
+    case PRODUCT_ENTERPRISE_SUBSCRIPTION_N:
+    case PRODUCT_HOME_BASIC_N:
+    case PRODUCT_HOME_PREMIUM_N:
+    case PRODUCT_PRO_FOR_EDUCATION_N:
+    case PRODUCT_PRO_WORKSTATION_N:
+    case PRODUCT_PROFESSIONAL_N:
+    case PRODUCT_PROFESSIONAL_S_N:
+    case PRODUCT_PROFESSIONAL_STUDENT_N:
+    case PRODUCT_STARTER_N:
+    case PRODUCT_ULTIMATE_N:
+      return true;
+    default:
+      return false;
+  }
 }
 
 // With the exception of Server 2003, server variants are treated the same as
