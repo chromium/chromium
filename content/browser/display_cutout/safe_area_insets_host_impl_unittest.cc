@@ -181,4 +181,11 @@ TEST_F(SafeAreaInsetsHostImplTest, SetViewportFitValue) {
   EXPECT_EQ(blink::mojom::ViewportFit::kAuto, GetValueOrDefault());
 }
 
+TEST_F(SafeAreaInsetsHostImplTest, GetValueOrDefault_ExpiredRfh) {
+  base::WeakPtr<RenderFrameHostImpl> null_rfh;
+  EXPECT_EQ(blink::mojom::ViewportFit::kAuto,
+            test_safe_area_insets_host()->GetValueOrDefault(null_rfh.get()))
+      << "Passing in a null pointer should return kAuto instead of crashing.";
+}
+
 }  // namespace content
