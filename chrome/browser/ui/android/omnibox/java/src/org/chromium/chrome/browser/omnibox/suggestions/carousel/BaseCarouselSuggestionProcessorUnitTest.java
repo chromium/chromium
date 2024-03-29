@@ -22,7 +22,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -100,8 +99,6 @@ public class BaseCarouselSuggestionProcessorUnitTest {
     @Config(qualifiers = "w600dp-h820dp")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testPopulateModelTest_isTabletWithRevamp() {
-        // Revamp turns off horizontal fading edge.
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         mProcessor.onNativeInitialized();
         mProcessor.populateModel(null, mModel, 0);
         Assert.assertFalse(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));

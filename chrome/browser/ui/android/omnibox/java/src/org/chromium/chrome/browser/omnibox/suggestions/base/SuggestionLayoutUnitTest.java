@@ -28,7 +28,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams.SuggestionViewType;
 import org.chromium.chrome.browser.omnibox.test.R;
 
@@ -143,8 +142,6 @@ public class SuggestionLayoutUnitTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @Config(qualifiers = "sw600dp")
     public void suggestionPadding_modernUiEnabled() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-
         // Re-create layout with new feature flags and overrides.
         mLayout = new SuggestionLayout(mContext);
 

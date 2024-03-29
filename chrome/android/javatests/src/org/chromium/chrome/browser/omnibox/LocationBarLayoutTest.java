@@ -342,8 +342,6 @@ public class LocationBarLayoutTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testTabletUrlBarTranslation_revampEnabled() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     LocationBarLayout locationBar = getLocationBar();

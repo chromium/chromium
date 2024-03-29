@@ -46,7 +46,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -137,11 +136,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @SmallTest
     @Feature("Omnibox")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"
-    })
     public void testBackgroundColor_withOmniboxModernizeVisualUpdateFlags() {
         assertEquals(
                 mDropdown.getStandardBgColor(),
