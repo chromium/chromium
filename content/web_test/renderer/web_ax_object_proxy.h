@@ -121,7 +121,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   bool IsSelectable();
   bool IsMultiLine();
   bool IsMultiSelectable();
-  bool IsSelectedOptionActive();
   bool IsExpanded();
   std::string Checked();
   bool IsVisible();

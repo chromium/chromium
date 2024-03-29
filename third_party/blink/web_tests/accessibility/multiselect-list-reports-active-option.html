@@ -49,31 +49,22 @@ async_test_after_layout_and_paint((testCase) => {
     accessibleMenulist.addNotificationListener(listListener);
 
     assert_true(accessibleOne.isSelected);
-    assert_true(accessibleOne.isSelectedOptionActive);
     assert_false(accessibleTwo.isSelected);
-    assert_false(accessibleTwo.isSelectedOptionActive);
     assert_false(accessibleThree.isSelected);
-    assert_false(accessibleThree.isSelectedOptionActive);
 
     // Change the selected index by simulating a down arrow keydown event.
     eventSender.keyDown('ArrowDown', []);
 
     assert_false(accessibleOne.isSelected);
-    assert_false(accessibleOne.isSelectedOptionActive);
     assert_true(accessibleTwo.isSelected);
-    assert_true(accessibleTwo.isSelectedOptionActive);
     assert_false(accessibleThree.isSelected);
-    assert_false(accessibleThree.isSelectedOptionActive);
 
     // Extend the selection by simulating a Shift + Down Arrow keydown event.
     eventSender.keyDown('ArrowDown', ['shiftKey']);
 
     assert_false(accessibleOne.isSelected);
-    assert_false(accessibleOne.isSelectedOptionActive);
     assert_true(accessibleTwo.isSelected);
-    assert_false(accessibleTwo.isSelectedOptionActive);
     assert_true(accessibleThree.isSelected);
-    assert_true(accessibleThree.isSelectedOptionActive);
 
     // Make the test finish quickly whether we get the notification or not.
     window.setTimeout(testCase.step_func(() => {

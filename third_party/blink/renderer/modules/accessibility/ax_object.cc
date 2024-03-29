@@ -3074,10 +3074,6 @@ bool AXObject::IsSelectedFromFocus() const {
   return false;
 }
 
-bool AXObject::IsSelectedOptionActive() const {
-  return false;
-}
-
 bool AXObject::IsNotUserSelectable() const {
   return false;
 }

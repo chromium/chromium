@@ -119,7 +119,6 @@ class BLINK_EXPORT WebAXObject {
   bool IsModal() const;
 
   bool IsOffScreen() const;
-  bool IsSelectedOptionActive() const;
   bool IsVisited() const;
 
   bool CanSetValueAttribute() const;

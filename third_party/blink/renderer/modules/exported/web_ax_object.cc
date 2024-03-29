@@ -295,13 +295,6 @@ bool WebAXObject::IsOffScreen() const {
   return private_->IsOffScreen();
 }
 
-bool WebAXObject::IsSelectedOptionActive() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsSelectedOptionActive();
-}
-
 bool WebAXObject::IsVisited() const {
   if (IsDetached())
     return false;

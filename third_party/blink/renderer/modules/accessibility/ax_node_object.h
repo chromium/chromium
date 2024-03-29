@@ -233,6 +233,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool HasContentEditableAttributeSet() const override;
 
   // Modify or take an action on an object.
+  bool OnNativeSetSelectedAction(bool selected) override;
   bool OnNativeSetValueAction(const String&) override;
 
   // AX name calculation.

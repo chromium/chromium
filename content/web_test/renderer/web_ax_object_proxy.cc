@@ -321,8 +321,6 @@ gin::ObjectTemplateBuilder WebAXObjectProxy::GetObjectTemplateBuilder(
       .SetProperty("isSelectable", &WebAXObjectProxy::IsSelectable)
       .SetProperty("isMultiLine", &WebAXObjectProxy::IsMultiLine)
       .SetProperty("isMultiSelectable", &WebAXObjectProxy::IsMultiSelectable)
-      .SetProperty("isSelectedOptionActive",
-                   &WebAXObjectProxy::IsSelectedOptionActive)
       .SetProperty("isExpanded", &WebAXObjectProxy::IsExpanded)
       .SetProperty("checked", &WebAXObjectProxy::Checked)
       .SetProperty("isVisible", &WebAXObjectProxy::IsVisible)
@@ -900,13 +898,6 @@ bool WebAXObjectProxy::IsMultiSelectable() {
     return false;
   }
   return GetAXNodeData().HasState(ax::mojom::State::kMultiselectable);
-}
-
-bool WebAXObjectProxy::IsSelectedOptionActive() {
-  if (!UpdateLayout()) {
-    return false;
-  }
-  return accessibility_object_.IsSelectedOptionActive();
 }
 
 bool WebAXObjectProxy::IsExpanded() {

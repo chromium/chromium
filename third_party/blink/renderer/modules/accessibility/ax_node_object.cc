@@ -590,6 +590,17 @@ AXObject* AXNodeObject::ActiveDescendant() {
   if (!element)
     return nullptr;
 
+  if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
+    // This is more direct than getting the item via
+    // select->item(active_index_). It's also more accurate, because
+    // active_index includes optgroup lines, whereas select->item() assumes an
+    // index that does not include them.
+    if (!select->UsesMenuList()) {
+      HTMLOptionElement* option = select->ActiveSelectionEnd();
+      return AXObjectCache().Get(option);
+    }
+  }
+
   Element* descendant =
       GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kActiveDescendant);
   if (!descendant)
@@ -2022,19 +2033,20 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode())) {
-    if (select_element->IsMultiple())
-      return ax::mojom::blink::Role::kListBox;
-    else
+    if (select_element->UsesMenuList() && !select_element->IsMultiple()) {
       return ax::mojom::blink::Role::kComboBoxSelect;
+    } else {
+      return ax::mojom::blink::Role::kListBox;
+    }
   }
 
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
     HTMLSelectElement* select_element = option->OwnerSelectElement();
-    if (!select_element || select_element->IsMultiple() ||
-        option->OwnerSelectList()) {
-      return ax::mojom::blink::Role::kListBoxOption;
-    } else {
+    if (select_element && select_element->UsesMenuList() &&
+        !select_element->IsMultiple()) {
       return ax::mojom::blink::Role::kMenuListOption;
+    } else {
+      return ax::mojom::blink::Role::kListBoxOption;
     }
   }
 
@@ -2665,8 +2677,9 @@ bool AXNodeObject::IsFocused() const {
 }
 
 AccessibilitySelectedState AXNodeObject::IsSelected() const {
-  if (!GetNode() || !GetLayoutObject() || !IsSubWidget())
+  if (!GetNode() || !GetLayoutObject() || !IsSubWidget()) {
     return kSelectedStateUndefined;
+  }
 
   // The aria-selected attribute overrides automatic behaviors.
   bool is_selected;
@@ -2680,6 +2693,13 @@ AccessibilitySelectedState AXNodeObject::IsSelected() const {
   if (!ui::IsSelectRequiredOrImplicit(RoleValue()))
     return kSelectedStateUndefined;
 
+  if (auto* option_element = DynamicTo<HTMLOptionElement>(GetNode())) {
+    if (!CanSetSelectedAttribute()) {
+      return kSelectedStateUndefined;
+    }
+    return (option_element->Selected()) ? kSelectedStateTrue
+                                        : kSelectedStateFalse;
+  }
   // Selection follows focus, but ONLY in single selection containers, and only
   // if aria-selected was not present to override.
   return IsSelectedFromFocus() ? kSelectedStateTrue : kSelectedStateFalse;
@@ -4441,6 +4461,35 @@ static bool IsInSameBlockFlow(LayoutObject* r1, LayoutObject* r2) {
 //
 // Modify or take an action on an object.
 //
+
+bool AXNodeObject::OnNativeSetSelectedAction(bool selected) {
+  auto* option = DynamicTo<HTMLOptionElement>(GetNode());
+  if (!option) {
+    return false;
+  }
+
+  HTMLSelectElement* select_element = option->OwnerSelectElement();
+  if (!select_element) {
+    return false;
+  }
+
+  if (!CanSetSelectedAttribute()) {
+    return false;
+  }
+
+  AccessibilitySelectedState is_option_selected = IsSelected();
+  if (is_option_selected == kSelectedStateUndefined) {
+    return false;
+  }
+
+  bool is_selected = (is_option_selected == kSelectedStateTrue) ? true : false;
+  if ((is_selected && selected) || (!is_selected && !selected)) {
+    return false;
+  }
+
+  select_element->SelectOptionByAccessKey(To<HTMLOptionElement>(GetNode()));
+  return true;
+}
 
 bool AXNodeObject::OnNativeSetValueAction(const String& string) {
   if (!GetNode() || !GetNode()->IsElementNode())
@@ -6235,6 +6284,20 @@ String AXNodeObject::NativeTextAlternative(
 
   String text_alternative;
   AXRelatedObjectVector local_related_objects;
+
+  if (auto* option_element = DynamicTo<HTMLOptionElement>(GetNode())) {
+    name_from = ax::mojom::blink::NameFrom::kContents;
+    text_alternative = option_element->DisplayLabel();
+    if (!text_alternative.empty()) {
+      if (name_sources) {
+        name_sources->push_back(NameSource(found_text_alternative));
+        name_sources->back().type = name_from;
+        name_sources->back().text = text_alternative;
+        *found_text_alternative = true;
+      }
+      return text_alternative;
+    }
+  }
 
   // 5.1/5.5 Text inputs, Other labelable Elements
   // If you change this logic, update AXNodeObject::IsNameFromLabelElement, too.

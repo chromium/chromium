@@ -910,6 +910,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If non-null, this is the node that the current aria-activedescendant caused
   // to have the selected state.
   WeakMember<Node> last_selected_from_active_descendant_;
+  // If non-zero, this is the DOMNodeID for the last <option> element selected
+  // in a select with size > 1.
+  DOMNodeId last_selected_list_option_ = 0;
 
   std::unique_ptr<AXRelationCache> relation_cache_;
 

@@ -101,8 +101,6 @@
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_list_box.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_list_box_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_control.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_media_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
@@ -1125,9 +1123,6 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
   if (node && node->IsMediaControlElement())
     return AccessibilityMediaControl::Create(layout_object, *this);
 
-  if (IsA<HTMLOptionElement>(node))
-    return MakeGarbageCollected<AXListBoxOption>(layout_object, *this);
-
   if (auto* html_input_element = DynamicTo<HTMLInputElement>(node)) {
     FormControlType type = html_input_element->FormControlType();
     if (type == FormControlType::kInputRange) {
@@ -1141,8 +1136,6 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
         DCHECK(ShouldCreateAXMenuListFor(node));
         return MakeGarbageCollected<AXMenuList>(layout_object, *this);
       }
-    } else {
-      return MakeGarbageCollected<AXListBox>(layout_object, *this);
     }
   }
 
@@ -2951,8 +2944,8 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 
   obj->ChildrenChangedWithCleanLayout();
   // TODO(accessibility) Only needed for <select> size changes.
-  // This can turn into a DCHECK if the shadow DOM is used for <select>
-  // elements instead of AXMenuList* and AXListBox* classes.
+  // This can turn into a DCHECK if the shadow DOM is used for <select size=1>
+  // elements instead of AXMenuList* classes.
   if (obj->IsDetached()) {
     RemoveSubtreeWhenSafe(optional_node);
     return;
@@ -3994,11 +3987,16 @@ void AXObjectCacheImpl::ListboxSelectedChildrenChanged(
 void AXObjectCacheImpl::ListboxActiveIndexChanged(HTMLSelectElement* select) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
-  auto* ax_object = DynamicTo<AXListBox>(Get(select));
-  if (!ax_object)
-    return;
-
-  ax_object->ActiveIndexChanged();
+  if (select->IsFocused()) {
+    if (HTMLOptionElement* option = select->ActiveSelectionEnd()) {
+      DOMNodeId option_id = option->GetDomNodeId();
+      if (option_id != last_selected_list_option_) {
+        PostNotification(select,
+                         ax::mojom::blink::Event::kActiveDescendantChanged);
+        last_selected_list_option_ = option_id;
+      }
+    }
+  }
 }
 
 void AXObjectCacheImpl::SetMenuListOptionsBounds(
