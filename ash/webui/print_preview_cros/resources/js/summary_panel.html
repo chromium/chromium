@@ -1,22 +1,10 @@
-<style>
-  :host {
-    align-items: flex-start;
-    display: inline-flex;
-    flex-flow: row nowrap;
-    gap: 8px;
-    justify-content: center;
-  }
-
+<style include="print-preview-cros-shared">
   .control-container {
     align-items: flex-end;
-    display: inline-flex;
-    flex-flow: row nowrap;
-    gap: 8px;
-    justify-content: center;
   }
 </style>
 <span id="sheetsUsed">[[sheetsUsedText]]</span>
-<div class="control-container">
+<div class="flex-container control-container">
   <!-- TODO(b/323585997): Replace label localized string. -->
   <cros-button id="cancel" label="Cancel" button-style="secondary"
       on-click="onCancelClicked">

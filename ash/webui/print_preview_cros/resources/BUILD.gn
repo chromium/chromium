@@ -13,6 +13,8 @@ build_webui("build") {
     "index.html",
   ]
 
+  css_files = [ "css/print_preview_cros_shared.css" ]
+
   non_web_component_files = [
     "js/data/destination_constants.ts",
     "js/data/destination_manager.ts",
