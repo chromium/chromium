@@ -63,10 +63,17 @@
 #include "url/url_constants.h"
 
 namespace features {
+
 // TODO(https://crbug.com/324934416): Remove this killswitch once the new
 // CanCommitURL restrictions finish rolling out.
 BASE_FEATURE(kAdditionalNavigationCommitChecks,
              "AdditionalNavigationCommitChecks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// TODO(https://crbug.com/325410297): Remove this killswitch once the new
+// sandboxed frame enforcements finish rolling out.
+BASE_FEATURE(kSandboxedFrameEnforcements,
+             "SandboxedFrameEnforcements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
@@ -1717,14 +1724,43 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
   return false;
 }
 
+bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
+    const ProcessLock& process_lock,
+    const GURL& url,
+    bool url_is_for_opaque_origin,
+    AccessType access_type) {
+  if (!base::FeatureList::IsEnabled(features::kSandboxedFrameEnforcements)) {
+    return true;
+  }
+
+  switch (access_type) {
+    case AccessType::kCanCommitNewOrigin:
+      // TODO(crbug.com/325410297): Sandboxed frames may commit normal URLs, as
+      // long as they commit them with an opaque origin. However, some existing
+      // code paths leading here, such as CanCommitURL() and
+      // CanCommitOriginAndUrl(), do not indicate anything about the future
+      // origin being opaque. For now, don't restrict URLs from committing in
+      // sandboxed processes here, but eventually this should be strengthened
+      // by plumbing in the correct value for `url_is_for_opaque_origin` from
+      // code paths like CanCommitURL().
+      return true;
+    case AccessType::kHostsOrigin:
+      // Sandboxed frame processes should only be able to host opaque origins,
+      // and only those origins should ever be used as a source or initiator
+      // origin in things like postMessage.
+      return url_is_for_opaque_origin;
+    case AccessType::kCanAccessDataForCommittedOrigin:
+      // Sandboxed frames should never access passwords, storage, or other data
+      // for any origin.
+      return false;
+  }
+}
+
 bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     int child_id,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
-  // TODO(crbug.com/325410297): Use `access_type` to perform stricter
-  // enforcements.
-
   if (ShouldRestrictCanAccessDataForOriginToUIThread()) {
     // Ensure this is only called on the UI thread, which is the only thread
     // with sufficient information to do the full set of checks.
@@ -1756,6 +1792,11 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     // this request is likely invalid.
     if (actual_process_lock.is_invalid()) {
       failure_reason = "process_lock_is_invalid";
+    } else if (actual_process_lock.is_sandboxed() &&
+               !IsAccessAllowedForSandboxedProcess(
+                   actual_process_lock, url, url_is_precursor_of_opaque_origin,
+                   access_type)) {
+      failure_reason = "sandboxing_restrictions";
     } else {
       // Loop over all BrowsingInstanceIDs in the SecurityState, and return true
       // if any of them would return true, otherwise return false. This allows

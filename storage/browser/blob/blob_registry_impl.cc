@@ -636,6 +636,15 @@ void BlobRegistryImpl::URLStoreForOrigin(
         "kSupportPartitionedBlobUrl flag is enabled");
     return;
   }
+  // TODO(crbug.com/40109437, crbug.com/325410297): The opaque origin exception
+  // should ideally be removed, so that ChildProcessSecurityPolicy can also
+  // verify the opaque origin's precursor. This may happen "for free" if/when
+  // kSupportPartitionedBlobUrl becomes the default, since this whole code path
+  // will go away. Otherwise, note that removing the opaque check will need to
+  // be careful about sandboxed frames: CanAccessDataForOrigin() blocks all
+  // access for sandboxed frames, yet sandboxed frames can actually create and
+  // use blob URLs (with opaque origins). So, removing `origin.opaque()` may
+  // necessitate using `ChildProcessSecurityPolicy::HostsOrigin()` instead.
   if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
     mojo::ReportBadMessage(
         "Cannot access data for origin passed to "

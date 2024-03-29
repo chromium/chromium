@@ -1694,6 +1694,72 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
     EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
 }
 
+TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  TestBrowserContext browser_context;
+  p->AddForTesting(kRendererID, &browser_context);
+
+  // Create a ProcessLock for a process-isolated sandboxed frame, and lock the
+  // kRendererID process to it.
+  UrlInfo sandboxed_url_info(
+      UrlInfoInit(GURL("https://foo.com")).WithSandbox(true));
+  scoped_refptr<SiteInstanceImpl> sandboxed_instance =
+      SiteInstanceImpl::CreateForUrlInfo(&browser_context, sandboxed_url_info,
+                                         /*is_guest=*/false,
+                                         /*is_fenced=*/false,
+                                         /*is_fixed_storage_partition=*/false);
+  p->LockProcess(sandboxed_instance->GetIsolationContext(), kRendererID,
+                 /*is_process_used=*/false,
+                 ProcessLock::FromSiteInfo(sandboxed_instance->GetSiteInfo()));
+
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  auto opaque_foo_origin = foo_origin.DeriveNewOpaqueOrigin();
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com"));
+  auto opaque_bar_origin = bar_origin.DeriveNewOpaqueOrigin();
+
+  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
+
+  // A sandboxed process should be able to commit new URLs, as long as they
+  // have an opaque origin with a matching precursor.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, opaque_foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+  // TODO(crbug.com/325410297): Currently, non-opaque origins are allowed to
+  // commit. Fix this and flip the expectation to false.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, bar_origin,
+                                  AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, opaque_bar_origin,
+                                  AccessType::kCanCommitNewOrigin));
+
+  // A sandboxed process should not be able to access data for any origin.
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, opaque_foo_origin,
+                         AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, foo_origin, AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, bar_origin, AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, opaque_bar_origin,
+                         AccessType::kCanAccessDataForCommittedOrigin));
+
+  // A sandboxed process should only be able to claim that it has an opaque
+  // origin.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, opaque_foo_origin,
+                                 AccessType::kHostsOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, foo_origin, AccessType::kHostsOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, bar_origin, AccessType::kHostsOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, opaque_bar_origin,
+                                  AccessType::kHostsOrigin));
+
+  p->Remove(kRendererID);
+}
+
 // Test the granting of origin permissions, and their interactions with
 // granting scheme permissions.
 TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {

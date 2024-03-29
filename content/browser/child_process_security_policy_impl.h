@@ -841,6 +841,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                   bool url_is_precursor_of_opaque_origin,
                                   AccessType access_type);
 
+  // Helper used by CanAccessOrigin to impose additional restrictions on a
+  // sandboxed process locked to `process_lock`.
+  bool IsAccessAllowedForSandboxedProcess(const ProcessLock& process_lock,
+                                          const GURL& url,
+                                          bool url_is_for_opaque_origin,
+                                          AccessType access_type);
+
   // Utility function to simplify lookups for OriginAgentClusterOptInEntry
   // values by origin.
   OriginAgentClusterIsolationState* LookupOriginIsolationState(
