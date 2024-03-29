@@ -543,7 +543,7 @@ bool ValidateUnaryOperation(
     const IdToOperandMap& id_to_operand_map,
     const Operation& operation,
     const webnn::DataTypeConstraintSet& input_constraint,
-    base::flat_set<uint32_t>& processed_operands) {
+    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation->input_operand_id)) {
     return false;
   }
@@ -576,7 +576,7 @@ bool ValidateUnaryOperation(
 
 bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
                            const mojom::ElementWiseUnaryPtr& operation,
-                           base::flat_set<uint32_t>& processed_operands) {
+                           base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation->input_operand_id)) {
     return false;
   }
@@ -601,7 +601,7 @@ bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
 bool ValidateBatchNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::BatchNormalizationPtr& batch_normalization,
-    base::flat_set<uint32_t>& processed_operands) {
+    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(batch_normalization->input_operand_id) ||
       !processed_operands.contains(batch_normalization->mean_operand_id) ||
       !processed_operands.contains(batch_normalization->variance_operand_id)) {
@@ -661,7 +661,7 @@ bool ValidateBatchNormalization(
 
 bool ValidateArgMinMax(const IdToOperandMap& id_to_operand_map,
                        const mojom::ArgMinMaxPtr& arg_min_max,
-                       base::flat_set<uint32_t>& processed_operands) {
+                       base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(arg_min_max->input_operand_id)) {
     return false;
   }
@@ -691,7 +691,7 @@ bool ValidateArgMinMax(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
                    const mojom::ClampPtr& clamp,
-                   base::flat_set<uint32_t>& processed_operands) {
+                   base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, clamp,
                               DataTypeConstraintSet::All(),
                               processed_operands)) {
@@ -706,7 +706,7 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
                     const mojom::ConcatPtr& concat,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   auto* output = GetMojoOperand(id_to_operand_map, concat->output_operand_id);
   if (!output) {
     // The concat operator is invalid.
@@ -741,7 +741,7 @@ bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
                     const mojom::Conv2dPtr& conv2d,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(conv2d->input_operand_id) ||
       !processed_operands.contains(conv2d->filter_operand_id)) {
     return false;
@@ -849,7 +849,7 @@ bool ValidateElementWiseBinaryDataTypes(
 
 bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
                                const mojom::ElementWiseBinaryPtr& operation,
-                               base::flat_set<uint32_t>& processed_operands) {
+                               base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation->lhs_operand_id) ||
       !processed_operands.contains(operation->rhs_operand_id)) {
     return false;
@@ -884,7 +884,7 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateElu(const IdToOperandMap& id_to_operand_map,
                  const mojom::EluPtr& elu,
-                 base::flat_set<uint32_t>& processed_operands) {
+                 base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, elu,
                               DataTypeConstraint::kFloat, processed_operands)) {
     return false;
@@ -917,7 +917,7 @@ static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
 
 bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
                               const mojom::ElementWiseUnaryPtr& operation,
-                              base::flat_set<uint32_t>& processed_operands) {
+                              base::flat_set<uint64_t>& processed_operands) {
   // List the validation of cast operator separately because its output data
   // type is different from the input data type.
   if (operation->kind == mojom::ElementWiseUnary::Kind::kCast) {
@@ -934,7 +934,7 @@ bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
                     const mojom::ExpandPtr& expand,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(expand->input_operand_id)) {
     return false;
   }
@@ -964,7 +964,7 @@ bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateGather(const IdToOperandMap& id_to_operand_map,
                     const mojom::GatherPtr& gather,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gather->input_operand_id) ||
       !processed_operands.contains(gather->indices_operand_id)) {
     return false;
@@ -994,7 +994,7 @@ bool ValidateGather(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
                   const mojom::GemmPtr& gemm,
-                  base::flat_set<uint32_t>& processed_operands) {
+                  base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gemm->a_operand_id) ||
       !processed_operands.contains(gemm->b_operand_id)) {
     return false;
@@ -1029,7 +1029,7 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateGru(const IdToOperandMap& id_to_operand_map,
                  const mojom::GruPtr& gru,
-                 base::flat_set<uint32_t>& processed_operands) {
+                 base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(gru->input_operand_id) ||
       !processed_operands.contains(gru->weight_operand_id) ||
       !processed_operands.contains(gru->recurrent_weight_operand_id)) {
@@ -1111,7 +1111,7 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateHardSigmoid(const IdToOperandMap& id_to_operand_map,
                          const mojom::HardSigmoidPtr& hard_sigmoid,
-                         base::flat_set<uint32_t>& processed_operands) {
+                         base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, hard_sigmoid,
                               DataTypeConstraint::kFloat, processed_operands)) {
     return false;
@@ -1126,7 +1126,7 @@ bool ValidateHardSigmoid(const IdToOperandMap& id_to_operand_map,
 bool ValidateLayerNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::LayerNormalizationPtr& layer_normalization,
-    base::flat_set<uint32_t>& processed_operands) {
+    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(layer_normalization->input_operand_id)) {
     return false;
   }
@@ -1174,7 +1174,7 @@ bool ValidateLayerNormalization(
 
 bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
                        const mojom::LeakyReluPtr& leaky_relu,
-                       base::flat_set<uint32_t>& processed_operands) {
+                       base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, leaky_relu,
                               DataTypeConstraint::kFloat, processed_operands)) {
     return false;
@@ -1188,7 +1188,7 @@ bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateLinear(const IdToOperandMap& id_to_operand_map,
                     const mojom::LinearPtr& linear,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, linear,
                               DataTypeConstraint::kFloat, processed_operands)) {
     return false;
@@ -1202,7 +1202,7 @@ bool ValidateLinear(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
                   const mojom::LstmPtr& lstm,
-                  base::flat_set<uint32_t>& processed_operands) {
+                  base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(lstm->input_operand_id) ||
       !processed_operands.contains(lstm->weight_operand_id) ||
       !processed_operands.contains(lstm->recurrent_weight_operand_id)) {
@@ -1298,7 +1298,7 @@ bool ValidateLstm(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
                       const mojom::LstmCell& lstm_cell,
-                      base::flat_set<uint32_t>& processed_operands) {
+                      base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(lstm_cell.input_operand_id) ||
       !processed_operands.contains(lstm_cell.weight_operand_id) ||
       !processed_operands.contains(lstm_cell.recurrent_weight_operand_id) ||
@@ -1387,7 +1387,7 @@ bool ValidateLstmCell(const IdToOperandMap& id_to_operand_map,
 bool ValidateInstanceNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalizationPtr& instance_normalization,
-    base::flat_set<uint32_t>& processed_operands) {
+    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(instance_normalization->input_operand_id)) {
     return false;
   }
@@ -1434,7 +1434,7 @@ bool ValidateInstanceNormalization(
 
 bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
                     const mojom::MatmulPtr& matmul,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(matmul->a_operand_id) ||
       !processed_operands.contains(matmul->b_operand_id)) {
     return false;
@@ -1462,7 +1462,7 @@ bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
 
 bool ValidatePad(const IdToOperandMap& id_to_operand_map,
                  const mojom::PadPtr& pad,
-                 base::flat_set<uint32_t>& processed_operands) {
+                 base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(pad->input_operand_id)) {
     return false;
   }
@@ -1490,7 +1490,7 @@ bool ValidatePad(const IdToOperandMap& id_to_operand_map,
 
 bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
                     const mojom::Pool2dPtr& pool2d,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(pool2d->input_operand_id)) {
     return false;
   }
@@ -1522,7 +1522,7 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
 
 bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
                    const mojom::PreluPtr& prelu,
-                   base::flat_set<uint32_t>& processed_operands) {
+                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(prelu->input_operand_id) ||
       !processed_operands.contains(prelu->slope_operand_id)) {
     return false;
@@ -1551,7 +1551,7 @@ bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
                         const mojom::Resample2dPtr& resample2d,
-                        base::flat_set<uint32_t>& processed_operands) {
+                        base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(resample2d->input_operand_id)) {
     return false;
   }
@@ -1597,7 +1597,7 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
                      const mojom::ReshapePtr& reshape,
-                     base::flat_set<uint32_t>& processed_operands) {
+                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(reshape->input_operand_id)) {
     return false;
   }
@@ -1631,7 +1631,7 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
                    const mojom::SlicePtr& slice,
-                   base::flat_set<uint32_t>& processed_operands) {
+                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(slice->input_operand_id)) {
     return false;
   }
@@ -1659,7 +1659,7 @@ bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
                      const mojom::SoftmaxPtr& softmax,
-                     base::flat_set<uint32_t>& processed_operands) {
+                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(softmax->input_operand_id)) {
     return false;
   }
@@ -1685,7 +1685,7 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateSoftplus(const IdToOperandMap& id_to_operand_map,
                       const mojom::SoftplusPtr& softplus,
-                      base::flat_set<uint32_t>& processed_operands) {
+                      base::flat_set<uint64_t>& processed_operands) {
   if (!ValidateUnaryOperation(id_to_operand_map, softplus,
                               DataTypeConstraint::kFloat, processed_operands)) {
     return false;
@@ -1699,7 +1699,7 @@ bool ValidateSoftplus(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
                    const mojom::SplitPtr& split,
-                   base::flat_set<uint32_t>& processed_operands) {
+                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(split->input_operand_id)) {
     return false;
   }
@@ -1750,7 +1750,7 @@ bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
                        const mojom::TransposePtr& transpose,
-                       base::flat_set<uint32_t>& processed_operands) {
+                       base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(transpose->input_operand_id)) {
     return false;
   }
@@ -1778,7 +1778,7 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
                         const mojom::TriangularPtr& triangular,
-                        base::flat_set<uint32_t>& processed_operands) {
+                        base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(triangular->input_operand_id)) {
     return false;
   }
@@ -1806,7 +1806,7 @@ bool ValidateTriangular(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
                    const mojom::WherePtr& where,
-                   base::flat_set<uint32_t>& processed_operands) {
+                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(where->condition_operand_id) ||
       !processed_operands.contains(where->true_value_operand_id) ||
       !processed_operands.contains(where->false_value_operand_id)) {
@@ -1843,7 +1843,7 @@ bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
 
 bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
                     const mojom::ReducePtr& reduce,
-                    base::flat_set<uint32_t>& processed_operands) {
+                    base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(reduce->input_operand_id)) {
     return false;
   }
@@ -1891,7 +1891,7 @@ base::flat_map<std::string, size_t> CreateByteLengthMap(
 
 bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                        const mojom::OperationPtr& operation,
-                       base::flat_set<uint32_t>& processed_operands) {
+                       base::flat_set<uint64_t>& processed_operands) {
   switch (operation->which()) {
     case mojom::Operation::Tag::kArgMinMax:
       return ValidateArgMinMax(id_to_operand_map, operation->get_arg_min_max(),
@@ -2068,7 +2068,7 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
   // Keep tracks of operands as they are visited in order to assert that they
   // are topologically sorted with inputs pointing to predecessor's outputs or
   // graph inputs.
-  base::flat_set<uint32_t> processed_operands;
+  base::flat_set<uint64_t> processed_operands;
 
   // Validate all operands in the graph for the dimensions and the byte length
   // of operand that can't be out of range, and hold the temporary information
