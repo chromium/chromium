@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 
 #include "base/trace_event/base_tracing.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -87,7 +88,7 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
   }
 
   commit_url_ = navigation_handle->GetURL();
-  if (!predictors::ResourcePrefetchPredictor::IsURLValidForLcpp(*commit_url_)) {
+  if (!predictors::IsURLValidForLcpp(*commit_url_)) {
     return STOP_OBSERVING;
   }
   LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetOrCreateForPage(

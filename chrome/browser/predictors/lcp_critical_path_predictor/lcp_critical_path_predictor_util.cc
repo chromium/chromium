@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace predictors {
@@ -524,6 +525,12 @@ bool IsValidLcpUrlsHistogram(
   return true;
 }
 
+size_t GetLCPPMultipleKeyMaxPathLength() {
+  static const size_t max_length = base::checked_cast<size_t>(
+      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
+  return max_length;
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -699,6 +706,54 @@ bool IsValidLcppStat(const LcppStat& lcpp_stat) {
     return false;
   }
   return true;
+}
+
+bool IsURLValidForLcpp(const GURL& url) {
+  return url.is_valid() && !url.host().empty() && !net::IsLocalhost(url) &&
+         url.SchemeIsHTTPOrHTTPS() &&
+         url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
+}
+
+std::string GetLCPPDatabaseKey(const GURL& url) {
+  CHECK(IsURLValidForLcpp(url));
+
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey)) {
+    return url.host();
+  }
+
+  const std::string path = url.path();
+  if (path.length() < 2) {  // path == "/"
+    return url.host();
+  }
+  // Say path is "/foo/baz", find second '/' to cut out the first level path
+  // "/foo".
+  const size_t max_path_length = GetLCPPMultipleKeyMaxPathLength();
+  // Say `max_path_length` is 6, create a string view "/abcdef". If 'f' is
+  // slash, "/abcde" is the first level path but if 'f' is not, the path is
+  // longer than `max_path_length`.
+  std::string_view path_view(path.data(),
+                             std::min(path.length(), max_path_length + 1));
+  const size_t second_slash_pos = path_view.find('/', 1);
+  size_t first_level_path_length;
+  if (second_slash_pos == std::string::npos) {
+    if (url.ExtractFileName().find('.') != std::string::npos ||
+        path_view.length() == max_path_length + 1) {
+      // Assume having a file extension is a file and
+      // path should not be a file name nor exceed the length limit
+      return url.host();
+    }
+    first_level_path_length = path_view.length();
+  } else {
+    first_level_path_length = second_slash_pos;
+  }
+  const size_t key_length = url.host().length() + first_level_path_length;
+  if (key_length > ResourcePrefetchPredictorTables::kMaxStringLength) {
+    // The key must not be longer than `kMaxStringLength`.
+    // Note that we confirmed that url.host() is less than the limit in
+    // `IsURLValidForLcpp()`.
+    return url.host();
+  }
+  return url.host() + url.path().substr(0, first_level_path_length);
 }
 
 }  // namespace predictors

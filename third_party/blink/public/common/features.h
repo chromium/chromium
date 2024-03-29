@@ -829,6 +829,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType;
 
+// If enabled, LCPP learns with additional first-level-path key to origin.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPMultipleKey);
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPPMultipleKeyMaxPathLength;
+
 // If enabled, prewarm HTTP disk cache based on the previous navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
 

@@ -78,6 +78,13 @@ bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
 // Otherwise, data might be corrupted.
 bool IsValidLcppStat(const LcppStat& lcpp_stat);
 
+// Returns true if the url is valid for learning.
+bool IsURLValidForLcpp(const GURL& url);
+
+// Returns the key string for the url. The url should be true for
+// the above IsURLValidForLcpp(url).
+std::string GetLCPPDatabaseKey(const GURL& url);
+
 }  // namespace predictors
 
 #endif  // CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_UTIL_H_

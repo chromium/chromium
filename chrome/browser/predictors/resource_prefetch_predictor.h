@@ -200,8 +200,6 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   // assembled a PageRequestSummary.
   virtual void RecordPageRequestSummary(const PageRequestSummary& summary);
 
-  static bool IsURLValidForLcpp(const GURL& url);
-
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
   void LearnLcpp(const GURL& url, const LcppDataInputs& inputs);

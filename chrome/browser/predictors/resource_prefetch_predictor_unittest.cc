@@ -1321,35 +1321,4 @@ TEST_F(ResourcePrefetchPredictorTest, WhenLcppDataIsCorrupted_ResetData) {
   }
 }
 
-TEST_F(ResourcePrefetchPredictorTest, LcppShouldNotLearnInvalidURLs) {
-  ResetPredictor();
-  InitializePredictor();
-  EXPECT_TRUE(mock_tables_->lcpp_table_.data_.empty());
-
-  const std::string invalid_urls[] = {
-      // Invalid urls
-      "http://?k=v",
-      "http:://google.com",
-      "http://google.com:12three45",
-      "://google.com",
-      "path",
-      "",                  // Empty
-      "file://server:0",   // File
-      "ftp://server",      // Ftp
-      "http://localhost",  // Localhost
-      "http://127.0.0.1",  // Localhost
-      "https://example" +
-          std::string(ResourcePrefetchPredictorTables::kMaxStringLength, 'a') +
-          ".test/",  // Too long
-  };
-
-  for (auto& invalid_url : invalid_urls) {
-    const GURL url(invalid_url);
-    EXPECT_FALSE(ResourcePrefetchPredictor::IsURLValidForLcpp(url))
-        << invalid_url;
-    LearnLcpp(url, "/#a", {});
-    EXPECT_TRUE(mock_tables_->lcpp_table_.data_.empty()) << invalid_url;
-  }
-}
-
 }  // namespace predictors

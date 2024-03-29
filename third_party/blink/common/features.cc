@@ -1374,6 +1374,13 @@ const base::FeatureParam<LcppPreloadLazyLoadImageType>
         &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
         LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
 
+BASE_FEATURE(kLCPPMultipleKey,
+             "LCPPMultipleKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kLCPPMultipleKeyMaxPathLength{
+    &kLCPPMultipleKey, "lcpp_multiple_key_max_path_length", 15};
+
 BASE_FEATURE(kHttpDiskCachePrewarming,
              "HttpDiskCachePrewarming",
              base::FEATURE_DISABLED_BY_DEFAULT);
