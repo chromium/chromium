@@ -971,8 +971,6 @@ const std::string& BrowserProcessImpl::GetApplicationLocale() {
 
 void BrowserProcessImpl::SetApplicationLocale(
     const std::string& actual_locale) {
-  // NOTE: this is called before any threads have been created in non-test
-  // environments.
   locale_ = actual_locale;
   ChromeContentBrowserClient::SetApplicationLocale(actual_locale);
   translate::TranslateDownloadManager::GetInstance()->set_application_locale(
