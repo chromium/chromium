@@ -67,6 +67,12 @@ void CaptureWindowObserver::SetSelectedWindow(aura::Window* window,
     window = nullptr;
   }
 
+  // Don't capture the shelf.
+  if (window && window->parent() &&
+      window->parent()->GetId() == kShellWindowId_ShelfContainer) {
+    window = nullptr;
+  }
+
   // Don't capture home screen window.
   if (window &&
       window == Shell::Get()->app_list_controller()->GetHomeScreenWindow()) {
