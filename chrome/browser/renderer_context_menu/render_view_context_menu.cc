@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -4272,6 +4273,7 @@ void RenderViewContextMenu::ExecRegionSearch(
       lens::features::IsLensOverlayEnabled()) {
     browser->tab_strip_model()
         ->GetActiveTab()
+        ->tab_features()
         ->lens_overlay_controller()
         ->ShowUI();
     return;

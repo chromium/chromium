@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -13,8 +15,14 @@ namespace tabs {
 TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
                    TabStripModel* owning_model)
     : contents_(std::move(contents)), owning_model_(owning_model) {
+  // When a TabModel is constructed it must be attached to a TabStripModel. This
+  // may later change if the Tab is detached.
   CHECK(owning_model);
-  lens_overlay_controller_ = std::make_unique<LensOverlayController>(this);
+
+  // Features that are only enabled for normal browser windows.
+  if (owning_model->delegate()->IsNormalWindow()) {
+    tab_features_ = TabFeatures::CreateTabFeatures(this);
+  }
 }
 
 TabModel::~TabModel() = default;
