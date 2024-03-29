@@ -155,7 +155,7 @@ ASH_EXPORT void ExpandArcPipWindow();
 bool IsAnyWindowDragged();
 
 // Returns the top window on MRU window list, or null if the list is empty.
-aura::Window* GetTopWindow();
+ASH_EXPORT aura::Window* GetTopWindow();
 ASH_EXPORT aura::Window* GetTopNonFloatedWindow();
 
 // Returns the floated window for the active desk if it exists.
