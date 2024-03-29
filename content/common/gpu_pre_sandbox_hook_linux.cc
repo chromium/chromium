@@ -425,7 +425,7 @@ void AddVulkanICDPermissions(std::vector<BrokerFilePermission>* permissions) {
 
   static const char* const kReadOnlyICDList[] = {
       "intel_icd.x86_64.json", "nvidia_icd.json", "radeon_icd.x86_64.json",
-      "mali_icd.json"};
+      "mali_icd.json", "freedreno_icd.aarch64.json"};
 
   for (std::string prefix : kReadOnlyICDPrefixes) {
     permissions->push_back(BrokerFilePermission::ReadOnly(prefix));
@@ -614,6 +614,7 @@ void LoadVulkanLibraries() {
   dlopen("libvulkan_radeon.so", dlopen_flag);
   dlopen("libvulkan_intel.so", dlopen_flag);
   dlopen("libGLX_nvidia.so.0", dlopen_flag);
+  dlopen("libvulkan_freedreno.so", dlopen_flag);
 }
 
 void LoadChromecastV4L2Libraries() {
