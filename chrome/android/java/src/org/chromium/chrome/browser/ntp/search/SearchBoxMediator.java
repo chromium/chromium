@@ -87,7 +87,7 @@ class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
         ColorStateList colorStateList =
                 mIsSurfacePolishOmniboxColorEnabled
                         ? AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_accent1_container_tint_list)
+                                mContext, R.color.default_icon_color_on_accent1_container_tint_list)
                         : ThemeUtils.getThemedToolbarIconTint(
                                 mContext, BrandedColorScheme.APP_DEFAULT);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);

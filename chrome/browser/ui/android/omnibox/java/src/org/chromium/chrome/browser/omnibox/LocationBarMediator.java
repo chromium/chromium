@@ -1600,7 +1600,7 @@ class LocationBarMediator
         ColorStateList tint =
                 useColorfulButtonTint
                         ? AppCompatResources.getColorStateList(
-                                mContext, R.color.default_icon_color_accent1_container_tint_list)
+                                mContext, R.color.default_icon_color_on_accent1_container_tint_list)
                         : ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);
         mLocationBarLayout.setMicButtonTint(tint);
         mLocationBarLayout.setLensButtonTint(tint);
