@@ -150,12 +150,13 @@ void FidoRequestHandlerBase::InitDiscoveries(
         base::BindOnce(&FidoRequestHandlerBase::OnWinIsUvpaa,
                        weak_factory_.GetWeakPtr()));
 
-    // Allow caBLE as a potential additional transport if requested by
-    // the implementing class because it is not subject to the OS'
+    // Allow caBLE and Enclave as a potential additional transports if
+    // requested by the implementing class because it is not subject to the OS'
     // device communication block (only GetAssertionRequestHandler uses
     // caBLE). Otherwise, do not instantiate any other transports.
     base::EraseIf(available_transports, [](auto transport) {
-      return transport != FidoTransportProtocol::kHybrid;
+      return transport != FidoTransportProtocol::kHybrid &&
+             transport != FidoTransportProtocol::kInternal;
     });
   }
 #endif  // BUILDFLAG(IS_WIN)
