@@ -7549,13 +7549,13 @@ To shut down the device, press and hold the power button on the device again.
 
       <!-- TODO(b/286455407): Update strings once finalized with UX Writing -->
       <!-- Game Dashboard strings -->
-      <message name="IDS_ASH_GAME_DASHBOARD_BACK_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard back button.">
+      <message name="IDS_ASH_GAME_DASHBOARD_BACK_TOOLTIP" desc="Tooltip for the Game Dashboard back button.">
         Back
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard game controls tile.">
+      <message name="IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE" desc="The display name for the Game Dashboard game controls tile.">
         Controls
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard help icon button.">
+      <message name="IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP" desc="Tooltip for the Game Dashboard help icon button.">
         Help center
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_RECORDING" desc="The title of the Game Dashboard button when the window is being recorded, and also shows the recording duration.">
@@ -7564,82 +7564,82 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE" desc="The default title of the Game Dashboard button.">
         Game dashboard
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_HELP_BUTTON_A11Y_LABEL" translateable="false" desc="Help button a11y label. Spoken by screen readers when the help button gets focus but not visually rendered.">
+      <message name="IDS_ASH_GAME_DASHBOARD_HELP_BUTTON_A11Y_LABEL" desc="Help button a11y label. Spoken by screen readers when the help button gets focus but not visually rendered.">
         Get help
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS" translateable="false" desc="The hidden state for compact Game Dashboard tile sub-labels.">
+      <message name="IDS_ASH_GAME_DASHBOARD_HIDDEN_STATUS" desc="The hidden state for compact Game Dashboard tile sub-labels.">
         Hidden
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START" translateable="false" desc="The tooltips for record game tile when recording has not yet started.">
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START" desc="The tooltips for record game tile when recording has not yet started.">
         Record game
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP" translateable="false" desc="The tooltips for record game tile when recording is in progress.">
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP" desc="The tooltips for record game tile when recording is in progress.">
         Stop recording
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard record game tile.">
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE" desc="The display name for the Game Dashboard record game tile.">
         Record game
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_RECORDING_TITLE" translateable="false" desc="The display name for the Game Dashboard record game tile when the window is being recorded.">
+      <message name="IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_RECORDING_TITLE" desc="The display name for the Game Dashboard record game tile when the window is being recorded.">
         Recording
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard screenshot tile.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE" desc="The display name for the Game Dashboard screenshot tile.">
         Take screenshot
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL" translateable="false" desc="Screen size settings button a11y label. Spoken by screen readers when the screen size settings button button gets focus but not visually rendered.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL" desc="Screen size settings button a11y label. Spoken by screen readers when the screen size settings button button gets focus but not visually rendered.">
         Edit screen size
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" translateable="false" desc="The display name for the Game Dashboard screen size settings.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" desc="The display name for the Game Dashboard screen size settings.">
         Screen size
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE" translateable="false" desc="The display name for the Game Dashboard send feedback button.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE" desc="The display name for the Game Dashboard send feedback button.">
         Send feedback
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_TITLE" translateable="false" desc="The display name for the Game Dashboard settings.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_TITLE" desc="The display name for the Game Dashboard settings.">
         Game dashboard options
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard settings icon button.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP" desc="Tooltip for the Game Dashboard settings icon button.">
         Game dashboard settings
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_A11Y_LABEL" translateable="false" desc="The accessibility label for the welcome dialog switch in the Game Dashboard Settings.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_A11Y_LABEL" desc="The accessibility label for the welcome dialog switch in the Game Dashboard Settings.">
         Welcome notification is <ph name="STATE">$1<ex>on</ex></ph>
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_TITLE" translateable="false" desc="The label displayed for the welcome dialog row of the Game Dashboard Settings.">
+      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_TITLE" desc="The label displayed for the welcome dialog row of the Game Dashboard Settings.">
         Welcome notification
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_TILE_ON" desc="The label for enabled Game Dashboard tiles.">
         On
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_CLOSE_TOOLBAR" translateable="false" desc="The tooltips for the toolbar gamepad button when the toolbar is expanded.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_CLOSE_TOOLBAR" desc="The tooltips for the toolbar gamepad button when the toolbar is expanded.">
         Close toolbar
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_OPEN_TOOLBAR" translateable="false" desc="The tooltips for the toolbar gamepad button when the toolbar is not expanded.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_OPEN_TOOLBAR" desc="The tooltips for the toolbar gamepad button when the toolbar is not expanded.">
         Open toolbar
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR" translateable="false" desc="The tooltips for toolbar tile when the toolbar is visible.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR" desc="The tooltips for toolbar tile when the toolbar is visible.">
         Hide toolbar
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_SHOW_TOOLBAR" translateable="false" desc="The tooltips for toolbar tile when the toolbar is not visible.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_SHOW_TOOLBAR" desc="The tooltips for toolbar tile when the toolbar is not visible.">
         Show toolbar
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" desc="The display name for the Game Dashboard toolbar tile.">
         Toolbar
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS" translateable="false" desc="The visible state for compact Game Dashboard tile sub-labels.">
+      <message name="IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS" desc="The visible state for compact Game Dashboard tile sub-labels.">
         Visible
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SHORTCUT" translateable="false" desc="The text displayed in the welcome dialog to show how to toggle the Game Dashboard.">
+      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SHORTCUT" desc="The text displayed in the welcome dialog to show how to toggle the Game Dashboard.">
         Press <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> + g at anytime
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_A11Y_LABEL" translateable="false" desc="The a11y label for the welcome dialog. Spoken by screen readers when the welcome dialog is a11y focused but not visually rendered.">
+      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_A11Y_LABEL" desc="The a11y label for the welcome dialog. Spoken by screen readers when the welcome dialog is a11y focused but not visually rendered.">
         Welcome dialog
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SUB_LABEL" translateable="false" desc="The additional context added to the welcome dialog about the Game Dashboard.">
+      <message name="IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SUB_LABEL" desc="The additional context added to the welcome dialog about the Game Dashboard.">
         Customize your gaming experience
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TABLET_TOAST" translateable="false" desc="The toast text when entering the tablet mode.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TABLET_TOAST" desc="The toast text when entering the tablet mode.">
         Tablet mode is on. Game dashboard is unavailable.
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_TABLET_STOP_RECORDING_TOAST" translateable="false" desc="The toast text when entering the tablet mode with recording in progress.">
+      <message name="IDS_ASH_GAME_DASHBOARD_TABLET_STOP_RECORDING_TOAST" desc="The toast text when entering the tablet mode with recording in progress.">
         Recording stopped. Can't use Game dashboard in tablet mode.
       </message>
 
@@ -7677,19 +7677,19 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_GC_SET_UP_SUB_TITLE" desc="The subtitle on the menu details row of Game Controls when no action is set up and Setup button shows up.">
         Keys, buttons, and more
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_ON_TEMPLATE" translateable="false" desc="The subtitle on the Controls row of the Game Dashboard when the controls have been toggled on and the feature is enabled.">
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_ON_TEMPLATE" desc="The subtitle on the Controls row of the Game Dashboard when the controls have been toggled on and the feature is enabled.">
         On for <ph name="GAME_APP_NAME">$1<ex>app name</ex></ph>
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_OFF_TEMPLATE" translateable="false" desc="The subtitle on the Controls row of the Game Dashboard when the controls have been toggled off and the feature is disabled.">
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_DETAILS_SUB_TITLE_OFF_TEMPLATE" desc="The subtitle on the Controls row of the Game Dashboard when the controls have been toggled off and the feature is disabled.">
         Off for <ph name="GAME_APP_NAME">$1<ex>app name</ex></ph>
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_GC_SET_UP_BUTTON_LABEL" translateable="false" desc="The label on the Setup button in the Controls row of the Game Dashboard when no buttons have been assigned.">
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_SET_UP_BUTTON_LABEL" desc="The label on the Setup button in the Controls row of the Game Dashboard when no buttons have been assigned.">
         Set up
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_TITLE" translateable="false" desc="The label on the Nudge next to the Controls row of the Game Dashboard when no buttons have been assigned.">
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_TITLE" desc="The label on the Nudge next to the Controls row of the Game Dashboard when no buttons have been assigned.">
         This is a touch game
       </message>
-      <message name="IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_SUB_TITLE" translateable="false" desc="The subtitle on the Nudge next to the Controls row of the Game Dashboard when no buttons have been assigned.">
+      <message name="IDS_ASH_GAME_DASHBOARD_GC_KEYBOARD_SETUP_NUDGE_SUB_TITLE" desc="The subtitle on the Nudge next to the Controls row of the Game Dashboard when no buttons have been assigned.">
         Set up to play with your keyboard
       </message>
 
