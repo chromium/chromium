@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_PREFS_H_
 
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 class PrefRegistrySimple;
@@ -26,6 +27,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the name of the pref to check for enterprise policy for `feature`.
 // Null is returned when no enterprise policy is defined for the `feature`.
+const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature);
+// TODO: crbug.com/331306557 - Cleanup after migration.
 const char* GetEnterprisePolicyPrefName(proto::ModelExecutionFeature feature);
 
 }  // namespace optimization_guide::model_execution::prefs
