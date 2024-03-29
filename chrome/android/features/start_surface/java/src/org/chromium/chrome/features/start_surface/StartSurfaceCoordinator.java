@@ -836,7 +836,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                         BrowserUiUtils.HostSurface.START_SURFACE);
 
         mMostVisitedCoordinator.initWithNative(
-                mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
+                profile, mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
         mIsMVTilesInitialized = true;
     }
 

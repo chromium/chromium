@@ -35,7 +35,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -115,7 +114,6 @@ public class TileRendererTest {
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
 
         mSharedParent = new LinearLayout(mActivity);
@@ -138,7 +136,7 @@ public class TileRendererTest {
                     TileRenderer tileRenderer =
                             new TileRenderer(mActivity, style, titleLines, mMockImageFetcher);
                     tileRenderer.setIconGeneratorForTesting(mIconGenerator);
-                    tileRenderer.onNativeInitializationReady();
+                    tileRenderer.onNativeInitializationReady(mProfile);
                     SuggestionsTileView tileView =
                             tileRenderer.buildTileView(mTile, mSharedParent, mTileSetupDelegate);
                     Assert.assertNotNull(tileView);

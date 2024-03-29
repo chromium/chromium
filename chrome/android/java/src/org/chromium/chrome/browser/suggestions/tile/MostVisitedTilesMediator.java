@@ -23,7 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
@@ -113,6 +113,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
     /** Called to initialize this mediator when native is ready. */
     public void initWithNative(
+            Profile profile,
             SuggestionsUiDelegate suggestionsUiDelegate,
             ContextMenuManager contextMenuManager,
             TileGroup.Delegate tileGroupDelegate,
@@ -129,8 +130,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                         offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
 
-        mTemplateUrlService =
-                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
+        mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);
 
         onSearchEngineHasLogoChanged();

@@ -25,7 +25,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -60,6 +60,7 @@ public class TileRenderer {
     private final float mIconCornerRadius;
     private int mTitleLinesCount;
     private boolean mNativeInitializationComplete;
+    private Profile mProfile;
 
     @LayoutRes private final int mLayout;
 
@@ -172,8 +173,8 @@ public class TileRenderer {
 
     /** Record that a tile was clicked for IPH reasons. */
     private void recordTileClickedForIPH(String eventName) {
-        Tracker tracker =
-                TrackerFactory.getTrackerForProfile(ProfileManager.getLastUsedRegularProfile());
+        assert mProfile != null;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
         tracker.notifyEvent(eventName);
     }
 
@@ -251,10 +252,12 @@ public class TileRenderer {
         return tileView;
     }
 
-    /** @return True, if the tile represents a Search query. */
+    /**
+     * @return True, if the tile represents a Search query.
+     */
     private boolean isSearchTile(Tile tile) {
-        TemplateUrlService searchService =
-                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
+        assert mProfile != null;
+        TemplateUrlService searchService = TemplateUrlServiceFactory.getForProfile(mProfile);
         return searchService != null
                 && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
     }
@@ -263,15 +266,16 @@ public class TileRenderer {
      * Notify the component that the native initialization has completed and the component can
      * safely execute native code.
      */
-    public void onNativeInitializationReady() {
+    public void onNativeInitializationReady(Profile profile) {
         mNativeInitializationComplete = true;
+        mProfile = profile;
     }
 
     /**
      * Given a Tile data and TileView, apply appropriate content description that will be announced
-     * when the view is focused for accessibility.
-     * The objective of the description is to offer audible guidance that helps users differentiate
-     * navigation (open www.site.com) and search (search www.site.com).
+     * when the view is focused for accessibility. The objective of the description is to offer
+     * audible guidance that helps users differentiate navigation (open www.site.com) and search
+     * (search www.site.com).
      *
      * @param tile Tile data that carries information about the destination URL.
      * @param tileView The view that should receive updated content description.

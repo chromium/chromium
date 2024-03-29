@@ -340,7 +340,7 @@ public class MostVisitedTilesLayoutTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
 
-        // Setting up the dummy data.
+        // Setting up the fake data.
         FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
         mostVisitedSites.setTileSuggestions(siteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
@@ -416,6 +416,6 @@ public class MostVisitedTilesLayoutTest {
                         TILE_GRID_ROWS,
                         null,
                         null);
-        coordinator.initWithNative(uiDelegate, delegate, mTouchEnabledDelegate);
+        coordinator.initWithNative(profile, uiDelegate, delegate, mTouchEnabledDelegate);
     }
 }

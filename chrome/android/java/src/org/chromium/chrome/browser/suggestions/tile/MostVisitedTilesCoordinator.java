@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
@@ -125,17 +124,18 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      * Called before the TasksSurface is showing to initialize MV tiles. {@link
      * MostVisitedTilesCoordinator#destroyMvtiles()} is called after the TasksSurface hides.
      *
+     * @param profile The Profile associated with the MV Tiles being displayed.
      * @param suggestionsUiDelegate The UI delegate of suggestion surface.
      * @param tileGroupDelegate The delegate of tile group.
      * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
      *     events are allowed.
      */
     public void initWithNative(
+            Profile profile,
             SuggestionsUiDelegate suggestionsUiDelegate,
             TileGroup.Delegate tileGroupDelegate,
             TouchEnabledDelegate touchEnabledDelegate) {
         mActivityLifecycleDispatcher.register(this);
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
         if (mRenderer == null) {
             mRenderer =
                     new TileRenderer(
@@ -146,7 +146,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         } else {
             mRenderer.setImageFetcher(suggestionsUiDelegate.getImageFetcher());
         }
-        mRenderer.onNativeInitializationReady();
+        mRenderer.onNativeInitializationReady(profile);
 
         mContextMenuManager =
                 new ContextMenuManager(
@@ -158,6 +158,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mOfflinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
         mMediator.initWithNative(
+                profile,
                 suggestionsUiDelegate,
                 mContextMenuManager,
                 tileGroupDelegate,

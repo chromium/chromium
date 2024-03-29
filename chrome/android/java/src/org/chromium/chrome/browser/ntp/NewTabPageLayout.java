@@ -525,7 +525,7 @@ public class NewTabPageLayout extends LinearLayout {
                         });
 
         mMostVisitedTilesCoordinator.initWithNative(
-                mManager, tileGroupDelegate, touchEnabledDelegate);
+                profile, mManager, tileGroupDelegate, touchEnabledDelegate);
     }
 
     /** Updates the search box when the parent view's scroll position is changed. */
