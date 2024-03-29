@@ -119,8 +119,7 @@ struct WeightHeader {
 static_assert(sizeof(WeightHeader) == 64, "WeightHeader must be 64 bytes");
 
 struct WeightMetadata {
-  WeightMetadata(BlobDataType mil_data_type,
-                 uint64_t size_in_bytes,
+  WeightMetadata(BlobDataType mil_data_type, uint64_t size_in_bytes,
                  uint64_t offset)
       : mil_data_type(mil_data_type),
         size_in_bytes(size_in_bytes),
@@ -252,11 +251,11 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
   base::FilePath data_dir = ml_package_dir.Append(kMlPackageDataDir);
 
   auto graph_builder = base::WrapUnique(new GraphBuilder(
-      graph_info, ml_package_dir, data_dir.Append(kMlPackageModelFileName),
+      graph_info, std::move(ml_package_dir),
+      data_dir.Append(kMlPackageModelFileName),
       data_dir.Append(kMlPackageWeightsDir).Append(kMlPackageWeightsFileName)));
 
-  RETURN_IF_ERROR(
-      graph_builder->BuildCoreMLModel(graph_info, working_directory));
+  RETURN_IF_ERROR(graph_builder->BuildCoreMLModel());
 
   if (!graph_builder->SerializeModel()) {
     return NewUnknownError("Failed to serialize CoreML model.");
@@ -277,8 +276,7 @@ GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info,
 GraphBuilder::~GraphBuilder() = default;
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
-GraphBuilder::BuildCoreMLModel(const mojom::GraphInfo& graph_info,
-                               const base::FilePath& working_directory) {
+GraphBuilder::BuildCoreMLModel() {
   CHECK_EQ(ml_model_.specificationversion(), 0);
   // Based on comment in Model.proto
   //  * 7 : iOS 16, macOS 13, tvOS 16, watchOS 9 (Core ML 6)
@@ -302,15 +300,15 @@ GraphBuilder::BuildCoreMLModel(const mojom::GraphInfo& graph_info,
   auto& block = (*main_function.mutable_block_specializations())["CoreML6"];
 
   // Add inputs.
-  for (auto& input_id : graph_info.input_operands) {
+  for (auto& input_id : graph_info_->input_operands) {
     RETURN_IF_ERROR(AddInput(input_id, main_function));
   }
 
-  if (graph_info.input_operands.empty()) {
+  if (graph_info_->input_operands.empty()) {
     AddPlaceholderInput(main_function, block);
   }
 
-  RETURN_IF_ERROR(SetupMlPackageDirStructure(working_directory));
+  RETURN_IF_ERROR(SetupMlPackageDirStructure());
 
   base::ElapsedTimer ml_weights_write_timer;
   RETURN_IF_ERROR(WriteWeightsToFile(block));
@@ -318,21 +316,56 @@ GraphBuilder::BuildCoreMLModel(const mojom::GraphInfo& graph_info,
                              ml_weights_write_timer.Elapsed());
 
   // Add operations.
-  for (auto& operation : graph_info.operations) {
+  for (auto& operation : graph_info_->operations) {
     switch (operation->which()) {
       case mojom::Operation::Tag::kElementWiseBinary: {
         RETURN_IF_ERROR(AddOperationForBinary(
             *operation->get_element_wise_binary(), block));
         break;
       }
-      default: {
+      case mojom::Operation::Tag::kArgMinMax:
+      case mojom::Operation::Tag::kBatchNormalization:
+      case mojom::Operation::Tag::kClamp:
+      case mojom::Operation::Tag::kConv2d:
+      case mojom::Operation::Tag::kConcat:
+      case mojom::Operation::Tag::kElementWiseUnary:
+      case mojom::Operation::Tag::kElu:
+      case mojom::Operation::Tag::kExpand:
+      case mojom::Operation::Tag::kGather:
+      case mojom::Operation::Tag::kGemm:
+      case mojom::Operation::Tag::kGru:
+      case mojom::Operation::Tag::kHardSigmoid:
+      case mojom::Operation::Tag::kHardSwish:
+      case mojom::Operation::Tag::kLayerNormalization:
+      case mojom::Operation::Tag::kInstanceNormalization:
+      case mojom::Operation::Tag::kLeakyRelu:
+      case mojom::Operation::Tag::kLinear:
+      case mojom::Operation::Tag::kLstm:
+      case mojom::Operation::Tag::kLstmCell:
+      case mojom::Operation::Tag::kMatmul:
+      case mojom::Operation::Tag::kPad:
+      case mojom::Operation::Tag::kPool2d:
+      case mojom::Operation::Tag::kPrelu:
+      case mojom::Operation::Tag::kReduce:
+      case mojom::Operation::Tag::kRelu:
+      case mojom::Operation::Tag::kResample2d:
+      case mojom::Operation::Tag::kReshape:
+      case mojom::Operation::Tag::kSigmoid:
+      case mojom::Operation::Tag::kSlice:
+      case mojom::Operation::Tag::kSoftmax:
+      case mojom::Operation::Tag::kSoftplus:
+      case mojom::Operation::Tag::kSoftsign:
+      case mojom::Operation::Tag::kSplit:
+      case mojom::Operation::Tag::kTanh:
+      case mojom::Operation::Tag::kTranspose:
+      case mojom::Operation::Tag::kTriangular:
+      case mojom::Operation::Tag::kWhere:
         return NewNotSupportedError("This operator is not implemented.");
-      }
     }
   }
 
   // Add output.
-  for (auto& output_id : graph_info.output_operands) {
+  for (auto& output_id : graph_info_->output_operands) {
     block.add_outputs(GetCoreMLNameFromOperand(
         output_id, GetOperand(output_id)));
     RETURN_IF_ERROR(AddOutput(output_id));
@@ -539,7 +572,11 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
       op->set_type(kOpPowerTypeName);
       break;
     }
-    default:
+    case mojom::ElementWiseBinary::Kind::kEqual:
+    case mojom::ElementWiseBinary::Kind::kGreater:
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+    case mojom::ElementWiseBinary::Kind::kLesser:
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return NewNotSupportedError("Unimplemented Binary Operator.");
   }
 
@@ -552,8 +589,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForBinary(
 }
 
 void GraphBuilder::AddConstantImmediateValue(
-    uint32_t constant_id,
-    CoreML::Specification::MILSpec::Block& block) {
+    uint32_t constant_id, CoreML::Specification::MILSpec::Block& block) {
   const Operand& operand = GetOperand(constant_id);
   auto* op = block.add_operations();
   PopulateNamedValueType(constant_id, operand, *op->add_outputs());
@@ -598,9 +634,7 @@ void GraphBuilder::AddConstantImmediateValue(
 }
 
 void GraphBuilder::AddConstantFileValue(
-    uint32_t constant_id,
-    uint64_t offset,
-    const mojom::Operand& operand,
+    uint32_t constant_id, uint64_t offset, const mojom::Operand& operand,
     CoreML::Specification::MILSpec::Block& block) {
   auto* op = block.add_operations();
   PopulateNamedValueType(constant_id, operand, *op->add_outputs());
@@ -628,8 +662,7 @@ void GraphBuilder::AddConstantFileValue(
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
-    uint64_t operand_id,
-    const mojom::Operand& operand,
+    uint64_t operand_id, const mojom::Operand& operand,
     ::CoreML::Specification::FeatureDescription& feature_description) {
   auto* feature_type = feature_description.mutable_type();
   auto* array_feature_type = feature_type->mutable_multiarraytype();
@@ -673,8 +706,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
 }
 
 void GraphBuilder::PopulateNamedValueType(
-    uint64_t operand_id,
-    const mojom::Operand& operand,
+    uint64_t operand_id, const mojom::Operand& operand,
     CoreML::Specification::MILSpec::NamedValueType& named_value_type) {
   named_value_type.set_name(GetCoreMLNameFromOperand(operand_id, operand));
   auto& value_type = *named_value_type.mutable_type();
@@ -713,8 +745,8 @@ void GraphBuilder::PopulateValueType(
   }
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::SetupMlPackageDirStructure(
-    const base::FilePath& working_directory) {
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::SetupMlPackageDirStructure() {
   if (!base::CreateDirectory(ml_package_dir_)) {
     return NewUnknownError("Fail to create .mlpackage directory.");
   }
@@ -766,8 +798,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::SetupMlPackageDirStructure(
 }
 
 GraphBuilder::OperandInfo::OperandInfo(
-    std::string coreml_name,
-    std::vector<uint32_t> dimensions,
+    std::string coreml_name, std::vector<uint32_t> dimensions,
     mojom::Operand::DataType data_type,
     CoreML::Specification::MILSpec::DataType mil_data_type)
     : coreml_name(std::move(coreml_name)),
