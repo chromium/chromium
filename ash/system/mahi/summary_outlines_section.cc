@@ -61,9 +61,8 @@ std::unique_ptr<views::View> CreateSectionHeader(const gfx::VectorIcon& icon,
 }  // namespace
 
 SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
-    : ui_controller_(ui_controller) {
+    : MahiUiController::Observer(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
-  controller_observation_.Observe(ui_controller_);
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
@@ -131,14 +130,6 @@ void SummaryOutlinesSection::OnContentsRefreshInitiated() {
   LoadSummaryAndOutlines();
 }
 
-void SummaryOutlinesSection::OnError(chromeos::MahiResponseStatus status) {
-  SetVisible(false);
-}
-
-void SummaryOutlinesSection::OnNavigatedToSummaryOutlinesSection() {
-  SetVisible(true);
-}
-
 void SummaryOutlinesSection::OnOutlinesLoaded(
     const std::vector<chromeos::MahiOutline>& outlines) {
   outlines_container_->RemoveAllChildViews();
@@ -162,8 +153,18 @@ void SummaryOutlinesSection::OnOutlinesLoaded(
   outlines_container_->SetVisible(false);
 }
 
-void SummaryOutlinesSection::OnQuestionPosted(const std::u16string& question) {
-  SetVisible(false);
+void SummaryOutlinesSection::OnStateChanged(
+    MahiUiController::State new_state,
+    const std::optional<PayloadType>& payload) {
+  switch (new_state) {
+    case MahiUiController::State::kError:
+    case MahiUiController::State::kQuestionAndAnswer:
+      SetVisible(false);
+      return;
+    case MahiUiController::State::kSummaryAndOutlines:
+      SetVisible(true);
+      return;
+  }
 }
 
 void SummaryOutlinesSection::OnSummaryLoaded(

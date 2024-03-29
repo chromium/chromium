@@ -82,9 +82,8 @@ SkPath GetClipPath(gfx::Size size) {
 }  // namespace
 
 RefreshBannerView::RefreshBannerView(MahiUiController* ui_controller)
-    : ui_controller_(ui_controller) {
+    : MahiUiController::Observer(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
-  controller_observation_.Observe(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetInteriorMargin(kRefreshBannerInteriorMargin);

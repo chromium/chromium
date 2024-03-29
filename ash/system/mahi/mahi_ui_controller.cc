@@ -17,6 +17,17 @@ bool HasError(chromeos::MahiResponseStatus status) {
 
 }  // namespace
 
+// MahiUiController::Observer --------------------------------------------------
+
+MahiUiController::Observer::Observer(MahiUiController* ui_controller) {
+  CHECK(ui_controller);
+  observation_.Observe(ui_controller);
+}
+
+MahiUiController::Observer::~Observer() = default;
+
+// MahiUiController ------------------------------------------------------------
+
 MahiUiController::MahiUiController() = default;
 
 MahiUiController::~MahiUiController() = default;
@@ -31,7 +42,8 @@ void MahiUiController::RemoveObserver(Observer* observer) {
 
 void MahiUiController::NavigateToSummaryOutlinesSection() {
   for (auto& observer : observers_) {
-    observer.OnNavigatedToSummaryOutlinesSection();
+    observer.OnStateChanged(State::kSummaryAndOutlines,
+                            /*payload=*/std::nullopt);
   }
 }
 
@@ -52,7 +64,7 @@ void MahiUiController::RefreshContents() {
 void MahiUiController::SendQuestion(const std::u16string& question,
                                     bool current_panel_content) {
   for (auto& observer : observers_) {
-    observer.OnQuestionPosted(question);
+    observer.OnStateChanged(State::kQuestionAndAnswer, question);
   }
 
   chromeos::MahiManager::Get()->AnswerQuestion(
@@ -72,7 +84,7 @@ void MahiUiController::HandleErrorStatus(chromeos::MahiResponseStatus status) {
   CHECK(HasError(status));
 
   for (auto& observer : observers_) {
-    observer.OnError(status);
+    observer.OnStateChanged(State::kError, status);
   }
 }
 

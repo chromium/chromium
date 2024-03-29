@@ -4,6 +4,8 @@
 
 #include "ash/system/mahi/mahi_question_answer_view.h"
 
+#include <variant>
+
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -87,11 +89,8 @@ std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
 
 }  // namespace
 
-MahiQuestionAnswerView::MahiQuestionAnswerView(
-    MahiUiController* ui_controller) {
-  CHECK(ui_controller);
-  controller_observation_.Observe(ui_controller);
-
+MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
+    : MahiUiController::Observer(ui_controller) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kInteriorMargin);
   SetIgnoreDefaultMainAxisMargins(true);
@@ -112,17 +111,22 @@ void MahiQuestionAnswerView::OnContentsRefreshInitiated() {
   RemoveAllChildViews();
 }
 
-void MahiQuestionAnswerView::OnError(chromeos::MahiResponseStatus status) {
-  SetVisible(false);
-}
-
-void MahiQuestionAnswerView::OnNavigatedToSummaryOutlinesSection() {
-  SetVisible(false);
-}
-
-void MahiQuestionAnswerView::OnQuestionPosted(const std::u16string& question) {
-  SetVisible(true);
-  AddChildView(CreateTextBubble(question, /*is_question=*/true));
+void MahiQuestionAnswerView::OnStateChanged(
+    MahiUiController::State new_state,
+    const std::optional<PayloadType>& payload) {
+  switch (new_state) {
+    case MahiUiController::State::kError:
+      SetVisible(false);
+      return;
+    case MahiUiController::State::kQuestionAndAnswer:
+      SetVisible(true);
+      AddChildView(CreateTextBubble(std::get<std::u16string>(*payload),
+                                    /*is_question=*/true));
+      return;
+    case MahiUiController::State::kSummaryAndOutlines:
+      SetVisible(false);
+      return;
+  }
 }
 
 BEGIN_METADATA(MahiQuestionAnswerView)

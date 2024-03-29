@@ -213,10 +213,8 @@ class BackButton : public IconButton, public MahiUiController::Observer {
             &kEcheArrowBackIcon,
             /*accessible_name=*/u"Back to summary",
             /*is_togglable=*/false,
-            /*has_border=*/false) {
-    CHECK(ui_controller);
-    observation_.Observe(ui_controller);
-  }
+            /*has_border=*/false),
+        MahiUiController::Observer(ui_controller) {}
 
   BackButton(const BackButton&) = delete;
   BackButton& operator=(const BackButton&) = delete;
@@ -224,19 +222,19 @@ class BackButton : public IconButton, public MahiUiController::Observer {
 
  private:
   // MahiController::Observer:
-  void OnNavigatedToSummaryOutlinesSection() override {
-    // Hide `BackButton` when the summary & outlines section shows.
-    SetVisible(false);
+  void OnStateChanged(MahiUiController::State new_state,
+                      const std::optional<PayloadType>& payload) override {
+    switch (new_state) {
+      case MahiUiController::State::kError:
+        break;
+      case MahiUiController::State::kQuestionAndAnswer:
+        SetVisible(true);
+        break;
+      case MahiUiController::State::kSummaryAndOutlines:
+        SetVisible(false);
+        break;
+    }
   }
-
-  void OnQuestionPosted(const std::u16string& question) override {
-    // Ensure `BackButton` is visible when a question posted to enable
-    // navigation back to the summary & outlines section.
-    SetVisible(true);
-  }
-
-  base::ScopedObservation<MahiUiController, MahiUiController::Observer>
-      observation_{this};
 };
 
 BEGIN_METADATA(BackButton)
@@ -356,9 +354,8 @@ DEFINE_VIEW_BUILDER(/*no export*/, ash::BackButton)
 namespace ash {
 
 MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
-    : ui_controller_(ui_controller) {
+    : MahiUiController::Observer(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller_);
-  controller_observation_.Observe(ui_controller_);
 
   SetOrientation(views::LayoutOrientation::kVertical);
   SetMainAxisAlignment(views::LayoutAlignment::kStart);

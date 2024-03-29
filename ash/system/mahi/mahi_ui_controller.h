@@ -7,12 +7,14 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 
 namespace ash {
@@ -20,32 +22,52 @@ namespace ash {
 // Communicates with `chromeos::MahiManager` and notifies observers of updates.
 class ASH_EXPORT MahiUiController {
  public:
+  enum class State {
+    // The state that presents the error triggered by user actions.
+    kError,
+
+    // The state that presents questions and answers.
+    kQuestionAndAnswer,
+
+    // The state that presents the summary and outlines.
+    kSummaryAndOutlines,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
+    explicit Observer(MahiUiController* ui_controller);
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override;
+
     // Called when an answer is loaded with a success.
     virtual void OnAnswerLoaded(const std::u16string& answer) {}
 
     // Called when a request to refresh the panel contents was initiated.
     virtual void OnContentsRefreshInitiated() {}
 
-    // Called when receiving any error status. `status` cannot be `kSuccess`.
-    virtual void OnError(chromeos::MahiResponseStatus status) {}
-
-    // Called when navigating to the summary & outlines section.
-    virtual void OnNavigatedToSummaryOutlinesSection() {}
-
     // Called when outlines are loaded with a success.
     virtual void OnOutlinesLoaded(
         const std::vector<chromeos::MahiOutline>& outlines) {}
 
-    // Called when a question is posted to backend.
-    virtual void OnQuestionPosted(const std::u16string& question) {}
-
     // Called when content refresh availability changes.
     virtual void OnRefreshAvailabilityChanged(bool available) {}
 
+    // Called when the current state of `MahiUiController` updates. `payload`
+    // indicates the additional data when state changes. If `new_state` is
+    // `State::kError`, `payload` is the error that leads to this change;
+    // if `new_state` is `kQuestionAndAnswer`, `payload` is a question string.
+    using PayloadType = std::variant</*posted_question=*/std::u16string,
+                                     /*error=*/chromeos::MahiResponseStatus>;
+    virtual void OnStateChanged(State new_state,
+                                const std::optional<PayloadType>& payload) {}
+
     // Called when a summary is loaded with a success.
     virtual void OnSummaryLoaded(const std::u16string& summary) {}
+
+   private:
+    base::ScopedObservation<MahiUiController, MahiUiController::Observer>
+        observation_{this};
   };
 
   MahiUiController();

@@ -9,7 +9,6 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -43,8 +42,6 @@ class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
 
   // `ui_controller_` will outlive `this`.
   const raw_ptr<MahiUiController> ui_controller_;
-  base::ScopedObservation<MahiUiController, MahiUiController::Observer>
-      controller_observation_{this};
 
   // Owned by the views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;

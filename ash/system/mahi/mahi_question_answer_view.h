@@ -5,11 +5,11 @@
 #ifndef ASH_SYSTEM_MAHI_MAHI_QUESTION_ANSWER_VIEW_H_
 #define ASH_SYSTEM_MAHI_MAHI_QUESTION_ANSWER_VIEW_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
-#include "base/scoped_observation.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -31,12 +31,8 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
   // MahiUiController::Observer:
   void OnAnswerLoaded(const std::u16string& answer) override;
   void OnContentsRefreshInitiated() override;
-  void OnError(chromeos::MahiResponseStatus status) override;
-  void OnNavigatedToSummaryOutlinesSection() override;
-  void OnQuestionPosted(const std::u16string& question) override;
-
-  base::ScopedObservation<MahiUiController, MahiUiController::Observer>
-      controller_observation_{this};
+  void OnStateChanged(MahiUiController::State new_state,
+                      const std::optional<PayloadType>& payload) override;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)
