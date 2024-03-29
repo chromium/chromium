@@ -822,6 +822,10 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().getNewTabButton();
     }
 
+    public @ColorInt int getSelectedOutlineGroupTint(int id, boolean shouldShowOutline) {
+        return getActiveStripLayoutHelper().getSelectedOutlineGroupTint(id, shouldShowOutline);
+    }
+
     public boolean shouldShowTabOutline(StripLayoutTab tab) {
         return getActiveStripLayoutHelper().shouldShowTabOutline(tab);
     }

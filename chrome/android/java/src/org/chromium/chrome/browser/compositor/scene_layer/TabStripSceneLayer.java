@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.scene_layer;
 
-import android.graphics.Color;
-
 import androidx.annotation.ColorInt;
 
 import org.jni_zero.JNINamespace;
@@ -217,6 +215,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getId() == selectedTabId;
             boolean isHovered = st.getId() == hoveredTabId;
+            boolean shouldShowOutline = layoutHelper.shouldShowTabOutline(st);
 
             // TODO(b/326301060): Update tab outline placeholder color with color picker.
             TabStripSceneLayerJni.get()
@@ -233,9 +232,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getCloseButton().getBackgroundTint(),
                             st.getDividerTint(),
                             st.getTint(isSelected, isHovered),
-                            Color.BLACK,
+                            layoutHelper.getSelectedOutlineGroupTint(st.getId(), shouldShowOutline),
                             isSelected,
-                            layoutHelper.shouldShowTabOutline(st),
+                            shouldShowOutline,
                             st.getClosePressed(),
                             layoutHelper.getWidth() * mDpToPx,
                             st.getDrawX() * mDpToPx,

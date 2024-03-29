@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Handler;
 import android.os.Message;
@@ -3619,6 +3620,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return !(curTab.getRootId() == adjTab.getRootId())
                 && (mTabGroupModelFilter.isTabInTabGroup(curTab)
                         || mTabGroupModelFilter.isTabInTabGroup(adjTab));
+    }
+
+    /**
+     * @param id The id of the selected tab.
+     * @return The outline color if the selected tab will show its Tab Group Indicator outline.
+     *     {@code Color.TRANSPARENT} otherwise.
+     */
+    protected @ColorInt int getSelectedOutlineGroupTint(int id, boolean shouldShowOutline) {
+        if (!shouldShowOutline) return Color.TRANSPARENT;
+
+        Tab tab = getTabById(id);
+        if (tab == null) return Color.TRANSPARENT;
+
+        StripLayoutGroupTitle groupTitle = findGroupTitle(tab.getRootId());
+        if (groupTitle == null) return Color.TRANSPARENT;
+
+        return groupTitle.getTint();
     }
 
     /**
