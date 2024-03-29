@@ -58,7 +58,7 @@ suite('FontMenu', () => {
       createToolbar();
     });
 
-    function udpateFonts(supportedFonts: string[]): void {
+    function updateFonts(supportedFonts: string[]): void {
       chrome.readingMode.supportedFonts = supportedFonts;
       toolbar.updateFonts();
       fontMenuOptions =
@@ -72,13 +72,13 @@ suite('FontMenu', () => {
     });
 
     test('shows only supported fonts', () => {
-      udpateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
+      updateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
       assertEquals(fontMenuOptions.length, 4);
 
-      udpateFonts(['font 1']);
+      updateFonts(['font 1']);
       assertEquals(fontMenuOptions.length, 1);
 
-      udpateFonts([
+      updateFonts([
         'font 1',
         'font 2',
         'font 3',
@@ -94,7 +94,7 @@ suite('FontMenu', () => {
     });
 
     test('each font option is styled with the font that it is', () => {
-      udpateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
+      updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
       fontMenuOptions.forEach(option => {
         assertFontsEqual(option.style.fontFamily, option.innerText);
       });
@@ -102,7 +102,7 @@ suite('FontMenu', () => {
 
     suite('on font option clicked', () => {
       setup(() => {
-        udpateFonts(['Serif', 'Poppins', 'STIX Two Text']);
+        updateFonts(['Serif', 'Poppins', 'STIX Two Text']);
         menuButton!.click();
       });
 
@@ -139,7 +139,7 @@ suite('FontMenu', () => {
       createToolbar();
     });
 
-    function udpateFonts(supportedFonts: string[]): void {
+    function updateFonts(supportedFonts: string[]): void {
       chrome.readingMode.supportedFonts = supportedFonts;
       toolbar.updateFonts();
     }
@@ -150,14 +150,14 @@ suite('FontMenu', () => {
     });
 
     test('shows only supported fonts', () => {
-      udpateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
+      updateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
       assertEquals(
           chrome.readingMode.supportedFonts.length, fontSelect!.options.length);
     });
 
     suite('on font option clicked', () => {
       setup(() => {
-        udpateFonts(['Serif', 'Poppins', 'STIX Two Text']);
+        updateFonts(['Serif', 'Poppins', 'STIX Two Text']);
       });
 
       test('propagates font', () => {
