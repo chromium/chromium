@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {IconLoader, MojomData, PageHandlerInterface, PageRemote} from 'chrome://downloads/downloads.js';
-import {DangerType, PageCallbackRouter, SafeBrowsingState, State} from 'chrome://downloads/downloads.js';
+import {DangerType, PageCallbackRouter, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -111,6 +111,7 @@ export class TestIconLoader extends TestBrowserProxy implements IconLoader {
 export function createDownload(config?: Partial<MojomData>): MojomData {
   return Object.assign(
       {
+        accountEmail: '',
         byExtId: '',
         byExtName: '',
         dangerType: DangerType.kNoApplicableDangerType,
@@ -136,6 +137,8 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         sinceString: 'Today',
         started: Date.now() - 10000,
         state: State.kComplete,
+        tailoredWarningType:
+            TailoredWarningType.kNoApplicableTailoredWarningType,
         total: -1,
         url: stringToMojoUrl('http://permission.site'),
         displayUrl: stringToMojoString16('http://permission.site'),

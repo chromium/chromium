@@ -721,9 +721,21 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="On the chrome://downloads page, the description shown for a blocked file that is dangerous.">
         Chrome blocked this download because the file is dangerous
       </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is dangerous because of cookie theft.">
+        Chrome blocked this download because the file can harm your personal and social network accounts
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT_AND_ACCOUNT"
+               desc="On the chrome://downloads page, the description with account info shown for a blocked file that is dangerous because of cookie theft.">
+        Chrome blocked this download because the file can harm your personal and social network accounts, including <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+      </message>
       <message name="IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON"
                desc="On the chrome://downloads page, the description shown for a blocked file that is uncommon.">
         Chrome blocked this download because the file isn't commonly downloaded and it may be dangerous
+      </message>
+      <message name="IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON_SUSPICIOUS_ARCHIVE"
+               desc="On the chrome://downloads page, the description shown for a blocked file that is suspicious archive.">
+        Chrome blocked this download because the archive file includes other files that may hide malware
       </message>
       <message name="IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED"
                desc="On the chrome://downloads page, the description shown for a blocked file that is potentially unwanted.">

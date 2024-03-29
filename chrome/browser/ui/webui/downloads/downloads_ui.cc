@@ -183,11 +183,28 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                                  ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS
                                  : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
   source->AddLocalizedString(
+      "dangerDownloadCookieTheft",
+      improved_download_warnings_ux
+          ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT
+          : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
+  source->AddLocalizedString(
+      "dangerDownloadCookieTheftAndAccountDesc",
+      improved_download_warnings_ux
+          ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT_AND_ACCOUNT
+          : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
+  source->AddLocalizedString(
       "dangerUncommonDesc",
       requests_ap_verdicts
           ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
           : (improved_download_warnings_ux
                  ? IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON
+                 : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD));
+  source->AddLocalizedString(
+      "dangerUncommonSuspiciousArchiveDesc",
+      requests_ap_verdicts
+          ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
+          : (improved_download_warnings_ux
+                 ? IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON_SUSPICIOUS_ARCHIVE
                  : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD));
   source->AddLocalizedString(
       "dangerSettingsDesc", improved_download_warnings_ux

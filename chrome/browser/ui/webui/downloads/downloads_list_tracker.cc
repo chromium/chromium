@@ -29,10 +29,12 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -52,6 +54,7 @@
 using content::BrowserContext;
 using content::DownloadManager;
 using download::DownloadItem;
+using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 
 using DownloadVector = DownloadManager::DownloadVector;
 
@@ -66,11 +69,10 @@ downloads::mojom::DangerType GetDangerType(
       return downloads::mojom::DangerType::kDangerousFile;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return downloads::mojom::DangerType::kDangerousUrl;
-    // Account compromise is represented in the UI the same as dangerous
-    // content.
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
       return downloads::mojom::DangerType::kDangerousContent;
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
+      return downloads::mojom::DangerType::kCookieTheft;
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
       return downloads::mojom::DangerType::kUncommonContent;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
@@ -105,6 +107,23 @@ downloads::mojom::DangerType GetDangerType(
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       return downloads::mojom::DangerType::kNoApplicableDangerType;
+  }
+}
+
+// Returns an enum value to be used as the |tailored_warning_type| value in
+// CreateDownloadData().
+downloads::mojom::TailoredWarningType GetTailoredWarningType(
+    TailoredWarningType tailored_warning_type) {
+  switch (tailored_warning_type) {
+    case TailoredWarningType::kSuspiciousArchive:
+      return downloads::mojom::TailoredWarningType::kSuspiciousArchive;
+    case TailoredWarningType::kCookieTheft:
+      return downloads::mojom::TailoredWarningType::kCookieTheft;
+    case TailoredWarningType::kCookieTheftWithAccountInfo:
+      return downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo;
+    case TailoredWarningType::kNoTailoredWarning:
+      return downloads::mojom::TailoredWarningType::
+          kNoApplicableTailoredWarningType;
   }
 }
 
@@ -324,8 +343,6 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->resume = download_item->CanResume();
   file_value->otr = IsIncognito(*download_item);
 
-  downloads::mojom::DangerType danger_type =
-      GetDangerType(download_item->GetDangerType());
   std::u16string last_reason_text;
   // -2 is invalid, -1 means indeterminate, and 0-100 are in-progress.
   int percent = -2;
@@ -395,7 +412,12 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
   CHECK(state);
 
+  downloads::mojom::DangerType danger_type =
+      GetDangerType(download_item->GetDangerType());
+  downloads::mojom::TailoredWarningType tailored_warning_type =
+      GetTailoredWarningType(download_model.GetTailoredWarningType());
   file_value->danger_type = danger_type;
+  file_value->tailored_warning_type = tailored_warning_type;
   file_value->is_dangerous = download_item->IsDangerous();
   file_value->is_insecure = download_item->IsInsecure();
   file_value->is_reviewable =
@@ -437,6 +459,20 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     DownloadItemWarningData::AddWarningActionEvent(
         download_item, DownloadItemWarningData::WarningSurface::DOWNLOADS_PAGE,
         DownloadItemWarningData::WarningAction::SHOWN);
+  }
+
+  if (tailored_warning_type ==
+      downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo) {
+    if (auto* identity_manager =
+            IdentityManagerFactory::GetForProfile(download_model.profile());
+        identity_manager) {
+      std::string email =
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email;
+      if (!email.empty()) {
+        file_value->account_email = std::move(email);
+      }
+    }
   }
 
   return file_value;

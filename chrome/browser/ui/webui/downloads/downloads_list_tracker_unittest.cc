@@ -31,7 +31,10 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
@@ -42,6 +45,7 @@ using DownloadVector = std::vector<raw_ptr<DownloadItem, VectorExperimental>>;
 using testing::_;
 using testing::Return;
 using testing::ReturnRefOfCopy;
+using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 
 namespace {
 
@@ -462,6 +466,31 @@ TEST_F(DownloadsListTrackerTest, CreateDownloadData_SafeBrowsing) {
     downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
     EXPECT_EQ(data->safe_browsing_state, SafeBrowsingState::kNoSafeBrowsing);
     EXPECT_FALSE(data->has_safe_browsing_verdict);
+  }
+
+  // Tailored warning fields.
+  {
+    MockDownloadItem* item = CreateNextItem();
+    ON_CALL(*item, GetDangerType())
+        .WillByDefault(Return(
+            download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE));
+    TailoredVerdict tailored_verdict;
+    tailored_verdict.set_tailored_verdict_type(TailoredVerdict::COOKIE_THEFT);
+    tailored_verdict.add_adjustments(TailoredVerdict::ACCOUNT_INFO_STRING);
+    safe_browsing::DownloadProtectionService::SetDownloadProtectionData(
+        item, "token",
+        safe_browsing::ClientDownloadResponse::SAFE,  // placeholder
+        tailored_verdict);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    signin::SetPrimaryAccount(identity_manager, "test@example.com",
+                              signin::ConsentLevel::kSignin);
+
+    downloads::mojom::DataPtr data = tracker->CreateDownloadData(item);
+    EXPECT_EQ(
+        data->tailored_warning_type,
+        downloads::mojom::TailoredWarningType::kCookieTheftWithAccountInfo);
+    EXPECT_EQ(data->account_email, "test@example.com");
   }
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)

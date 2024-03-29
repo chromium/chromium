@@ -34,7 +34,7 @@ import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/
 import {BrowserProxy} from './browser_proxy.js';
 import type {MojomData} from './data.js';
 import type {PageHandlerInterface} from './downloads.mojom-webui.js';
-import {DangerType, SafeBrowsingState, State} from './downloads.mojom-webui.js';
+import {DangerType, SafeBrowsingState, State, TailoredWarningType} from './downloads.mojom-webui.js';
 import {IconLoaderImpl} from './icon_loader.js';
 import {getTemplate} from './item.html.js';
 
@@ -451,10 +451,30 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
           case DangerType.kDangerousContent:
           case DangerType.kDangerousHost:
             return loadTimeData.getString('dangerDownloadDesc');
-
+          case DangerType.kCookieTheft:
+            switch (data.tailoredWarningType) {
+              case TailoredWarningType.kCookieTheft:
+                return loadTimeData.getString('dangerDownloadCookieTheft');
+              case TailoredWarningType.kCookieTheftWithAccountInfo:
+                return data.accountEmail ?
+                    loadTimeData.getStringF(
+                        'dangerDownloadCookieTheftAndAccountDesc',
+                        data.accountEmail) :
+                    loadTimeData.getString('dangerDownloadCookieTheft');
+              case TailoredWarningType.kSuspiciousArchive:
+              case TailoredWarningType.kNoApplicableTailoredWarningType:
+                return loadTimeData.getString('dangerDownloadDesc');
+            }
           case DangerType.kUncommonContent:
-            return loadTimeData.getString('dangerUncommonDesc');
-
+            switch (data.tailoredWarningType) {
+              case TailoredWarningType.kSuspiciousArchive:
+                return loadTimeData.getString(
+                    'dangerUncommonSuspiciousArchiveDesc');
+              case TailoredWarningType.kCookieTheft:
+              case TailoredWarningType.kCookieTheftWithAccountInfo:
+              case TailoredWarningType.kNoApplicableTailoredWarningType:
+                return loadTimeData.getString('dangerUncommonDesc');
+            }
           case DangerType.kPotentiallyUnwanted:
             return loadTimeData.getString('dangerSettingsDesc');
 

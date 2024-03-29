@@ -8,7 +8,7 @@ export {CrToastManagerElement} from 'chrome://resources/cr_elements/cr_toast/cr_
 export {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 export {BrowserProxy} from './browser_proxy.js';
 export {MojomData} from './data.js';
-export {DangerType, PageCallbackRouter, PageHandlerInterface, PageRemote, SafeBrowsingState, State} from './downloads.mojom-webui.js';
+export {DangerType, PageCallbackRouter, PageHandlerInterface, PageRemote, SafeBrowsingState, State, TailoredWarningType} from './downloads.mojom-webui.js';
 export {IconLoader, IconLoaderImpl} from './icon_loader.js';
 export {DownloadsItemElement} from './item.js';
 export {DownloadsManagerElement} from './manager.js';

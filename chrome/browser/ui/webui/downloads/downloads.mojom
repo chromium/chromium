@@ -15,6 +15,7 @@ enum DangerType {
   kDangerousFile,
   kDangerousUrl,
   kDangerousContent,
+  kCookieTheft,
   kUncommonContent,
   kDangerousHost,
   kPotentiallyUnwanted,
@@ -28,6 +29,14 @@ enum DangerType {
   kDeepScannedSafe,
   kDeepScannedOpenedDangerous,
   kBlockedScanFailed,
+};
+
+// This corresponds to DownloadUIModel::TailoredWarningType.
+enum TailoredWarningType {
+  kNoApplicableTailoredWarningType,
+  kCookieTheft,
+  kCookieTheftWithAccountInfo,
+  kSuspiciousArchive,
 };
 
 // Represents the state of a download in the UI.
@@ -71,10 +80,13 @@ struct Data {
   string by_ext_id;
   string by_ext_name;
   DangerType danger_type;
+  TailoredWarningType tailored_warning_type;
   string date_string;
   string file_name;
   string file_path;
   string file_url;
+  // Used to display tailored warnings with account information.
+  string account_email;
   string id;
   string last_reason_text;
   string progress_status_text;
