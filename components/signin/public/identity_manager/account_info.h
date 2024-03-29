@@ -63,11 +63,13 @@ struct AccountInfo : public CoreAccountInfo {
   AccountInfo& operator=(const AccountInfo& other);
   AccountInfo& operator=(AccountInfo&& other) noexcept;
 
+  // Mandatory fields for `IsValid()` to return true:
   std::string full_name;
   std::string given_name;
   std::string hosted_domain;
-  std::string locale;
   std::string picture_url;
+
+  // Available once the account image is downloaded:
   std::string last_downloaded_image_url_with_size;
   gfx::Image account_image;
 
@@ -78,13 +80,14 @@ struct AccountInfo : public CoreAccountInfo {
 
   AccountCapabilities capabilities;
   signin::Tribool is_child_account = signin::Tribool::kUnknown;
+  std::string locale;
 
   // Returns true if all fields in the account info are empty.
   bool IsEmpty() const;
 
   // Returns true if all non-optional fields in this account info are filled.
-  // Note: IsValid() does not check if `access_point`, `is_child_account` or
-  // `capabilities` are filled.
+  // Note: IsValid() does not check if `access_point`, `is_child_account`,
+  // `capabilities` or `locale` are filled.
   bool IsValid() const;
 
   // Updates the empty fields of |this| with |other|. Returns whether at least

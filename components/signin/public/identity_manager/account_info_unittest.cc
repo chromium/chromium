@@ -32,8 +32,8 @@ TEST_F(AccountInfoTest, IsEmpty) {
   }
 }
 
-// Tests that IsValid() returns true only when all the fields are non-empty
-// (except is_child_account).
+// Tests that IsValid() returns true only when all mandatory fields are
+// non-empty.
 TEST_F(AccountInfoTest, IsValid) {
   AccountInfo info;
   EXPECT_EQ(signin::Tribool::kUnknown, info.is_child_account);
@@ -45,7 +45,6 @@ TEST_F(AccountInfoTest, IsValid) {
 
   info.full_name = info.given_name = "test_name";
   info.hosted_domain = "test_domain";
-  info.locale = "test_locale";
   info.picture_url = "test_picture_url";
   EXPECT_TRUE(info.IsValid());
 }
@@ -73,6 +72,7 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
   info.account_id = CoreAccountId::FromGaiaId("test_id");
   info.is_child_account = signin::Tribool::kTrue;
   info.is_under_advanced_protection = true;
+  info.locale = "en";
   info.access_point = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
 
   AccountInfo other;
@@ -82,10 +82,12 @@ TEST_F(AccountInfoTest, UpdateWithNoModification) {
   EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
             other.access_point);
   other.is_under_advanced_protection = false;
+  other.locale = "en";
 
   EXPECT_FALSE(info.UpdateWith(other));
   EXPECT_EQ("test_id", info.gaia);
   EXPECT_EQ("test_id", info.email);
+  EXPECT_EQ("en", info.locale);
   EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
             info.access_point);
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
@@ -101,6 +103,7 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   AccountInfo other;
   other.account_id = CoreAccountId::FromGaiaId("test_id");
   other.full_name = other.given_name = "test_name";
+  other.locale = "fr";
   other.is_child_account = signin::Tribool::kTrue;
   other.access_point = signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
   AccountCapabilitiesTestMutator mutator(&other.capabilities);
@@ -112,6 +115,7 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   EXPECT_EQ("test_id", info.email);
   EXPECT_EQ("test_name", info.full_name);
   EXPECT_EQ("test_name", info.given_name);
+  EXPECT_EQ("fr", info.locale);
   EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
             info.access_point);
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
