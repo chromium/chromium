@@ -145,7 +145,7 @@ class Signer:
                     hashlib.sha256(data).hexdigest(),
             }.items():
                 manifest_result = manifest_result.replace(key, value)
-            for key, value in manifest_dict_replacements:
+            for key, value in manifest_dict_replacements.items():
                 manifest_result = manifest_result.replace(key, value)
         return manifest_result
 
