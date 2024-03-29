@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
@@ -72,7 +73,8 @@ class FloatingWorkspaceService : public KeyedService,
                                  public apps::AppRegistryCacheWrapper::Observer,
                                  public ash::SessionObserver,
                                  public NetworkStateHandlerObserver,
-                                 public ash::SystemTrayObserver {
+                                 public ash::SystemTrayObserver,
+                                 public chromeos::PowerManagerClient::Observer {
  public:
   static FloatingWorkspaceService* GetForProfile(Profile* profile);
 
@@ -111,6 +113,7 @@ class FloatingWorkspaceService : public KeyedService,
 
   // ash::SessionObserver overrides:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+  void OnLockStateChanged(bool locked) override;
 
   // NetworkStateHandlerObserver:
   void OnShuttingDown() override;
@@ -120,6 +123,10 @@ class FloatingWorkspaceService : public KeyedService,
   // ash::SystemTrayObserver overrides:
   void OnFocusLeavingSystemTray(bool reverse) override;
   void OnSystemTrayBubbleShown() override;
+
+  // chromeos::PowerManagerClient::Observer overrides.
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   void MaybeCloseNotification();
 
@@ -197,6 +204,14 @@ class FloatingWorkspaceService : public KeyedService,
   virtual void LaunchFloatingWorkspaceTemplate(
       const DeskTemplate* desk_template);
 
+  // Handles the recording of the error for template launch.
+  void HandleTemplateLaunchErrors(DesksClient::DeskActionError error);
+
+  // Callback function that is run after a floating workspace template
+  // is downloaded and launched.
+  void OnTemplateLaunched(std::optional<DesksClient::DeskActionError> error,
+                          const base::Uuid& desk_uuid);
+
   // Return the desk client to be used, in test it will return a mocked one.
   virtual DesksClient* GetDesksClient();
 
@@ -261,6 +276,15 @@ class FloatingWorkspaceService : public KeyedService,
   // connection.
   void OnNetworkStateOrSyncServiceStateChanged();
 
+  // Initial task start. This involves checking the network connectivity upon
+  // log in and sending a notification if no network is connected or start
+  // posting a task for waiting for sync server downloads to complete.
+  void InitiateSigninTask();
+
+  // Returns true if we should exclude the `floating_workspace_template` from
+  // consideration for either sign out or restore.
+  bool ShouldExcludeTemplate(const DeskTemplate* floating_workspace_template);
+
   const raw_ptr<Profile> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
@@ -278,6 +302,13 @@ class FloatingWorkspaceService : public KeyedService,
   // Flag to tell us if we should launch on cache is ready.
   bool should_launch_on_ready_ = false;
 
+  // Flag to tell us if we should restore when we wake up from sleep.
+  bool restore_upon_wake_ = false;
+
+  // Flag to tell us if we should launch the floating workspace template onto a
+  // new desk.
+  bool launch_on_new_desk_ = false;
+
   // Time when the service is initialized.
   base::TimeTicks initialization_timeticks_;
 
@@ -290,6 +321,17 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Time when the last template was uploaded.
   base::TimeTicks last_uploaded_timeticks_;
+
+  // The in memory cache of the latest floating workspace template. This is
+  // populated when we first capture a floating workspace template and every
+  // time we receive a new floating workspace template from sync. This is used
+  // to detect stale entries when we rerun floating workspace flow from sleep
+  // mode.
+  std::optional<base::Time> timestamp_before_suspend_;
+
+  // The in memory cache of the latest workspace desk datatype download status.
+  std::optional<syncer::SyncService::ModelTypeDownloadStatus>
+      download_status_cache_;
 
   // Timer used for periodic capturing and uploading.
   base::RepeatingTimer timer_;
