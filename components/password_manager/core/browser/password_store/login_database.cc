@@ -986,8 +986,8 @@ LoginDatabase::EncryptionResult DecryptPasswordFromStatement(
   LoginDatabase::EncryptionResult encryption_result =
       LoginDatabase::DecryptedString(encrypted_password, plaintext_password);
   if (encryption_result != LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
-    LOG(ERROR) << "Password decryption failed, encryption_result is "
-               << encryption_result;
+    DLOG(WARNING) << "Password decryption failed, encryption_result is "
+                  << encryption_result;
   }
   return encryption_result;
 }
