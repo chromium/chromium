@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -56,14 +57,6 @@
 namespace web_app {
 
 namespace {
-OsHooksErrors GetFinalErrorBitsetFromCollection(
-    std::vector<OsHooksErrors> os_hooks_errors) {
-  OsHooksErrors final_errors;
-  for (const OsHooksErrors& error : os_hooks_errors) {
-    final_errors = final_errors | error;
-  }
-  return final_errors;
-}
 
 base::AtomicRefCount& GetSuppressCount() {
   static base::AtomicRefCount g_ref_count;
@@ -85,41 +78,6 @@ OsIntegrationManager::ScopedSuppressForTesting::~ScopedSuppressForTesting() {
   GetSuppressCount().Decrement();
 #endif
 }
-
-// This barrier is designed to accumulate errors from calls to OS hook
-// operations, and call the completion callback when all OS hook operations
-// have completed. The |callback| is called when all copies of this object and
-// all callbacks created using this object are destroyed.
-class OsIntegrationManager::OsHooksBarrier
-    : public base::RefCounted<OsHooksBarrier> {
- public:
-  explicit OsHooksBarrier(OsHooksErrors errors_default,
-                          InstallOsHooksCallback callback)
-      : errors_(errors_default), callback_(std::move(callback)) {}
-
-  void OnError(OsHookType::Type type) { AddResult(type, Result::kError); }
-
-  ResultCallback CreateBarrierCallbackForType(OsHookType::Type type) {
-    return base::BindOnce(&OsHooksBarrier::AddResult, this, type);
-  }
-
- private:
-  friend class base::RefCounted<OsHooksBarrier>;
-
-  ~OsHooksBarrier() {
-    CHECK(callback_);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), std::move(errors_)));
-  }
-
-  void AddResult(OsHookType::Type type, Result result) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    errors_[type] = result == Result::kError ? true : false;
-  }
-
-  OsHooksErrors errors_;
-  InstallOsHooksCallback callback_;
-};
 
 InstallOsHooksOptions::InstallOsHooksOptions() = default;
 InstallOsHooksOptions::InstallOsHooksOptions(
@@ -146,22 +104,12 @@ OsIntegrationManager::OsIntegrationManager(
 OsIntegrationManager::~OsIntegrationManager() = default;
 
 // static
-base::RepeatingCallback<void(OsHooksErrors)>
-OsIntegrationManager::GetBarrierForSynchronize(
-    AnyOsHooksErrorCallback errors_callback) {
+base::RepeatingClosure OsIntegrationManager::GetBarrierForSynchronize(
+    base::OnceClosure final_callback) {
   // There are always 2 barriers, one for the normal OS Hook call and one for
   // Synchronize().
-  int num_barriers = 2;
-
-  auto barrier_callback_for_synchronize = base::BarrierCallback<OsHooksErrors>(
-      num_barriers,
-      base::BindOnce(
-          [](AnyOsHooksErrorCallback callback,
-             std::vector<OsHooksErrors> combined_errors) {
-            std::move(callback).Run(
-                GetFinalErrorBitsetFromCollection(combined_errors));
-          },
-          std::move(errors_callback)));
+  auto barrier_callback_for_synchronize =
+      base::BarrierClosure(2, std::move(final_callback));
   return barrier_callback_for_synchronize;
 }
 
@@ -261,16 +209,15 @@ void OsIntegrationManager::Synchronize(
 
 void OsIntegrationManager::InstallOsHooks(
     const webapps::AppId& app_id,
-    InstallOsHooksCallback callback,
+    base::OnceClosure callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), OsHooksErrors()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
-void OsIntegrationManager::UninstallAllOsHooks(
-    const webapps::AppId& app_id,
-    UninstallOsHooksCallback callback) {
+void OsIntegrationManager::UninstallAllOsHooks(const webapps::AppId& app_id,
+                                               base::OnceClosure callback) {
   OsHooksOptions os_hooks;
   os_hooks.set();
   UninstallOsHooks(app_id, os_hooks, std::move(callback));
@@ -278,9 +225,9 @@ void OsIntegrationManager::UninstallAllOsHooks(
 
 void OsIntegrationManager::UninstallOsHooks(const webapps::AppId& app_id,
                                             const OsHooksOptions& os_hooks,
-                                            UninstallOsHooksCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), OsHooksErrors()));
+                                            base::OnceClosure callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void OsIntegrationManager::UpdateOsHooks(
@@ -288,9 +235,9 @@ void OsIntegrationManager::UpdateOsHooks(
     std::string_view old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
-    UpdateOsHooksCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), OsHooksErrors()));
+    base::OnceClosure callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void OsIntegrationManager::GetAppExistingShortCutLocation(
@@ -783,10 +730,12 @@ void OsIntegrationManager::WriteStateToDB(
     const webapps::AppId& app_id,
     std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
     base::OnceClosure callback) {
-  // Exit early if the app is scheduled to be uninstalled or is already
-  // uninstalled.
+  // Exit early if the app is already uninstalled. We still need to write the
+  // desired_states to the web_app DB during the uninstallation process since
+  // that helps make decisions on whether the uninstallation went successfully
+  // or not inside the RemoveWebAppJob.
   const WebApp* existing_app = provider_->registrar_unsafe().GetAppById(app_id);
-  if (!existing_app || existing_app->is_uninstalling()) {
+  if (!existing_app) {
     std::move(callback).Run();
     return;
   }
@@ -816,74 +765,6 @@ void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
         std::move(final_callback));
   }
   sub_managers_[index]->ForceUnregister(app_id, std::move(next_callback));
-}
-
-void OsIntegrationManager::OnShortcutsCreated(
-    const webapps::AppId& app_id,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
-    InstallOsHooksOptions options,
-    scoped_refptr<OsHooksBarrier> barrier,
-    bool shortcuts_created) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(barrier);
-
-  if (provider_ && !provider_->registrar_unsafe().GetAppById(app_id)) {
-    return;
-  }
-
-  bool shortcut_creation_failure =
-      !shortcuts_created && options.os_hooks[OsHookType::kShortcuts];
-  if (shortcut_creation_failure)
-    barrier->OnError(OsHookType::kShortcuts);
-
-#if !BUILDFLAG(IS_MAC)
-  // This step happens before shortcut creation on Mac.
-  if (options.os_hooks[OsHookType::kFileHandlers]) {
-    RegisterFileHandlers(app_id, barrier->CreateBarrierCallbackForType(
-                                     OsHookType::kFileHandlers));
-  }
-#endif
-
-  if (options.os_hooks[OsHookType::kProtocolHandlers]) {
-    RegisterProtocolHandlers(app_id, barrier->CreateBarrierCallbackForType(
-                                         OsHookType::kProtocolHandlers));
-  }
-
-  if (options.os_hooks[OsHookType::kUrlHandlers]) {
-    RegisterUrlHandlers(app_id, barrier->CreateBarrierCallbackForType(
-                                    OsHookType::kUrlHandlers));
-  }
-
-  if (options.os_hooks[OsHookType::kShortcuts] &&
-      options.add_to_quick_launch_bar) {
-    AddAppToQuickLaunchBar(app_id);
-  }
-  if (shortcuts_created && options.os_hooks[OsHookType::kShortcutsMenu]) {
-    if (web_app_info) {
-      RegisterShortcutsMenu(
-          app_id, web_app_info->shortcuts_menu_item_infos,
-          web_app_info->shortcuts_menu_icon_bitmaps,
-          barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
-    } else {
-      ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-          app_id,
-          barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
-    }
-  }
-
-  if (options.os_hooks[OsHookType::kRunOnOsLogin] &&
-      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    // TODO(crbug.com/1091964): Implement Run on OS Login mode selection.
-    // Currently it is set to be the default: RunOnOsLoginMode::kWindowed
-    RegisterRunOnOsLogin(app_id, barrier->CreateBarrierCallbackForType(
-                                     OsHookType::kRunOnOsLogin));
-  }
-
-  if (options.os_hooks[OsHookType::kUninstallationViaOsSettings]) {
-    RegisterWebAppOsUninstallation(
-        app_id,
-        provider_ ? provider_->registrar_unsafe().GetAppShortName(app_id) : "");
-  }
 }
 
 void OsIntegrationManager::OnShortcutsDeleted(const webapps::AppId& app_id,

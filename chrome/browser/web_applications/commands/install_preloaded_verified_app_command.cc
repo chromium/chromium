@@ -229,8 +229,7 @@ void InstallPreloadedVerifiedAppCommand::OnAppLockAcquired(
 
 void InstallPreloadedVerifiedAppCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
+    webapps::InstallResultCode code) {
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
                                                    : CommandResult::kFailure,
                           app_id, code);

@@ -86,7 +86,7 @@ using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
 //
 // This enum should be zero based. It is not strongly typed enum class to
 // support implicit conversion to int. Values are also used as index in
-// OsHooksErrors and OsHooksOptions.
+// OsHooksOptions.
 namespace OsHookType {
 enum Type {
   kShortcuts = 0,

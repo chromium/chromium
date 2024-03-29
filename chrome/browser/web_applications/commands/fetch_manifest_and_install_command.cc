@@ -149,6 +149,17 @@ void LogInstallInfo(base::Value::Dict& dict,
   dict.Set("start_url", install_info.start_url.spec());
   dict.Set("name", install_info.title);
 }
+
+bool IsShortcutCreated(WebAppRegistrar& registrar,
+                       const webapps::AppId& app_id) {
+  auto os_state = registrar.GetAppCurrentOsIntegrationState(app_id);
+  if (!os_state.has_value()) {
+    return false;
+  }
+
+  return os_state->has_shortcut();
+}
+
 }  // namespace
 
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
@@ -667,8 +678,7 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
 
 void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
     const webapps::AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
+    webapps::InstallResultCode code) {
   if (IsWebContentsDestroyed()) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);
     return;
@@ -687,10 +697,10 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
           ->GetPrefs(),
       app_id, install_surface_);
 
-  bool error = os_hooks_errors[OsHookType::kShortcuts];
+  bool is_shortcut_created = IsShortcutCreated(app_lock_->registrar(), app_id);
   DCHECK(app_lock_);
-  const bool can_reparent_tab =
-      app_lock_->install_finalizer().CanReparentTab(app_id, !error);
+  const bool can_reparent_tab = app_lock_->install_finalizer().CanReparentTab(
+      app_id, is_shortcut_created);
 
   bool should_reparent_tab = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -704,7 +714,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 
   if (should_reparent_tab && can_reparent_tab &&
       (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser)) {
-    app_lock_->install_finalizer().ReparentTab(app_id, !error,
+    app_lock_->install_finalizer().ReparentTab(app_id, is_shortcut_created,
                                                web_contents_.get());
   }
 

@@ -39,7 +39,7 @@ class RemoveWebAppJob : public UninstallJob {
   webapps::WebappUninstallSource uninstall_source() const override;
 
  private:
-  void OnOsHooksUninstalled(OsHooksErrors errors);
+  void SynchronizeAndUninstallOsHooks();
   void OnIconDataDeleted(bool success);
   void OnTranslationDataDeleted(bool success);
   void OnWebAppProfileDeleted(Profile* profile);

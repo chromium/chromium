@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -41,8 +40,7 @@ class InstallFromInfoJob {
  public:
   using ResultCallback =
       base::OnceCallback<void(webapps::AppId app_id,
-                              webapps::InstallResultCode code,
-                              OsHooksErrors os_hook_errors)>;
+                              webapps::InstallResultCode code)>;
 
   // The `install_params` controls whether and how OS hooks get installed.
   InstallFromInfoJob(Profile* profile,
@@ -59,8 +57,7 @@ class InstallFromInfoJob {
 
  private:
   void OnInstallCompleted(const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;

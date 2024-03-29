@@ -83,7 +83,7 @@ void InstallAppLocallyCommand::StartWithLock(
 #endif
 
   auto os_hooks_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&InstallAppLocallyCommand::OnOsHooksInstalled,
+      base::BindOnce(&InstallAppLocallyCommand::OnOsIntegrationSynchronized,
                      weak_factory_.GetWeakPtr()));
 
   app_lock_->os_integration_manager().InstallOsHooks(
@@ -93,13 +93,11 @@ void InstallAppLocallyCommand::StartWithLock(
   synchronize_options.add_shortcut_to_desktop = options.add_to_desktop;
   synchronize_options.add_to_quick_launch_bar = options.add_to_quick_launch_bar;
   synchronize_options.reason = options.reason;
-  app_lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(os_hooks_barrier, OsHooksErrors()),
-      synchronize_options);
+  app_lock_->os_integration_manager().Synchronize(app_id_, os_hooks_barrier,
+                                                  synchronize_options);
 }
 
-void InstallAppLocallyCommand::OnOsHooksInstalled(
-    const OsHooksErrors os_hooks_errors) {
+void InstallAppLocallyCommand::OnOsIntegrationSynchronized() {
   const base::Time& install_time = base::Time::Now();
   {
     // Updating install time on app.

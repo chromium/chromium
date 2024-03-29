@@ -417,13 +417,12 @@ TEST_F(OsIntegrationSynchronizeCommandTest,
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(states.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = states.value();
-  ASSERT_TRUE(os_integration_state.has_uninstall_registration());
 #if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(os_integration_state.has_uninstall_registration());
   EXPECT_TRUE(
       os_integration_state.uninstall_registration().registered_with_os());
 #else
-  EXPECT_FALSE(
-      os_integration_state.uninstall_registration().registered_with_os());
+  ASSERT_FALSE(os_integration_state.has_uninstall_registration());
 #endif
 }
 

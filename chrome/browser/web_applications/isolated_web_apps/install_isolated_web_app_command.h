@@ -26,7 +26,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -176,8 +175,7 @@ class InstallIsolatedWebAppCommand
 
   void FinalizeInstall(WebAppInstallInfo info);
   void OnFinalizeInstall(const webapps::AppId& unused_app_id,
-                         webapps::InstallResultCode install_result_code,
-                         OsHooksErrors unused_os_hooks_errors);
+                         webapps::InstallResultCode install_result_code);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

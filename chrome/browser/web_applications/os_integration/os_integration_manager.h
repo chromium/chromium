@@ -39,10 +39,6 @@ namespace web_app {
 class FakeOsIntegrationManager;
 class WebAppProvider;
 
-// OsHooksErrors contains the result of all Os hook deployments.
-// If a bit is set to `true`, then an error did occur.
-using OsHooksErrors = std::bitset<OsHookType::kMaxValue + 1>;
-
 // OsHooksOptions contains the (install/uninstall) options of all Os hook
 // deployments.
 using OsHooksOptions = std::bitset<OsHookType::kMaxValue + 1>;
@@ -59,19 +55,6 @@ struct InstallOsHooksOptions {
   bool add_to_quick_launch_bar = false;
   ShortcutCreationReason reason = SHORTCUT_CREATION_BY_USER;
 };
-
-// Retire these 3 once the sub-manager project is done.
-// Callback made after InstallOsHooks is finished.
-using InstallOsHooksCallback =
-    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
-
-// Callback made after UninstallOsHooks is finished.
-using UninstallOsHooksCallback =
-    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
-
-// Callback made after UpdateOsHooks is finished.
-using UpdateOsHooksCallback =
-    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
 using BarrierCallback =
     base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>;
@@ -98,10 +81,8 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~OsIntegrationManager() override;
 
-  using AnyOsHooksErrorCallback =
-      base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
-  static base::RepeatingCallback<void(OsHooksErrors)> GetBarrierForSynchronize(
-      AnyOsHooksErrorCallback errors_callback);
+  static base::RepeatingClosure GetBarrierForSynchronize(
+      base::OnceClosure errors_callback);
 
   // Sets internal WebAppProvider reference and threads it through to all sub
   // managers.
@@ -126,7 +107,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   // otherwise it will use (SkBitmaps) from |web_app_info|.
   // virtual for testing
   virtual void InstallOsHooks(const webapps::AppId& app_id,
-                              InstallOsHooksCallback callback,
+                              base::OnceClosure callback,
                               std::unique_ptr<WebAppInstallInfo> web_app_info,
                               InstallOsHooksOptions options);
 
@@ -137,13 +118,13 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   // callback. virtual for testing
   virtual void UninstallOsHooks(const webapps::AppId& app_id,
                                 const OsHooksOptions& os_hooks,
-                                UninstallOsHooksCallback callback);
+                                base::OnceClosure callback);
 
   // Uninstall all OS hooks for the web app.
   // Used when uninstalling a web app.
   // virtual for testing
   virtual void UninstallAllOsHooks(const webapps::AppId& app_id,
-                                   UninstallOsHooksCallback callback);
+                                   base::OnceClosure callback);
 
   // Update all needed OS hooks for the web app.
   // virtual for testing
@@ -152,7 +133,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       std::string_view old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebAppInstallInfo& web_app_info,
-      UpdateOsHooksCallback callback);
+      base::OnceClosure callback);
 
   // Proxy calls for WebAppShortcutManager.
   // virtual for testing
@@ -298,8 +279,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id);
 
  private:
-  class OsHooksBarrier;
-
   // Synchronize:
   void StartSubManagerExecutionIfRequired(
       const webapps::AppId& app_id,
@@ -338,12 +317,6 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id,
       size_t index,
       base::OnceClosure final_callback);
-
-  void OnShortcutsCreated(const webapps::AppId& app_id,
-                          std::unique_ptr<WebAppInstallInfo> web_app_info,
-                          InstallOsHooksOptions options,
-                          scoped_refptr<OsHooksBarrier> barrier,
-                          bool shortcuts_created);
 
   void OnShortcutsDeleted(const webapps::AppId& app_id,
                           ResultCallback callback,

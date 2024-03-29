@@ -275,10 +275,10 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
                      weak_ptr_factory_.GetWeakPtr(), mode));
 }
 
-void InstallFromSyncCommand::OnInstallFinalized(FinalizeMode mode,
-                                                const webapps::AppId& app_id,
-                                                webapps::InstallResultCode code,
-                                                OsHooksErrors os_hooks_errors) {
+void InstallFromSyncCommand::OnInstallFinalized(
+    FinalizeMode mode,
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode code) {
   if (mode == FinalizeMode::kNormalWebAppInfo && !IsSuccess(code)) {
     InstallFallback(code);
     return;

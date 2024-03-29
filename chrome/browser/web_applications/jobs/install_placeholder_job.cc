@@ -180,9 +180,9 @@ void InstallPlaceholderJob::FinalizeInstall(
                      weak_factory_.GetWeakPtr()));
 }
 
-void InstallPlaceholderJob::OnInstallFinalized(const webapps::AppId& app_id,
-                                               webapps::InstallResultCode code,
-                                               OsHooksErrors os_hooks_errors) {
+void InstallPlaceholderJob::OnInstallFinalized(
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode code) {
   debug_value_->Set("result_code", base::ToString(code));
 
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());

@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -31,6 +32,21 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
+
+namespace {
+
+bool IsOsIntegrationRemovedForApp(
+    std::optional<proto::WebAppOsIntegrationState> state) {
+  if (!state.has_value()) {
+    return true;
+  }
+
+  return !state->has_file_handling() && !state->has_protocols_handled() &&
+         !state->has_run_on_os_login() && !state->has_shortcut() &&
+         !state->has_shortcut_menus() && !state->has_uninstall_registration();
+}
+
+}  // namespace
 
 RemoveWebAppJob::RemoveWebAppJob(
     webapps::WebappUninstallSource uninstall_source,
@@ -114,15 +130,14 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   }
 
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&RemoveWebAppJob::OnOsHooksUninstalled,
+      base::BindOnce(&RemoveWebAppJob::SynchronizeAndUninstallOsHooks,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // TODO(crbug.com/1401125): Remove UninstallAllOsHooks() once OS integration
   // sub managers have been implemented.
   lock_->os_integration_manager().UninstallAllOsHooks(app_id_,
                                                       synchronize_barrier);
-  lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+  lock_->os_integration_manager().Synchronize(app_id_, synchronize_barrier);
 
   // While sometimes `Synchronize` needs to read icon data, for the uninstall
   // case it never needs to be read. Thus, it is safe to schedule this now and
@@ -141,12 +156,15 @@ webapps::WebappUninstallSource RemoveWebAppJob::uninstall_source() const {
   return uninstall_source_;
 }
 
-void RemoveWebAppJob::OnOsHooksUninstalled(OsHooksErrors errors) {
+void RemoveWebAppJob::SynchronizeAndUninstallOsHooks() {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!hooks_uninstalled_);
   hooks_uninstalled_ = true;
-  debug_value_->Set("hooks_uninstalled_success", errors.any());
-  errors_ = errors_ || errors.any();
+  bool os_integration_removal_success = IsOsIntegrationRemovedForApp(
+      lock_->registrar().GetAppCurrentOsIntegrationState(app_id_));
+  debug_value_->Set("os_integration_removal_success",
+                    os_integration_removal_success);
+  errors_ = errors_ || !os_integration_removal_success;
   MaybeFinishPrimaryRemoval();
 }
 

@@ -222,8 +222,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
         web_app::mojom::UserDisplayMode::kStandalone;
     updated_info->icon_bitmaps.any = std::move(updated_icons);
 
-    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
-                           OsHooksErrors>
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         update_future;
     provider().install_finalizer().FinalizeUpdate(*updated_info,
                                                   update_future.GetCallback());
@@ -233,7 +232,6 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     }
     EXPECT_EQ(update_future.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessAlreadyInstalled);
-    EXPECT_TRUE(update_future.Get<OsHooksErrors>().none());
     return update_future.Get<webapps::AppId>();
   }
 

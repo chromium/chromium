@@ -231,9 +231,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // WebAppInstallManager and replace this runtime error in
   // WebAppInstallFinalizer with DCHECK(started_).
   if (!started_) {
-    std::move(callback).Run(webapps::AppId(),
-                            webapps::InstallResultCode::kWebAppProviderNotReady,
-                            OsHooksErrors());
+    std::move(callback).Run(
+        webapps::AppId(), webapps::InstallResultCode::kWebAppProviderNotReady);
     return;
   }
 
@@ -433,8 +432,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       app_id != existing_web_app->app_id()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), webapps::AppId(),
-                                  webapps::InstallResultCode::kWebAppDisabled,
-                                  OsHooksErrors()));
+                                  webapps::InstallResultCode::kWebAppDisabled));
     return;
   }
 
@@ -587,8 +585,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
     std::move(callback).Run(webapps::AppId(),
-                            webapps::InstallResultCode::kWriteDataFailed,
-                            OsHooksErrors());
+                            webapps::InstallResultCode::kWriteDataFailed);
     return;
   }
 
@@ -600,8 +597,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   if (!web_app) {
     std::move(callback).Run(
         webapps::AppId(),
-        webapps::InstallResultCode::kAppNotInRegistrarAfterCommit,
-        OsHooksErrors());
+        webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
     return;
   }
 
@@ -619,8 +615,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 
   if (!should_install_os_hooks) {
     std::move(callback).Run(app_id,
-                            webapps::InstallResultCode::kSuccessNewInstall,
-                            OsHooksErrors());
+                            webapps::InstallResultCode::kSuccessNewInstall);
     return;
   }
 
@@ -691,21 +686,18 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   synchronize_options.add_to_quick_launch_bar =
       hooks_options.add_to_quick_launch_bar;
   synchronize_options.reason = hooks_options.reason;
-  provider_->os_integration_manager().Synchronize(
-      app_id, base::BindOnce(os_hooks_barrier, OsHooksErrors()),
-      synchronize_options);
+  provider_->os_integration_manager().Synchronize(app_id, os_hooks_barrier,
+                                                  synchronize_options);
 }
 
 void WebAppInstallFinalizer::OnInstallHooksFinished(
     InstallFinalizedCallback callback,
-    webapps::AppId app_id,
-    OsHooksErrors os_hooks_errors) {
+    webapps::AppId app_id) {
   auto joined = std::move(callback).Then(
       base::BindOnce(&WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
                      weak_ptr_factory_.GetWeakPtr(), app_id));
 
-  std::move(joined).Run(app_id, webapps::InstallResultCode::kSuccessNewInstall,
-                        os_hooks_errors);
+  std::move(joined).Run(app_id, webapps::InstallResultCode::kSuccessNewInstall);
 }
 
 void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(
@@ -734,16 +726,14 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
     std::move(callback).Run(webapps::AppId(),
-                            webapps::InstallResultCode::kWriteDataFailed,
-                            OsHooksErrors());
+                            webapps::InstallResultCode::kWriteDataFailed);
     return;
   }
 
   if (!ShouldUpdateOsHooks(app_id)) {
     provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
     std::move(callback).Run(
-        app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled,
-        OsHooksErrors());
+        app_id, webapps::InstallResultCode::kSuccessAlreadyInstalled);
     return;
   }
 
@@ -757,21 +747,15 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
   provider_->os_integration_manager().UpdateOsHooks(
       app_id, old_name, file_handlers_need_os_update, web_app_info,
       os_hooks_barrier);
-  provider_->os_integration_manager().Synchronize(
-      app_id, base::BindOnce(os_hooks_barrier, OsHooksErrors()));
+  provider_->os_integration_manager().Synchronize(app_id, os_hooks_barrier);
 }
 
 void WebAppInstallFinalizer::OnUpdateHooksFinished(
     InstallFinalizedCallback callback,
-    webapps::AppId app_id,
-    OsHooksErrors os_hooks_errors) {
+    webapps::AppId app_id) {
   provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
-  std::move(callback).Run(
-      app_id,
-      os_hooks_errors.any()
-          ? webapps::InstallResultCode::kUpdateTaskFailed
-          : webapps::InstallResultCode::kSuccessAlreadyInstalled,
-      os_hooks_errors);
+  std::move(callback).Run(app_id,
+                          webapps::InstallResultCode::kSuccessAlreadyInstalled);
 }
 
 void WebAppInstallFinalizer::WriteExternalConfigMapInfo(

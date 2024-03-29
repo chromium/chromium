@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
@@ -94,8 +93,7 @@ class InstallFromSyncCommand
 
   void OnInstallFinalized(FinalizeMode mode,
                           const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
 
   void InstallFallback(webapps::InstallResultCode error_code);
 

@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -72,8 +71,7 @@ class InstallFromInfoAndReplaceCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
   void OnInstallFromInfoJobCompleted(webapps::AppId app_id,
-                                     webapps::InstallResultCode code,
-                                     OsHooksErrors os_hook_errors);
+                                     webapps::InstallResultCode code);
   void OnUninstallAndReplaced(webapps::InstallResultCode code,
                               bool did_uninstall_and_replace);
 

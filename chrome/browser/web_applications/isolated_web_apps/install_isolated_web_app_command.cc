@@ -28,7 +28,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -256,8 +255,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
 
 void InstallIsolatedWebAppCommand::OnFinalizeInstall(
     const webapps::AppId& unused_app_id,
-    webapps::InstallResultCode install_result_code,
-    OsHooksErrors unused_os_hooks_errors) {
+    webapps::InstallResultCode install_result_code) {
   if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {
     ReportSuccess();
   } else {

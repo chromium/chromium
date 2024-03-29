@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -79,8 +78,7 @@ void ManifestUpdateFinalizeCommand::StartWithLock(
 
 void ManifestUpdateFinalizeCommand::OnInstallationComplete(
     const webapps::AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
+    webapps::InstallResultCode code) {
   if (!IsSuccess(code)) {
     CompleteCommand(code, ManifestUpdateResult::kAppUpdateFailed);
     return;

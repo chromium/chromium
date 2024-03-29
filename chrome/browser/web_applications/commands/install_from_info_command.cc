@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/jobs/install_from_info_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -79,8 +78,7 @@ void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
     webapps::AppId app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hook_errors) {
+    webapps::InstallResultCode code) {
   bool was_install_success = webapps::IsSuccess(code);
   if (!was_install_success) {
     CompleteAndSelfDestruct(CommandResult::kFailure, app_id_, code);

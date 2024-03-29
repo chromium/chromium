@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -82,8 +81,7 @@ class InstallPreloadedVerifiedAppCommand
   void OnAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> app_lock);
   void OnInstallFinalized(const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
 
   void Abort(CommandResult result, webapps::InstallResultCode code);
 

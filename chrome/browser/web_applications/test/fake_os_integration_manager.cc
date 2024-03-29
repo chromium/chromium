@@ -56,11 +56,9 @@ void FakeOsIntegrationManager::SetNextCreateShortcutsResult(
 
 void FakeOsIntegrationManager::InstallOsHooks(
     const webapps::AppId& app_id,
-    InstallOsHooksCallback callback,
+    base::OnceClosure callback,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
-  OsHooksErrors os_hooks_errors;
-
   last_options_ = options;
 
   if (options.os_hooks[OsHookType::kFileHandlers]) {
@@ -70,15 +68,11 @@ void FakeOsIntegrationManager::InstallOsHooks(
   did_add_to_desktop_ = options.add_to_desktop;
 
   if (options.os_hooks[OsHookType::kShortcuts] && can_create_shortcuts_) {
-    bool success = true;
     ++num_create_shortcuts_calls_;
     auto it = next_create_shortcut_results_.find(app_id);
     if (it != next_create_shortcut_results_.end()) {
-      success = it->second;
       next_create_shortcut_results_.erase(app_id);
     }
-    if (!success)
-      os_hooks_errors[OsHookType::kShortcutsMenu] = true;
   }
 
   if (options.os_hooks[OsHookType::kRunOnOsLogin]) {
@@ -92,25 +86,22 @@ void FakeOsIntegrationManager::InstallOsHooks(
     ++num_register_url_handlers_calls_;
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
-void FakeOsIntegrationManager::UninstallOsHooks(
-    const webapps::AppId& app_id,
-    const OsHooksOptions& os_hooks,
-    UninstallOsHooksCallback callback) {
+void FakeOsIntegrationManager::UninstallOsHooks(const webapps::AppId& app_id,
+                                                const OsHooksOptions& os_hooks,
+                                                base::OnceClosure callback) {
   if (os_hooks[OsHookType::kRunOnOsLogin]) {
     ++num_unregister_run_on_os_login_calls_;
   }
-  OsHooksErrors os_hooks_errors;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
-void FakeOsIntegrationManager::UninstallAllOsHooks(
-    const webapps::AppId& app_id,
-    UninstallOsHooksCallback callback) {
+void FakeOsIntegrationManager::UninstallAllOsHooks(const webapps::AppId& app_id,
+                                                   base::OnceClosure callback) {
   OsHooksOptions os_hooks;
   os_hooks.set();
   UninstallOsHooks(app_id, os_hooks, std::move(callback));
@@ -121,13 +112,12 @@ void FakeOsIntegrationManager::UpdateOsHooks(
     std::string_view old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
-    UninstallOsHooksCallback callback) {
+    base::OnceClosure callback) {
   if (file_handlers_need_os_update != FileHandlerUpdateAction::kNoUpdate)
     ++num_update_file_handlers_calls_;
 
-  OsHooksErrors os_hooks_errors;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void FakeOsIntegrationManager::SetFileHandlerManager(

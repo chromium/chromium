@@ -250,14 +250,11 @@ void WebAppUninstallAndReplaceJob::InstallOsHooksForReplacementApp(
   synchronize_options.add_shortcut_to_desktop = options.add_to_desktop;
   synchronize_options.add_to_quick_launch_bar = options.add_to_quick_launch_bar;
   synchronize_options.reason = options.reason;
-  to_app_lock_->os_integration_manager().Synchronize(
-      to_app_, base::BindOnce(os_hooks_barrier, OsHooksErrors()));
+  to_app_lock_->os_integration_manager().Synchronize(to_app_, os_hooks_barrier);
 }
 
 void WebAppUninstallAndReplaceJob::OnInstallOsHooksCompleted(
-    base::OnceClosure on_complete,
-    OsHooksErrors errors) {
-  debug_value_->Set("complete_errors", errors.any());
+    base::OnceClosure on_complete) {
   std::move(on_complete).Run();
 }
 

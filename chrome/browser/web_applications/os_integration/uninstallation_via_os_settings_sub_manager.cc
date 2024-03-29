@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -51,19 +50,18 @@ void UninstallationViaOsSettingsSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_uninstall_registration());
 
-  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
-  if (!web_app) {
+  bool should_register =
+      IsOsUninstallationSupported() &&
+      provider_->registrar_unsafe().IsLocallyInstalled(app_id) &&
+      provider_->registrar_unsafe().CanUserUninstallWebApp(app_id);
+
+  if (!should_register) {
     std::move(configure_done).Run();
     return;
   }
 
   proto::OsUninstallRegistration* os_uninstall_registration =
       desired_state.mutable_uninstall_registration();
-
-  bool should_register =
-      IsOsUninstallationSupported() &&
-      provider_->registrar_unsafe().IsLocallyInstalled(app_id) &&
-      web_app->CanUserUninstallWebApp();
   os_uninstall_registration->set_registered_with_os(should_register);
   os_uninstall_registration->set_display_name(
       provider_->registrar_unsafe().GetAppShortName(app_id));

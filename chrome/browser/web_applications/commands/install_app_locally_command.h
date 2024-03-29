@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
@@ -30,12 +29,10 @@ class InstallAppLocallyCommand : public WebAppCommand<AppLock> {
  private:
   // Records locally installed app success metric to UMA after OS Hooks are
   // installed.
-  void OnOsHooksInstalled(const OsHooksErrors os_hooks_errors);
+  void OnOsIntegrationSynchronized();
 
   std::unique_ptr<AppLock> app_lock_;
-
   webapps::AppId app_id_;
-
   base::WeakPtrFactory<InstallAppLocallyCommand> weak_factory_{this};
 };
 

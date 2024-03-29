@@ -106,9 +106,6 @@ void RunOnOsLoginCommand::Abort(
     case RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled:
       stop_reason_ = "App is not locally installed";
       break;
-    case RunOnOsLoginCommandCompletionState::kOSHooksNotProperlySet:
-      stop_reason_ = "OS Hooks were not properly set";
-      break;
     default:
       NOTREACHED_NORETURN();
   }
@@ -134,7 +131,7 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   if (login_mode_.value() == current_mode.value) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    OnOsHooksSet(OsHooksErrors());
+    OnOsIntegrationSynchronized();
     return;
   }
 
@@ -145,11 +142,10 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   lock_->registrar().NotifyWebAppRunOnOsLoginModeChanged(app_id_,
                                                          login_mode_.value());
 
-  auto synchronize_barrier =
-      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
-          &RunOnOsLoginCommand::OnOsHooksSet, weak_factory_.GetWeakPtr()));
-  lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+  auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
+      base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
+                     weak_factory_.GetWeakPtr()));
+  lock_->os_integration_manager().Synchronize(app_id_, synchronize_barrier);
   UpdateRunOnOsLoginModeWithOsIntegration(synchronize_barrier);
 }
 
@@ -171,27 +167,26 @@ void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
   if (os_integration_state && login_mode_.value() == *os_integration_state) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    OnOsHooksSet(OsHooksErrors());
+    OnOsIntegrationSynchronized();
     return;
   }
 
-  auto synchronize_barrier =
-      OsIntegrationManager::GetBarrierForSynchronize(base::BindOnce(
-          &RunOnOsLoginCommand::OnOsHooksSet, weak_factory_.GetWeakPtr()));
-  lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+  auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
+      base::BindOnce(&RunOnOsLoginCommand::OnOsIntegrationSynchronized,
+                     weak_factory_.GetWeakPtr()));
+  lock_->os_integration_manager().Synchronize(app_id_, synchronize_barrier);
   UpdateRunOnOsLoginModeWithOsIntegration(synchronize_barrier);
 }
 
 void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
-    base::RepeatingCallback<void(OsHooksErrors)> os_hooks_callback) {
+    base::RepeatingClosure os_hooks_callback) {
   std::optional<RunOnOsLoginMode> os_integration_state =
       lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
 
   if (os_integration_state && login_mode_.value() == *os_integration_state) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kRunOnOsLoginModeAlreadyMatched);
-    std::move(os_hooks_callback).Run(OsHooksErrors());
+    std::move(os_hooks_callback).Run();
     return;
   }
 
@@ -213,12 +208,7 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration(
   }
 }
 
-void RunOnOsLoginCommand::OnOsHooksSet(OsHooksErrors errors) {
-  if (errors[OsHookType::kRunOnOsLogin] == true) {
-    Abort(RunOnOsLoginCommandCompletionState::kOSHooksNotProperlySet);
-    return;
-  }
-
+void RunOnOsLoginCommand::OnOsIntegrationSynchronized() {
   if (!completion_state_set_) {
     RecordCompletionState(
         RunOnOsLoginCommandCompletionState::kSuccessfulCompletion);

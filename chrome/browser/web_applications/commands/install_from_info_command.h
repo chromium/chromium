@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -65,8 +64,7 @@ class InstallFromInfoCommand
 
  private:
   void OnInstallFromInfoJobCompleted(webapps::AppId app_id,
-                                     webapps::InstallResultCode code,
-                                     OsHooksErrors os_hook_errors);
+                                     webapps::InstallResultCode code);
 
   raw_ref<Profile> profile_;
 

@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 
@@ -63,8 +62,7 @@ class InstallPlaceholderJob {
           bitmaps);
 
   void OnInstallFinalized(const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;

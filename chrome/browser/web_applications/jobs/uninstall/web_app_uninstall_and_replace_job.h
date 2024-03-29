@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
@@ -59,7 +59,7 @@ class WebAppUninstallAndReplaceJob {
   void InstallOsHooksForReplacementApp(base::OnceClosure on_complete,
                                        ShortcutLocations locations);
 
-  void OnInstallOsHooksCompleted(base::OnceClosure on_complete, OsHooksErrors);
+  void OnInstallOsHooksCompleted(base::OnceClosure on_complete);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;

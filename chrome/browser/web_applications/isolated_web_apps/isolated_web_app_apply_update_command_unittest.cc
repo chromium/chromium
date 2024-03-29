@@ -393,7 +393,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
     void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                         InstallFinalizedCallback callback) override {
       std::move(callback).Run(app_id_,
-                              webapps::InstallResultCode::kNotInstallable, {});
+                              webapps::InstallResultCode::kNotInstallable);
     }
 
    private:

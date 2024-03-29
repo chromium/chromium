@@ -387,8 +387,7 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
 
 void ExternalAppResolutionCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
+    webapps::InstallResultCode code) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
   install_code_ = code;
 
@@ -646,8 +645,7 @@ void ExternalAppResolutionCommand::OnInstallFromInfoAppLockAcquired(
 
 void ExternalAppResolutionCommand::OnInstallFromInfoCompleted(
     webapps::AppId app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hook_errors) {
+    webapps::InstallResultCode code) {
   install_from_info_job_ = std::nullopt;
   app_id_ = app_id;
   install_code_ = code;

@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -107,8 +106,7 @@ class ExternalAppResolutionCommand
       bool icon_download_failed,
       std::unique_ptr<SharedWebContentsWithAppLock> apps_lock);
   void OnInstallFinalized(const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
   void OnUninstallAndReplaceCompletedUninstallPlaceholder(
       bool uninstall_triggered);
   void OnAllAppsLockGrantedRemovePlaceholder(std::unique_ptr<AllAppsLock> lock);
@@ -131,8 +129,7 @@ class ExternalAppResolutionCommand
   void OnInstallFromInfoAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> apps_lock);
   void OnInstallFromInfoCompleted(webapps::AppId app_id,
-                                  webapps::InstallResultCode code,
-                                  OsHooksErrors os_hook_errors);
+                                  webapps::InstallResultCode code);
   void OnUninstallAndReplaceCompleted(bool is_offline_install,
                                       bool uninstall_triggered);
 

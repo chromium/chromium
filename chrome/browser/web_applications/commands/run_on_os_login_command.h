@@ -30,8 +30,8 @@ enum class RunOnOsLoginCommandCompletionState {
   kNotAllowedByPolicy = 2,
   kRunOnOsLoginModeAlreadyMatched = 3,
   kAppNotLocallyInstalled = 4,
-  kOSHooksNotProperlySet = 5,
-  kMaxValue = kOSHooksNotProperlySet
+  // kOSHooksNotProperlySet = 5,
+  kMaxValue = kAppNotLocallyInstalled
 };
 
 // This command persists run on os login data to the web_app DB
@@ -71,8 +71,8 @@ class RunOnOsLoginCommand : public WebAppCommand<AppLock> {
   // OS state matches what is calculated to be the desired stated.
   void SyncRunOnOsLoginMode();
   void UpdateRunOnOsLoginModeWithOsIntegration(
-      base::RepeatingCallback<void(OsHooksErrors)> os_hooks_callback);
-  void OnOsHooksSet(OsHooksErrors errors);
+      base::RepeatingClosure os_hooks_callback);
+  void OnOsIntegrationSynchronized();
   void RecordCompletionState(
       RunOnOsLoginCommandCompletionState completion_state);
 

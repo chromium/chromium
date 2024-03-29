@@ -199,9 +199,11 @@ webapps::AppId InstallShortcut(Profile* profile,
 void UninstallWebApp(Profile* profile, const webapps::AppId& app_id) {
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile);
   base::test::TestFuture<webapps::UninstallResultCode> future;
+
   DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 
   // Allow updates to be published to App Service listeners.

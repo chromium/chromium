@@ -337,11 +337,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ManifestUpdate) {
     base::RunLoop run_loop;
     provider().install_finalizer().FinalizeUpdate(
         *web_app_info,
-        base::BindLambdaForTesting([&run_loop](const webapps::AppId& app_id,
-                                               webapps::InstallResultCode code,
-                                               OsHooksErrors os_hooks_errors) {
+        base::BindLambdaForTesting([&run_loop](
+                                       const webapps::AppId& app_id,
+                                       webapps::InstallResultCode code) {
           EXPECT_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
-          EXPECT_TRUE(os_hooks_errors.none());
           run_loop.Quit();
         }));
 
