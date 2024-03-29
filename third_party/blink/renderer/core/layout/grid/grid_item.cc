@@ -270,13 +270,13 @@ void GridItemData::SetAlignmentFallback(
           is_parallel_with_root_grid == (track_direction == kForRows);
 
       if (is_parallel_to_baseline_axis) {
-        return !item_style.LogicalHeight().IsPercentOrCalcOrStretch() &&
-               !item_style.LogicalMinHeight().IsPercentOrCalcOrStretch() &&
-               !item_style.LogicalMaxHeight().IsPercentOrCalcOrStretch();
+        return !item_style.LogicalHeight().HasPercentOrStretch() &&
+               !item_style.LogicalMinHeight().HasPercentOrStretch() &&
+               !item_style.LogicalMaxHeight().HasPercentOrStretch();
       } else {
-        return !item_style.LogicalWidth().IsPercentOrCalcOrStretch() &&
-               !item_style.LogicalMinWidth().IsPercentOrCalcOrStretch() &&
-               !item_style.LogicalMaxWidth().IsPercentOrCalcOrStretch();
+        return !item_style.LogicalWidth().HasPercentOrStretch() &&
+               !item_style.LogicalMinWidth().HasPercentOrStretch() &&
+               !item_style.LogicalMaxWidth().HasPercentOrStretch();
       }
     }
     return true;

@@ -243,8 +243,8 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
   }
 
   if (node.HasAspectRatio() &&
-      (style.LogicalMinHeight().IsPercentOrCalcOrStretch() ||
-       style.LogicalMaxHeight().IsPercentOrCalcOrStretch())) {
+      (style.LogicalMinHeight().HasPercentOrStretch() ||
+       style.LogicalMaxHeight().HasPercentOrStretch())) {
     return false;
   }
 
@@ -258,8 +258,8 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
   // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
   // In this specific case our min/max sizes are now dependent on what
   // "min-width" resolves to - which is unique to grid.
-  if (node.IsGrid() && (style.LogicalMinWidth().IsPercentOrCalcOrStretch() ||
-                        style.LogicalMaxWidth().IsPercentOrCalcOrStretch())) {
+  if (node.IsGrid() && (style.LogicalMinWidth().HasPercentOrStretch() ||
+                        style.LogicalMaxWidth().HasPercentOrStretch())) {
     return false;
   }
 
@@ -892,17 +892,17 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
                 .InlineSize();
     const bool depends_on_block_constraints =
         Style().LogicalWidth().HasAuto() ||
-        Style().LogicalWidth().IsPercentOrCalcOrStretch() ||
-        Style().LogicalMinWidth().IsPercentOrCalcOrStretch() ||
-        Style().LogicalMaxWidth().IsPercentOrCalcOrStretch();
+        Style().LogicalWidth().HasPercentOrStretch() ||
+        Style().LogicalMinWidth().HasPercentOrStretch() ||
+        Style().LogicalMaxWidth().HasPercentOrStretch();
     return MinMaxSizesResult(sizes, depends_on_block_constraints);
   }
 
   // Returns if we are (directly) dependent on any block constraints.
   auto DependsOnBlockConstraints = [&]() -> bool {
-    return Style().LogicalHeight().IsPercentOrCalcOrStretch() ||
-           Style().LogicalMinHeight().IsPercentOrCalcOrStretch() ||
-           Style().LogicalMaxHeight().IsPercentOrCalcOrStretch() ||
+    return Style().LogicalHeight().HasPercentOrStretch() ||
+           Style().LogicalMinHeight().HasPercentOrStretch() ||
+           Style().LogicalMaxHeight().HasPercentOrStretch() ||
            (Style().LogicalHeight().HasAuto() &&
             constraint_space.IsBlockAutoBehaviorStretch());
   };

@@ -233,6 +233,13 @@ bool Length::HasPercent() const {
   return GetType() == kPercent;
 }
 
+bool Length::HasPercentOrStretch() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasPercentOrStretch();
+  }
+  return GetType() == kPercent || GetType() == kFillAvailable;
+}
+
 bool Length::IsCalculatedEqual(const Length& o) const {
   return IsCalculated() &&
          (&GetCalculationValue() == &o.GetCalculationValue() ||

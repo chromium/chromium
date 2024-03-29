@@ -276,6 +276,7 @@ class PLATFORM_EXPORT Length {
   bool HasContentOrIntrinsic() const;
   bool HasAutoOrContentOrIntrinsic() const;
   bool HasPercent() const;
+  bool HasPercentOrStretch() const;
 
   bool IsSpecified() const {
     return GetType() == kFixed || GetType() == kPercent ||
@@ -295,13 +296,6 @@ class PLATFORM_EXPORT Length {
     // TODO(https://crbug.com/313072): Not all calc()s have percentages;
     // many callers may want HasPercent, above.
     return GetType() == kPercent || GetType() == kCalculated;
-  }
-  bool IsPercentOrCalcOrStretch() const {
-    // TODO(https://crbug.com/313072): Not all calc()s have percentages;
-    // many callers may want a function like HasPercent, above (but that
-    // doesn't exist yet).
-    return GetType() == kPercent || GetType() == kCalculated ||
-           GetType() == kFillAvailable;
   }
   bool IsFlex() const { return GetType() == kFlex; }
   bool IsExtendToZoom() const { return GetType() == kExtendToZoom; }

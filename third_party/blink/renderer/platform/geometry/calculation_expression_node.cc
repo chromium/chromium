@@ -52,6 +52,8 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
   if (keyword != Keyword::kSize && keyword != Keyword::kAny) {
     if (keyword == Keyword::kAuto) {
       has_auto_ = true;
+    } else if (keyword == Keyword::kWebkitFillAvailable) {
+      has_stretch_ = true;
     } else {
       has_content_or_intrinsic_ = true;
     }
@@ -382,6 +384,7 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     has_content_or_intrinsic_ = basis->HasContentOrIntrinsicSize();
     has_auto_ = basis->HasAuto();
     has_percent_ = basis->HasPercent();
+    has_stretch_ = basis->HasStretch();
   } else {
     for (const auto& child : children_) {
       if (child->HasContentOrIntrinsicSize()) {
@@ -392,6 +395,9 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
       }
       if (child->HasPercent()) {
         has_percent_ = true;
+      }
+      if (child->HasStretch()) {
+        has_stretch_ = true;
       }
     }
   }

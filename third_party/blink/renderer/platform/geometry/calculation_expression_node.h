@@ -57,11 +57,13 @@ class PLATFORM_EXPORT CalculationExpressionNode
   bool HasAutoOrContentOrIntrinsicSize() const {
     return has_auto_ || has_content_or_intrinsic_;
   }
+  bool HasStretch() const { return has_stretch_; }
   // HasPercent returns whether this node's value expression should be
   // treated as having a percent.  Note that this means that percentages
   // inside of the calculation part of a calc-size() do not make the
   // calc-size() act as though it has a percent.
   bool HasPercent() const { return has_percent_; }
+  bool HasPercentOrStretch() const { return has_percent_ || has_stretch_; }
 
   virtual bool IsNumber() const { return false; }
   virtual bool IsIdentifier() const { return false; }
@@ -89,6 +91,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   bool has_content_or_intrinsic_ = false;
   bool has_auto_ = false;
   bool has_percent_ = false;
+  bool has_stretch_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final

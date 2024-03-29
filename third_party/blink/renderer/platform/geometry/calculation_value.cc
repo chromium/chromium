@@ -163,4 +163,11 @@ bool CalculationValue::HasPercent() const {
   return data_.expression->HasPercent();
 }
 
+bool CalculationValue::HasPercentOrStretch() const {
+  if (!IsExpression()) {
+    return HasExplicitPercent();
+  }
+  return data_.expression->HasPercentOrStretch();
+}
+
 }  // namespace blink
