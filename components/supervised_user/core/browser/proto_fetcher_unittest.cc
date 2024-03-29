@@ -733,6 +733,37 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
   }
 }
 
+// Test whether fetcher forbids being started twice.
+TEST_P(ProtoFetcherTest, MustBeStoppedBeforeRestarting) {
+  MakePrimaryAccountAvailable();
+  SetAutomaticIssueOfAccessTokens();
+  std::unique_ptr<Receiver> receiver = MakeReceiver();
+
+  std::unique_ptr<Fetcher> fetcher = CreateTestFetcher(
+      *identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(), Request(), GetConfig());
+
+  // This fetch won't finish anytime soon because there's an unmocked HTTP
+  // response pending.
+  fetcher->Start(
+      BindOnce(&Receiver::Receive, base::Unretained(receiver.get())));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Subsequent call should not be allowed.
+  EXPECT_DEATH_IF_SUPPORTED(
+      fetcher->Start(
+          BindOnce(&Receiver::Receive, base::Unretained(&*receiver))),
+      "");
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // But a restart is allowed (which erases HTTP mock queue):
+  fetcher->Stop();
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  fetcher->Start(BindOnce(&Receiver::Receive, base::Unretained(&*receiver)));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+}
+
 // Instead of /0, /1... print human-readable description of the test: status of
 // the retrying feature followed by http method.
 std::string PrettyPrintFetcherTestCaseName(

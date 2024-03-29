@@ -374,11 +374,17 @@ class ProtoFetcher {
         args_(args) {}
   virtual ~ProtoFetcher() = default;
 
+  // Kicks off the fetching process. The fetcher must not be started before
+  // calling this method.
   virtual void Start(Callback callback) {
+    CHECK(!fetcher_) << "Only stopped fetcher can be started.";
     fetcher_ = std::make_unique<TypedProtoFetcher<Response>>(
         identity_manager_.get(), url_loader_factory_, payload_, config_, args_,
         std::move(callback));
   }
+
+  // Terminates the fetching process. The fetcher must be still operating while
+  // calling this method.
   virtual void Stop() {
     CHECK(fetcher_) << "Only started fetcher can be stopped.";
     fetcher_.reset();
@@ -454,6 +460,7 @@ class RetryingFetcherImpl final : public ProtoFetcher<Response> {
   void OnRetriedResponse(const ProtoFetcherStatus& status,
                          std::unique_ptr<Response> response) {
     if (ShouldRetry(status)) {
+      Stop();
       backoff_entry_.InformOfRequest(/*succeeded=*/false);
       timer_.Start(FROM_HERE, backoff_entry_.GetTimeUntilRelease(), this,
                    &RetryingFetcherImpl<Response>::Retry);
