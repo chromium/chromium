@@ -114,6 +114,7 @@ ClientSharedImage::ClientSharedImage(
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
+  CHECK(sii_holder_);
   SetTextureTarget(GMBIsNative(gmb_type));
 }
 
@@ -127,6 +128,21 @@ ClientSharedImage::ClientSharedImage(
       metadata_(metadata),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
+      texture_target_(texture_target) {
+  CHECK(!mailbox.IsZero());
+  CHECK(sii_holder_);
+#if !BUILDFLAG(IS_FUCHSIA)
+  CHECK(texture_target);
+#endif
+}
+
+ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
+                                     const SharedImageMetadata& metadata,
+                                     const SyncToken& sync_token,
+                                     uint32_t texture_target)
+    : mailbox_(mailbox),
+      metadata_(metadata),
+      creation_sync_token_(sync_token),
       texture_target_(texture_target) {
   CHECK(!mailbox.IsZero());
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -156,6 +172,7 @@ ClientSharedImage::ClientSharedImage(
               base::DoNothing())),
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
+  CHECK(sii_holder_);
   SetTextureTarget(GMBIsNative(gpu_memory_buffer_->GetType()));
 }
 
@@ -299,7 +316,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
     const ExportedSharedImage& exported_shared_image) {
   return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
-      exported_shared_image.creation_sync_token_, nullptr,
+      exported_shared_image.creation_sync_token_,
       exported_shared_image.texture_target_));
 }
 

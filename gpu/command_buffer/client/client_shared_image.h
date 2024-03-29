@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -91,11 +92,14 @@ class GPU_EXPORT ClientSharedImage
   // provides a native buffer.
   static void AllowExternalSamplingWithoutNativeBuffersForTesting(bool allow);
 
+  // `sii_holder` must not be null.
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     gfx::GpuMemoryBufferType gmb_type);
+
+  // `sii_holder` must not be null.
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
@@ -205,15 +209,24 @@ class GPU_EXPORT ClientSharedImage
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   ~ClientSharedImage();
 
-  // This constructor is used only when importing a ClientSharedImage, which
-  // should only be done via implementations of
+  // This constructor is used only when importing an owned ClientSharedImage,
+  // which should only be done via implementations of
   // SharedImageInterface::ImportSharedImage().
+  // `sii_holder` must not be null.
   friend class ClientSharedImageInterface;
   friend class viz::TestSharedImageInterface;
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+                    uint32_t texture_target);
+
+  // This constructor is used only when importing an unowned ClientSharedImage,
+  // in which case this ClientSharedImage is not associated with a
+  // SharedImageInterface.
+  ClientSharedImage(const Mailbox& mailbox,
+                    const SharedImageMetadata& metadata,
+                    const SyncToken& sync_token,
                     uint32_t texture_target);
 
   // Initializes `texture_target_`.
@@ -240,6 +253,7 @@ struct GPU_EXPORT ExportedSharedImage {
   friend class viz::TestSharedImageInterface;
   friend struct mojo::StructTraits<gpu::mojom::ExportedSharedImageDataView,
                                    ExportedSharedImage>;
+  FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest, ImportUnowned);
 
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,

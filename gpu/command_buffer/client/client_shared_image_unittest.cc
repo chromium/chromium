@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/client/client_shared_image.h"
+
+#include <GLES2/gl2.h>
+
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
 
-TEST(ClientSharedImageTest, Creation) {
+// TODO(blundell): Set up SharedImageInterface in these tests and test creation
+// paths that pass in SIIHolder.
+TEST(ClientSharedImageTest, ImportUnowned) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
@@ -21,15 +26,16 @@ TEST(ClientSharedImageTest, Creation) {
                                kOpaque_SkAlphaType,
                                kUsage};
 
-  auto client_si = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, metadata, SyncToken(), /*sii_holder=*/nullptr,
-      gfx::EMPTY_BUFFER);
+  auto client_si = ClientSharedImage::ImportUnowned(
+      ExportedSharedImage(mailbox, metadata, SyncToken(), GL_TEXTURE_2D));
 
   // Check that the ClientSI's state matches the input parameters.
   EXPECT_TRUE(client_si->mailbox() == mailbox);
   EXPECT_EQ(client_si->format(), kFormat);
   EXPECT_EQ(client_si->size(), kSize);
   EXPECT_EQ(client_si->usage(), kUsage);
+  EXPECT_EQ(client_si->GetTextureTarget(),
+            static_cast<uint32_t>(GL_TEXTURE_2D));
   EXPECT_FALSE(client_si->HasHolder());
 }
 
