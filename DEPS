@@ -4944,6 +4944,7 @@ hooks = [
                 'src/third_party/perfetto/tools/test_data',
                 '--dir',
                 'src/base/tracing/test/data',
+                '--overwrite',
                 'download',
     ],
   },
