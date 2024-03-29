@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                  height = info_bar->target_height_for_testing();
                }),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      SelectTab(kTabStripElementId, 0), FlushEvents(),
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       CheckView(ConfirmInfoBar::kInfoBarElementId,
                 [&height](ConfirmInfoBar* info_bar) {
                   return height == info_bar->target_height_for_testing();
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
 
   ShowPromptForTesting();
   RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       SendAccelerator(kBrowserViewElementId, incognito_accelerator),
       InAnyContext(
           WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
@@ -127,10 +127,10 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
   RunTestSequence(
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
-      PressButton(ConfirmInfoBar::kOkButtonElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      PressButton(ConfirmInfoBar::kOkButtonElementId),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
-      SelectTab(kTabStripElementId, 0), FlushEvents(),
+      SelectTab(kTabStripElementId, 0),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
@@ -143,9 +143,8 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   ShowPromptForTesting();
-  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kOkButtonElementId),
-                  FlushEvents(),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
@@ -158,9 +157,8 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   ShowPromptForTesting();
-  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kDismissButtonElementId),
-                  FlushEvents(),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
@@ -168,9 +166,9 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
                        LogsMetrics) {
   base::HistogramTester histogram_tester;
   ShowPromptForTesting();
-  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   PressButton(ConfirmInfoBar::kOkButtonElementId),
-                  FlushEvents(), WaitForHide(ConfirmInfoBar::kInfoBarElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId),
                   FlushEvents());
 
   histogram_tester.ExpectTotalCount(
@@ -188,9 +186,9 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       // Open two tabs
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
       // Dismiss prompt on one tab
-      PressButton(ConfirmInfoBar::kDismissButtonElementId), FlushEvents(),
+      PressButton(ConfirmInfoBar::kDismissButtonElementId),
       // Wait for hide
       WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       // Move tab to new window
