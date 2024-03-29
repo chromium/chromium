@@ -328,6 +328,10 @@ const uint16_t kSteelSeriesBluetoothVendorId = 0x0111;
 const uint16_t kSteelSeriesStratusDuoBluetoothProductId = 0x1431;
 const uint16_t kSteelSeriesStratusPlusBluetoothProductId = 0x1434;
 
+const uint16_t kFlossVirtualSuspendVendorId = 0x0000;
+const uint16_t kFlossVirtualSuspendProductId = 0x0000;
+const char kFlossVirtualSuspendName[] = "VIRTUAL_SUSPEND_UHID";
+
 bool GetEventBits(int fd,
                   const base::FilePath& path,
                   unsigned int type,
@@ -844,6 +848,15 @@ bool EventDeviceInfo::HasMouse() const {
   if (input_id_.vendor == kSteelSeriesBluetoothVendorId &&
       (input_id_.product == kSteelSeriesStratusDuoBluetoothProductId ||
       input_id_.product == kSteelSeriesStratusPlusBluetoothProductId)) {
+    return false;
+  }
+
+  // When floss is enabled, it presents a virtual device used to wake the device
+  // on bluetooth connection. This long term should be reduced down to not
+  // appear as a mouse. For now, filter it out directly. (b/309017352)
+  if (input_id_.vendor == kFlossVirtualSuspendVendorId &&
+      input_id_.product == kFlossVirtualSuspendProductId &&
+      name_ == kFlossVirtualSuspendName) {
     return false;
   }
 
