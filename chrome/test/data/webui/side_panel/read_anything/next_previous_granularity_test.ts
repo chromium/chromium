@@ -5,6 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NEXT_GRANULARITY_EVENT, PREVIOUS_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -32,6 +33,7 @@ suite('NextPrevious', () => {
 
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
+    flush();
 
     nextButton = toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
         '#nextGranularity')!;

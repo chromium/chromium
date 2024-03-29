@@ -18,7 +18,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import type {DomRepeat, DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ReadAnythingElement} from './app.js';
@@ -36,7 +36,6 @@ export interface ReadAnythingToolbarElement {
     fontSizeMenu: CrActionMenuElement,
     moreOptionsMenu: CrActionMenuElement,
     voiceSelectionMenu: VoiceSelectionMenuElement,
-    fontTemplate: DomRepeat,
     toolbarContainer: HTMLElement,
     fontSelect: HTMLSelectElement,
     more: CrIconButtonElement,
@@ -453,8 +452,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     fonts.forEach(element => {
       this.fontOptions_.push(element);
     });
-
-    this.$.fontTemplate.render();
   }
 
   private playPauseButtonAriaLabel_(paused: boolean) {

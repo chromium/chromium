@@ -168,7 +168,7 @@
             on-keydown="onFontSelectKeyDown_"
             aria-label="$i18n{fontNameTitle}"
             title="$i18n{fontNameTitle}">
-      <template id="fontTemplate" is="dom-repeat" items="[[fontOptions_]]">
+      <template is="dom-repeat" items="[[fontOptions_]]">
         <option value="[[item]]">[[item]]</option>
       </template>
     </select>
@@ -307,7 +307,7 @@
     </template>
   </cr-action-menu>
   <cr-action-menu id="fontMenu">
-  <template id="fontTemplate" is="dom-repeat" items="[[fontOptions_]]">
+  <template is="dom-repeat" items="[[fontOptions_]]">
     <button class="dropdown-item" on-click="onFontClick_"
           style$="font-family:[[item]]">
       <iron-icon class="button-image check-mark"

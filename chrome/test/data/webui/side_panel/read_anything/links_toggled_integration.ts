@@ -4,6 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -71,6 +72,7 @@ suite('LinksToggledIntegration', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
+    flush();
     linksToggleButton =
         app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
             '#' + LINK_TOGGLE_BUTTON_ID)!;
