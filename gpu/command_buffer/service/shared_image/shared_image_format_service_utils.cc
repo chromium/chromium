@@ -193,22 +193,21 @@ class SharedImageFormatRestrictedUtilsAccessor {
   }
 };
 
-gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    return viz::SinglePlaneSharedImageFormatToBufferFormat(format);
+// This class method is primarily meant to be accessed by gpu service side code
+// with the exception of some client needing access temporarily until the
+// BufferFormat usage is deprecated. This requires usage of below wrapper class
+// to access this method from service side code conveniently.
+class GPU_GLES2_EXPORT SharedImageFormatToBufferFormatRestrictedUtilsAccessor {
+ public:
+  static gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
+    return viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+        format);
   }
+};
 
-  if (format == viz::MultiPlaneFormat::kYV12) {
-    return gfx::BufferFormat::YVU_420;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    return gfx::BufferFormat::YUV_420_BIPLANAR;
-  } else if (format == viz::MultiPlaneFormat::kNV12A) {
-    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-  } else if (format == viz::MultiPlaneFormat::kP010) {
-    return gfx::BufferFormat::P010;
-  }
-  NOTREACHED() << "format=" << format.ToString();
-  return gfx::BufferFormat::RGBA_8888;
+gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
+  return SharedImageFormatToBufferFormatRestrictedUtilsAccessor::ToBufferFormat(
+      format);
 }
 
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {

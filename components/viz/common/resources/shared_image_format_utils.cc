@@ -427,4 +427,25 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
   return GL_RGBA8_OES;
 }
 
+// static
+gfx::BufferFormat
+SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+    SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    return SinglePlaneSharedImageFormatToBufferFormat(format);
+  }
+
+  if (format == MultiPlaneFormat::kYV12) {
+    return gfx::BufferFormat::YVU_420;
+  } else if (format == MultiPlaneFormat::kNV12) {
+    return gfx::BufferFormat::YUV_420_BIPLANAR;
+  } else if (format == MultiPlaneFormat::kNV12A) {
+    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
+  } else if (format == MultiPlaneFormat::kP010) {
+    return gfx::BufferFormat::P010;
+  }
+  NOTREACHED() << "format=" << format.ToString();
+  return gfx::BufferFormat::RGBA_8888;
+}
+
 }  // namespace viz
