@@ -620,7 +620,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests the accessibility string for a signed-in user whose name is not
 // available yet.
-- (void)testAccessiblityStringForSignedInUserWithoutName {
+// TODO(crbug.com/331928746): Test flaky.
+- (void)FLAKY_testAccessiblityStringForSignedInUserWithoutName {
   NSString* email = @"test@test.com";
   NSString* gaiaID = @"gaiaID";
   // Sign in to Chrome.
