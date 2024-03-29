@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.customtabs.features.branding.BrandingControll
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
@@ -297,16 +296,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             toolbar.setMinimizeButtonEnabled(false);
         }
         if (mIntentDataProvider.get().isPartialCustomTab()) {
-            Callback<Runnable> softInputCallback;
-            if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-                softInputCallback =
-                        ((PartialCustomTabDisplayManager) mCustomTabHeightStrategy)
-                                ::onShowSoftInput;
-            } else {
-                softInputCallback =
-                        ((PartialCustomTabBottomSheetStrategy) mCustomTabHeightStrategy)
-                                ::onShowSoftInput;
-            }
+            Callback<Runnable> softInputCallback =
+                    ((PartialCustomTabDisplayManager) mCustomTabHeightStrategy)::onShowSoftInput;
 
             var tabController = mTabController.get();
             tabController.registerTabObserver(new PartialCustomTabTabObserver(softInputCallback));

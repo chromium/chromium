@@ -431,11 +431,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private static @Px int getInitialActivityWidth(
             boolean isTrustedIntent, @Px int initialActivityWidth, String packageName) {
-        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return 0;
-
-        boolean enabledDueToThirdParty =
-                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
-                        && isAllowedThirdParty(packageName);
+        boolean enabledDueToThirdParty = isAllowedThirdParty(packageName);
         return (isTrustedIntent || enabledDueToThirdParty) ? initialActivityWidth : 0;
     }
 
@@ -1113,9 +1109,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean isPartialCustomTab() {
-        return isPartialHeightCustomTab()
-                || (ChromeFeatureList.sCctResizableSideSheet.isEnabled()
-                        && isPartialWidthCustomTab());
+        return isPartialHeightCustomTab() || isPartialWidthCustomTab();
     }
 
     @Override

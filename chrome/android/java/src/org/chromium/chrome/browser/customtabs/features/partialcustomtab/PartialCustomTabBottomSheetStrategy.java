@@ -50,7 +50,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -66,9 +65,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * CustomTabHeightStrategy for Partial Custom Tab. An instance of this class should be
- * owned by the CustomTabActivity. Refer to
- * {@link
+ * CustomTabHeightStrategy for Partial Custom Tab. An instance of this class should be owned by the
+ * CustomTabActivity. Refer to {@link
  * https://docs.google.com/document/d/1YuFXHai2JECqAPE_HgamcKid3VTR05GAvJcyb4jaL6o/edit?usp=sharing}
  * for detailed inner workings and issues addressed along the way.
  */
@@ -384,15 +382,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     // ConfigurationChangedObserver implementation.
-
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        // When the side-sheet implementation is enabled the configuration change will be handled
-        // by PartialCustomTabDisplayManager.
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
-
-        onConfigurationChanged(newConfig.orientation);
-    }
+    public void onConfigurationChanged(Configuration newConfig) {}
 
     // ValueAnimator.AnimatorUpdateListener implementation.
     @Override
@@ -511,8 +502,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     private void positionAtWidth(int width) {
-        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
-
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         if (isFullHeight() || isFullscreen()) {
             attrs.width = MATCH_PARENT;
@@ -541,18 +530,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             attrs.y = mDisplayHeight - attrs.height - mNavbarHeight;
         }
 
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            attrs.gravity = Gravity.TOP | Gravity.START;
-        } else {
-            attrs.gravity = Gravity.TOP;
-        }
+        attrs.gravity = Gravity.TOP | Gravity.START;
 
         mActivity.getWindow().setAttributes(attrs);
     }
 
     private boolean isMaxWidthLandscapeBottomSheet() {
-        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return false;
-
         int displayWidth = mVersionCompat.getDisplayWidth();
         return isLandscapeMaxWidth(displayWidth);
     }
@@ -567,19 +550,16 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         boolean isMaxWidthLandscapeBottomSheet = isMaxWidthLandscapeBottomSheet();
 
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            float maxWidthBottomSheetEv =
-                    mActivity.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
-            float regBottomSheetEv =
-                    mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
-            float elevation =
-                    isMaxWidthLandscapeBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;
+        float maxWidthBottomSheetEv =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+        float regBottomSheetEv =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
+        float elevation = isMaxWidthLandscapeBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;
 
-            ViewGroup coordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
-            coordinatorLayout.setElevation(elevation);
-            if (handleView != null) {
-                handleView.setElevation(elevation);
-            }
+        ViewGroup coordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
+        coordinatorLayout.setElevation(elevation);
+        if (handleView != null) {
+            handleView.setElevation(elevation);
         }
 
         int sideOffset =
@@ -609,17 +589,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @Override
     protected boolean shouldHaveNoShadowOffset() {
         return mStatus == HeightStatus.TOP
-                || (ChromeFeatureList.sCctResizableSideSheet.isEnabled()
-                        && mActivity.getWindow().getAttributes().y <= getFullyExpandedY());
+                || mActivity.getWindow().getAttributes().y <= getFullyExpandedY();
     }
 
     @Override
     protected boolean isFullHeight() {
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            return MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
-        } else {
-            return isLandscape() || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
-        }
+        return MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
     }
 
     private boolean isLandscape() {

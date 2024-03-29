@@ -2303,10 +2303,6 @@ extern const char kCCTGoogleBottomBarDescription[];
 
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
-extern const char kCCTResizableSideSheetName[];
-extern const char kCCTResizableSideSheetDescription[];
-extern const char kCCTResizableSideSheetForThirdPartiesName[];
-extern const char kCCTResizableSideSheetForThirdPartiesDescription[];
 
 extern const char kCCTRevampedBrandingName[];
 extern const char kCCTRevampedBrandingDescription[];

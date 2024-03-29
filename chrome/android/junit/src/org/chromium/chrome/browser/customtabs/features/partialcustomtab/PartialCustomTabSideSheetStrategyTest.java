@@ -55,12 +55,10 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.ResizeType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,7 +69,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
         manifest = Config.NONE,
         shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
 @LooperMode(Mode.PAUSED)
-@EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
     private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
     private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;

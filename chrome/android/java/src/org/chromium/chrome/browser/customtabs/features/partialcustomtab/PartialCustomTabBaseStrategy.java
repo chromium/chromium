@@ -39,7 +39,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -354,12 +353,10 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     protected void maybeInvokeResizeCallback() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
 
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            // onActivityLayout should be called before onResized and only when the PCCT is created
-            // or its size has changed.
-            if (mHeight != attrs.height || mWidth != attrs.width) {
-                invokeActivityLayoutCallback();
-            }
+        // onActivityLayout should be called before onResized and only when the PCCT is created
+        // or its size has changed.
+        if (mHeight != attrs.height || mWidth != attrs.width) {
+            invokeActivityLayoutCallback();
         }
 
         if (isFullHeight() || isFullscreen()) {

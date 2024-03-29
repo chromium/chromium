@@ -59,8 +59,6 @@ BASE_DECLARE_FEATURE(kCCTGoogleBottomBar);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
-BASE_DECLARE_FEATURE(kCCTResizableSideSheet);
-BASE_DECLARE_FEATURE(kCCTResizableSideSheetForThirdParties);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTRevampedBranding);
 BASE_DECLARE_FEATURE(kCCTTabModalDialog);

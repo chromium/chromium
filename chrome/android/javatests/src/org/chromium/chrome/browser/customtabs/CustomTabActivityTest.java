@@ -81,7 +81,6 @@ import androidx.test.runner.lifecycle.Stage;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -113,7 +112,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -137,7 +135,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTrack
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -1976,31 +1973,7 @@ public class CustomTabActivityTest {
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
-    @DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testLaunchPartialCustomTabActivity_BottomSheet() throws Exception {
-        WindowManager wm =
-                (WindowManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics metrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(metrics);
-
-        Assume.assumeTrue(
-                "BottomSheet PCCT does not support landscape.",
-                metrics.heightPixels > metrics.widthPixels);
-        doTestLaunchPartialCustomTabWithInitialHeight();
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @EnableFeatures({
-        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES
-    })
-    public void testLaunchPartialCustomTabActivity_BottomSheet_SideSheetFlagEnabled()
-            throws Exception {
         doTestLaunchPartialCustomTabWithInitialHeight();
     }
 
@@ -2024,22 +1997,12 @@ public class CustomTabActivityTest {
                 (BaseCustomTabRootUiCoordinator)
                         mCustomTabActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
 
-        boolean useDisplayManager =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET);
-        if (useDisplayManager) {
-            PartialCustomTabDisplayManager displayManager =
-                    (PartialCustomTabDisplayManager)
-                            coordinator.getCustomTabSizeStrategyForTesting();
-            assertEquals(
-                    "Incorrect strategy type with display manager.",
-                    PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
-                    displayManager.getActiveStrategyType());
-        } else {
-            assertEquals(
-                    "Incorrect strategy type is not bottom sheet.",
-                    PartialCustomTabBottomSheetStrategy.class.toString(),
-                    coordinator.getCustomTabSizeStrategyForTesting().getClass().toString());
-        }
+        PartialCustomTabDisplayManager displayManager =
+                (PartialCustomTabDisplayManager) coordinator.getCustomTabSizeStrategyForTesting();
+        assertEquals(
+                "Incorrect strategy type with display manager.",
+                PartialCustomTabBaseStrategy.PartialCustomTabType.BOTTOM_SHEET,
+                displayManager.getActiveStrategyType());
 
         // Verify the hierarchy of the enclosing layouts that PCCT relies on for its operation.
         CallbackHelper eventHelper = new CallbackHelper();
@@ -2071,11 +2034,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @EnableFeatures({
-        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
     // Bug in O that's been fixed in 8.1
     // https://issuetracker.google.com/issues/68427483
@@ -2131,11 +2090,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     // Screen rotation is not relevant on automotive.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
@@ -2181,11 +2136,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @EnableFeatures({
-        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void testLaunchPartialCustomTabActivity_FullSize() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
@@ -2219,11 +2170,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @EnableFeatures({
-        ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES
-    })
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void testLaunchPartialCustomTabActivity_startActivityForResult() {
         CustomTabsIntent customTabsIntent =
                 new CustomTabsIntent.Builder().setInitialActivityHeightPx(200).build();

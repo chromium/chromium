@@ -372,18 +372,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testInitialActivityWidth_1Pdisabled() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(false);
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
-    }
-
-    @Test
-    public void testInitialActivityWidth_3Penabled_notdenied() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
-        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
+    public void testInitialActivityWidth_3P_notdenied() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -394,9 +383,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testInitialActivityWidth_3Penabled_denied() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
-        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
+    public void testInitialActivityWidth_3P_denied() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -406,19 +393,6 @@ public class CustomTabIntentDataProviderTest {
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
-    }
-
-    @Test
-    public void testInitialActivityWidth_3Pdisabled() {
-        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
-        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(false);
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
-        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
-        when(connection.isFirstParty(any())).thenReturn(true);
-        CustomTabsConnection.setInstanceForTesting(connection);
-        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Width should be 50", 50, dataProvider.getInitialActivityWidth());
     }
 
     @Test

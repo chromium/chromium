@@ -187,8 +187,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTGoogleBottomBar,
     &kCCTReportParallelRequestStatus,
     &kCCTResizableForThirdParties,
-    &kCCTResizableSideSheet,
-    &kCCTResizableSideSheetForThirdParties,
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
     &kDataSharingAndroid,
@@ -541,14 +539,6 @@ BASE_FEATURE(kCCTReportParallelRequestStatus,
 
 BASE_FEATURE(kCCTResizableForThirdParties,
              "CCTResizableForThirdParties",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizableSideSheet,
-             "CCTResizableSideSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizableSideSheetForThirdParties,
-             "CCTResizableSideSheetForThirdParties",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTRevampedBranding,

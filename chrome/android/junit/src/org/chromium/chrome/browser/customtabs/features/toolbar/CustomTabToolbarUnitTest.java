@@ -339,7 +339,6 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testMaximizeButton() {
         assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
         mToolbar.initSideSheetMaximizeButton(/* maximizedOnInit= */ false, () -> true);
@@ -478,7 +477,6 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testHandleStrategy_ClickCloseListener() {
         var strategy1 = new SimpleHandleStrategy(r -> {});
         mToolbar.setHandleStrategy(strategy1);

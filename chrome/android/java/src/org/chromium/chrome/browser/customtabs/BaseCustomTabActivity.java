@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarC
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -385,18 +384,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         super.performPreInflationStartup();
 
         if (mIntentDataProvider.isPartialCustomTab()) {
-            if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-                @AnimRes
-                int startAnimResId =
-                        PartialCustomTabDisplayManager.getStartAnimationOverride(
-                                this,
-                                getIntentDataProvider(),
-                                getIntentDataProvider().getAnimationEnterRes());
-                overridePendingTransition(startAnimResId, R.anim.no_anim);
-            } else if (getIntentDataProvider().isPartialHeightCustomTab()) {
-                // Take care of only the bottom sheet animation if side sheet is not enabled.
-                overridePendingTransition(R.anim.slide_in_up, R.anim.no_anim);
-            }
+            @AnimRes
+            int startAnimResId =
+                    PartialCustomTabDisplayManager.getStartAnimationOverride(
+                            this,
+                            getIntentDataProvider(),
+                            getIntentDataProvider().getAnimationEnterRes());
+            overridePendingTransition(startAnimResId, R.anim.no_anim);
         }
 
         WebappExtras webappExtras = getIntentDataProvider().getWebappExtras();

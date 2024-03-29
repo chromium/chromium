@@ -1268,16 +1268,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "cct-resizable-side-sheet",
-    "owners": ["kgrosu@chromium.org", "jinsukkim@chromium.org", "twellington@chromium.org"],
-    "expiry_milestone": 121
-  },
-  {
-    "name": "cct-resizable-side-sheet-for-third-parties",
-    "owners": ["katzz@chromium.org", "kgrosu@chromium.org", "jinsukkim@chromium.org"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "cct-revamped-branding",
     "owners": ["sinansahin@google.com"],
     "expiry_milestone": 140

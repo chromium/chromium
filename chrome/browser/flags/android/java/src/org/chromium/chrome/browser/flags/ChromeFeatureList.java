@@ -225,9 +225,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
-    public static final String CCT_RESIZABLE_SIDE_SHEET = "CCTResizableSideSheet";
-    public static final String CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES =
-            "CCTResizableSideSheetForThirdParties";
     public static final String CCT_REVAMPED_BRANDING = "CCTRevampedBranding";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
@@ -545,10 +542,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
-    public static final CachedFlag sCctResizableSideSheet =
-            newCachedFlag(CCT_RESIZABLE_SIDE_SHEET, true);
-    public static final CachedFlag sCctResizableSideSheetForThirdParties =
-            newCachedFlag(CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             newCachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, false);
@@ -689,8 +682,6 @@ public abstract class ChromeFeatureList {
                     sCctPageInsightsHub,
                     sCctGoogleBottomBar,
                     sCctResizableForThirdParties,
-                    sCctResizableSideSheet,
-                    sCctResizableSideSheetForThirdParties,
                     sCctTabModalDialog,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,

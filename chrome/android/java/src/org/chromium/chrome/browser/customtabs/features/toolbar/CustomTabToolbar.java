@@ -343,12 +343,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /**
      * Initialize the maximize button for side sheet CCT. Create one if not instantiated.
+     *
      * @param maximizedOnInit {@code true} if the side sheet is starting in maximized state.
      * @param onMaximizeClicked Callback to invoke when maximize button gets clicked.
      */
     public void initSideSheetMaximizeButton(
             boolean maximizedOnInit, MaximizeButtonCallback callback) {
-        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (maximizeButton == null) {
             ViewStub maximizeButtonStub = findViewById(R.id.maximize_button_stub);
@@ -447,7 +447,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     /** Remove maximize button from side sheet CCT toolbar. */
     public void removeSideSheetMaximizeButton() {
-        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         maximizeButton.setOnClickListener(null);
         maximizeButton.setVisibility(View.GONE);
