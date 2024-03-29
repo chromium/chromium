@@ -35,6 +35,7 @@ class AXObjectCacheImpl;
 
 class AXMenuList final : public AXNodeObject {
  public:
+  AXMenuList(Node*, AXObjectCacheImpl&);
   AXMenuList(LayoutObject*, AXObjectCacheImpl&);
 
   AXMenuList(const AXMenuList&) = delete;

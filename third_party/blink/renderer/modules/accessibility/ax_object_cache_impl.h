@@ -496,7 +496,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   Element* GetActiveAriaModalDialog() const;
 
   static bool UseAXMenuList() { return use_ax_menu_list_; }
-  static bool ShouldCreateAXMenuListFor(LayoutObject* layout_object);
+  static bool ShouldCreateAXMenuListFor(const Node*);
   static bool ShouldCreateAXMenuListOptionFor(const Node*);
   static bool IsRelevantPseudoElement(const Node& node);
   static bool IsRelevantPseudoElementDescendant(

@@ -491,8 +491,7 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
       if (!select_element->GetLayoutObject())
         return select_element->IsInCanvasSubtree();
       // Non-option: only create AXObject if not inside an AXMenuList.
-      return !AXObjectCacheImpl::ShouldCreateAXMenuListFor(
-          select_element->GetLayoutObject());
+      return !AXObjectCacheImpl::ShouldCreateAXMenuListFor(select_element);
     }
   }
 
@@ -1139,7 +1138,7 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
   if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
     if (select_element->UsesMenuList()) {
       if (use_ax_menu_list_) {
-        DCHECK(ShouldCreateAXMenuListFor(layout_object));
+        DCHECK(ShouldCreateAXMenuListFor(node));
         return MakeGarbageCollected<AXMenuList>(layout_object, *this);
       }
     } else {
@@ -1163,21 +1162,19 @@ bool AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(const Node* node) {
     return false;
 
   if (auto* select = option_element->OwnerSelectElement())
-    return ShouldCreateAXMenuListFor(select->GetLayoutObject());
+    return ShouldCreateAXMenuListFor(select);
 
   return false;
 }
 
 // static
-bool AXObjectCacheImpl::ShouldCreateAXMenuListFor(LayoutObject* layout_object) {
-  if (!layout_object)
-    return false;
-
+bool AXObjectCacheImpl::ShouldCreateAXMenuListFor(const Node* node) {
   if (!AXObjectCacheImpl::UseAXMenuList())
     return false;
 
-  if (auto* select = DynamicTo<HTMLSelectElement>(layout_object->GetNode()))
+  if (auto* select = DynamicTo<HTMLSelectElement>(node)) {
     return select->UsesMenuList();
+  }
 
   return false;
 }
@@ -1192,7 +1189,7 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   if (slot.IsInUserAgentShadowRoot()) {
     if (HTMLSelectElement* select =
             DynamicTo<HTMLSelectElement>(slot.OwnerShadowHost())) {
-      if (ShouldCreateAXMenuListFor(select->GetLayoutObject())) {
+      if (ShouldCreateAXMenuListFor(select)) {
         return false;
       }
     }
@@ -1296,6 +1293,16 @@ AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
 
   if (auto* area = DynamicTo<HTMLAreaElement>(node))
     return MakeGarbageCollected<AXImageMapLink>(area, *this);
+
+  // Create AXMenuList even if no LayoutObject is available (e.g. in <canvas>).
+  if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
+    if (select_element->UsesMenuList()) {
+      if (use_ax_menu_list_) {
+        DCHECK(ShouldCreateAXMenuListFor(node));
+        return MakeGarbageCollected<AXMenuList>(node, *this);
+      }
+    }
+  }
 
   return MakeGarbageCollected<AXNodeObject>(node, *this);
 }
@@ -2674,7 +2681,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
   if (document) {
     Element* focused_element = GetDocument().FocusedElement();
     if (IsA<HTMLSelectElement>(focused_element) &&
-        ShouldCreateAXMenuListFor(focused_element->GetLayoutObject())) {
+        ShouldCreateAXMenuListFor(focused_element)) {
       // HTML <select> has its own specialized handling.
       // TODO(accessibility) Remove this rule once we stop using AXMenuList*.
       return;

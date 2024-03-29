@@ -40,6 +40,11 @@ AXMenuList::AXMenuList(LayoutObject* layout_object,
   DCHECK(IsA<HTMLSelectElement>(layout_object->GetNode()));
 }
 
+AXMenuList::AXMenuList(Node* node, AXObjectCacheImpl& ax_object_cache)
+    : AXNodeObject(node, ax_object_cache) {
+  DCHECK(IsA<HTMLSelectElement>(node));
+}
+
 ax::mojom::blink::Role AXMenuList::NativeRoleIgnoringAria() const {
   return ax::mojom::blink::Role::kComboBoxSelect;
 }
@@ -181,12 +186,6 @@ AXObject* AXMenuList::GetOrCreateMockPopupChild() {
 }
 
 bool AXMenuList::IsCollapsed() const {
-  // Collapsed is the "default" state, so if the LayoutObject doesn't exist
-  // this makes slightly more sense than returning false.
-  if (!GetLayoutObject()) {
-    return true;
-  }
-
   return !To<HTMLSelectElement>(GetNode())->PopupIsVisible();
 }
 

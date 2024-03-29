@@ -970,8 +970,7 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     }
     // TODO(accessibility) Remove this rule once we stop using AXMenuList*.
     if (IsA<HTMLSelectElement>(popup_owner) &&
-        AXObjectCacheImpl::ShouldCreateAXMenuListFor(
-            popup_owner->GetLayoutObject())) {
+        AXObjectCacheImpl::ShouldCreateAXMenuListFor(popup_owner)) {
       return nullptr;
     }
     return popup_owner;
@@ -1031,7 +1030,7 @@ bool AXObject::CanComputeAsNaturalParent(Node* node) {
   // parent an AXMenuListPopup, which is added as a child on creation. No other
   // children are allowed, and false is returned for anything else where the
   // parent would be AXMenuList.
-  if (AXObjectCacheImpl::ShouldCreateAXMenuListFor(node->GetLayoutObject())) {
+  if (AXObjectCacheImpl::ShouldCreateAXMenuListFor(node)) {
     return false;
   }
 
@@ -3902,6 +3901,14 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
+  // Ensure clean teardown of AXMenuList and AXMenuListPopup.
+  // TODO(accessibility) Remove this exception once AXMenuList* is removed.
+  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup ||
+      RoleValue() == ax::mojom::blink::Role::kMenuListOption ||
+      RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
+    return true;
+  }
+
   const Node* node = GetNode();
 
   if (!node) {
@@ -4003,13 +4010,6 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // unflattened DOM tree remains, such as the cached parent.
   if (IsA<HTMLSlotElement>(element)) {
     return true;
-  }
-
-  // Ensure clean teardown of AXMenuList.
-  if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
-    if (option->OwnerSelectElement()) {
-      return true;
-    }
   }
 
   // Include all pseudo element content. Any anonymous subtree is included
