@@ -40,13 +40,12 @@ void PageInfoSecurityContentView::SetIdentityInfo(
   security_description_type_ = security_description->type;
 
   if (security_description->summary_style == SecuritySummaryColor::RED) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift) &&
-        (identity_info.safe_browsing_status ==
-             PageInfo::SAFE_BROWSING_STATUS_MALWARE ||
-         identity_info.safe_browsing_status ==
-             PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING ||
-         identity_info.safe_browsing_status ==
-             PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE)) {
+    if (identity_info.safe_browsing_status ==
+            PageInfo::SAFE_BROWSING_STATUS_MALWARE ||
+        identity_info.safe_browsing_status ==
+            PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING ||
+        identity_info.safe_browsing_status ==
+            PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE) {
       security_view_->SetIcon(
           PageInfoViewFactory::GetConnectionDangerousIcon());
     } else {

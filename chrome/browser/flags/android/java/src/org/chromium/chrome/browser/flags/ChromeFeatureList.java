@@ -400,7 +400,6 @@ public abstract class ChromeFeatureList {
             "RecoverFromNeverSaveAndroid_LAUNCHED";
     public static final String REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY =
             "RedirectExplicitCTAIntentsToExistingActivity";
-    public static final String RED_INTERSTITIAL_FACELIFT = "RedInterstitialFacelift";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
     public static final String RENAME_JOURNEYS = "RenameJourneys";

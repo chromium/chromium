@@ -191,8 +191,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // dialog. The new UI is covered by
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
     feature_list_.InitWithFeatures(
-        {safe_browsing::kRedInterstitialFacelift,
-         features::kFileSystemAccessPersistentPermissions,
+        {features::kFileSystemAccessPersistentPermissions,
          features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
          permissions::features::kOneTimePermission},
         {});
@@ -1520,7 +1519,6 @@ class PageInfoBubbleViewBrowserTestWithRedInterstitialFaceliftEnabled
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PageInfoBubbleViewBrowserTest::SetUpCommandLine(command_line);
-    feature_list.InitAndEnableFeature(safe_browsing::kRedInterstitialFacelift);
   }
 
  private:

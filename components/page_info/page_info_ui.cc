@@ -447,34 +447,21 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
     case PageInfo::SAFE_BROWSING_STATUS_NONE:
       break;
     case PageInfo::SAFE_BROWSING_STATUS_MALWARE:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_MALWARE_SUMMARY_NEW
-              : IDS_PAGE_INFO_MALWARE_SUMMARY,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_MALWARE_DETAILS_NEW
-              : IDS_PAGE_INFO_MALWARE_DETAILS,
-          SecurityDescriptionType::SAFE_BROWSING);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_MALWARE_SUMMARY_NEW,
+                                       IDS_PAGE_INFO_MALWARE_DETAILS_NEW,
+                                       SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING:
       return CreateSecurityDescription(
           SecuritySummaryColor::RED,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW
-              : IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW
-              : IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS,
+          IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW,
+          IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW,
           SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE:
       return CreateSecurityDescription(
           SecuritySummaryColor::RED,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW
-              : IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW
-              : IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS,
+          IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW,
+          IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW,
           SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE: {
 #if BUILDFLAG(FULL_SAFE_BROWSING)

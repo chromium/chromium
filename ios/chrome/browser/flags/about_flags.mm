@@ -1150,11 +1150,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)},
-    {"enable-red-interstitial-facelift",
-     flag_descriptions::kEnableRedInterstitialFaceliftName,
-     flag_descriptions::kEnableRedInterstitialFaceliftDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(safe_browsing::kRedInterstitialFacelift)},
     {"ios-edit-menu-partial-translate",
      flag_descriptions::kIOSEditMenuPartialTranslateName,
      flag_descriptions::kIOSEditMenuPartialTranslateDescription,

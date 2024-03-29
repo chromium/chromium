@@ -6,7 +6,6 @@
 
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
@@ -104,11 +103,7 @@ LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     case security_state::NONE:
       return INFO;
     case security_state::DANGEROUS:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kRedInterstitialFacelift)) {
-        return DANGEROUS;
-      }
-      return NOT_SECURE_WARNING;
+      return DANGEROUS;
     case security_state::WARNING:
       return NOT_SECURE_WARNING;
     case security_state::SECURE:

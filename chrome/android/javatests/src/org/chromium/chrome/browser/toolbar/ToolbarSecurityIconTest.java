@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -191,7 +190,6 @@ public final class ToolbarSecurityIconTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Omnibox"})
-    @DisableFeatures(ChromeFeatureList.RED_INTERSTITIAL_FACELIFT)
     public void testGetSecurityIconResource() {
         for (int securityLevel : SECURITY_LEVELS) {
             assertEquals(
@@ -248,14 +246,14 @@ public final class ToolbarSecurityIconTest {
                         !IS_PAINT_PREVIEW));
 
         assertEquals(
-                R.drawable.omnibox_not_secure_warning,
+                R.drawable.omnibox_dangerous,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.DANGEROUS,
                         IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW));
         assertEquals(
-                R.drawable.omnibox_not_secure_warning,
+                R.drawable.omnibox_dangerous,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.DANGEROUS,
                         !IS_SMALL_DEVICE,
@@ -288,28 +286,6 @@ public final class ToolbarSecurityIconTest {
                 R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(
                         ConnectionSecurityLevel.SECURE,
-                        !IS_SMALL_DEVICE,
-                        !IS_OFFLINE_PAGE,
-                        !IS_PAINT_PREVIEW));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Omnibox"})
-    @EnableFeatures(ChromeFeatureList.RED_INTERSTITIAL_FACELIFT)
-    public void testDangerousSecurityIconResourceRedInterstitialFaceliftEnabled() {
-        assertEquals(
-                R.drawable.omnibox_dangerous,
-                mLocationBarModel.getSecurityIconResource(
-                        ConnectionSecurityLevel.DANGEROUS,
-                        IS_SMALL_DEVICE,
-                        !IS_OFFLINE_PAGE,
-                        !IS_PAINT_PREVIEW));
-        assertEquals(
-                R.drawable.omnibox_dangerous,
-                mLocationBarModel.getSecurityIconResource(
-                        ConnectionSecurityLevel.DANGEROUS,
                         !IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE,
                         !IS_PAINT_PREVIEW));

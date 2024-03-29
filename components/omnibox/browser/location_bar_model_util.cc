@@ -42,10 +42,8 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
                  ? vector_icons::kNotSecureWarningChromeRefreshIcon
                  : vector_icons::kNotSecureWarningIcon;
     case security_state::DANGEROUS:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kRedInterstitialFacelift) &&
-          malicious_content_status !=
-              security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
+      if (malicious_content_status !=
+          security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
         return IsChromeRefreshIconsEnabled()
                    ? vector_icons::kDangerousChromeRefreshIcon
                    : vector_icons::kDangerousIcon;

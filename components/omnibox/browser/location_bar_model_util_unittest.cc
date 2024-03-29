@@ -48,8 +48,6 @@ TEST(LocationBarModelUtilTest,
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kRedInterstitialFacelift);
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::DANGEROUS,
       /*use_updated_connection_security_indicators=*/false,

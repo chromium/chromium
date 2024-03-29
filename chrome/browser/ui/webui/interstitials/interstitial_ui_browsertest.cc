@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -27,8 +26,6 @@ class InterstitialUITest : public InProcessBrowserTest {
   ~InterstitialUITest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kRedInterstitialFacelift);
     InProcessBrowserTest::SetUpCommandLine(command_line);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -83,9 +80,6 @@ class InterstitialUITest : public InProcessBrowserTest {
                         int message_id) {
     TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, HomePage) {
