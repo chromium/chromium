@@ -4284,6 +4284,7 @@ source_set("ash") {
     "//components/crash/core/app",
     "//components/crash/core/common",
     "//components/crash/core/common:crash_key",
+    "//components/cross_device/logging:logging",
     "//components/crx_file",
     "//components/device_event_log",
     "//components/download/public/common:public",

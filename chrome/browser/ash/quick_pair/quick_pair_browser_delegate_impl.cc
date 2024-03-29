@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/quick_pair/common/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom.h"
+#include "components/cross_device/logging/logging.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -59,7 +59,7 @@ QuickPairBrowserDelegateImpl::GetImageFetcher() {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
       GetURLLoaderFactory();
   if (!shared_url_loader_factory) {
-    QP_LOG(WARNING)
+    CD_LOG(WARNING, Feature::FP)
         << "No URL loader factory to provide an image fetcher instance.";
     return nullptr;
   }

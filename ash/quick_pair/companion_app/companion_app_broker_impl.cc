@@ -9,9 +9,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/shell.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace {
 
@@ -87,9 +87,9 @@ bool CompanionAppBrokerImpl::MaybeShowCompanionAppActions(
   // the app is already installed, or we are in guest-mode (guests cannot
   // install apps).
   if (!has_play_link || companion_installed || is_guest) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Showing \"Launch companion app\" "
-                       "notification.";
+    CD_LOG(VERBOSE, Feature::FP) << __func__
+                                 << ": Showing \"Launch companion app\" "
+                                    "notification.";
 
     for (auto& observer : observers_) {
       observer.ShowLaunchCompanionApp(device);
@@ -106,7 +106,8 @@ bool CompanionAppBrokerImpl::MaybeShowCompanionAppActions(
 void CompanionAppBrokerImpl::InstallCompanionApp(scoped_refptr<Device> device) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
-  QP_LOG(VERBOSE) << __func__ << ": Opening play store page for companion app.";
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Opening play store page for companion app.";
 
   // TODO(b/274973687): Make more generalized once device metadata includes link
   QuickPairBrowserDelegate::Get()->OpenPlayStorePage(
@@ -118,15 +119,15 @@ void CompanionAppBrokerImpl::LaunchCompanionApp(scoped_refptr<Device> device) {
 
   const std::string& app_id = ash::features::kFastPairPwaCompanionAppId.Get();
   if (QuickPairBrowserDelegate::Get()->CompanionAppInstalled(app_id)) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": Found installed app. Launching "
-                       "companion app.";
+    CD_LOG(VERBOSE, Feature::FP) << __func__
+                                 << ": Found installed app. Launching "
+                                    "companion app.";
 
     QuickPairBrowserDelegate::Get()->LaunchCompanionApp(app_id);
   } else {
-    QP_LOG(VERBOSE) << __func__
-                    << ": No Play store link or installed app. "
-                       "Opening companion web page.";
+    CD_LOG(VERBOSE, Feature::FP) << __func__
+                                 << ": No Play store link or installed app. "
+                                    "Opening companion web page.";
 
     NewWindowDelegate::GetPrimary()->OpenUrl(
         GURL(ash::features::kFastPairPwaCompanionInstallUri.Get()),

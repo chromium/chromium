@@ -631,6 +631,9 @@ include_rules = [
   "-chrome/browser/ui/lacros",
   "-chrome/browser/ui/quick_answers/lacros",
   "-chrome/browser/sync/test/lacros",
+
+  # For logging via the CD_LOG macro.
+  "+components/cross_device/logging/logging.h",
 ]
 
 specific_include_rules = {
