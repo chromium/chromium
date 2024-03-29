@@ -11,7 +11,9 @@
   #tethering-capabilities-div,
   #tethering-status-div,
   #tethering-config-div,
-  #wifi-direct-capabilities-div {
+  #wifi-direct-capabilities-div,
+  #wifi-direct-owner-info-div,
+  #wifi-direct-client-info-div {
     white-space: pre-wrap;
   }
 
@@ -223,6 +225,18 @@
       <div id="wifi-direct-capabilities-div"></div>
       <cr-button class="action-button" on-click="getWifiDirectCapabilities_">
         $i18n{refreshWifiDirectCapabilitiesButtonText}
+      </cr-button>
+
+      <h2>$i18n{wifiDirectOwnerInfoLabel}</h2>
+      <div id="wifi-direct-owner-info-div"></div>
+      <cr-button class="action-button" on-click="getWifiDirectOwnerInfo_">
+        $i18n{refreshWifiDirectOwnerInfoButtonText}
+      </cr-button>
+
+      <h2>$i18n{wifiDirectClientInfoLabel}</h2>
+      <div id="wifi-direct-client-info-div"></div>
+      <cr-button class="action-button" on-click="getWifiDirectClientInfo_">
+        $i18n{refreshWifiDirectClientInfoButtonText}
       </cr-button>
     </div>
   </template>

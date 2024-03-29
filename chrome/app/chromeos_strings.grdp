@@ -3636,6 +3636,18 @@
   <message name="IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CAPABILITIES_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing WiFi Direct capabilities.">
     Refresh WiFi Direct Capabilities
   </message>
+  <message name="IDS_NETWORK_UI_WIFI_DIRECT_OWNER_INFO_LABEL" desc="Title for the section for displaying and refreshing WiFi Direct owners info.">
+    WiFi Direct Owners Info:
+  </message>
+  <message name="IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_OWNER_INFO_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing WiFi Direct owners info.">
+    Refresh WiFi Direct Owners Info
+  </message>
+  <message name="IDS_NETWORK_UI_WIFI_DIRECT_CLIENT_INFO_LABEL" desc="Title for the section for displaying and refreshing WiFi Direct clients info.">
+    WiFi Direct Clients Info:
+  </message>
+  <message name="IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CLIENT_INFO_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing WiFi Direct clients info.">
+    Refresh WiFi Direct Clients Info
+  </message>
 
   <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
     To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>

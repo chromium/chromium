@@ -160,6 +160,8 @@ class NetworkUiElement extends NetworkUiElementBase {
     }
     if (this.isWifiDirectEnabled_) {
       this.getWifiDirectCapabilities_();
+      this.getWifiDirectClientInfo_();
+      this.getWifiDirectOwnerInfo_();
     }
     this.getHostname_();
     this.selectTabFromHash_();
@@ -369,6 +371,22 @@ class NetworkUiElement extends NetworkUiElementBase {
   private async getWifiDirectCapabilities_() {
     const result = await this.browserProxy_.getWifiDirectCapabilities();
     const div = this.shadowRoot!.querySelector('#wifi-direct-capabilities-div');
+    if (div) {
+      div.textContent = stringifyJson(result);
+    }
+  }
+
+  private async getWifiDirectOwnerInfo_() {
+    const result = await this.browserProxy_.getWifiDirectOwnerInfo();
+    const div = this.shadowRoot!.querySelector('#wifi-direct-owner-info-div');
+    if (div) {
+      div.textContent = stringifyJson(result);
+    }
+  }
+
+  private async getWifiDirectClientInfo_() {
+    const result = await this.browserProxy_.getWifiDirectClientInfo();
+    const div = this.shadowRoot!.querySelector('#wifi-direct-client-info-div');
     if (div) {
       div.textContent = stringifyJson(result);
     }

@@ -94,6 +94,8 @@ constexpr char kSetTetheringConfig[] = "setTetheringConfig";
 constexpr char kCheckTetheringReadiness[] = "checkTetheringReadiness";
 constexpr char kSetTetheringEnabled[] = "setTetheringEnabled";
 constexpr char kGetWifiDirectCapabilities[] = "getWifiDirectCapabilities";
+constexpr char kGetWifiDirectOwnerInfo[] = "getWifiDirectOwnerInfo";
+constexpr char kGetWifiDirectClientInfo[] = "getWifiDirectClientInfo";
 
 bool GetServicePathFromGuid(const std::string& guid,
                             std::string* service_path) {
@@ -754,6 +756,14 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
         base::BindRepeating(
             &WifiDirectMessageHandler::GetWifiDirectCapabilities,
             base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kGetWifiDirectOwnerInfo,
+        base::BindRepeating(&WifiDirectMessageHandler::GetWifiDirectOwnerInfo,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kGetWifiDirectClientInfo,
+        base::BindRepeating(&WifiDirectMessageHandler::GetWifiDirectClientInfo,
+                            base::Unretained(this)));
   }
 
  private:
@@ -770,6 +780,41 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
         &WifiDirectMessageHandler::OnGetShillManagerDictPropertiesByKey,
         weak_ptr_factory_.GetWeakPtr(), callback_id,
         shill::kP2PCapabilitiesProperty));
+  }
+
+  void GetWifiDirectOwnerInfo(const base::Value::List& arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+
+    ShillManagerClient::Get()->GetProperties(base::BindOnce(
+        &WifiDirectMessageHandler::OnGetShillManagerListPropertiesByKey,
+        weak_ptr_factory_.GetWeakPtr(), callback_id,
+        shill::kP2PGroupInfosProperty));
+  }
+
+  void GetWifiDirectClientInfo(const base::Value::List& arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+
+    ShillManagerClient::Get()->GetProperties(base::BindOnce(
+        &WifiDirectMessageHandler::OnGetShillManagerListPropertiesByKey,
+        weak_ptr_factory_.GetWeakPtr(), callback_id,
+        shill::kP2PClientInfosProperty));
+  }
+
+  void OnGetShillManagerListPropertiesByKey(
+      const std::string& callback_id,
+      const std::string& dict_key,
+      std::optional<base::Value::Dict> properties) {
+    if (!properties) {
+      NET_LOG(ERROR) << "Error getting Shill manager properties.";
+      Respond(callback_id,
+              base::Value("Error getting Shill manager properties."));
+      return;
+    }
+
+    base::Value::List* value = properties->FindList(dict_key);
+    Respond(callback_id, value ? std::move(*value) : base::Value::List());
   }
 
   void OnGetShillManagerDictPropertiesByKey(
@@ -975,7 +1020,19 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
                IDS_NETWORK_UI_WIFI_DIRECT_CAPABILITIES_LABEL))
       .Set("refreshWifiDirectCapabilitiesButtonText",
            l10n_util::GetStringUTF16(
-               IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CAPABILITIES_BUTTON_TEXT));
+               IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CAPABILITIES_BUTTON_TEXT))
+      .Set("wifiDirectOwnerInfoLabel",
+           l10n_util::GetStringUTF16(
+               IDS_NETWORK_UI_WIFI_DIRECT_OWNER_INFO_LABEL))
+      .Set("refreshWifiDirectOwnerInfoButtonText",
+           l10n_util::GetStringUTF16(
+               IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_OWNER_INFO_BUTTON_TEXT))
+      .Set("wifiDirectClientInfoLabel",
+           l10n_util::GetStringUTF16(
+               IDS_NETWORK_UI_WIFI_DIRECT_CLIENT_INFO_LABEL))
+      .Set("refreshWifiDirectClientInfoButtonText",
+           l10n_util::GetStringUTF16(
+               IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CLIENT_INFO_BUTTON_TEXT));
 }
 
 NetworkUI::NetworkUI(content::WebUI* web_ui)
