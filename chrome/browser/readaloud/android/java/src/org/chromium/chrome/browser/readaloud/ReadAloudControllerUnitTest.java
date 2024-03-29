@@ -76,6 +76,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextPart;
+import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
@@ -2372,15 +2374,90 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    public void testTapToSeek_Success() {
+    public void testIsPlayingCurrentTab() {
+        // should be false at first since currentlyPlayingTab is null
+        assertFalse(mController.isPlayingCurrentTab());
+        // set to playing tab
+        requestAndStartPlayback();
+        assertTrue(mController.isPlayingCurrentTab());
+        // should be false after switching to a non playing tab
+        MockTab newTab = mTabModelSelector.addMockTab();
+        mTabModelSelector
+                .getModel(false)
+                .setIndex(
+                        mTabModelSelector.getModel(false).indexOf(newTab),
+                        TabSelectionType.FROM_USER,
+                        false);
+        assertFalse(mController.isPlayingCurrentTab());
+        // switch back to current tab
+        mTabModelSelector
+                .getModel(false)
+                .setIndex(
+                        mTabModelSelector.getModel(false).indexOf(mTab),
+                        TabSelectionType.FROM_USER,
+                        false);
+        assertTrue(mController.isPlayingCurrentTab());
+        // back to null after stopping playback
+        mController.maybeStopPlayback(mTab);
+        assertFalse(mController.isPlayingCurrentTab());
+    }
+
+    @Test
+    public void testTapToSeek() {
         // play tab
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
-        resolvePromises();
-        verify(mPlaybackHooks, times(1))
-                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(ReadAloudMetrics.TAP_TO_SEEK_TIME, 12);
+        when(mMetadata.fullText())
+                .thenAnswer(
+                        invocation -> {
+                            mClock.advanceCurrentTimeMillis(12);
+                            return "the quick brown fox jumps over the lazy dog";
+                        });
+        PlaybackTextPart p =
+                new PlaybackTextPart() {
+                    @Override
+                    public int getOffset() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getType() {
+                        return PlaybackTextType.TEXT_TYPE_UNSPECIFIED;
+                    }
+
+                    @Override
+                    public int getParagraphIndex() {
+                        return -1;
+                    }
+
+                    @Override
+                    public int getLength() {
+                        return -1;
+                    }
+                };
+        PlaybackTextPart[] paragraphs = new PlaybackTextPart[] {p};
+        when(mMetadata.paragraphs()).thenReturn(paragraphs);
+        mController.tapToSeek("the quick brown fox", 4, 9);
+        verify(mPlayback, times(1)).seekToWord(0, 8);
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testTapToSeek_differentTab() {
+        // play tab
+        requestAndStartPlayback();
+        // switch tabs
+        MockTab newTab = mTabModelSelector.addMockTab();
+        mTabModelSelector
+                .getModel(false)
+                .setIndex(
+                        mTabModelSelector.getModel(false).indexOf(newTab),
+                        TabSelectionType.FROM_USER,
+                        false);
+        // shouldn't seek
+        mController.tapToSeek("the quick brown fox", 4, 9);
+        verify(mPlayback, never()).seekToWord(0, 8);
     }
 
     private void requestAndStartPlayback() {

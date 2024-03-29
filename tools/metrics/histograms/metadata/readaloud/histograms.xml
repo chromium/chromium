@@ -276,6 +276,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.TapToSeekTime" units="ms" expires_after="2024-08-04">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Android only. Records processing time for a tap to seek feature. Finds a
+    matching substring in the ReadAloud distilled text to seek playback to the
+    word. Records the time taken for both successful and failed attempts to
+    match the substring.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.VoiceChanged.{VoiceID}" enum="Boolean"
     expires_after="2024-06-02">
   <owner>andreaxg@google.com</owner>

@@ -53,56 +53,50 @@ public class TapToSeekHandler {
             int endOffset,
             Playback playback,
             Tab currentlyPlayingTab) {
-        if (ReadAloudFeatures.isTapToSeekEnabled()
-                && playback != null
-                && currentlyPlayingTab != null
-                && currentlyPlayingTab == mCurrentTabSupplier.get()) {
-            char[] fullText = playback.getMetadata().fullText().toCharArray();
-            // Set the needle to the word +- 15 characters on either side.
-            int substringStartIndex = Math.max(0, beginOffset - 15);
-            int substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
-            String needle =
+        char[] fullText = playback.getMetadata().fullText().toCharArray();
+        // Set the needle to the word +- 15 characters on either side.
+        int substringStartIndex = Math.max(0, beginOffset - 15);
+        int substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
+        String needle =
+                content.substring(substringStartIndex, substringEndIndex)
+                        .replaceAll(
+                                "[\\[\\(][\\s\\S]*?[\\]\\)]",
+                                "") // removes any () and [] and inner content
+                        .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
+        int found = BoyerMoore.indexOf(fullText, needle.toCharArray());
+        if (found > 0) {
+            maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback);
+        } else {
+            // Last needle not matched, try with the word and -15 characters.
+            substringStartIndex = Math.max(0, beginOffset - 15);
+            substringEndIndex = endOffset;
+            needle =
                     content.substring(substringStartIndex, substringEndIndex)
+                            .trim()
                             .replaceAll(
                                     "[\\[\\(][\\s\\S]*?[\\]\\)]",
                                     "") // removes any () and [] and inner content
                             .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
-            int found = BoyerMoore.indexOf(fullText, needle.toCharArray());
+            found = BoyerMoore.indexOf(fullText, needle.toCharArray());
             if (found > 0) {
                 maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback);
             } else {
-                // Last needle not matched, try with the word and -15 characters.
-                substringStartIndex = Math.max(0, beginOffset - 15);
-                substringEndIndex = endOffset;
+                // Last needle not matched, try with the word and +15 characters.
+                substringStartIndex = beginOffset;
+                substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
                 needle =
                         content.substring(substringStartIndex, substringEndIndex)
                                 .trim()
                                 .replaceAll(
                                         "[\\[\\(][\\s\\S]*?[\\]\\)]",
                                         "") // removes any () and [] and inner content
-                                .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
+                                .replaceAll("\\s+", " "); // replaces any white-space with a space.
                 found = BoyerMoore.indexOf(fullText, needle.toCharArray());
                 if (found > 0) {
-                    maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback);
+                    maybeTapToSeek(found + beginOffset, content, playback);
                 } else {
-                    // Last needle not matched, try with the word and +15 characters.
-                    substringStartIndex = beginOffset;
-                    substringEndIndex = Math.min(content.length() - 1, endOffset + 15);
-                    needle =
-                            content.substring(substringStartIndex, substringEndIndex)
-                                    .trim()
-                                    .replaceAll(
-                                            "[\\[\\(][\\s\\S]*?[\\]\\)]",
-                                            "") // removes any () and [] and inner content
-                                    .replaceAll(
-                                            "\\s+", " "); // replaces any white-space with a space.
-                    found = BoyerMoore.indexOf(fullText, needle.toCharArray());
-                    if (found > 0) {
-                        maybeTapToSeek(found + beginOffset, content, playback);
-                    } else {
-                        // TODO: b/325654229 Improve heuristics with more substrings to match with.
-                        ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);
-                    }
+                    // TODO: b/325654229 Improve heuristics with more substrings to match with.
+                    ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);
                 }
             }
         }

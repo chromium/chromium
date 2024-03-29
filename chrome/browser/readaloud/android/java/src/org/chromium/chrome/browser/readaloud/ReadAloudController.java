@@ -1368,6 +1368,13 @@ public class ReadAloudController
         mOnUserLeaveHint = true;
     }
 
+    /** if the current focused tab has an active playback */
+    public boolean isPlayingCurrentTab() {
+        return mPlayback != null
+                && mCurrentlyPlayingTab != null
+                && mCurrentlyPlayingTab == mTabModel.getCurrentTabSupplier().get();
+    }
+
     /**
      * Triggered with ContextualSearch's onSelectionChange. Sends the selected webpage content and
      * playback to TapToSeekHandler to find the selected word in the playback and seek to it.
@@ -1377,8 +1384,13 @@ public class ReadAloudController
      * @param endOffset index of where the selected word ends within the content
      */
     public void tapToSeek(String content, int beginOffset, int endOffset) {
-        mTapToSeekHandler.tapToSeek(
-                content, beginOffset, endOffset, mPlayback, mCurrentlyPlayingTab);
+        if (ReadAloudFeatures.isTapToSeekEnabled() && isPlayingCurrentTab()) {
+            long timeWhenTapToSeekRequested = sClock.currentTimeMillis();
+            mTapToSeekHandler.tapToSeek(
+                    content, beginOffset, endOffset, mPlayback, mCurrentlyPlayingTab);
+            ReadAloudMetrics.recordTapToSeekTime(
+                    sClock.currentTimeMillis() - timeWhenTapToSeekRequested);
+        }
     }
 
     private void notifyReadabilityMayHaveChanged() {

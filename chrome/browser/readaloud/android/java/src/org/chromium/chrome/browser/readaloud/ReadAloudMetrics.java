@@ -32,6 +32,7 @@ public class ReadAloudMetrics {
             "ReadAloud.DurationListened.LockedScreen";
     public static String HAS_DATE_MODIFIED = "ReadAloud.HasDateModified";
     public static String READABILITY_SERVER_SIDE = "ReadAloud.ServerReadabilityResult";
+    public static String TAP_TO_SEEK_TIME = "ReadAloud.TapToSeekTime";
 
     /**
      * The reason why we clear the prepared message.
@@ -99,6 +100,10 @@ public class ReadAloudMetrics {
         if (durationMs != 0) {
             RecordHistogram.recordLongTimesHistogram(TIME_SPENT_LISTENING, durationMs);
         }
+    }
+
+    public static void recordTapToSeekTime(long durationMs) {
+        RecordHistogram.recordTimesHistogram(TAP_TO_SEEK_TIME, durationMs);
     }
 
     public static void recordDurationMsListenedLockedScreen(long durationMs) {
