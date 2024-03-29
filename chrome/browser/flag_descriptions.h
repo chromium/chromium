@@ -3323,6 +3323,9 @@ extern const char kAutocorrectToggleDescription[];
 extern const char kAutocorrectUseReplaceSurroundingTextName[];
 extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 
+extern const char kBluetoothAudioLEAudioOnlyName[];
+extern const char kBluetoothAudioLEAudioOnlyDescription[];
+
 extern const char kBluetoothFlossTelephonyName[];
 extern const char kBluetoothFlossTelephonyDescription[];
 

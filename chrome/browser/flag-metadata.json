@@ -918,6 +918,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "bluetooth-audio-le-audio-only",
+    "owners": ["jrwu@chromium.org", "chromeos-audio@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "bluetooth-coredump",
     "owners": ["mmandlik@chromium.org", "chromeos-bt-team@google.com"],
     "expiry_milestone": 120

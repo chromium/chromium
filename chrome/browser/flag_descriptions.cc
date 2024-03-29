@@ -5726,6 +5726,12 @@ const char kAutocorrectUseReplaceSurroundingTextDescription[] =
     "When autocorrect is enabled, use the ReplaceSurroundingText API "
     "for better app compatibility.";
 
+const char kBluetoothAudioLEAudioOnlyName[] = "Bluetooth Audio LE Audio Only";
+const char kBluetoothAudioLEAudioOnlyDescription[] =
+    "Enable Bluetooth LE audio and disable classic profiles "
+    "(A2DP, HFP, AVRCP). This is used for prototyping and demonstration "
+    "purposes.";
+
 const char kBluetoothFlossTelephonyName[] = "Bluetooth Floss Telephony";
 const char kBluetoothFlossTelephonyDescription[] =
     "Enable Floss to create a Bluetooth HID device that allows applications to "
