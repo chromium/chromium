@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/dbus/common/dbus_library_error.h"
+#include "chromeos/printing/ppd_line_reader.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/device_event_log/device_event_log.h"
@@ -334,7 +335,13 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
       case PpdProvider::SUCCESS:
         DCHECK(!ppd_contents.empty());
         {
-          std::string ppd = ppd_contents;
+          // Use PpdLineReader to ungzip the content (if gzipped).
+          auto reader = chromeos::PpdLineReader::Create(ppd_contents);
+          std::string ppd = reader->RemainingContent();
+          if (reader->Error()) {
+            PRINTER_LOG(ERROR) << printer.make_and_model()
+                               << " Error when reading/decompressing PPD";
+          }
           if (!hplip_plugin_path.empty()) {
             if (!AddHplipPluginPathToPpdContent(hplip_plugin_path, ppd)) {
               PRINTER_LOG(ERROR) << printer.make_and_model()

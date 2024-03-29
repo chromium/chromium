@@ -47,7 +47,8 @@ const char* kTestPpd = R"PPD(*PPD-Adobe: "4.3"
 *HPMechOffset: "70"
 *cupsModelName: "DESKJET 930"
 *1284DeviceID: "MFG:HP;MDL:psc 900 series;DES:psc 900 series;"
-*cupsVersion: 1.5)PPD";
+*cupsVersion: 1.5
+)PPD";
 
 // This is the exact same contents as kTestPpd, but gzipped
 // with gzip --best.
@@ -184,6 +185,11 @@ TEST(PpdLineReaderTest, CorruptGzipData) {
 
   // Should have flagged an error because the gzip data was corrupt.
   EXPECT_TRUE(reader->Error());
+
+  // The same test for RemainingContent().
+  reader = PpdLineReader::Create(gzipped_contents, kPpdMaxLineLength);
+  reader->RemainingContent();
+  EXPECT_TRUE(reader->Error());
 }
 
 // Tests that the simple PPD begins with the magic number which is present at
@@ -221,6 +227,34 @@ TEST(PpdLineReaderTest, RejectFileStartingWithNewline) {
 
   EXPECT_FALSE(PpdLineReader::ContainsMagicNumber("\x0D*PPD-Adobe: \"4.3\"",
                                                   kPpdMaxLineLength));
+}
+
+TEST(PpdLineReaderTest, RemainingContentForGzippedData) {
+  const std::string gzipped(reinterpret_cast<const char*>(kTestPpdGzipped),
+                            sizeof(kTestPpdGzipped));
+  const std::string ungzipped(kTestPpd);
+
+  // `max_line_length` should not matter for RemainingContent().
+  auto reader = PpdLineReader::Create(gzipped, /*max_line_length=*/30);
+  EXPECT_EQ(reader->RemainingContent(), ungzipped);
+  EXPECT_FALSE(reader->Error());
+
+  // We are at the end. There is nothing more to read.
+  std::string unused;
+  EXPECT_FALSE(reader->NextLine(&unused));
+}
+
+TEST(PpdLineReaderTest, RemainingContentForUncompressedData) {
+  const std::string ungzipped(kTestPpd);
+
+  // `max_line_length` should not matter for RemainingContent().
+  auto reader = PpdLineReader::Create(ungzipped, /*max_line_length=*/30);
+  EXPECT_EQ(reader->RemainingContent(), ungzipped);
+  EXPECT_FALSE(reader->Error());
+
+  // We are at the end. There is nothing more to read.
+  std::string unused;
+  EXPECT_FALSE(reader->NextLine(&unused));
 }
 
 }  // namespace

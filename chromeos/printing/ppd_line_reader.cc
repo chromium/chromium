@@ -105,11 +105,20 @@ class PpdLineReaderImpl : public PpdLineReader {
     }
   }
 
+  std::string RemainingContent() override {
+    std::string content(read_buf_->data() + read_ofs_,
+                        read_buf_->data() + read_buf_size_);
+    for (ReadNextChunk(); read_buf_size_ > 0; ReadNextChunk()) {
+      content.append(read_buf_->data(), read_buf_size_);
+    }
+    return content;
+  }
+
   bool Error() const override { return error_; }
 
  private:
   // Chunk size of reads to the underlying source stream.
-  static constexpr int kReadBufCapacity = 500;
+  static constexpr int kReadBufCapacity = 1024;
 
   // Skip input until we hit a newline (which is discarded).  If
   // we encounter eof before a newline, false is returned.
@@ -125,28 +134,38 @@ class PpdLineReaderImpl : public PpdLineReader {
     }
   }
 
+  void ReadNextChunk() {
+    // Just ignore if we already reach EOF.
+    if (eof_) {
+      return;
+    }
+    read_ofs_ = 0;
+
+    // Since StringSourceStream never uses the callback, and filter streams
+    // are only supposed to use the callback if the underlying source stream
+    // uses it, we should never see the callback used.
+    int result = input_->Read(
+        read_buf_.get(), kReadBufCapacity,
+        base::BindOnce([](int) { LOG(FATAL) << "Unexpected async read"; }));
+    if (result <= 0) {
+      eof_ = true;
+      error_ = (result < 0);
+      read_buf_size_ = 0;
+    } else {
+      read_buf_size_ = result;
+    }
+  }
+
   // Consume and return the next char from the source stream.  If there is no
   // more data to be had, set eof.  Eof() should be checked before the returned
   // value is used.
   char NextChar() {
     if (read_ofs_ == read_buf_size_) {
       // Grab more data from the underlying stream.
-      read_ofs_ = 0;
-
-      // Since StringSourceStream never uses the callback, and filter streams
-      // are only supposed to use the callback if the underlying source stream
-      // uses it, we should never see the callback used.
-      int result = input_->Read(
-          read_buf_.get(), kReadBufCapacity,
-          base::BindOnce([](int) { LOG(FATAL) << "Unexpected async read"; }));
-      if (result == 0) {
-        eof_ = true;
+      ReadNextChunk();
+      if (read_buf_size_ == 0) {
         return '\0';
-      } else if (result < 0) {
-        eof_ = true;
-        error_ = true;
       }
-      read_buf_size_ = result;
     }
     return read_buf_->data()[read_ofs_++];
   }
