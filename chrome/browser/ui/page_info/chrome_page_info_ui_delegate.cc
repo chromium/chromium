@@ -224,15 +224,10 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
         // level notification permission for notifications to work. If system
         // permissions are missing, guide the user to system settings to fix
         // this.
-        const webapps::AppId* app_id =
-            web_app::WebAppTabHelper::GetAppId(web_contents_);
-        if (!app_id) {
-          return false;
-        }
-        web_app::WebAppProvider* web_app_provider =
-            web_app::WebAppProvider::GetForLocalAppsUnchecked(GetProfile());
-        if (!web_app_provider ||
-            !web_app_provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
+        std::optional<webapps::AppId> app_id =
+            web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
+                web_contents_);
+        if (!app_id.has_value()) {
           return false;
         }
 

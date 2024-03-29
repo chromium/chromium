@@ -60,6 +60,12 @@ WebAppTabHelper::GetAppIdForNotificationAttribution(
       !web_app_provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
     return std::nullopt;
   }
+  // Default apps are locally installed but unless an app shim has been created
+  // for them should not get attributed notifications.
+  if (!AppShimRegistry::Get()->IsAppInstalledInProfile(*app_id,
+                                                       profile->GetPath())) {
+    return std::nullopt;
+  }
   return *app_id;
 }
 #endif

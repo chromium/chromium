@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -282,6 +284,13 @@ class WebAppNotificationsBrowserTest_MacPermissions
   void SetUpOnMainThread() override {
     WebAppNotificationsBrowserTest::SetUpOnMainThread();
 
+    // The os_hooks_suppress_ is set as part of the
+    // WebAppControllerBrowserTest to prevent OS integrations from being
+    // executed. This needs to be reset so that OS integration can be run.
+    os_hooks_suppress_.reset();
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+
     const GURL app_url =
         https_server()->GetURL("/web_app_notifications/index.html");
 
@@ -290,6 +299,16 @@ class WebAppNotificationsBrowserTest_MacPermissions
     // kStandalone.
     SetAppBrowserForAppId(app_id);
   }
+
+  void TearDownOnMainThread() override {
+    test::UninstallAllWebApps(browser()->profile());
+    override_registration_.reset();
+    WebAppNotificationsBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions, Granted) {
