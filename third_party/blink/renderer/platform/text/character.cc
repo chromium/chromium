@@ -255,26 +255,6 @@ bool Character::MaybeEmojiPresentation(UChar32 c) {
          c == kVariationSelector16Character || c >= 65536;
 }
 
-template <typename CharacterType>
-static inline String NormalizeSpacesInternal(const CharacterType* characters,
-                                             unsigned length) {
-  StringBuilder normalized;
-  normalized.ReserveCapacity(length);
-
-  for (unsigned i = 0; i < length; ++i)
-    normalized.Append(Character::NormalizeSpaces(characters[i]));
-
-  return normalized.ToString();
-}
-
-String Character::NormalizeSpaces(const LChar* characters, unsigned length) {
-  return NormalizeSpacesInternal(characters, length);
-}
-
-String Character::NormalizeSpaces(const UChar* characters, unsigned length) {
-  return NormalizeSpacesInternal(characters, length);
-}
-
 bool Character::IsCommonOrInheritedScript(UChar32 character) {
   ICUError status;
   UScriptCode script = uscript_getScript(character, &status);

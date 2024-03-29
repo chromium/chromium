@@ -152,12 +152,6 @@ class PLATFORM_EXPORT Character {
     return TreatAsZeroWidthSpaceInComplexScript(c) ||
            c == kZeroWidthNonJoinerCharacter || c == kZeroWidthJoinerCharacter;
   }
-  static bool LegacyTreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
-    return c < 0x20  // ASCII Control Characters
-           ||
-           (c >= 0x7F && c < 0xA0)  // ASCII Delete .. No-break spaceCharacter
-           || TreatAsZeroWidthSpaceInComplexScript(c);
-  }
   static bool TreatAsZeroWidthSpaceInComplexScript(UChar32 c) {
     return c == kFormFeedCharacter || c == kCarriageReturnCharacter ||
            c == kSoftHyphenCharacter || c == kZeroWidthSpaceCharacter ||
@@ -194,16 +188,6 @@ class PLATFORM_EXPORT Character {
   static bool IsExtendedPictographic(UChar32);
   static bool MaybeEmojiPresentation(UChar32);
 
-  static inline UChar NormalizeSpaces(UChar character) {
-    if (TreatAsSpace(character))
-      return kSpaceCharacter;
-
-    if (TreatAsZeroWidthSpace(character))
-      return kZeroWidthSpaceCharacter;
-
-    return character;
-  }
-
   static inline bool IsNormalizedCanvasSpaceCharacter(UChar32 c) {
     // According to specification all space characters should be replaced with
     // 0x0020 space character.
@@ -217,9 +201,6 @@ class PLATFORM_EXPORT Character {
     // will fail
     return c == 0x0009 || (c >= 0x000A && c <= 0x000D);
   }
-
-  static String NormalizeSpaces(const LChar*, unsigned length);
-  static String NormalizeSpaces(const UChar*, unsigned length);
 
   static bool IsCommonOrInheritedScript(UChar32);
   static bool IsPrivateUse(UChar32);
