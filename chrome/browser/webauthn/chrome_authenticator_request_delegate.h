@@ -121,6 +121,8 @@ class ChromeAuthenticatorRequestDelegate
    public:
     virtual void Created(ChromeAuthenticatorRequestDelegate* delegate) = 0;
 
+    virtual void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) {}
+
     virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
     GetCablePairingsFromSyncedDevices() = 0;
 
@@ -241,6 +243,12 @@ class ChromeAuthenticatorRequestDelegate
   // for deletion until after the thread-pool is shutdown when testing, causing
   // "leaks" to be reported.
   void SetPassEmptyUsbDeviceManagerForTesting(bool value);
+
+  // Allows setting a mock `TrustedVaultConnection` so a real one will not be
+  // created. This is only used for a single request, and is destroyed
+  // afterward.
+  void SetTrustedVaultConnectionForTesting(
+      std::unique_ptr<trusted_vault::TrustedVaultConnection> connection);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
@@ -444,6 +452,10 @@ class ChromeAuthenticatorRequestDelegate
   // to the account, but then immediately need it in order to satisfy UV for
   // the request.
   std::optional<std::string> gpm_pin_stashed_;
+
+  // Override for test mocking.
+  std::unique_ptr<trusted_vault::TrustedVaultConnection>
+      vault_connection_override_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

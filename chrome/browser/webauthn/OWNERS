@@ -1,1 +1,4 @@
 file://device/fido/OWNERS
+
+# For updates to MockTrustedVaultConnection
+per-file enclave_authenticator_browsertest.cc=file://components/trusted_vault/OWNERS

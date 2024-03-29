@@ -563,6 +563,7 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   }
 
   auto* const sync_service = SyncServiceFactory::GetForProfile(profile);
+
   // TODO(crbug.com/40066949): Remove this call once IsSyncFeatureEnabled()
   // is fully deprecated, see ConsentLevel::kSync documentation for details,
   // in components/signin/public/base/consent_level.h.
@@ -628,6 +629,10 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
   // this delegate.
   dialog_model_->OnRequestComplete();
   dialog_model_->observers.RemoveObserver(this);
+
+  if (g_observer) {
+    g_observer->OnDestroy(this);
+  }
 }
 
 // static
@@ -1300,6 +1305,11 @@ void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
   pass_empty_usb_device_manager_ = value;
 }
 
+void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(
+    std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
+  vault_connection_override_ = std::move(connection);
+}
+
 class ChromeAuthenticatorRequestDelegate::EnclaveManagerObserver
     : public EnclaveManager::Observer {
  public:
@@ -1414,9 +1424,11 @@ void ChromeAuthenticatorRequestDelegate::DownloadAccountState() {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory();
   std::unique_ptr<trusted_vault::TrustedVaultConnection> trusted_vault_conn =
-      trusted_vault::NewFrontendTrustedVaultConnection(
-          trusted_vault::SecurityDomainId::kPasskeys, identity_manager,
-          url_loader_factory);
+      vault_connection_override_
+          ? std::move(vault_connection_override_)
+          : trusted_vault::NewFrontendTrustedVaultConnection(
+                trusted_vault::SecurityDomainId::kPasskeys, identity_manager,
+                url_loader_factory);
   download_account_state_request_ =
       trusted_vault_conn->DownloadAuthenticationFactorsRegistrationState(
           identity_manager->GetPrimaryAccountInfo(

@@ -8,6 +8,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 class EnclaveManager;
 class Profile;
 
@@ -15,6 +19,9 @@ class EnclaveManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static EnclaveManager* GetForProfile(Profile* profile);
   static EnclaveManagerFactory* GetInstance();
+
+  static void SetUrlLoaderFactoryForTesting(
+      network::SharedURLLoaderFactory* factory);
 
  private:
   friend base::NoDestructor<EnclaveManagerFactory>;

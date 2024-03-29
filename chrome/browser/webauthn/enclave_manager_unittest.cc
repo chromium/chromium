@@ -7,12 +7,10 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
-#include "base/path_service.h"
-#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -21,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
+#include "chrome/browser/webauthn/test_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -37,7 +36,6 @@
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/test_callback_receiver.h"
-#include "net/base/port_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -46,10 +44,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "crypto/scoped_fake_apple_keychain_v2.h"
@@ -168,91 +162,6 @@ struct TempDir {
   base::ScopedTempDir dir_;
 };
 
-std::pair<base::Process, uint16_t> StartEnclave(base::FilePath cwd) {
-  base::FilePath data_root;
-  CHECK(base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &data_root));
-  const base::FilePath enclave_bin_path =
-      data_root.AppendASCII("cloud_authenticator_test_service");
-  base::LaunchOptions subprocess_opts;
-  subprocess_opts.current_directory = cwd;
-
-  std::optional<base::Process> enclave_process;
-  uint16_t port;
-  char port_str[6];
-
-  for (int i = 0; i < 10; i++) {
-#if BUILDFLAG(IS_WIN)
-    HANDLE read_handle;
-    HANDLE write_handle;
-    SECURITY_ATTRIBUTES security_attributes;
-
-    security_attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
-    security_attributes.bInheritHandle = TRUE;
-    security_attributes.lpSecurityDescriptor = NULL;
-    CHECK(CreatePipe(&read_handle, &write_handle, &security_attributes, 0));
-
-    subprocess_opts.stdin_handle = INVALID_HANDLE_VALUE;
-    subprocess_opts.stdout_handle = write_handle;
-    subprocess_opts.stderr_handle = INVALID_HANDLE_VALUE;
-    subprocess_opts.handles_to_inherit.push_back(write_handle);
-    enclave_process = base::LaunchProcess(base::CommandLine(enclave_bin_path),
-                                          subprocess_opts);
-    CloseHandle(write_handle);
-    CHECK(enclave_process->IsValid());
-
-    DWORD read_bytes;
-    CHECK(ReadFile(read_handle, port_str, sizeof(port_str), &read_bytes, NULL));
-    CloseHandle(read_handle);
-#else
-    int fds[2];
-    CHECK(!pipe(fds));
-    subprocess_opts.fds_to_remap.emplace_back(fds[1], 1);
-    enclave_process = base::LaunchProcess(base::CommandLine(enclave_bin_path),
-                                          subprocess_opts);
-    CHECK(enclave_process->IsValid());
-    close(fds[1]);
-
-    const ssize_t read_bytes =
-        HANDLE_EINTR(read(fds[0], port_str, sizeof(port_str)));
-    close(fds[0]);
-#endif
-
-    CHECK(read_bytes > 0);
-    port_str[read_bytes - 1] = 0;
-    unsigned u_port;
-    CHECK(base::StringToUint(port_str, &u_port)) << port_str;
-    port = base::checked_cast<uint16_t>(u_port);
-
-    if (net::IsPortAllowedForScheme(port, "wss")) {
-      break;
-    }
-    LOG(INFO) << "Port " << port << " not allowed. Trying again.";
-
-    // The kernel randomly picked a port that Chromium will refuse to connect
-    // to. Try again.
-    enclave_process->Terminate(/*exit_code=*/1, /*wait=*/false);
-  }
-
-  return std::make_pair(std::move(*enclave_process), port);
-}
-
-enclave::ScopedEnclaveOverride TestEnclaveIdentity(uint16_t port) {
-  constexpr std::array<uint8_t, device::kP256X962Length> kTestPublicKey = {
-      0x04, 0x6b, 0x17, 0xd1, 0xf2, 0xe1, 0x2c, 0x42, 0x47, 0xf8, 0xbc,
-      0xe6, 0xe5, 0x63, 0xa4, 0x40, 0xf2, 0x77, 0x03, 0x7d, 0x81, 0x2d,
-      0xeb, 0x33, 0xa0, 0xf4, 0xa1, 0x39, 0x45, 0xd8, 0x98, 0xc2, 0x96,
-      0x4f, 0xe3, 0x42, 0xe2, 0xfe, 0x1a, 0x7f, 0x9b, 0x8e, 0xe7, 0xeb,
-      0x4a, 0x7c, 0x0f, 0x9e, 0x16, 0x2b, 0xce, 0x33, 0x57, 0x6b, 0x31,
-      0x5e, 0xce, 0xcb, 0xb6, 0x40, 0x68, 0x37, 0xbf, 0x51, 0xf5,
-  };
-  const std::string url = "ws://127.0.0.1:" + base::NumberToString(port);
-  enclave::EnclaveIdentity identity;
-  identity.url = GURL(url);
-  identity.public_key = kTestPublicKey;
-
-  return enclave::ScopedEnclaveOverride(std::move(identity));
-}
-
 std::string MakeVaultResponse() {
   trusted_vault_pb::Vault vault;
   vault.mutable_vault_parameters()->set_vault_handle("test vault handle");
@@ -284,8 +193,9 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
       // `IdentityTestEnvironment` wants to run on an IO thread.
       : task_env_(base::test::TaskEnvironment::MainThreadType::IO),
         temp_dir_(),
-        process_and_port_(StartEnclave(temp_dir_.GetPath())),
-        enclave_override_(TestEnclaveIdentity(process_and_port_.second)),
+        process_and_port_(StartWebAuthnEnclave(temp_dir_.GetPath())),
+        enclave_override_(
+            TestWebAuthnEnclaveIdentity(process_and_port_.second)),
         network_service_(CreateNetwork(&network_context_)),
         security_domain_service_(
             FakeSecurityDomainService::New(kSecretVersion)),
@@ -630,7 +540,7 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
   // Override the enclave with port=100, which will cause connection failures.
   {
     device::enclave::ScopedEnclaveOverride override(
-        TestEnclaveIdentity(/*port=*/100));
+        TestWebAuthnEnclaveIdentity(/*port=*/100));
     BoolCallback register_callback;
     manager_.RegisterIfNeeded(register_callback.callback());
     register_callback.WaitForCallback();

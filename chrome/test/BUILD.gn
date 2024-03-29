@@ -5475,6 +5475,14 @@ if (!is_android) {
     }
 
     sources += metric_integration_sources
+
+    if (!is_chromeos) {
+      sources += [ "../browser/webauthn/enclave_authenticator_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/webauthn:test_support",
+        "//components/os_crypt/sync:test_support",
+      ]
+    }
   }
 }
 
@@ -8047,8 +8055,6 @@ test("unit_tests") {
       "../browser/webauthn/cablev2_devices_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
       "../browser/webauthn/enclave_manager_unittest.cc",
-      "../browser/webauthn/fake_security_domain_service.cc",
-      "../browser/webauthn/fake_security_domain_service.h",
       "../common/importer/mock_importer_bridge.cc",
       "../common/importer/mock_importer_bridge.h",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",
@@ -8247,6 +8253,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/side_panel/performance_controls:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/user_notes:mojo_bindings",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webauthn/proto",
       "//components/app_constants",
       "//components/color",
@@ -8312,12 +8319,6 @@ test("unit_tests") {
     ]
 
     data += [ "//ash/components/arc/test/data/icons/" ]
-
-    data_deps += [
-      # enclave_manager_unittest.cc runs this binary as part of its testing
-      # process.
-      "//third_party/cloud_authenticator/test/local_service:cloud_authenticator_test_service",
-    ]
 
     if (include_js2gtest_tests && is_chromeos_ash) {
       data += js2gtest_js_libraries
