@@ -7,8 +7,6 @@ package ios.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-import "ios/web/public/session/proto/metadata.proto";
-
 // Represents the color of a tab group.
 //
 // It maps to colors in a specific color map.
