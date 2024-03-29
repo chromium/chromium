@@ -726,6 +726,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="47677902929517676">Pokud hesla chcete uložit do svého účtu, musíte nejdříve v zařízení nastavit přístupový kód.</translation>
 <translation id="4775879719735953715">Výchozí prohlížeč</translation>
 <translation id="4779732376610430319">Přejít do Nastavení…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Otevřít v anonymním okně?</translation>
 <translation id="4803185665210547709">Spravováno vaší organizací.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5283494734135414249">Klepněte na zkratku, která se zobrazí pod adresním řádkem.</translation>
 <translation id="5295239312320826323">Odstranit účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318298563956633672">Tento produkt již měříte.</translation>
 <translation id="5327753393331509826">Získejte oznámení ohledně obsahu</translation>

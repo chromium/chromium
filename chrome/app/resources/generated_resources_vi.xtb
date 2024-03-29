@@ -3414,6 +3414,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3577487026101678864">Tính năng đồng bộ hoá tệp đang bật</translation>
 <translation id="3577745545227000795">Hoạt động thu thập dữ liệu phần cứng của <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Tự động định cấu hình địa chỉ IP</translation>
+<translation id="3581861561942370740">Tìm kiếm trong nhật ký tải xuống</translation>
 <translation id="3582057310199111521">Bạn đã nhập mật khẩu vào trang web lừa đảo và mật khẩu này được phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3582299299336701326">Làm tối màn hình sáng và làm sáng màn hình tối. Nhấn tổ hợp phím Tìm kiếm + Ctrl + H để bật và tắt tính năng đảo màu.</translation>
 <translation id="3584169441612580296">Đọc và thay đổi ảnh, nhạc và phương tiện khác từ máy tính của bạn</translation>
@@ -5331,6 +5332,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5056950756634735043">Đang kết nối với vùng chứa</translation>
 <translation id="5057110919553308744">Khi bạn nhấp vào tiện ích</translation>
 <translation id="5057127674016624293">Quá trình quét mất nhiều thời gian hơn dự kiến</translation>
+<translation id="5057480703570202545">Nhật ký tải xuống</translation>
 <translation id="5059241099014281248">Hạn chế khả năng đăng nhập</translation>
 <translation id="5059429103770496207">Kiểu hiển thị</translation>
 <translation id="5059526285558225588">Chọn nội dung bạn muốn chia sẻ</translation>
@@ -5740,6 +5742,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5390677308841849479">Cam và đỏ đậm</translation>
 <translation id="5392192690789334093">Được phép gửi thông báo</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Đường liên kết}other{# đường liên kết}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Phông chữ mặc định</translation>
 <translation id="5397378439569041789">Đăng ký thiết bị kiosk hoặc thiết bị bảng hiệu</translation>
 <translation id="5397794290049113714">Bạn</translation>

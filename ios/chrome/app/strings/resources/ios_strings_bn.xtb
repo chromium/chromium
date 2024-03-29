@@ -630,6 +630,7 @@
 <translation id="4282944936010261425">আপনি সমাধান করতে পারেন, সুরক্ষা সম্পর্কিত এমন কোনও সমস্যা নেই।</translation>
 <translation id="4286718549648564014">আপনার অ্যাকাউন্ট <ph name="USER_EMAIL" />-এ ঠিকানা সরানো হয়েছে</translation>
 <translation id="428768789042547925">নতুন কী আছে</translation>
+<translation id="429074084062258019">{count,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="4293080268407233932">সার্চ করুন</translation>
 <translation id="4302248187517737842">কোনও ইউজারনেম নেই ••••••••</translation>
 <translation id="4302415908542657649">পাসওয়ার্ড শেয়ার করা হচ্ছে</translation>
@@ -1270,6 +1271,7 @@
 <translation id="7524055474074101597">অ্যাপ জুড়ে আপনার পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="7527917367892640435">প্যাকেজ আগেই ট্র্যাক করা হয়েছে</translation>
 <translation id="7531345132340165516">বর্তমান সাইট</translation>
+<translation id="75362970626182391">নতুন ট্যাব গ্রুপ</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
 <translation id="754655535278952384"><ph name="TIME" />-এ টিক চিহ্ন দেওয়া হয়েছে</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" />-এ ব্যবহার করা শেষ ট্যাব</translation>

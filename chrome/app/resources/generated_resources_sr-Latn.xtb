@@ -876,7 +876,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1644852018355792105">Unesite Bluetooth šifru za uređaj <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Nepoznat izvor</translation>
-<translation id="1645516838734033527">Da bi štitio <ph name="DEVICE_TYPE" />, Smart Lock zahteva da imate zaključavanje ekrana na telefonu.</translation>
+<translation id="1645516838734033527">Da bi štitio <ph name="DEVICE_TYPE" />, Smart Lock zahteva da imate otključavanje ekrana na telefonu.</translation>
 <translation id="1646045728251578877">Dostupno je softversko ažuriranje</translation>
 <translation id="1646982517418478057">Unesite lozinku da biste šifrovali ovaj sertifikat</translation>
 <translation id="1647408325348388858">Želite da otvorite i izmenite fajl <ph name="FILE_NAME" /> u ovoj veb-aplikaciji?</translation>
@@ -1246,7 +1246,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1926339101652878330">Ova podešavanja kontrolišu smernice za preduzeća. Kontaktirajte administratora za više informacija.</translation>
 <translation id="1926887872692564784">Kursor</translation>
 <translation id="1927632033341042996">Prst <ph name="NEW_FINGER_NUMBER" /></translation>
-<translation id="192817607445937251">PIN za zaključavanje ekrana</translation>
+<translation id="192817607445937251">PIN za otključavanje ekrana</translation>
 <translation id="192858925209436740">Povežite OneDrive sa aplikacijom Fajlovi da biste upravljali sačuvanim dokumentima sa Chromebook-a. Treba da se prijavite pomoću Microsoft naloga.</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
 <translation id="1929343511231420085">Bilo koji serijski port</translation>
@@ -4044,7 +4044,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4043267180218562935">Veličina kursora</translation>
 <translation id="4043620984511647481">Ručno dodajte štampač</translation>
 <translation id="4044612648082411741">Unesite lozinku za sertifikat</translation>
-<translation id="4044708573046946214">Lozinka za zaključavanje ekrana</translation>
+<translation id="4044708573046946214">Lozinka za otključavanje ekrana</translation>
 <translation id="4044883420905480380">Povezali ste se na WiFi i prijavili ste se na <ph name="USER_EMAIL" /> pomoću Android telefona</translation>
 <translation id="404493185430269859">Podrazumevani pretraživač</translation>
 <translation id="4044964245574571633">Koristi Microsoft OneDrive memorijski prostor</translation>
@@ -6584,7 +6584,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6062513606899361544">Nijednoj aplikaciji nije dozvoljeno da koristi lokaciju</translation>
 <translation id="6063284707309177505">Napravi QR kôd</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: Neko sa sličnim glasom ili snimkom možda može da pristupa ličnim rezultatima deteta <ph name="SUPERVISED_USER_NAME" />. Radi uštede baterije u podešavanjima Pomoćnika deteta <ph name="SUPERVISED_USER_NAME" /> možete da izaberete da funkcija „Hej Google“ bude aktivna samo kad je uređaj povezan sa izvorom napajanja.</translation>
-<translation id="6064217302520318294">Zaključavanje ekrana</translation>
+<translation id="6064217302520318294">Otključavanje ekrana</translation>
 <translation id="606449270532897041">Upravljaj podacima o sajtovima</translation>
 <translation id="6064764629679333574">Poboljšajte kvalitet zvuka Bluetooth mikrofona tako što ćete povećati zvuk niske rezolucije na visoku rezoluciju.</translation>
 <translation id="6065145031947216733">Želite da razdvojite pregledanje?</translation>
@@ -7746,7 +7746,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6966370001499648704">Kontrolišite koje telefone koristite kao bezbednosne ključeve</translation>
 <translation id="6967112302799758487">Sve aplikacije i igre instalirane pomoću Steam-a za Chromebook (beta) biće uklonjene sa ovog uređaja. Uklonićemo i podatke povezane sa ovim aplikacijama i igrama. Pre deinstaliranja obavezno napravite rezervne kopije sačuvanih aplikacija i igara.</translation>
 <translation id="6967430741871315905">Nismo uspeli da proverimo da li je uređaj dozvoljen</translation>
-<translation id="6968288415730398122">Unesite lozinku da biste konfigurisali zaključavanje ekrana</translation>
+<translation id="6968288415730398122">Unesite lozinku da biste konfigurisali otključavanje ekrana</translation>
 <translation id="6969047215179982698">Isključi Deljenje u blizini</translation>
 <translation id="6969216690072714773">Unesite nove ili ažurirajte postojeće informacije koje će biti povezane sa ovim uređajem.</translation>
 <translation id="696942486482903620">Kada čuvate lozinke na Google nalogu, možete da ih koristite na ovom uređaju i na svim drugim uređajima na kojima ste prijavljeni</translation>
@@ -8059,7 +8059,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7225179976675429563">Nedostaje tip mreže</translation>
 <translation id="7227458944009118910">Aplikacije navedene ispod mogu da obrađuju i linkove protokola. Ostale aplikacije će tražiti dozvolu.</translation>
 <translation id="7228056665272655255">Da biste podesili otisak prsta, neka dete dodirne senzor za otisak prsta u gornjem desnom uglu tastature. Podaci o otisku prsta deteta se bezbedno čuvaju na ovom <ph name="DEVICE_TYPE" /> uređaju i uvek ostaju na njemu.</translation>
-<translation id="7228523857728654909">Zaključavanje ekrana i prijavljivanje</translation>
+<translation id="7228523857728654909">Otključavanje ekrana i prijavljivanje</translation>
 <translation id="7228854227189381547">Ne prebacuj</translation>
 <translation id="7230222852462421043">&amp;Vrati prozor</translation>
 <translation id="7230881857327093958">Promene će se primeniti posle podešavanja</translation>
@@ -8971,7 +8971,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Tražite komponente pregledača? Posetite</translation>
 <translation id="7903429136755645827">Kliknite da biste prilagodili kontrole za igre</translation>
-<translation id="7903481341948453971">Koristite zaključavanje ekrana kada popunjavate lozinke</translation>
+<translation id="7903481341948453971">Koristite otključavanje ekrana kada popunjavate lozinke</translation>
 <translation id="7903742244674067440">Imate sačuvane sertifikate koji identifikuju ove autoritete za izdavanje sertifikata</translation>
 <translation id="7903925330883316394">Pomoćni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">katakana</translation>
@@ -10632,7 +10632,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9131209053278896908">Ovde se prikazuju blokirani sajtovi</translation>
 <translation id="9131487537093447019">Slanje poruka na Bluetooth uređaje i primanje poruka sa njih.</translation>
 <translation id="9133568201369135151">Prikupljanje dijagnostičkih podataka je završeno. U te podatke su uvršteni i neki lični podaci.</translation>
-<translation id="9133985615769429248">Ako delite ovaj uređaj sa drugima, možete da koristite zaključavanje ekrana da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
+<translation id="9133985615769429248">Ako delite ovaj uređaj sa drugima, možete da koristite otključavanje ekrana da biste potvrdili da ste to vi kada god koristite sačuvanu lozinku</translation>
 <translation id="9134066738478820307">Sajtovi mogu da koriste identifikatore za puštanje zaštićenog sadržaja</translation>
 <translation id="913411432238655354">Vraćanje aplikacija pri pokretanju</translation>
 <translation id="9137013805542155359">Prikaži original</translation>

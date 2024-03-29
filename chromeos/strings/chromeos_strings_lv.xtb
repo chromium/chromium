@@ -34,6 +34,7 @@
 <translation id="1174073918202301297">Saīsne pievienota</translation>
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1180621378971766337">mājīgs</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1191518099344003522">APN ir iespējots.</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
@@ -85,6 +86,7 @@
 <translation id="1451536289672181509">Ierīce ir tastatūra.</translation>
 <translation id="1452939186874918380">lietussargi</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
+<translation id="1463084054301832672">kotedža</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
 <translation id="1478594628797167447">Skeneris</translation>
@@ -162,6 +164,7 @@
 <translation id="183675228220305365">reālisms</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
 <translation id="1840474674287087346">Darbvirsmas krāsa</translation>
+<translation id="184095011128924488">radošs</translation>
 <translation id="1846318329111865304">Sapņu ainavas</translation>
 <translation id="1851218745569890714">Videokonferences</translation>
 <translation id="1852934301711881861">Instalēt Chrome OS Flex</translation>
@@ -188,6 +191,7 @@
 <translation id="1962550982027027473">Jānorāda noklusējuma APN.</translation>
 <translation id="1967860190218310525">Izveidot jaunu APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1977973007732255293">tradicionāls</translation>
 <translation id="1977994649430373166">Google profila fotoattēls</translation>
 <translation id="1979103255016296513">Paroles maiņa ir nokavēta</translation>
 <translation id="1999615961760456652">Caurlaides lapa</translation>
@@ -330,6 +334,7 @@
 <translation id="2878387241690264070">Izlādes apjoms <ph name="NUM_SECONDS" /> s laikā: <ph name="RATE" />.</translation>
 <translation id="2880569433548999039">Ekrānsaudzētājs Peldošie mākoņi</translation>
 <translation id="2890557891229184386">tropu sala</translation>
+<translation id="2895772081848316509">tumšs</translation>
 <translation id="2926057806159140518">Ievadiet savu lietotājvārdu un paroli vai skenējiet kvadrātkodu</translation>
 <translation id="2940811910881150316">Nevar pārbaudīt ierīci. Lai pārbaudītu, atkal atveriet vāku.</translation>
 <translation id="2941112035454246133">Zema</translation>
@@ -345,6 +350,7 @@
 <translation id="3060579846059757016">Struktūras</translation>
 <translation id="3069085583900247081">Testēšana neizdevās</translation>
 <translation id="3078740164268491126">tabula</translation>
+<translation id="3081652522083185657">gaišs</translation>
 <translation id="3083667275341675831">Savienojamības diagnostika</translation>
 <translation id="3084958266922136097">Atspējot ekrānsaudzētāju</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
@@ -385,6 +391,7 @@
 <translation id="3328783797891415197">Tiek veikta pārbaude</translation>
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
+<translation id="3347558044552027859">moderns</translation>
 <translation id="3359218928534347896">pārslēgt mikrofona skaņu</translation>
 <translation id="3360306038446926262">Logi</translation>
 <translation id="3361618936611118375">suši</translation>
@@ -395,6 +402,7 @@
 <translation id="3383623117265110236">Ekskluzīvi</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
+<translation id="3428551088151258685">ārpus telpām</translation>
 <translation id="3428971106895559033">pasteļtoņos</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Drošība</translation>
@@ -448,6 +456,7 @@
 <translation id="3749289110408117711">Faila nosaukums</translation>
 <translation id="3771294271822695279">Video faili</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
+<translation id="3785643128701396311">pikselizēts stils</translation>
 <translation id="3790109258688020991">puantillisms</translation>
 <translation id="380097101658023925">RGB vadīklas</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
@@ -496,6 +505,8 @@
 <translation id="404928562651467259">BRĪDINĀJUMS</translation>
 <translation id="4054683689023980771">Notiek attēla lejupielāde…</translation>
 <translation id="4063039537646912479">gaiši zilā</translation>
+<translation id="4070799384363688067">anime</translation>
+<translation id="4091002263446255071">romantisks</translation>
 <translation id="4093865285251893588">Profila attēls</translation>
 <translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="409469431304488632">Eksperiments</translation>
@@ -670,6 +681,7 @@
 <translation id="5049856988445523908">SIM karte bloķēta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupas nosaukums</translation>
 <translation id="5051044138948155788">Šī ir vienīgā lapa. Tiks atvērts skenēšanas sākuma ekrāns.</translation>
+<translation id="5078983345702708852">futūristisks</translation>
 <translation id="5087864757604726239">atpakaļ</translation>
 <translation id="5088172560898466307">Servera nosaukums</translation>
 <translation id="5089810972385038852">Štats</translation>
@@ -848,6 +860,7 @@
 <translation id="6122277663991249694">Chrome OS ievades metodes pakalpojums</translation>
 <translation id="6127426868813166163">baltā</translation>
 <translation id="6136285399872347291">atpakaļatkāpe</translation>
+<translation id="6137614725462089991">kiberpanks</translation>
 <translation id="6137767437444130246">Lietotāja sertifikāts</translation>
 <translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -894,6 +907,7 @@
 <translation id="6382182670717268353">Ekrānsaudzētāja priekšskatījums</translation>
 <translation id="6388847657025262518">Skenera dokumentu padevējā ir iestrēdzis papīrs. Pārbaudiet padevēju un mēģiniet vēlreiz.</translation>
 <translation id="6394634179843537518">Pievienot failu</translation>
+<translation id="639964859328803943">launags ar tēju</translation>
 <translation id="6400680457268373900">Sirreāls attēls: <ph name="DREAMSCAPES_OBJECT" /> no šāda materiāla: <ph name="DREAMSCAPES_MATERIAL" />, krāsas: <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">meklēšana pārlūkā</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
@@ -913,6 +927,7 @@
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Tikai ierīcē <ph name="PRODUCT_NAME" /> pieejams ekrānsaudzētājs</translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
+<translation id="6492891353338939218">nostalģisks</translation>
 <translation id="6494974875566443634">Pielāgošana</translation>
 <translation id="6500818810472529210">Skatiet rezultātu Google meklēšanā</translation>
 <translation id="650266656685499220">Lai izveidotu albumus, pārejiet uz pakalpojumu Google fotoattēli.</translation>
@@ -940,6 +955,7 @@
 <translation id="6624819909909965616">Nevar augšupielādēt failu, kura lielums pārsniedz 10 MB.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6647510110698214773">Šifrēšanas algoritms</translation>
+<translation id="6648412990074186169">minimālisms</translation>
 <translation id="6650062777702288430">Kana/burtciparu slēdzis</translation>
 <translation id="6657240842932274095">Vai atļaut sistēmas pakalpojumiem izmantot jūsu atrašanās vietu?</translation>
 <translation id="6657585470893396449">Parole</translation>
@@ -960,6 +976,7 @@
 <translation id="6741823073189174383">laiva</translation>
 <translation id="674276385369049081">Jaunākie kameras foni, ko nodrošina Google MI</translation>
 <translation id="6744441848304920043">džungļi</translation>
+<translation id="6747035363363040417">neitrāls</translation>
 <translation id="6747215703636344499">Apturēts — izvades paliktnis ir pilns</translation>
 <translation id="6749473226660745022">Fotoattēli</translation>
 <translation id="6753452347192452143">Ierīce ir dators.</translation>
@@ -1011,6 +1028,7 @@
 <translation id="708426984172631313">APTURĒTA</translation>
 <translation id="7086168019478250425">bioluminiscējoša pludmale</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7097908713073775559">krāsains</translation>
 <translation id="710028965487274708">Neizdevās — autorizācija neizdevās</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Izvēlieties tikai <ph name="PRODUCT_NAME" /> pieejamus mākslas darbus</translation>
@@ -1067,6 +1085,7 @@
           MI fona tapešu izveidei var izmantot tikai personīgiem un nekomerciāliem mērķiem. Ja izmantojat palīdzību fona tapešu veidošanai, Google MI serveriem tiek nosūtīts teksts fona tapešu ieteikumu ģenerēšanai atbilstoši <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Uzzināt vairāk<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Google meklēšanā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
+<translation id="7344788170842919262">zemes toņu</translation>
 <translation id="7353413232959255829"><ph name="LIST_POSITION" />. meklēšanas rezultāts no <ph name="LIST_SIZE" /> rezultātiem vaicājumam <ph name="SEARCH_RESULT_TEXT" />. Lai pārietu uz saīsni, nospiediet taustiņu Enter.</translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="73631062356239394">Diagnostikas datu kopīgošana</translation>
@@ -1194,6 +1213,7 @@
 <translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Izstrādātāju rīki</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8156233298086717232">maģisks</translation>
 <translation id="8162776280680283326">lapsas</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8183975772394450380">pludmale</translation>
@@ -1219,6 +1239,7 @@
 <translation id="8329018942023753850">lietotne Kalkulators</translation>
 <translation id="8336739000755212683">Mainīt ierīces konta attēlu</translation>
 <translation id="8339024191194156249">Uzzināt vairāk par automātisko palaišanu</translation>
+<translation id="8346937114125330423">klasisks</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> vai <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Drukas uzdevumi</translation>
 <translation id="8349758651405877930">instrumenti</translation>
@@ -1256,6 +1277,7 @@
 <translation id="8508640263392900755">Informācija par APN</translation>
 <translation id="8522687886059337719">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" /> un <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrānsaudzētājam<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="852896705346853285">tējas namiņš</translation>
 <translation id="8538236298648811558">Nodrošina Google MI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
@@ -1359,6 +1381,7 @@
 <translation id="9106415115617144481">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana</translation>
 <translation id="9111102763498581341">Atbloķēt</translation>
 <translation id="9122602430962285795">Lai atkārtoti izveidotu savienojumu, pārejiet uz iestatījumiem.</translation>
+<translation id="9122865513525855321">dzenbudisms</translation>
 <translation id="9126720536733509015">Saglabāt vairākas lapas vienā PDF failā</translation>
 <translation id="9133772297793293778">Nospiediet tastatūras modificētājtaustiņus 1–4 un vēl 1 taustiņu. Lai izietu no rediģēšanas režīma, nospiediet taustiņu kombināciju Alt+Esc.</translation>
 <translation id="9137526406337347448">Google pakalpojumi</translation>

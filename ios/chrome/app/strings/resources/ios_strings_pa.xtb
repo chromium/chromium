@@ -726,6 +726,7 @@
 <translation id="47677902929517676">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਹਿਲਾਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਕੋਡ ਸੈੱਟ ਕੀਤਾ ਜਾਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="4775879719735953715">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="4779732376610430319">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">ਕੀ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਖੋਲ੍ਹਣਾ ਹੈ?</translation>
 <translation id="4803185665210547709">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।
 <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">ਪਤਾ ਬਾਰ ਦੇ ਹੇਠਾਂ ਦਿਖਣ ਵਾਲੇ ਸ਼ਾਰਟਕੱਟ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5295239312320826323">ਕੀ ਖਾਤਾ <ph name="USER_EMAIL" /> ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ਵਿੱਚੋਂ <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318298563956633672">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="5327753393331509826">ਸਮੱਗਰੀ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>

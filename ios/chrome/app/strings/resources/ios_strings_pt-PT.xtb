@@ -1182,6 +1182,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6989674195860388998">Alterar nas Definições…</translation>
 <translation id="6998989275928107238">Para</translation>
 <translation id="699954956411469731">Notificações para dispositivos móveis</translation>
+<translation id="699985840472413751">Fechar transferência</translation>
 <translation id="7004032350256606903">A sua entidade requer que navegue em privado.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
@@ -1472,6 +1473,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="850600235656508448">Abrir no modo de navegação anónima</translation>
 <translation id="8517375800490286174">Licenças de Código Aberto</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} palavra-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, {email}.}other{{count} palavras-passe e outros itens são guardados apenas neste dispositivo. Para usá-los nos seus outros dispositivos, guarde-os na sua Conta Google, {email}.}}</translation>
+<translation id="8522813812888400223">Cancelar transferência</translation>
 <translation id="8524799873541103884">Separadores <ph name="INCOGNITO" /> <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">A sua sessão vai ser terminada e os separadores vão ser fechados</translation>
 <translation id="8528009254289981965">Abra links de outras apps na Navegação anónima</translation>

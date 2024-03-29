@@ -630,6 +630,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4282944936010261425">Xavfsizlik yuzasidan tuzatilishi kerak muammo mavjud emas.</translation>
 <translation id="4286718549648564014">Manzil <ph name="USER_EMAIL" /> hisobingizga olindi</translation>
 <translation id="428768789042547925">Yangi xususiyatlar</translation>
+<translation id="429074084062258019">{count,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
 <translation id="4293080268407233932">Qidiruv</translation>
 <translation id="4302248187517737842">Loginsiz ••••••••</translation>
 <translation id="4302415908542657649">Parol ulashilgan</translation>
@@ -1269,6 +1270,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7524055474074101597">Boshqa ilovalarda parollaringiz va boshqalarni oching.</translation>
 <translation id="7527917367892640435">Joʻnatma kuzatilmoqda</translation>
 <translation id="7531345132340165516">Joriy sayt</translation>
+<translation id="75362970626182391">Yangi varaqlar guruhi</translation>
 <translation id="7537586195939242955">Passbook ilovasiga ma’lumotlarni yozib bo‘lmadi.</translation>
 <translation id="754655535278952384">Tekshirildi: <ph name="TIME" /></translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" />da oxirgi ochilgan varaq</translation>

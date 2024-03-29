@@ -630,6 +630,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4282944936010261425">Tidak ada masalah keamanan yang harus Anda perbaiki.</translation>
 <translation id="4286718549648564014">Alamat dipindahkan ke akun <ph name="USER_EMAIL" /> Anda</translation>
 <translation id="428768789042547925">Yang Baru</translation>
+<translation id="429074084062258019">{count,plural, =1{Tambahkan Tab ke Grup}other{Tambahkan Tab ke Grup}}</translation>
 <translation id="4293080268407233932">Telusuri</translation>
 <translation id="4302248187517737842">Tidak Ada Nama Pengguna ••••••••</translation>
 <translation id="4302415908542657649">Berbagi Sandi</translation>
@@ -1269,6 +1270,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7524055474074101597">Akses sandi Anda dan lainnya di seluruh aplikasi.</translation>
 <translation id="7527917367892640435">Paket Sudah Dilacak</translation>
 <translation id="7531345132340165516">Situs Ini</translation>
+<translation id="75362970626182391">Grup Tab Baru</translation>
 <translation id="7537586195939242955">Maaf, Pass Anda tidak dapat dipasang ke Passbook saat ini.</translation>
 <translation id="754655535278952384">Diperiksa <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Tab Terakhir yang Digunakan pada <ph name="SOURCE_DEVICE" /></translation>

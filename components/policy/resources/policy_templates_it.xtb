@@ -1517,6 +1517,24 @@ Se questo criterio non viene configurato, equivale ad attivarlo per gli utenti n
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
 <translation id="2183338188392346527">Non segnalare i contatori del tempo di esecuzione del dispositivo</translation>
+<translation id="2187372280917024033">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi. Questo criterio è molto simile a <ph name="DOH_TEMPLATES_POLICY_NAME" /> e lo sostituirà se verrà specificato.
+A differenza del criterio <ph name="DOH_TEMPLATES_POLICY_NAME" />, questo criterio consente di specificare le informazioni sull'identità.
+Gli identificatori vengono specificati mediante segnaposto di variabili che vengono sostituiti con informazioni sull'utente o sul dispositivo in <ph name="PRODUCT_NAME" />. Gli identificatori non vengono inviati al server DNS come testo normale; vengono invece sottoposti ad hashing con l'algoritmo <ph name="SHA256" /> e con codifica esadecimale maiuscola.
+
+Gli identificatori vengono specificati tra parentesi graffe, precedute dal simbolo del dollaro. Per l'identificazione degli utenti, usa i seguenti segnaposto <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> e <ph name="USER_EMAIL_NAME" />. Per l'identificazione del dispositivo, usa i seguenti segnaposto <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> e <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Prima della versione 122, gli identificatori dei dispositivi non venivano sostituiti per gli utenti non affiliati. A partire dalla versione 122, i segnaposto dei dispositivi vengono sostituiti con il valore <ph name="DEVICE_NOT_MANAGED" />, che viene sottoposto ad hashing e con codifica esadecimale.
+
+A partire dalla versione 125, gli indirizzi IP dei dispositivi possono essere aggiunti come URI del modello utilizzando il segnaposto <ph name="DEVICE_IP_ADDRESSES" />. Questo segnaposto verrà sostituito da una stringa esadecimale che rappresenta l'ordine dei byte di rete dell'indirizzo IPv4 e/o dell'indirizzo IPv6 associati alla rete attuale, se quest'ultima è gestita tramite criteri.
+L'indirizzo IPv4 reca il prefisso 0010; l'indirizzo IPv6 reca il prefisso 0020. Per le reti a doppio stack, per la sostituzione dei segnaposto verranno utilizzati entrambi gli indirizzi IPv4 e IPv6. Vengono aggiunti più indirizzi consecutivamente, senza delimitatore. Per gli utenti non affiliati, la sostituzione avviene solo se la rete è gestita in base ai criteri relativi agli utenti. Se il segnaposto degli indirizzi IP non può essere sostituito con l'indirizzo IP del dispositivo, viene sostituito con una stringa vuota.
+
+Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_SECURE" />, è necessario configurare questo criterio o il criterio <ph name="DOH_TEMPLATES_POLICY_NAME" /> e il campo non può essere lasciato vuoto.
+
+Se il criterio <ph name="DOH_MODE_POLICY_NAME" /> viene impostato su <ph name="SECURE_DNS_MODE_AUTOMATIC" /> e questo criterio viene configurato, verranno usati i modelli URI specificati; se questo criterio non viene configurato, verranno usate le mappature impostate come hardcoded per cercare di eseguire l'upgrade del resolver DNS attuale dell'utente a un resolver DoH gestito dallo stesso fornitore.
+
+Se il modello URI contiene una variabile <ph name="HTTP_VARIABLE_DNS" />, per le richieste al resolver verrà usato il metodo <ph name="HTTP_METHOD_GET" />; in caso contrario verrà usato il metodo <ph name="HTTP_METHOD_POST" />.
+
+Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è facoltativo se viene configurato questo criterio.</translation>
 <translation id="219297066914002620">Indica a <ph name="PRODUCT_OS_NAME" /> di attivare o disattivare gli strumenti della console di gestione delle macchine virtuali.
 
       Se il criterio viene impostato su true o non viene impostato, l'utente potrà usare l'interfaccia a riga di comando di gestione delle macchine virtuali.
@@ -2095,6 +2113,10 @@ NOTA: questo criterio presentava un valore predefinito documentato erroneamente 
 <translation id="2608535066974278204">Il periodo di tempo (in minuti) che specifica la durata dell'intervallo di tempo per il riavvio.</translation>
 <translation id="2608887839902987727">Impedisci all'autenticazione captive portal di ignorare le impostazioni del proxy</translation>
 <translation id="2608985885792348429">Impostazione relativa agli appunti predefinita</translation>
+<translation id="2613493229743687635">L'API <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> consente alle applicazioni web isolate (identificate in base alla loro origine) di acquisire più piattaforme contemporaneamente senza ulteriore autorizzazione dell'utente.
+      Se il criterio non viene configurato, <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> non è disponibile per alcuna applicazione web.
+Per migliorare la privacy, questo criterio non supporterà gli aggiornamenti a metà sessione del valore del criterio, pertanto le modifiche verranno applicate solo dopo che l'utente si è disconnesso e ha eseguito nuovamente l'accesso.
+L'utente avrà la certezza che, dopo l'accesso, le altre app non saranno in grado di acquisire le schermate, se ciò non era già stato consentito all'inizio della sessione.</translation>
 <translation id="2615240493030733717">Segnala informazioni sul fuso orario</translation>
 <translation id="2619258867868873629">La destinazione "Salva come PDF" e la destinazione "Salva su Google Drive" sui dispositivi <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2621290137818374425">La configurazione del criterio consente di disattivare i requisiti relativi alle informative di Certificate Transparency per i nomi host negli URL specificati. Anche se rilevare certificati emessi in modo scorretto diventa più difficile, gli host possono continuare a utilizzare certificati che altrimenti non verrebbero ritenuti attendibili, in quanto non resi pubblici in modo appropriato.
@@ -4678,6 +4700,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="4725801978265372736">Richiedi la corrispondenza tra il nome dell'utente locale e il proprietario dell'host di accesso remoto</translation>
 <translation id="4726228171190098009">Non consentire al dispositivo di richiedere il Powerwash</translation>
 <translation id="4726895359147376813">Mappatura di ID permanenti a configurazioni delle VM</translation>
+<translation id="4732069502693984686">Attiva l'acquisizione automatica di più schermate</translation>
 <translation id="4733471537137819387">Norme relative all'autenticazione HTTP integrata.</translation>
 <translation id="473673197014866318">Questo criterio consente di stabilire le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da criteri relativi alle estensioni esistenti. Il criterio prevale su tutti i criteri precedenti che potrebbero essere stati impostati.
 

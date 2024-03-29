@@ -726,6 +726,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="47677902929517676">Para salvar senhas na sua conta, primeiro defina uma para o dispositivo.</translation>
 <translation id="4775879719735953715">Navegador padrão</translation>
 <translation id="4779732376610430319">Acessar as configurações…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Abrir na navegação anônima?</translation>
 <translation id="4803185665210547709">Gerenciado pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5283494734135414249">Toque no atalho que aparece abaixo da barra de endereço.</translation>
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5318298563956633672">Você já está acompanhando este produto.</translation>
 <translation id="5327753393331509826">Receber notificações de conteúdo</translation>

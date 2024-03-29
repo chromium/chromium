@@ -2491,6 +2491,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2845382757467349449">Lesezeichenleiste immer anzeigen</translation>
 <translation id="2845751331501453107">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK1" />der von Websites vorgeschlagenen Werbung<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />deinen Cookie-Einstellungen<ph name="LINK_END2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
 <translation id="284581348330507117">Erstelle unterschiedliche Passwörter</translation>
+<translation id="284884486564166077">Mit Lens in einem Bild suchen</translation>
 <translation id="2849035674501872372">Nachsehen</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Deine PIN wurde hinzugefügt</translation>
@@ -3395,6 +3396,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3577487026101678864">Dateisynchronisierung an</translation>
 <translation id="3577745545227000795">Erhebung von Hardwaredaten durch <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">IP-Adresse automatisch konfigurieren</translation>
+<translation id="3581861561942370740">Im Downloadverlauf suchen</translation>
 <translation id="3582057310199111521">Auf einer betrügerischen Website eingegeben und durch eine Datenpanne preisgegeben</translation>
 <translation id="3582299299336701326">Helle Displays werden dunkel und dunkle Displays hell. Durch Drücken der Suchtaste + Strg + H wird die Farbumkehr aktiviert und deaktiviert.</translation>
 <translation id="3584169441612580296">Fotos, Musik und andere Medien auf deinem Computer lesen und ändern</translation>
@@ -5311,6 +5313,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="5057127674016624293">Das Scannen dauert länger als erwartet</translation>
+<translation id="5057480703570202545">Downloadverlauf</translation>
 <translation id="5059241099014281248">Anmeldung beschränken</translation>
 <translation id="5059429103770496207">Anzeigestil</translation>
 <translation id="5059526285558225588">Auswählen, was geteilt werden soll</translation>
@@ -5720,6 +5723,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5390677308841849479">Dunkelrot und Orange</translation>
 <translation id="5392192690789334093">Dürfen Benachrichtigungen senden</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# Links}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Standardschriftart</translation>
 <translation id="5397378439569041789">Kiosk- und Beschilderungsgeräte anmelden</translation>
 <translation id="5397794290049113714">Ich</translation>

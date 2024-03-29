@@ -1182,6 +1182,7 @@
 <translation id="6989674195860388998">सेटिङमा गई डिफल्ट ब्राउजर बदल्नुहोस्…</translation>
 <translation id="6998989275928107238">लाई</translation>
 <translation id="699954956411469731">मोबाइलमा प्राप्त सूचनाहरू</translation>
+<translation id="699985840472413751">डाउनलोड बार बन्द गर्नुहोस्</translation>
 <translation id="7004032350256606903">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
@@ -1472,6 +1473,7 @@
 <translation id="850600235656508448">इन्कोग्निटोमा खोल्नुहोस्</translation>
 <translation id="8517375800490286174">खुला स्रोतका इजाजतपत्रहरू</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} पासवर्ड र अन्य वस्तुहरू यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड र वस्तुहरू आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता ({email}) मा सेभ गर्नुहोस्।}other{{count} वटा पासवर्ड र अन्य वस्तुहरू यो डिभाइसमा मात्र सेभ गरिएका छन्। यी पासवर्ड र वस्तुहरू आफ्ना अन्य डिभाइसहरूमा प्रयोग गर्न तिनलाई आफ्नो Google खाता ({email}) मा सेभ गर्नुहोस्।}}</translation>
+<translation id="8522813812888400223">डाउनलोड गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ट्याबहरू <ph name="FIRST_VISIBLE_TAB" /> मार्फत <ph name="LAST_VISIBLE_TAB" /> को <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">तपाईंलाई साइन आउट गरिने छ र ट्याबहरू बन्द गरिने छन्</translation>
 <translation id="8528009254289981965">अन्य एपका लिंकहरू इन्कोग्निटो मोडमा खोल्नुहोस्</translation>

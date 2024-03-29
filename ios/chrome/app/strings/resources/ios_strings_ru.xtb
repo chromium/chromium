@@ -726,6 +726,7 @@
 <translation id="47677902929517676">Чтобы сохранить пароли в аккаунте, сначала настройте код доступа на устройстве.</translation>
 <translation id="4775879719735953715">Браузер по умолчанию</translation>
 <translation id="4779732376610430319">Открыть настройки</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Открыть в режиме инкогнито?</translation>
 <translation id="4803185665210547709">Браузером управляет ваша организация.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">Нажмите на ярлык под адресной строкой.</translation>
 <translation id="5295239312320826323">Удалить аккаунт <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показать</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> из <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318298563956633672">Вы уже отслеживаете этот товар.</translation>
 <translation id="5327753393331509826">Получайте уведомления о контенте</translation>

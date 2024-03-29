@@ -2486,6 +2486,7 @@
 <translation id="2845382757467349449">总是显示书签栏</translation>
 <translation id="2845751331501453107">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK1" />网站建议的广告<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
+<translation id="284884486564166077">使用智能镜头搜索任意图片</translation>
 <translation id="2849035674501872372">查找</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">您的 PIN 码已添加完毕</translation>
@@ -3390,6 +3391,7 @@
 <translation id="3577487026101678864">已开启文件同步</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> 硬件数据收集</translation>
 <translation id="3581605050355435601">自动配置 IP 地址</translation>
+<translation id="3581861561942370740">搜索下载记录</translation>
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3582299299336701326">将亮屏幕调暗，或将暗屏幕调亮。按搜索键 + Ctrl + H 即可开启和关闭颜色反转功能。</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
@@ -5305,6 +5307,7 @@
 <translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5057127674016624293">扫描用时超出了预期</translation>
+<translation id="5057480703570202545">下载记录</translation>
 <translation id="5059241099014281248">限制登录</translation>
 <translation id="5059429103770496207">显示样式</translation>
 <translation id="5059526285558225588">选择要分享什么</translation>
@@ -5714,6 +5717,7 @@
 <translation id="5390677308841849479">深红色和橙色</translation>
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
+<translation id="5394529681046491727">Wi-Fi 直连</translation>
 <translation id="5395498824851198390">默认字体</translation>
 <translation id="5397378439569041789">注册自助服务终端或数字标牌设备</translation>
 <translation id="5397794290049113714">您</translation>

@@ -630,6 +630,7 @@
 <translation id="4282944936010261425">没有需要解决的安全问题。</translation>
 <translation id="4286718549648564014">已将地址迁移到您的账号 <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">新变化</translation>
+<translation id="429074084062258019">{count,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="4293080268407233932">搜索</translation>
 <translation id="4302248187517737842">无用户名 ••••••••</translation>
 <translation id="4302415908542657649">正在分享密码</translation>
@@ -725,6 +726,7 @@
 <translation id="47677902929517676">若要将密码保存到您的账号，您必须先在设备上设置屏幕解锁密码。</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4779732376610430319">前往“设置”…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">在无痕模式下打开？</translation>
 <translation id="4803185665210547709">由贵单位管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@
 <translation id="5283494734135414249">点按地址栏下方显示的相应快捷方式。</translation>
 <translation id="5295239312320826323">移除账号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
+<translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">您已在跟踪此产品。</translation>
 <translation id="5327753393331509826">接收内容通知</translation>
@@ -1267,6 +1270,7 @@
 <translation id="7524055474074101597">获取您为各种应用保存的密码和其他信息。</translation>
 <translation id="7527917367892640435">已在跟踪此包裹</translation>
 <translation id="7531345132340165516">当前网站</translation>
+<translation id="75362970626182391">新标签页分组</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="754655535278952384">上次检查时间：<ph name="TIME" /></translation>
 <translation id="7552154146060018538">在 <ph name="SOURCE_DEVICE" /> 上使用的最后一个标签页</translation>

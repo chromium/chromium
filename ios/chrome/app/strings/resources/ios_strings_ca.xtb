@@ -630,6 +630,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4282944936010261425">No hi ha cap problema de seguretat que hagis de corregir.</translation>
 <translation id="4286718549648564014">L'adreça s'ha mogut al compte <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novetats</translation>
+<translation id="429074084062258019">{count,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="4293080268407233932">Cerca</translation>
 <translation id="4302248187517737842">Sense nom d'usuari ••••••••</translation>
 <translation id="4302415908542657649">S'està compartint la contrasenya</translation>
@@ -725,6 +726,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="47677902929517676">Per desar les contrasenyes al teu compte, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="4775879719735953715">Navegador predeterminat</translation>
 <translation id="4779732376610430319">Ves a Configuració...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Vols obrir-ho en mode d'incògnit?</translation>
 <translation id="4803185665210547709">Gestionat per la teva organització.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5283494734135414249">Toca la drecera que es mostra a sota de la barra d'adreces.</translation>
 <translation id="5295239312320826323">Vols suprimir el compte <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318298563956633672">Ja estàs fent el seguiment d'aquest producte.</translation>
 <translation id="5327753393331509826">Rep notificacions de contingut</translation>
@@ -1267,6 +1270,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7524055474074101597">Accedeix a les teves contrasenyes i a altres elements en totes les aplicacions.</translation>
 <translation id="7527917367892640435">Paquet ja seguit</translation>
 <translation id="7531345132340165516">Lloc web actual</translation>
+<translation id="75362970626182391">Grup de pestanyes nou</translation>
 <translation id="7537586195939242955">No es pot instal·lar el passi a Passbook en aquest moment.</translation>
 <translation id="754655535278952384">Comprovada <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Darrera pestanya utilitzada a <ph name="SOURCE_DEVICE" /></translation>

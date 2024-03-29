@@ -637,6 +637,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
 <translation id="4425173294238317796">Giriş açarı təsdiqi üçün vərəq</translation>
 <translation id="442518031075347249">Artıq virtual kartınızı Google Pay ilə istifadə edə bilməyəcəksiniz. <ph name="BEGIN_LINK1" />Virtual kartlar haqqında ətraflı məlumat<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Veb tarixçənizin bəzi hissəsi burada görünməyə bilər. Lazım gələrsə, "Tam Chrome tarixçəsini açın" seçiminə toxunun. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> keçidində Google Hesabınıza məxsus brauzer tarixçəsinin başqa formaları ola bilər</translation>
 <translation id="4430277756566635951">Seçilib: <ph name="EMAIL" />. Hesab seçin.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> tabını bağlayın</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> qovluğuna əlfəcinləndi</translation>
@@ -1104,6 +1105,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6719634564325948108">QR Kodu ilə qoşulun?</translation>
 <translation id="6723740634201835758">Google Hesabında</translation>
 <translation id="6738867403308150051">Endirilir...</translation>
+<translation id="67404633032079629">Veb tarixçənizin bəzi hissəsi burada görünməyə bilər. Tam veb tarixçəsini görmək üçün "Tam Chrome tarixçəsini açın" üzərinə toxunun.</translation>
 <translation id="674388916582496364">Ziyarət etdiyiniz saytların təcrübənizi fərdiləşdirmək üçün maraqlarınızı xatırlaması normaldır. Saytlar həmçinin maraqlarınız haqqında Chrome ilə məlumat saxlaya bilər.</translation>
 <translation id="6751521182688001123">Cəld yeni tab açın. Bu qısayolu redaktə etmək üçün toxunub saxlayın.</translation>
 <translation id="6756507620369789050">Rəy paylaşın</translation>

@@ -2497,6 +2497,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2845382757467349449">Toujours afficher la barre des favoris</translation>
 <translation id="2845751331501453107">Lorsque vous naviguez, la personnalisation d'une annonce que vous voyez dépend de ce paramètre, des <ph name="BEGIN_LINK1" />annonces suggérées par le site<ph name="LINK_END1" />, des <ph name="BEGIN_LINK2" />paramètres des témoins<ph name="LINK_END2" />, et du fait que le site que vous consultez personnalise les annonces</translation>
 <translation id="284581348330507117">Créer des mots de passe uniques</translation>
+<translation id="284884486564166077">Rechercher une image avec Lentille</translation>
 <translation id="2849035674501872372">Obtenir des réponses rapides</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Votre NIP a été ajouté</translation>
@@ -3401,6 +3402,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3577487026101678864">La synchronisation des fichiers est activée</translation>
 <translation id="3577745545227000795">Collecte des données matérielles par <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Configurer automatiquement l'adresse IP</translation>
+<translation id="3581861561942370740">Rechercher dans l'historique des téléchargements</translation>
 <translation id="3582057310199111521">Entré sur un site trompeur et trouvé dans une violation de données</translation>
 <translation id="3582299299336701326">Assombrissez les écrans clairs et éclaircissez les écrans sombres. Appuyez sur Rechercher+Ctrl+H pour activer et désactiver l'inversion des couleurs.</translation>
 <translation id="3584169441612580296">Lire et modifier les photos, la musique et les autres médias stockés sur votre ordinateur</translation>
@@ -5317,6 +5319,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5056950756634735043">Connexion au conteneur en cours…</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
 <translation id="5057127674016624293">L'analyse prend plus de temps que prévu</translation>
+<translation id="5057480703570202545">Historique des téléchargements</translation>
 <translation id="5059241099014281248">Restreindre les connexions</translation>
 <translation id="5059429103770496207">Style d'affichage</translation>
 <translation id="5059526285558225588">Choisir quoi partager</translation>
@@ -5726,6 +5729,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5390677308841849479">Rouge foncé et orange</translation>
 <translation id="5392192690789334093">Autorisés à envoyer des notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
+<translation id="5394529681046491727">Wi-Fi direct</translation>
 <translation id="5395498824851198390">Police par défaut</translation>
 <translation id="5397378439569041789">Inscrire l'appareil kiosk ou d'affichage</translation>
 <translation id="5397794290049113714">Vous</translation>

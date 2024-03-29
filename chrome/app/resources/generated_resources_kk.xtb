@@ -2491,6 +2491,7 @@
 <translation id="2845382757467349449">Әрқашан бетбелгілер жолағын көрсету</translation>
 <translation id="2845751331501453107">Шолу кезінде сіз көрген жарнаманың жекелендірілгені осы параметрге, <ph name="BEGIN_LINK1" />сайт ұсынған жарнамаларға<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cookie файлдарының параметрлеріне<ph name="LINK_END2" /> және сіз көріп жатқан сайттың жарнамаларды жекелендіруіне байланысты.</translation>
 <translation id="284581348330507117">Бірегей құпия сөздер жасаңыз.</translation>
+<translation id="284884486564166077">Lens көмегімен кез келген суретті іздеңіз</translation>
 <translation id="2849035674501872372">Іздеу</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">PIN кодыңыз енгізілді</translation>
@@ -3395,6 +3396,7 @@
 <translation id="3577487026101678864">Файлды синхрондау қосулы</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> жабдық деректерін жинау</translation>
 <translation id="3581605050355435601">IP мекенжайын автоматты конфигурациялау</translation>
+<translation id="3581861561942370740">Жүктеп алу тарихынан іздеу</translation>
 <translation id="3582057310199111521">Жалған сайтқа кірген және деректер қауіпсіздігінің бұзылуы анықталды</translation>
 <translation id="3582299299336701326">Ашық экрандарды қарайтып, күңгірт экрандарды ашық ете аласыз. "Іздеу" + Ctrl + H перне тіркесімімен түс инверсиясын қосуға және өшіруге болады.</translation>
 <translation id="3584169441612580296">Компьютеріңізден фотосуреттерді, музыканы және басқа медиа файлдарын оқу және өзгерту</translation>
@@ -5311,6 +5313,7 @@
 <translation id="5056950756634735043">Контейнерге қосылуда</translation>
 <translation id="5057110919553308744">Кеңейтім басылғанда</translation>
 <translation id="5057127674016624293">Сканерлеу әдеттегіден ұзаққа созылып жатыр</translation>
+<translation id="5057480703570202545">Жүктеп алу тарихы</translation>
 <translation id="5059241099014281248">Кіруді шектеу</translation>
 <translation id="5059429103770496207">Көрсету стилі</translation>
 <translation id="5059526285558225588">Бөлісілетін контентті таңдаңыз</translation>
@@ -5720,6 +5723,7 @@
 <translation id="5390677308841849479">Қою қызыл және сарғылт</translation>
 <translation id="5392192690789334093">Хабарландыру жіберуге рұқсат бар</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Сілтеме}other{# сілтеме}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Әдепкі қаріп</translation>
 <translation id="5397378439569041789">Киоскіні немесе көрсеткіш құрылғыны тіркеу</translation>
 <translation id="5397794290049113714">Сіз</translation>

@@ -630,6 +630,7 @@
 <translation id="4282944936010261425">તમારે ઠીક કરવી પડે એવી કોઈ સુરક્ષા સંબંધિત સમસ્યા નથી.</translation>
 <translation id="4286718549648564014">સરનામું તમારા એકાઉન્ટ <ph name="USER_EMAIL" /> પર ખસેડવામાં આવ્યું</translation>
 <translation id="428768789042547925">નવું શું છે</translation>
+<translation id="429074084062258019">{count,plural, =1{ગ્રૂપમાં ટૅબ ઉમેરો}one{ગ્રૂપમાં ટૅબ ઉમેરો}other{ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="4293080268407233932">શોધો</translation>
 <translation id="4302248187517737842">કોઈ વપરાશકર્તાનું નામ નથી ••••••••</translation>
 <translation id="4302415908542657649">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
@@ -725,6 +726,7 @@
 <translation id="47677902929517676">તમારા એકાઉન્ટમાં પાસવર્ડ સાચવવા માટે, તમારે સૌથી પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="4775879719735953715">ડિફૉલ્ટ બ્રાઉઝર</translation>
 <translation id="4779732376610430319">સેટિંગ પર જાઓ...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">શું છૂપા મોડમાં ખોલીએ?</translation>
 <translation id="4803185665210547709">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@
 <translation id="5283494734135414249">ઍડ્રેસ બારની નીચે દેખાતા શૉર્ટકટ પર ટૅપ કરો.</translation>
 <translation id="5295239312320826323">એકાઉન્ટ <ph name="USER_EMAIL" /> કાઢી નાખીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />માંથી <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
 <translation id="5327753393331509826">કન્ટેન્ટ સંબંધિત નોટિફિકેશન મેળવો</translation>
@@ -1267,6 +1270,7 @@
 <translation id="7524055474074101597">સમગ્ર ઍપ પર તમારા પાસવર્ડ અને બીજું ઘણું ઍક્સેસ કરો.</translation>
 <translation id="7527917367892640435">પૅકેજને પહેલેથી જ ટ્રૅક કરવામાં આવ્યું છે</translation>
 <translation id="7531345132340165516">વર્તમાન સાઇટ</translation>
+<translation id="75362970626182391">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
 <translation id="754655535278952384">છેલ્લે ચેક કર્યાનો સમય <ph name="TIME" /></translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> પર ઉપયોગમાં લીધેલું છેલ્લું ટૅબ</translation>

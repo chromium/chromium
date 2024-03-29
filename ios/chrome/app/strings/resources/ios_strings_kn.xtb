@@ -726,6 +726,7 @@
 <translation id="47677902929517676">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಸೆಟ್‌ ಮಾಡಬೇಕು.</translation>
 <translation id="4775879719735953715">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್</translation>
 <translation id="4779732376610430319">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಬೇಕೆ?</translation>
 <translation id="4803185665210547709">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -834,6 +835,7 @@
 <translation id="5283494734135414249">ವಿಳಾಸ ಪಟ್ಟಿಯ ಅಡಿಯಲ್ಲಿ ಗೋಚರಿಸುವ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
+<translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="INDEX" /></translation>
 <translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5318298563956633672">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="5327753393331509826">ಕಂಟೆಂಟ್‌ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>

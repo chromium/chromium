@@ -206,6 +206,7 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
       Ist die Richtlinie deaktiviert, ist die Funktion „Einkaufsliste“ nicht verfügbar.
       </translation>
 <translation id="1144147113722324623">Automatisches Upgrade auf HTTPS für Audio und Video aktivieren und Warnhinweis „Nicht sicher“ für Bilder anzeigen.</translation>
+<translation id="1145928409398419809"><ph name="GOOGLE_CLASSROOM_NAME" />-Integration deaktivieren.</translation>
 <translation id="1147732569915511430">SHA-256-Hash des Avatarbilds.</translation>
 <translation id="1148415065145333943">Modus „Intelligente Akkuladung“ deaktivieren</translation>
 <translation id="1149203480502386713">Post-Quanten-Algorithmus für Schlüsselvereinbarungen mit TLS aktivieren</translation>
@@ -1500,6 +1501,24 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
 <translation id="2180958780733364832">Verwendung des monitorlosen Modus verwalten</translation>
 <translation id="2182291258410176649">Der Nutzer entscheidet, ob "Sicherung und Wiederherstellung" aktiviert werden soll</translation>
 <translation id="2183338188392346527">Gerätelaufzeitzähler nicht melden</translation>
+<translation id="2187372280917024033">Die URI-Vorlage des gewünschten DNS-over-HTTPS-Resolvers. Wenn du mehrere DNS-over-HTTPS-Resolver angeben möchtest, trenne die dazugehörigen URI-Vorlagen durch Leerzeichen. Diese Richtlinie ist der Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ sehr ähnlich, die sie überschreibt, wenn sie konfiguriert ist.
+Im Gegensatz zur Richtlinie „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ unterstützt diese Richtlinie die Angabe von Informationen zur Identität.
+IDs werden mithilfe von Variablenplatzhaltern angegeben, die in <ph name="PRODUCT_NAME" /> durch Nutzer- oder Geräteinformationen ersetzt werden. Die IDs werden nicht in Nur-Text an den DNS-Server gesendet. Stattdessen werden sie mit dem <ph name="SHA256" />-Algorithmus gehasht und im Hexadezimalsystem mit Großbuchstaben codiert.
+
+IDs werden in geschweiften Klammern angegeben, denen ein Dollarzeichen vorangestellt ist. Verwende zur Nutzeridentifikation die Platzhalter <ph name="USER_EMAIL" />, <ph name="USER_EMAIL_DOMAIN" /> und <ph name="USER_EMAIL_NAME" />. Verwende zur Geräteidentifikation die Platzhalter <ph name="DEVICE_DIRECTORY_ID" />, <ph name="DEVICE_SERIAL_NUMBER" />, <ph name="DEVICE_ASSET_ID" /> und <ph name="DEVICE_ANNOTATED_LOCATION" />.
+
+Vor Version 122 wurden Geräte-IDs für nicht verbundene Nutzer nicht ersetzt. Ab Version 122 werden die Geräteplatzhalter durch den Wert „<ph name="DEVICE_NOT_MANAGED" />“ ersetzt, der gehasht und im Hexadezimalsystem codiert ist.
+
+Ab Version 125 können die Geräte-IP-Adressen als Vorlagen-URI mit dem Platzhalter <ph name="DEVICE_IP_ADDRESSES" /> hinzugefügt werden. Dieser Platzhalter wird durch einen Hexadezimalstring ersetzt, der die Netzwerk-Bytereihenfolge der IPv4- und/oder IPv6-Adresse des aktuellen Netzwerks darstellt, wenn das Netzwerk durch eine Richtlinie verwaltet wird.
+Der IPv4-Adresse ist der Wert 0010 und der IPv6-Adresse der Wert 0020 vorangestellt. In Dual-Stack-Netzwerken werden sowohl die IPv4- als auch die IPv6-Adresse für den Platzhalterersatz verwendet. Mehrere Adressen werden nacheinander ohne Trennzeichen hinzugefügt. Bei nicht verbundenen Nutzern erfolgt der Austausch nur, wenn das Netzwerk durch Nutzerrichtlinien verwaltet wird. Wenn der Platzhalter für IP-Adressen nicht durch die IP-Adresse des Geräts ersetzt werden kann, wird er durch einen leeren String ersetzt.
+
+Wenn „<ph name="DOH_MODE_POLICY_NAME" />“ auf „<ph name="SECURE_DNS_MODE_SECURE" />“ gesetzt ist, muss entweder diese Richtlinie oder „<ph name="DOH_TEMPLATES_POLICY_NAME" />“ konfiguriert werden und darf nicht leer sein.
+
+Ist „<ph name="DOH_MODE_POLICY_NAME" />“ auf „<ph name="SECURE_DNS_MODE_AUTOMATIC" />“ gesetzt und diese Richtlinie konfiguriert, werden die angegebenen URI-Vorlagen verwendet. Wenn die Richtlinie nicht konfiguriert ist, werden hartcodierte Zuordnungen verwendet, um einen Upgradeversuch vom aktuellen DNS-Resolver des Nutzers auf einen DoH-Resolver vorzunehmen, der von demselben Anbieter betrieben wird.
+
+Sollte die URI-Vorlage die Variable „<ph name="HTTP_VARIABLE_DNS" />“ enthalten, wird für Anfragen an den Resolver „<ph name="HTTP_METHOD_GET" />“ verwendet. Andernfalls kommt „<ph name="HTTP_METHOD_POST" />“ zum Einsatz.
+
+In Version 114 und höher ist „<ph name="DOH_SALT_POLICY_NAME" />“ optional, wenn diese Richtlinie konfiguriert ist.</translation>
 <translation id="219297066914002620"><ph name="PRODUCT_OS_NAME" /> wird angewiesen, die Konsolentools zur Verwaltung virtueller Maschinen zu aktivieren oder zu deaktivieren.
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, kann der Nutzer die VM-Management-Befehlszeile verwenden.
@@ -2078,6 +2097,10 @@ HINWEIS: Diese Richtlinie hatte in M117 den falsch dokumentierten Standardwert �
 <translation id="2608535066974278204">Zeitraum (in Minuten), der die Dauer des Zeitfensters für den Neustart angibt.</translation>
 <translation id="2608887839902987727">Verhindern, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
 <translation id="2608985885792348429">Standardmäßige Einstellung für die Zwischenablage</translation>
+<translation id="2613493229743687635">Mit der <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> API können isolierte Web-Apps (identifiziert durch ihren Ursprung) ohne zusätzliche Nutzerberechtigung mehrere Oberflächen gleichzeitig erfassen.
+      Ist die Richtlinie nicht konfiguriert, steht <ph name="GET_ALL_SCREENS_MEDIA_NAME" /> keinen Web-Apps zur Verfügung.
+Zur Verbesserung des Datenschutzes unterstützt diese Richtlinie keine Aktualisierungen des Richtlinienwerts während einer Sitzung. Daher werden Änderungen erst wirksam, nachdem sich der Nutzer ab- und wieder angemeldet hat.
+Der Nutzer kann sich somit darauf verlassen, dass nach der Anmeldung keine weiteren Apps den Bildschirm erfassen können, denen das nicht schon zu Beginn der Sitzung erlaubt war.</translation>
 <translation id="2615240493030733717">Informationen zur Zeitzone ausgeben</translation>
 <translation id="2619258867868873629">Das Ziel von „Als PDF speichern“ und das Ziel von „In Google Drive speichern“ auf <ph name="PRODUCT_OS_NAME" />-Geräten</translation>
 <translation id="2621290137818374425">Wenn die Richtlinie konfiguriert ist, werden die Certificate Transparency-Offenlegungspflichten für die Hostnamen in den angegebenen URLs deaktiviert. Dadurch sind Zertifikate weiterhin zulässig, die andernfalls nicht vertrauenswürdig wären, weil sie nicht ordnungsgemäß offengelegt wurden. Es ist aber schwerer, fehlerhaft ausgestellte Zertifikate für diese Hosts zu erkennen.
@@ -3224,6 +3247,7 @@ Jede Regel hat folgende Bestandteile:
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Melden der Netzwerkschnittstellen auf Geräten deaktivieren</translation>
 <translation id="3540935459049973317">Zeitbeschränkungen für Apps</translation>
+<translation id="3546271546272655966">„<ph name="DBSC_FEATURE_NAME" />“ kann abhängig vom Funktionseinführungsprozess verwendet werden.</translation>
 <translation id="3547954654003013442">Proxy-Einstellungen</translation>
 <translation id="3548064438634502368">Browser schließen</translation>
 <translation id="3548642468619496972">Blockiert schädliche, ungewöhnliche und unerwünschte Downloads sowie gefährliche Dateitypen.</translation>
@@ -4624,6 +4648,7 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
 <translation id="4725801978265372736">Verlangen, dass der Name des lokalen Nutzers und des Host-Inhabers des Remotezugriffs übereinstimmen</translation>
 <translation id="4726228171190098009">Powerwash-Anfrage durch Gerät nicht zulassen</translation>
 <translation id="4726895359147376813">Zuordnung von persistenten IDs zu VM-Konfigurationen</translation>
+<translation id="4732069502693984686">Ermöglicht die automatische Bildschirmaufnahme für mehrere Bildschirme</translation>
 <translation id="4733471537137819387">Strategien im Hinblick auf die integrierte HTTP-Authentifizierung</translation>
 <translation id="473673197014866318">Mit dieser Richtlinie werden Einstellungen zur Erweiterungsverwaltung für <ph name="PRODUCT_NAME" /> festgelegt, darunter Einstellungen, die von anderen auf Erweiterungen bezogenen Richtlinien geregelt werden. Durch diese Richtlinie werden alle älteren Richtlinien überschrieben.
 
@@ -4759,6 +4784,15 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
       Bei deaktivierter Richtlinie ist die Registrierung für <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optional und bei Nichterfüllung wird der Startprozess von <ph name="PRODUCT_NAME" /> nicht blockiert.
 
       Diese Richtlinie wird im Rahmen der Registrierung von Cloud-Richtlinien auf Computern verwendet. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="4889589161838982604">Bestimmt den Status der Funktion „<ph name="DBSC_FEATURE_NAME" />“.
+
+„<ph name="DBSC_FEATURE_NAME" />“ schützt Google-Cookies zur Authentifizierung vor Cookie-Diebstahl, indem Google-Servern regelmäßig ein kryptografischer Nachweis über den Gerätebesitz zur Verfügung gestellt wird.
+
+Wenn diese Richtlinie auf „false“ gesetzt ist, ist die Funktion „<ph name="DBSC_FEATURE_NAME" />“ deaktiviert.
+
+Wenn sie auf „true“ festgelegt ist, ist die Funktion „<ph name="DBSC_FEATURE_NAME" />“ aktiviert.
+
+Ist die Richtlinie nicht konfiguriert, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für die Funktion „<ph name="DBSC_FEATURE_NAME" />“. In diesem Fall wird sie nach und nach für immer mehr Nutzer eingeführt.</translation>
 <translation id="488996881569316769">Netzwerktelemetrie</translation>
 <translation id="4890453377345554695">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
 
@@ -5531,6 +5565,7 @@ Dies wurde in M112 entfernt.</translation>
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="552607466422196365">„<ph name="DBSC_FEATURE_NAME" />“ deaktivieren.</translation>
 <translation id="5526184558582921522">Anfragen an den Quirks Server und potenzielle Downloads von Hardware-spezifischen Konfigurationsdateien zulassen</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
 <translation id="5534079385061985566">Funktion zur vollständigen Wiederherstellung aktivieren.</translation>
@@ -5932,6 +5967,7 @@ Wenn keine der beiden Richtlinien konfiguriert ist, werden alle Webdienstauthent
 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, darf <ph name="PLUGIN_VM_NAME" /> keine Daten erheben.
       Ist die Richtlinie auf "true" gesetzt, erhebt <ph name="PLUGIN_VM_NAME" /> möglicherweise Nutzerdaten von <ph name="PLUGIN_VM_NAME" />, die dann kombiniert und gründlich analysiert werden, um die Nutzung von <ph name="PLUGIN_VM_NAME" /> weiter zu verbessern.</translation>
+<translation id="5872738620659477303">Google-Anmeldedaten an ein Gerät binden</translation>
 <translation id="5875873062228321803">Mit dieser Richtlinie wird die Anforderung an die zulässige Mindestversion von <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Wenn diese Richtlinie auf eine nicht leere Liste festgelegt wird, passiert Folgendes:
@@ -5957,6 +5993,11 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Das Attribut <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> ist optional und der Standardwert "False".</translation>
 <translation id="5879014913445067283">Steuerung der Erkennung von Netzwerkfreigaben über <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">"Zum Suchen antippen" aktivieren</translation>
+<translation id="5881715931837589500">Aktiviert die <ph name="GOOGLE_CLASSROOM_NAME" />-Integration für <ph name="PRODUCT_OS_NAME" />.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die <ph name="GOOGLE_CLASSROOM_NAME" />-Integration für Unternehmensnutzer aktiviert.
+
+Wenn sie deaktiviert ist, ist die <ph name="GOOGLE_CLASSROOM_NAME" />-Integration für Unternehmensnutzer deaktiviert.</translation>
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
 <translation id="5883015257301027298">Standardeinstellungen für Cookies</translation>
 <translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn du einen Wert unter dem Standardwert festlegst, geschieht dies auf eigenes Risiko.
@@ -5993,6 +6034,11 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5897913798715600338">Lädt den Akku mit Schnellladetechnologie auf.</translation>
 <translation id="5898486742390981550">Wenn mehrere Nutzer angemeldet sind, kann nur der Hauptnutzer Android-Apps verwenden.</translation>
 <translation id="5899751601113377553">Verhindern, dass Nutzer <ph name="LACROS_NAME" /> verwenden</translation>
+<translation id="5900000623536207626">Aktiviert die <ph name="GOOGLE_TASKS_NAME" />-Integration für <ph name="PRODUCT_OS_NAME" />.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die <ph name="GOOGLE_TASKS_NAME" />-Integration für Unternehmensnutzer aktiviert.
+
+Wenn sie deaktiviert ist, ist die <ph name="GOOGLE_TASKS_NAME" />-Integration für Unternehmensnutzer deaktiviert.</translation>
 <translation id="5900919753933009463">Netzwerkkonfiguration ausgeben</translation>
 <translation id="5901427587865226597">Nur Duplexdruck</translation>
 <translation id="5905114360004248993">Pop-ups auf diesen Websites zulassen</translation>
@@ -6137,6 +6183,7 @@ Diese Richtlinie wird ab M124 eingestellt.</translation>
 <translation id="6049117606554031363">Melden des Boardstatus auf Geräten aktivieren</translation>
 <translation id="6050796253724099706">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="605132676434455096">Hinzufügen neuer Profile nicht zulassen</translation>
+<translation id="6052660755155321371">„<ph name="GOOGLE_TASKS_NAME" />“ deaktivieren.</translation>
 <translation id="6053260874233331700">Zugriff auf Standortbestimmung auf dem Anmeldebildschirm nicht zulassen.</translation>
 <translation id="6053681087509103368">Zulassen, dass WebRTC veraltete Versionen des TLS/DTLS-Protokolls verwendet</translation>
 <translation id="6056517174496942473">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs aktivieren</translation>
@@ -7700,6 +7747,7 @@ Der Richtlinienwert ist eine Liste von base64-codierten X.509-Zertifikaten. Alle
 
       Hinweis: Die Richtlinie wirkt sich nicht auf Google Drive und internen Speicher aus. Die Nutzer können weiterhin auf Dateien zugreifen, die im Ordner "Downloads" gespeichert sind.</translation>
 <translation id="7177857088692019405">Schnelles Entsperren</translation>
+<translation id="7177980542896745343"><ph name="GOOGLE_CLASSROOM_NAME" />-Integration aktivieren</translation>
 <translation id="7179157174254421614">Wenn die automatische Zeitzonenerkennung nicht durch die Richtlinie <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> deaktiviert ist, wird durch das Konfigurieren der Richtlinie die Methode zur Zeitzonenerkennung festgelegt. Diese kann von Nutzern nicht geändert werden.
 
 Die Richtlinie kann folgendermaßen konfiguriert werden:
@@ -7932,6 +7980,7 @@ Für diese Richtlinie muss eine Liste mit voll qualifizierten Domainnamen festge
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
+<translation id="7372210077527987724"><ph name="GOOGLE_CLASSROOM_NAME" />-Integration aktivieren.</translation>
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
 <translation id="7373200034079131670">Nach Nutzerabmeldung neu starten, wenn Android oder eine VM gestartet wurde.</translation>
 <translation id="7374784840090523241">Passkeys standardmäßig in einem anderen Speicher erstellen, z. B. im <ph name="PRODUCT_NAME" />-Profil.</translation>
@@ -8443,6 +8492,7 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
       Ist die Richtlinie auf „False“ festgelegt oder nicht konfiguriert, werden <ph name="FLASH_PLUGIN_NAME" />-Inhalte anderer Herkunft oder kleine Inhalte ggf. blockiert.
 
       Hinweis: Wenn du konfigurieren möchtest, welche Websites <ph name="FLASH_PLUGIN_NAME" /> ausführen dürfen, findest du unter den folgenden Richtlinien weitere Informationen: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> und <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7801833005984890634"><ph name="GOOGLE_TASKS_NAME" />-Integration aktivieren</translation>
 <translation id="7804859754080118507">Ereignisse zu Netzwerkverbindung und Signalstärke auf registrierten Geräten melden.
 
       Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -9505,6 +9555,7 @@ Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. 
 <translation id="8685748277907759932">Verhindern, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
 <translation id="8686700500128191717">Melden der Nutzer auf Geräten aktivieren</translation>
 <translation id="8687958770985542440">Damit wird die Web Components v0 API bis M84 wieder aktiviert.</translation>
+<translation id="8690591325980850680"><ph name="GOOGLE_TASKS_NAME" />-Integration aktivieren.</translation>
 <translation id="8693243869659262736">Integrierten DNS-Client verwenden</translation>
 <translation id="8695006038397632296">Installationsanfragen für Erweiterungen erstellen und in der Admin-Konsole hochladen</translation>
 <translation id="8695108198606654558">Diese Richtlinie steuert nur das Verhalten für den ersten Import nach der Installation. Sie ermöglicht einen problemloseren Übergang zu <ph name="PRODUCT_NAME" /> in Umgebungen, in denen vor der Installation des Browsers ein anderer Browser intensiv genutzt wurde. Diese Richtlinie wirkt sich nicht auf die Funktionen des Passwortmanagers für Google-Konten aus.
@@ -10226,6 +10277,7 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI f
       Wenn die Richtlinie konfiguriert ist, kann der Nutzer sie nicht über die Browsereinstellungen ändern. Wird die Richtlinie nicht konfiguriert, ist der Hintergrundmodus zuerst deaktiviert, aber der Nutzer hat die Möglichkeit, das zu ändern.</translation>
 <translation id="981245424658084931">Geräteaktivität-Heartbeat aktivieren</translation>
 <translation id="981346395360763138">Standortdienste von Google deaktiviert</translation>
+<translation id="982195863867062122">„<ph name="DBSC_FEATURE_NAME" />“ aktivieren.</translation>
 <translation id="982497069985795632">Rechtschreibprüfung aktivieren</translation>
 <translation id="983256325512298435">Eine Liste mit Protokollen festlegen, über die eine externe App aus aufgeführten Quellen gestartet werden kann, ohne beim Nutzer nachzufragen</translation>
 <translation id="984365509386992443">Wenn diese Richtlinie aktiviert ist oder nicht konfiguriert wird, erhält der Nutzer möglicherweise Umfragen zu Safe Browsing.

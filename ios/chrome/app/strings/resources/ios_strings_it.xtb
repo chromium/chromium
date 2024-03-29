@@ -630,6 +630,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4282944936010261425">Non ci sono problemi di sicurezza da risolvere.</translation>
 <translation id="4286718549648564014">Indirizzo spostato nel tuo account <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Novità</translation>
+<translation id="429074084062258019">{count,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
 <translation id="4293080268407233932">Ricerca</translation>
 <translation id="4302248187517737842">Nessun nome utente ••••••••</translation>
 <translation id="4302415908542657649">Condivisione della password in corso…</translation>
@@ -1269,6 +1270,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7524055474074101597">Accedi alle tue password e ad altro ancora nelle app.</translation>
 <translation id="7527917367892640435">Pacchetto già monitorato</translation>
 <translation id="7531345132340165516">Sito corrente</translation>
+<translation id="75362970626182391">Nuovo gruppo di schede</translation>
 <translation id="7537586195939242955">Spiacenti, il tuo pass non può essere installato in Passbook in questo momento.</translation>
 <translation id="754655535278952384">Ultimo controllo: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Ultima scheda utilizzata su <ph name="SOURCE_DEVICE" /></translation>

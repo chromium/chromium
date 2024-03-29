@@ -337,6 +337,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2405664212338326887">Niet verbonden</translation>
 <translation id="2408955596600435184">Je pincode invoeren</translation>
 <translation id="2412593942846481727">Update beschikbaar</translation>
+<translation id="2416438829169535743">Weergave sluiten?</translation>
 <translation id="2417486498593892439">Inloggen bij netwerk</translation>
 <translation id="2426051945783024481">Cameraframe automatisch gecentreerd</translation>
 <translation id="2427507373259914951">Klik met linkermuisknop</translation>
@@ -1154,9 +1155,11 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5555639311269196631">Hotspot uitzetten</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5558091555391176027">Hoge zichtbaarheid voor Dichtbij delen aan- of uitzetten</translation>
+<translation id="5558314826121965174">Creativiteit</translation>
 <translation id="556042886152191864">Knop</translation>
 <translation id="5570122939431135380">Nieuw tabblad openen in een nieuw incognitovenster</translation>
 <translation id="5571066253365925590">Bluetooth staat aan</translation>
+<translation id="5572632238877308040">Essentials</translation>
 <translation id="557563299383177668">Volgende alinea</translation>
 <translation id="5577082622442191756">Bluetooth aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Ga na of bluetooth aanstaat op je telefoon als je Telefoonhub wilt gebruiken</translation>
@@ -1181,6 +1184,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
 <translation id="5662709761327382534">Microfoon opnemen <ph name="CURRENT_STATE" />. Druk op Enter om microfoonopnamen <ph name="NEW_STATE" /> te zetten.</translation>
 <translation id="5669267381087807207">Activeren</translation>
+<translation id="5672890847723042801">Hulpprogramma's</translation>
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>
 <translation id="5675363643668471212">Plankitem</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
@@ -1363,6 +1367,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
 <translation id="6352082849089527770">Onbekende netwerken</translation>
 <translation id="6359587239691116345">Krijg de nieuwste functies en beveiligingsverbeteringen. Als je deze update weigert, werkt je apparaat misschien niet meer goed en kun je beveiligings- en prestatieproblemen ondervinden.</translation>
+<translation id="6362833380917912748">Maak kennis met de ingebouwde apps</translation>
 <translation id="6376931439017688372">Bluetooth staat aan</translation>
 <translation id="6378515133128829137">Venster rechts vastzetten</translation>
 <translation id="6381109794406942707">Geef je pincode op om het apparaat te ontgrendelen.</translation>
@@ -1849,6 +1854,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8262312463845990408">Afspelen aan-/uitzetten</translation>
 <translation id="8270450402312105425">{0,plural, =1{Zet het apparaat binnen een uur terug naar een oudere versie}other{Zet het apparaat binnen # uur terug naar een oudere versie}}</translation>
 <translation id="8277261673056602147">Tekst op je scherm markeren</translation>
+<translation id="8287009018010202411">Productiviteit</translation>
 <translation id="828708037801473432">Uit</translation>
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8308637677604853869">Vorig menu</translation>
@@ -1920,6 +1926,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Je apps sorteren op naam of kleur</translation>
 <translation id="8609384513243082612">Nieuw tabblad openen</translation>
+<translation id="861045123704058818">Apps worden tijdelijk ingedeeld op categorie</translation>
 <translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1965,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Je identiteit verifiëren: <ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>
+<translation id="8756799553341497810">Nadat je deze weergave hebt gesloten, kun je de indeling van je app aanpassen.</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
 <translation id="8763883995157866248">Slaapmodus aanzetten</translation>
 <translation id="877404052021108314">90 °F naar °C</translation>

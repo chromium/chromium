@@ -2505,6 +2505,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2845382757467349449">Непрекъснато показване на лентата на отметките</translation>
 <translation id="2845751331501453107">Рекламите, които виждате по време на сърфиране, могат да бъдат персонализирани. Това зависи от тази настройка, <ph name="BEGIN_LINK1" />предложените от сайтовете реклами<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />настройките ви за „бисквитките“<ph name="LINK_END2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите</translation>
 <translation id="284581348330507117">Създайте уникални пароли</translation>
+<translation id="284884486564166077">Търсене на което и да е изображение с Обектив</translation>
 <translation id="2849035674501872372">Търсене</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">ПИН кодът ви е добавен</translation>
@@ -3409,6 +3410,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3577487026101678864">Синхронизирането на файлове е включено</translation>
 <translation id="3577745545227000795">Събиране на данни за хардуера от <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Автоматично конфигуриране на IP адреса</translation>
+<translation id="3581861561942370740">Търсете в историята на изтеглянията</translation>
 <translation id="3582057310199111521">Въведена в измамнически сайт и разкрита при нарушение на сигурността на данните</translation>
 <translation id="3582299299336701326">Направете светлите екрани тъмни, а тъмните – светли. Натиснете клавиша „търсене“ + Ctrl + H, за да включите или изключите функцията за инвертиране на цветовете.</translation>
 <translation id="3584169441612580296">Четене и промяна на снимки, музика и друга мултимедия от компютъра ви</translation>
@@ -5327,6 +5329,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5056950756634735043">Установява се връзка с контейнера</translation>
 <translation id="5057110919553308744">При кликване върху разширението</translation>
 <translation id="5057127674016624293">Сканирането отнема повече време от очакваното</translation>
+<translation id="5057480703570202545">История на изтеглянията</translation>
 <translation id="5059241099014281248">Ограничаване на влизането в профил</translation>
 <translation id="5059429103770496207">Стил на показване</translation>
 <translation id="5059526285558225588">Изберете какво да споделите</translation>
@@ -5736,6 +5739,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5390677308841849479">Тъмночервено и оранжево</translation>
 <translation id="5392192690789334093">Сайтове с разрешение да изпращат известия</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Връзка}other{# връзки}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Стандартен шрифт</translation>
 <translation id="5397378439569041789">Устройство в павилионен режим или в такъв за подписване</translation>
 <translation id="5397794290049113714">Вие</translation>

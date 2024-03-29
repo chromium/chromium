@@ -630,6 +630,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4282944936010261425">Nuk ka asnjë problem sigurie për ta rregulluar.</translation>
 <translation id="4286718549648564014">Adresa u zhvendos te llogaria <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Më të rejat</translation>
+<translation id="429074084062258019">{count,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
 <translation id="4293080268407233932">Kërko</translation>
 <translation id="4302248187517737842">Nuk ka emër përdoruesi ••••••••</translation>
 <translation id="4302415908542657649">Fjalëkalimi po ndahet</translation>
@@ -725,6 +726,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="47677902929517676">Për t'i ruajtur fjalëkalimet në llogarinë tënde, në fillim duhet të caktosh një kod kalimi në pajisjen tënde.</translation>
 <translation id="4775879719735953715">Shfletuesi i parazgjedhur</translation>
 <translation id="4779732376610430319">Shko te "Cilësimet"...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Të hapet në modalitetin "e fshehtë"?</translation>
 <translation id="4803185665210547709">Menaxhohet nga organizata jote.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5283494734135414249">Trokit te shkurtorja që shfaqet nën shiritin e adresës.</translation>
 <translation id="5295239312320826323">Do ta heqësh llogarinë <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Shfaq</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> nga <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318298563956633672">Po e monitoron tashmë këtë produkt.</translation>
 <translation id="5327753393331509826">Merr njoftime për përmbajtjet</translation>
@@ -1267,6 +1270,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7524055474074101597">Qasu te fjalëkalimet e tua etj. nëpër aplikacione.</translation>
 <translation id="7527917367892640435">Pakoja është gjurmuar tashmë</translation>
 <translation id="7531345132340165516">Sajti aktual</translation>
+<translation id="75362970626182391">Grupi i ri i skedave</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
 <translation id="754655535278952384">Kontrolluar <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Skeda e fundit e përdorur në <ph name="SOURCE_DEVICE" /></translation>

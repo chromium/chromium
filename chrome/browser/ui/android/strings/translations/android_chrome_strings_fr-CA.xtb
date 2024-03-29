@@ -637,6 +637,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
 <translation id="4425173294238317796">Feuille de confirmation de la clé d'accès</translation>
 <translation id="442518031075347249">Vous ne pourrez plus utiliser votre carte virtuelle avec Google Pay. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">Une partie de votre historique Web peut ne pas s'afficher ici. Si nécessaire, touchez Ouvrir l'historique complet de Chrome. Par ailleurs, votre compte Google peut contenir d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="4430277756566635951">Actuellement sélectionné : <ph name="EMAIL" />. Sélectionnez un compte.</translation>
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marqué comme favori dans <ph name="FOLDER_NAME" /></translation>
@@ -1106,6 +1107,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6719634564325948108">Se connecter au moyen d'un code QR?</translation>
 <translation id="6723740634201835758">Dans votre compte Google</translation>
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
+<translation id="67404633032079629">Une partie de votre historique Web peut ne pas s'afficher ici. Pour afficher un historique Web complet, touchez Ouvrir l'historique complet de Chrome.</translation>
 <translation id="674388916582496364">Les sites que vous visitez mémorisent couramment les sujets qui vous intéressent afin de personnaliser votre expérience. Les sites peuvent également stocker des renseignements sur vos centres d’intérêt dans Chrome.</translation>
 <translation id="6751521182688001123">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, maintenez le doigt sur celui-ci.</translation>
 <translation id="6756507620369789050">Partager vos commentaires</translation>

@@ -34,6 +34,7 @@
 <translation id="1174073918202301297">La drecera s'ha afegit</translation>
 <translation id="1175697296044146566">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Normal (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1180621378971766337">agradable</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1191518099344003522">L'APN està activat.</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
@@ -85,6 +86,7 @@
 <translation id="1451536289672181509">El dispositiu és un teclat.</translation>
 <translation id="1452939186874918380">paraigües</translation>
 <translation id="1459693405370120464">Temps</translation>
+<translation id="1463084054301832672">d'estil rústic</translation>
 <translation id="1468664791493211953">Ofertes</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
 <translation id="1478594628797167447">Escàners</translation>
@@ -162,6 +164,7 @@
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1840474674287087346">Color de l'escriptori</translation>
+<translation id="184095011128924488">creativa</translation>
 <translation id="1846318329111865304">Paisatges onírics</translation>
 <translation id="1851218745569890714">Videoconferències</translation>
 <translation id="1852934301711881861">Instal·la ChromeOS Flex</translation>
@@ -188,6 +191,7 @@
 <translation id="1962550982027027473">Es necessita un APN predeterminat</translation>
 <translation id="1967860190218310525">Crea un APN nou</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1977973007732255293">tradicional</translation>
 <translation id="1977994649430373166">Foto de perfil de Google</translation>
 <translation id="1979103255016296513">Canvi de contrasenya vençut</translation>
 <translation id="1999615961760456652">Portal captiu</translation>
@@ -330,6 +334,7 @@
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="2880569433548999039">Estalvi de pantalla Moviment de núvols</translation>
 <translation id="2890557891229184386">una illa tropical</translation>
+<translation id="2895772081848316509">fosca</translation>
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
 <translation id="2940811910881150316">No es pot provar el dispositiu. Torna a obrir la tapa per fer la prova.</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -345,6 +350,7 @@
 <translation id="3060579846059757016">Esquemes</translation>
 <translation id="3069085583900247081">La prova no s'ha superat</translation>
 <translation id="3078740164268491126">taula</translation>
+<translation id="3081652522083185657">lluminosa</translation>
 <translation id="3083667275341675831">Diagnòstic de connectivitat</translation>
 <translation id="3084958266922136097">Desactiva l'estalvi de pantalla</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
@@ -385,6 +391,7 @@
 <translation id="3328783797891415197">La prova s'està executant</translation>
 <translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3340978935015468852">configuració</translation>
+<translation id="3347558044552027859">moderna</translation>
 <translation id="3359218928534347896">commuta el silenci del micròfon</translation>
 <translation id="3360306038446926262">Finestres</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -395,6 +402,7 @@
 <translation id="3383623117265110236">Exclusiva</translation>
 <translation id="3404249063913988450">Activa l'estalvi de pantalla</translation>
 <translation id="3413935475507503304">Per continuar amb l'actualització, fes clic a Següent.</translation>
+<translation id="3428551088151258685">exterior</translation>
 <translation id="3428971106895559033">pastel</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguretat</translation>
@@ -448,6 +456,7 @@
 <translation id="3749289110408117711">Nom del fitxer</translation>
 <translation id="3771294271822695279">Fitxers de vídeo</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
+<translation id="3785643128701396311">pixel art</translation>
 <translation id="3790109258688020991">puntillista</translation>
 <translation id="380097101658023925">controls RGB</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
@@ -496,6 +505,8 @@
 <translation id="404928562651467259">ADVERTIMENT</translation>
 <translation id="4054683689023980771">S'està baixant la imatge</translation>
 <translation id="4063039537646912479">blau clar</translation>
+<translation id="4070799384363688067">anime</translation>
+<translation id="4091002263446255071">romàntica</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="409469431304488632">Experiment</translation>
@@ -670,6 +681,7 @@
 <translation id="5049856988445523908">SIM bloquejada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom del grup</translation>
 <translation id="5051044138948155788">Aquesta és l'única pàgina. Se't dirigirà a la pantalla d'inici per escanejar.</translation>
+<translation id="5078983345702708852">futurista</translation>
 <translation id="5087864757604726239">enrere</translation>
 <translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
@@ -848,6 +860,7 @@
 <translation id="6122277663991249694">Servei del mètode d'introducció de text a Chrome OS</translation>
 <translation id="6127426868813166163">blanc</translation>
 <translation id="6136285399872347291">retrocés</translation>
+<translation id="6137614725462089991">ciberpunk</translation>
 <translation id="6137767437444130246">Certificat d'usuari</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -894,6 +907,7 @@
 <translation id="6382182670717268353">Previsualització de l'estalvi de pantalla</translation>
 <translation id="6388847657025262518">L'alimentador de documents de l'escàner està encallat. Comprova l'alimentador i torna-ho a provar.</translation>
 <translation id="6394634179843537518">Afegeix un fitxer</translation>
+<translation id="639964859328803943">berenar</translation>
 <translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> surrealista de <ph name="DREAMSCAPES_MATERIAL" /> de color <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">cerca del navegador</translation>
 <translation id="6410257289063177456">Fitxers d'imatge </translation>
@@ -913,6 +927,7 @@
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Estalvi de pantalla exclusiu de <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
+<translation id="6492891353338939218">antiga</translation>
 <translation id="6494974875566443634">Personalització</translation>
 <translation id="6500818810472529210">Consulta el resultat a la Cerca de Google</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
@@ -940,6 +955,7 @@
 <translation id="6624819909909965616">No es pot penjar un fitxer de més de 10 MB</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6647510110698214773">Algoritme d'encriptació</translation>
+<translation id="6648412990074186169">minimalista</translation>
 <translation id="6650062777702288430">Interruptor de caràcters kana/alfanumèrics</translation>
 <translation id="6657240842932274095">Vols permetre que els serveis del sistema utilitzin la teva ubicació?</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
@@ -960,6 +976,7 @@
 <translation id="6741823073189174383">barca</translation>
 <translation id="674276385369049081">Fons de càmera recents amb la tecnologia de la IA de Google</translation>
 <translation id="6744441848304920043">una jungla</translation>
+<translation id="6747035363363040417">d'estil neutre</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">El dispositiu és un ordinador.</translation>
@@ -1011,6 +1028,7 @@
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7086168019478250425">platja bioluminescent</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7097908713073775559">acolorits</translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
@@ -1067,6 +1085,7 @@
           Només pots crear fons de pantalla amb IA per a un ús personal i no comercial. Quan reps ajuda sobre fons de pantalla, el text s'envia als servidors de la IA de Google per generar suggeriments de fons de pantalla, de conformitat amb la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />política de privadesa de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
+<translation id="7344788170842919262">terrossos</translation>
 <translation id="7353413232959255829">Resultat de cerca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prem Retorn per navegar fins a la drecera.</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="73631062356239394">Comparteix les dades de diagnòstic</translation>
@@ -1194,6 +1213,7 @@
 <translation id="8143951647992294073">Selecciona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Eines per a desenvolupadors</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8156233298086717232">màgica</translation>
 <translation id="8162776280680283326">guineus</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8183975772394450380">una platja</translation>
@@ -1219,6 +1239,7 @@
 <translation id="8329018942023753850">aplicació Calculadora</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
 <translation id="8339024191194156249">Obtén més informació sobre l'inici automàtic</translation>
+<translation id="8346937114125330423">clàssica</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8349758651405877930">instruments</translation>
@@ -1256,6 +1277,7 @@
 <translation id="8508640263392900755">Detalls de l'APN</translation>
 <translation id="8522687886059337719">Ara tens accés als nous <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fons de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />estalvis de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="852896705346853285">saló de te</translation>
 <translation id="8538236298648811558">Amb la tecnologia de la IA de Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
@@ -1359,6 +1381,7 @@
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
 <translation id="9122602430962285795">Per tornar-te a connectar, ves a Configuració</translation>
+<translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Desa múltiples pàgines en un PDF</translation>
 <translation id="9133772297793293778">Prem d'1 a 4 tecles modificadores i una altra tecla del teclat. Per sortir del mode d'edició, prem Alt+Esc.</translation>
 <translation id="9137526406337347448">Serveis de Google</translation>

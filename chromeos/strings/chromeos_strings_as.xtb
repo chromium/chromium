@@ -272,6 +272,7 @@
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
 <translation id="2465272316171730950">বৰ্তমান পাঠ সৃষ্টি কৰিব নোৱাৰি। অনুগ্ৰহ কৰি, অলপ সময়ৰ পাছত উভতি আহক।</translation>
+<translation id="2472215337771558851">এটা খচৰা সৃষ্টি কৰিবলৈ বা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ হেল্প মী ৰাইট ব্যৱহাৰ কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত</translation>
 <translation id="2480572840229215612">কেঁকোৰা</translation>
 <translation id="248546197012830854">ডিভাইচটো অফলাইন হৈ আছে। সহায় বিষয়ক সমল চাবলৈ ৱাই-ফাই নেটৱৰ্কৰ সৈতে সংযুক্ত হওক।</translation>
 <translation id="2486301288428798846">কাঠ</translation>
@@ -329,10 +330,12 @@
 <translation id="2860473693272905224">স্কেনাৰটোত অন্য এখন পৃষ্ঠা ৰাখক</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2873483161362553159">ব্ৰাউজাৰ নেভিগেশ্বন</translation>
+<translation id="2873939192640533085">"অধিক আত্মবিশ্বাস ফুটাই তোলক"ৰ দৰে এটা প্ৰম্প্‌ট দিয়ক</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2875812231449496375">এই ৱালপেপাৰখনৰ সৈতে শ্ৰেষ্ঠ ফলাফল পাবলৈ এইটো অন কৰক। আপুনি যিকোনো সময়তে এই ছেটিংটো অফ কৰিব পাৰে।</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="2880569433548999039">ডাৱৰৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
+<translation id="2888298276507578975">"ধন্যবাদসূচক টোকা লিখক"ৰ দৰে প্ৰম্প্‌ট দিয়ক</translation>
 <translation id="2890557891229184386">গ্ৰীষ্মমণ্ডলীয় দ্বীপ</translation>
 <translation id="2895772081848316509">গাঢ়</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
@@ -377,6 +380,7 @@
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3226657629376379887">লে’আউট সম্পৰ্কীয় কাৰ্যৰ মেনু</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
+<translation id="3237710083340813756">পুনৰ লিখক</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="324961752321393509">আপোনাৰ প্ৰশাসকে এই এপ্‌টো বন্ধ কৰিবলৈ অনুমতি নিদিয়ে</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
@@ -415,6 +419,7 @@
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
+<translation id="3487866404496702283">mahi সুবিধাৰ বাবে মতামত</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ট’নৰ সৈতে <ph name="OFFICE_STYLE" /> অফিচ</translation>
 <translation id="3493187369049186498">আপোনাৰ Chromebookএ ডেটাৰ জোখ-মাখ কৰে। এইটো প্ৰদানকাৰীৰ ডেটাতকৈ বেলেগ হ’ব পাৰে।</translation>
@@ -444,6 +449,7 @@
 <translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
 <translation id="3651050199673793219">তাপমানৰ এটা একক বাছনি কৰক</translation>
 <translation id="3654530588944650786">ফুলি থকা এপাহ উজ্জ্বল <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> ফুল</translation>
+<translation id="3661106764436337772">দ্ৰুতভাৱে আৰু অধিক আত্মবিশ্বাসেৰে লিখক</translation>
 <translation id="3662461537616691585">বাৰ্গাণ্ডী আৰু মেৰুন</translation>
 <translation id="3668449597372804501">ডাৱৰৰ প্ৰবাহৰ ৱালপেপাৰ</translation>
 <translation id="3675132884790542448">গাহৰি</translation>
@@ -879,6 +885,7 @@
 <translation id="6235460611964961764">ডেটাৰ ব্যৱহাৰ মেনুৱেলভাৱে ৰিছেট কৰক</translation>
 <translation id="6243280677745499710">বর্তমান ছেট কৰা ৱালপেপাৰ</translation>
 <translation id="6250316632541035980">বেকন আৰু কণী</translation>
+<translation id="6255213378196499011">হেল্প মী ৰাইটৰ ছেটিং</translation>
 <translation id="6275224645089671689">ৰাইট এৰ’</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
@@ -995,6 +1002,7 @@
 <translation id="6871256179359663621">পাতল বেঙুনীয়া</translation>
 <translation id="6889786074662672253">ৰিষ্টাৰ্ট কৰি থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এইটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
 <translation id="6900701049656042631">এই এলবামটোত কোনো ফট’ নাই। ফট’ যোগ দিবলৈ, <ph name="LINK" />লৈ যাওক</translation>
+<translation id="6905163627763043954">ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />লৈ উভতি যাওক</translation>
 <translation id="6910312834584889076">স্কেনাৰৰ ঢাকনীখন খোলা আছে। ঢাকনীখন বন্ধ কৰি পুনৰ চেষ্টা কৰি চাওক।</translation>
 <translation id="6911383237894364323">মিডিয়া ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>

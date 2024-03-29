@@ -2494,6 +2494,7 @@
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="2845751331501453107">Գովազդի անհատականացումը կախված է այս կարգավորումից, <ph name="BEGIN_LINK1" />կայքերի կողմից առաջարկվող գովազդներից<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />քուքիների կարգավորումներից<ph name="LINK_END2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք</translation>
 <translation id="284581348330507117">Ստեղծեք չկրկնվող գաղտնաբառեր</translation>
+<translation id="284884486564166077">Որոնեք ցանկացած պատկեր Տեսապակու միջոցով</translation>
 <translation id="2849035674501872372">Փնտրել</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Ձեր PIN կոդն ավելացվեց</translation>
@@ -3396,6 +3397,7 @@
 <translation id="3577487026101678864">Ֆայլերի համաժամացումը միացված է</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> օպերացիոն համակարգով աշխատող սարքակազմի տվյալների հավաքում</translation>
 <translation id="3581605050355435601">IP հասցեի ավտոմատ կարգավորում</translation>
+<translation id="3581861561942370740">Որոնեք ներբեռնումների պատմության մեջ</translation>
 <translation id="3582057310199111521">Մուտքագրվել է կասկածելի կայքում և հայտնաբերվել տվյալների արտահոսքում</translation>
 <translation id="3582299299336701326">Բաց գույները դարձնել մուգ, իսկ մուգ գույները՝ բաց։ Սեղմեք Որոնում + Ctrl + H՝ գունաշրջումը միացնելու և անջատելու համար։</translation>
 <translation id="3584169441612580296">Կարդալ և փոխել լուսանկարները, երաժշտությունը և ձեր համակարգչում պահվող այլ մեդիա ֆայլերը</translation>
@@ -5313,6 +5315,7 @@
 <translation id="5056950756634735043">Միացում կոնտեյներին</translation>
 <translation id="5057110919553308744">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
 <translation id="5057127674016624293">Սկանավորումը սովորականից երկար է տևում</translation>
+<translation id="5057480703570202545">Ներբեռնումների պատմությունը</translation>
 <translation id="5059241099014281248">Սահմանափակ մուտք</translation>
 <translation id="5059429103770496207">Ցուցադրման ոճը</translation>
 <translation id="5059526285558225588">Ինչ տվյալներ հասանելի դարձնել</translation>
@@ -5722,6 +5725,7 @@
 <translation id="5390677308841849479">Մուգ կարմիր և նարնջագույն</translation>
 <translation id="5392192690789334093">Ծանուցումների ուղարկումը թույլատրված է</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Հղում}one{# հղում}other{# հղում}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Կանխադրված տառատեսակ</translation>
 <translation id="5397378439569041789">Գրանցել կրպակի կամ ցուցանակի սարք</translation>
 <translation id="5397794290049113714">Դուք</translation>

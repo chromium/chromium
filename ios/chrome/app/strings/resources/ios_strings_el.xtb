@@ -630,6 +630,7 @@
 <translation id="4282944936010261425">Δεν υπάρχουν προβλήματα ασφάλειας που πρέπει να διορθώσετε.</translation>
 <translation id="4286718549648564014">Η διεύθυνση μετακινήθηκε στον λογαριασμό σας <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Τι νέο υπάρχει</translation>
+<translation id="429074084062258019">{count,plural, =1{Προσθήκη καρτέλας στην ομάδα}other{Προσθήκη καρτελών στην ομάδα}}</translation>
 <translation id="4293080268407233932">Αναζήτηση</translation>
 <translation id="4302248187517737842">Χωρίς όνομα χρήστη ••••••••</translation>
 <translation id="4302415908542657649">Κοινοποίηση κωδικού πρόσβασης</translation>
@@ -725,6 +726,7 @@
 <translation id="47677902929517676">Για να αποθηκεύσετε κωδικούς πρόσβασης στον λογαριασμό σας, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="4775879719735953715">Προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="4779732376610430319">Μετάβαση στις Ρυθμίσεις…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Άνοιγμα στην Ανώνυμη περιήγηση;</translation>
 <translation id="4803185665210547709">Διαχειριζόμενο από τον οργανισμό σας.
 <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@
 <translation id="5283494734135414249">Πατήστε τη συντόμευση που εμφανίζεται κάτω από τη γραμμή διευθύνσεων.</translation>
 <translation id="5295239312320826323">Να καταργηθεί ο λογαριασμός <ph name="USER_EMAIL" />;</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> από <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318298563956633672">Παρακολουθείτε ήδη αυτό το προϊόν.</translation>
 <translation id="5327753393331509826">Λήψη ειδοποιήσεων περιεχομένου</translation>
@@ -1268,6 +1271,7 @@
 <translation id="7524055474074101597">Αποκτήστε πρόσβαση στους κωδικούς πρόσβασής σας και σε πολλές άλλες εφαρμογές.</translation>
 <translation id="7527917367892640435">Το πακέτο παρακολουθείται ήδη</translation>
 <translation id="7531345132340165516">Τρέχων ιστότοπος</translation>
+<translation id="75362970626182391">Νέα ομάδα καρτελών</translation>
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση του πάσου σας στο Passbook.</translation>
 <translation id="754655535278952384">Έγινε έλεγχος <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Τελευταία καρτέλα που χρησιμοποιήθηκε στη συσκευή <ph name="SOURCE_DEVICE" /></translation>

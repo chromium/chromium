@@ -34,6 +34,7 @@
 <translation id="1174073918202301297">Verknüpfung hinzugefügt</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="1175951029573070619">Durchschnittlich (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1180621378971766337">gemütlich</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1191518099344003522">APN ist aktiviert.</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
@@ -85,6 +86,7 @@
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
 <translation id="1452939186874918380">Regenschirme</translation>
 <translation id="1459693405370120464">Wetter</translation>
+<translation id="1463084054301832672">Hütten</translation>
 <translation id="1468664791493211953">Angebote</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -162,6 +164,7 @@
 <translation id="183675228220305365">Realismus</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1840474674287087346">Desktopfarbe</translation>
+<translation id="184095011128924488">kreativ</translation>
 <translation id="1846318329111865304">Traumlandschaften</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
 <translation id="1852934301711881861">Chrome OS Flex installieren</translation>
@@ -188,6 +191,7 @@
 <translation id="1962550982027027473">Ein Standard-APN ist erforderlich</translation>
 <translation id="1967860190218310525">Neuen APN erstellen</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1977973007732255293">traditionell</translation>
 <translation id="1977994649430373166">Google-Profilfoto</translation>
 <translation id="1979103255016296513">Passwortänderung überfällig</translation>
 <translation id="1999615961760456652">Captive Portal</translation>
@@ -330,6 +334,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
 <translation id="2880569433548999039">Cloud Flow-Bildschirmschoner</translation>
 <translation id="2890557891229184386">Tropeninsel</translation>
+<translation id="2895772081848316509">dunkel</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
 <translation id="2940811910881150316">Gerät kann nicht getestet werden. Klappe das Gerät zum Testen wieder auf.</translation>
 <translation id="2941112035454246133">Niedrig</translation>
@@ -345,6 +350,7 @@
 <translation id="3060579846059757016">Übersicht</translation>
 <translation id="3069085583900247081">Fehler beim Test</translation>
 <translation id="3078740164268491126">Tabelle</translation>
+<translation id="3081652522083185657">hell</translation>
 <translation id="3083667275341675831">Connectivity Diagnostics</translation>
 <translation id="3084958266922136097">Bildschirmschoner deaktivieren</translation>
 <translation id="3091839911843451378">Fehlgeschlagen – Angehalten</translation>
@@ -385,6 +391,7 @@
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">Einstellungen</translation>
+<translation id="3347558044552027859">modernes</translation>
 <translation id="3359218928534347896">Mikrofonstummschalten ein- oder ausschalten</translation>
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3361618936611118375">Sushi</translation>
@@ -395,6 +402,7 @@
 <translation id="3383623117265110236">Exklusiv</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
+<translation id="3428551088151258685">Outdoor</translation>
 <translation id="3428971106895559033">Pastelltönen</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
@@ -448,6 +456,7 @@
 <translation id="3749289110408117711">Dateiname</translation>
 <translation id="3771294271822695279">Videodateien</translation>
 <translation id="3784455785234192852">Sperre</translation>
+<translation id="3785643128701396311">Pixel-Art</translation>
 <translation id="3790109258688020991">Pointillismus</translation>
 <translation id="380097101658023925">RGB-Einstellungen</translation>
 <translation id="38114475217616659">Gesamten Verlauf löschen</translation>
@@ -496,6 +505,8 @@
 <translation id="404928562651467259">Warnung</translation>
 <translation id="4054683689023980771">Bild wird heruntergeladen</translation>
 <translation id="4063039537646912479">hellblau</translation>
+<translation id="4070799384363688067">Anime</translation>
+<translation id="4091002263446255071">romantisch</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="409469431304488632">Test</translation>
@@ -670,6 +681,7 @@
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
 <translation id="5051044138948155788">Das ist die einzige Seite. Du gelangst dann zum Startbildschirm für den Scanvorgang.</translation>
+<translation id="5078983345702708852">futuristisch</translation>
 <translation id="5087864757604726239">zurück</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
@@ -848,6 +860,7 @@
 <translation id="6122277663991249694">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="6127426868813166163">weiß</translation>
 <translation id="6136285399872347291">Letztes Zeichen löschen</translation>
+<translation id="6137614725462089991">Cyberpunk</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
 <translation id="6146993107019042706">Gib zum Schluss dein neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -894,6 +907,7 @@
 <translation id="6382182670717268353">Bildschirmschoner – Vorschau</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrolliere den Einzug und versuche es noch einmal.</translation>
 <translation id="6394634179843537518">Datei hinzufügen</translation>
+<translation id="639964859328803943">High-Tea</translation>
 <translation id="6400680457268373900">Ein(e) fantasievolle(r/s) <ph name="DREAMSCAPES_OBJECT" /> aus <ph name="DREAMSCAPES_MATERIAL" /> in <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">Browsersuche</translation>
 <translation id="6410257289063177456">Bilddateien</translation>
@@ -913,6 +927,7 @@
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Exklusiver <ph name="PRODUCT_NAME" />-Bildschirmschoner</translation>
 <translation id="649050271426829538">Angehalten – Papierstau</translation>
+<translation id="6492891353338939218">besorgt</translation>
 <translation id="6494974875566443634">Anpassung</translation>
 <translation id="6500818810472529210">Ergebnis in der Google Suche anzeigen</translation>
 <translation id="650266656685499220">Gehe zu Google Fotos, um Alben zu erstellen</translation>
@@ -940,6 +955,7 @@
 <translation id="6624819909909965616">Dateien mit einer Größe von 10 MB oder mehr können nicht hochgeladen werden</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6647510110698214773">Verschlüsselungsalgorithmus</translation>
+<translation id="6648412990074186169">minimal</translation>
 <translation id="6650062777702288430">Kana/alphanumerische Zeichen</translation>
 <translation id="6657240842932274095">Systemdiensten erlauben, deinen Standort zu verwenden?</translation>
 <translation id="6657585470893396449">Passwort</translation>
@@ -960,6 +976,7 @@
 <translation id="6741823073189174383">Boot</translation>
 <translation id="674276385369049081">Aktuelle Kamerahintergründe, die auf Google AI basieren</translation>
 <translation id="6744441848304920043">Dschungel</translation>
+<translation id="6747035363363040417">neutral</translation>
 <translation id="6747215703636344499">Angehalten – Ausgabefach ist voll</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">Das Gerät ist ein Computer.</translation>
@@ -1011,6 +1028,7 @@
 <translation id="708426984172631313">ABGEBROCHEN</translation>
 <translation id="7086168019478250425">biolumineszierender Strand</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7097908713073775559">farbenfroh</translation>
 <translation id="710028965487274708">Fehler – Autorisierung fehlgeschlagen</translation>
 <translation id="7103252855940681301">Der Name des Geräts <ph name="INDEX" /> von <ph name="COUNT" /> lautet „<ph name="NAME" />“.</translation>
 <translation id="7107255225945990211">Exklusives Kunstwerk für <ph name="PRODUCT_NAME" /> auswählen</translation>
@@ -1067,6 +1085,7 @@
           Du kannst Hintergründe mit KI nur für den privaten und nicht kommerziellen Gebrauch erstellen. Wenn du Hilfe für Hintergründe verwendest, wird Text an die Google AI-Server gesendet, um Vorschläge für Hintergründe gemäß der <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu generieren. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
+<translation id="7344788170842919262">erdig</translation>
 <translation id="7353413232959255829">Suchergebnis <ph name="LIST_POSITION" /> von <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Drücke die Eingabetaste, um die Tastenkombination aufzurufen.</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="73631062356239394">Diagnosedaten teilen</translation>
@@ -1194,6 +1213,7 @@
 <translation id="8143951647992294073">"<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />" auswählen</translation>
 <translation id="8151185429379586178">Entwicklertools</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8156233298086717232">magisch</translation>
 <translation id="8162776280680283326">Füchse</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8183975772394450380">Strand</translation>
@@ -1219,6 +1239,7 @@
 <translation id="8329018942023753850">Rechner App</translation>
 <translation id="8336739000755212683">Bild des Gerätekontos ändern</translation>
 <translation id="8339024191194156249">Weitere Informationen zum automatischen Start</translation>
+<translation id="8346937114125330423">klassisch</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> oder <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
 <translation id="8349758651405877930">Instrumente</translation>
@@ -1256,6 +1277,7 @@
 <translation id="8508640263392900755">APN-Details</translation>
 <translation id="8522687886059337719">Du hast jetzt Zugriff auf neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> und <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />Bildschirmschoner<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="852896705346853285">Teehaus</translation>
 <translation id="8538236298648811558">Powered by Google AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>
@@ -1359,6 +1381,7 @@
 <translation id="9106415115617144481">Seite <ph name="PAGE_NUMBER" /> wird gescannt</translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="9122602430962285795">Gehe zu den Einstellungen, um die Verbindung wiederherzustellen</translation>
+<translation id="9122865513525855321">Zen</translation>
 <translation id="9126720536733509015">Mehrere Seiten in einem PDF speichern</translation>
 <translation id="9133772297793293778">Drücke eine bis vier Modifikatortasten und eine weitere Taste auf deiner Tastatur. Um den Bearbeitungsmodus zu beenden, drücke Alt + Esc-Taste.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>

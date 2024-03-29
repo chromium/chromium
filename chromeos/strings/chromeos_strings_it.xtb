@@ -34,6 +34,7 @@
 <translation id="1174073918202301297">Scorciatoia aggiunta</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Nella media (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1180621378971766337">accogliente</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1191518099344003522">APN attivo.</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
@@ -85,6 +86,7 @@
 <translation id="1451536289672181509">Il dispositivo è una tastiera.</translation>
 <translation id="1452939186874918380">ombrelli</translation>
 <translation id="1459693405370120464">Meteo</translation>
+<translation id="1463084054301832672">cottage</translation>
 <translation id="1468664791493211953">Offerte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -162,6 +164,7 @@
 <translation id="183675228220305365">realista</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1840474674287087346">Colore desktop</translation>
+<translation id="184095011128924488">creativo</translation>
 <translation id="1846318329111865304">Paesaggi irreali</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
 <translation id="1852934301711881861">Installa ChromeOS Flex</translation>
@@ -188,6 +191,7 @@
 <translation id="1962550982027027473">È richiesto un APN predefinito</translation>
 <translation id="1967860190218310525">Crea nuovo APN</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1977973007732255293">tradizionale</translation>
 <translation id="1977994649430373166">Foto del profilo Google</translation>
 <translation id="1979103255016296513">Modifica della password scaduta</translation>
 <translation id="1999615961760456652">Captive portal</translation>
@@ -330,6 +334,7 @@
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2880569433548999039">Salvaschermo Flusso di nuvole</translation>
 <translation id="2890557891229184386">un'isola tropicale</translation>
+<translation id="2895772081848316509">scuro</translation>
 <translation id="2926057806159140518">Inserisci il tuo nome utente e la password o scansiona il codice QR</translation>
 <translation id="2940811910881150316">Impossibile testare il dispositivo. Riapri il coperchio per testarlo.</translation>
 <translation id="2941112035454246133">Bassa</translation>
@@ -345,6 +350,7 @@
 <translation id="3060579846059757016">Prospetti</translation>
 <translation id="3069085583900247081">Test non riuscito</translation>
 <translation id="3078740164268491126">tabella</translation>
+<translation id="3081652522083185657">chiaro</translation>
 <translation id="3083667275341675831">Diagnostica della connettività</translation>
 <translation id="3084958266922136097">Disabilita salvaschermo</translation>
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
@@ -385,6 +391,7 @@
 <translation id="3328783797891415197">Test in esecuzione</translation>
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">impostazioni</translation>
+<translation id="3347558044552027859">moderno</translation>
 <translation id="3359218928534347896">attiva/disattiva audio del microfono</translation>
 <translation id="3360306038446926262">Finestre</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -395,6 +402,7 @@
 <translation id="3383623117265110236">Esclusiva</translation>
 <translation id="3404249063913988450">Abilita salvaschermo</translation>
 <translation id="3413935475507503304">Per continuare con l'aggiornamento, fai clic su Avanti.</translation>
+<translation id="3428551088151258685">all'aperto</translation>
 <translation id="3428971106895559033">pastello</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
@@ -448,6 +456,7 @@
 <translation id="3749289110408117711">Nome file</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3784455785234192852">Blocca</translation>
+<translation id="3785643128701396311">pixel art</translation>
 <translation id="3790109258688020991">puntinato</translation>
 <translation id="380097101658023925">Controlli RGB</translation>
 <translation id="38114475217616659">Cancella tutta la cronologia</translation>
@@ -496,6 +505,8 @@
 <translation id="404928562651467259">AVVISO</translation>
 <translation id="4054683689023980771">Download dell'immagine in corso…</translation>
 <translation id="4063039537646912479">azzurro</translation>
+<translation id="4070799384363688067">anime</translation>
+<translation id="4091002263446255071">romantico</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="409427325554347132">Salva dettagli del test</translation>
 <translation id="409469431304488632">Sperimentale</translation>
@@ -670,6 +681,7 @@
 <translation id="5049856988445523908">SIM bloccata (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome del gruppo</translation>
 <translation id="5051044138948155788">Questa è l'unica pagina. Si aprirà la schermata iniziale della scansione.</translation>
+<translation id="5078983345702708852">futuristico</translation>
 <translation id="5087864757604726239">indietro</translation>
 <translation id="5088172560898466307">Nome host del server</translation>
 <translation id="5089810972385038852">Stato</translation>
@@ -848,6 +860,7 @@
 <translation id="6122277663991249694">Servizio metodo di immissione di ChromeOS</translation>
 <translation id="6127426868813166163">bianco</translation>
 <translation id="6136285399872347291">backspace</translation>
+<translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificato utente</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -894,6 +907,7 @@
 <translation id="6382182670717268353">Anteprima salvaschermo</translation>
 <translation id="6388847657025262518">L'alimentatore di documenti dello scanner è inceppato. Controlla l'alimentatore e riprova.</translation>
 <translation id="6394634179843537518">Aggiungi file</translation>
+<translation id="639964859328803943">tè pomeridiano</translation>
 <translation id="6400680457268373900">Una <ph name="DREAMSCAPES_OBJECT" /> surreale fatta di <ph name="DREAMSCAPES_MATERIAL" /> di colore <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">Ricerca dal browser</translation>
 <translation id="6410257289063177456">File di immagine</translation>
@@ -913,6 +927,7 @@
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Salvaschermo esclusivo di <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
+<translation id="6492891353338939218">shabby chic</translation>
 <translation id="6494974875566443634">Personalizzazione</translation>
 <translation id="6500818810472529210">Visualizza i risultati nella Ricerca Google</translation>
 <translation id="650266656685499220">Per creare album, accedi a Google Foto</translation>
@@ -940,6 +955,7 @@
 <translation id="6624819909909965616">Impossibile caricare file di dimensioni superiori a 10 MB</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6647510110698214773">Algoritmo di crittografia</translation>
+<translation id="6648412990074186169">minimal</translation>
 <translation id="6650062777702288430">Spostamento tra caratteri kana/alfanumerici</translation>
 <translation id="6657240842932274095">Consentire ai servizi di sistema di utilizzare la tua posizione?</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -960,6 +976,7 @@
 <translation id="6741823073189174383">barca</translation>
 <translation id="674276385369049081">Sfondi della fotocamera recenti con IA di Google integrata</translation>
 <translation id="6744441848304920043">una giungla</translation>
+<translation id="6747035363363040417">neutro</translation>
 <translation id="6747215703636344499">Operazione interrotta - Vassoio di uscita pieno</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6753452347192452143">Il dispositivo è un computer.</translation>
@@ -1011,6 +1028,7 @@
 <translation id="708426984172631313">INTERROTTO</translation>
 <translation id="7086168019478250425">spiaggia bioluminescente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7097908713073775559">colorato</translation>
 <translation id="710028965487274708">Stampa non riuscita - Autorizzazione negata</translation>
 <translation id="7103252855940681301">Il nome del dispositivo <ph name="INDEX" /> di <ph name="COUNT" /> è: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Scegli artwork esclusive di <ph name="PRODUCT_NAME" /></translation>
@@ -1067,6 +1085,7 @@
           Puoi creare sfondi con l'IA solo per uso personale e non commerciale. Quando ricevi assistenza relativa agli sfondi, ai server dell'IA di Google viene inviato il testo per generare suggerimenti di sfondi, soggetti alle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
+<translation id="7344788170842919262">naturale</translation>
 <translation id="7353413232959255829">Risultato di ricerca <ph name="LIST_POSITION" /> di <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Premi Invio per navigare alla scorciatoia.</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="73631062356239394">Condividi dati diagnostici</translation>
@@ -1194,6 +1213,7 @@
 <translation id="8143951647992294073">Seleziona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Strumenti per sviluppatori</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8156233298086717232">magico</translation>
 <translation id="8162776280680283326">volpi</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8183975772394450380">una spiaggia</translation>
@@ -1219,6 +1239,7 @@
 <translation id="8329018942023753850">app calcolatrice</translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
 <translation id="8339024191194156249">Scopri di più sull'avvio automatico</translation>
+<translation id="8346937114125330423">classico</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8349758651405877930">strumentazioni</translation>
@@ -1256,6 +1277,7 @@
 <translation id="8508640263392900755">Dettagli APN</translation>
 <translation id="8522687886059337719">Ora hai accesso a nuovi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />sfondi<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />salvaschermi<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="852896705346853285">sala da tè</translation>
 <translation id="8538236298648811558">IA di Google integrata</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
@@ -1359,6 +1381,7 @@
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9122602430962285795">Per riconnetterti, vai alle Impostazioni</translation>
+<translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Salva più pagine in un unico PDF</translation>
 <translation id="9133772297793293778">Premi 1-4 tasti di modifica e 1 altro tasto della tastiera. Per uscire dalla modalità di modifica, premi Alt + Esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>

@@ -2509,6 +2509,7 @@
 <translation id="2845382757467349449">Διαρκής εμφάνιση γραμμής σελιδοδεικτών</translation>
 <translation id="2845751331501453107">Η εξατομίκευση ή όχι μιας διαφήμισης που βλέπετε καθώς περιηγείστε εξαρτάται από αυτήν τη ρύθμιση, τις <ph name="BEGIN_LINK1" />Διαφημίσεις που προτείνονται από τον ιστότοπο<ph name="LINK_END1" />, τις <ph name="BEGIN_LINK2" />ρυθμίσεις cookie<ph name="LINK_END2" /> και το κατά πόσο ο ιστότοπος που προβάλλετε εξατομικεύει τις διαφημίσεις.</translation>
 <translation id="284581348330507117">Δημιουργήστε μοναδικούς κωδικούς πρόσβασης</translation>
+<translation id="284884486564166077">Αναζήτηση οποιασδήποτε εικόνας με το Lens</translation>
 <translation id="2849035674501872372">Αναζήτηση</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Το PIN σας προστέθηκε</translation>
@@ -3413,6 +3414,7 @@
 <translation id="3577487026101678864">Ο συγχρονισμός αρχείων είναι ενεργός</translation>
 <translation id="3577745545227000795">Συλλογή δεδομένων εξοπλισμού <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Αυτόματη διαμόρφωση διεύθυνσης IP</translation>
+<translation id="3581861561942370740">Αναζήτηση στο ιστορικό λήψεων</translation>
 <translation id="3582057310199111521">Εισήχθη σε παραπλανητικό ιστότοπο και βρέθηκε σε παραβίαση δεδομένων</translation>
 <translation id="3582299299336701326">Κάντε τις φωτεινές οθόνες σκοτεινές και τις σκοτεινές οθόνες φωτεινές. Πατήστε Αναζήτηση + Ctrl + H για να ενεργοποιήσετε και να απενεργοποιήσετε την αντιστροφή χρωμάτων.</translation>
 <translation id="3584169441612580296">Ανάγνωση και αλλαγή φωτογραφιών, μουσικής και άλλων μέσων από τον υπολογιστή σας</translation>
@@ -5330,6 +5332,7 @@
 <translation id="5056950756634735043">Σύνδεση στο κοντέινερ</translation>
 <translation id="5057110919553308744">Όταν κάνετε κλικ στην επέκταση</translation>
 <translation id="5057127674016624293">Η σάρωση διαρκεί περισσότερο από το αναμενόμενο</translation>
+<translation id="5057480703570202545">Ιστορικό λήψεων</translation>
 <translation id="5059241099014281248">Περιορισμός σύνδεσης</translation>
 <translation id="5059429103770496207">Στιλ προβολής</translation>
 <translation id="5059526285558225588">Επιλέξτε τι θα μοιράζεστε</translation>
@@ -5739,6 +5742,7 @@
 <translation id="5390677308841849479">Σκούρο κόκκινο και πορτοκαλί</translation>
 <translation id="5392192690789334093">Επιτρέπεται η αποστολή ειδοποιήσεων</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Σύνδεσμος}other{# σύνδεσμοι}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Προεπιλεγμένη γραμματοσειρά</translation>
 <translation id="5397378439569041789">Εγγραφή συσκευής kiosk ή σήμανσης</translation>
 <translation id="5397794290049113714">Εσείς</translation>

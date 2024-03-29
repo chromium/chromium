@@ -272,6 +272,7 @@
 <translation id="2446553403094072641">Ukunemba kwephoyinti elintantayo</translation>
 <translation id="2448312741937722512">Uhlobo</translation>
 <translation id="2465272316171730950">Kugcwele. Sicela ubuye ngesikhashana.</translation>
+<translation id="2472215337771558851">Sebenzisa okuthi Ngisize ngibhale ukuze usungule okusalungiswa noma wenze ngcono umsebenzi okhona, osekelwe yi-Google AI</translation>
 <translation id="2480572840229215612">izinkalankala</translation>
 <translation id="248546197012830854">Idivayisi ayixhunyiwe ku-inthanethi. Xhuma kunethiwekhi ye-Wi-Fi ukuze ubone okuqukethwe kosizo.</translation>
 <translation id="2486301288428798846">ukhuni</translation>
@@ -329,10 +330,12 @@
 <translation id="2860473693272905224">Beka elinye ikhasi kuskena</translation>
 <translation id="2872961005593481000">Cisha</translation>
 <translation id="2873483161362553159">Ukufuna kwebhrawuza</translation>
+<translation id="2873939192640533085">Faka umyalelo njengokuthi "zwakala uqiniseka kakhulu"</translation>
 <translation id="2874939134665556319">Ithrekhi yangaphambilini</translation>
 <translation id="2875812231449496375">Vula lokhu ukuze uthole imiphumela ehamba phambili ngalesi sithombe sangemuva. Ungavala le sethingi nganoma yisiphi isikhathi.</translation>
 <translation id="2878387241690264070">Iyekiswe ukushaja ngokungu-<ph name="RATE" /> kumasekhondi angu-<ph name="NUM_SECONDS" />.</translation>
 <translation id="2880569433548999039">Isigciniskrini sokugeleza se-cloud</translation>
+<translation id="2888298276507578975">Faka ukwaziswa njengokuthi "bhala inothi lokubonga"</translation>
 <translation id="2890557891229184386">isiqhingi esishisayo</translation>
 <translation id="2895772081848316509">okumnyama</translation>
 <translation id="2926057806159140518">Faka igama lomsebenzisi nephasiwedi yakho noma uskene ikhodi yakho ye-QR</translation>
@@ -377,6 +380,7 @@
 <translation id="3226405216343213872">Ifuna izikena</translation>
 <translation id="3226657629376379887">Imenyu yezenzo yohlaka</translation>
 <translation id="3227186760713762082">Hlukanisa inani le-<ph name="CATEGORY_TEXT" /> ngo-<ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Bhala kabusha</translation>
 <translation id="3246869037381808805">Imisebenzi yokuphrinta emidala kunosuku olu-1 izosuswa</translation>
 <translation id="324961752321393509">Umlawuli wakho akakuvumeli ukuvala le app</translation>
 <translation id="3268178239013324452">Yehlulekile - Umnyango uvuliwe</translation>
@@ -415,6 +419,7 @@
 <translation id="346539236881580388">Thatha futhi</translation>
 <translation id="3484914941826596830">Ngenkathi i-firmware ibuyekeza, ungakhiphi ukuxhuma le divayisi yangaphandle noma ucishe ikhompyutha. Unganciphisa leli windi. Lesi sibuyekezo singase sithathe imizuzu embalwa futhi idivayisi yakho yangaphandle ingase ingasebenzi phakathi nalesi sikhathi.</translation>
 <translation id="3486220673238053218">incazelo</translation>
+<translation id="3487866404496702283">Impendulo yesakhi se-mahi</translation>
 <translation id="3488065109653206955">Yenziwe yasebenza ngokungaphelele</translation>
 <translation id="3492882532495507361">Ihhovisi le-<ph name="OFFICE_STYLE" /> elinamathoni e-<ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Idatha ilinganiswa nge-Chromebook yakho. Lokhu kungase kuhluke kudatha yomhlinzeki.</translation>
@@ -444,6 +449,7 @@
 <translation id="3632579075709132555">Guqula isikrini sobumfihlo</translation>
 <translation id="3651050199673793219">Khetha iyunithi yezinga lokushisa</translation>
 <translation id="3654530588944650786">Okucwebezelayo <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> embalini</translation>
+<translation id="3661106764436337772">Bhala ngokushesha nangokuzethemba okwengeziwe</translation>
 <translation id="3662461537616691585">i-burgundy ne-maroon</translation>
 <translation id="3668449597372804501">Isithombe sangemuva se-cloud flow</translation>
 <translation id="3675132884790542448">izingulube</translation>
@@ -879,6 +885,7 @@
 <translation id="6235460611964961764">Setha kabusha ngokuzenzela ukusetshenziswa kwedatha</translation>
 <translation id="6243280677745499710">Manje isethiwe</translation>
 <translation id="6250316632541035980">ubhekeni namaqanda</translation>
+<translation id="6255213378196499011">Ngisize ngibhale amasethingi</translation>
 <translation id="6275224645089671689">Umcibisholo wesokudla</translation>
 <translation id="6278428485366576908">Itimu</translation>
 <translation id="6280912520669706465">I-ARC</translation>

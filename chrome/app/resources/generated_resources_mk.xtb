@@ -3415,6 +3415,7 @@
 <translation id="3577487026101678864">Синхронизацијата на датотеки е вклучена</translation>
 <translation id="3577745545227000795">Прибирање хардверски податоци за <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Автоматско конфигурирање IP-адреса</translation>
+<translation id="3581861561942370740">Пребарајте ја историјата на преземања</translation>
 <translation id="3582057310199111521">Внесена на измамнички сајт и откриена при упад во податоци</translation>
 <translation id="3582299299336701326">Го претвора светлиот екран во темен и темниот екран во светол. Притиснете Search + Ctrl + H за да се вклучи и исклучи инверзија на боите.</translation>
 <translation id="3584169441612580296">Прочитајте ги и променете ги фотографиите, музиката и другите медиуми од компјутерoт</translation>
@@ -5332,6 +5333,7 @@
 <translation id="5056950756634735043">Се поврзува со контејнерот</translation>
 <translation id="5057110919553308744">Кога ќе кликнете на екстензијата</translation>
 <translation id="5057127674016624293">Скенирањето трае подолго од очекуваното</translation>
+<translation id="5057480703570202545">Историја на преземања</translation>
 <translation id="5059241099014281248">Ограничи најавување</translation>
 <translation id="5059429103770496207">Стил на приказ</translation>
 <translation id="5059526285558225588">Изберете што да се сподели</translation>
@@ -5741,6 +5743,7 @@
 <translation id="5390677308841849479">Темноцрвена и портокалова</translation>
 <translation id="5392192690789334093">Дозволено им е да испраќаат известувања</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Линк}one{# линк}other{# линка}}</translation>
+<translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Стандарден фонт</translation>
 <translation id="5397378439569041789">Регистрирајте киоск или уред за сигнализација</translation>
 <translation id="5397794290049113714">Вие</translation>

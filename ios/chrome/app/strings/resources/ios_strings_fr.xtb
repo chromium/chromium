@@ -630,6 +630,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4282944936010261425">Vous n'avez aucun problème de sécurité à résoudre.</translation>
 <translation id="4286718549648564014">Adresse transférée vers votre compte <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Nouveautés</translation>
+<translation id="429074084062258019">{count,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="4293080268407233932">Rechercher</translation>
 <translation id="4302248187517737842">Aucun nom d'utilisateur ••••••••</translation>
 <translation id="4302415908542657649">Partage des mots de passe…</translation>
@@ -725,6 +726,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="47677902929517676">Pour enregistrer les mots de passe dans votre compte, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="4775879719735953715">Navigateur par défaut</translation>
 <translation id="4779732376610430319">Accéder aux réglages...</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Ouvrir en navigation privée ?</translation>
 <translation id="4803185665210547709">Géré par votre organisation.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5283494734135414249">Appuyez sur le raccourci qui s'affiche sous la barre d'adresse.</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" /> ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> sur <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5327753393331509826">Recevez des notifications sur les contenus</translation>
@@ -1268,6 +1271,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7524055474074101597">Accédez à vos mots de passe et plus encore depuis vos différentes applis.</translation>
 <translation id="7527917367892640435">Colis déjà suivi</translation>
 <translation id="7531345132340165516">Site actuel</translation>
+<translation id="75362970626182391">Nouveau groupe d'onglets</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="754655535278952384">Vérifié <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Dernier onglet utilisé sur <ph name="SOURCE_DEVICE" /></translation>

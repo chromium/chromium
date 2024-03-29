@@ -2498,6 +2498,7 @@
 <translation id="2845382757467349449">හැමවිට පිටුසලකුණු බාර් එක පෙන්වන්න</translation>
 <translation id="2845751331501453107">ඔබ බ්‍රවුස් කරන විට, ඔබ දකින දැන්වීමක් පෞද්ගලීකරණය කර තිබේ ද යන්න මෙම සැකසීම, <ph name="BEGIN_LINK1" />අඩවි-යෝජිත දැන්වීම්<ph name="LINK_END1" />, ඔබේ <ph name="BEGIN_LINK2" />කුකී සැකසීම්<ph name="LINK_END2" />, සහ ඔබ බලන අඩවිය දැන්වීම් පෞද්ගලීකරණය කරන්නේ දැයි මත රඳා පවතී</translation>
 <translation id="284581348330507117">අනන්‍ය මුරපද තනන්න</translation>
+<translation id="284884486564166077">Lens සමග ඕනෑම රූපයක් සොයන්න</translation>
 <translation id="2849035674501872372">සොයන්න</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">ඔබගේ PIN එක් කර ඇත</translation>
@@ -3402,6 +3403,7 @@
 <translation id="3577487026101678864">ගොනු සමමුහූර්ත කිරීම සක්‍රීයයි</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> දෘඪාංග දත්ත එකතුව</translation>
 <translation id="3581605050355435601">IP ලිපිනය ස්වයංක්‍රීයව වින්‍යාස කරන්න</translation>
+<translation id="3581861561942370740">බාගත ඉතිහාසය සොයන්න</translation>
 <translation id="3582057310199111521">වංචනික වෙබ් අඩවියකට ඇතුළත් වූ අතර දත්ත කඩ කිරීම සොයා ගත්තා</translation>
 <translation id="3582299299336701326">ආලෝකමත් තිර අඳුරු කරන්න, සහ අඳුරු තිර ආලෝකමත් කරන්න. වර්ණ අපවර්තනය ක්‍රියාත්මක සහ ක්‍රියා විරහිත කිරීමට සෙවීම + Ctrl + H ඔබන්න.</translation>
 <translation id="3584169441612580296">ඔබගේ පරිගණකයෙන් ඡායාරූප, සංගීතය, සහ වෙනත් මාධ්‍යය කියවා වෙනස් කරන්න</translation>
@@ -5319,6 +5321,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5056950756634735043">බහාලුමට සම්බන්ධ වෙමින්</translation>
 <translation id="5057110919553308744">ඔබ දිගුව ක්ලික් කළ විට</translation>
 <translation id="5057127674016624293">ස්කෑන් කිරීම බලාපොරොත්තු වූවාට වඩා වැඩි කාලයක් ගනී</translation>
+<translation id="5057480703570202545">බාගැනීමේ ඉතිහාසය</translation>
 <translation id="5059241099014281248">පුරනය සීමා කරන්න</translation>
 <translation id="5059429103770496207">සංදර්ශන විලාසය</translation>
 <translation id="5059526285558225588">බෙදා ගන්නා දේ තෝරන්න</translation>
@@ -5728,6 +5731,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5390677308841849479">තද රතු සහ තැඹිලි</translation>
 <translation id="5392192690789334093">දැනුම්දීම් යැවීමට ඉඩ දී ඇත</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{සබැඳිය}one{සබැඳි #}other{සබැඳි #}}</translation>
+<translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395498824851198390">පෙරනිමි අකුරු වර්ගය</translation>
 <translation id="5397378439569041789">කියෝස්ක් හෝ සයිනේජ් උපාංගය ලියාපදිංචි කරන්න</translation>
 <translation id="5397794290049113714">ඔබ</translation>

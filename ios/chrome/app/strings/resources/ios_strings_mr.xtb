@@ -630,6 +630,7 @@
 <translation id="4282944936010261425">तुमच्याकडे निराकरण करण्यासाठी सुरक्षेसंबंधित समस्या नाहीत.</translation>
 <translation id="4286718549648564014">पत्ता तुमच्या <ph name="USER_EMAIL" /> खात्यावर हलवला आहे</translation>
 <translation id="428768789042547925">नवीन काय आहे</translation>
+<translation id="429074084062258019">{count,plural, =1{गट मध्ये टॅब जोडा}other{गट मध्ये टॅब जोडा}}</translation>
 <translation id="4293080268407233932">शोधा</translation>
 <translation id="4302248187517737842">वापरकर्ता नाव नाही ••••••••</translation>
 <translation id="4302415908542657649">पासवर्ड शेअर करत आहे</translation>
@@ -1270,6 +1271,7 @@
 <translation id="7524055474074101597">सर्व अ‍ॅप्सवर तुमचे पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
 <translation id="7527917367892640435">पॅकेज आधीच ट्रॅक केले आहे</translation>
 <translation id="7531345132340165516">सध्याची साइट</translation>
+<translation id="75362970626182391">नवीन टॅब गट</translation>
 <translation id="7537586195939242955">क्षमस्व, यावेळी तुमचा पास पासबुकमध्ये इंस्टॉल केला जाऊ शकत नाही.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> तपासले</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> वर वापरलेला शेवटचा टॅब</translation>

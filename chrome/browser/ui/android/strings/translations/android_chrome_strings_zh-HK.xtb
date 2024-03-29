@@ -637,7 +637,7 @@
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，系統將通知您。</translation>
 <translation id="4425173294238317796">密鑰確認工作表</translation>
 <translation id="442518031075347249">您將無法再透過 Google Pay 使用虛擬卡。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
-<translation id="4425786638332151079">這裡可能沒有顯示所有網頁記錄。如有需要，請輕觸「開啟完整的 Chrome 歷史記錄」。此外，你的 Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
+<translation id="4425786638332151079">部分網頁記錄可能不會在此顯示。如有需要，請開啟完整的 Chrome 記錄。此外，你的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上亦可能有其他形式的瀏覽記錄。</translation>
 <translation id="4430277756566635951">目前已選取 <ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
@@ -1107,7 +1107,7 @@
 <translation id="6719634564325948108">要使用 QR 碼連線嗎？</translation>
 <translation id="6723740634201835758">在您的 Google 帳戶中</translation>
 <translation id="6738867403308150051">下載中…</translation>
-<translation id="67404633032079629">這裡可能沒有顯示所有網頁記錄。如要查看完整的網頁記錄，請輕觸「開啟完整的 Chrome 歷史記錄」。</translation>
+<translation id="67404633032079629">部分網頁記錄可能不會在此顯示。如要查看完整網頁記錄，請輕按 [開啟完整 Chrome 記錄]。</translation>
 <translation id="674388916582496364">您瀏覽的網站經常會記住您感興趣的項目，以便為您提供個人化體驗。網站亦可將您的興趣相關資訊儲存在 Chrome 中。</translation>
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="6756507620369789050">提供意見</translation>

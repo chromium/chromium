@@ -337,6 +337,7 @@
 <translation id="2405664212338326887">ချိတ်ဆက်မထားပါ</translation>
 <translation id="2408955596600435184">သင့်ပင်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="2412593942846481727">အပ်ဒိတ် ရနိုင်သည်</translation>
+<translation id="2416438829169535743">မြင်ကွင်းမှ ထွက်မလား။</translation>
 <translation id="2417486498593892439">ကွန်ရက်သို့ လက်မှတ်ထိုးဝင်ခြင်း</translation>
 <translation id="2426051945783024481">ကင်မရာဘောင်ကို အလယ်တွင် အလိုအလျောက်ထားလိုက်သည်</translation>
 <translation id="2427507373259914951">ဘယ်ဘက်ခလုတ်ကို နှိပ်ရန်</translation>
@@ -1154,9 +1155,11 @@
 <translation id="5555639311269196631">ဟော့စပေါ့ ပိတ်ရန်</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5558091555391176027">‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ အထူးမြင်နိုင်မှုကို ပြောင်းရန်</translation>
+<translation id="5558314826121965174">ဖန်တီးနိုင်စွမ်း</translation>
 <translation id="556042886152191864">ခလုတ်</translation>
 <translation id="5570122939431135380">ရုပ်ဖျက် ဝင်းဒိုးအသစ်တွင် တဘ်အသစ်ဖွင့်ရန်</translation>
 <translation id="5571066253365925590">ဘလူးတုသ်ကို ဖွင့်ထား</translation>
+<translation id="5572632238877308040">မရှိမဖြစ်များ</translation>
 <translation id="557563299383177668">နောက်စာပိုဒ်</translation>
 <translation id="5577082622442191756">ဘလူးတုသ် ပြောင်းရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="5577281275355252094">'ဖုန်းစင်တာ' အသုံးပြုရန် သင့်ဖုန်းတွင် ဘလူးတုသ်ဖွင့်ထား၊ မထား စစ်ဆေးပါ</translation>
@@ -1181,6 +1184,7 @@
 <translation id="5662075790140998213">မျက်နှာပြင် ၁၀</translation>
 <translation id="5662709761327382534">မိုက်ခရိုဖုန်းအသံဖမ်းရန် <ph name="CURRENT_STATE" />၊ မိုက်ခရိုဖုန်းအသံဖမ်းခြင်း <ph name="NEW_STATE" /> ရန် enter ကို နှိပ်ပါ</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
+<translation id="5672890847723042801">အထောက်အကူပြု ဆော့ဖ်ဝဲလ်များ</translation>
 <translation id="5673434351075758678">သင့်ဆက်တင်များ စင့်ခ်လုပ်ပြီးနောက် "<ph name="FROM_LOCALE" />" မှ "<ph name="TO_LOCALE" />" သို့။</translation>
 <translation id="5675363643668471212">စင်ပစ္စည်း</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
@@ -1363,6 +1367,7 @@
 <translation id="6351032674660237738">အက်ပ်အကြံပြုချက်များ</translation>
 <translation id="6352082849089527770">အမျိုးအမည်မသိ ကွန်ရက်များ</translation>
 <translation id="6359587239691116345">နောက်ဆုံးထုတ်ဝန်ဆောင်မှုနှင့် လုံခြုံရေးတိုးမြှင့်မှုများ ရယူနိုင်သည်။ ဤအပ်ဒိတ်ကို ငြင်းပယ်ပါက သင့်စက် မှန်ကန်စွာ အလုပ်မလုပ်တော့ဘဲ လုံခြုံရေးနှင့် စွမ်းဆောင်မှုပြဿနာများ ကြုံတွေ့ရနိုင်သည်။</translation>
+<translation id="6362833380917912748">အသင့်ပါအက်ပ်များကို သိအောင်လုပ်ပါ</translation>
 <translation id="6376931439017688372">ဘလူးတုသ်ကို ဖွင့်ထားသည်</translation>
 <translation id="6378515133128829137">ဝင်းဒိုးကို ညာဘက်တွင် ပင်ထိုးရန်</translation>
 <translation id="6381109794406942707">ဤစက်ကိုဖွင့်ရန် သင့်ပင်နံပါတ် ထည့်ပါ။</translation>
@@ -1849,6 +1854,7 @@
 <translation id="8262312463845990408">ဖွင့်ရန် ခလုတ်</translation>
 <translation id="8270450402312105425">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ တစ်နာရီအတွင်း ပြောင်းပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # နာရီအတွင်း ပြောင်းပါ}}</translation>
 <translation id="8277261673056602147">သင့်ဖန်သားပြင်ပေါ်ရှိ စာသားကို မြင်သာအောင်လုပ်ရန်</translation>
+<translation id="8287009018010202411">အလုပ်ပြီးမြောက်မှု</translation>
 <translation id="828708037801473432">ပိတ်ရန်</translation>
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>
 <translation id="8308637677604853869">ယခင် မီနျူး</translation>
@@ -1920,6 +1926,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">အက်ပ်များကို အမည် (သို့) အရောင်ဖြင့်စီရန်</translation>
 <translation id="8609384513243082612">တဘ်အသစ် ဖွင့်ရန်</translation>
+<translation id="861045123704058818">အက်ပ်များကို အမျိုးအစားအလိုက် ယာယီစုစည်းထားသည်</translation>
 <translation id="8612216344243590325">အရေးကြီးဖိုင်များကို ဒက်စ်တော့ပေါ်တွင် ထားမည့်အစား <ph name="HOLDING_SPACE_TITLE" /> တွင် သိမ်းပါ။ ဖိုင်များကို <ph name="HOLDING_SPACE_TITLE" /> သို့ ဆွဲထည့်ပါ။</translation>
 <translation id="8614517853887502247">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_1_TITLE" /> နှင့် <ph name="APP_2_TITLE" /> အကြောင်းကြားချက်များကို ဖျောက်ထားသည်</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1965,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">သင်၏အထောက်အထားကို အတည်ပြုပါ- သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
 <translation id="875593634123171288">VPN ဆက်တင်များကို ပြရန်</translation>
+<translation id="8756799553341497810">ဤမြင်ကွင်းမှ ထွက်ပါက သင့်အက်ပ်အပြင်အဆင်ကို စတင်စိတ်ကြိုက်လုပ်နိုင်သည်။</translation>
 <translation id="8759408218731716181">အများအပြား လက်မှတ်ထိုး ဝင်မှုကို သတ်မှတ် မပေးနိုင်</translation>
 <translation id="8763883995157866248">စက်ကို အိပ်စက်မုဒ်တွင် ထားရန်</translation>
 <translation id="877404052021108314">၉၀°F ကို C ဖြင့်ပြပါ</translation>

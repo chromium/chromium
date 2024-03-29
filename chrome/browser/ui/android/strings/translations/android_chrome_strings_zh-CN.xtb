@@ -635,6 +635,7 @@
 <translation id="4425140285732600465">正在跟踪价格。当任一网站上的商品降价时，您会收到提醒。</translation>
 <translation id="4425173294238317796">通行密钥确认工作表</translation>
 <translation id="442518031075347249">您将无法再通过 Google Pay 使用此虚拟卡。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
+<translation id="4425786638332151079">您的部分网络历史记录可能不会在此处显示。如果需要，请点按“打开完整的 Chrome 历史记录”。此外，您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="4430277756566635951">目前选择的是：<ph name="EMAIL" />。请选择一个账号。</translation>
 <translation id="4452411734226507615">关闭“<ph name="TAB_TITLE" />”标签页</translation>
 <translation id="4452548195519783679">已将书签添加到“<ph name="FOLDER_NAME" />”</translation>
@@ -1104,6 +1105,7 @@
 <translation id="6719634564325948108">使用二维码连接？</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="6738867403308150051">正在下载…</translation>
+<translation id="67404633032079629">您的部分网络历史记录可能不会在此处显示。要查看完整的网络历史记录，请点按“打开完整的 Chrome 历史记录”。</translation>
 <translation id="674388916582496364">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还能将您的兴趣信息存储在 Chrome 中。</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6756507620369789050">分享反馈</translation>

@@ -630,6 +630,7 @@
 <translation id="4282944936010261425">Няма проблеми със сигурността, които да отстраните.</translation>
 <translation id="4286718549648564014">Адресът бе преместен в профила ви <ph name="USER_EMAIL" /></translation>
 <translation id="428768789042547925">Новите неща</translation>
+<translation id="429074084062258019">{count,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="4293080268407233932">Търсене</translation>
 <translation id="4302248187517737842">Няма потребителско име ••••••••</translation>
 <translation id="4302415908542657649">Паролата се споделя</translation>
@@ -725,6 +726,7 @@
 <translation id="47677902929517676">За да запазите паролите в профила си, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="4775879719735953715">Браузър по подразбиране</translation>
 <translation id="4779732376610430319">Към настройките…</translation>
+<translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Да се отвори ли в режим „инкогнито“?</translation>
 <translation id="4803185665210547709">Управлява се от организацията ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -833,6 +835,7 @@
 <translation id="5283494734135414249">Докоснете прекия път, който се показва под адресната лента.</translation>
 <translation id="5295239312320826323">Да се премахне ли профилът <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Показване</translation>
+<translation id="5316356981864168850"><ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318298563956633672">Вече проследявате този продукт.</translation>
 <translation id="5327753393331509826">Получаване на известия за съдържание</translation>
@@ -1267,6 +1270,7 @@
 <translation id="7524055474074101597">Осъществявайте достъп до паролите си и други данни във всички приложения.</translation>
 <translation id="7527917367892640435">Пратката вече се проследява</translation>
 <translation id="7531345132340165516">Настоящ сайт</translation>
+<translation id="75362970626182391">Нова група раздели</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="754655535278952384">Проверихте <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Последният раздел, използван на <ph name="SOURCE_DEVICE" /></translation>

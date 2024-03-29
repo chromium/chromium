@@ -272,6 +272,7 @@
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2465272316171730950">Estamos no limite da nossa capacidade. Volte dentro de alguns momentos.</translation>
+<translation id="2472215337771558851">Use a funcionalidade Ajuda-me a escrever para criar um rascunho ou refinar um trabalho existente com tecnologia de IA da Google</translation>
 <translation id="2480572840229215612">caranguejos</translation>
 <translation id="248546197012830854">O dispositivo está offline. Ligue-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
 <translation id="2486301288428798846">madeira</translation>
@@ -329,10 +330,12 @@
 <translation id="2860473693272905224">Coloque outra página no scanner</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2873483161362553159">Navegação no navegador</translation>
+<translation id="2873939192640533085">Introduza um comando como "soar mais confiante"</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2875812231449496375">Ative esta definição para alcançar os melhores resultados com esta imagem de fundo. Pode desativá-la em qualquer altura.</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2880569433548999039">Proteção de ecrã Fluxo das nuvens</translation>
+<translation id="2888298276507578975">Introduza um comando como "escrever uma nota de agradecimento"</translation>
 <translation id="2890557891229184386">ilha tropical</translation>
 <translation id="2895772081848316509">escuros</translation>
 <translation id="2926057806159140518">Introduza o seu nome de utilizador e palavra-passe ou leia o código QR</translation>
@@ -377,6 +380,7 @@
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3226657629376379887">Menu de ações do esquema</translation>
 <translation id="3227186760713762082">Divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Reescrever</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="324961752321393509">O seu administrador não permite fechar esta app</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
@@ -415,6 +419,7 @@
 <translation id="346539236881580388">Repetir</translation>
 <translation id="3484914941826596830">Enquanto o firmware está a ser atualizado, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta atualização pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
 <translation id="3486220673238053218">definição</translation>
+<translation id="3487866404496702283">Feedback sobre a caraterística do mahi</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3492882532495507361">Um escritório <ph name="OFFICE_STYLE" /> com tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Os dados são medidos pelo seu Chromebook. Estes dados podem ser diferentes dos dados do fornecedor.</translation>
@@ -444,6 +449,7 @@
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3654530588944650786">Um(a) <ph name="FLOWER_TYPE" /> de cor <ph name="FLOWER_COLOR" /> a florescer</translation>
+<translation id="3661106764436337772">Escreva mais rápido e com mais confiança</translation>
 <translation id="3662461537616691585">borgonha e castanho</translation>
 <translation id="3668449597372804501">Imagem de fundo Fluxo das nuvens</translation>
 <translation id="3675132884790542448">porcos</translation>
@@ -879,6 +885,7 @@
 <translation id="6235460611964961764">Repor utilização de dados manualmente</translation>
 <translation id="6243280677745499710">Definida atualmente</translation>
 <translation id="6250316632541035980">bacon e ovos</translation>
+<translation id="6255213378196499011">Definições da funcionalidade Ajuda-me a escrever</translation>
 <translation id="6275224645089671689">Seta para a direita</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
