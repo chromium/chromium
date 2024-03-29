@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * {@link StripLayoutGroupTitle} is used to keep track of the strip position and rendering
@@ -37,14 +38,19 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // Position constants.
     private static final int MIN_VISUAL_WIDTH_DP = 24;
     private static final int MAX_VISUAL_WIDTH_DP = 156;
-    private static final int DEFAULT_MARGIN_DP = 9;
-    private static final int TOP_MARGIN_DP = 7;
+
+    private static final int MARGIN_TOP_DP = 7;
+    private static final int MARGIN_BOTTOM_DP = 9;
+    private static final int MARGIN_START_DP = 13;
+    private static final int MARGIN_END_DP = 9;
+
     private static final int TEXT_PADDING_DP = 8;
     private static final int CORNER_RADIUS_DP = 7;
     private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
 
-    private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
-    private static final int EFFECTIVE_MAX_WIDTH = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
+    private static final int WIDTH_MARGINS_DP = MARGIN_START_DP + MARGIN_END_DP;
+    private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
+    private static final int EFFECTIVE_MAX_WIDTH = MAX_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
 
     // State variables.
     private final boolean mIncognito;
@@ -163,6 +169,34 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
+     * @return DrawX accounting for padding.
+     */
+    public float getPaddedX() {
+        return mDrawX + (LocalizationUtils.isLayoutRtl() ? MARGIN_END_DP : MARGIN_START_DP);
+    }
+
+    /**
+     * @return DrawY accounting for padding.
+     */
+    public float getPaddedY() {
+        return mDrawY + MARGIN_TOP_DP;
+    }
+
+    /**
+     * @return Width accounting for padding.
+     */
+    public float getPaddedWidth() {
+        return mWidth - MARGIN_START_DP - MARGIN_END_DP;
+    }
+
+    /**
+     * @return Height accounting for padding.
+     */
+    public float getPaddedHeight() {
+        return mHeight - MARGIN_TOP_DP - MARGIN_BOTTOM_DP;
+    }
+
+    /**
      * @return The tint color resource that represents the tab group title indicator background.
      */
     public @ColorInt int getTint() {
@@ -188,7 +222,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
         // Account for view padding & margins. Increment to prevent off-by-one rounding errors
         // adding a title fade when unnecessary.
-        float viewWidth = textWidth + (TEXT_PADDING_DP * 2) + (DEFAULT_MARGIN_DP * 2) + 1;
+        float viewWidth = textWidth + (TEXT_PADDING_DP * 2) + WIDTH_MARGINS_DP + 1;
         setWidth(MathUtils.clamp(viewWidth, EFFECTIVE_MIN_WIDTH, EFFECTIVE_MAX_WIDTH));
     }
 
@@ -205,20 +239,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     protected void updateRootId(int rootId) {
         mRootId = rootId;
-    }
-
-    /**
-     * @return The default margin for the title container. The top margin will be different.
-     */
-    public int getDefaultMargin() {
-        return DEFAULT_MARGIN_DP;
-    }
-
-    /**
-     * @return The top margin for the title container.
-     */
-    public int getTopMargin() {
-        return TOP_MARGIN_DP;
     }
 
     /**

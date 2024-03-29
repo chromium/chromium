@@ -486,6 +486,8 @@ public class StripLayoutHelperTest {
         // Setup with 5 tabs. Select tab 2.
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        // group 2nd and 3rd tab.
+        groupTabs(1, 3);
 
         // Trigger update to set divider values.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
@@ -1139,19 +1141,9 @@ public class StripLayoutHelperTest {
         groupTabs(0, 2);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
-
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        ((StripLayoutTab) views[2]).setTrailingMargin(75.f);
 
-        // Set required tab values and update layout.
-        for (int i = 0; i < views.length; i++) {
-            if (views[i] instanceof StripLayoutTab tab) {
-                tab.setHeight(1.f);
-                tab.setDrawY(0.f);
-            }
-        }
+        // Update layout.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Start reorder mode on the third tab.
@@ -1160,8 +1152,9 @@ public class StripLayoutHelperTest {
         // Verify that we enter reorder mode.
         assertTrue("Should in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
 
-        float initialPosition = 48.f; // offsetXLeft(10) + groupTitle(42) + deltaOffset(-4)
-        float delta = 132.f; // tabWidth(160) - tabOverlap(28);
+        // offsetXLeft(10) + groupTitle(46) + deltaOffset(-4)
+        float initialPosition = 52.f;
+        float delta = views[1].getWidth() - TAB_OVERLAP_WIDTH;
 
         // Assert: tab position should not changed.
         for (int i = 1; i < views.length; i++) {
@@ -2248,11 +2241,8 @@ public class StripLayoutHelperTest {
         int oldSecondTabId = tabs[1].getId();
         groupTabs(0, 2);
 
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-
         // Assert: first view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
 
@@ -2260,14 +2250,14 @@ public class StripLayoutHelperTest {
         float tabWidth = views[1].getWidth();
         float expectedStartWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 2, groupTitle);
         float expectedEndWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 3, groupTitle);
-        float threshold = tabWidth / 2 - 28.f;
+        float threshold = tabWidth / 2 - TAB_OVERLAP_WIDTH;
 
         // Assert: bottom indicator start width.
         assertEquals(
                 "Bottom indicator start width is incorrect",
                 expectedStartWidth,
                 groupTitle.getBottomIndicatorWidth(),
-                0.f);
+                EPSILON);
 
         // Start reorder mode on third tab. Drag between tabs in group.
         // -300 < -(tabWidth + marginWidth) = -(190 + 95) = -285
@@ -2284,7 +2274,7 @@ public class StripLayoutHelperTest {
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
                 (groupTitle).getBottomIndicatorWidth(),
-                0.f);
+                EPSILON);
     }
 
     @Test
@@ -2298,12 +2288,8 @@ public class StripLayoutHelperTest {
         StripLayoutTab thirdTab = tabs[2];
         groupTabs(0, 3);
 
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
-
         // Assert: first view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
 
@@ -2317,7 +2303,7 @@ public class StripLayoutHelperTest {
                 "Bottom indicator start width is incorrect",
                 expectedStartWidth,
                 groupTitle.getBottomIndicatorWidth(),
-                0.f);
+                EPSILON);
 
         // Start reorder on fifth tab. Drag right out of the tab group.
         // 60 > marginWidth * flipThreshold = 95 * 0.53 = 51
@@ -2337,7 +2323,7 @@ public class StripLayoutHelperTest {
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
                 (groupTitle).getBottomIndicatorWidth(),
-                0.f);
+                EPSILON);
     }
 
     @Test
@@ -2349,11 +2335,8 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         groupTabs(0, 2);
 
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-
         // Assert: first view should be group title.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
 
@@ -2365,9 +2348,9 @@ public class StripLayoutHelperTest {
 
         // Check initial bottom indicator width.
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(42) = 688.
-        // tabWidth = (availableSize(688) + 5 * overlap(28)) / 6 = 138
-        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(138.f, 2, groupTitle);
+        // - groupTitleWidth(46) = 684.
+        // tabWidth = (availableSize(684) + 5 * overlap(28)) / 6 = 137.3333
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(137.3333f, 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2395,9 +2378,9 @@ public class StripLayoutHelperTest {
         runningAnimator.end();
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(42) = 688.
-        // ExpectedWidth = (availableSize(688) + 4 * overlap(28)) / 5 = 160
-        float expectedWidthAfterResize = 160.f;
+        // - groupTitleWidth(46) = 684.
+        // ExpectedWidth = (availableSize(684) + 4 * overlap(28)) / 5 = 159.2
+        float expectedWidthAfterResize = 159.2f;
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
@@ -2412,7 +2395,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Check bottom indicator end width.
-        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(160.f, 2, groupTitle);
+        float expectedEndWidth =
+                calculateExpectedBottomIndicatorWidth(expectedWidthAfterResize, 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width after resize.",
                 expectedEndWidth,
@@ -2429,8 +2413,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         groupTabs(0, 2);
 
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
+        // Assert: first view should be a GroupTitle.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
@@ -2440,9 +2423,9 @@ public class StripLayoutHelperTest {
 
         // Check initial bottom indicator width.
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(42) = 688.
-        // tabWidth = (availableSize(688) + 5 * overlap(28)) / 6 = 138
-        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(138.f, 2, groupTitle);
+        // - groupTitleWidth(46) = 684.
+        // tabWidth = (availableSize(684) + 5 * overlap(28)) / 6 = 137.3333
+        float expectedStartWidth = calculateExpectedBottomIndicatorWidth(137.3333f, 2, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width before resize.",
                 expectedStartWidth,
@@ -2478,9 +2461,9 @@ public class StripLayoutHelperTest {
         runningAnimator.end();
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // - groupTitleWidth(42) = 688.
-        // ExpectedWidth = (availableSize(688) + 4 * overlap(28)) / 5  = 160.
-        float expectedWidthAfterResize = 160.f;
+        // - groupTitleWidth(46) = 684.
+        // ExpectedWidth = (availableSize(684) + 4 * overlap(28)) / 5  = 159.2.
+        float expectedWidthAfterResize = 159.2f;
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
@@ -2495,7 +2478,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Check bottom indicator end width.
-        float expectedEndWidth = calculateExpectedBottomIndicatorWidth(160.f, 1, groupTitle);
+        float expectedEndWidth =
+                calculateExpectedBottomIndicatorWidth(expectedWidthAfterResize, 1, groupTitle);
         assertEquals(
                 "Unexpected bottom indicator width after resize.",
                 expectedEndWidth,
@@ -2506,8 +2490,10 @@ public class StripLayoutHelperTest {
     private float calculateExpectedBottomIndicatorWidth(
             float tabWidth, float tabCount, StripLayoutGroupTitle groupTitle) {
         // (tabWidth - tabOverlap(28.f)) * tabCount + groupTitleWidth -
-        // bottomIndicatorWidthOffset(23.f).
-        return (tabWidth - TAB_OVERLAP_WIDTH) * tabCount + groupTitle.getWidth() - 23.f;
+        //      bottomIndicatorWidthOffset(27.f).
+        return (tabWidth - TAB_OVERLAP_WIDTH) * tabCount
+                + groupTitle.getWidth()
+                - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
     }
 
     @Test
@@ -3177,6 +3163,8 @@ public class StripLayoutHelperTest {
             when(mModel.getTabAt(i).getRootId()).thenReturn(groupRootId);
         }
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(groupRootId))).thenReturn(numTabs);
+
+        mStripLayoutHelper.rebuildStripViews();
     }
 
     private void setTabDragSourceMock() {
@@ -3566,9 +3554,6 @@ public class StripLayoutHelperTest {
         groupTabs(1, 3);
         groupTabs(4, 8);
 
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
-
         // Verify.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertEquals("Should be 10 views (10 tabs).", 10, views.length);
@@ -3584,9 +3569,6 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, true, 0, 10);
         groupTabs(1, 3);
         groupTabs(4, 8);
-
-        // Rebuild views.
-        mStripLayoutHelper.rebuildStripViews();
 
         // Verify.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3605,9 +3587,15 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TAB, views[11] instanceof StripLayoutTab);
 
         // verify bottom indicator width.
-        float tabWidth = views[0].getWidth() - 28.f;
-        float expectedWidth1 = views[1].getWidth() + tabWidth * 2 - 23;
-        float expectedWidth2 = views[5].getWidth() + tabWidth * 4 - 23;
+        float tabWidth = views[0].getWidth() - TAB_OVERLAP_WIDTH;
+        float expectedWidth1 =
+                views[1].getWidth()
+                        + tabWidth * 2
+                        - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+        float expectedWidth2 =
+                views[5].getWidth()
+                        + tabWidth * 4
+                        - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         assertEquals(
                 expectedWidth1, ((StripLayoutGroupTitle) views[1]).getBottomIndicatorWidth(), 0.f);
         assertEquals(
@@ -3700,12 +3688,9 @@ public class StripLayoutHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testSetLayerTitleCache() {
-        // Setup.
+        // Setup. Group 2nd and 3rd tab.
         initializeTest(false, false, 0);
-
-        // Group 2nd and 3rd tab.
         groupTabs(1, 3);
-        mStripLayoutHelper.rebuildStripViews();
 
         // Set a new LayerTitleCache.
         LayerTitleCache newTitleCache = mock(LayerTitleCache.class);

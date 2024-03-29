@@ -169,8 +169,6 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat y,
       jfloat width,
       jfloat height,
-      jfloat default_margin,
-      jfloat top_margin,
       jfloat title_text_padding,
       jfloat corner_radius,
       jfloat bottom_indicator_width,

@@ -492,8 +492,6 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     jfloat y,
     jfloat width,
     jfloat height,
-    jfloat default_margin,
-    jfloat top_margin,
     jfloat title_text_padding,
     jfloat corner_radius,
     jfloat bottom_indicator_width,
@@ -508,12 +506,6 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   scoped_refptr<cc::slim::SolidColorLayer> bottom_indicator_layer =
       GetNextGroupBottomLayer();
   group_write_index_++;
-
-  // Adjust position values.
-  x += default_margin;
-  y += top_margin;
-  width -= (default_margin * 2);
-  height -= (default_margin + top_margin);
 
   // Set title indicator container properties.
   title_indicator_layer->SetPosition(gfx::PointF(x, y));
@@ -542,7 +534,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   // Set bottom indicator properties.
   float bottom_indicator_x = x;
   float bottom_indicator_y =
-      y + height + default_margin - bottom_indicator_height;
+      scrollable_strip_layer_->bounds().height() - bottom_indicator_height;
 
   // Use ceiling value to prevent height float from getting truncated, otherwise
   // it could result in bottom indicator looks thinner than intended in certain
