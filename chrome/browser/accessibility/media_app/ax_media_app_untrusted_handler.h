@@ -103,9 +103,6 @@ class AXMediaAppUntrustedHandler
   void ViewportUpdated(const ::gfx::RectF& viewport_box,
                        float scale_factor) override;
 
-  // TODO(b/309860428): Delete once AXMediaApp is deleted.
-  void SetMediaAppForTesting(AXMediaApp* media_app) { media_app_ = media_app; }
-
  protected:
   void PushDirtyPage(const std::string& dirty_page_id);
   std::string PopDirtyPage();

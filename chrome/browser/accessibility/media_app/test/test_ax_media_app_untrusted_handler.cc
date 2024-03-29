@@ -4,12 +4,21 @@
 
 #include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "third_party/re2/src/re2/re2.h"
+#include <utility>
+
+#include "content/public/browser/browser_context.h"
 #include "ui/accessibility/ax_tree.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 namespace ash::test {
+
+TestAXMediaAppUntrustedHandler::TestAXMediaAppUntrustedHandler(
+    content::BrowserContext& context,
+    mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
+    : AXMediaAppUntrustedHandler(context, std::move(page)) {}
+
+TestAXMediaAppUntrustedHandler::~TestAXMediaAppUntrustedHandler() = default;
 
 std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
     const {
@@ -17,6 +26,12 @@ std::string TestAXMediaAppUntrustedHandler::GetDocumentTreeToStringForTesting()
     return {};
   }
   return document_.ax_tree()->ToString();
+}
+
+void TestAXMediaAppUntrustedHandler::
+    EnablePendingSerializedUpdatesForTesting() {
+  pending_serialized_updates_for_testing_ =
+      std::make_unique<std::vector<const ui::AXTreeUpdate>>();
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -33,10 +48,8 @@ void TestAXMediaAppUntrustedHandler::FlushForTesting() {
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 bool TestAXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  if (is_ocr_service_enabled_for_testing_) {
-    return true;
-  }
-  return AXMediaAppUntrustedHandler::IsOcrServiceEnabled();
+  return is_ocr_service_enabled_for_testing_ ||
+         AXMediaAppUntrustedHandler::IsOcrServiceEnabled();
 }
 
 void TestAXMediaAppUntrustedHandler::PushDirtyPageForTesting(

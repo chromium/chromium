@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+import("//services/screen_ai/buildflags/features.gni")
+
+assert(is_chromeos_ash, "AXMediaApp is ash-chrome only")
+
 source_set("test_support") {
   testonly = true
 
@@ -9,10 +13,19 @@ source_set("test_support") {
     "../ax_media_app.h",
     "fake_ax_media_app.cc",
     "fake_ax_media_app.h",
+    "test_ax_media_app_untrusted_handler.cc",
+    "test_ax_media_app_untrusted_handler.h",
   ]
 
   deps = [
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
+    "//chrome/browser",
     "//content/public/browser",
+    "//services/screen_ai/buildflags",
     "//ui/gfx",
   ]
+
+  if (enable_screen_ai_service) {
+    deps += [ "//services/screen_ai/public/mojom" ]
+  }
 }

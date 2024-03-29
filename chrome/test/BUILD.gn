@@ -794,8 +794,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.cc",
-      "../browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h",
       "../browser/ash/login/app_mode/test/ash_accelerator_helpers.cc",
       "../browser/ash/login/lock/screen_locker_tester.cc",
       "../browser/ash/login/lock/screen_locker_tester.h",
@@ -6673,7 +6671,6 @@ test("unit_tests") {
     "//chrome/browser:browser_themes",
     "//chrome/browser:buildflags",
     "//chrome/browser:theme_properties",
-    "//chrome/browser/accessibility/media_app/test:test_support",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autofill",
@@ -8597,6 +8594,7 @@ test("unit_tests") {
       "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
       "//ash/webui/scanning",
       "//ash/webui/settings/public/constants:mojom",
+      "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/almanac_api_client:unit_tests",
       "//chrome/browser/apps/app_deduplication_service:unit_tests",
       "//chrome/browser/apps/app_discovery_service:unit_tests",
