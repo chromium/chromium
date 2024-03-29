@@ -44,6 +44,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -136,6 +137,16 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true);
   dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog->SetTopContentView(
+      views::Builder<views::ImageView>()
+          .SetImage(
+              ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+                  IDR_PINE_ONBOARDING_IMAGE))
+          .Build());
+  dialog->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
   if (restore_on) {
     // If the user had the restore pref set as "Ask every time", don't show the
     // Cancel button.
@@ -170,7 +181,6 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 
   // NOTE: Comment/uncomment the following apps locally, but avoid changes as to
   // reduce merge conflicts.
-
   // Chrome.
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Reddit",

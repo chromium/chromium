@@ -175,11 +175,13 @@ Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
       color_map_(std::move(color_map)),
       text_map_(skottie_->GetCurrentTextPropertyValues()) {
   DCHECK(skottie_);
-  bool animation_has_image_assets =
+  bool animation_has_external_image_assets =
       !skottie_->GetImageAssetMetadata().asset_storage().empty();
-  if (animation_has_image_assets) {
-    DCHECK(frame_data_provider)
-        << "SkottieFrameDataProvider required for animations with image assets";
+  // Embedded image assets would not be added to `asset_storage()` and not reach
+  // here.
+  if (animation_has_external_image_assets) {
+    DCHECK(frame_data_provider) << "SkottieFrameDataProvider required for "
+                                   "animations with external image assets";
     for (const auto& asset_metadata_pair :
          skottie_->GetImageAssetMetadata().asset_storage()) {
       const std::string& asset_id = asset_metadata_pair.first;

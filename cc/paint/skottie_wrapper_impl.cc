@@ -347,7 +347,8 @@ class SkottieWrapperImpl : public SkottieWrapper {
                 .setPropertyObserver(property_manager_)
                 .setFontManager(skia::DefaultFontMgr())
                 .setResourceProvider(skresources::CachingResourceProvider::Make(
-                    mru_resource_provider))
+                    skresources::DataURIResourceProviderProxy::Make(
+                        mru_resource_provider)))
                 .setMarkerObserver(marker_store_)
                 .make(reinterpret_cast<const char*>(data.data()), data.size())),
         raw_data_(std::move(raw_data)),
