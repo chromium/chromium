@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -69,6 +70,13 @@ ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
 
+  // Convert display bounds to the parent's coordinates, as layer bounds are
+  // always relative to their parent.
+  gfx::Rect target_restore_rect = display::Screen::GetScreen()
+                                      ->GetDisplayNearestWindow(root_window)
+                                      .bounds();
+  wm::ConvertRectFromScreen(root_window, &target_restore_rect);
+
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(
           [](WallpaperWidgetController* wallpaper_widget_controller) {
@@ -89,10 +97,7 @@ ScopedOverviewWallpaperClipper::~ScopedOverviewWallpaperClipper() {
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kWallpaperRestoreAnimationDuration)
-      .SetClipRect(wallpaper_view_layer,
-                   display::Screen::GetScreen()
-                       ->GetDisplayNearestWindow(root_window)
-                       .bounds(),
+      .SetClipRect(wallpaper_view_layer, target_restore_rect,
                    gfx::Tween::ACCEL_20_DECEL_100)
       .SetRoundedCorners(wallpaper_view_layer, gfx::RoundedCornersF(),
                          gfx::Tween::ACCEL_20_DECEL_100);
