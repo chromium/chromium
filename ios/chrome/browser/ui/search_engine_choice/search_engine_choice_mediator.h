@@ -13,15 +13,21 @@ class PrefService;
 class TemplateURLService;
 @protocol SearchEngineChoiceConsumer;
 
+namespace search_engines {
+class SearchEngineChoiceService;
+}  // namespace search_engines
+
 @interface SearchEngineChoiceMediator : NSObject<SearchEngineChoiceMutator>
 
 // The delegate object that manages interactions with the Search Engine Choice
 // table view.
 @property(nonatomic, weak) id<SearchEngineChoiceConsumer> consumer;
 
-- (instancetype)initWithTemplateURLService:
-                    (TemplateURLService*)templateURLService
-                               prefService:(PrefService*)prefService
+- (instancetype)
+    initWithTemplateURLService:(TemplateURLService*)templateURLService
+     searchEngineChoiceService:
+         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
+                   prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

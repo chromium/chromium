@@ -51,23 +51,28 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 @end
 
 @implementation SearchEngineChoiceMediator {
+  raw_ptr<search_engines::SearchEngineChoiceService>
+      _searchEngineChoiceService;                   // weak
   raw_ptr<TemplateURLService> _templateURLService;  // weak
+  std::unique_ptr<SearchEngineObserverBridge> _observerTemplateURLService;
   raw_ptr<PrefService> _prefService;
-  std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of URLs of prepopulated search engines and search engines that are
   // created by policy.
   std::vector<std::unique_ptr<TemplateURL>> _templateUrlList;
   NSString* _selectedSearchEngineKeyword;
 }
 
-- (instancetype)initWithTemplateURLService:
-                    (TemplateURLService*)templateURLService
-                               prefService:(PrefService*)prefService {
+- (instancetype)
+    initWithTemplateURLService:(TemplateURLService*)templateURLService
+     searchEngineChoiceService:
+         (search_engines::SearchEngineChoiceService*)searchEngineChoiceService
+                   prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _templateURLService = templateURLService;
+    _searchEngineChoiceService = searchEngineChoiceService;
     _prefService = prefService;
-    _observer =
+    _observerTemplateURLService =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
     _templateURLService->Load();
   }
@@ -76,6 +81,10 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 
 - (void)saveDefaultSearchEngine {
   CHECK(_selectedSearchEngineKeyword);
+  // When the default search engine is saved, there is no reason to observe
+  // `_templateURLService` anymore since the dialog should disappear right
+  // after.
+  _observerTemplateURLService.reset();
   std::u16string keyword =
       base::SysNSStringToUTF16(_selectedSearchEngineKeyword);
   TemplateURL* selectedTemplateURL = nil;
@@ -90,8 +99,9 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 }
 
 - (void)disconnect {
-  _observer.reset();
+  _searchEngineChoiceService = nullptr;
   _templateURLService = nullptr;
+  _observerTemplateURLService.reset();
   _prefService = nullptr;
 }
 
@@ -118,10 +128,7 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
 
 #pragma mark - Private
 
-// Loads all TemplateURLs from TemplateURLService and classifies them into
-// `_firstList` and `_secondList`. If a TemplateURL is
-// prepopulated, created by policy or the default search engine, it will get
-// into the first list, otherwise the second list.
+// Loads all search engines in `_templateUrlList` and updates the consumer.
 - (void)loadSearchEngines {
   _templateUrlList = _templateURLService->GetTemplateURLsForChoiceScreen();
   NSMutableArray<SnippetSearchEngineElement*>* searchEngineList =

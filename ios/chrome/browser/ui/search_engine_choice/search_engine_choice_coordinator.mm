@@ -10,6 +10,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -84,9 +85,13 @@
       initWithFirstRunMode:_firstRun
            wideMarginWidth:(deviceFormFactor != ui::DEVICE_FORM_FACTOR_PHONE)];
   _viewController.actionDelegate = self;
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+  search_engines::SearchEngineChoiceService* searchEngineChoiceService =
+      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
   _mediator = [[SearchEngineChoiceMediator alloc]
-      initWithTemplateURLService:ios::TemplateURLServiceFactory::
-                                     GetForBrowserState(browserState)
+      initWithTemplateURLService:templateURLService
+       searchEngineChoiceService:searchEngineChoiceService
                      prefService:browserState->GetPrefs()];
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
