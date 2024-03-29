@@ -17,7 +17,6 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.m
 // Routines interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 3, NextIndex: 2
-[Stable]
 interface CrosHealthdRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the
@@ -75,7 +74,7 @@ interface CrosHealthdRoutinesService {
 // Argument types for the possible routines the routine control API can create.
 //
 // NextMinVersion: 6, NextIndex: 19
-[Stable, Extensible]
+[Extensible]
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -227,7 +226,6 @@ struct VolumeButtonRoutineArgument {
 // Replier interface for the LED lit up routine.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 interface LedLitUpRoutineReplier {
   // Returns whether the actual LED color matches the expected color.
   //
@@ -254,7 +252,6 @@ interface LedLitUpRoutineReplier {
 //    response is |true|. If the response is |false|, the routine fails.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct LedLitUpRoutineArgument {
   // The LED to be lit up.
   LedName name@0;
