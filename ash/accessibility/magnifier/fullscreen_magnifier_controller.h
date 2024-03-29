@@ -79,13 +79,6 @@ class ASH_EXPORT FullscreenMagnifierController
   // Returns if the screen magnifier is enabled or not.
   bool IsEnabled() const;
 
-  // Enables or disables the feature for keeping the text input focus centered.
-  void SetKeepFocusCentered(bool keep_focus_centered);
-
-  // Returns true if magnifier will keep the focus centered in screen for text
-  // input.
-  bool KeepFocusCentered() const;
-
   // Sets the magnification ratio. 1.0f means no magnification.
   void SetScale(float scale, bool animate);
 

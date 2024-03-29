@@ -157,15 +157,6 @@ bool FullscreenMagnifierController::IsEnabled() const {
   return is_enabled_;
 }
 
-void FullscreenMagnifierController::SetKeepFocusCentered(
-    bool keep_focus_centered) {
-  keep_focus_centered_ = keep_focus_centered;
-}
-
-bool FullscreenMagnifierController::KeepFocusCentered() const {
-  return keep_focus_centered_;
-}
-
 void FullscreenMagnifierController::SetScale(float scale, bool animate) {
   if (!is_enabled_)
     return;

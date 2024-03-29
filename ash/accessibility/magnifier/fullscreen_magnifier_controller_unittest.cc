@@ -937,46 +937,6 @@ TEST_F(FullscreenMagnifierControllerTest, KeyboardOverscrollDisabled) {
             old_keyboard_overscroll_value);
 }
 
-// Disabled due to https://crbug.com/917113.
-TEST_F(FullscreenMagnifierControllerTest,
-       DISABLED_TextfieldFocusedWithKeyboard) {
-  // Set up text input view.
-  text_input_helper_.CreateAndShowTextInputView(gfx::Rect(500, 200, 80, 80));
-  gfx::Rect text_input_bounds = text_input_helper_.GetTextInputViewBounds();
-
-  // Enables magnifier and confirm the viewport is at center.
-  GetFullscreenMagnifierController()->SetEnabled(true);
-  EXPECT_EQ(2.0f, GetFullscreenMagnifierController()->GetScale());
-  EXPECT_EQ("200,150 400x300", GetViewport().ToString());
-  EXPECT_FALSE(GetFullscreenMagnifierController()->KeepFocusCentered());
-
-  GetFullscreenMagnifierController()->SetKeepFocusCentered(true);
-
-  // Set up and show the keyboard.
-  keyboard::SetAccessibilityKeyboardEnabled(true);
-  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
-  keyboard_controller->ShowKeyboard(true);
-
-  // Focus on the text input field.
-  text_input_helper_.FocusOnTextInputView();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that the caret bounds is centered in the area above the keyboard.
-  gfx::Rect viewport_outside_keyboard_bounds = GetViewport();
-  viewport_outside_keyboard_bounds.set_height(
-      viewport_outside_keyboard_bounds.height() -
-      keyboard_controller->GetVisualBoundsInScreen().height() /
-          GetFullscreenMagnifierController()->GetScale());
-
-  gfx::Rect caret_bounds = text_input_helper_.GetCaretBounds();
-
-  EXPECT_TRUE(GetFullscreenMagnifierController()->KeepFocusCentered());
-  EXPECT_TRUE(viewport_outside_keyboard_bounds.Contains(text_input_bounds));
-  EXPECT_TRUE(text_input_bounds.Contains(caret_bounds.CenterPoint()));
-  EXPECT_EQ(caret_bounds.CenterPoint(),
-            viewport_outside_keyboard_bounds.CenterPoint());
-}
-
 // Tests that the magnifier gets updated when dragging a window.
 TEST_F(FullscreenMagnifierControllerTest, DragWindow) {
   UpdateDisplay("800x700");
