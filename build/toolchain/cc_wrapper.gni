@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 
 # Defines the configuration of cc wrapper
@@ -37,7 +36,5 @@ declare_args() {
   cc_wrapper = ""
 }
 
-assert(!use_goma || cc_wrapper == "",
-       "use_goma and cc_wrapper can not be used together.")
 assert(!use_remoteexec || cc_wrapper == "",
        "use_remoteexec and cc_wrapper can not be used together.")

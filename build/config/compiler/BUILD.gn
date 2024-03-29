@@ -20,7 +20,6 @@ import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/cros/cros_config.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -248,8 +247,6 @@ declare_args() {
        (clang_use_default_sample_profile || clang_sample_profile_path != ""))
 }
 
-assert(!(llvm_force_head_revision && use_goma),
-       "can't use goma with trunk clang")
 assert(!(llvm_force_head_revision && use_remoteexec),
        "can't use rbe with trunk clang")
 
@@ -881,8 +878,6 @@ config("compiler") {
 
   if (is_clang && !is_nacl && show_includes) {
     if (is_win) {
-      # TODO(crbug.com/1223741): Goma mixes the -H and /showIncludes output.
-      assert(!use_goma, "show_includes on Windows is not reliable with goma")
       cflags += [
         "/clang:-H",
         "/clang:-fshow-skipped-includes",
@@ -1565,7 +1560,7 @@ config("compiler_deterministic") {
 
   # Tells the compiler not to use absolute paths when passing the default
   # paths to the tools it invokes. We don't want this because we don't
-  # really need it and it can mess up the goma cache entries.
+  # really need it and it can mess up the RBE cache entries.
   if (is_clang && (!is_nacl || is_nacl_saigo)) {
     cflags += [ "-no-canonical-prefixes" ]
 
@@ -1573,7 +1568,7 @@ config("compiler_deterministic") {
     # with a relative path and pass relative paths to built-in
     # libraries. Not needed on Windows because we call the linker
     # directly there, not through the compiler driver.
-    # We don't link on goma, so this change is just for cleaner
+    # We don't link on RBE, so this change is just for cleaner
     # internal linker invocations, for people who work on the build.
     if (!is_win) {
       ldflags += [ "-no-canonical-prefixes" ]
@@ -1857,7 +1852,7 @@ config("default_warnings") {
     if (!is_nacl || is_nacl_saigo) {
       if (is_win) {
         # TODO(thakis): https://crbug.com/617318
-        # Currently goma can not handle case sensitiveness for windows well.
+        # Currently RBE can not handle case sensitiveness for windows well.
         cflags += [ "-Wno-nonportable-include-path" ]
       }
 

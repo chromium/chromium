@@ -46,8 +46,7 @@ args will produce a debug build of Chrome for board=eve using goma:
 import("//build/args/chromeos/eve.gni")
 
 is_debug = true
-use_goma = true
-goma_dir = "/path/to/goma/"
+use_remoteexec = true
 ```
 
 TODO(bpastene): Make 'cros_boards' a first class citizen in gclient and replace

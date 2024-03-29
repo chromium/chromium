@@ -11,7 +11,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/control_flow_guard.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/timestamp.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -132,8 +131,8 @@ config("compiler") {
 
     # Enable ANSI escape codes if something emulating them is around (cmd.exe
     # doesn't understand ANSI escape codes by default). Make sure to not enable
-    # this if goma/remoteexec is in use, because this will lower cache hits.
-    if (!use_goma && !use_remoteexec &&
+    # this if remoteexec is in use, because this will lower cache hits.
+    if (!use_remoteexec &&
         exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
         "True") {
       cflags += [ "-fansi-escape-codes" ]
@@ -145,7 +144,7 @@ config("compiler") {
   }
 
   # Disabled with cc_wrapper because of https://github.com/mozilla/sccache/issues/264
-  if (use_lld && !use_thin_lto && (is_clang || !use_goma) && cc_wrapper == "") {
+  if (use_lld && !use_thin_lto && cc_wrapper == "") {
     # /Brepro lets the compiler not write the mtime field in the .obj output.
     # link.exe /incremental relies on this field to work correctly, but lld
     # never looks at this timestamp, so it's safe to pass this flag with

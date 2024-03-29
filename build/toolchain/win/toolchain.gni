@@ -8,7 +8,6 @@ import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build/toolchain/win/win_toolchain_data.gni")
@@ -53,8 +52,8 @@ template("msvc_toolchain") {
       toolchain_is_clang = is_clang
     }
 
-    # When the invoker has explicitly overridden use_goma or cc_wrapper in the
-    # toolchain args, use those values, otherwise default to the global one.
+    # When the invoker has explicitly overridden use_remoteexec or cc_wrapper in
+    # the toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
     # supply for these values are to force-disable them.
     if (defined(toolchain_args.use_remoteexec)) {
@@ -62,22 +61,13 @@ template("msvc_toolchain") {
     } else {
       toolchain_uses_remoteexec = use_remoteexec
     }
-    if (defined(toolchain_args.use_goma)) {
-      toolchain_uses_goma = toolchain_args.use_goma
-    } else {
-      toolchain_uses_goma = use_goma
-    }
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_uses_remoteexec && toolchain_uses_goma),
-           "Goma and re-client can't be used together.")
     assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
            "re-client and cc_wrapper can't be used together.")
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
-           "Goma and cc_wrapper can't be used together.")
 
     if (toolchain_uses_remoteexec) {
       if (toolchain_is_clang) {
@@ -85,8 +75,6 @@ template("msvc_toolchain") {
       } else {
         cl_prefix = ""
       }
-    } else if (toolchain_uses_goma) {
-      cl_prefix = "${goma_dir}/gomacc${_exe} "
     } else if (toolchain_cc_wrapper != "" && toolchain_is_clang) {
       cl_prefix = toolchain_cc_wrapper + " "
     } else {

@@ -4,7 +4,6 @@
 
 import("//build/config/ios/ios_sdk.gni")
 import("//build/toolchain/apple/toolchain.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
@@ -100,12 +99,12 @@ config("compiler") {
 # that is iOS-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  # The variable ios_sdk_path is relative to root_build_dir when using Goma RBE
-  # and system Xcode (since Goma RBE only supports paths relative to source).
+  # The variable ios_sdk_path is relative to root_build_dir when using RBE
+  # and system Xcode (since RBE only supports paths relative to source).
   # Rebase the value in that case since gn does not convert paths in compiler
   # flags (since it is not aware they are paths).
   _sdk_root = ios_sdk_path
-  if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+  if (use_system_xcode && (use_remoteexec || use_siso)) {
     _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
   }
 
@@ -256,7 +255,7 @@ group("xctest") {
 _xctrunner_path =
     "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
 
-# When building with Goma RBE, $ios_sdk_platform_path corresponds to a symlink
+# When building with RBE, $ios_sdk_platform_path corresponds to a symlink
 # below $root_build_dir that points to the real SDK to use. Because the files
 # are below $root_build_dir, it is not possible to list them as a target input
 # without gn complaining (as it can't find a target creating those files).
@@ -268,7 +267,7 @@ _xctrunner_path =
 #
 # To workaround this, add a target that pretends to create those files
 # (but does nothing). See https://crbug.com/1061487 for why this is needed.
-if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+if (use_system_xcode && (use_remoteexec || use_siso)) {
   action("copy_xctrunner_app") {
     testonly = true
     script = "//build/noop.py"
@@ -300,7 +299,7 @@ action("xctest_runner_without_arm64e") {
   # When running under ASan, the ASan runtime library must be packaged alongside
   # the test runner binary.
   deps = [ "//build/config/sanitizers:deps" ]
-  if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+  if (use_system_xcode && (use_remoteexec || use_siso)) {
     deps += [ ":copy_xctrunner_app" ]
   }
 }

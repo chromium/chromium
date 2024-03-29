@@ -6,7 +6,6 @@ import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
@@ -338,10 +337,10 @@ template("create_signed_bundle") {
     if (defined(invoker.extra_system_frameworks)) {
       # All framework in extra_system_frameworks are expected to be system
       # framework and the path to be already system absolute so do not use
-      # rebase_path here unless using Goma RBE and system Xcode (as in that
+      # rebase_path here unless using RBE and system Xcode (as in that
       # case the system framework are found via a symlink in root_build_dir).
       foreach(_framework, invoker.extra_system_frameworks) {
-        if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+        if (use_system_xcode && (use_remoteexec || use_siso)) {
           _framework_path = rebase_path(_framework, root_build_dir)
         } else {
           _framework_path = _framework
@@ -1932,7 +1931,7 @@ template("ios_xcuitest_test_runner_bundle") {
              "-o=" + rebase_path(_output_name, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
 
-    if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+    if (use_system_xcode && (use_remoteexec || use_siso)) {
       deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }
@@ -1965,7 +1964,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     outputs = [ "{{bundle_contents_dir}}/PkgInfo" ]
 
-    if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+    if (use_system_xcode && (use_remoteexec || use_siso)) {
       public_deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }

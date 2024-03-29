@@ -12,7 +12,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -115,7 +114,7 @@ template("single_apple_toolchain") {
       host_toolchain = host_toolchain
     }
 
-    # When the invoker has explicitly overridden use_goma or cc_wrapper in the
+    # When the invoker has explicitly overridden cc_wrapper in the
     # toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
     # supply for these values are to force-disable them.
@@ -124,22 +123,13 @@ template("single_apple_toolchain") {
     } else {
       toolchain_uses_remoteexec = use_remoteexec
     }
-    if (defined(toolchain_args.use_goma)) {
-      toolchain_uses_goma = toolchain_args.use_goma
-    } else {
-      toolchain_uses_goma = use_goma
-    }
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_uses_remoteexec && toolchain_uses_goma),
-           "Goma and re-client can't be used together.")
     assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
            "re-client and cc_wrapper can't be used together.")
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
-           "Goma and cc_wrapper can't be used together.")
 
     if (defined(toolchain_args.use_lld)) {
       toolchain_uses_lld = toolchain_args.use_lld
@@ -178,13 +168,6 @@ template("single_apple_toolchain") {
 
       # C/C++ (clang) rewrapper prefix to use when use_remoteexec is true.
       compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
-    } else if (toolchain_uses_goma) {
-      assert(toolchain_cc_wrapper == "",
-             "Goma and cc_wrapper can't be used together.")
-      compiler_prefix = "$goma_dir/gomacc "
-      if (use_goma_rust) {
-        rust_compiler_prefix = compiler_prefix
-      }
     } else if (toolchain_cc_wrapper != "") {
       compiler_prefix = toolchain_cc_wrapper + " "
     } else {
