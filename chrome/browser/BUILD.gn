@@ -4135,6 +4135,7 @@ static_library("browser") {
       "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h",
       "new_tab_page/modules/modules_switches.cc",
       "new_tab_page/modules/modules_switches.h",
+      "new_tab_page/modules/modules_util.h",
       "new_tab_page/modules/new_tab_page_modules.cc",
       "new_tab_page/modules/new_tab_page_modules.h",
       "new_tab_page/modules/photos/photos_handler.cc",

@@ -8,6 +8,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/modules/modules_util.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/search/ntp_features.h"
@@ -16,14 +17,6 @@
 #include "url/url_util.h"
 
 namespace {
-
-const size_t kCategoryBlockListCount = 18;
-constexpr std::array<std::string_view, kCategoryBlockListCount>
-    kCategoryBlockList{"/g/11b76fyj2r", "/m/09lkz",  "/m/012mj",  "/m/01rbb",
-                       "/m/02px0wr",    "/m/028hh",  "/m/034qg",  "/m/034dj",
-                       "/m/0jxxt",      "/m/015fwp", "/m/04shl0", "/m/01h6rj",
-                       "/m/05qt0",      "/m/06gqm",  "/m/09l0j_", "/m/01pxgq",
-                       "/m/0chbx",      "/m/02c66t"};
 
 int GetMinVisitsToShow(int min_required_visits) {
   static int min_visits = base::GetFieldTrialParamByFeatureAsInt(
@@ -120,7 +113,8 @@ history_clusters::QueryClustersFilterParams CreateFilterParamsFromFeatureFlags(
       ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam, {});
   filter_params.categories_blocklist = GetCategories(
       ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam,
-      {kCategoryBlockList.begin(), kCategoryBlockListCount});
+      {ntp_modules::kCategoryBlockList.begin(),
+       ntp_modules::kCategoryBlockListCount});
   filter_params.is_search_initiated = true;
   filter_params.has_related_searches = min_required_related_searches > 0;
   filter_params.is_shown_on_prominent_ui_surfaces = true;

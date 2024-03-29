@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/modules_util.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,14 +39,6 @@
 
 using history::BrowsingHistoryService;
 using history::HistoryService;
-
-const size_t kCategoryBlockListCount = 18;
-constexpr std::array<std::string_view, kCategoryBlockListCount>
-    kCategoryBlockList{"/g/11b76fyj2r", "/m/09lkz",  "/m/012mj",  "/m/01rbb",
-                       "/m/02px0wr",    "/m/028hh",  "/m/034qg",  "/m/034dj",
-                       "/m/0jxxt",      "/m/015fwp", "/m/04shl0", "/m/01h6rj",
-                       "/m/05qt0",      "/m/06gqm",  "/m/09l0j_", "/m/01pxgq",
-                       "/m/0chbx",      "/m/02c66t"};
 
 namespace {
 // Name of preference to track list of dismissed tabs.
@@ -150,7 +143,8 @@ TabResumptionPageHandler::TabResumptionPageHandler(
               /*Default value for visibility threshold*/ 0.5))),
       categories_blocklist_(GetTabResumptionCategories(
           ntp_features::kNtpTabResumptionModuleCategoriesBlocklistParam,
-          {kCategoryBlockList.begin(), kCategoryBlockListCount})),
+          {ntp_modules::kCategoryBlockList.begin(),
+           ntp_modules::kCategoryBlockListCount})),
       time_limit_(base::GetFieldTrialParamByFeatureAsInt(
           ntp_features::kNtpTabResumptionModuleTimeLimit,
           ntp_features::kNtpTabResumptionModuleTimeLimitParam,
