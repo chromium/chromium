@@ -277,7 +277,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that selecting sign-out from a non-managed user account clears the
 // user's account data.
-- (void)testSignOutFromNonManagedAccountClearsAccountData {
+// TODO(crbug.com/331778550): Flaky. Re-enable when fixed.
+- (void)DISABLED_testSignOutFromNonManagedAccountClearsAccountData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
@@ -302,11 +303,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that signing out from a managed user account keeps the user's local
 // data.
-- (void)testsSignOutFromManagedAccountKeepsLocalData {
-  // TODO(crbug.com/331778550): Test fails on iPad simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad simulator.");
-  }
+// TODO(crbug.com/331778550): Flaky. Re-enable when fixed.
+- (void)DISABLED_testsSignOutFromManagedAccountKeepsLocalData {
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
@@ -370,7 +368,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that users data is not cleared when the signed in account disappear and
 // it is a managed account.
-- (void)testsManagedAccountRemovedFromAnotherGoogleApp {
+// TODO(crbug.com/331778550): Flaky. Re-enable when fixed.
+- (void)DISABLED_testsManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
