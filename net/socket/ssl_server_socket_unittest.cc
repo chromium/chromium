@@ -502,11 +502,13 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
 
   std::unique_ptr<FakeDataChannel> channel_1_;
   std::unique_ptr<FakeDataChannel> channel_2_;
-  SSLConfig client_ssl_config_;
-  SSLServerConfig server_ssl_config_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<MockClientCertVerifier> client_cert_verifier_;
+  SSLConfig client_ssl_config_;
+  // Note that this has a pointer to the `cert_verifier_`, so must be destroyed
+  // before that is.
+  SSLServerConfig server_ssl_config_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
   std::unique_ptr<SSLClientContext> client_context_;
