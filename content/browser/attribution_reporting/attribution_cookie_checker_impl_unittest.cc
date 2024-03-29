@@ -176,7 +176,9 @@ TEST_F(AttributionCookieCheckerImplTest, Partitioned_NotSet) {
       .same_site = net::CookieSameSite::NO_RESTRICTION,
       // Mojo deserialization crashes without the unguessable token here.
       .partition_key = net::CookiePartitionKey::FromURLForTesting(
-          GURL("https://r2.test"), base::UnguessableToken::Create()),
+          GURL("https://r2.test"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()),
   });
 
   EXPECT_FALSE(IsDebugCookieSet());

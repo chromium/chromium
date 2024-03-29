@@ -10,9 +10,11 @@
 
 #include "base/types/expected.h"
 #include "net/base/cronet_buildflags.h"
+#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
@@ -26,19 +28,33 @@ class NET_EXPORT CookiePartitionKey {
   class NET_EXPORT SerializedCookiePartitionKey {
    public:
     const std::string& TopLevelSite() const;
+    bool has_cross_site_ancestor() const;
 
    private:
     friend class CookiePartitionKey;
     // This constructor does not check if the values being serialized are valid.
     // The caller of this function must ensure that only valid values are passed
     // to this method.
-    //
-    // TODO (crbug.com/41486025) once ancestor chain bit is implemented update
-    // update constructor to set the value.
-    explicit SerializedCookiePartitionKey(const std::string& site);
+    explicit SerializedCookiePartitionKey(const std::string& site,
+                                          bool has_cross_site_ancestor);
 
     std::string top_level_site_;
+    bool has_cross_site_ancestor_;
   };
+
+  // An enumerated value representing whether any frame in the PartitionKey's
+  // ancestor chain (including the top-level document's site) is cross-site with
+  // the current frame. These values are persisted to disk. Entries should not
+  // be renumbered and numeric values should never be reused.
+  enum class AncestorChainBit {
+    // All frames in the ancestor chain are pairwise same-site.
+    kSameSite = 0,
+    // At least one frame in the ancestor chain is cross-site with
+    // the current frame.
+    kCrossSite = 1,
+  };
+
+  static AncestorChainBit BoolToAncestorChainBit(bool val);
 
   CookiePartitionKey() = delete;
 #if !BUILDFLAG(CRONET_BUILD)
@@ -73,23 +89,33 @@ class NET_EXPORT CookiePartitionKey {
 
   static CookiePartitionKey FromURLForTesting(
       const GURL& url,
-      const std::optional<base::UnguessableToken> nonce = std::nullopt) {
-    return nonce ? CookiePartitionKey(SchemefulSite(url), nonce)
-                 : CookiePartitionKey(url);
+      AncestorChainBit ancestor_chain_bit = AncestorChainBit::kCrossSite,
+      std::optional<base::UnguessableToken> nonce = std::nullopt) {
+    return CookiePartitionKey(SchemefulSite(url), nonce, ancestor_chain_bit);
   }
 
   // Create a partition key from a network isolation key. Partition key is
-  // derived from the key's top-frame site.
+  // derived from the key's top-frame site. For scripts, the request_site
+  // is the url of the context running the code.
+  //
+  // TODO (crbug.com/325439525) Once all call sites no longer utilize default
+  // parameters. Remove existing default parameters and replace with const refs.
   static std::optional<CookiePartitionKey> FromNetworkIsolationKey(
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkIsolationKey& network_isolation_key,
+      SiteForCookies site_for_cookies = SiteForCookies(),
+      SchemefulSite request_site = SchemefulSite());
 
   // Create a new CookiePartitionKey from the site of an existing
   // CookiePartitionKey. This should only be used for sites of partition keys
   // which were already created using Deserialize or FromNetworkIsolationKey.
+  //
+  // TODO (crbug.com/325439525) Once all call sites no longer utilize default
+  // parameters. Remove existing default parameters and replace with const refs.
   static CookiePartitionKey FromWire(
       const SchemefulSite& site,
+      AncestorChainBit ancestor_chain_bit = AncestorChainBit::kCrossSite,
       std::optional<base::UnguessableToken> nonce = std::nullopt) {
-    return CookiePartitionKey(site, nonce);
+    return CookiePartitionKey(site, nonce, ancestor_chain_bit);
   }
 
   // Create a new CookiePartitionKey in a script running in a renderer. We do
@@ -112,8 +138,12 @@ class NET_EXPORT CookiePartitionKey {
   // Forwards to FromWire, but unlike that method in this one the optional nonce
   // argument has no default. It also checks that cookie partitioning is enabled
   // before returning a valid key, which FromWire does not check.
+  //
+  // TODO (crbug.com/325439525) Once all call sites no longer utilize default
+  // parameters. Remove existing default parameters and replace with const refs.
   [[nodiscard]] static std::optional<CookiePartitionKey>
   FromStorageKeyComponents(const SchemefulSite& top_level_site,
+                           AncestorChainBit ancestor_chain_bit,
                            const std::optional<base::UnguessableToken>& nonce);
 
   // FromStorage is a factory method which is meant for creating a new
@@ -123,7 +153,7 @@ class NET_EXPORT CookiePartitionKey {
   // storage.
   [[nodiscard]] static base::expected<std::optional<CookiePartitionKey>,
                                       std::string>
-  FromStorage(const std::string& top_level_site);
+  FromStorage(const std::string& top_level_site, bool has_cross_site_ancestor);
 
   // This method should be used when the data provided is expected to be
   // non-null but might be invalid or comes from a potentially untrustworthy
@@ -132,7 +162,8 @@ class NET_EXPORT CookiePartitionKey {
   // This reserves FromStorage to handle cases that can result in a null key
   // (and perfectly validly, like in the case when the top_level_site is empty).
   [[nodiscard]] static base::expected<CookiePartitionKey, std::string>
-  FromUntrustedInput(const std::string& top_level_site);
+  FromUntrustedInput(const std::string& top_level_site,
+                     bool has_cross_site_ancestor);
 
   const SchemefulSite& site() const { return site_; }
 
@@ -148,24 +179,38 @@ class NET_EXPORT CookiePartitionKey {
     return key && key->nonce();
   }
 
+  bool IsThirdParty() const {
+    return ancestor_chain_bit_ == AncestorChainBit::kCrossSite;
+  }
+
  private:
   explicit CookiePartitionKey(const SchemefulSite& site,
-                              std::optional<base::UnguessableToken> nonce);
-  explicit CookiePartitionKey(const GURL& url);
+                              std::optional<base::UnguessableToken> nonce,
+                              AncestorChainBit ancestor_chain_bit);
   explicit CookiePartitionKey(bool from_script);
 
   // This method holds the deserialization logic for validating input from
   // DeserializeForTesting and FromUntrustedInput which can be used to pass
   // unserializable top_level_site values.
   [[nodiscard]] static base::expected<CookiePartitionKey, std::string>
-  DeserializeInternal(const std::string& top_level_site);
+  DeserializeInternal(
+      const std::string& top_level_site,
+      CookiePartitionKey::AncestorChainBit has_cross_site_ancestor);
+
+  AncestorChainBit MaybeAncestorChainBit() const;
 
   SchemefulSite site_;
   bool from_script_ = false;
+  // crbug.com/328043119 remove code associated with
+  // kAncestorChainBitEnabledInPartitionedCookies
+  //  when feature is no longer needed.
+  bool ancestor_chain_enabled_ = base::FeatureList::IsEnabled(
+      features::kAncestorChainBitEnabledInPartitionedCookies);
 
   // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
   // for non-opaque origins.
   std::optional<base::UnguessableToken> nonce_;
+  AncestorChainBit ancestor_chain_bit_ = AncestorChainBit::kCrossSite;
 };
 
 // Used so that CookiePartitionKeys can be the arguments of DCHECK_EQ.

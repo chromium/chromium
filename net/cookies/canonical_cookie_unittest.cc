@@ -732,7 +732,9 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   status = CookieInclusionStatus();
   auto partition_key_with_nonce =
       std::make_optional(CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
+          GURL("https://toplevelsite.com"),
+          CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()));
   cookie = CanonicalCookie::Create(
       url, "__Host-A=2; Path=/; Secure", creation_time, server_time,
       partition_key_with_nonce, /*block_truncated=*/true, &status);
@@ -2173,7 +2175,8 @@ TEST(CanonicalCookieTest, TestFirstPartyPartitionedAndCrossSiteContext) {
       make_cookie(CookiePartitionKey::FromURLForTesting(GURL(url)));
   auto nonced_partition_key_cookie =
       make_cookie(CookiePartitionKey::FromURLForTesting(
-          GURL(url), base::UnguessableToken::Create()));
+          GURL(url), CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()));
   auto different_site_partition_key_cookie =
       make_cookie(CookiePartitionKey::FromURLForTesting(GURL(url2)));
 
@@ -6087,7 +6090,8 @@ TEST(CanonicalCookieTest, IsThirdPartyPartitioned) {
   // Nonced-partitioned cookie should always be 3p context.
   auto partition_key_with_nonce =
       std::make_optional(CookiePartitionKey::FromURLForTesting(
-          GURL("https://x.y"), base::UnguessableToken::Create()));
+          GURL("https://x.y"), CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()));
   EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
                   "A", "B", "x.y", "/foo/bar", base::Time(), base::Time(),
                   base::Time(), base::Time(), /*secure=*/true,

@@ -27,8 +27,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   bool is_opaque = url::Origin::Create(url).opaque();
   CHECK_NE(is_opaque, CookiePartitionKey::Serialize(partition_key).has_value());
 
-  CHECK_NE(is_opaque,
-           CookiePartitionKey::FromUntrustedInput(url_str).has_value());
+  CHECK_NE(is_opaque, CookiePartitionKey::FromUntrustedInput(
+                          url_str, partition_key->IsThirdParty())
+                          .has_value());
 
   if (!is_opaque) {
     CHECK(std::make_optional(CookiePartitionKey::FromURLForTesting(url)) ==

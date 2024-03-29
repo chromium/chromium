@@ -2019,8 +2019,10 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_NoncedPartition) {
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
           net::COOKIE_PRIORITY_DEFAULT,
-          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope),
-                                                     kStorageKeyNonce))));
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL(kExampleScope),
+              net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+              kStorageKeyNonce))));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1u, worker_test_helper_->changes().size());

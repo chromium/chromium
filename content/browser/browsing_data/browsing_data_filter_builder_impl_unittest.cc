@@ -1186,7 +1186,9 @@ TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
       "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
       std::nullopt,
       net::CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
+          GURL("https://toplevelsite.com"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()));
   EXPECT_TRUE(cookie);
   EXPECT_TRUE(delete_info.Matches(
       *cookie,

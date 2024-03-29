@@ -593,12 +593,16 @@ TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
        CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")), true,
        true},
       {"Nonced partitioned cookie when unpartitioned not excluded",
-       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"),
-                                             base::UnguessableToken::Create()),
+       CookiePartitionKey::FromURLForTesting(
+           GURL("https://foo.com"),
+           CookiePartitionKey::AncestorChainBit::kCrossSite,
+           base::UnguessableToken::Create()),
        false, true},
       {"Nonced partitioned cookie when unpartitioned excluded",
-       CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"),
-                                             base::UnguessableToken::Create()),
+       CookiePartitionKey::FromURLForTesting(
+           GURL("https://foo.com"),
+           CookiePartitionKey::AncestorChainBit::kCrossSite,
+           base::UnguessableToken::Create()),
        true, true},
   };
 

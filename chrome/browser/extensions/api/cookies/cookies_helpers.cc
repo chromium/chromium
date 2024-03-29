@@ -234,7 +234,8 @@ bool ValidateCookieApiPartitionKey(
       !partition_key->top_level_site->empty()) {
     base::expected<net::CookiePartitionKey, std::string> key =
         net::CookiePartitionKey::FromUntrustedInput(
-            partition_key->top_level_site.value());
+            partition_key->top_level_site.value(),
+            /*has_cross_site_ancestor=*/true);
     if (!key.has_value()) {
       error_message = key.error();
       return false;
@@ -305,7 +306,8 @@ CookiePartitionKeyCollectionFromApiPartitionKey(
   // update this method utilize the ancestor bit.
   base::expected<net::CookiePartitionKey, std::string> net_partition_key =
       net::CookiePartitionKey::FromUntrustedInput(
-          partition_key->top_level_site.value());
+          partition_key->top_level_site.value(),
+          /*has_cross_site_ancestor=*/true);
   if (!net_partition_key.has_value()) {
     return net::CookiePartitionKeyCollection();
   }

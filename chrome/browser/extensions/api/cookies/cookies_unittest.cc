@@ -250,7 +250,9 @@ TEST_F(ExtensionCookiesTest, PartitionKeySerialization) {
       /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
       net::COOKIE_PRIORITY_LOW,
       net::CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
+          GURL("https://toplevelsite.com"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()));
 
   EXPECT_TRUE(nonce_cookie->IsPartitioned());
   EXPECT_TRUE(net::CookiePartitionKey::HasNonce(nonce_cookie->PartitionKey()));

@@ -538,7 +538,9 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   ASSERT_TRUE(
       SetCookie(GURL("https://f.com"), "C=2; secure; samesite=none",
                 net::CookiePartitionKey::FromURLForTesting(
-                    GURL("https://g.com"), base::UnguessableToken::Create())));
+                    GURL("https://g.com"),
+                    net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+                    base::UnguessableToken::Create())));
 
   ASSERT_EQ(7u, GetAllCookies().size());
   RemoveAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES);
@@ -623,7 +625,9 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   ASSERT_TRUE(
       SetCookie(GURL("https://a.com"), "C=2; secure;",
                 net::CookiePartitionKey::FromURLForTesting(
-                    GURL("https://b.com"), base::UnguessableToken::Create())));
+                    GURL("https://b.com"),
+                    net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+                    base::UnguessableToken::Create())));
 
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
       BrowsingDataFilterBuilder::Create(

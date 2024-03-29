@@ -4042,7 +4042,9 @@ TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
         COOKIE_PRIORITY_DEFAULT,
         CookiePartitionKey::FromURLForTesting(
-            GURL("https://example.com"), base::UnguessableToken::Create()));
+            GURL("https://example.com"),
+            CookiePartitionKey::AncestorChainBit::kCrossSite,
+            base::UnguessableToken::Create()));
     GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
     ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                    /*modify_httponly=*/true));
@@ -6358,7 +6360,9 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURLNonce) {
   CookieOptions options = CookieOptions::MakeAllInclusive();
 
   auto anonymous_iframe_key = CookiePartitionKey::FromURLForTesting(
-      GURL("https://anonymous-iframe.test"), base::UnguessableToken::Create());
+      GURL("https://anonymous-iframe.test"),
+      CookiePartitionKey::AncestorChainBit::kCrossSite,
+      base::UnguessableToken::Create());
 
   // Define cookies from outside an anonymous iframe:
   EXPECT_TRUE(CreateAndSetCookie(cm.get(), https_www_foo_.url(),
@@ -6429,8 +6433,10 @@ TEST_F(CookieMonsterTest, SiteHasCookieInOtherPartition) {
   EXPECT_TRUE(CreateAndSetCookie(
       cm.get(), url, "foo=bar; Secure; SameSite=None; Partitioned", options,
       std::nullopt, std::nullopt,
-      CookiePartitionKey::FromURLForTesting(GURL("https://nottoplevelsite.com"),
-                                            base::UnguessableToken::Create())));
+      CookiePartitionKey::FromURLForTesting(
+          GURL("https://nottoplevelsite.com"),
+          CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create())));
 
   // Should still return false with the original partition key.
   EXPECT_THAT(cm->SiteHasCookieInOtherPartition(site, partition_key),

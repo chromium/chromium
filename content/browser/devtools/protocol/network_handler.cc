@@ -434,7 +434,9 @@ MakeCookieFromProtocolValues(const std::string& name,
     // implemented update this method utilize the ancestor bit.
     base::expected<net::CookiePartitionKey, std::string>
         deserialized_partition_key =
-            net::CookiePartitionKey::FromUntrustedInput(partition_key.value());
+            net::CookiePartitionKey::FromUntrustedInput(
+                partition_key.value(), /*has_cross_site_ancestor=*/
+                true);
     if (!deserialized_partition_key.has_value()) {
       return Response::InvalidParams(
           "Deserializing cookie partition key failed");

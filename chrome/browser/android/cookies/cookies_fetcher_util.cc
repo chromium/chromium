@@ -124,7 +124,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
   // implemented update this method utilize the ancestor bit.
   base::expected<net::CookiePartitionKey, std::string>
       serialized_cookie_partition_key =
-          net::CookiePartitionKey::FromUntrustedInput(top_level_site);
+          net::CookiePartitionKey::FromUntrustedInput(
+              top_level_site, /*has_cross_site_ancestor=*/true);
   if (!serialized_cookie_partition_key.has_value()) {
     return;
   }

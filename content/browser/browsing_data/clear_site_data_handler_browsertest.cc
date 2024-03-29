@@ -115,7 +115,10 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
       uint64_t data_type_mask =
           BrowsingDataRemover::DATA_TYPE_COOKIES |
           BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
-
+      net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
+          (net::SchemefulSite(origin) == top_level_site
+               ? net::CookiePartitionKey::AncestorChainBit::kSameSite
+               : net::CookiePartitionKey::AncestorChainBit::kCrossSite);
       BrowsingDataFilterBuilderImpl filter_builder(
           BrowsingDataFilterBuilder::Mode::kDelete);
       filter_builder.AddRegisterableDomain(origin.host());
@@ -123,7 +126,7 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
       filter_builder.SetCookiePartitionKeyCollection(
           net::CookiePartitionKeyCollection::FromOptional(
               net::CookiePartitionKey::FromStorageKeyComponents(
-                  top_level_site, /*nonce=*/std::nullopt)));
+                  top_level_site, ancestor_chain_bit, /*nonce=*/std::nullopt)));
 
       ExpectCall(base::Time(), base::Time::Max(), data_type_mask,
                  kOriginTypeMask, &filter_builder);

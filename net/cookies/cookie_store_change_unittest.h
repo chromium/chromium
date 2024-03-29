@@ -733,8 +733,10 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, PartitionedCookies) {
       "__Host-a=2; Secure; Path=/; Partitioned; Max-Age=7200",
       CookieOptions::MakeAllInclusive(), std::nullopt /* server_time */,
       std::nullopt /* system_time */,
-      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"),
-                                            base::UnguessableToken::Create()));
+      CookiePartitionKey::FromURLForTesting(
+          GURL("https://www.bar.com"),
+          CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()));
   this->DeliverChangeNotifications();
   ASSERT_EQ(2u, all_cookie_changes.size());
 }
@@ -1835,8 +1837,9 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies_WithNonce) {
   std::unique_ptr<CookieChangeSubscription> subscription =
       cs->GetChangeDispatcher().AddCallbackForUrl(
           GURL("https://www.example.com"),
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"),
-                                                nonce),
+          CookiePartitionKey::FromURLForTesting(
+              GURL("https://www.foo.com"),
+              CookiePartitionKey::AncestorChainBit::kCrossSite, nonce),
           base::BindRepeating(
               &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
               base::Unretained(&cookie_changes)));
@@ -1859,13 +1862,14 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies_WithNonce) {
   ASSERT_EQ(0u, cookie_changes.size());
 
   // Set partitioned cookie with nonce.
-  this->CreateAndSetCookie(cs, GURL("https://www.example.com"),
-                           "__Host-a=3; Secure; Path=/; Partitioned",
-                           CookieOptions::MakeAllInclusive(),
-                           std::nullopt /* server_time */,
-                           std::nullopt /* system_time */,
-                           CookiePartitionKey::FromURLForTesting(
-                               GURL("https://www.foo.com"), nonce));
+  this->CreateAndSetCookie(
+      cs, GURL("https://www.example.com"),
+      "__Host-a=3; Secure; Path=/; Partitioned",
+      CookieOptions::MakeAllInclusive(), std::nullopt /* server_time */,
+      std::nullopt /* system_time */,
+      CookiePartitionKey::FromURLForTesting(
+          GURL("https://www.foo.com"),
+          CookiePartitionKey::AncestorChainBit::kCrossSite, nonce));
   this->DeliverChangeNotifications();
   ASSERT_EQ(1u, cookie_changes.size());
 }
@@ -3118,8 +3122,9 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies_WithNonce) {
   std::unique_ptr<CookieChangeSubscription> subscription =
       cs->GetChangeDispatcher().AddCallbackForCookie(
           GURL("https://www.example.com"), "__Host-a",
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"),
-                                                nonce),
+          CookiePartitionKey::FromURLForTesting(
+              GURL("https://www.foo.com"),
+              CookiePartitionKey::AncestorChainBit::kCrossSite, nonce),
           base::BindRepeating(
               &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
               base::Unretained(&cookie_changes)));
@@ -3142,13 +3147,14 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies_WithNonce) {
   ASSERT_EQ(0u, cookie_changes.size());
 
   // Set partitioned cookie with nonce.
-  this->CreateAndSetCookie(cs, GURL("https://www.example.com"),
-                           "__Host-a=3; Secure; Path=/; Partitioned",
-                           CookieOptions::MakeAllInclusive(),
-                           std::nullopt /* server_time */,
-                           std::nullopt /* system_time */,
-                           CookiePartitionKey::FromURLForTesting(
-                               GURL("https://www.foo.com"), nonce));
+  this->CreateAndSetCookie(
+      cs, GURL("https://www.example.com"),
+      "__Host-a=3; Secure; Path=/; Partitioned",
+      CookieOptions::MakeAllInclusive(), std::nullopt /* server_time */,
+      std::nullopt /* system_time */,
+      CookiePartitionKey::FromURLForTesting(
+          GURL("https://www.foo.com"),
+          CookiePartitionKey::AncestorChainBit::kCrossSite, nonce));
   this->DeliverChangeNotifications();
   ASSERT_EQ(1u, cookie_changes.size());
 }

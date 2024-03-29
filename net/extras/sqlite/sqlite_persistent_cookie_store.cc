@@ -963,8 +963,8 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     // If we can't create a CookiePartitionKey from SQL values, we delete any
     // cookie with the same top_frame_site_key value.
     base::expected<std::optional<CookiePartitionKey>, std::string>
-        partition_key =
-            CookiePartitionKey::FromStorage(statement.ColumnString(2));
+        partition_key = CookiePartitionKey::FromStorage(
+            statement.ColumnString(2), true /*has_cross_site_ancestor=*/);
     if (!partition_key.has_value()) {
       top_frame_site_keys_to_delete.insert(statement.ColumnString(2));
       continue;
