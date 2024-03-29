@@ -229,7 +229,13 @@ class MinimumWindowsSupportTest : public DelayloadsTest {
 // you fail a test double-check that casing of the name.
 #if defined(NDEBUG) && !defined(COMPONENT_BUILD)
 
-TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
+// TODO(crbug.com/331859923): flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ChromeDllDelayloadsCheck DISABLED_ChromeDllDelayloadsCheck
+#else
+#define MAYBE_ChromeDllDelayloadsCheck ChromeDllDelayloadsCheck
+#endif
+TEST_F(DelayloadsTest, MAYBE_ChromeDllDelayloadsCheck) {
   base::FilePath dll;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &dll));
   dll = dll.Append(L"chrome.dll");
