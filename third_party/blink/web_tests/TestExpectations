@@ -7080,7 +7080,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14-arm64 ] accessibility/notification-listeners.html [ Failure ]
 [ Debug Mac14-arm64 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure ]
 [ Debug Mac14-arm64 ] media/controls/doubletap-to-jump-backwards.html [ Failure Pass Timeout ]
-crbug.com/329549100 [ Mac14 ] external/wpt/html/semantics/invokers/invoketarget-on-dialog-behavior.tentative.html [ Timeout ]
 crbug.com/40261737 [ Mac14-arm64 ] external/wpt/webtransport/streams-close.https.any.sharedworker.html [ Failure Pass ]
 crbug.com/40261737 [ Mac14-arm64 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure Pass ]
 crbug.com/40912755 [ Mac14-arm64 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Failure Pass ]
