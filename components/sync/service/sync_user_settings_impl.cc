@@ -236,13 +236,6 @@ void SyncUserSettingsImpl::KeepAccountSettingsPrefsOnlyForUsers(
   prefs_->KeepAccountSettingsPrefsOnlyForUsers(available_gaia_ids);
 }
 
-#if BUILDFLAG(IS_IOS)
-void SyncUserSettingsImpl::SetBookmarksAndReadingListAccountStorageOptIn(
-    bool value) {
-  prefs_->SetBookmarksAndReadingListAccountStorageOptIn(value);
-}
-#endif  // BUILDFLAG(IS_IOS)
-
 UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
     const {
   UserSelectableTypeSet registered_types;

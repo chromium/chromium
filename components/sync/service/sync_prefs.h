@@ -140,23 +140,6 @@ class SyncPrefs {
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids);
 
-#if BUILDFLAG(IS_IOS)
-  // Sets the opt-in for bookmarks & reading list in transport mode.
-  // Note that this only has an effect if `kReplaceSyncPromosWithSignInPromos`
-  // is NOT enabled. (It should still be called if
-  // `kReplaceSyncPromosWithSignInPromos` is enabled though, to better support
-  // rollbacks.)
-  void SetBookmarksAndReadingListAccountStorageOptIn(bool value);
-
-  // Gets the opt-in state for bookmarks & reading list in transport mode, for
-  // testing. Production code should use `GetSelectedTypes()`
-  // instead which already takes this into account.
-  bool IsOptedInForBookmarksAndReadingListAccountStorageForTesting();
-
-  // Clears the opt-in for bookmarks & reading list in transport mode.
-  void ClearBookmarksAndReadingListAccountStorageOptIn();
-#endif  // BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Functions to deal with the Ash-specific state where sync-the-feature is
   // disabled because the user reset sync via dashboard.

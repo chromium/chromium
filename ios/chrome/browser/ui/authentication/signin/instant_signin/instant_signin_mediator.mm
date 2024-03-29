@@ -97,8 +97,8 @@ using signin_metrics::PromoAction;
       _accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
     return;
   }
-  _syncService->GetUserSettings()
-      ->SetBookmarksAndReadingListAccountStorageOptIn(true);
+  // TODO(crbug.com/41488185): Turn on corresponding data type; Bookmarks or RL
+  // on sign-in to avoid double-promo flow, and consider renaming this method.
 }
 
 @end

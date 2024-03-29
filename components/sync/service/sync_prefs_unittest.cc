@@ -413,13 +413,7 @@ TEST_F(SyncPrefsTest,
 #endif
 
 #if BUILDFLAG(IS_IOS)
-  // On iOS, Bookmarks and Reading list require a dedicated opt-in.
-  EXPECT_EQ(
-      sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
-      base::Difference(expected_types, {UserSelectableType::kBookmarks,
-                                        UserSelectableType::kReadingList}));
-
-  sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
+  // On iOS, Bookmarks and Reading List are enabled by default.
   expected_types.PutAll(
       {UserSelectableType::kBookmarks, UserSelectableType::kReadingList});
 #endif
@@ -785,31 +779,6 @@ TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   sync_prefs_->ClearPassphrasePromptMutedProductVersion();
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
 }
-
-#if BUILDFLAG(IS_IOS)
-TEST_F(SyncPrefsTest, SetBookmarksAndReadingListAccountStorageOptInPrefChange) {
-  // Default value disabled.
-  EXPECT_FALSE(
-      sync_prefs_
-          ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
-
-  // Enable bookmarks and reading list account storage pref.
-  sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
-
-  // Check pref change to enabled.
-  EXPECT_TRUE(
-      sync_prefs_
-          ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
-
-  // Clear pref.
-  sync_prefs_->ClearBookmarksAndReadingListAccountStorageOptIn();
-
-  // Default value applied after clearing the pref.
-  EXPECT_FALSE(
-      sync_prefs_
-          ->IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
-}
-#endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SyncPrefsTest, GetNumberOfAccountsWithPasswordsSelected) {
@@ -1303,11 +1272,13 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksOptedIn) {
     disable_sync_to_signin.InitAndDisableFeature(
         kReplaceSyncPromosWithSignInPromos);
 
-    // The user enables Bookmarks and ReadingList. On iOS, this involves a
-    // special opt-in pref.
+    // The user enables Bookmarks and Reading List. On iOS
+    // pre-kReplaceSyncPromosWithSignInPromos, this used to involve a special
+    // opt-in pref.
     SyncPrefs prefs(&pref_service_);
 #if BUILDFLAG(IS_IOS)
-    prefs.SetBookmarksAndReadingListAccountStorageOptIn(true);
+    pref_service_.SetBoolean(
+        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, true);
 #else
     prefs.SetSelectedTypeForAccount(UserSelectableType::kBookmarks, true,
                                     gaia_id_hash_);
@@ -1354,12 +1325,10 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
         kReplaceSyncPromosWithSignInPromos);
 
     // The regular Bookmarks and ReadingList prefs are enabled (by default), but
-    // the additional opt-in pref is not.
+    // the additional opt-in pref should not be enabled.
     SyncPrefs prefs(&pref_service_);
-    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kBookmarks));
-    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kReadingList));
+    ASSERT_FALSE(pref_service_.GetBoolean(
+        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn));
   }
 
   {

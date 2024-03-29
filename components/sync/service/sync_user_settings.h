@@ -102,11 +102,6 @@ class SyncUserSettings {
   virtual void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) = 0;
 
-#if BUILDFLAG(IS_IOS)
-  // Enables the account storage for bookmark and reading list datatype.
-  virtual void SetBookmarksAndReadingListAccountStorageOptIn(bool value) = 0;
-#endif  // BUILDFLAG(IS_IOS)
-
   // Registered user selectable types are derived from registered model types.
   // A UserSelectableType is registered if any of its ModelTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;

@@ -57,12 +57,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
               KeepAccountSettingsPrefsOnlyForUsers,
               (const std::vector<signin::GaiaIdHash>&),
               (override));
-#if BUILDFLAG(IS_IOS)
-  MOCK_METHOD(void,
-              SetBookmarksAndReadingListAccountStorageOptIn,
-              (bool),
-              (override));
-#endif  // BUILDFLAG(IS_IOS)
   MOCK_METHOD(UserSelectableTypeSet,
               GetRegisteredSelectableTypes,
               (),

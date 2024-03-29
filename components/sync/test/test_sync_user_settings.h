@@ -48,9 +48,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
-#if BUILDFLAG(IS_IOS)
-  void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
-#endif  // BUILDFLAG(IS_IOS)
   ModelTypeSet GetPreferredDataTypes() const;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 

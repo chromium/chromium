@@ -572,18 +572,6 @@ TEST_F(SyncUserSettingsImplTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
       sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
 }
 
-// Protects against GetSelectedTypes() incorrectly requiring a
-// SetBookmarksAndReadingListAccountStorageOptIn() for syncing users.
-// TODO(crbug.com/1440628): Remove when the temporary opt-in is deleted.
-TEST_F(SyncUserSettingsImplTest, BookmarksOnByDefaultForSyncingUsers) {
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
-  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(GetUserTypes());
-
-  EXPECT_TRUE(sync_user_settings->GetSelectedTypes().Has(
-      UserSelectableType::kBookmarks));
-}
-
 TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenForSyncingUser) {
   base::test::ScopedFeatureList enable_keep_account_passphrase(
       kSyncRememberCustomPassphraseAfterSignout);

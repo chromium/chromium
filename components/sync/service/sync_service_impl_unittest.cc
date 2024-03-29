@@ -586,11 +586,6 @@ TEST_F(SyncServiceImplTest,
                 {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
             service()->GetDisableReasons());
   EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
-#if BUILDFLAG(IS_IOS)
-  SyncPrefs sync_prefs(prefs());
-  EXPECT_FALSE(
-      sync_prefs.IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
-#endif  // BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SyncServiceImplTest,
@@ -608,12 +603,6 @@ TEST_F(SyncServiceImplTest,
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-#if BUILDFLAG(IS_IOS)
-  // Opt in bookmarks and reading list account storage.
-  SyncPrefs sync_prefs(prefs());
-  sync_prefs.SetBookmarksAndReadingListAccountStorageOptIn(true);
-#endif  // BUILDFLAG(IS_IOS)
-
   // Sign-out.
   signin::PrimaryAccountMutator* account_mutator =
       identity_manager()->GetPrimaryAccountMutator();
@@ -623,10 +612,6 @@ TEST_F(SyncServiceImplTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
-#if BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(
-      sync_prefs.IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
-#endif  // BUILDFLAG(IS_IOS)
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

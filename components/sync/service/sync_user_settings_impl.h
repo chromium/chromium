@@ -78,9 +78,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
-#if BUILDFLAG(IS_IOS)
-  void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
-#endif  // BUILDFLAG(IS_IOS)
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncFeatureDisabledViaDashboard() const override;

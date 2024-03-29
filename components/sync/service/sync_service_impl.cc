@@ -2186,10 +2186,6 @@ void SyncServiceImpl::StopAndClear() {
   // done so it doesn't trigger again if the user signs in later.
   sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();
 
-#if BUILDFLAG(IS_IOS)
-  sync_prefs_.ClearBookmarksAndReadingListAccountStorageOptIn();
-#endif  // BUILDFLAG(IS_IOS)
-
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).
   DVLOG(2) << "Notify observers on StopAndClear";
