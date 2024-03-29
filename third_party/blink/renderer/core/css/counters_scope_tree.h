@@ -31,7 +31,6 @@ class CORE_EXPORT CountersScopeTree final
   void CreateCountersForLayoutObject(LayoutObject&);
   void CreateCounterForLayoutObject(LayoutObject&, const AtomicString&);
   void CreateCounterForLayoutCounter(LayoutCounter&);
-  void CreateListItemCounterForLayoutObject(LayoutObject&);
 
   void RemoveCounterForLayoutCounter(LayoutCounter&);
   void RemoveCounterFromScope(CounterNode&,

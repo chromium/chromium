@@ -243,33 +243,6 @@ CounterNode* CreateCounter(LayoutObject& object,
   return nullptr;
 }
 
-CounterNode* CreateListItemCounter(LayoutObject& object) {
-  Node* node = object.GetNode();
-  if (!node) {
-    return nullptr;
-  }
-  if (ListItemOrdinal* ordinal = ListItemOrdinal::Get(*node)) {
-    if (const auto& explicit_value = ordinal->ExplicitValue()) {
-      return MakeGarbageCollected<CounterNode>(object, CounterNode::kResetType,
-                                               explicit_value.value());
-    }
-    int value = ListItemOrdinal::IsInReversedOrderedList(*node) ? -1 : 1;
-    return MakeGarbageCollected<CounterNode>(
-        object, CounterNode::kIncrementType, value);
-  }
-  if (auto* olist = DynamicTo<HTMLOListElement>(node)) {
-    int value = base::ClampAdd(olist->StartConsideringItemCount(),
-                               olist->IsReversed() ? 1 : -1);
-    return MakeGarbageCollected<CounterNode>(object, CounterNode::kResetType,
-                                             value, olist->IsReversed());
-  }
-  if (IsA<HTMLUListElement>(node)) {
-    return MakeGarbageCollected<CounterNode>(object, CounterNode::kResetType,
-                                             0);
-  }
-  return nullptr;
-}
-
 bool PreorderTreePositionComparator(const Element& element,
                                     CountersScope* scope) {
   return LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
@@ -422,18 +395,6 @@ void CountersScopeTree::CreateCounterForLayoutObject(
     // during when the flat tree traversal is not available.
     StyleScope()->GetStyleContainmentScopeTree()->AddCounterToObjectMap(
         object, identifier, *counter);
-  }
-}
-
-void CountersScopeTree::CreateListItemCounterForLayoutObject(
-    LayoutObject& object) {
-  CounterNode* counter = CreateListItemCounter(object);
-  if (counter) {
-    AttachCounter(*counter, list_item_);
-    // Add the counter info in the counters cache to remove
-    // during when the flat tree traversal is not available.
-    StyleScope()->GetStyleContainmentScopeTree()->AddCounterToObjectMap(
-        object, list_item_, *counter);
   }
 }
 

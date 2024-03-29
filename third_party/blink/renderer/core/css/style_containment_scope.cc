@@ -172,11 +172,6 @@ void StyleContainmentScope::CreateCounterNodeForLayoutObject(
   counters_tree_->CreateCounterForLayoutObject(object, identifier);
 }
 
-void StyleContainmentScope::CreateListItemCounterNodeForLayoutObject(
-    LayoutObject& object) {
-  counters_tree_->CreateListItemCounterForLayoutObject(object);
-}
-
 void StyleContainmentScope::CreateCounterNodeForLayoutCounter(
     LayoutCounter& counter) {
   counters_tree_->CreateCounterForLayoutCounter(counter);
