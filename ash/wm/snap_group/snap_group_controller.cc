@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -123,7 +124,9 @@ SnapGroup* SnapGroupController::GetSnapGroupForGivenWindow(
   return iter != window_to_snap_group_map_.end() ? iter->second : nullptr;
 }
 
-bool SnapGroupController::OnSnappingWindow(aura::Window* to_be_snapped_window) {
+bool SnapGroupController::OnSnappingWindow(
+    aura::Window* to_be_snapped_window,
+    WindowSnapActionSource snap_action_source) {
   // TODO(b/331305840): Come up with an API to retrieve the snapped window on
   // the same side as the `to_be_snapped_window` to simplify the logic.
   SnapGroup* group_to_replace = GetSnapGroupForGivenWindow(
@@ -158,13 +161,20 @@ bool SnapGroupController::OnSnappingWindow(aura::Window* to_be_snapped_window) {
           .value_or(chromeos::kDefaultSnapRatio);
   const float snapping_window_snap_ratio =
       window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
-  const float snap_ratio_diff =
-      std::abs(snapped_window_snap_ratio - snapping_window_snap_ratio);
 
-  // Disallow snap-to-replace if the snap ratio difference exceeds the allowed
-  // threshold.
-  if (snap_ratio_diff > kSnapToReplaceRatioDiffThreshold) {
-    return false;
+  // TODO(michelefan): The two snap action sources from Lacros are currently
+  // bundled together. We should separate them.
+  if (snap_action_source == WindowSnapActionSource::kSnapByWindowLayoutMenu ||
+      snap_action_source ==
+          WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu) {
+    const float snap_ratio_diff =
+        std::abs(snapped_window_snap_ratio - snapping_window_snap_ratio);
+
+    // Disallow snap-to-replace if the snap ratio difference exceeds the allowed
+    // threshold.
+    if (snap_ratio_diff > kSnapToReplaceRatioDiffThreshold) {
+      return false;
+    }
   }
 
   // TODO(b/331470570): Consider directly replacing the `to_be_snapped_window`

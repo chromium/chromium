@@ -2211,7 +2211,7 @@ void SplitViewController::OnWindowSnapped(
 
   if (auto* snap_group_controller = SnapGroupController::Get();
       snap_group_controller &&
-      snap_group_controller->OnSnappingWindow(window)) {
+      snap_group_controller->OnSnappingWindow(window, snap_action_source)) {
     return;
   }
 

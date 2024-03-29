@@ -4270,10 +4270,36 @@ TEST_F(SnapGroupTest, SnapToReplaceBasic) {
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
-// Test that the snap ratio difference is calculated before snap-to-replace. If
-// it's below the threshold, the snap-to-replace action will occur. If not,
-// we'll start a new faster split-screen session. The previous snap ratio will
-// be preserved after window replacement within a snap group.
+// Tests that if a third window is snapped via any method except the window
+// layout menu, it should allow 'snap to replace' regardless of snap ratio
+// difference, the previous snap group's layout will be preserved.
+TEST_F(SnapGroupTest, SnapToReplaceWithNonWindowLayoutSnapActionSource) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  const gfx::Rect w1_bounds(w1->GetBoundsInScreen());
+  const gfx::Rect w2_bounds(w2->GetBoundsInScreen());
+
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  const float w3_snap_ratio = 0.2;
+  SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped, w3_snap_ratio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  EXPECT_GT(std::abs(w3_snap_ratio - chromeos::kDefaultSnapRatio),
+            kSnapToReplaceRatioDiffThreshold);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(w3->GetBoundsInScreen(), w1_bounds);
+  EXPECT_EQ(w2->GetBoundsInScreen(), w2_bounds);
+}
+
+// Test that the snap ratio difference is calculated before snap-to-replace when
+// snapping from window layout menu. If it's below the threshold, the
+// snap-to-replace action will occur. If not, we'll start a new faster
+// split-screen session. The previous snap ratio will be preserved after window
+// replacement within a snap group.
 TEST_F(SnapGroupTest, SnapToReplaceWithRatioMargin) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -4286,15 +4312,16 @@ TEST_F(SnapGroupTest, SnapToReplaceWithRatioMargin) {
   EXPECT_EQ(*WindowState::Get(w1.get())->snap_ratio(),
             chromeos::kDefaultSnapRatio);
 
-  // Snap the new window `w3` with a 0.55 ratio. Since the difference between
-  // `w3_snap_event_snap_ratio` and `w1_snap_ratio` is less than
+  // Snap the new window `w3` with `chromeos::kDefaultSnapRatio` snap ratio from
+  // window layout menu. Since the difference between
+  // `chromeos::kDefaultSnapRatio` and `w1_snap_ratio` is less than
   // `kSnapToReplaceRatioDiffThreshold`, replace w1 with w3. Maintain the
   // previous snap ratio in the snap group formed by `w1` and `w2`.
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
-  const float w3_snap_event_snap_ratio = 0.55;
   SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
-                    w3_snap_event_snap_ratio, WindowSnapActionSource::kTest);
-  EXPECT_LT(std::abs(w1_snap_ratio - w3_snap_event_snap_ratio),
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_LT(std::abs(w1_snap_ratio - chromeos::kDefaultSnapRatio),
             kSnapToReplaceRatioDiffThreshold);
 
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
@@ -4305,16 +4332,16 @@ TEST_F(SnapGroupTest, SnapToReplaceWithRatioMargin) {
   EXPECT_EQ(*WindowState::Get(w2.get())->snap_ratio(),
             chromeos::kDefaultSnapRatio);
 
-  // Snap the new window `w4` with a 0.35 ratio. Since the difference between
-  // `w4_snap_event_snap_ratio` and snap ratio of `w3` is greater than
-  // `kSnapToReplaceRatioDiffThreshold`, we will start a new faster split-screen
-  // session.
+  // Snap the new window `w4` with `chromeos::kOneThirdSnapRatio` ratio. Since
+  // the difference between `w4_snap_event_snap_ratio` and snap ratio of `w3` is
+  // greater than `kSnapToReplaceRatioDiffThreshold`, we will start a new faster
+  // split-screen session.
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
-  const float w4_snap_event_snap_ratio = 0.35;
   SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
-                    w4_snap_event_snap_ratio, WindowSnapActionSource::kTest);
+                    chromeos::kOneThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
   EXPECT_GT(std::abs(*WindowState::Get(w3.get())->snap_ratio() -
-                     w4_snap_event_snap_ratio),
+                     chromeos::kOneThirdSnapRatio),
             kSnapToReplaceRatioDiffThreshold);
   VerifySplitViewOverviewSession(w4.get());
   EXPECT_FALSE(

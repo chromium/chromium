@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/containers/flat_map.h"
 #include "ui/display/display_observer.h"
 
@@ -68,8 +69,10 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // Returns true if the attempt to replace the window within the snap group
   // positioned directly below with the given `to_be_snapped_window` is
-  // successful, returns false otherwise.
-  bool OnSnappingWindow(aura::Window* to_be_snapped_window);
+  // successful, returns false otherwise. The `snap_action_source` determines
+  // the need for snap ratio difference calculations during 'snap to replace'.
+  bool OnSnappingWindow(aura::Window* to_be_snapped_window,
+                        WindowSnapActionSource snap_action_source);
 
   // Minimizes the most recently used and unminimized snap groups.
   void MinimizeTopMostSnapGroup();
