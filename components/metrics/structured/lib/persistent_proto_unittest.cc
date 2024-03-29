@@ -76,8 +76,10 @@ class TestCase {
     return proto;
   }
 
-  void WriteToDisk(const KeyProto& proto) {
-    ASSERT_TRUE(base::WriteFile(GetPath(), proto.SerializeAsString()));
+  void WriteToDisk(const KeyProto& proto) { WriteToDisk(GetPath(), proto); }
+
+  void WriteToDisk(const base::FilePath& path, const KeyProto& proto) {
+    ASSERT_TRUE(base::WriteFile(path, proto.SerializeAsString()));
   }
 
   void OnRead(const ReadStatus status) {
@@ -307,6 +309,51 @@ TYPED_TEST(PersistentProtoTest, ClearContents) {
 
   ASSERT_TRUE(base::GetFileSize(this->test_.GetPath(), &size));
   EXPECT_EQ(size, static_cast<int64_t>(empty_proto.size()));
+}
+
+TYPED_TEST(PersistentProtoTest, UpdatePath) {
+  const base::FilePath new_path =
+      this->test_.temp_dir_.GetPath().Append(FILE_PATH_LITERAL("new_proto"));
+  const int64_t kNewLastRotation = 10;
+
+  const auto test_proto = MakeTestProto();
+  this->test_.WriteToDisk(test_proto);
+
+  auto test_proto2 = MakeTestProto();
+  test_proto2.set_last_rotation(kNewLastRotation);
+  this->test_.WriteToDisk(new_path, test_proto2);
+
+  auto pproto = this->BuildTestProto();
+
+  // Underlying proto should be nullptr until read is complete.
+  EXPECT_EQ(pproto.get(), nullptr);
+
+  this->Wait();
+  EXPECT_EQ(this->test_.read_status_, ReadStatus::kOk);
+  EXPECT_EQ(this->test_.read_count_, 1);
+  EXPECT_EQ(this->test_.write_count_, 0);
+
+  const KeyProto* ptr = pproto.get();
+
+  pproto.UpdatePath(new_path, this->test_.ReadCallback(),
+                    /*remove_existing=*/true);
+  this->Wait();
+
+  EXPECT_EQ(this->test_.read_status_, ReadStatus::kOk);
+  EXPECT_EQ(this->test_.read_count_, 2);
+  EXPECT_EQ(this->test_.write_count_, 1);
+
+  // It is expected that the underlying proto doesn't change.
+  EXPECT_EQ(ptr, pproto.get());
+
+  // Check the content of the updated proto.
+  EXPECT_EQ(ptr->key(), test_proto.key());
+  EXPECT_EQ(ptr->rotation_period(), test_proto.rotation_period());
+  EXPECT_EQ(ptr->last_rotation(), kNewLastRotation);
+
+  // Check the state of the files are what we expect.
+  ASSERT_FALSE(base::PathExists(this->test_.GetPath()));
+  ASSERT_TRUE(base::PathExists(new_path));
 }
 
 }  // namespace metrics::structured

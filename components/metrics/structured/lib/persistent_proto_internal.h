@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
 #define COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
 
+#include <atomic>
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -77,6 +79,15 @@ class PersistentProtoInternal
   // Schedules a write to be executed immediately. Only to be used for tests.
   void StartWriteForTesting();
 
+  // Updates the path of this persistent proto to a new file. The contents at
+  // |path| will be merged with existing content of |proto_|. Optional fields
+  // are overwritten and repeated fields are appended.
+  // |on_read| is called once the read of the new path is complete.
+  // |remove_existing| specifies if the existing file should be removed.
+  void UpdatePath(const base::FilePath& path,
+                  ReadCallback on_read,
+                  bool remove_existing = false);
+
  protected:
   // Cleans up the in-memory proto.
   void DeallocProto();
@@ -108,6 +119,11 @@ class PersistentProtoInternal
   // Run when the cache finishes writing to disk, if provided.
   WriteCallback on_write_;
 
+  // Boolean to flag whether the path is being updated.
+  //
+  // If the path is being updated queuing a write needs to be blocked.
+  std::atomic_bool updating_path_ = false;
+
   // The proto itself.
   raw_ptr<google::protobuf::MessageLite> proto_ = nullptr;
 
@@ -115,7 +131,7 @@ class PersistentProtoInternal
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Persistence for |proto_|.
-  base::ImportantFileWriter proto_file_;
+  std::unique_ptr<base::ImportantFileWriter> proto_file_;
 
   base::WeakPtrFactory<PersistentProtoInternal> weak_factory_{this};
 };
