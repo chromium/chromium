@@ -258,8 +258,7 @@ class FakeCookieChecker : public AttributionCookieChecker {
 
  private:
   // AttributionCookieChecker:
-  void IsDebugCookieSet(const url::Origin& origin,
-                        base::OnceCallback<void(bool)> callback) override {
+  void IsDebugCookieSet(const url::Origin&, Callback callback) override {
     std::move(callback).Run(debug_cookie_set_.contains(base::Time::Now()));
   }
 

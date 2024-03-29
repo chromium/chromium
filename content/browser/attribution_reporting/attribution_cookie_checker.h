@@ -17,9 +17,10 @@ class AttributionCookieChecker {
  public:
   virtual ~AttributionCookieChecker() = default;
 
+  using Callback = base::OnceCallback<void(bool is_debug_cookie_set)>;
+
   // Checks if an attribution debug key is set for `origin`.
-  virtual void IsDebugCookieSet(const url::Origin& origin,
-                                base::OnceCallback<void(bool)> callback) = 0;
+  virtual void IsDebugCookieSet(const url::Origin& origin, Callback) = 0;
 };
 
 }  // namespace content

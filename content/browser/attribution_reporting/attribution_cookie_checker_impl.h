@@ -28,9 +28,8 @@ class CONTENT_EXPORT AttributionCookieCheckerImpl
   AttributionCookieCheckerImpl& operator=(AttributionCookieCheckerImpl&&) =
       delete;
 
-  // AttributionManagerImpl::CookieChecker:
-  void IsDebugCookieSet(const url::Origin& origin,
-                        base::OnceCallback<void(bool)> callback) override;
+  // AttributionCookieChecker:
+  void IsDebugCookieSet(const url::Origin&, Callback) override;
 
  private:
   const raw_ref<StoragePartitionImpl> storage_partition_;

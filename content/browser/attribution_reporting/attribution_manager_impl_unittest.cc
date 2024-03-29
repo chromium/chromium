@@ -216,16 +216,6 @@ class MockCookieChecker : public AttributionCookieChecker {
  public:
   ~MockCookieChecker() override { EXPECT_THAT(callbacks_, IsEmpty()); }
 
-  // AttributionManagerImpl::CookieChecker:
-  void IsDebugCookieSet(const url::Origin& origin,
-                        base::OnceCallback<void(bool)> callback) override {
-    if (defer_callbacks_) {
-      callbacks_.push_back(std::move(callback));
-    } else {
-      std::move(callback).Run(origins_with_debug_cookie_set_.contains(origin));
-    }
-  }
-
   void AddOriginWithDebugCookieSet(url::Origin origin) {
     origins_with_debug_cookie_set_.insert(std::move(origin));
   }
@@ -234,16 +224,26 @@ class MockCookieChecker : public AttributionCookieChecker {
 
   void RunNextDeferredCallback(bool is_debug_cookie_set) {
     if (!callbacks_.empty()) {
-      std::move(callbacks_.front()).Run(is_debug_cookie_set);
+      Callback callback = std::move(callbacks_.front());
       callbacks_.pop_front();
+      std::move(callback).Run(is_debug_cookie_set);
     }
   }
 
  private:
+  // AttributionCookieChecker:
+  void IsDebugCookieSet(const url::Origin& origin, Callback callback) override {
+    if (defer_callbacks_) {
+      callbacks_.emplace_back(std::move(callback));
+    } else {
+      std::move(callback).Run(origins_with_debug_cookie_set_.contains(origin));
+    }
+  }
+
   base::flat_set<url::Origin> origins_with_debug_cookie_set_;
 
   bool defer_callbacks_ = false;
-  base::circular_deque<base::OnceCallback<void(bool)>> callbacks_;
+  base::circular_deque<Callback> callbacks_;
 };
 
 class MockAttributionOsLevelManager : public AttributionOsLevelManager {
