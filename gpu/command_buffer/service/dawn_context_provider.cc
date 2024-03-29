@@ -334,12 +334,10 @@ bool DawnContextProvider::Initialize(
     adapter_options.nextInChain = &adapter_options_luid;
   }
 
+  // Share D3D11 device with ANGLE to reduce synchronization overhead.
   dawn::native::d3d11::RequestAdapterOptionsD3D11Device
       adapter_options_d3d11_device;
-  bool share_d3d11_device =
-      adapter_options.backendType == wgpu::BackendType::D3D11 &&
-      features::kSkiaGraphiteDawnShareDevice.Get();
-  if (share_d3d11_device) {
+  if (adapter_options.backendType == wgpu::BackendType::D3D11) {
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
         gl::QueryD3D11DeviceObjectFromANGLE();
     CHECK(d3d11_device) << "Query d3d11 device from ANGLE failed.";
@@ -493,18 +491,7 @@ bool DawnContextProvider::Initialize(
       backend_type == wgpu::BackendType::Vulkan && force_fallback_adapter;
 
 #if BUILDFLAG(IS_WIN)
-  auto d3d11_device = GetD3D11Device();
-
-  // DirectComposition is initialized in ui/gl/init/gl_initializer_win.cc while
-  // initializing GL. So we need to shutdown it and re-initialize it here with
-  // the D3D11 device from dawn device.
-  // TODO(crbug.com/1469283): avoid initializing DirectComposition twice.
-  if (!share_d3d11_device && d3d11_device) {
-    gl::ShutdownDirectComposition();
-    gl::InitializeDirectComposition(d3d11_device);
-  }
-
-  if (d3d11_device) {
+  if (auto d3d11_device = GetD3D11Device()) {
     static auto* crash_key = base::debug::AllocateCrashKeyString(
         "d3d11-debug-layer", base::debug::CrashKeySize::Size32);
     const bool enabled = IsD3D11DebugLayerEnabled(d3d11_device);

@@ -381,10 +381,6 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
     &kSkiaGraphite, "dawn_backend_validation", false};
 
-// Whether Dawn shares device with ANGLE.
-const base::FeatureParam<bool> kSkiaGraphiteDawnShareDevice{
-    &kSkiaGraphite, "dawn_share_device", true};
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              "SkiaGraphiteDawnUseD3D12",

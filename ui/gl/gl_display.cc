@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "ui/base/ozone_buildflags.h"
@@ -141,6 +142,11 @@ namespace gl {
 
 namespace {
 
+base::AtomicFlag* GetANGLEDebugLayerFlag() {
+  static base::AtomicFlag* const flag = new base::AtomicFlag();
+  return flag;
+}
+
 void AdjustAngleFeaturesFromChromeFeatures(
     std::vector<std::string>& enabled_angle_features,
     std::vector<std::string>& disabled_angle_features) {
@@ -251,9 +257,8 @@ EGLDisplay GetPlatformANGLEDisplay(
   }
 
   display_attribs.push_back(EGL_PLATFORM_ANGLE_DEBUG_LAYERS_ENABLED_ANGLE);
-  display_attribs.push_back(
-      base::FeatureList::IsEnabled(features::kANGLEDebugLayer) ? EGL_TRUE
-                                                               : EGL_FALSE);
+  display_attribs.push_back(GetANGLEDebugLayerFlag()->IsSet() ? EGL_TRUE
+                                                              : EGL_FALSE);
 
   display_attribs.push_back(EGL_NONE);
 
@@ -646,6 +651,11 @@ DisplayType GLDisplayEGL::GetDisplayType() const {
 GLDisplayEGL* GLDisplayEGL::GetDisplayForCurrentContext() {
   GLContext* context = GLContext::GetCurrent();
   return context ? context->GetGLDisplayEGL() : nullptr;
+}
+
+// static
+void GLDisplayEGL::EnableANGLEDebugLayer() {
+  GetANGLEDebugLayerFlag()->Set();
 }
 
 bool GLDisplayEGL::IsEGLSurfacelessContextSupported() {

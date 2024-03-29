@@ -117,6 +117,8 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   static GLDisplayEGL* GetDisplayForCurrentContext();
 
+  static void EnableANGLEDebugLayer();
+
   EGLDisplay GetDisplay() const override;
   void Shutdown() override;
   bool IsInitialized() const override;

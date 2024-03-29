@@ -482,6 +482,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if BUILDFLAG(IS_WIN)
   UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
                         static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
+#if defined(USE_EGL)
+  if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
+      features::kSkiaGraphiteDawnBackendValidation.Get()) {
+    // Enable ANGLE debug layer if we need backend validation for Graphite since
+    // we can share the D3D11 device between ANGLE and Dawn.
+    gl::GLDisplayEGL::EnableANGLEDebugLayer();
+  }
+#endif
 #endif
   if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
     gl_display = gl::init::InitializeGLNoExtensionsOneOff(
