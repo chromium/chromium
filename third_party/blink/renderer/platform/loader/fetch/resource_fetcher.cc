@@ -118,6 +118,8 @@ static constexpr base::TimeDelta kUnusedPreloadTimeout = base::Seconds(3);
 static constexpr char kCrossDocumentCachedResource[] =
     "Blink.MemoryCache.CrossDocumentCachedResource2";
 
+static constexpr char kEarlyHintsInitiatorType[] = "early-hints";
+
 #define RESOURCE_HISTOGRAM_PREFIX "Blink.MemoryCache.RevalidationPolicy."
 
 #define RESOURCE_TYPE_NAME(name) \
@@ -762,6 +764,11 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   if (IsDetached() || !resource_load_observer_)
     return;
 
+  if (!is_static_data) {
+    MarkEarlyHintConsumedIfNeeded(request.InspectorId(), resource,
+                                  resource->GetResponse());
+  }
+
   resource_load_observer_->WillSendRequest(
       request, ResourceResponse() /* redirects */, resource->GetType(),
       resource->Options(), render_blocking_behavior, resource);
@@ -808,9 +815,9 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
       }
     }
 
-    AtomicString initiator_type = resource->Options().initiator_info.name;
-    MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(initial_url, resource,
-                                                          &initiator_type);
+    AtomicString initiator_type = resource->IsPreloadedByEarlyHints()
+                                      ? AtomicString(kEarlyHintsInitiatorType)
+                                      : resource->Options().initiator_info.name;
     scheduled_resource_timing_reports_.push_back(
         ScheduledResourceTimingInfo{std::move(info), initiator_type});
 
@@ -2670,8 +2677,9 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     Resource* resource,
     const PendingResourceTimingInfo& pending_info,
     base::TimeTicks response_end) {
-  if (resource->GetResourceRequest().IsFromOriginDirtyStyleSheet())
+  if (resource->GetResourceRequest().IsFromOriginDirtyStyleSheet()) {
     return;
+  }
 
   // Resource timing entries that correspond to resources fetched by extensions
   // are precluded.
@@ -2680,15 +2688,15 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     return;
   }
 
-  AtomicString initiator_type = pending_info.initiator_type;
+  AtomicString initiator_type = resource->IsPreloadedByEarlyHints()
+                                    ? AtomicString(kEarlyHintsInitiatorType)
+                                    : pending_info.initiator_type;
 
   const KURL& initial_url =
       resource->GetResourceRequest().GetRedirectInfo().has_value()
           ? resource->GetResourceRequest().GetRedirectInfo()->original_url
           : resource->GetResourceRequest().Url();
 
-  MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(initial_url, resource,
-                                                        &initiator_type);
   mojom::blink::ResourceTimingInfoPtr info = CreateResourceTimingInfo(
       pending_info.start_time, initial_url, &resource->GetResponse());
   if (info->allow_timing_details) {
@@ -2788,21 +2796,22 @@ void ResourceFetcher::RecordLCPPSubresourceMetrics() {
                               potentially_lcp_resource_priority_boosts_);
 }
 
-void ResourceFetcher::MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(
-    const KURL& resource_initial_url,
+void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
+    uint64_t inspector_id,
     Resource* resource,
-    AtomicString* origin_initiator_type) {
-  auto iter =
-      unused_early_hints_preloaded_resources_.find(resource_initial_url);
+    const ResourceResponse& response) {
+  const KURL& initial_url =
+      resource->GetResourceRequest().GetRedirectInfo().has_value()
+          ? resource->GetResourceRequest().GetRedirectInfo()->original_url
+          : resource->GetResourceRequest().Url();
+  auto iter = unused_early_hints_preloaded_resources_.find(initial_url);
   if (iter != unused_early_hints_preloaded_resources_.end()) {
     unused_early_hints_preloaded_resources_.erase(iter);
-    const ResourceResponse& response = resource->GetResponse();
     // The network service may not reuse the response fetched by the early hints
     // due to cache control policies.
     if (!response.NetworkAccessed() &&
         (!response.WasFetchedViaServiceWorker() ||
          response.IsServiceWorkerPassThrough())) {
-      *origin_initiator_type = AtomicString("early-hints");
       resource->SetIsPreloadedByEarlyHints();
     }
   }

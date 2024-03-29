@@ -1139,6 +1139,10 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     response_object->setSecurityDetails(BuildSecurityDetails(*ssl_info));
   }
 
+  if (cached_resource && cached_resource->IsPreloadedByEarlyHints()) {
+    response_object->setFromEarlyHints(true);
+  }
+
   return response_object;
 }
 

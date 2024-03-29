@@ -970,6 +970,8 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
+  fetcher_->MarkEarlyHintConsumedIfNeeded(resource_->InspectorId(), resource_,
+                                          response);
   // FrameType never changes during the lifetime of a request.
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     ResourceRequest request_for_obserber(initial_request);

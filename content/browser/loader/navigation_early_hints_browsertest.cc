@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -148,7 +149,7 @@ class PreconnectListener
 
 // Most tests use EmbeddedTestServer but this uses QuicSimpleTestServer because
 // Early Hints are only plumbed over HTTP/2 or HTTP/3 (QUIC).
-class NavigationEarlyHintsTest : public ContentBrowserTest {
+class NavigationEarlyHintsTest : public DevToolsProtocolTest {
  public:
   NavigationEarlyHintsTest() {
     feature_list_.InitWithFeatures(
@@ -160,7 +161,7 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
   ~NavigationEarlyHintsTest() override = default;
 
   void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
+    DevToolsProtocolTest::SetUpOnMainThread();
     ConfigureMockCertVerifier();
     host_resolver()->AddRule("*", "127.0.0.1");
 
@@ -178,17 +179,40 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
 
     ASSERT_TRUE(net::QuicSimpleTestServer::Start());
 
-    ContentBrowserTest::SetUpCommandLine(command_line);
+    DevToolsProtocolTest::SetUpCommandLine(command_line);
   }
 
   void TearDown() override {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
     net::QuicSimpleTestServer::Shutdown();
-    ContentBrowserTest::TearDown();
+    DevToolsProtocolTest::TearDown();
   }
 
   net::test_server::EmbeddedTestServer& cross_origin_server() {
     return cross_origin_server_;
+  }
+
+  std::string WaitForHintedScriptDevtoolsRequestId() {
+    base::Value::Dict result;
+    while (true) {
+      result = WaitForNotification("Network.requestWillBeSent", true);
+      const base::Value* request_url = result.FindByDottedPath("request.url");
+      if (request_url->GetString() ==
+          net::QuicSimpleTestServer::GetFileURL(kHintedScriptPath).spec()) {
+        return *result.FindString("requestId");
+      }
+    }
+  }
+
+  base::Value::Dict WaitForResponseReceived(const std::string& request_id) {
+    base::Value::Dict result;
+    while (true) {
+      result = WaitForNotification("Network.responseReceived", true);
+      const std::string* received_id = result.FindString("requestId");
+      if (received_id && *received_id == request_id) {
+        return result;
+      }
+    }
   }
 
  protected:
@@ -786,6 +810,27 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, InvalidHeader_NewLine) {
   RegisterResponse(entry);
   EXPECT_FALSE(
       NavigateToURL(shell(), net::QuicSimpleTestServer::GetFileURL(kPath)));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DevtoolsEventsForEarlyHint) {
+  ResponseEntry entry = CreatePageEntryWithHintedScript(net::HTTP_OK);
+  RegisterResponse(entry);
+  shell()->LoadURL(GURL("about:blank"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  Attach();
+  SendCommandAsync("Network.enable");
+  GURL target_url =
+      net::QuicSimpleTestServer::GetFileURL(kPageWithHintedScriptPath);
+  EXPECT_TRUE(NavigateToURL(shell(), target_url, target_url));
+
+  std::string hinted_id = WaitForHintedScriptDevtoolsRequestId();
+  base::Value::Dict result = WaitForResponseReceived(hinted_id);
+  base::Value* from_early_hints_value =
+      result.FindByDottedPath("response.fromEarlyHints");
+  ASSERT_TRUE(from_early_hints_value);
+  ASSERT_TRUE(from_early_hints_value->is_bool());
+  ASSERT_TRUE(from_early_hints_value->GetBool());
 }
 
 class NavigationEarlyHintsAddressSpaceTest : public NavigationEarlyHintsTest {

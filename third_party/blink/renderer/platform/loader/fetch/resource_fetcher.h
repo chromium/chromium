@@ -370,6 +370,11 @@ class PLATFORM_EXPORT ResourceFetcher
   // changed such that the load should no longer be deferred.
   void ReloadImagesIfNotDeferred();
 
+  // Check if a resource is preloaded by earlyhints when response received.
+  void MarkEarlyHintConsumedIfNeeded(uint64_t inspector_id,
+                                     Resource* resource,
+                                     const ResourceResponse& response);
+
  private:
   friend class ResourceCacheValidationSuppressor;
   enum class StopFetchingTarget {
@@ -443,11 +448,6 @@ class PLATFORM_EXPORT ResourceFetcher
   void StopFetchingIncludingKeepaliveLoaders();
 
   void MaybeSaveResourceToStrongReference(Resource* resource);
-
-  void MarkEarlyHintConsumedAndOverrideInitiatorTypeIfNeeded(
-      const KURL& resource_inital_url,
-      Resource* resource,
-      AtomicString* origin_initiator_type);
 
   enum class RevalidationPolicy {
     kUse,

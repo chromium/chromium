@@ -436,7 +436,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void SetIsPreloadedByEarlyHints() { is_preloaded_by_early_hints_ = true; }
 
-  bool IsPreloadedByEarlyHints() { return is_preloaded_by_early_hints_; }
+  bool IsPreloadedByEarlyHints() const { return is_preloaded_by_early_hints_; }
 
   void SetIsLoadedFromMemoryCache() { is_loaded_from_memory_cache_ = true; }
 
