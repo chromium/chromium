@@ -17,6 +17,8 @@ namespace ash {
 
 namespace {
 
+using WindowSizeRange = WMFeatureMetricsRecorder::WindowSizeRange;
+
 constexpr base::TimeDelta kRecordPeriodicMetricsInterval = base::Minutes(30);
 
 }  // namespace
@@ -76,8 +78,7 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
       BucketsAre(base::Bucket(AppType::SYSTEM_APP, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
-      BucketsAre(base::Bucket(
-          WMFeatureMetricsRecorder::WindowSizeRange::kXSWidthXSHeight, 1)));
+      BucketsAre(base::Bucket(WindowSizeRange::kXSWidthXSHeight, 1)));
 
   wm::ActivateWindow(window2.get());
   WindowState::Get(window2.get())->Maximize();
@@ -103,11 +104,65 @@ TEST_F(WMFeatureMetricsRecorderTests, WindowLayoutMetricsRecorder) {
       BucketsAre(base::Bucket(AppType::SYSTEM_APP, 2)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
-      BucketsAre(
-          base::Bucket(
-              WMFeatureMetricsRecorder::WindowSizeRange::kLWidthLHeight, 1),
-          base::Bucket(
-              WMFeatureMetricsRecorder::WindowSizeRange::kXSWidthXSHeight, 1)));
+      BucketsAre(base::Bucket(WindowSizeRange::kLWidthLHeight, 1),
+                 base::Bucket(WindowSizeRange::kXSWidthXSHeight, 1)));
+}
+
+// Tests that window sizes range can be recorded properly.
+TEST_F(WMFeatureMetricsRecorderTests, WindowSizeRangeTest) {
+  UpdateDisplay("1600x1000");
+  base::HistogramTester histogram_tester;
+
+  const std::string metrics_prefix =
+      WMFeatureMetricsRecorder::GetFeatureMetricsPrefix(
+          WMFeatureMetricsRecorder::WMFeatureType::kWindowLayoutState);
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 200, 100));
+  wm::ActivateWindow(window.get());
+
+  struct TestCase {
+    const char* msg;
+    gfx::Size size;
+    WindowSizeRange expectation;
+  };
+  std::vector<TestCase> test_cases = {
+      {"(0-800, 0-600)", gfx::Size(500, 400),
+       WindowSizeRange::kXSWidthXSHeight},
+      {"(0-800, 600-728)", gfx::Size(500, 700),
+       WindowSizeRange::kXSWidthSHeight},
+      {"(0-800, 728-900)", gfx::Size(500, 800),
+       WindowSizeRange::kXSWidthMHeight},
+      {"(0-800, >900)", gfx::Size(500, 1000), WindowSizeRange::kXSWidthLHeight},
+      {"(800-1024, 0-600)", gfx::Size(900, 400),
+       WindowSizeRange::kSWidthXSHeight},
+      {"(800-1024, 600-728)", gfx::Size(900, 700),
+       WindowSizeRange::kSWidthSHeight},
+      {"(800-1024, 728-900)", gfx::Size(900, 800),
+       WindowSizeRange::kSWidthMHeight},
+      {"(800-1024, >900)", gfx::Size(900, 1000),
+       WindowSizeRange::kSWidthLHeight},
+      {"(1024-1400, 0-600)", gfx::Size(1200, 400),
+       WindowSizeRange::kMWidthXSHeight},
+      {"(1024-1400, 600-728)", gfx::Size(1200, 700),
+       WindowSizeRange::kMWidthSHeight},
+      {"(1024-1400, 728-900)", gfx::Size(1200, 800),
+       WindowSizeRange::kMWidthMHeight},
+      {"(1024-1400, >900)", gfx::Size(1200, 1000),
+       WindowSizeRange::kMWidthLHeight},
+      {">1400, 0-600)", gfx::Size(1500, 400), WindowSizeRange::kLWidthXSHeight},
+      {">1400, 600-728)", gfx::Size(1500, 700),
+       WindowSizeRange::kLWidthSHeight},
+      {">1400, 728-900)", gfx::Size(1500, 800),
+       WindowSizeRange::kLWidthMHeight},
+      {">1400, >900)", gfx::Size(1500, 1000), WindowSizeRange::kLWidthLHeight}};
+
+  for (auto test_case : test_cases) {
+    SCOPED_TRACE(test_case.msg);
+    window->SetBounds(gfx::Rect(test_case.size));
+    FastForwardBy(kRecordPeriodicMetricsInterval);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(metrics_prefix + "ActiveWindowSize"),
+        BucketsInclude(base::Bucket(test_case.expectation, 1)));
+  }
 }
 
 }  // namespace ash
