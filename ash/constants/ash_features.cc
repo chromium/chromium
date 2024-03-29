@@ -1970,7 +1970,7 @@ BASE_FEATURE(kNearbyPresence,
 // Enables a limit on the number of notifications that can show.
 BASE_FEATURE(kNotificationLimit,
              "NotificationLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Notifier Collision to allow popup notifications and tray bubbles not
 // overlap when showing on a display.
