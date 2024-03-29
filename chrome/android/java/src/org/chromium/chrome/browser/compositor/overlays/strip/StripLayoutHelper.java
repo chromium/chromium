@@ -197,6 +197,28 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 }
 
                 @Override
+                public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
+                    // Removing the tab at the end of a group through the GTS will result in the
+                    // width of a group changing without a tab moving. This means a rebuild won't
+                    // occur, and we'll need to manually update the bottom indicator here.
+                    if (!mInReorderMode) {
+                        buildBottomIndicator();
+                        mRenderHost.requestRender();
+                    }
+                }
+
+                @Override
+                public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                    // Removing the tab at the end of a group through the GTS will result in the
+                    // width of a group changing without a tab moving. This means a rebuild won't
+                    // occur, and we'll need to manually update the bottom indicator here.
+                    if (!mInReorderMode) {
+                        buildBottomIndicator();
+                        mRenderHost.requestRender();
+                    }
+                }
+
+                @Override
                 public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                     rebuildStripViews();
                 }
