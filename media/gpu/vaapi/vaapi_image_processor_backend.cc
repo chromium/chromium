@@ -72,18 +72,14 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   if (!IsSupported(input_config) || !IsSupported(output_config))
     return nullptr;
 
-  if (!base::Contains(input_config.preferred_storage_types,
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
-      !base::Contains(input_config.preferred_storage_types,
-                      VideoFrame::STORAGE_DMABUFS)) {
+  if (input_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+      input_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
                 "based FrameResource only for input";
     return nullptr;
   }
-  if (!base::Contains(output_config.preferred_storage_types,
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
-      !base::Contains(output_config.preferred_storage_types,
-                      VideoFrame::STORAGE_DMABUFS)) {
+  if (output_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+      output_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
                 "based FrameResource only for output";
     return nullptr;

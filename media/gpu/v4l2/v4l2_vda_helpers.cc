@@ -89,9 +89,9 @@ std::unique_ptr<ImageProcessor> CreateImageProcessor(
       base::BindRepeating(&V4L2ImageProcessorBackend::Create,
                           image_processor_device, nb_buffers),
       ImageProcessor::PortConfig(vda_output_format, vda_output_coded_size, {},
-                                 visible_rect, {VideoFrame::STORAGE_DMABUFS}),
+                                 visible_rect, VideoFrame::STORAGE_DMABUFS),
       ImageProcessor::PortConfig(ip_output_format, ip_output_coded_size, {},
-                                 visible_rect, {output_storage_type}),
+                                 visible_rect, output_storage_type),
       image_processor_output_mode, std::move(error_cb),
       std::move(client_task_runner));
   if (!image_processor)

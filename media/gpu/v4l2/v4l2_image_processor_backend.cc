@@ -256,38 +256,23 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     return nullptr;
   }
 
-  VideoFrame::StorageType input_storage_type = VideoFrame::STORAGE_UNKNOWN;
-  for (auto input_type : input_config.preferred_storage_types) {
-    v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(input_type);
-    if (v4l2_memory_type == V4L2_MEMORY_USERPTR ||
-        v4l2_memory_type == V4L2_MEMORY_DMABUF) {
-      input_storage_type = input_type;
-      break;
-    }
-  }
-  if (input_storage_type == VideoFrame::STORAGE_UNKNOWN) {
+  const v4l2_memory input_memory_type =
+      InputStorageTypeToV4L2Memory(input_config.storage_type);
+  if (input_memory_type != V4L2_MEMORY_USERPTR &&
+      input_memory_type != V4L2_MEMORY_DMABUF) {
     VLOGF(2) << "Unsupported input storage type";
     return nullptr;
   }
 
-  VideoFrame::StorageType output_storage_type = VideoFrame::STORAGE_UNKNOWN;
-  for (auto output_type : output_config.preferred_storage_types) {
-    v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(output_type);
-    if (v4l2_memory_type == V4L2_MEMORY_MMAP ||
-        v4l2_memory_type == V4L2_MEMORY_DMABUF) {
-      output_storage_type = output_type;
-      break;
-    }
-  }
-  if (output_storage_type == VideoFrame::STORAGE_UNKNOWN) {
+  // When |output_mode| is ALLOCATE, then |output_config.storage_type| is
+  // ignored. The output memory type will be V4L2_MEMORY_MMAP.
+  const v4l2_memory output_memory_type =
+      output_mode == OutputMode::ALLOCATE
+          ? V4L2_MEMORY_MMAP
+          : InputStorageTypeToV4L2Memory(output_config.storage_type);
+  if (output_memory_type != V4L2_MEMORY_MMAP &&
+      output_memory_type != V4L2_MEMORY_DMABUF) {
     VLOGF(2) << "Unsupported output storage type";
-    return nullptr;
-  }
-
-  const v4l2_memory input_memory_type =
-      InputStorageTypeToV4L2Memory(input_storage_type);
-  if (input_memory_type == 0) {
-    VLOGF(1) << "Unsupported input storage type: " << input_storage_type;
     return nullptr;
   }
 
@@ -405,20 +390,10 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   if (device->Ioctl(VIDIOC_S_CTRL, &alpha) != 0)
     VPLOGF(1) << "V4L2_CID_ALPHA_COMPONENT failed";
 
-  const v4l2_memory output_memory_type =
-      output_mode == OutputMode::ALLOCATE
-          ? V4L2_MEMORY_MMAP
-          : InputStorageTypeToV4L2Memory(output_storage_type);
   std::unique_ptr<V4L2ImageProcessorBackend> image_processor(
       new V4L2ImageProcessorBackend(
-          std::move(device),
-          PortConfig(input_config.fourcc, negotiated_input_size, input_planes,
-                     input_config.visible_rect, {input_storage_type}),
-          PortConfig(output_config.fourcc, negotiated_output_size,
-                     output_planes, output_config.visible_rect,
-                     {output_storage_type}),
-          input_memory_type, output_memory_type, output_mode,
-          std::move(error_cb)));
+          std::move(device), input_config, output_config, input_memory_type,
+          output_memory_type, output_mode, std::move(error_cb)));
 
   if (!image_processor->CreateInputBuffers(num_buffers) ||
       !image_processor->CreateOutputBuffers(num_buffers)) {

@@ -136,60 +136,40 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
     return nullptr;
   }
 
-  std::unique_ptr<VideoFrameMapper> input_frame_mapper;
   // LibYUVImageProcessorBackend supports only memory-based video frame for
   // input.
-  VideoFrame::StorageType input_storage_type = VideoFrame::STORAGE_UNKNOWN;
-  for (auto input_type : input_config.preferred_storage_types) {
-    if (input_type == VideoFrame::STORAGE_DMABUFS ||
-        input_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      // The LibYUVImageProcessorBackend is not currently used to read from
-      // Intel media compressed buffers, so we don't need the VideoFrameMapper
-      // to support those.
-      input_frame_mapper = VideoFrameMapperFactory::CreateMapper(
-          input_config.fourcc.ToVideoPixelFormat(), input_type,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
-      if (input_frame_mapper) {
-        input_storage_type = input_type;
-        break;
-      }
-    }
-
-    if (VideoFrame::IsStorageTypeMappable(input_type)) {
-      input_storage_type = input_type;
-      break;
-    }
+  std::unique_ptr<VideoFrameMapper> input_frame_mapper;
+  if (input_config.storage_type == VideoFrame::STORAGE_DMABUFS ||
+      input_config.storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    // The LibYUVImageProcessorBackend is not currently used to read from
+    // Intel media compressed buffers, so we don't need the VideoFrameMapper
+    // to support those.
+    input_frame_mapper = VideoFrameMapperFactory::CreateMapper(
+        input_config.fourcc.ToVideoPixelFormat(), input_config.storage_type,
+        /*force_linear_buffer_mapper=*/true,
+        /*must_support_intel_media_compressed_buffers=*/false);
   }
-  if (input_storage_type == VideoFrame::STORAGE_UNKNOWN) {
+
+  if (!input_frame_mapper &&
+      !VideoFrame::IsStorageTypeMappable(input_config.storage_type)) {
     VLOGF(2) << "Unsupported input storage type";
     return nullptr;
   }
 
   std::unique_ptr<VideoFrameMapper> output_frame_mapper;
-  VideoFrame::StorageType output_storage_type = VideoFrame::STORAGE_UNKNOWN;
-  for (auto output_type : output_config.preferred_storage_types) {
-    if (output_type == VideoFrame::STORAGE_DMABUFS ||
-        output_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      // The LibYUVImageProcessorBackend is not currently used to write onto
-      // Intel media compressed buffers, so we don't need the VideoFrameMapper
-      // to support those.
-      output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
-          output_config.fourcc.ToVideoPixelFormat(), output_type,
-          /*force_linear_buffer_mapper=*/true,
-          /*must_support_intel_media_compressed_buffers=*/false);
-      if (output_frame_mapper) {
-        output_storage_type = output_type;
-        break;
-      }
-    }
-
-    if (VideoFrame::IsStorageTypeMappable(output_type)) {
-      output_storage_type = output_type;
-      break;
-    }
+  if (output_config.storage_type == VideoFrame::STORAGE_DMABUFS ||
+      output_config.storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    // The LibYUVImageProcessorBackend is not currently used to write onto
+    // Intel media compressed buffers, so we don't need the VideoFrameMapper
+    // to support those.
+    output_frame_mapper = VideoFrameMapperFactory::CreateMapper(
+        output_config.fourcc.ToVideoPixelFormat(), output_config.storage_type,
+        /*force_linear_buffer_mapper=*/true,
+        /*must_support_intel_media_compressed_buffers=*/false);
   }
-  if (output_storage_type == VideoFrame::STORAGE_UNKNOWN) {
+
+  if (!output_frame_mapper &&
+      !VideoFrame::IsStorageTypeMappable(output_config.storage_type)) {
     VLOGF(2) << "Unsupported output storage type";
     return nullptr;
   }
@@ -255,13 +235,7 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
       base::WrapUnique<ImageProcessorBackend>(new LibYUVImageProcessorBackend(
           std::move(input_frame_mapper), std::move(output_frame_mapper),
           std::move(intermediate_frame), std::move(crop_intermediate_frame),
-          PortConfig(input_config.fourcc, input_config.size,
-                     input_config.planes, input_config.visible_rect,
-                     {input_storage_type}),
-          PortConfig(output_config.fourcc, output_config.size,
-                     output_config.planes, output_config.visible_rect,
-                     {output_storage_type}),
-          OutputMode::IMPORT, std::move(error_cb),
+          input_config, output_config, OutputMode::IMPORT, std::move(error_cb),
           std::move(backend_task_runner)));
   VLOGF(2) << "LibYUVImageProcessorBackend created for converting from "
            << input_config.ToString() << " to " << output_config.ToString();

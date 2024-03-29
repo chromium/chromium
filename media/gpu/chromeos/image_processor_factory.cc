@@ -76,10 +76,10 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
   // match that type.
   ImageProcessor::PortConfig input_config(
       chosen_input_candidate->fourcc, chosen_input_candidate->size,
-      /*planes=*/{}, input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
+      /*planes=*/{}, input_visible_rect, VideoFrame::STORAGE_DMABUFS);
   ImageProcessor::PortConfig output_config(
       /*fourcc=*/*chosen_output_format, /*size=*/output_size, /*planes=*/{},
-      /*visible_rect=*/gfx::Rect(output_size), {output_storage_type});
+      /*visible_rect=*/gfx::Rect(output_size), output_storage_type);
   return ImageProcessor::Create(
       base::BindRepeating(&VaapiImageProcessorBackend::Create), input_config,
       output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
@@ -202,10 +202,10 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
 
   ImageProcessor::PortConfig input_config(
       matched_candidate.fourcc, matched_candidate.size, /*planes=*/{},
-      input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
+      input_visible_rect, VideoFrame::STORAGE_DMABUFS);
   ImageProcessor::PortConfig output_config(
       *output_format, output_size, /*planes=*/{}, gfx::Rect(output_size),
-      {output_storage_type});
+      output_storage_type);
   return ImageProcessor::Create(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create), input_config,
       output_config, ImageProcessor::OutputMode::IMPORT, std::move(error_cb),
@@ -231,10 +231,10 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
 
   ImageProcessor::PortConfig input_config(
       input_candidates[0].fourcc, input_candidates[0].size, /*planes=*/{},
-      input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
+      input_visible_rect, VideoFrame::STORAGE_DMABUFS);
   ImageProcessor::PortConfig output_config(
       Fourcc(Fourcc::NV12), output_size, /*planes=*/{}, gfx::Rect(output_size),
-      {output_storage_type});
+      output_storage_type);
 
   if (!GLImageProcessorBackend::IsSupported(input_config, output_config)) {
     return nullptr;

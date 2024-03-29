@@ -150,8 +150,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateInputFrame(
 
   const ImageProcessor::PortConfig& input_config =
       image_processor_->input_config();
-  const VideoFrame::StorageType input_storage_type =
-      input_config.storage_type();
+  const VideoFrame::StorageType input_storage_type = input_config.storage_type;
   std::optional<VideoFrameLayout> input_layout = CreateLayout(input_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(input_layout);
 
@@ -183,7 +182,7 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
   const ImageProcessor::PortConfig& output_config =
       image_processor_->output_config();
   const VideoFrame::StorageType output_storage_type =
-      output_config.storage_type();
+      output_config.storage_type;
   std::optional<VideoFrameLayout> output_layout = CreateLayout(output_config);
   ASSERT_TRUE_OR_RETURN_NULLPTR(output_layout);
   if (VideoFrame::IsStorageTypeMappable(output_storage_type)) {

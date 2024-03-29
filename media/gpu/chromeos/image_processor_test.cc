@@ -442,9 +442,9 @@ class ImageProcessorParamTest
 
   std::unique_ptr<test::ImageProcessorClient> CreateImageProcessorClient(
       const test::Image& input_image,
-      const std::vector<VideoFrame::StorageType>& input_storage_types,
+      VideoFrame::StorageType input_storage_type,
       test::Image* const output_image,
-      const std::vector<VideoFrame::StorageType>& output_storage_types) {
+      VideoFrame::StorageType output_storage_type) {
     bool is_single_planar_input = true;
     bool is_single_planar_output = true;
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -467,10 +467,10 @@ class ImageProcessorParamTest
     LOG_ASSERT(input_layout && output_layout);
     ImageProcessor::PortConfig input_config(
         input_fourcc, input_image.Size(), input_layout->planes(),
-        input_image.VisibleRect(), input_storage_types);
+        input_image.VisibleRect(), input_storage_type);
     ImageProcessor::PortConfig output_config(
         output_fourcc, output_image->Size(), output_layout->planes(),
-        output_image->VisibleRect(), output_storage_types);
+        output_image->VisibleRect(), output_storage_type);
 
     // TODO(crbug.com/917951): Select more appropriate number of buffers.
     constexpr size_t kNumBuffers = 1;
@@ -541,8 +541,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
   auto ip_client = CreateImageProcessorClient(
-      input_image, {VideoFrame::STORAGE_OWNED_MEMORY}, &output_image,
-      {VideoFrame::STORAGE_OWNED_MEMORY});
+      input_image, VideoFrame::STORAGE_OWNED_MEMORY, &output_image,
+      VideoFrame::STORAGE_OWNED_MEMORY);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
@@ -570,8 +570,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
     GTEST_SKIP() << "Skipping Dmabuf format " << input_image.PixelFormat();
   auto ip_client = CreateImageProcessorClient(
-      input_image, {VideoFrame::STORAGE_DMABUFS}, &output_image,
-      {VideoFrame::STORAGE_OWNED_MEMORY});
+      input_image, VideoFrame::STORAGE_DMABUFS, &output_image,
+      VideoFrame::STORAGE_OWNED_MEMORY);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
@@ -599,8 +599,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToDmabuf) {
     GTEST_SKIP() << "Skipping Dmabuf format " << output_image.PixelFormat();
 
   auto ip_client =
-      CreateImageProcessorClient(input_image, {VideoFrame::STORAGE_DMABUFS},
-                                 &output_image, {VideoFrame::STORAGE_DMABUFS});
+      CreateImageProcessorClient(input_image, VideoFrame::STORAGE_DMABUFS,
+                                 &output_image, VideoFrame::STORAGE_DMABUFS);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
@@ -633,8 +633,8 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   }
 
   auto ip_client = CreateImageProcessorClient(
-      input_image, {VideoFrame::STORAGE_GPU_MEMORY_BUFFER}, &output_image,
-      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+      input_image, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, &output_image,
+      VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";

@@ -49,27 +49,19 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   struct MEDIA_GPU_EXPORT PortConfig {
     PortConfig() = delete;
     PortConfig(const PortConfig&);
-    PortConfig(
-        Fourcc fourcc,
-        const gfx::Size& size,
-        const std::vector<ColorPlaneLayout>& planes,
-        const gfx::Rect& visible_rect,
-        const std::vector<VideoFrame::StorageType>& preferred_storage_types);
+    PortConfig(Fourcc fourcc,
+               const gfx::Size& size,
+               const std::vector<ColorPlaneLayout>& planes,
+               const gfx::Rect& visible_rect,
+               const VideoFrame::StorageType storage_type);
     ~PortConfig();
 
     bool operator==(const PortConfig& other) const {
       return fourcc == other.fourcc && size == other.size &&
              planes == other.planes && visible_rect == other.visible_rect &&
-             preferred_storage_types == other.preferred_storage_types;
+             storage_type == other.storage_type;
     }
     bool operator!=(const PortConfig& other) const { return !(*this == other); }
-
-    // Get the first |preferred_storage_types|.
-    // If |preferred_storage_types| is empty, return STORAGE_UNKNOWN.
-    VideoFrame::StorageType storage_type() const {
-      return preferred_storage_types.empty() ? VideoFrame::STORAGE_UNKNOWN
-                                             : preferred_storage_types.front();
-    }
 
     // Output human readable string of PortConfig.
     // Example:
@@ -89,8 +81,9 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
     // Layout property (stride, offset, size of bytes) for each color plane.
     const std::vector<ColorPlaneLayout> planes;
     const gfx::Rect visible_rect;
-    // List of preferred storage types.
-    const std::vector<VideoFrame::StorageType> preferred_storage_types;
+
+    // Video frame storage type.
+    const VideoFrame::StorageType storage_type;
   };
 
   // Process |input_frame| and store in |output_frame|. Only used when output

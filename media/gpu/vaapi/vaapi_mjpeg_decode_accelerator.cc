@@ -368,10 +368,10 @@ void VaapiMjpegDecodeAccelerator::Decoder::CreateImageProcessor(
   DCHECK(dst_fourcc.has_value());
   const ImageProcessorBackend::PortConfig input_config(
       *src_fourcc, src_frame->coded_size(), src_frame->layout().planes(),
-      src_frame->visible_rect(), {src_frame->storage_type()});
+      src_frame->visible_rect(), src_frame->storage_type());
   const ImageProcessorBackend::PortConfig output_config(
       *dst_fourcc, dst_frame->coded_size(), dst_frame->layout().planes(),
-      dst_frame->visible_rect(), {dst_frame->storage_type()});
+      dst_frame->visible_rect(), dst_frame->storage_type());
   if (image_processor_ && image_processor_->input_config() == input_config &&
       image_processor_->output_config() == output_config) {
     return;
