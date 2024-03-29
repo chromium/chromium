@@ -77,14 +77,13 @@ constexpr char kHistogramsFilename[] = "lacros_histograms.txt";
 std::string GetCompressedHistograms() {
   std::string histograms =
       base::StatisticsRecorder::ToJSON(base::JSON_VERBOSITY_LEVEL_FULL);
-  std::string compressed_histograms;
-  if (feedback_util::ZipString(base::FilePath(kHistogramsFilename),
-                               std::move(histograms), &compressed_histograms)) {
-    return compressed_histograms;
-  } else {
+  std::optional<std::string> compressed_histograms =
+      feedback_util::ZipString(base::FilePath(kHistogramsFilename), histograms);
+  if (!compressed_histograms.has_value()) {
     LOG(ERROR) << "Failed to compress lacros histograms.";
     return std::string();
   }
+  return compressed_histograms.value();
 }
 
 NavigateParams::PathBehavior ConvertPathBehavior(

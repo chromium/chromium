@@ -260,18 +260,20 @@ FeedbackCommon::~FeedbackCommon() = default;
 void FeedbackCommon::CompressFile(const base::FilePath& filename,
                                   const std::string& zipname,
                                   std::string data_to_be_compressed) {
-  std::string compressed_data;
-  if (feedback_util::ZipString(filename, std::move(data_to_be_compressed),
-                               &compressed_data)) {
-    std::string attachment_file_name = zipname;
-    if (attachment_file_name.empty()) {
-      // We need to use the UTF8Unsafe methods here to accommodate Windows,
-      // which uses wide strings to store file paths.
-      attachment_file_name = filename.BaseName().AsUTF8Unsafe().append(kZipExt);
-    }
-
-    AddFile(attachment_file_name, std::move(compressed_data));
+  std::optional<std::string> compressed_data =
+      feedback_util::ZipString(filename, data_to_be_compressed);
+  if (!compressed_data.has_value()) {
+    return;
   }
+
+  std::string attachment_file_name = zipname;
+  if (attachment_file_name.empty()) {
+    // We need to use the UTF8Unsafe methods here to accommodate Windows,
+    // which uses wide strings to store file paths.
+    attachment_file_name = filename.BaseName().AsUTF8Unsafe().append(kZipExt);
+  }
+
+  AddFile(attachment_file_name, std::move(compressed_data.value()));
 }
 
 void FeedbackCommon::CompressLogs() {

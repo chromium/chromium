@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_FEEDBACK_FEEDBACK_UTIL_H_
 #define COMPONENTS_FEEDBACK_FEEDBACK_UTIL_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -13,11 +15,13 @@
 
 namespace feedback_util {
 
-bool ZipString(const base::FilePath& filename,
-               const std::string& data,
-               std::string* compressed_data);
+// Creates a ZIP file that contains a single file within. That file is named
+// `filename` and its contents is `data`. Returns the compressed archive, or
+// nullopt on failure.
+std::optional<std::string> ZipString(const base::FilePath& filename,
+                                     std::string_view data);
 
-// Converts the entries in |sys_info| into a single string. Primarily used for
+// Converts the entries in `sys_info` into a single string. Primarily used for
 // creating a system_logs.txt file attached to feedback reports.
 std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info);
 
@@ -25,13 +29,11 @@ std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info);
 void RemoveUrlsFromAutofillData(std::string& autofill_metadata);
 
 #if !BUILDFLAG(IS_WIN)
-// Returns true if the data from the file specified by |path| is read into
-// |contents| successfully.
-// If the file size is greater than |max_size| in bytes, the data will be
-// truncated to |max_size| and put in |contents|.
-bool ReadEndOfFile(const base::FilePath& path,
-                   size_t max_size,
-                   std::string* contents);
+// Reads the data from the latter part of the file specified by `path`.
+// If the file size is greater than `max_size` in bytes, the data will be
+// truncated to `max_size`. Returns the file contents, or nullopt on failure.
+std::optional<std::string> ReadEndOfFile(const base::FilePath& path,
+                                         size_t max_size);
 #endif
 
 }  // namespace feedback_util

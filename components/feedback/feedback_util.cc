@@ -4,7 +4,9 @@
 
 #include "components/feedback/feedback_util.h"
 
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -27,27 +29,31 @@ constexpr char kMultilineEndString[] = "---------- END ----------\n\n";
 
 namespace feedback_util {
 
-bool ZipString(const base::FilePath& filename,
-               const std::string& data,
-               std::string* compressed_logs) {
+std::optional<std::string> ZipString(const base::FilePath& filename,
+                                     std::string_view data) {
   base::ScopedTempDir temp_dir;
   base::FilePath zip_file;
 
   // Create a temporary directory, put the logs into a file in it. Create
   // another temporary file to receive the zip file in.
-  if (!temp_dir.CreateUniqueTempDir())
-    return false;
+  if (!temp_dir.CreateUniqueTempDir()) {
+    return std::nullopt;
+  }
   if (!base::WriteFile(temp_dir.GetPath().Append(filename), data)) {
-    return false;
+    return std::nullopt;
+  }
+  if (!base::CreateTemporaryFile(&zip_file)) {
+    return std::nullopt;
   }
 
-  bool succeed = base::CreateTemporaryFile(&zip_file) &&
-                 zip::Zip(temp_dir.GetPath(), zip_file, false) &&
-                 base::ReadFileToString(zip_file, compressed_logs);
-
+  std::string compressed_logs;
+  bool succeed = zip::Zip(temp_dir.GetPath(), zip_file, false) &&
+                 base::ReadFileToString(zip_file, &compressed_logs);
   base::DeleteFile(zip_file);
-
-  return succeed;
+  if (!succeed) {
+    return std::nullopt;
+  }
+  return compressed_logs;
 }
 
 std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info) {
@@ -108,61 +114,55 @@ void RemoveUrlsFromAutofillData(std::string& autofill_metadata) {
 // This function is only called on ChromeOS and Lacros build.
 // See https://crbug.com/1119560.
 #if !BUILDFLAG(IS_WIN)
-bool ReadEndOfFile(const base::FilePath& path,
-                   size_t max_size,
-                   std::string* contents) {
-  if (!contents) {
-    LOG(ERROR) << "contents buffer is null.";
-    return false;
-  }
-
+std::optional<std::string> ReadEndOfFile(const base::FilePath& path,
+                                         size_t max_size) {
   if (path.ReferencesParent()) {
     LOG(ERROR) << "ReadEndOfFile can't be called on file paths with parent "
                   "references.";
-    return false;
+    return std::nullopt;
   }
 
   base::ScopedFILE fp(base::OpenFile(path, "r"));
   if (!fp) {
     PLOG(ERROR) << "Failed to open file " << path.value();
-    return false;
+    return std::nullopt;
   }
 
-  std::unique_ptr<char[]> chunk(new char[max_size]);
-  std::unique_ptr<char[]> last_chunk(new char[max_size]);
-  chunk[0] = '\0';
-  last_chunk[0] = '\0';
+  std::vector<char> chunk(max_size);
+  std::vector<char> last_chunk(max_size);
 
   size_t total_bytes_read = 0;
   size_t bytes_read = 0;
 
   // Since most logs are not seekable, read until the end keeping tracking of
   // last two chunks.
-  while ((bytes_read = fread(chunk.get(), 1, max_size, fp.get())) == max_size) {
+  while ((bytes_read = fread(chunk.data(), 1, max_size, fp.get())) ==
+         max_size) {
     total_bytes_read += bytes_read;
     last_chunk.swap(chunk);
     chunk[0] = '\0';
   }
   total_bytes_read += bytes_read;
+  std::string contents;
   if (total_bytes_read < max_size) {
     // File is smaller than max_size
-    contents->assign(chunk.get(), bytes_read);
+    contents.assign(chunk.data(), bytes_read);
   } else if (bytes_read == 0) {
     // File is exactly max_size or a multiple of max_size
-    contents->assign(last_chunk.get(), max_size);
+    contents.assign(last_chunk.data(), max_size);
   } else {
     // Number of bytes to keep from last_chunk
     size_t bytes_from_last = max_size - bytes_read;
 
     // Shift left last_chunk by size of chunk and fit it in the back of
     // last_chunk.
-    memmove(last_chunk.get(), last_chunk.get() + bytes_read, bytes_from_last);
-    memcpy(last_chunk.get() + bytes_from_last, chunk.get(), bytes_read);
+    memmove(last_chunk.data(), last_chunk.data() + bytes_read, bytes_from_last);
+    memcpy(last_chunk.data() + bytes_from_last, chunk.data(), bytes_read);
 
-    contents->assign(last_chunk.get(), max_size);
+    contents.assign(last_chunk.data(), max_size);
   }
 
-  return true;
+  return contents;
 }
 #endif  // !BUILDFLAG(IS_WIN)
 

@@ -13,6 +13,7 @@
 #include "base/rand_util.h"
 #include "base/test/values_test_util.h"
 #include "components/feedback/feedback_report.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feedback_util {
@@ -27,78 +28,62 @@ class FeedbackUtilTest : public ::testing::Test {
 };
 
 TEST_F(FeedbackUtilTest, ReadEndOfFileEmpty) {
-  std::string read_data("should be erased");
-
   base::FilePath file_path = temp_dir_.GetPath().Append("test_empty.txt");
 
   WriteFile(file_path, "", 0);
 
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 10, &read_data));
-  EXPECT_EQ(0u, read_data.length());
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 10),
+              testing::Optional(std::string()));
 }
 
 TEST_F(FeedbackUtilTest, ReadEndOfFileSmall) {
   const char kTestData[] = "0123456789";  // Length of 10
-  std::string read_data;
-
   base::FilePath file_path = temp_dir_.GetPath().Append("test_small.txt");
 
   WriteFile(file_path, kTestData, strlen(kTestData));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 15, &read_data));
-  EXPECT_EQ(kTestData, read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 15),
+              testing::Optional(std::string(kTestData)));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 10, &read_data));
-  EXPECT_EQ(kTestData, read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 10),
+              testing::Optional(std::string(kTestData)));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 2, &read_data));
-  EXPECT_EQ("89", read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 2),
+              testing::Optional(std::string("89")));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 3, &read_data));
-  EXPECT_EQ("789", read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 3),
+              testing::Optional(std::string("789")));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 5, &read_data));
-  EXPECT_EQ("56789", read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 5),
+              testing::Optional(std::string("56789")));
 }
 
 TEST_F(FeedbackUtilTest, ReadEndOfFileWithZeros) {
   const size_t test_size = 10;
   std::string test_data("abcd\0\0\0\0hi", test_size);
-  std::string read_data;
 
   base::FilePath file_path = temp_dir_.GetPath().Append("test_zero.txt");
 
   WriteFile(file_path, test_data.data(), test_size);
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 15, &read_data));
-  EXPECT_EQ(test_data, read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 15),
+              testing::Optional(test_data));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 10, &read_data));
-  EXPECT_EQ(test_data, read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 10),
+              testing::Optional(test_data));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 2, &read_data));
-  EXPECT_EQ(test_data.substr(test_size - 2, 2), read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 2),
+              testing::Optional(test_data.substr(test_size - 2, 2)));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 3, &read_data));
-  EXPECT_EQ(test_data.substr(test_size - 3, 3), read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 3),
+              testing::Optional(test_data.substr(test_size - 3, 3)));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 5, &read_data));
-  EXPECT_EQ(test_data.substr(test_size - 5, 5), read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 5),
+              testing::Optional(test_data.substr(test_size - 5, 5)));
 }
 
 TEST_F(FeedbackUtilTest, ReadEndOfFileMedium) {
   std::string test_data = base::RandBytesAsString(10000);  // 10KB data
-  std::string read_data;
 
   const size_t test_size = test_data.length();
 
@@ -106,25 +91,20 @@ TEST_F(FeedbackUtilTest, ReadEndOfFileMedium) {
 
   WriteFile(file_path, test_data.data(), test_size);
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 15000, &read_data));
-  EXPECT_EQ(test_data, read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 15000),
+              testing::Optional(test_data));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 10000, &read_data));
-  EXPECT_EQ(test_data, read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 10000),
+              testing::Optional(test_data));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 1000, &read_data));
-  EXPECT_EQ(test_data.substr(test_size - 1000, 1000), read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 1000),
+              testing::Optional(test_data.substr(test_size - 1000, 1000)));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 300, &read_data));
-  EXPECT_EQ(test_data.substr(test_size - 300, 300), read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 300),
+              testing::Optional(test_data.substr(test_size - 300, 300)));
 
-  read_data.clear();
-  EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 175, &read_data));
-  EXPECT_EQ(test_data.substr(test_size - 175, 175), read_data);
+  EXPECT_THAT(feedback_util::ReadEndOfFile(file_path, 175),
+              testing::Optional(test_data.substr(test_size - 175, 175)));
 }
 
 TEST_F(FeedbackUtilTest, LogsToStringShouldSkipFeedbackUserCtlConsentKey) {

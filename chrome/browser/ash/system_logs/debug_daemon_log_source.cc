@@ -100,16 +100,17 @@ std::vector<debugd::FeedbackLogType> GetLogTypesForUser(
 }  // namespace
 
 std::string ReadUserLogFile(const base::FilePath& log_file_path) {
-  std::string value;
-  const bool read_success =
-      feedback_util::ReadEndOfFile(log_file_path, kMaxLogSize, &value);
+  std::optional<std::string> maybe_value =
+      feedback_util::ReadEndOfFile(log_file_path, kMaxLogSize);
 
-  if (read_success && value.length() == kMaxLogSize) {
-    value.replace(0, strlen(kLogTruncated), kLogTruncated);
+  if (maybe_value.has_value() && maybe_value.value().size() == kMaxLogSize) {
+    maybe_value.value().replace(0, strlen(kLogTruncated), kLogTruncated);
 
     LOG(WARNING) << "Large log file was likely truncated: " << log_file_path;
   }
-  return (read_success && !value.empty()) ? value : std::string(kNotAvailable);
+  return (maybe_value.has_value() && !maybe_value.value().empty())
+             ? maybe_value.value()
+             : std::string(kNotAvailable);
 }
 
 std::string ReadUserLogFilePattern(
