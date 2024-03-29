@@ -223,7 +223,7 @@ BASE_FEATURE(kNetworkAnnotationMonitoring,
 // crbug.com/1462832 for more details of New Tab Page triggered prerendering.
 BASE_FEATURE(kNewTabPageTriggerForPrerender2,
              "NewTabPageTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Don't call the Win32 API PrefetchVirtualMemory when loading chrome.dll inside
