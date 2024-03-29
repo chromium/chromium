@@ -754,6 +754,7 @@ src/webgpu/shader/validation/expression/call/builtin/pack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4xI8Clamp.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack4xU8Clamp.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/radians.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/round.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/saturate.spec.ts
