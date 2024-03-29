@@ -86,7 +86,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   }
 
   // Returns the tree id of the tree managed by this AXTreeManager.
-  AXTreeID GetTreeID() const {
+  const AXTreeID& GetTreeID() const {
     return ax_tree_ ? ax_tree_->GetAXTreeID() : ui::AXTreeIDUnknown();
   }
 
