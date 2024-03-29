@@ -173,8 +173,8 @@ TEST(JPEGCodec, EncodeDecodeRGBA) {
   std::vector<unsigned char> decoded;
   int outw, outh;
   EXPECT_TRUE(JPEGCodec::Decode(&encoded[0], encoded.size(),
-                                JPEGCodec::FORMAT_RGBA, &decoded,
-                                &outw, &outh));
+                                kRGBA_8888_SkColorType, &decoded, &outw,
+                                &outh));
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(original.size(), decoded.size());
@@ -196,7 +196,7 @@ TEST(JPEGCodec, DecodeCorrupted) {
   std::vector<unsigned char> output;
   int outw, outh;
   ASSERT_FALSE(JPEGCodec::Decode(&original[0], original.size(),
-                                 JPEGCodec::FORMAT_RGBA, &output, &outw,
+                                 kRGBA_8888_SkColorType, &output, &outw,
                                  &outh));
 
   // make some compressed data
@@ -208,14 +208,14 @@ TEST(JPEGCodec, DecodeCorrupted) {
 
   // try decompressing a truncated version
   ASSERT_FALSE(JPEGCodec::Decode(&compressed[0], compressed.size() / 2,
-                                 JPEGCodec::FORMAT_RGBA, &output, &outw,
+                                 kRGBA_8888_SkColorType, &output, &outw,
                                  &outh));
 
   // corrupt it and try decompressing that
   for (int i = 10; i < 30; i++)
     compressed[i] = i;
   ASSERT_FALSE(JPEGCodec::Decode(&compressed[0], compressed.size(),
-                                 JPEGCodec::FORMAT_RGBA, &output, &outw,
+                                 kRGBA_8888_SkColorType, &output, &outw,
                                  &outh));
 }
 
@@ -227,7 +227,7 @@ TEST(JPEGCodec, InvalidRead) {
   int outw, outh;
   JPEGCodec::Decode(kTopSitesMigrationTestImage,
                     std::size(kTopSitesMigrationTestImage),
-                    JPEGCodec::FORMAT_RGBA, &output, &outw, &outh);
+                    kRGBA_8888_SkColorType, &output, &outw, &outh);
 }
 
 // Coverage for data races in JPEG encoding when run with TSan.
@@ -263,7 +263,7 @@ TEST(JPEGCodec, ExtremelyLargeImage) {
   int outw, outh;
   bool ok = JPEGCodec::Decode(kExtremelyLargeTestImage,
                               std::size(kExtremelyLargeTestImage),
-                              JPEGCodec::FORMAT_RGBA, &output, &outw, &outh);
+                              kRGBA_8888_SkColorType, &output, &outw, &outh);
   EXPECT_FALSE(ok);
   EXPECT_EQ(outw, 25000);
   EXPECT_EQ(outh, 25000);
