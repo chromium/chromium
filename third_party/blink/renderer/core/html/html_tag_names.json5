@@ -447,8 +447,9 @@
     },
     {
       name: "selectedoption",
-      interfaceName: "HTMLElement",
-      runtimeEnabled: "HTMLSelectListElement",
+      interfaceName: "HTMLSelectedOptionElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+      runtimeEnabled: "StylableSelect",
     },
     {
       name: "selectlist",

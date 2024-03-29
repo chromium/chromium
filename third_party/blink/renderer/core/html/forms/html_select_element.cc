@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
+#include "third_party/blink/renderer/core/html/forms/html_selected_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -900,6 +901,13 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   // control element's content during the autofill operation, we want the state
   // to show as as autofilled.
   SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
+
+  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    for (HTMLSelectedOptionElement* selectedoption :
+         descendant_selectedoptions_) {
+      selectedoption->SelectedOptionElementChanged(element);
+    }
+  }
 }
 
 bool HTMLSelectElement::DispatchFocusEvent(
@@ -1252,6 +1260,7 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(option_slot_);
   visitor->Trace(last_on_change_option_);
   visitor->Trace(suggested_option_);
+  visitor->Trace(descendant_selectedoptions_);
   visitor->Trace(first_child_datalist_);
   visitor->Trace(select_type_);
   HTMLFormControlElementWithState::Trace(visitor);
@@ -1587,6 +1596,16 @@ void HTMLSelectElement::RecalcFirstChildDatalist() {
 
 bool HTMLSelectElement::IsAppearanceBikeshed() const {
   return select_type_->IsAppearanceBikeshed();
+}
+
+void HTMLSelectElement::SelectedOptionElementInserted(
+    HTMLSelectedOptionElement* selectedoption) {
+  descendant_selectedoptions_.insert(selectedoption);
+}
+
+void HTMLSelectElement::SelectedOptionElementRemoved(
+    HTMLSelectedOptionElement* selectedoption) {
+  descendant_selectedoptions_.erase(selectedoption);
 }
 
 bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {

@@ -50,6 +50,7 @@ class PopupMenu;
 class SelectType;
 class V8UnionHTMLElementOrLong;
 class V8UnionHTMLOptGroupElementOrHTMLOptionElement;
+class HTMLSelectedOptionElement;
 
 class CORE_EXPORT HTMLSelectElement final
     : public HTMLFormControlElementWithState,
@@ -234,6 +235,9 @@ class CORE_EXPORT HTMLSelectElement final
   // the SelectType supports alternate rendering based on appearance:bikeshed.
   bool IsAppearanceBikeshed() const;
 
+  void SelectedOptionElementInserted(HTMLSelectedOptionElement* selectedoption);
+  void SelectedOptionElementRemoved(HTMLSelectedOptionElement* selectedoption);
+
   void DefaultEventHandler(Event&) override;
   bool SupportsFocus(UpdateBehavior update_behavior) const override;
 
@@ -338,6 +342,7 @@ class CORE_EXPORT HTMLSelectElement final
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
   Member<HTMLDataListElement> first_child_datalist_;
+  HeapHashSet<Member<HTMLSelectedOptionElement>> descendant_selectedoptions_;
   bool uses_menu_list_ = true;
   bool is_multiple_;
   mutable bool should_recalc_list_items_;
