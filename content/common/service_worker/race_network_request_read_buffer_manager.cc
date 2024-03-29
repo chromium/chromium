@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/race_network_request_read_buffer_manager.h"
+
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/common/features.h"
@@ -43,8 +45,9 @@ RaceNetworkRequestReadBufferManager::ReadData() {
   CHECK_EQ(BytesRemaining(), 0u);
   uint32_t num_bytes = 0;
   MojoResult result;
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kServiceWorkerAutoPreload, "query_data_size", false)) {
+  bool is_query_data_size_mode = base::GetFieldTrialParamByFeatureAsBool(
+      features::kServiceWorkerAutoPreload, "query_data_size", false);
+  if (is_query_data_size_mode) {
     result = consumer_handle_->ReadData(nullptr, &num_bytes,
                                         MOJO_READ_DATA_FLAG_QUERY);
     CHECK_EQ(result, MOJO_RESULT_OK);
@@ -54,7 +57,7 @@ RaceNetworkRequestReadBufferManager::ReadData() {
         network::features::GetDataPipeDefaultAllocationSize(
             network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
   }
-
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_before_read", num_bytes);
   SCOPED_CRASH_KEY_BOOL("SWRace", "consumer_handle_valid",
                         consumer_handle_->is_valid());
   scoped_refptr<net::IOBuffer> buffer =
@@ -80,6 +83,19 @@ RaceNetworkRequestReadBufferManager::ReadData() {
       } else {
         buffer_v[i];
       }
+    }
+  } else if (result == MOJO_RESULT_INVALID_ARGUMENT) {
+    static bool has_dumped_without_crashing = false;
+    if (!has_dumped_without_crashing) {
+      has_dumped_without_crashing = true;
+      SCOPED_CRASH_KEY_BOOL("SWRace", "is_query_data_size_mode",
+                            is_query_data_size_mode);
+      SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", result);
+      SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer", num_bytes);
+      SCOPED_CRASH_KEY_NUMBER("SWRace", "is_consumer_handler_valid",
+                              consumer_handle_->is_valid());
+      SCOPED_CRASH_KEY_NUMBER("SWRace", "buffer_size", buffer->size());
+      base::debug::DumpWithoutCrashing();
     }
   }
 
