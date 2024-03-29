@@ -3823,6 +3823,18 @@
       'win11-arm64-rel-tests',
     ],
   },
+  'pixel_interactive_ui_tests': {
+    # This target should be removed from any CI only builders. Developers can
+    # intentionally make UI changes. Without running pixel tests on CQ, those
+    # cls will get wrongly reverted by sheriffs.
+    # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
+    # need to update this field.
+    'remove_from': [
+      'Win11 Tests x64',
+      'win-rel-cft',
+      'win11-arm64-rel-tests',
+    ],
+  },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
