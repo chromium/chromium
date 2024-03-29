@@ -239,6 +239,8 @@ void MultiDeviceSetupImpl::SetHostDevice(
     const std::string& auth_token,
     SetHostDeviceCallback callback) {
   if (!auth_token_validator_->IsAuthTokenValid(auth_token)) {
+    PA_LOG(WARNING) << "MultiDeviceSetupImpl::SetHostDevice failed due to "
+                       "invalid auth token";
     std::move(callback).Run(false /* success */);
     return;
   }
@@ -399,6 +401,11 @@ bool MultiDeviceSetupImpl::AttemptSetHost(
 
   multidevice::RemoteDeviceRefList eligible_devices =
       eligible_host_devices_provider_->GetEligibleHostDevices();
+  if (eligible_devices.empty()) {
+    PA_LOG(WARNING)
+        << __func__
+        << ": attempting to set host but no eligible devices are available";
+  }
 
   auto it = base::ranges::find_if(
       eligible_devices,
@@ -414,8 +421,12 @@ bool MultiDeviceSetupImpl::AttemptSetHost(
                host_instance_id_or_legacy_device_id;
       });
 
-  if (it == eligible_devices.end())
+  if (it == eligible_devices.end()) {
+    PA_LOG(WARNING)
+        << " MultiDeviceSetupImpl::AttemptSetHost failed because there was no "
+           "match in the eligible devices for the selected host";
     return false;
+  }
 
   LogForgetHostConfirmed(
       VerifyAndForgetHostConfirmationState::kCompletedSetupState);

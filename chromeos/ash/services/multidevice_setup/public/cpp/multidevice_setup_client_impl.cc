@@ -137,8 +137,8 @@ void MultiDeviceSetupClientImpl::RemoveHostDevice() {
 
 const MultiDeviceSetupClient::HostStatusWithDevice&
 MultiDeviceSetupClientImpl::GetHostStatus() const {
-  PA_LOG(VERBOSE) << "Responding to GetHostStatus() with the following host = "
-                  << HostStatusWithDeviceToString(host_status_with_device_);
+  PA_LOG(INFO) << "Responding to GetHostStatus() with the following host = "
+               << HostStatusWithDeviceToString(host_status_with_device_);
   return host_status_with_device_;
 }
 
