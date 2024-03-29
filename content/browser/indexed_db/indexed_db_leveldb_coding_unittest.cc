@@ -861,6 +861,39 @@ TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
     EXPECT_EQ(sqlite_compare(encoded_a, encoded_a), 0);
     EXPECT_EQ(sqlite_compare(encoded_b, encoded_b), 0);
   }
+
+  // Also test decoding by treating all test cases as one massive array key.
+  const IndexedDBKey all_keys_key(keys);
+  std::string encoded;
+  EncodeSortableIDBKey(all_keys_key, &encoded);
+  IndexedDBKey decoded_value;
+  ASSERT_TRUE(DecodeSortableIDBKey(encoded, &decoded_value));
+  EXPECT_TRUE(all_keys_key.Equals(decoded_value))
+      << "Original is\n"
+      << all_keys_key.DebugString() << "\nwhereas depickled version is\n"
+      << decoded_value.DebugString();
+}
+
+TEST(IndexedDBLevelDBCodingTest, DecodeSortableWithCorruption) {
+  std::vector<std::string> cases = {
+      // Empty string.
+      {},
+      // Binary with bad meta-mark.
+      {"\x40\x02\xff\x00", 4},
+      // String with bad meta-mark.
+      {"\x30\x00\x02\xff\xff\x00\x00", 7},
+      // Array without terminating sentinel.
+      {"\x50\x20\xff\xff\xff\xff", 6},
+      // String with no terminating sentinel.
+      {"\x30\x00\x01\xff\xff", 5},
+      // Double with insufficient bytes.
+      {"\x10\x00\x01\xff", 4},
+  };
+
+  for (const auto& test_case : cases) {
+    blink::IndexedDBKey value;
+    EXPECT_FALSE(DecodeSortableIDBKey(test_case, &value));
+  }
 }
 
 // Verify that encoded doubles compare in the same order as C++ double
@@ -916,6 +949,18 @@ TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
         EXPECT_GT(sqlite_compare(encoded_a, encoded_b), 0);
       }
     }
+  }
+
+  for (double value : values) {
+    const IndexedDBKey key(value, blink::mojom::IDBKeyType::Number);
+    std::string encoded;
+    EncodeSortableIDBKey(key, &encoded);
+    IndexedDBKey decoded_value;
+    ASSERT_TRUE(DecodeSortableIDBKey(encoded, &decoded_value));
+    EXPECT_TRUE(key.Equals(decoded_value))
+        << "Original is\n"
+        << key.DebugString() << "\nwhereas depickled version is\n"
+        << decoded_value.DebugString();
   }
 }
 

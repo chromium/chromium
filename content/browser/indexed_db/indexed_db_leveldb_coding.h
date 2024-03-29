@@ -105,6 +105,9 @@ CONTENT_EXPORT void EncodeBlobJournal(const BlobJournalType& journal,
 [[nodiscard]] CONTENT_EXPORT bool DecodeIDBKey(
     std::string_view* slice,
     std::unique_ptr<blink::IndexedDBKey>* value);
+[[nodiscard]] CONTENT_EXPORT bool DecodeSortableIDBKey(
+    std::string_view serialized,
+    blink::IndexedDBKey* value);
 [[nodiscard]] CONTENT_EXPORT bool DecodeIDBKeyPath(
     std::string_view* slice,
     blink::IndexedDBKeyPath* value);

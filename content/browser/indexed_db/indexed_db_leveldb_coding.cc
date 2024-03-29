@@ -4,8 +4,10 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 
+#include <array>
 #include <iterator>
 #include <limits>
+#include <list>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -45,6 +47,8 @@ constexpr unsigned char kIndexedDBKeyMinKeyTypeByte = 5;
 constexpr unsigned char kIndexedDBKeyBinaryTypeByte = 6;
 
 constexpr unsigned char kSentinel = 0x0;
+constexpr size_t kSentinelLength = sizeof(kSentinel);
+constexpr unsigned char kPaddingByte = 0x1;
 // These values are used with sentinel-based encoding. The relative order is
 // important as it matches the standard algorithm to compare two keys:
 // https://w3c.github.io/IndexedDB/#compare-two-keys
@@ -101,16 +105,43 @@ inline void EncodeIntSafely(int64_t value, int64_t max, std::string* into) {
 // efficient. TODO(estade): use variable length encoding.
 void EncodeStringWithSentinel(const std::u16string& value, std::string* into) {
   size_t length = value.length();
-  into->reserve(into->size() + length * sizeof(char16_t) * 2 + 1);
+  into->reserve(into->size() +
+                length * (sizeof(char16_t) + sizeof(kPaddingByte)) +
+                kSentinelLength);
 
   for (char16_t c : value) {
-    into->push_back(1);
-    into->push_back(0);
+    into->push_back(kPaddingByte);
     into->push_back(static_cast<char>(c >> 8));
     into->push_back(static_cast<char>(c));
   }
 
   into->push_back(kSentinel);
+}
+
+// Reads and consumes the first bytes of `encoded` and outputs decoded string to
+// `output`. Returns true on success.
+bool DecodeStringWithSentinel(std::string_view& encoded,
+                              std::u16string* output) {
+  constexpr int kChunkLengthInBytes = sizeof(kPaddingByte) + sizeof(char16_t);
+  if (encoded.size() < kChunkLengthInBytes + kSentinelLength) {
+    return false;
+  }
+
+  for (; !encoded.empty(); encoded = encoded.substr(kChunkLengthInBytes)) {
+    if (encoded.front() == kSentinel) {
+      encoded = encoded.substr(kSentinelLength);
+      return true;
+    }
+    if (encoded.size() < kChunkLengthInBytes + kSentinelLength) {
+      return false;
+    }
+    if (encoded.at(0) != kPaddingByte) {
+      return false;
+    }
+    output->push_back(static_cast<char16_t>(encoded.at(1)) << 8 |
+                      encoded.at(2));
+  }
+  return false;
 }
 
 // This doubles the length of the data; a variable length encoding would be more
@@ -120,11 +151,34 @@ void EncodeBinaryWithSentinel(const std::string& value, std::string* into) {
   into->reserve(into->size() + length * sizeof(char) * 2 + 1);
 
   for (char c : value) {
-    into->push_back(0x01);
+    into->push_back(kPaddingByte);
     into->push_back(c);
   }
 
   into->push_back(kSentinel);
+}
+
+// Reads and consumes the first bytes of `encoded` and outputs decoded binary as
+// string in `output`. Returns true on success.
+bool DecodeBinaryWithSentinel(std::string_view& encoded, std::string* output) {
+  constexpr int kChunkLengthInBytes = sizeof(kPaddingByte) + 1;
+  if (encoded.size() < kChunkLengthInBytes + kSentinelLength) {
+    return false;
+  }
+  for (; !encoded.empty(); encoded = encoded.substr(kChunkLengthInBytes)) {
+    if (encoded.front() == kSentinel) {
+      encoded = encoded.substr(1);
+      return true;
+    }
+    if (encoded.size() < kChunkLengthInBytes + kSentinelLength) {
+      return false;
+    }
+    if (encoded.at(0) != kPaddingByte) {
+      return false;
+    }
+    output->push_back(encoded.at(1));
+  }
+  return true;
 }
 
 void EncodeSortableDouble(double value, std::string* into) {
@@ -150,6 +204,79 @@ void EncodeSortableDouble(double value, std::string* into) {
   std::array<uint8_t, 8u> chars;
   base::span(chars).copy_from(base::numerics::U64ToBigEndian(modified_bits));
   into->insert(into->end(), chars.begin(), chars.end());
+}
+
+// Reads and consumes the first 8 bytes of `encoded` and outputs decoded double
+// as `output`. Returns true on success.
+bool DecodeSortableDouble(std::string_view& data, double* output) {
+  constexpr size_t kLengthInBytes = sizeof(double);
+  if (data.size() < kLengthInBytes) {
+    return false;
+  }
+
+  uint64_t host_bits = base::numerics::U64FromBigEndian(base::as_bytes(
+      base::span<const char, kLengthInBytes>{data.data(), kLengthInBytes}));
+  data = data.substr(kLengthInBytes);
+
+  static constexpr uint64_t kSignBit = base::bits::LeftmostBit<uint64_t>();
+  if (host_bits & kSignBit) {
+    host_bits = host_bits ^ kSignBit;
+  } else {
+    host_bits = host_bits ^ std::numeric_limits<uint64_t>::max();
+  }
+
+  std::memcpy(output, &host_bits, kLengthInBytes);
+  return true;
+}
+
+// Decodes bytes of type `value_type` starting at `data`. Returns the address
+// after the end of the decoded data on success, or nullptr on failure (which
+// indicates a problem with the data).
+bool DecodeSortableKeyNonArray(char value_type,
+                               std::string_view& data,
+                               IndexedDBKey* decoded) {
+  switch (value_type) {
+    case kOrderedBinaryTypeByte: {
+      std::string binary;
+      if (DecodeBinaryWithSentinel(data, &binary)) {
+        *decoded = IndexedDBKey(std::move(binary));
+        return true;
+      }
+      return false;
+    }
+
+    case kOrderedStringTypeByte: {
+      std::u16string string_bytes;
+      if (DecodeStringWithSentinel(data, &string_bytes)) {
+        *decoded = IndexedDBKey(std::move(string_bytes));
+        return true;
+      }
+      return false;
+    }
+
+    case kOrderedDateTypeByte: {
+      double date;
+      if (DecodeSortableDouble(data, &date)) {
+        *decoded = IndexedDBKey(date, blink::mojom::IDBKeyType::Date);
+        return true;
+      }
+      return false;
+    }
+
+    case kOrderedNumberTypeByte: {
+      double number;
+      if (DecodeSortableDouble(data, &number)) {
+        *decoded = IndexedDBKey(number, blink::mojom::IDBKeyType::Number);
+        return true;
+      }
+      return false;
+    }
+
+    case kOrderedArrayTypeByte:
+    case kSentinel:
+    default:
+      return false;
+  }
 }
 
 }  // namespace
@@ -548,6 +675,60 @@ bool DecodeIDBKeyRecursive(std::string_view* slice,
 bool DecodeIDBKey(std::string_view* slice,
                   std::unique_ptr<IndexedDBKey>* value) {
   return DecodeIDBKeyRecursive(slice, value, 0);
+}
+
+bool DecodeSortableIDBKey(std::string_view serialized,
+                          blink::IndexedDBKey* value) {
+  if (serialized.empty()) {
+    return false;
+  }
+
+  std::string_view data = serialized;
+  blink::IndexedDBKey* into = value;
+  std::list<std::vector<IndexedDBKey>> key_arrays;
+  while (!data.empty()) {
+    char value_type = data.front();
+    data = data.substr(1);
+    switch (value_type) {
+      case kOrderedArrayTypeByte:
+        key_arrays.emplace_back();
+        continue;
+
+      case kOrderedBinaryTypeByte:
+      case kOrderedStringTypeByte:
+      case kOrderedDateTypeByte:
+      case kOrderedNumberTypeByte:
+        if (!key_arrays.empty()) {
+          key_arrays.back().emplace_back();
+          into = &key_arrays.back().back();
+        } else if (into != value) {
+          return false;
+        }
+        if (!DecodeSortableKeyNonArray(value_type, data, into)) {
+          return false;
+        }
+        continue;
+
+      case kSentinel: {
+        if (key_arrays.empty()) {
+          return false;
+        }
+        IndexedDBKey keys(std::move(key_arrays.back()));
+        key_arrays.pop_back();
+        if (key_arrays.empty()) {
+          *value = std::move(keys);
+          break;
+        }
+
+        key_arrays.back().emplace_back(std::move(keys));
+        continue;
+      }
+
+      default:
+        return false;
+    }
+  }
+  return data.empty() && value->IsValid();
 }
 
 bool DecodeDouble(std::string_view* slice, double* value) {
