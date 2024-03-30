@@ -3083,6 +3083,16 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
         AdjustSVGAttributes(token);
       }
       AdjustForeignAttributes(token);
+
+      if (tag == HTMLTag::kScript && token->SelfClosing() &&
+          current_namespace == svg_names::kNamespaceURI) {
+        token->SetSelfClosingToFalse();
+        tree_.InsertForeignElement(token, current_namespace);
+        AtomicHTMLToken fake_token(HTMLToken::kEndTag, HTMLTag::kScript);
+        ProcessTokenInForeignContent(&fake_token);
+        return;
+      }
+
       tree_.InsertForeignElement(token, current_namespace);
       break;
     }

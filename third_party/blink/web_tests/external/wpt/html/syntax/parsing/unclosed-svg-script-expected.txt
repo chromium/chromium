@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SVG scripts with self-closing start tag should run
-  assert_true: expected true got false
-Harness: the test ran to completion.
-
