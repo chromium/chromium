@@ -3043,10 +3043,6 @@ const char kThirdPartyStoragePartitioningDescription[] =
     "https://issues.chromium.org/issues/new?component=1363614&template=1922563"
     "&customFields=1223031:Proj-StoragePartitioningTrial.";
 
-const char kScreenSaverDurationName[] = "Screen saver duration settings";
-const char kScreenSaverDurationDescription[] =
-    "Allow users to customize screen saver running time.";
-
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
