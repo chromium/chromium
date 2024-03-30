@@ -333,6 +333,7 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     uint32_t macos_specific_texture_target;
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_WIN)
+    uint32_t directml_feature_level;
     uint32_t d3d12_feature_level;
     uint32_t vulkan_version;
     OverlayInfo overlay_info;
@@ -406,8 +407,12 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   // TODO(kbr): add dx_diagnostics on Windows.
 #if BUILDFLAG(IS_WIN)
   EnumerateOverlayInfo(overlay_info, enumerator);
+  enumerator->AddBool("supportsDirectML", directml_feature_level != 0);
   enumerator->AddBool("supportsDx12", d3d12_feature_level != 0);
   enumerator->AddBool("supportsVulkan", vulkan_version != 0);
+  enumerator->AddString(
+      "directMLFeatureLevel",
+      gpu::DirectMLFeatureLevelToString(directml_feature_level));
   enumerator->AddString("dx12FeatureLevel",
                         gpu::D3DFeatureLevelToString(d3d12_feature_level));
   enumerator->AddString("vulkanVersion",

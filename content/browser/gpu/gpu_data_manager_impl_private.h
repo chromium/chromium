@@ -73,15 +73,16 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
       const gpu::GPUInfo& gpu_info,
       const std::optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
 #if BUILDFLAG(IS_WIN)
-  void UpdateDx12Info(uint32_t d3d12_feature_level);
+  void UpdateDirectXInfo(uint32_t d3d12_feature_level,
+                         uint32_t directml_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);
   void UpdateDevicePerfInfo(const gpu::DevicePerfInfo& device_perf_info);
 
   void UpdateOverlayInfo(const gpu::OverlayInfo& overlay_info);
   void UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
-  void UpdateDx12RequestStatus(bool request_continues);
+  void UpdateDirectXRequestStatus(bool request_continues);
   void UpdateVulkanRequestStatus(bool request_continues);
-  bool Dx12Requested() const;
+  bool DirectXRequested() const;
   bool VulkanRequested() const;
   void TerminateInfoCollectionGpuProcess();
 #endif
@@ -229,7 +230,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // Notify all observers whenever there is a GPU info update.
   void NotifyGpuInfoUpdate();
 
-  void RequestGpuSupportedDx12Version(bool delayed);
+  void RequestGpuSupportedDirectXVersion(bool delayed);
   void RequestGpuSupportedVulkanVersion(bool delayed);
   void RequestDawnInfo(bool delayed, bool collect_metrics);
   void RequestMojoMediaVideoCapabilities();
@@ -242,9 +243,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gpu::GPUInfo gpu_info_;
   gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 #if BUILDFLAG(IS_WIN)
-  bool gpu_info_dx12_valid_ = false;
-  bool gpu_info_dx12_requested_ = false;
-  bool gpu_info_dx12_request_failed_ = false;
+  bool gpu_info_dx_valid_ = false;
+  bool gpu_info_dx_requested_ = false;
+  bool gpu_info_dx_request_failed_ = false;
   bool gpu_info_vulkan_valid_ = false;
   bool gpu_info_vulkan_requested_ = false;
   bool gpu_info_vulkan_request_failed_ = false;

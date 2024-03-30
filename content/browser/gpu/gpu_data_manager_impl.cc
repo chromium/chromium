@@ -164,9 +164,11 @@ void GpuDataManagerImpl::UpdateGpuInfo(
 }
 
 #if BUILDFLAG(IS_WIN)
-void GpuDataManagerImpl::UpdateDx12Info(uint32_t d3d12_feature_level) {
+
+void GpuDataManagerImpl::UpdateDirectXInfo(uint32_t d3d12_feature_level,
+                                           uint32_t directml_feature_level) {
   base::AutoLock auto_lock(lock_);
-  private_->UpdateDx12Info(d3d12_feature_level);
+  private_->UpdateDirectXInfo(d3d12_feature_level, directml_feature_level);
 }
 
 void GpuDataManagerImpl::UpdateVulkanInfo(uint32_t vulkan_version) {
@@ -190,9 +192,9 @@ void GpuDataManagerImpl::UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
   private_->UpdateDXGIInfo(std::move(dxgi_info));
 }
 
-void GpuDataManagerImpl::UpdateDx12RequestStatus(bool request_continues) {
+void GpuDataManagerImpl::UpdateDirectXRequestStatus(bool request_continues) {
   base::AutoLock auto_lock(lock_);
-  private_->UpdateDx12RequestStatus(request_continues);
+  private_->UpdateDirectXRequestStatus(request_continues);
 }
 
 void GpuDataManagerImpl::UpdateVulkanRequestStatus(bool request_continues) {
@@ -200,9 +202,9 @@ void GpuDataManagerImpl::UpdateVulkanRequestStatus(bool request_continues) {
   private_->UpdateVulkanRequestStatus(request_continues);
 }
 
-bool GpuDataManagerImpl::Dx12Requested() const {
+bool GpuDataManagerImpl::DirectXRequested() const {
   base::AutoLock auto_lock(lock_);
-  return private_->Dx12Requested();
+  return private_->DirectXRequested();
 }
 
 bool GpuDataManagerImpl::VulkanRequested() const {

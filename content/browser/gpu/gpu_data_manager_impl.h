@@ -51,12 +51,13 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
                                           public display::DisplayObserver {
  public:
   enum GpuInfoRequest {
-    kGpuInfoRequestDx12 = 1 << 0,
+    kGpuInfoRequestDirectX = 1 << 0,
     kGpuInfoRequestVulkan = 1 << 1,
     kGpuInfoRequestDawnInfo = 1 << 2,
-    kGpuInfoRequestDx12Vulkan = kGpuInfoRequestVulkan | kGpuInfoRequestDx12,
+    kGpuInfoRequestDirectXVulkan =
+        kGpuInfoRequestVulkan | kGpuInfoRequestDirectX,
     kGpuInfoRequestVideo = 1 << 3,
-    kGpuInfoRequestAll = kGpuInfoRequestDx12 | kGpuInfoRequestVulkan |
+    kGpuInfoRequestAll = kGpuInfoRequestDirectX | kGpuInfoRequestVulkan |
                          kGpuInfoRequestDawnInfo | kGpuInfoRequestVideo,
   };
 
@@ -107,14 +108,15 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
       const gpu::GPUInfo& gpu_info,
       const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
 #if BUILDFLAG(IS_WIN)
-  void UpdateDx12Info(uint32_t d3d12_feature_level);
+  void UpdateDirectXInfo(uint32_t d3d12_feature_level,
+                         uint32_t directml_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);
   void UpdateDevicePerfInfo(const gpu::DevicePerfInfo& device_perf_info);
   void UpdateOverlayInfo(const gpu::OverlayInfo& overlay_info);
   void UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
-  void UpdateDx12RequestStatus(bool request_continues);
+  void UpdateDirectXRequestStatus(bool request_continues);
   void UpdateVulkanRequestStatus(bool request_continues);
-  bool Dx12Requested() const;
+  bool DirectXRequested() const;
   bool VulkanRequested() const;
   void TerminateInfoCollectionGpuProcess();
 #endif

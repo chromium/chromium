@@ -188,6 +188,8 @@ struct GpuInfo {
   uint32 macos_specific_texture_target;
 
   [EnableIf=is_win]
+  uint32 directml_feature_level;
+  [EnableIf=is_win]
   uint32 d3d12_feature_level;
   [EnableIf=is_win]
   uint32 vulkan_version;

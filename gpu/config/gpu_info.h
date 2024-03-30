@@ -462,6 +462,9 @@ struct GPU_EXPORT GPUInfo {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+  // The supported DirectML feature level in the gpu driver;
+  uint32_t directml_feature_level = 0;
+
   // The supported d3d feature level in the gpu driver;
   uint32_t d3d12_feature_level = 0;
 
