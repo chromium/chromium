@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+class GURL;
+
 // Base object for Price Insights data. This will be used to pass the data to
 // the UICollectionViewCell.
 @interface PriceInsightsItem : NSObject
@@ -19,6 +21,8 @@
 @property(nonatomic, copy) NSString* lowPrice;
 // The product typically high price.
 @property(nonatomic, copy) NSString* highPrice;
+// The product buying options URL.
+@property(nonatomic, assign) const GURL& buyingOptionsURL;
 // Whether or not the price can be tracked.
 @property(nonatomic, assign) BOOL canPriceTrack;
 // Whether or not the price is already being tracked.

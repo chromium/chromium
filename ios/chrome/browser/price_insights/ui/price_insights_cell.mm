@@ -6,10 +6,13 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -29,10 +32,13 @@ const CGFloat kContentStackViewSpacing = 4.0f;
 const CGFloat kPriceTrackingVerticalStackViewSpacing = 2.0f;
 
 // The spacing between price tracking stack views.
-const CGFloat kPriceTrackingStackViewSpacing = 20.0f;
+const CGFloat kHorizontalStackViewSpacing = 20.0f;
 
 // The corner radius of this container.
 const float kCornerRadius = 24;
+
+// Size of the icon.
+const CGFloat kIconSize = 20.0f;
 
 }  // namespace
 
@@ -46,6 +52,7 @@ const float kCornerRadius = 24;
 @implementation PriceInsightsCell {
   PriceNotificationsTrackButton* _trackButton;
   UIStackView* _priceTrackingStackView;
+  UIStackView* _buyingOptionsStackView;
   UIStackView* _contentStackView;
 }
 
@@ -77,6 +84,11 @@ const float kCornerRadius = 24;
       ([self hasPriceRange] && [self hasPriceHistory])) {
     [self configurePriceTrackingAndRange];
     [_contentStackView addArrangedSubview:_priceTrackingStackView];
+  }
+
+  if (self.item.buyingOptionsURL.is_valid()) {
+    [self configureBuyingOptions];
+    [_contentStackView addArrangedSubview:_buyingOptionsStackView];
   }
 }
 
@@ -174,7 +186,7 @@ const float kCornerRadius = 24;
   }
 
   _priceTrackingStackView.axis = UILayoutConstraintAxisHorizontal;
-  _priceTrackingStackView.spacing = kPriceTrackingStackViewSpacing;
+  _priceTrackingStackView.spacing = kHorizontalStackViewSpacing;
   _priceTrackingStackView.distribution = UIStackViewDistributionFill;
   _priceTrackingStackView.alignment = UIStackViewAlignmentCenter;
   _priceTrackingStackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -186,9 +198,70 @@ const float kCornerRadius = 24;
                    kContentVerticalInset, kContentHorizontalInset);
 }
 
+// Method that creates a view for the buying options module.
+- (void)configureBuyingOptions {
+  UILabel* title = [[UILabel alloc] init];
+  title.numberOfLines = 1;
+  title.textAlignment = NSTextAlignmentLeft;
+  title.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  title.adjustsFontForContentSizeCategory = YES;
+  title.adjustsFontSizeToFitWidth = NO;
+  title.text = l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
+  title.translatesAutoresizingMaskIntoConstraints = NO;
+  title.lineBreakMode = NSLineBreakByTruncatingTail;
+  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+
+  UILabel* subtitle = [[UILabel alloc] init];
+  subtitle.numberOfLines = 1;
+  subtitle.textAlignment = NSTextAlignmentLeft;
+  subtitle.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
+  subtitle.adjustsFontForContentSizeCategory = YES;
+  subtitle.adjustsFontSizeToFitWidth = NO;
+  subtitle.lineBreakMode = NSLineBreakByTruncatingTail;
+  subtitle.text =
+      l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE);
+  subtitle.translatesAutoresizingMaskIntoConstraints = NO;
+  subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  UIStackView* verticalStack =
+      [[UIStackView alloc] initWithArrangedSubviews:@[ title, subtitle ]];
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.distribution = UIStackViewDistributionFill;
+  verticalStack.alignment = UIStackViewAlignmentLeading;
+  verticalStack.spacing = kVerticalStackViewSpacing;
+
+  UIImage* icon = DefaultSymbolWithPointSize(kOpenImageActionSymbol, kIconSize);
+  UIImageView* iconView = [[UIImageView alloc] initWithImage:icon];
+  iconView.tintColor = [UIColor colorNamed:kGrey500Color];
+
+  _buyingOptionsStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ verticalStack, iconView ]];
+  _buyingOptionsStackView.axis = UILayoutConstraintAxisHorizontal;
+  _buyingOptionsStackView.spacing = kHorizontalStackViewSpacing;
+  _buyingOptionsStackView.distribution = UIStackViewDistributionFill;
+  _buyingOptionsStackView.alignment = UIStackViewAlignmentCenter;
+  _buyingOptionsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _buyingOptionsStackView.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
+  _buyingOptionsStackView.layoutMarginsRelativeArrangement = YES;
+  _buyingOptionsStackView.layoutMargins =
+      UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
+                   kContentVerticalInset, kContentHorizontalInset);
+
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(handleBuyingOptionsTap:)];
+  [_buyingOptionsStackView addGestureRecognizer:tapRecognizer];
+}
+
 #pragma mark - Actions
 
 - (void)trackButtonToggled {
+}
+
+- (void)handleBuyingOptionsTap:(UITapGestureRecognizer*)sender {
 }
 
 @end
