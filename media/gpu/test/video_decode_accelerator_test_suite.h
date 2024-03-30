@@ -52,6 +52,9 @@ class VideoDecodeAcceleratorTestSuite : public base::TestSuite {
   // Gets the name of the test output file path (testsuitename/testname).
   base::FilePath GetTestOutputFilePath() const;
 
+  // Returns whether the VideoPlayerTestEnvironment is initialized.
+  bool ValidVideoTestEnvironment() const;
+
  protected:
   // Overridden from base::TestSuite:
   void Initialize() override;
