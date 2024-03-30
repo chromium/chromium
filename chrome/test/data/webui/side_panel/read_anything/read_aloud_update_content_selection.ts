@@ -92,6 +92,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
+    document.onselectionchange = () => {};
     chrome.readingMode.setContentForTesting(axTree, []);
   });
 
