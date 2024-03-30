@@ -140,9 +140,16 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  if (paint_layer_.InvisibleForPositionVisibility()) {
-    DCHECK(RuntimeEnabledFeatures::CSSPositionVisibilityEnabled());
-    return kFullyPainted;
+  std::optional<CheckAncestorPositionVisibilityScope>
+      check_position_visibility_scope;
+  if (RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    if (paint_layer_.InvisibleForPositionVisibility() ||
+        paint_layer_.HasAncestorInvisibleForPositionVisibility()) {
+      return kFullyPainted;
+    }
+    if (paint_layer_.GetLayoutObject().IsStackingContext()) {
+      check_position_visibility_scope.emplace(paint_layer_);
+    }
   }
 
   // A paint layer should always have LocalBorderBoxProperties when it's ready
