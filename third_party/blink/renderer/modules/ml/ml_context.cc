@@ -9,11 +9,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -239,4 +241,184 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
                                     "Not implemented");
   return nullptr;
 }
+
+void MLContext::writeBuffer(
+    ScriptState* script_state,
+    MLBuffer* dst_buffer,
+    const MaybeShared<DOMArrayBufferView>& src_data_view,
+    uint64_t src_element_offset,
+    ExceptionState& exception_state) {
+  WriteWebNNBuffer(
+      script_state, dst_buffer,
+      base::span<const uint8_t>(
+          static_cast<const uint8_t*>(src_data_view->BaseAddressMaybeShared()),
+          src_data_view->byteLength()),
+      src_element_offset, src_data_view->TypeSize(),
+      /*src_element_count=*/std::nullopt, exception_state);
+}
+
+void MLContext::writeBuffer(
+    ScriptState* script_state,
+    MLBuffer* dst_buffer,
+    const MaybeShared<DOMArrayBufferView>& src_data_view,
+    uint64_t src_element_offset,
+    uint64_t src_element_count,
+    ExceptionState& exception_state) {
+  WriteWebNNBuffer(
+      script_state, dst_buffer,
+      base::span<const uint8_t>(
+          static_cast<const uint8_t*>(src_data_view->BaseAddressMaybeShared()),
+          src_data_view->byteLength()),
+      src_element_offset, src_data_view->TypeSize(), src_element_count,
+      exception_state);
+}
+
+void MLContext::writeBuffer(ScriptState* script_state,
+                            MLBuffer* dst_buffer,
+                            const DOMArrayBufferBase* src_data_base,
+                            uint64_t src_byte_offset,
+                            ExceptionState& exception_state) {
+  WriteWebNNBuffer(
+      script_state, dst_buffer,
+      base::span<const uint8_t>(
+          static_cast<const uint8_t*>(src_data_base->DataMaybeShared()),
+          src_data_base->ByteLength()),
+      src_byte_offset,
+      /*src_data_type_size_bytes=*/1, /*src_element_count=*/std::nullopt,
+      exception_state);
+}
+
+void MLContext::writeBuffer(ScriptState* script_state,
+                            MLBuffer* dst_buffer,
+                            const DOMArrayBufferBase* src_data_base,
+                            uint64_t src_byte_offset,
+                            uint64_t src_byte_size,
+                            ExceptionState& exception_state) {
+  WriteWebNNBuffer(script_state, dst_buffer,
+                   base::make_span(static_cast<const uint8_t*>(
+                                       src_data_base->DataMaybeShared()),
+                                   src_data_base->ByteLength()),
+                   src_byte_offset,
+                   /*src_data_type_size_bytes=*/1,
+                   /*src_element_count=*/src_byte_size, exception_state);
+}
+
+ScriptPromise<DOMArrayBuffer> MLContext::readBuffer(
+    ScriptState* script_state,
+    MLBuffer* src_buffer,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return ScriptPromise<DOMArrayBuffer>();
+  }
+
+  if (src_buffer->context() != this) {
+    exception_state.ThrowTypeError(
+        "The source buffer wasn't created with this context.");
+    return ScriptPromise<DOMArrayBuffer>();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
+    src_buffer->ReadBufferImpl(resolver);
+    return promise;
+  }
+
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Not implemented");
+
+  return promise;
+}
+
+void MLContext::WriteWebNNBuffer(ScriptState* script_state,
+                                 MLBuffer* dst_buffer,
+                                 base::span<const uint8_t> src_data,
+                                 uint64_t src_element_offset,
+                                 unsigned src_data_type_size_bytes,
+                                 std::optional<uint64_t> src_element_count,
+                                 ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return;
+  }
+
+  if (dst_buffer->context() != this) {
+    exception_state.ThrowTypeError(
+        "The destination buffer wasn't created with this context.");
+    return;
+  }
+
+  const size_t src_data_byte_length = src_data.size();
+  if (src_element_offset > src_data_byte_length / src_data_type_size_bytes) {
+    exception_state.ThrowTypeError(
+        "Data offset is too large: srcOffset exceeded byte length of srcData.");
+    return;
+  }
+
+  uint64_t src_byte_offset;
+  if (!base::CheckMul(src_element_offset, src_data_type_size_bytes)
+           .AssignIfValid(&src_byte_offset)) {
+    exception_state.ThrowTypeError(
+        "Data offset is too large: srcOffset will overflow.");
+    return;
+  }
+
+  uint64_t max_write_size_bytes;
+  if (!base::CheckSub(src_data_byte_length, src_byte_offset)
+           .AssignIfValid(&max_write_size_bytes)) {
+    exception_state.ThrowTypeError(
+        "Number of bytes to write is too large: offset exceeds byte length.");
+    return;
+  }
+
+  uint64_t write_byte_size = max_write_size_bytes;
+  if (src_element_count.has_value()) {
+    if (src_element_count.value() >
+        max_write_size_bytes / src_data_type_size_bytes) {
+      exception_state.ThrowTypeError(
+          "Number of bytes to write is too large: number of elements will "
+          "overflow.");
+      return;
+    }
+
+    write_byte_size = src_element_count.value() * src_data_type_size_bytes;
+  }
+
+  if (write_byte_size > dst_buffer->size()) {
+    exception_state.ThrowTypeError(
+        "Number of bytes to write is too large: write size exceeded buffer "
+        "size.");
+    return;
+  }
+
+  // Write size and offset needs to be cast to size_t.
+  base::CheckedNumeric<size_t> checked_write_byte_size(write_byte_size);
+  if (!checked_write_byte_size.IsValid()) {
+    exception_state.ThrowRangeError("Number of bytes to write is too large");
+    return;
+  }
+
+  base::CheckedNumeric<size_t> checked_src_byte_offset(src_byte_offset);
+  if (!checked_src_byte_offset.IsValid()) {
+    exception_state.ThrowRangeError("Offset to write is too large");
+    return;
+  }
+
+  if (device_type_ == V8MLDeviceType::Enum::kGpu) {
+    dst_buffer->WriteBufferImpl(
+        src_data.subspan(checked_src_byte_offset.ValueOrDie(),
+                         checked_write_byte_size.ValueOrDie()),
+        exception_state);
+    return;
+  }
+
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Not implemented");
+}
+
 }  // namespace blink

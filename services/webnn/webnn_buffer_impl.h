@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_WEBNN_BUFFER_IMPL_H_
 
 #include "base/component_export.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
@@ -28,9 +29,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNBufferImpl
   WebNNBufferImpl(const WebNNBufferImpl&) = delete;
   WebNNBufferImpl& operator=(const WebNNBufferImpl&) = delete;
 
+  // TODO(crbug.com/1472888): prefer using `size_t` over `uint64_t`.
   uint64_t size() const { return size_; }
 
  private:
+  // mojom::WebNNBuffer
+  void ReadBuffer(ReadBufferCallback callback) override;
+  void WriteBuffer(mojo_base::BigBuffer src_buffer) override;
+
   // `OnDisconnect` is called from two places.
   //  - When the buffer is explicitly destroyed by the WebNN
   //  developer via the WebNN API.

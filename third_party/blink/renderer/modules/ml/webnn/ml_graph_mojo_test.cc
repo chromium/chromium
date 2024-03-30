@@ -133,13 +133,16 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
  public:
   FakeWebNNBuffer(WebNNContextHelper& helper,
                   mojo::PendingReceiver<blink_mojom::WebNNBuffer> receiver,
-                  const base::UnguessableToken& buffer_handle)
+                  const base::UnguessableToken& buffer_handle,
+                  uint64_t size)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
-        handle_(buffer_handle) {
+        handle_(buffer_handle),
+        buffer_(size) {
     receiver_.set_disconnect_handler(WTF::BindOnce(
         &FakeWebNNBuffer::OnConnectionError, WTF::Unretained(this)));
   }
+
   ~FakeWebNNBuffer() override = default;
 
   FakeWebNNBuffer(const FakeWebNNBuffer&) = delete;
@@ -148,6 +151,18 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   const base::UnguessableToken& handle() const { return handle_; }
 
  private:
+  void ReadBuffer(ReadBufferCallback callback) override {
+    mojo_base::BigBuffer dst_buffer(buffer_.byte_span());
+
+    std::move(callback).Run(
+        blink_mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
+  }
+
+  void WriteBuffer(mojo_base::BigBuffer src_buffer) override {
+    ASSERT_LE(src_buffer.size(), buffer_.size());
+    memcpy(buffer_.data(), src_buffer.data(), src_buffer.size());
+  }
+
   void OnConnectionError() {
     helper_->DisconnectAndDestroyWebNNBufferImpl(handle());
   }
@@ -157,6 +172,8 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   mojo::Receiver<blink_mojom::WebNNBuffer> receiver_;
 
   const base::UnguessableToken handle_;
+
+  mojo_base::BigBuffer buffer_;
 };
 
 class FakeWebNNContext : public blink_mojom::WebNNContext {
@@ -188,7 +205,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
     context_helper_.ConnectWebNNBufferImpl(
         buffer_handle,
         std::make_unique<FakeWebNNBuffer>(context_helper_, std::move(receiver),
-                                          buffer_handle));
+                                          buffer_handle, buffer_info->size));
   }
 
   WebNNContextHelper context_helper_;
@@ -298,6 +315,45 @@ ScriptPromise<MLGraph> BuildSimpleGraph(V8TestingScope& scope,
                         scope.GetExceptionState());
 }
 
+bool IsBufferDataEqual(DOMArrayBuffer* array_buffer,
+                       base::span<const uint8_t> expected_data) {
+  return array_buffer->ByteLength() == expected_data.size() &&
+         std::equal(expected_data.data(),
+                    expected_data.data() + expected_data.size(),
+                    static_cast<const uint8_t*>(array_buffer->Data()),
+                    static_cast<const uint8_t*>(array_buffer->Data()) +
+                        array_buffer->ByteLength());
+}
+
+MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
+    DOMArrayBuffer* array_buffer,
+    base::span<const uint8_t> data) {
+  memcpy(array_buffer->Data(), data.data(), data.size());
+  return MaybeShared<DOMArrayBufferView>(
+      blink::DOMUint8Array::Create(array_buffer, /*byte_offset=*/0,
+                                   /*length=*/array_buffer->ByteLength()));
+}
+
+// Checks the contents of a MLBuffer.
+// Returns false if unable to download or the buffer data did not match
+// expected.
+bool DownloadMLBufferAndCheck(V8TestingScope& scope,
+                              MLContext* context,
+                              MLBuffer* src_buffer,
+                              base::span<const uint8_t> expected_data) {
+  auto* script_state = scope.GetScriptState();
+  ScriptPromiseTester tester(
+      script_state,
+      context->readBuffer(script_state, src_buffer, scope.GetExceptionState()));
+  tester.WaitUntilSettled();
+  if (tester.IsRejected()) {
+    return false;
+  }
+  EXPECT_TRUE(tester.IsFulfilled());
+  auto* array_buffer = V8ToObject<DOMArrayBuffer>(&scope, tester.Value());
+  return IsBufferDataEqual(array_buffer, expected_data);
+}
+
 TEST_P(MLGraphTestMojo, CreateWebNNBufferTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
@@ -327,6 +383,176 @@ TEST_P(MLGraphTestMojo, CreateWebNNBufferTest) {
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
   EXPECT_EQ(ml_buffer->size(), desc->size());
+}
+
+TEST_P(MLGraphTestMojo, WriteWebNNBufferTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* script_state = scope.GetScriptState();
+
+  ScriptPromiseTester context_tester(script_state,
+                                     CreateContext(scope, options));
+  context_tester.WaitUntilSettled();
+  EXPECT_TRUE(context_tester.IsFulfilled());
+  MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
+
+  constexpr uint64_t kBufferSize = 4ull;
+
+  auto* desc = MLBufferDescriptor::Create();
+  desc->setSize(kBufferSize);
+
+  MLBuffer* ml_buffer =
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+
+  if (scope.GetExceptionState().Code() ==
+      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
+    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+  }
+
+  ASSERT_THAT(ml_buffer, testing::NotNull());
+
+  const std::array<const uint8_t, kBufferSize> input_data = {0xAA, 0xAA, 0xAA,
+                                                             0xAA};
+  DOMArrayBuffer* array_buffer =
+      DOMArrayBuffer::Create(input_data.data(), input_data.size());
+  ASSERT_THAT(array_buffer, testing::NotNull());
+
+  // Writing the full buffer.
+  ml_context->writeBuffer(
+      script_state, ml_buffer,
+      CreateArrayBufferViewFromBytes(array_buffer, input_data),
+      /*src_element_offset=*/0, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  ml_context->writeBuffer(
+      script_state, ml_buffer,
+      MaybeShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(
+          array_buffer, /*byte_offset=*/0,
+          /*length=*/array_buffer->ByteLength() / 4)),
+      /*src_element_offset=*/0, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  EXPECT_TRUE(
+      DownloadMLBufferAndCheck(scope, ml_context, ml_buffer, input_data));
+
+  // Writing to the remainder of the buffer from source offset.
+  ml_context->writeBuffer(
+      script_state, ml_buffer,
+      CreateArrayBufferViewFromBytes(
+          array_buffer,
+          std::array<const uint8_t, kBufferSize>{0xAA, 0xAA, 0xBB, 0xBB}),
+      /*src_element_offset=*/2, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // Writing zero bytes at the end of the buffer.
+  ml_context->writeBuffer(
+      script_state, ml_buffer,
+      MaybeShared<DOMArrayBufferView>(blink::DOMUint32Array::Create(
+          array_buffer, /*byte_offset=*/0,
+          /*length=*/array_buffer->ByteLength() / 4)),
+      /*src_element_offset=*/1, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  EXPECT_TRUE(DownloadMLBufferAndCheck(
+      scope, ml_context, ml_buffer,
+      std::array<const uint8_t, kBufferSize>{0xBB, 0xBB, 0xAA, 0xAA}));
+
+  // Writing with both a source offset and size.
+  ml_context->writeBuffer(
+      script_state, ml_buffer,
+      CreateArrayBufferViewFromBytes(
+          array_buffer,
+          std::array<const uint8_t, kBufferSize>{0xCC, 0xCC, 0xCC, 0xCC}),
+      /*src_element_offset=*/2, /*src_element_count=*/1,
+      scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  EXPECT_TRUE(DownloadMLBufferAndCheck(
+      scope, ml_context, ml_buffer,
+      std::array<const uint8_t, kBufferSize>{0xCC, 0xBB, 0xAA, 0xAA}));
+}
+
+// Writing data from an array buffer to a destroyed MLBuffer should not crash.
+TEST_P(MLGraphTestMojo, WriteWebNNBufferThenDestroyTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* script_state = scope.GetScriptState();
+
+  ScriptPromiseTester context_tester(script_state,
+                                     CreateContext(scope, options));
+  context_tester.WaitUntilSettled();
+  EXPECT_TRUE(context_tester.IsFulfilled());
+  MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
+
+  auto* desc = MLBufferDescriptor::Create();
+  desc->setSize(4ull);
+
+  MLBuffer* ml_buffer =
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+
+  if (scope.GetExceptionState().Code() ==
+      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
+    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+  }
+
+  ASSERT_THAT(ml_buffer, testing::NotNull());
+
+  ml_buffer->destroy();
+
+  ml_context->writeBuffer(
+      script_state, ml_buffer,
+      CreateDOMArrayBufferView(desc->size(), V8MLOperandDataType::Enum::kUint8)
+          ->BufferBase(),
+      /*src_byte_offset=*/0, scope.GetExceptionState());
+}
+
+// Reading data from an array buffer to a destroyed MLBuffer should not crash.
+TEST_P(MLGraphTestMojo, ReadWebNNBufferThenDestroyTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* script_state = scope.GetScriptState();
+
+  ScriptPromiseTester context_tester(script_state,
+                                     CreateContext(scope, options));
+  context_tester.WaitUntilSettled();
+  EXPECT_TRUE(context_tester.IsFulfilled());
+  MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
+
+  auto* desc = MLBufferDescriptor::Create();
+  desc->setSize(4ull);
+
+  MLBuffer* ml_buffer =
+      ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
+
+  if (scope.GetExceptionState().Code() ==
+      ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
+    GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
+  }
+
+  ASSERT_THAT(ml_buffer, testing::NotNull());
+
+  ml_buffer->destroy();
+
+  ScriptPromiseTester buffer_tester(
+      script_state, ml_context->readBuffer(script_state, ml_buffer,
+                                           scope.GetExceptionState()));
+  buffer_tester.WaitUntilSettled();
+  EXPECT_TRUE(buffer_tester.IsRejected());
 }
 
 struct OperandInfoMojo {

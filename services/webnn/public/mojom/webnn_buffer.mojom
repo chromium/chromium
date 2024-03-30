@@ -4,10 +4,20 @@
 
 module webnn.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
+
 // Description of the WebNNBuffer to create.
 struct BufferInfo {
   // The size of the buffer in bytes.
   uint64 size;
+};
+
+// Represents the return value of `ReadBuffer()`. Let it be
+// `buffer` if the buffer was successfully read back and `error` otherwise.
+union ReadBufferResult {
+  mojo_base.mojom.BigBuffer buffer;
+  Error error;
 };
 
 // WebNNBuffer creates memory in the GPU process and is used by the renderer
@@ -15,4 +25,12 @@ struct BufferInfo {
 // Buffer creation is performed by calling hardware accelerated OS machine
 // learning APIs.
 interface WebNNBuffer {
+  // Called by the renderer process to carryout reading data from a
+  // `WebNNBuffer`. The result callback contains a copy of the data being
+  // read.
+  ReadBuffer() => (ReadBufferResult result);
+
+  // Called by the renderer process to carryout writing to a `WebNNBuffer`.
+  // The src_buffer is a BigBuffer representing the data to write from.
+  WriteBuffer(mojo_base.mojom.BigBuffer src_buffer);
 };

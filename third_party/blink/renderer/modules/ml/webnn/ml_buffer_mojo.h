@@ -42,6 +42,16 @@ class MODULES_EXPORT MLBufferMojo final : public MLBuffer {
   void DestroyImpl() override;
 
  private:
+  void ReadBufferImpl(ScriptPromiseResolver<DOMArrayBuffer>* resolver) override;
+
+  void WriteBufferImpl(base::span<const uint8_t> src_data,
+                       ExceptionState& exception_state) override;
+
+  // The callback of reading from `WebNNBuffer` by calling hardware accelerated
+  // OS machine learning APIs.
+  void OnDidReadBuffer(ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+                       webnn::mojom::blink::ReadBufferResultPtr result);
+
   // Identifies this `WebNNBuffer` mojo instance in the service process.
   const base::UnguessableToken webnn_handle_;
 

@@ -31,4 +31,19 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
   return {};
 }
 
+void ContextImpl::ReadBufferImpl(
+    const WebNNBufferImpl& src_buffer,
+    mojom::WebNNBuffer::ReadBufferCallback callback) {
+  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
+  // an IPC security reviewer.
+  NOTIMPLEMENTED();
+}
+
+void ContextImpl::WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
+                                  mojo_base::BigBuffer src_buffer) {
+  // TODO(crbug.com/1472888): Implement MLBuffer for TFLite. Involve
+  // an IPC security reviewer.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace webnn::tflite

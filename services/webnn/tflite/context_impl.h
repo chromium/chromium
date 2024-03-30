@@ -29,6 +29,12 @@ class ContextImpl final : public WebNNContextImpl {
       mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
+
+  void ReadBufferImpl(const WebNNBufferImpl& src_buffer,
+                      mojom::WebNNBuffer::ReadBufferCallback callback) override;
+
+  void WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
+                       mojo_base::BigBuffer src_buffer) override;
 };
 
 }  // namespace webnn::tflite

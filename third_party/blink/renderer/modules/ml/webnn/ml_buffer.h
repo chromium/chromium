@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -28,6 +30,21 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // ml_buffer.idl
   void destroy();
   uint64_t size() const;
+
+  const MLContext* context() const { return ml_context_.Get(); }
+
+  // An MLBuffer should implement this method to read data from the MLBuffer.
+  // Once the buffer is read, the resolver should be resolved with a copy of the
+  // buffer data. Otherwise, the resolver should be rejected accordingly. The
+  // caller must call `Promise()` on `resolver` before calling this method.
+  virtual void ReadBufferImpl(
+      ScriptPromiseResolver<DOMArrayBuffer>* resolver) = 0;
+
+  // An MLBuffer should implement this method to write data into
+  // the MLBuffer. If write was successful, the data will be stored
+  // in the MLBuffer.
+  virtual void WriteBufferImpl(base::span<const uint8_t> src_data,
+                               ExceptionState& exception_state) = 0;
 
  protected:
   explicit MLBuffer(MLContext* context, uint64_t size);

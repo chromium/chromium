@@ -66,4 +66,47 @@ void MLBufferMojo::DestroyImpl() {
   remote_buffer_.reset();
 }
 
+void MLBufferMojo::ReadBufferImpl(
+    ScriptPromiseResolver<DOMArrayBuffer>* resolver) {
+  // Remote context gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_buffer_.is_bound()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     "Invalid buffer state");
+    return;
+  }
+
+  remote_buffer_->ReadBuffer(WTF::BindOnce(&MLBufferMojo::OnDidReadBuffer,
+                                           WrapPersistent(this),
+                                           WrapPersistent(resolver)));
+}
+
+void MLBufferMojo::OnDidReadBuffer(
+    ScriptPromiseResolver<DOMArrayBuffer>* resolver,
+    webnn::mojom::blink::ReadBufferResultPtr result) {
+  if (result->is_error()) {
+    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    resolver->RejectWithDOMException(
+        ConvertWebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
+        read_buffer_error.message);
+    return;
+  }
+  resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer().data(),
+                                           result->get_buffer().size()));
+}
+
+void MLBufferMojo::WriteBufferImpl(base::span<const uint8_t> src_data,
+                                   ExceptionState& exception_state) {
+  // Remote context gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_buffer_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid buffer state");
+    return;
+  }
+
+  // Copy src data.
+  remote_buffer_->WriteBuffer(src_data);
+}
+
 }  // namespace blink

@@ -5686,6 +5686,8 @@ interface MLContext
     method compute
     method constructor
     method createBuffer
+    method readBuffer
+    method writeBuffer
 interface MLGraph
     attribute @@toStringTag
     method constructor

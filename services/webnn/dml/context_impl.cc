@@ -18,6 +18,8 @@
 
 namespace webnn::dml {
 
+using Microsoft::WRL::ComPtr;
+
 ContextImpl::ContextImpl(scoped_refptr<Adapter> adapter,
                          mojo::PendingReceiver<mojom::WebNNContext> receiver,
                          WebNNContextProviderImpl* context_provider,
@@ -57,7 +59,7 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
   const uint64_t aligned_buffer_byte_size =
       base::bits::AlignUp(buffer_info->size, kDMLBufferAlignment);
 
-  Microsoft::WRL::ComPtr<ID3D12Resource> buffer;
+  ComPtr<ID3D12Resource> buffer;
   HRESULT hr = command_recorder_->CreateDefaultBuffer(
       aligned_buffer_byte_size, L"WebNN_Default_Buffer_External", buffer);
   if (FAILED(hr)) {
@@ -72,6 +74,205 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
   // being connected and that context cannot destruct before the buffer.
   return std::make_unique<BufferImpl>(std::move(receiver), std::move(buffer),
                                       this, buffer_info->size, buffer_handle);
+}
+
+void ContextImpl::ReadBufferImpl(
+    const WebNNBufferImpl& src_buffer,
+    mojom::WebNNBuffer::ReadBufferCallback callback) {
+  HRESULT hr = StartRecordingIfNecessary();
+  if (FAILED(hr)) {
+    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    return;
+  }
+
+  // TODO(crbug.com/329198124): avoid creating staging buffers on UMA devices.
+  const uint64_t src_buffer_size = src_buffer.size();
+  ComPtr<ID3D12Resource> download_buffer;
+  hr = command_recorder_->CreateReadbackBuffer(
+      src_buffer_size, L"WebNN_Readback_Buffer", download_buffer);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to create the download buffer: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    return;
+  }
+
+  const BufferImpl& src_buffer_impl =
+      static_cast<const BufferImpl&>(src_buffer);
+  ReadbackBufferWithBarrier(command_recorder_.get(), download_buffer,
+                            src_buffer_impl.buffer(), src_buffer_size);
+
+  // Submit copy and schedule GPU wait.
+  hr = command_recorder_->CloseAndExecute();
+  if (FAILED(hr)) {
+    HandleRecordingError("Failed to close and execute the command list.", hr);
+    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    return;
+  }
+
+  // Read size needs to be cast to size_t.
+  base::CheckedNumeric<size_t> checked_src_buffer_size(src_buffer_size);
+  if (!checked_src_buffer_size.IsValid()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
+  // The source and readback buffer is held alive during execution by the
+  // recorder by calling `ReadbackBufferWithBarrier()` then
+  // CommandRecorder::CloseAndExecute().
+  adapter_->command_queue()->WaitAsync(base::BindOnce(
+      &ContextImpl::OnReadbackComplete, weak_factory_.GetWeakPtr(),
+      std::move(download_buffer), checked_src_buffer_size.ValueOrDie(),
+      std::move(callback)));
+}
+
+void ContextImpl::OnReadbackComplete(
+    ComPtr<ID3D12Resource> download_buffer,
+    size_t read_byte_size,
+    mojom::WebNNBuffer::ReadBufferCallback callback,
+    HRESULT hr) {
+  // Tell the queue to release the downloaded buffer so it may be finally
+  // released at the end of this function.
+  adapter_->command_queue()->ReleaseCompletedResources();
+
+  if (FAILED(hr)) {
+    HandleRecordingError("Failed to download the buffer.", hr);
+    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    return;
+  }
+
+  CHECK(download_buffer);
+
+  // Copy over data from the download buffer to the destination buffer.
+  void* mapped_download_data = nullptr;
+  hr = download_buffer->Map(0, nullptr, &mapped_download_data);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to map the download buffer: "
+                << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(ToError<mojom::ReadBufferResult>(
+        mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    return;
+  }
+
+  mojo_base::BigBuffer dst_buffer(base::make_span(
+      static_cast<const uint8_t*>(mapped_download_data), read_byte_size));
+
+  download_buffer->Unmap(0, nullptr);
+
+  std::move(callback).Run(
+      mojom::ReadBufferResult::NewBuffer(std::move(dst_buffer)));
+}
+
+void ContextImpl::WriteBufferImpl(const WebNNBufferImpl& dst_buffer,
+                                  mojo_base::BigBuffer src_buffer) {
+  if (FAILED(StartRecordingIfNecessary())) {
+    return;
+  }
+
+  // TODO(crbug.com/329198124): avoid creating staging buffers on UMA devices.
+  ComPtr<ID3D12Resource> upload_buffer;
+  HRESULT hr = command_recorder_->CreateUploadBuffer(
+      src_buffer.size(), L"WebNN_Upload_Buffer", upload_buffer);
+  if (FAILED(hr)) {
+    // TODO(crbug.com/41492165): generate error using context.
+    DLOG(ERROR) << "Failed to create the upload buffer: "
+                << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+
+  CHECK(upload_buffer);
+
+  // Copy over data from the source buffer to the upload buffer.
+  void* mapped_upload_data = nullptr;
+  hr = upload_buffer->Map(0, nullptr, &mapped_upload_data);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to map the upload buffer: "
+                << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+
+  CHECK(mapped_upload_data);
+
+  memcpy(static_cast<uint8_t*>(mapped_upload_data), src_buffer.data(),
+         src_buffer.size());
+
+  upload_buffer->Unmap(0, nullptr);
+
+  const BufferImpl& dst_buffer_impl =
+      static_cast<const BufferImpl&>(dst_buffer);
+  UploadBufferWithBarrier(command_recorder_.get(), dst_buffer_impl.buffer(),
+                          std::move(upload_buffer), src_buffer.size());
+
+  // TODO(crbug.com/40278771): consider not submitting after every write.
+  // CloseAndExecute() only needs to be called once, when the buffer is read by
+  // another context operation (ex. input into dispatch). Submitting immediately
+  // prevents memory usage from increasing; however, it also incurs more
+  // overhead due to a near empty command-list getting executed every time.
+  hr = command_recorder_->CloseAndExecute();
+  if (FAILED(hr)) {
+    HandleRecordingError("Failed to close and execute the command list.", hr);
+    return;
+  }
+
+  // Since the queue owns the upload buffer, it does not need to be provided
+  // to OnUploadComplete() and will be finally released once the wait is
+  // satisfied.
+  adapter_->command_queue()->WaitAsync(base::BindOnce(
+      &ContextImpl::OnUploadComplete, weak_factory_.GetWeakPtr()));
+}
+
+void ContextImpl::OnUploadComplete(HRESULT hr) {
+  // Once the upload is complete, tell the queue to de-queue the dst_buffer and
+  // upload buffer which immediately releases it.
+  adapter_->command_queue()->ReleaseCompletedResources();
+
+  if (FAILED(hr)) {
+    HandleRecordingError("Failed to upload the buffer.", hr);
+    return;
+  }
+}
+
+HRESULT ContextImpl::StartRecordingIfNecessary() {
+  // Recreate the recorder on error since resources recorded but
+  // not executed would remain alive until this context gets destroyed and
+  // this context would be prevented from recording new commands.
+  if (!command_recorder_) {
+    command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
+                                                adapter_->dml_device());
+    if (!command_recorder_) {
+      DLOG(ERROR) << "Failed to create the command recorder.";
+      return E_FAIL;
+    }
+  }
+
+  CHECK(command_recorder_);
+
+  // If the recorder is already recording, no need to re-open.
+  HRESULT hr = S_OK;
+  if (command_recorder_->IsOpen()) {
+    return hr;
+  }
+
+  // Open the command recorder for recording the context execution commands.
+  hr = command_recorder_->Open();
+  if (FAILED(hr)) {
+    HandleRecordingError("Failed to open the command recorder.", hr);
+    return hr;
+  }
+
+  CHECK(command_recorder_->IsOpen());
+
+  return hr;
+}
+
+void ContextImpl::HandleRecordingError(std::string_view error_message,
+                                       HRESULT hr) {
+  LOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+  command_recorder_.reset();
 }
 
 }  // namespace webnn::dml

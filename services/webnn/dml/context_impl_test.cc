@@ -82,6 +82,12 @@ class WebNNContextDMLImplTest : public TestBase {
   base::test::TaskEnvironment task_environment_;
 };
 
+bool IsBufferDataEqual(const mojo_base::BigBuffer& a,
+                       const mojo_base::BigBuffer& b) {
+  return a.size() == b.size() && std::equal(a.data(), a.data() + a.size(),
+                                            b.data(), b.data() + b.size());
+}
+
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   WebNNContextProviderImpl::CreateForTesting(
@@ -283,5 +289,59 @@ TEST_F(WebNNContextDMLImplTest,
 }
 
 // TODO(crbug.com/1472888): Test the buffer gets destroyed.
+
+TEST_F(WebNNContextDMLImplTest, WriteBufferImplTest) {
+  BadMessageTestHelper bad_message_helper;
+
+  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  SKIP_TEST_IF(
+      !CreateWebNNContext(webnn_provider_remote, webnn_context_remote));
+
+  mojo::Remote<mojom::WebNNBuffer> webnn_buffer_remote;
+  webnn_context_remote->CreateBuffer(
+      webnn_buffer_remote.BindNewPipeAndPassReceiver(),
+      mojom::BufferInfo::New(4ull), base::UnguessableToken::Create());
+
+  const std::array<const uint8_t, 4> input_data{0xAA, 0xAA, 0xAA, 0xAA};
+  webnn_buffer_remote->WriteBuffer(mojo_base::BigBuffer(input_data));
+
+  webnn_context_remote.FlushForTesting();
+  EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
+
+  base::test::TestFuture<mojom::ReadBufferResultPtr> future;
+  webnn_buffer_remote->ReadBuffer(future.GetCallback());
+  mojom::ReadBufferResultPtr result = future.Take();
+  ASSERT_FALSE(result->is_error());
+  EXPECT_TRUE(IsBufferDataEqual(mojo_base::BigBuffer(input_data),
+                                std::move(result->get_buffer())));
+}
+
+// Test writing to a WebNNBuffer smaller than the data being written fails.
+TEST_F(WebNNContextDMLImplTest, WriteBufferImplTooLargeTest) {
+  BadMessageTestHelper bad_message_helper;
+
+  mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
+  SKIP_TEST_IF(
+      !CreateWebNNContext(webnn_provider_remote, webnn_context_remote));
+
+  mojo::Remote<mojom::WebNNBuffer> webnn_buffer_remote;
+  webnn_context_remote->CreateBuffer(
+      webnn_buffer_remote.BindNewPipeAndPassReceiver(),
+      mojom::BufferInfo::New(4ull), base::UnguessableToken::Create());
+
+  webnn_buffer_remote->WriteBuffer(mojo_base::BigBuffer(
+      std::array<const uint8_t, 5>({0xBB, 0xBB, 0xBB, 0xBB, 0xBB})));
+
+  webnn_context_remote.FlushForTesting();
+  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
+}
 
 }  // namespace webnn::dml

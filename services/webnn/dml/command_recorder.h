@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // Architecture).
   bool IsUMA() const;
 
+  // Indicates whether this recorder is ready to record new commands.
+  bool IsOpen() const { return is_open_; }
+
   IDMLDevice* GetDMLDevice() const;
 
   // Get the command queue that this command recorder submits command list to.
