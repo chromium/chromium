@@ -506,7 +506,7 @@ class CORE_EXPORT ObjectPaintProperties {
   }
 
   bool HasNodeTypeInRange(NodeId first_id, NodeId last_id) const {
-    for (NodeId i = first_id; i < last_id;
+    for (NodeId i = first_id; i <= last_id;
          i = static_cast<NodeId>(static_cast<int>(i) + 1)) {
       if (nodes_.HasField(i)) {
         return true;

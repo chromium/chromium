@@ -3608,8 +3608,11 @@ TEST_P(PaintPropertyTreeBuilderTest, ContainPaintOrStyleLayoutTreeState) {
 
     // Verify that we created isolation nodes.
     EXPECT_TRUE(clip_properties->TransformIsolationNode());
+    EXPECT_TRUE(clip_properties->HasTransformNode());
     EXPECT_TRUE(clip_properties->EffectIsolationNode());
+    EXPECT_TRUE(clip_properties->HasEffectNode());
     EXPECT_TRUE(clip_properties->ClipIsolationNode());
+    EXPECT_TRUE(clip_properties->HasClipNode());
 
     // Verify parenting:
 
