@@ -67,8 +67,6 @@ CreditCardAccessManager::CreditCardAccessManager(
     autofill_metrics::CreditCardFormEventLogger* form_event_logger)
     : driver_(driver),
       client_(client),
-      payments_network_interface_(
-          client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()),
       personal_data_manager_(personal_data_manager),
       form_event_logger_(form_event_logger) {}
 
@@ -184,10 +182,12 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
   if (is_user_verifiable_.value_or(false)) {
     unmask_details_request_in_progress_ = true;
     preflight_call_timestamp_ = base::TimeTicks::Now();
-    payments_network_interface_->GetUnmaskDetails(
-        base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
-                       weak_ptr_factory_.GetWeakPtr()),
-        personal_data_manager_->app_locale());
+    client_->GetPaymentsAutofillClient()
+        ->GetPaymentsNetworkInterface()
+        ->GetUnmaskDetails(
+            base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
+                           weak_ptr_factory_.GetWeakPtr()),
+            personal_data_manager_->app_locale());
     autofill_metrics::LogCardUnmaskPreflightCalled(
         GetOrCreateFidoAuthenticator()->IsUserOptedIn());
   }
@@ -1089,7 +1089,9 @@ void CreditCardAccessManager::HandleDialogUserResponse(
     case WebauthnDialogCallbackType::kVerificationCancelled:
       // TODO(crbug.com/949269): Add tests and logging for canceling verify
       // pending dialog.
-      payments_network_interface_->CancelRequest();
+      client_->GetPaymentsAutofillClient()
+          ->GetPaymentsNetworkInterface()
+          ->CancelRequest();
       SignalCanFetchUnmaskDetails();
       ready_to_start_authentication_.Reset();
       unmask_details_request_in_progress_ = false;
