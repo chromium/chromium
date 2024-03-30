@@ -349,6 +349,7 @@ SessionTargeting::GetAppsOpened() const {
 
 // Anchor.
 Anchor::Anchor(const Targeting* anchor_dict) : anchor_dict_(anchor_dict) {}
+Anchor::~Anchor() = default;
 
 const std::optional<WindowAnchorType> Anchor::GetActiveAppWindowAnchorType()
     const {

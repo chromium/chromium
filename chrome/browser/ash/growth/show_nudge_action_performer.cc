@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ash/growth/show_nudge_action_performer.h"
 
+#include <optional>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "base/check_is_test.h"
@@ -33,7 +39,8 @@ constexpr char kSecondaryButtonPath[] = "secondaryButton";
 constexpr char kLabelPath[] = "label";
 constexpr char kActionPath[] = "action";
 constexpr char kArrowPath[] = "arrow";
-constexpr char kActiveAppWindowAnchorType[] =
+constexpr char kAnchorPath[] = "anchor";
+constexpr char kActiveAppWindowAnchorTypePath[] =
     "anchor.activeAppWindowAnchorType";
 
 // Nudge ID.
@@ -119,7 +126,7 @@ const std::string* GetNudgeBody(const NudgePayload* nudge_payload) {
 const std::optional<int> GetActiveAppWindowAnchorType(
     const NudgePayload* nudge_payload) {
   CHECK(nudge_payload);
-  return nudge_payload->FindIntByDottedPath(kActiveAppWindowAnchorType);
+  return nudge_payload->FindIntByDottedPath(kActiveAppWindowAnchorTypePath);
 }
 
 void MaybeSetImageData(const base::Value::Dict* image_value,
@@ -182,6 +189,7 @@ void ShowNudgeActionPerformer::Run(
   const base::Value::Dict* action_params,
   growth::ActionPerformer::Callback callback) {
   if (!ShowNudge(campaign_id, action_params)) {
+    // TODO: b/331953307 - callback with concrete failure result reason.
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
     return;
@@ -192,6 +200,55 @@ void ShowNudgeActionPerformer::Run(
 
 growth::ActionType ShowNudgeActionPerformer::ActionType() const {
   return growth::ActionType::kShowNudge;
+}
+
+// Get the anchor view.
+// Returns:
+// 1. nullptr if no anchor payload specified. Nudge will anchor at the default
+//    position.
+// 2. The targeted anchor view if available.
+// 3. nullopt if the anchor view is not found. Skip showing nudge in this case.
+std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
+  const auto* anchor_dict = nudge_payload->FindDict(kAnchorPath);
+  if (!anchor_dict) {
+    // No anchor specified. Anchor on the default position.
+    return nullptr;
+  }
+
+  // TODO: b/331948797 - Use GetActiveAppWindowAnchorType from
+  // `campaigns_model`.
+  auto app_window_anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
+  if (app_window_anchor_type &&
+      static_cast<growth::WindowAnchorType>(app_window_anchor_type.value()) ==
+          growth::WindowAnchorType::kCaptionButtonContainer) {
+    auto* anchor_view = GetWindowCaptionButtonContainer();
+    if (!anchor_view) {
+      // Can't find the targeted view. Return nullopt and skip showing nudge.
+      return std::nullopt;
+    }
+
+    return anchor_view;
+  }
+
+  auto anchor = growth::Anchor(anchor_dict);
+  auto* shelf_app_button_id = anchor.GetShelfAppButtonId();
+  if (shelf_app_button_id) {
+    auto* anchor_view =
+        ash::Shell::GetPrimaryRootWindowController()
+            ->shelf()
+            ->hotseat_widget()
+            ->GetShelfView()
+            ->GetShelfAppButton(ash::ShelfID(*shelf_app_button_id));
+    if (!anchor_view) {
+      // Can't find the targeted view. Return nullopt and skip showing nudge.
+      return std::nullopt;
+    }
+
+    return anchor_view;
+  }
+
+  // No anchor specified. Anchor on the default position.
+  return nullptr;
 }
 
 bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
@@ -208,23 +265,17 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
   std::u16string nudge_body = base::UTF8ToUTF16(*body_text);
 
-  views::View* nudge_anchor = nullptr;
-
-  // TODO: b/329701489 - Next: Add Shelf Id anchor.
-  auto anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
-  if (anchor_type &&
-      static_cast<growth::WindowAnchorType>(anchor_type.value()) ==
-          growth::WindowAnchorType::kCaptionButtonContainer) {
-    nudge_anchor = GetWindowCaptionButtonContainer();
-    if (!nudge_anchor) {
-      // TODO: b/331212624 - Log error metric.
-      return false;
-    }
+  auto anchor_view = GetAnchor(nudge_payload);
+  if (!anchor_view) {
+    // No targeted anchor view found. Skip showing nudge.
+    // TODO(b/330378048): Records a error metric.
+    LOG(ERROR) << "Targeted anchor view is not found. Skip showing nudge.";
+    return false;
   }
 
   auto nudge_data = ash::AnchoredNudgeData(
       kGrowthNudgeId, ash::NudgeCatalogName::kGrowthCampaignNudge, nudge_body,
-      /*anchor_view=*/nudge_anchor);
+      /*anchor_view=*/anchor_view.value());
 
   auto* title = GetNudgeTitle(nudge_payload);
   if (title && !title->empty()) {
