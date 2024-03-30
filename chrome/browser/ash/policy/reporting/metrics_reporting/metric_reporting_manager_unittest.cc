@@ -378,7 +378,7 @@ class MetricReportingManagerTest
         metrics::kWebsiteEventsWindow, metrics::kWebsiteEventsBucketCount);
     crash_event_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kDevice, Destination::CRASH_EVENTS,
-        Priority::IMMEDIATE);
+        Priority::FAST_BATCH);
 
     auto telemetry_queue = std::make_unique<test::FakeMetricReportQueue>();
     telemetry_queue_ptr_ = telemetry_queue.get();

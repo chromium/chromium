@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
 
   const auto [priority, record] =
       missive_event_observer.GetNextEnqueuedRecord();
-  EXPECT_THAT(priority, Eq(Priority::IMMEDIATE));
+  EXPECT_THAT(priority, Eq(Priority::FAST_BATCH));
   ASSERT_TRUE(record.has_source_info());
   EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
 

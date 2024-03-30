@@ -258,7 +258,7 @@ MetricReportingManager::MetricReportingManager(
       EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
       /*rate_limiter=*/nullptr, source_info);
   crash_event_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kDevice, Destination::CRASH_EVENTS, Priority::IMMEDIATE,
+      EventType::kDevice, Destination::CRASH_EVENTS, Priority::FAST_BATCH,
       /*rate_limiter=*/nullptr, std::move(source_info));
   DelayedInit();
 
