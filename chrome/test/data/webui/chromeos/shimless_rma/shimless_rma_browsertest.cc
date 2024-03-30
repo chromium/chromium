@@ -60,6 +60,13 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, OnboardingChooseWipeDevicePage) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest,
+                       OnboardingChooseWpDisableMethodPage) {
+  RunTest(
+      "chromeos/shimless_rma/onboarding_choose_wp_disable_method_page_test.js",
+      "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

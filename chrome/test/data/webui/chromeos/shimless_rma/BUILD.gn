@@ -21,7 +21,7 @@ build_webui_tests("build_webui_tests") {
     "hardware_error_page_test.ts",
     "onboarding_choose_destination_page_test.ts",
     "onboarding_choose_wipe_device_page_test.ts",
-    "onboarding_choose_wp_disable_method_page_test.js",
+    "onboarding_choose_wp_disable_method_page_test.ts",
     "onboarding_enter_rsu_wp_disable_code_page_test.js",
     "onboarding_landing_page_test.js",
     "onboarding_network_page_test.js",

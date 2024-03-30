@@ -34,10 +34,6 @@ this.ShimlessRmaBrowserTest = class extends PolymerTest {
 
 const tests = [
   [
-    'OnboardingChooseWpDisableMethodPageTest',
-    'onboarding_choose_wp_disable_method_page_test.js'
-  ],
-  [
     'OnboardingEnterRsuWpDisableCodePageTest',
     'onboarding_enter_rsu_wp_disable_code_page_test.js'
   ],
