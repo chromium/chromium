@@ -767,6 +767,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL" translateable="false" desc="The text used for the subtext of the quick settings pod for remaining time in an active session.">
         <ph name="REMAINING_TIME">$1<ex>1 hr, 4 min</ex></ph> left
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_FIRST_TIME_USER_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for focus mode detailed view for first time user.">
+        Focus settings. Set a timer, task, and music to get in the flow
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_EXPERIENCED_USER_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for focus mode detailed view for experienced user.">
+        Focus settings
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_SUBHEADER" translateable="false" desc="The text used for the subheader of the timer section of the focus mode detailed view.">
         Timer
       </message>
@@ -774,13 +780,13 @@ Style notes:
         minutes
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD" translateable="false" desc="The accessible name for the textfield that the user can use to input a specific time value for a focus session.">
-        Input minutes for focus session
+        Edit timer. <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_INCREMENT_BUTTON" translateable="false" desc="The accessible name for the button that the user can press to increase focus session duration.">
-        Increase current timer by <ph name="FOCUS_DURATION_DELTA">$1<ex>5</ex></ph> minutes
+        Add <ph name="FOCUS_DURATION_DELTA">$1<ex>5 minutes</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_DECREMENT_BUTTON" translateable="false" desc="The accessible name for the button that the user can press to decrease focus session duration.">
-        Decrease current timer by <ph name="FOCUS_DURATION_DELTA">$1<ex>5</ex></ph> minutes
+        Reduce <ph name="FOCUS_DURATION_DELTA">$1<ex>5 minutes</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER" translateable="false" desc="The text used for the subheader of the task section of the focus mode detailed view.">
         Task to focus on
@@ -888,7 +894,7 @@ Style notes:
         Enter a task you'd like to focus on. Press enter to add the task
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_CHIP_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the task chip in the chip carousel in the focus mode detailed view.">
-        <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph> (List item) Suggested tasks to focus on from Google Tasks (List)
+        <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph> (List item) Suggested tasks to focus on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME_ENABLED" translateable="false" desc="The accessible name for the do not disturb switch when enabled in the focus mode detailed view.">
         Enable Do not disturb while in Focus. Do not disturb is enabled

@@ -4,8 +4,11 @@
 
 #include "ash/system/focus_mode/focus_mode_detailed_view_controller.h"
 
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -24,8 +27,10 @@ std::unique_ptr<views::View> FocusModeDetailedViewController::CreateView() {
 }
 
 std::u16string FocusModeDetailedViewController::GetAccessibleName() const {
-  // TODO: replace this placeholder later.
-  return u"Focus Mode Settings";
+  return l10n_util::GetStringUTF16(
+      FocusModeController::Get()->HasStartedSessionBefore()
+          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_EXPERIENCED_USER_ACCESSIBLE_NAME
+          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_FIRST_TIME_USER_ACCESSIBLE_NAME);
 }
 
 }  // namespace ash

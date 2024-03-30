@@ -73,6 +73,9 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // is in session and the current session duration.
   void UpdateToggleButtonAccessibility(bool in_focus_session);
 
+  // Updates the accessibility text of the timer adjustment buttons.
+  void UpdateTimerAdjustmentButtonAccessibility();
+
   // Creates the row with the timer and functionality to add time to the focus
   // session.
   void CreateTimerView();
