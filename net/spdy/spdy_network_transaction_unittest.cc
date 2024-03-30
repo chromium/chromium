@@ -115,6 +115,10 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
   }
 
   ~SpdyNetworkTransactionTest() override {
+    // Clear raw_ptr to upload pointer prior to deleting it, to avoid triggering
+    // danling raw_ptr warning.
+    request_.upload_data_stream = nullptr;
+
     // UploadDataStream may post a deletion task back to the message loop on
     // destruction.
     upload_data_stream_.reset();
@@ -495,13 +499,13 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
 
   const GURL default_url_;
   const HostPortPair host_port_pair_;
-  HttpRequestInfo request_;
-  SpdyTestUtil spdy_util_;
-  const NetLogWithSource log_;
 
- private:
+  const NetLogWithSource log_;
   std::unique_ptr<ChunkedUploadDataStream> upload_chunked_data_stream_;
   std::unique_ptr<UploadDataStream> upload_data_stream_;
+  HttpRequestInfo request_;
+  SpdyTestUtil spdy_util_;
+
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList feature_list_;
 };

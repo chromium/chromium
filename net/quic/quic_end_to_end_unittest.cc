@@ -222,9 +222,9 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   HttpNetworkSessionParams session_params_;
   HttpNetworkSessionContext session_context_;
   std::unique_ptr<TestTransactionFactory> transaction_factory_;
-  HttpRequestInfo request_;
   std::string request_body_;
   std::unique_ptr<UploadDataStream> upload_data_stream_;
+  HttpRequestInfo request_;
   std::unique_ptr<QuicSimpleServer> server_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
   IPEndPoint server_address_;
