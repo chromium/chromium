@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -24,6 +25,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 namespace {
@@ -444,7 +446,9 @@ void BirchReleaseNotesItem::PerformSecondaryAction() {
 }
 
 void BirchReleaseNotesItem::LoadIcon(LoadIconCallback callback) const {
-  LOG(ERROR) << "Not implemented";
+  std::move(callback).Run(
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_BIRCH_RELEASE_NOTES_ICON));
 }
 
 }  // namespace ash
