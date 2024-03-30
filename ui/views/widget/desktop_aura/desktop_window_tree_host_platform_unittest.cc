@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "ui/aura/client/capture_client.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -19,6 +20,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/test/views_test_base.h"
@@ -520,8 +523,12 @@ class ScopedPlatformWindowFactoryDelegate
 
   std::unique_ptr<ui::PlatformWindow> Create(
       aura::WindowTreeHostPlatform* host) override {
-    return std::make_unique<ui::StubWindow>(host, false);
+    auto stub_ptr = std::make_unique<ui::StubWindow>(gfx::Rect());
+    stub_ptr->InitDelegateWithWidget(/*delegate=*/host,
+                                     /*widget=*/++last_accelerated_widget_);
+    return std::move(stub_ptr);
   }
+  gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
 };
 
 TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
@@ -552,6 +559,47 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   widget->Show();
   EXPECT_TRUE(widget->IsActive());
 }
+
+TEST_F(DesktopWindowTreeHostPlatformTest, FocusParentWindowWillActivate) {
+#if BUILDFLAG(IS_OZONE)
+  if (!base::FeatureList::IsEnabled(
+          features::kOzoneBubblesUsePlatformWidgets)) {
+    GTEST_SKIP();
+  }
+#endif
+
+  std::unique_ptr<ScopedPlatformWindowFactoryDelegate>
+      scoped_platform_window_factory_delegate(
+          new ScopedPlatformWindowFactoryDelegate);
+
+  auto widget = CreateWidgetWithNativeWidget();
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  widget->Show();
+
+  Widget::InitParams widget_2_params(Widget::InitParams::TYPE_BUBBLE);
+  widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
+  widget_2_params.parent = widget->GetNativeWindow();
+  auto widget2 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_2_params));
+  widget2->Show();
+
+  // Deactivate toplevel.
+  host_platform->Deactivate();
+  EXPECT_FALSE(host_platform->IsActive());
+
+  // Set focus in the toplevel content_window.
+  std::unique_ptr<aura::Window> child_window =
+      std::make_unique<aura::Window>(nullptr);
+  child_window->Init(ui::LAYER_NOT_DRAWN);
+  host_platform->GetContentWindow()->AddChild(child_window.get());
+  auto* focus_client = aura::client::GetFocusClient(host_platform->window());
+  focus_client->FocusWindow(child_window.get());
+
+  // Toplevel should be active.
+  EXPECT_TRUE(host_platform->IsActive());
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 class VisibilityObserver : public aura::WindowObserver {

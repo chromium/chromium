@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -27,6 +28,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
@@ -144,20 +146,26 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
     return false;
   }
 
+  auto* xdg_parent = wayland_window_->AsWaylandPopup()->GetXdgParentWindow();
+  if (!xdg_parent) {
+    NOTREACHED() << "xdg_popup does not have a valid parent xdg_surface";
+    return false;
+  }
+
   XDGSurfaceWrapperImpl* parent_xdg_surface = nullptr;
-  // If the parent window is a popup, the surface of that popup must be used as
-  // a parent.
-  if (auto* parent_popup = wayland_window_->parent_window()->AsWaylandPopup()) {
-    XDGPopupWrapperImpl* popup =
-        static_cast<XDGPopupWrapperImpl*>(parent_popup->shell_popup());
-    parent_xdg_surface = popup->xdg_surface_wrapper();
-  } else {
-    WaylandToplevelWindow* wayland_surface =
-        static_cast<WaylandToplevelWindow*>(wayland_window_->parent_window());
+  // If the xdg_parent window is a popup, the surface of that popup must be used
+  // as a parent to create this xdg_popup.
+  if (auto* parent_popup = xdg_parent->AsWaylandPopup()) {
     parent_xdg_surface =
-        static_cast<XDGToplevelWrapperImpl*>(wayland_surface->shell_toplevel())
+        static_cast<XDGPopupWrapperImpl*>(parent_popup->shell_popup())
+            ->xdg_surface_wrapper();
+  } else if (auto* parent_toplevel = xdg_parent->AsWaylandToplevelWindow()) {
+    parent_xdg_surface =
+        static_cast<XDGToplevelWrapperImpl*>(parent_toplevel->shell_toplevel())
             ->xdg_surface_wrapper();
   }
+
+  CHECK(xdg_surface_wrapper_ && parent_xdg_surface);
 
   if (!xdg_surface_wrapper_ || !parent_xdg_surface)
     return false;
@@ -198,7 +206,12 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
     }
   }
 
-  GrabIfPossible(connection_, wayland_window_->parent_window());
+  std::optional<bool> parent_shell_popup_has_grab;
+  if (auto* parent_popup = xdg_parent->AsWaylandPopup()) {
+    parent_shell_popup_has_grab.emplace(
+        parent_popup->shell_popup()->has_grab());
+  }
+  GrabIfPossible(connection_, parent_shell_popup_has_grab);
 
   static constexpr xdg_popup_listener kXdgPopupListener = {
       .configure = &OnConfigure,

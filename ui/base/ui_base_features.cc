@@ -134,6 +134,12 @@ bool AreF11AndF12ShortcutsEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_OZONE)
+BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
+             "OzoneBubblesUsePlatformWidgets",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_OZONE)
+
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 BASE_FEATURE(kInputMethodSettingsUiUpdate,

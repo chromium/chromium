@@ -63,6 +63,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void OnWidgetInitDone() = 0;
 
   // Called from DesktopNativeWidgetAura::OnWindowActivated().
+  // `active`: if `DesktopNativeWidgetAura::content_window()` contains the
+  // `aura::Window` that gains active.
   virtual void OnActiveWindowChanged(bool active) = 0;
 
   // Creates and returns the Tooltip implementation to use. Return value is

@@ -56,6 +56,7 @@ namespace ui {
 
 class BitmapCursor;
 class OSExchangeData;
+class WaylandBubble;
 class WaylandConnection;
 class WaylandSubsurface;
 class WaylandWindowDragController;
@@ -77,7 +78,7 @@ class WaylandWindow : public PlatformWindow,
   ~WaylandWindow() override;
 
   // A factory method that can create any of the derived types of WaylandWindow
-  // (WaylandToplevelWindow, WaylandPopup and WaylandAuxiliaryWindow).
+  // (WaylandToplevelWindow, WaylandPopup and WaylandBubble).
   static std::unique_ptr<WaylandWindow> Create(
       PlatformWindowDelegate* delegate,
       WaylandConnection* connection,
@@ -112,6 +113,7 @@ class WaylandWindow : public PlatformWindow,
     parent_window_ = parent_window;
   }
   WaylandWindow* parent_window() const { return parent_window_; }
+  PlatformWindowDelegate* delegate() { return delegate_; }
 
   gfx::AcceleratedWidget GetWidget() const;
 
@@ -142,6 +144,14 @@ class WaylandWindow : public PlatformWindow,
   // shell_popups as long as they must be destroyed in the back order.
   void set_child_window(WaylandWindow* window) { child_window_ = window; }
   WaylandWindow* child_window() const { return child_window_; }
+
+  // Called only by `WaylandBubble`s that are managed in this instance's
+  // `child_bubbles_` list.
+  void AddBubble(WaylandBubble* window);
+  void RemoveBubble(WaylandBubble* window);
+  void ActivateBubble(WaylandBubble* window);
+
+  WaylandBubble* active_bubble() { return active_bubble_; }
 
   // Sets the window_scale for this window with respect to a display this window
   // is located at. This determines how events can be translated and how pixel
@@ -334,6 +344,12 @@ class WaylandWindow : public PlatformWindow,
   // Returns a top most child window within the same hierarchy.
   WaylandWindow* GetTopMostChildWindow();
 
+  // This is the ancestor window that has an xdg_toplevel or xdg_popup role,
+  // because xdg_popup can only be created by another window with an xdg-role.
+  // If `parent_window()` is WaylandBubble, we walk up the window tree to find
+  // the closest ancestor with an xdg-role assigned to create a xdg_popup.
+  WaylandWindow* GetXdgParentWindow();
+
   // Called by the WaylandSurface attached to this window when that surface
   // becomes partially or fully within the scanout region of an output that it
   // wasn't before.
@@ -349,11 +365,16 @@ class WaylandWindow : public PlatformWindow,
   // Says if the current window is set as active by the Wayland server. This
   // only applies to toplevel surfaces (surfaces such as popups, subsurfaces
   // do not support that).
+  // TODO(fangzhoug): Revisit `IsActive()` meaning, it has a mixed meaning of
+  // both platform activation in wayland server's perspective as toplevel, and
+  // activation status of delegate()->OnActivationChanged() as bubble.
   virtual bool IsActive() const;
 
-  // WaylandWindow can be any type of object - WaylandToplevelWindow,
-  // WaylandPopup. The following methods cast itself to WaylandPopup or
-  // WaylandToplevelWindow, if |this| is of that type.
+  // WaylandWindow can be any type of object - WaylandBubble,
+  // WaylandToplevelWindow, WaylandPopup. The following methods cast itself to
+  // WaylandBubble, WaylandPopup or WaylandToplevelWindow, if |this| is
+  // of that type.
+  virtual WaylandBubble* AsWaylandBubble();
   virtual WaylandPopup* AsWaylandPopup();
   virtual WaylandToplevelWindow* AsWaylandToplevelWindow();
 
@@ -393,9 +414,11 @@ class WaylandWindow : public PlatformWindow,
 
   WaylandConnection* connection() { return connection_; }
   const WaylandConnection* connection() const { return connection_; }
-  PlatformWindowDelegate* delegate() { return delegate_; }
   zaura_surface* aura_surface() {
     return aura_surface_ ? aura_surface_.get() : nullptr;
+  }
+  const std::vector<raw_ptr<WaylandBubble>>& child_bubbles() {
+    return child_bubbles_;
   }
 
   // Update the bounds of the window in DIP. Unlike SetBoundInDIP, it will not
@@ -557,7 +580,16 @@ class WaylandWindow : public PlatformWindow,
   raw_ptr<PlatformWindowDelegate> delegate_;
   raw_ptr<WaylandConnection> connection_;
   raw_ptr<WaylandWindow> parent_window_ = nullptr;
+  // TODO(crbug.com/329705709): Rename to `child_popup_`.
   raw_ptr<WaylandWindow> child_window_ = nullptr;
+
+  // `active_bubble_` represents the WaylandBubble that should take activation
+  // when this WaylandWindow has activation from wayland server. It can be set
+  // on a WaylandWindow regardless of whether or not this WaylandWindow has
+  // activation. If this WaylandWindow has activation the bubble is considered
+  // the active WaylandWindow in the window hierarchy.
+  raw_ptr<WaylandBubble> active_bubble_ = nullptr;
+  std::vector<raw_ptr<WaylandBubble>> child_bubbles_;
 
   std::unique_ptr<WaylandFrameManager> frame_manager_;
   bool received_configure_event_ = false;

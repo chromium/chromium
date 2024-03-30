@@ -27,7 +27,7 @@ class WaylandPopup : public WaylandWindow {
 
   ~WaylandPopup() override;
 
-  ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }
+  ShellPopupWrapper* shell_popup() { return shell_popup_.get(); }
 
   // WaylandWindow overrides:
   void TooltipShown(const char* text,

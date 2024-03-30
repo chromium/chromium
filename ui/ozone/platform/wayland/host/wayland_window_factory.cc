@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
@@ -22,24 +23,34 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
   std::unique_ptr<WaylandWindow> window;
   switch (properties.type) {
     case PlatformWindowType::kPopup:
-    case PlatformWindowType::kTooltip:
-    case PlatformWindowType::kMenu:
+    case PlatformWindowType::kBubble:
       // kPopup can be created by MessagePopupView without a parent window set.
       // It looks like it ought to be a global notification window. Thus, use a
       // toplevel window instead.
       if (auto* parent = connection->window_manager()->GetWindow(
               properties.parent_widget)) {
+        window = std::make_unique<WaylandBubble>(delegate, connection, parent);
+      } else {
+        // TODO(crbug.com/1399419): Make sure bubbles/popups pass a parent
+        // window.
+        DLOG(WARNING) << "Failed to determine parent for bubble/popup window.";
+        window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
+      }
+      break;
+    case PlatformWindowType::kTooltip:
+    case PlatformWindowType::kMenu:
+      if (auto* parent = connection->window_manager()->GetWindow(
+              properties.parent_widget)) {
         window = std::make_unique<WaylandPopup>(delegate, connection, parent);
       } else {
-        DLOG(WARNING) << "Failed to determine parent for menu/popup window.";
+        DLOG(WARNING) << "Failed to determine parent for menu/tooltip window.";
         window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       }
       break;
     case PlatformWindowType::kWindow:
-    case PlatformWindowType::kBubble:
     case PlatformWindowType::kDrag:
       // TODO(crbug.com/1399419): Figure out what kind of surface we need to
-      // create for kBubble and kDrag windows.
+      // create kDrag windows.
       window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       break;
     default:

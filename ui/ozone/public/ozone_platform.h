@@ -209,9 +209,12 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // remaining issues are resolved.
     bool supports_out_of_window_clip_rect = false;
 
-    // Whether wayland server has the fix that applies transformations in the
-    // correct order.
+    // Wayland only: whether wayland server has the fix that applies
+    // transformations in the correct order.
     bool has_transformation_fix = false;
+
+    // Wayland only: whether bubble widgets can use platform objects.
+    bool supports_subwindows_as_accelerated_widgets = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

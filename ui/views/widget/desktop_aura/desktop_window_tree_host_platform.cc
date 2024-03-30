@@ -23,6 +23,7 @@
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -341,7 +342,21 @@ void DesktopWindowTreeHostPlatform::OnWidgetInitDone() {
       GetWindowMaskForClipping().isEmpty());
 }
 
-void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {}
+void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {
+#if BUILDFLAG(IS_OZONE)
+  // When bubbles are accelerated widgets, `window_children_` can contain a
+  // bubble where `bubble->is_active_` is true, while `this->is_active_` is
+  // false.
+  // When WindowFocusedFromInputEvent makes a window of this tree host
+  // active, we enter this condition where `active && !is_active_` because
+  // subwindows do not get active state from the OS on some platforms (E.g.
+  // Wayland). So we need to ensure Activate is conveyed to the platform_window.
+  if (base::FeatureList::IsEnabled(features::kOzoneBubblesUsePlatformWidgets) &&
+      active && !is_active_ && !window_children_.empty()) {
+    Activate();
+  }
+#endif
+}
 
 std::unique_ptr<corewm::Tooltip>
 DesktopWindowTreeHostPlatform::CreateTooltip() {

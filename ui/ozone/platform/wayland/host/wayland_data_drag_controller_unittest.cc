@@ -893,7 +893,7 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
 }
 
 // Ensures that requests to create a |PlatformWindowType::kPopup| during drag
-// sessions return xdg_popup-backed windows.
+// sessions return wl_subsurface-backed windows.
 TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
   auto* origin_window = window_.get();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
@@ -920,7 +920,8 @@ TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* surface = server->GetObject<wl::MockSurface>(surface_id);
     ASSERT_TRUE(surface);
-    EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
+    EXPECT_EQ(nullptr, surface->xdg_surface());
+    EXPECT_NE(nullptr, surface->sub_surface());
   });
 }
 
@@ -943,6 +944,7 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
           auto* surface = server->GetObject<wl::MockSurface>(surface_id);
           ASSERT_TRUE(surface);
           EXPECT_EQ(nullptr, surface->sub_surface());
+          EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
         });
   };
 

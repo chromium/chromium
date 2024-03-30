@@ -132,6 +132,11 @@ BASE_DECLARE_FEATURE(kSupportF11AndF12KeyShortcuts);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool AreF11AndF12ShortcutsEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_OZONE)
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kOzoneBubblesUsePlatformWidgets);
+#endif  // BUILDFLAG(IS_OZONE)
+
 // Indicates whether DrmOverlayManager should used the synchronous API to
 // perform pageflip tests.
 COMPONENT_EXPORT(UI_BASE_FEATURES)

@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
 #include <aura-shell-client-protocol.h>
+
 #include <string>
 
 #include "base/nix/xdg_util.h"
@@ -26,6 +27,7 @@
 #include "ui/ozone/platform/wayland/host/gtk_surface1.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
+#include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -179,6 +181,9 @@ void WaylandToplevelWindow::Hide() {
     child_window()->Hide();
     set_child_window(nullptr);
   }
+  for (auto bubble : child_bubbles()) {
+    bubble->Hide();
+  }
   WaylandWindow::Hide();
 
   // Request the compositor to cease any possible ongoing snapping
@@ -322,12 +327,15 @@ void WaylandToplevelWindow::Activate() {
   } else if (gtk_surface1_) {
     gtk_surface1_->RequestFocus();
   }
+
   // This is required as the high level activation might not get a flush for
   // a while. Example: Ash calls OpenURL in Lacros, which activates a window
   // but nothing more happens (until the user moves the mouse over a Lacros
   // window in which case events will start and the activation will come
   // through).
   connection()->Flush();
+
+  WaylandWindow::Activate();
 }
 
 void WaylandToplevelWindow::Deactivate() {
@@ -335,6 +343,7 @@ void WaylandToplevelWindow::Deactivate() {
     shell_toplevel_->Deactivate();
     connection()->Flush();
   }
+  WaylandWindow::Deactivate();
 }
 
 void WaylandToplevelWindow::SizeConstraintsChanged() {
@@ -661,8 +670,13 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     delegate()->OnWindowStateChanged(previous_state_, state_);
   }
 
-  if (did_active_change)
-    delegate()->OnActivationChanged(is_active_);
+  if (did_active_change) {
+    if (active_bubble()) {
+      ActivateBubble(is_active_ ? active_bubble() : nullptr);
+    } else {
+      delegate()->OnActivationChanged(is_active_);
+    }
+  }
 }
 
 void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {

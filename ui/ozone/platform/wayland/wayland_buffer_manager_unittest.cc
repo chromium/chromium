@@ -1477,10 +1477,9 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
 TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
   constexpr uint32_t kDmabufBufferId = 1;
 
-  // Exercise three window types that create different windows - toplevel, popup
-  // and subsurface.
+  // Exercise two window types that create different windows - toplevel, menu.
+  // subsurface windows do not create xdg_surfaces so no need to configure them.
   std::vector<PlatformWindowType> window_types{PlatformWindowType::kWindow,
-                                               PlatformWindowType::kPopup,
                                                PlatformWindowType::kTooltip};
 
   for (const auto& type : window_types) {

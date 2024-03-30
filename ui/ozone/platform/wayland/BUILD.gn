@@ -77,6 +77,8 @@ source_set("wayland") {
     "host/single_pixel_buffer.h",
     "host/surface_augmenter.cc",
     "host/surface_augmenter.h",
+    "host/wayland_bubble.cc",
+    "host/wayland_bubble.h",
     "host/wayland_buffer_backing.cc",
     "host/wayland_buffer_backing.h",
     "host/wayland_buffer_backing_dmabuf.cc",

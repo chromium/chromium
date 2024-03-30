@@ -2313,6 +2313,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   ASSERT_TRUE(event4->IsLocatedEvent());
   EXPECT_EQ(event4->AsLocatedEvent()->location(), gfx::Point(7, 16));
 
+  nested_menu_window.reset();
   menu_window.reset();
 }
 

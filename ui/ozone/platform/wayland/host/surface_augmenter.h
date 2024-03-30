@@ -41,6 +41,7 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   // Returns true if augmented_surface_set_rounded_corners_clip_bounds handles
   // bounds as its in local surface coordinates space.
   bool NeedsRoundedClipBoundsInLocalSurfaceCoordinates() const;
+  bool SupportsCompositingOnlySurface() const;
 
   uint32_t GetSurfaceAugmentorVersion() const;
 
