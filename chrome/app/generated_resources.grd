@@ -6949,7 +6949,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Add Username
       </message>
       <message name="IDS_ADD_USERNAME_BODY" desc="Body text in the add username bubble.">
-        To help Google Password Manager save your sing-in info, add your username for this site
+        To help Google Password Manager save your sign-in info, add your username for this site
       </message>
       <message name="IDS_UPDATE_PASSWORD" desc="The title of the save password bubble when a password can be updated.">
         Update password?
