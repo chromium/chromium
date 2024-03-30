@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_timestamp
-  NameError: name 'wait_for_future_safe' is not defined
-Harness: the test ran to completion.
