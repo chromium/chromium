@@ -3326,6 +3326,7 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Nonaktifkan pelaporan antarmuka jaringan perangkat</translation>
 <translation id="3540935459049973317">Batas Waktu per Aplikasi</translation>
+<translation id="3546271546272655966"><ph name="DBSC_FEATURE_NAME" /> dapat digunakan bergantung pada proses peluncuran fitur.</translation>
 <translation id="3547954654003013442">Setelan proxy</translation>
 <translation id="3548064438634502368">Tutup Browser</translation>
 <translation id="3548642468619496972">Blokir download berbahaya, download tidak biasa atau tidak diinginkan, dan jenis file berbahaya.</translation>
@@ -4971,6 +4972,15 @@ Jika kebijakan disetel ke Salah (False), perilaku default akan digunakan.</trans
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> akan menjadi opsional dan proses peluncuran <ph name="PRODUCT_NAME" /> tidak akan diblokir jika gagal.
 
       Pendaftaran kebijakan cloud cakupan perangkat di desktop menggunakan kebijakan ini. Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
+<translation id="4889589161838982604">Mengontrol status fitur <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> melindungi cookie autentikasi Google dari pencurian cookie dengan memberikan bukti kriptografis kepemilikan perangkat ke server Google secara berkala.
+
+Jika kebijakan ini disetel ke salah (false), fitur <ph name="DBSC_FEATURE_NAME" /> akan dinonaktifkan.
+
+Jika kebijakan ini disetel ke benar (true), fitur <ph name="DBSC_FEATURE_NAME" /> akan diaktifkan.
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk fitur <ph name="DBSC_FEATURE_NAME" />, yang berarti fitur tersebut akan diluncurkan secara bertahap ke semakin banyak pengguna.</translation>
 <translation id="488996881569316769">Telemetri Jaringan</translation>
 <translation id="4890453377345554695">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta akses tulis ke file atau direktori di sistem file pada sistem operasi host.
 
@@ -5764,6 +5774,7 @@ Hal ini dihapus di M112.</translation>
       Jika kebijakan ini tidak disetel, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
+<translation id="552607466422196365">Nonaktifkan <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Izinkan kueri ke Server Quirk dan file konfigurasi khusus hardware yang mungkin didownload</translation>
 <translation id="5526701598901867718">Semua (tidak aman)</translation>
 <translation id="5534079385061985566">Aktifkan fitur pemulihan penuh.</translation>
@@ -6181,6 +6192,7 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, <ph name="PLUGIN_VM_NAME" /> tidak diizinkan mengumpulkan data.
       Jika ditetapkan ke benar (true), <ph name="PLUGIN_VM_NAME" /> dapat mengumpulkan data penggunaan <ph name="PLUGIN_VM_NAME" /> yang kemudian digabungkan dan dianalisis secara menyeluruh untuk membuat pengalaman <ph name="PLUGIN_VM_NAME" /> jadi lebih baik.</translation>
+<translation id="5872738620659477303">Mengikat kredensial Google ke perangkat</translation>
 <translation id="5875873062228321803">Mengonfigurasi persyaratan versi minimum <ph name="PRODUCT_OS_NAME" /> yang diizinkan.
 
       Jika kebijakan ini disetel ke daftar tidak kosong:
@@ -10634,6 +10646,7 @@ Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, l
       Jika Anda menyetel kebijakan tersebut, pengguna tidak dapat mengubahnya di setelan browser. Jika tidak disetel, mode latar belakang akan nonaktif terlebih dahulu dan pengguna dapat mengubahnya.</translation>
 <translation id="981245424658084931">Aktifkan heartbeat aktivitas perangkat</translation>
 <translation id="981346395360763138">Layanan lokasi Google dinonaktifkan</translation>
+<translation id="982195863867062122">Aktifkan <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Aktifkan fitur pemeriksa ejaan</translation>
 <translation id="983256325512298435">Menentukan daftar protokol yang dapat meluncurkan aplikasi eksternal dari asal yang tercantum tanpa meminta izin pengguna</translation>
 <translation id="984365509386992443">Jika kebijakan ini disetel ke aktif atau tidak disetel, pengguna mungkin akan menerima survei yang terkait dengan Safe Browsing.

@@ -3268,6 +3268,7 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
 <translation id="3540846231645422635">Cihaz ağ arayüzü raporlamasını devre dışı bırak</translation>
 <translation id="3540935459049973317">Uygulama Başına Süre Sınırları</translation>
+<translation id="3546271546272655966">Özellik kullanıma sunma sürecine bağlı olarak <ph name="DBSC_FEATURE_NAME" /> kullanılabilir.</translation>
 <translation id="3547954654003013442">Proxy ayarları</translation>
 <translation id="3548064438634502368">Tarayıcıları Kapat</translation>
 <translation id="3548642468619496972">Kötü amaçlı indirmeleri, yaygın olmayan veya istenmeyen indirmeleri ve tehlikeli dosya türlerini engelle.</translation>
@@ -4870,6 +4871,15 @@ Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> isteğe bağlı olur ve başarısız olması halinde <ph name="PRODUCT_NAME" /> ürününün işlemi başlatmasını engellemez.
 
       Masaüstünde makine kapsamı bulut politika kaydı bu politikayı kullanır. Ayrıntılar için https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 adresine bakın.</translation>
+<translation id="4889589161838982604"><ph name="DBSC_FEATURE_NAME" /> özelliğinin durumunu kontrol eder.
+
+<ph name="DBSC_FEATURE_NAME" />, cihaz sahipliğini Google sunucularına belirli aralıklarla kriptografik bir şekilde kanıtlayarak Google kimlik doğrulama çerezlerinin çalınmasını engeller.
+
+Bu politika Yanlış değerine ayarlanırsa <ph name="DBSC_FEATURE_NAME" /> özelliği devre dışı bırakılır.
+
+Bu politika Doğru değerine ayarlanırsa <ph name="DBSC_FEATURE_NAME" /> özelliği etkinleştirilir.
+
+Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />, <ph name="DBSC_FEATURE_NAME" /> için varsayılan kullanıma sunma sürecini uygular. Bu da özelliğin kademeli olarak daha fazla kullanıcıya sunulacağı anlamına gelir.</translation>
 <translation id="488996881569316769">Ağ Telemetrisi</translation>
 <translation id="4890453377345554695">Politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sistemindeki dosya veya dizinlere yazma erişimi vermelerini isteyebilecek siteleri belirten URL kalıplarının listesini oluşturabilirsiniz.
 
@@ -5655,6 +5665,7 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
       Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
+<translation id="552607466422196365"><ph name="DBSC_FEATURE_NAME" /> özelliğini devre dışı bırak</translation>
 <translation id="5526184558582921522">Quirks Sunucusu'nu sorgulamaya ve donanıma özgü yapılandırma dosyalarını içerebilecek indirmelere izin ver</translation>
 <translation id="5526701598901867718">Hepsi (güvenli değil)</translation>
 <translation id="5534079385061985566">Tam geri yükleme özelliğini etkinleştir.</translation>
@@ -6059,6 +6070,7 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
 
       Politika yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PLUGIN_VM_NAME" /> eklentisinin veri toplamasına izin verilmez.
       Politika doğru değerine ayarlanırsa <ph name="PLUGIN_VM_NAME" /> eklentisi <ph name="PLUGIN_VM_NAME" /> kullanım verilerini toplayabilir. Ardından <ph name="PLUGIN_VM_NAME" /> deneyimini iyileştirmek için veriler birleştirilir ve kapsamlı bir şekilde analiz edilir.</translation>
+<translation id="5872738620659477303">Google kimlik bilgilerini bir cihaza bağla</translation>
 <translation id="5875873062228321803">İzin verilen minimum <ph name="PRODUCT_OS_NAME" /> sürümü gereksinimini yapılandırır.
 
       Bu politika boş olmayan bir listeye ayarlandığında:
@@ -10440,6 +10452,7 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
       Bu politikayı ayarlarsanız kullanıcılar tarayıcı ayarlarında değiştiremez. Politika ayarlanmazsa arka plan modu başta kapalı olur, ancak kullanıcılar bunu değiştirebilir.</translation>
 <translation id="981245424658084931">Cihaz etkinliği sinyalini etkinleştir</translation>
 <translation id="981346395360763138">Google konum hizmetleri devre dışı</translation>
+<translation id="982195863867062122"><ph name="DBSC_FEATURE_NAME" /> özelliğini etkinleştir.</translation>
 <translation id="982497069985795632">Yazım denetimini etkinleştir</translation>
 <translation id="983256325512298435">Listelenen kaynaklardan kullanıcıya sormadan harici uygulama başlatabilecek protokollerin bir listesini tanımlayın</translation>
 <translation id="984365509386992443">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında kullanıcı, Güvenli Tarama ile ilgili anketler alabilir.

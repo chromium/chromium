@@ -3313,6 +3313,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Desativar relatórios sobre a interface de rede do dispositivo</translation>
 <translation id="3540935459049973317">Limites de tempo por app</translation>
+<translation id="3546271546272655966">O <ph name="DBSC_FEATURE_NAME" /> pode ser usado dependendo do processo de lançamento do recurso.</translation>
 <translation id="3547954654003013442">Configurações de proxy</translation>
 <translation id="3548064438634502368">Fechar navegadores</translation>
 <translation id="3548642468619496972">Bloquear downloads maliciosos, incomuns ou indesejados e tipos de arquivo perigosos.</translation>
@@ -4960,6 +4961,15 @@ Se a política for definida como "false", o comportamento padrão será usado.</
       Se ela for definida como "Desativada" ou não for definida, o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional e não impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
 
       A inscrição de políticas da nuvem para o escopo da máquina em computadores usa esta política. Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="4889589161838982604">Controla o estado do recurso <ph name="DBSC_FEATURE_NAME" />.
+
+O <ph name="DBSC_FEATURE_NAME" /> protege os cookies de autenticação do Google contra o roubo de cookies. Ele faz isso ao fornecer uma prova criptográfica de posse do dispositivo regularmente aos servidores do Google.
+
+Se esta política for definida como falsa, o recurso <ph name="DBSC_FEATURE_NAME" /> será desativado.
+
+Se for definida como verdadeira, o recurso <ph name="DBSC_FEATURE_NAME" /> será ativado.
+
+Se for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão do <ph name="DBSC_FEATURE_NAME" />, o que significa que o recurso será lançado gradualmente para um número cada vez maior de usuários.</translation>
 <translation id="488996881569316769">Telemetria de rede</translation>
 <translation id="4890453377345554695">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de gravação de arquivos ou diretórios no sistema de arquivos do sistema operacional do host.
 
@@ -5750,6 +5760,7 @@ A remoção foi feita na versão M112.</translation>
       Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
+<translation id="552607466422196365">Desativar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Permitir consultas ao Quirks Server e possíveis downloads de arquivos de configuração específicos de hardware</translation>
 <translation id="5526701598901867718">Todos (não seguro)</translation>
 <translation id="5534079385061985566">Ativar o recurso de restauração completa.</translation>
@@ -6164,6 +6175,7 @@ e serão desativadas por padrão se a política não for definida. Se você defi
 
       Se a política for definida como falsa ou não for definida, <ph name="PLUGIN_VM_NAME" /> não terá permissão para coletar dados.
       Se ela for definida como verdadeira, <ph name="PLUGIN_VM_NAME" /> poderá coletar dados de uso de <ph name="PLUGIN_VM_NAME" />, que serão combinados e analisados para melhorar a experiência com <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5872738620659477303">Vincular credenciais do Google a um dispositivo</translation>
 <translation id="5875873062228321803">Configura o requisito da versão mínima permitida do <ph name="PRODUCT_OS_NAME" />.
 
       Quando esta política for definida como uma lista não vazia:
@@ -10614,6 +10626,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       Se a política for definida, os usuários não poderão mudá-la nas configurações do navegador. Se ela for deixada sem definição, o modo de segundo plano ficará desativado, mas os usuários poderão ativá-lo.</translation>
 <translation id="981245424658084931">Ativar sinal de funcionamento da atividade do dispositivo</translation>
 <translation id="981346395360763138">Serviços de localização do Google desativados</translation>
+<translation id="982195863867062122">Ativar o recurso <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Ativar verificação ortográfica</translation>
 <translation id="983256325512298435">Define uma lista de protocolos que podem inicializar um aplicativo externo a partir de origens listadas sem notificar o usuário</translation>
 <translation id="984365509386992443">Quando esta política for ativada ou deixada sem definição, o usuário poderá receber pesquisas relacionadas ao recurso Navegação segura.

@@ -3258,6 +3258,7 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
       Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Tắt tính năng báo cáo giao diện mạng của thiết bị</translation>
 <translation id="3540935459049973317">Giới hạn thời gian cho mỗi ứng dụng</translation>
+<translation id="3546271546272655966">Cho phép dùng <ph name="DBSC_FEATURE_NAME" /> tuỳ thuộc vào quá trình ra mắt tính năng.</translation>
 <translation id="3547954654003013442">Cài đặt proxy</translation>
 <translation id="3548064438634502368">Đóng trình duyệt</translation>
 <translation id="3548642468619496972">Chặn tải các tệp độc hại, các tệp không phổ biến hoặc không mong muốn xuống và chặn các loại tệp nguy hiểm.</translation>
@@ -4895,6 +4896,15 @@ Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc 
       Thao tác đặt chính sách này thành Tắt hoặc không đặt sẽ hiển thị <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> theo cách không bắt buộc và không chặn quá trình phát hành <ph name="PRODUCT_NAME" /> nếu không thành công.
 
       Tính năng đăng ký chính sách đám mây trong phạm vi máy sử dụng chính sách này. Hãy xem https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 để biết thông tin chi tiết.</translation>
+<translation id="4889589161838982604">Kiểm soát trạng thái của tính năng <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> bảo vệ các cookie xác thực của Google khỏi hành vi đánh cắp cookie bằng cách thường xuyên cung cấp bằng chứng dạng mật mã về quyền sở hữu thiết bị cho các máy chủ của Google.
+
+Nếu bạn đặt chính sách này thành false, tính năng <ph name="DBSC_FEATURE_NAME" /> sẽ tắt.
+
+Nếu bạn đặt chính sách này thành true, tính năng <ph name="DBSC_FEATURE_NAME" /> sẽ bật.
+
+Nếu bạn không đặt chính sách này thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình triển khai mặc định dành cho tính năng <ph name="DBSC_FEATURE_NAME" />. Nói cách khác, tính năng này sẽ được triển khai dần cho số lượng người dùng ngày càng tăng.</translation>
 <translation id="488996881569316769">Dữ liệu đo từ xa của mạng</translation>
 <translation id="4890453377345554695">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép yêu cầu người dùng cấp quyền ghi các tệp hoặc thư mục trong hệ thống tệp của hệ điều hành máy chủ.
 
@@ -5682,6 +5692,7 @@ API này đã bị loại bỏ ở M112.</translation>
       Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.</translation>
+<translation id="552607466422196365">Tắt <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Cho phép gửi các truy vấn đến máy chủ của Quirks và các tệp cấu hình dành riêng cho phần cứng có thể tải xuống</translation>
 <translation id="5526701598901867718">Tất cả (không an toàn)</translation>
 <translation id="5534079385061985566">Bật tính năng khôi phục hoàn toàn.</translation>
@@ -6094,6 +6105,7 @@ Nếu bạn chưa đặt cả hai chính sách này thì mọi trạng thái xá
 
       Nếu bạn đặt chính sách này thành false hoặc không đặt chính sách, thì <ph name="PLUGIN_VM_NAME" /> không được phép thu thập dữ liệu.
       Nếu bạn đặt chính sách thành true, thì <ph name="PLUGIN_VM_NAME" /> có thể thu thập dữ liệu sử dụng của <ph name="PLUGIN_VM_NAME" />. Sau đó, dữ liệu này được kết hợp và phân tích kỹ lưỡng để cải thiện trải nghiệm của <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5872738620659477303">Liên kết thông tin đăng nhập Google với một thiết bị</translation>
 <translation id="5875873062228321803">Định cấu hình yêu cầu phiên bản tối thiểu được phép của <ph name="PRODUCT_OS_NAME" />.
 
       Khi bạn đặt chính sách này thành danh sách không phải là danh sách trống:
@@ -10463,6 +10475,7 @@ Giá trị mặc định là RollbackDisabled.</translation>
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi chính sách này trong phần cài đặt của trình duyệt. Nếu bạn không đặt chính sách này, chế độ nền sẽ tắt ngay từ đầu, nhưng người dùng có thể thay đổi chế độ cài đặt này.</translation>
 <translation id="981245424658084931">Bật gói heartbeat về hoạt động của thiết bị</translation>
 <translation id="981346395360763138">Đã tắt dịch vụ vị trí của Google</translation>
+<translation id="982195863867062122">Bật <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Bật tính năng kiểm tra chính tả</translation>
 <translation id="983256325512298435">Xác định danh sách các giao thức có thể chạy một ứng dụng bên ngoài từ các nguồn được liệt kê mà không cần nhắc người dùng</translation>
 <translation id="984365509386992443">Khi bạn bật chính sách này hoặc không đặt, người dùng có thể nhận được khảo sát liên quan đến tính năng Duyệt web an toàn.

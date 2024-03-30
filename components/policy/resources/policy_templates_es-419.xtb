@@ -3319,6 +3319,7 @@ Para obtener más información sobre el manejo de datos de las funciones de IA g
       Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Inhabilitar los informes de la interfaz de red del dispositivo</translation>
 <translation id="3540935459049973317">Límites de tiempo por app</translation>
+<translation id="3546271546272655966">Se puede usar <ph name="DBSC_FEATURE_NAME" /> según el proceso de lanzamiento de la función.</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3548064438634502368">Cerrar navegadores</translation>
 <translation id="3548642468619496972">Bloquear las descargas de archivos maliciosos, desconocidos, no deseados o de tipos peligrosos</translation>
@@ -4963,6 +4964,15 @@ Si la estableces como falsa, se usará el comportamiento predeterminado.</transl
       Si la inhabilitas o no la estableces, la inscripción en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional y no se bloqueará el proceso de ejecución de <ph name="PRODUCT_NAME" /> si esta falla.
 
       Esta política se usa en máquinas de escritorio con inscripción en las políticas de nube. Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="4889589161838982604">Controla el estado de la función <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> proporciona regularmente a los servidores de Google una prueba criptográfica de la posesión del dispositivo para proteger las cookies de autenticación de Google contra el robo de cookies.
+
+Si estableces la política como falsa, se inhabilitará la función <ph name="DBSC_FEATURE_NAME" />.
+
+Si la estableces como verdadera, se habilitará la función <ph name="DBSC_FEATURE_NAME" />.
+
+Si no la estableces, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado de la función <ph name="DBSC_FEATURE_NAME" />, lo que significa que la función se lanzará de forma gradual para una cantidad cada vez mayor de usuarios.</translation>
 <translation id="488996881569316769">Telemetría de red</translation>
 <translation id="4890453377345554695">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que pueden pedir a los usuarios acceso de escritura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
@@ -5754,6 +5764,7 @@ Esto se quitó en M112.</translation>
       Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="552607466422196365">Inhabilitar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="5526184558582921522">Permitir las consultas a Quirks Server y los archivos de configuración específicos de hardware que se pueden descargar</translation>
 <translation id="5526701598901867718">Todos (inseguro)</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
@@ -6171,6 +6182,7 @@ los usuarios no podrán cambiarla ni anularla.</translation>
 
       Si estableces la política como falsa o no la estableces, no se permitirá que <ph name="PLUGIN_VM_NAME" /> recopile datos.
       Si la estableces como verdadera, <ph name="PLUGIN_VM_NAME" /> podrá recopilar datos de uso de <ph name="PLUGIN_VM_NAME" />, que luego se combinarán y analizarán de forma exhaustiva para mejorar la experiencia en la utilización de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5872738620659477303">Vincular las credenciales de Google a un dispositivo</translation>
 <translation id="5875873062228321803">Configura el requisito de la versión mínima permitida de <ph name="PRODUCT_OS_NAME" />.
 
       Cuando se configura esta política con una lista no vacía:
@@ -10650,6 +10662,7 @@ Para obtener más información sobre el manejo de datos de las funciones de IA g
       Si estableces la política, los usuarios no podrán cambiarlo en la configuración del navegador. Si no la estableces, el modo en segundo plano estará desactivado, pero los usuarios podrán activarlo.</translation>
 <translation id="981245424658084931">Habilitar la señal de monitoreo de funcionamiento de la actividad del dispositivo</translation>
 <translation id="981346395360763138">Se inhabilitaron los servicios de ubicación de Google</translation>
+<translation id="982195863867062122">Habilitar <ph name="DBSC_FEATURE_NAME" />.</translation>
 <translation id="982497069985795632">Habilitar el corrector ortográfico</translation>
 <translation id="983256325512298435">Define una lista de protocolos que puede ejecutar una aplicación externa a partir los orígenes enumerados sin avisarle al usuario</translation>
 <translation id="984365509386992443">Si habilitas esta política o no la estableces, el usuario podría recibir encuestas relacionadas con la Navegación segura.

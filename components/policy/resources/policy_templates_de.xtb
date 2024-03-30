@@ -3224,6 +3224,7 @@ Jede Regel hat folgende Bestandteile:
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540846231645422635">Melden der Netzwerkschnittstellen auf Geräten deaktivieren</translation>
 <translation id="3540935459049973317">Zeitbeschränkungen für Apps</translation>
+<translation id="3546271546272655966">„<ph name="DBSC_FEATURE_NAME" />“ kann abhängig vom Funktionseinführungsprozess verwendet werden.</translation>
 <translation id="3547954654003013442">Proxy-Einstellungen</translation>
 <translation id="3548064438634502368">Browser schließen</translation>
 <translation id="3548642468619496972">Blockiert schädliche, ungewöhnliche und unerwünschte Downloads sowie gefährliche Dateitypen.</translation>
@@ -4774,6 +4775,15 @@ Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung ve
       Bei deaktivierter Richtlinie ist die Registrierung für <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optional und bei Nichterfüllung wird der Startprozess von <ph name="PRODUCT_NAME" /> nicht blockiert.
 
       Diese Richtlinie wird im Rahmen der Registrierung von Cloud-Richtlinien auf Computern verwendet. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="4889589161838982604">Bestimmt den Status der Funktion „<ph name="DBSC_FEATURE_NAME" />“.
+
+„<ph name="DBSC_FEATURE_NAME" />“ schützt Google-Cookies zur Authentifizierung vor Cookie-Diebstahl, indem Google-Servern regelmäßig ein kryptografischer Nachweis über den Gerätebesitz zur Verfügung gestellt wird.
+
+Wenn diese Richtlinie auf „false“ gesetzt ist, ist die Funktion „<ph name="DBSC_FEATURE_NAME" />“ deaktiviert.
+
+Wenn sie auf „true“ festgelegt ist, ist die Funktion „<ph name="DBSC_FEATURE_NAME" />“ aktiviert.
+
+Ist die Richtlinie nicht konfiguriert, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für die Funktion „<ph name="DBSC_FEATURE_NAME" />“. In diesem Fall wird sie nach und nach für immer mehr Nutzer eingeführt.</translation>
 <translation id="488996881569316769">Netzwerktelemetrie</translation>
 <translation id="4890453377345554695">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
 
@@ -5546,6 +5556,7 @@ Dies wurde in M112 entfernt.</translation>
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="552607466422196365">„<ph name="DBSC_FEATURE_NAME" />“ deaktivieren.</translation>
 <translation id="5526184558582921522">Anfragen an den Quirks Server und potenzielle Downloads von Hardware-spezifischen Konfigurationsdateien zulassen</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
 <translation id="5534079385061985566">Funktion zur vollständigen Wiederherstellung aktivieren.</translation>
@@ -5947,6 +5958,7 @@ Wenn keine der beiden Richtlinien konfiguriert ist, werden alle Webdienstauthent
 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, darf <ph name="PLUGIN_VM_NAME" /> keine Daten erheben.
       Ist die Richtlinie auf "true" gesetzt, erhebt <ph name="PLUGIN_VM_NAME" /> möglicherweise Nutzerdaten von <ph name="PLUGIN_VM_NAME" />, die dann kombiniert und gründlich analysiert werden, um die Nutzung von <ph name="PLUGIN_VM_NAME" /> weiter zu verbessern.</translation>
+<translation id="5872738620659477303">Google-Anmeldedaten an ein Gerät binden</translation>
 <translation id="5875873062228321803">Mit dieser Richtlinie wird die Anforderung an die zulässige Mindestversion von <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Wenn diese Richtlinie auf eine nicht leere Liste festgelegt wird, passiert Folgendes:
@@ -10241,6 +10253,7 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI f
       Wenn die Richtlinie konfiguriert ist, kann der Nutzer sie nicht über die Browsereinstellungen ändern. Wird die Richtlinie nicht konfiguriert, ist der Hintergrundmodus zuerst deaktiviert, aber der Nutzer hat die Möglichkeit, das zu ändern.</translation>
 <translation id="981245424658084931">Geräteaktivität-Heartbeat aktivieren</translation>
 <translation id="981346395360763138">Standortdienste von Google deaktiviert</translation>
+<translation id="982195863867062122">„<ph name="DBSC_FEATURE_NAME" />“ aktivieren.</translation>
 <translation id="982497069985795632">Rechtschreibprüfung aktivieren</translation>
 <translation id="983256325512298435">Eine Liste mit Protokollen festlegen, über die eine externe App aus aufgeführten Quellen gestartet werden kann, ohne beim Nutzer nachzufragen</translation>
 <translation id="984365509386992443">Wenn diese Richtlinie aktiviert ist oder nicht konfiguriert wird, erhält der Nutzer möglicherweise Umfragen zu Safe Browsing.

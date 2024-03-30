@@ -3221,6 +3221,7 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="3540846231645422635">Rapportage voor netwerkinterface van apparaat uitzetten</translation>
 <translation id="3540935459049973317">Tijdslimieten per app</translation>
+<translation id="3546271546272655966">Je kunt <ph name="DBSC_FEATURE_NAME" /> gebruiken, afhankelijk van het releaseproces voor de functie.</translation>
 <translation id="3547954654003013442">Proxyinstellingen</translation>
 <translation id="3548064438634502368">Browsers sluiten</translation>
 <translation id="3548642468619496972">Schadelijke downloads, ongebruikelijke of ongewenste downloads en gevaarlijke bestandstypen blokkeren.</translation>
@@ -4767,6 +4768,15 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
       Als je het beleid niet toepast, of niet instelt, is <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
 
       Dit beleid wordt gebruikt door cloud-beleidsinschrijving voor machinebereik op desktop. Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
+<translation id="4889589161838982604">Beheert de status van de functie <ph name="DBSC_FEATURE_NAME" />.
+
+<ph name="DBSC_FEATURE_NAME" /> beschermt Google-verificatiecookies tegen diefstal van cookies door regelmatig een cryptografisch bewijs van eigendom van het apparaat te verstrekken aan de servers van Google.
+
+Als je dit beleid instelt op onwaar, wordt de functie <ph name="DBSC_FEATURE_NAME" /> uitgezet.
+
+Als je dit beleid instelt op waar, wordt de functie <ph name="DBSC_FEATURE_NAME" /> aangezet.
+
+Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor de functie <ph name="DBSC_FEATURE_NAME" />. Dit betekent dat de functie geleidelijk wordt uitgerold naar een steeds groter aantal gebruikers.</translation>
 <translation id="488996881569316769">Netwerktelemetrie</translation>
 <translation id="4890453377345554695">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
 
@@ -5539,6 +5549,7 @@ Dit is verwijderd in M112.</translation>
       Als je het beleid niet instelt, is <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
+<translation id="552607466422196365"><ph name="DBSC_FEATURE_NAME" /> uitzetten.</translation>
 <translation id="5526184558582921522">Query's naar de Quirks Server en potentiële downloads van hardwarespecifieke configuratiebestanden toestaan</translation>
 <translation id="5526701598901867718">Alle (onbeveiligd)</translation>
 <translation id="5534079385061985566">Functie voor volledig herstel aanzetten.</translation>
@@ -5939,6 +5950,7 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 
       Als het beleid is ingesteld op 'False' of niet is ingesteld, heeft <ph name="PLUGIN_VM_NAME" /> geen toestemming om gegevens te verzamelen.
       Als het is ingesteld op 'True', kan <ph name="PLUGIN_VM_NAME" /> gebruiksgegevens verzamelen van <ph name="PLUGIN_VM_NAME" /> die daarna worden gecombineerd en grondig geanalyseerd om het gebruik van <ph name="PLUGIN_VM_NAME" /> te verbeteren.</translation>
+<translation id="5872738620659477303">Google-inloggegevens aan een apparaat binden</translation>
 <translation id="5875873062228321803">Hiermee configureer je de vereiste voor de minimaal toegestane versie van <ph name="PRODUCT_OS_NAME" />.
 
       Als dit beleid is ingesteld op een niet-lege lijst:
@@ -10214,6 +10226,7 @@ Als je het beleid niet toepast, staat de achtergrondmodus uit.
 Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserinstellingen. Als je het niet instelt, staat de achtergrondmodus aanvankelijk uit, maar kunnen gebruikers dit aanpassen.</translation>
 <translation id="981245424658084931">Hartslag voor apparaatactiviteit aanzetten</translation>
 <translation id="981346395360763138">Locatieservices van Google staan uit</translation>
+<translation id="982195863867062122"><ph name="DBSC_FEATURE_NAME" /> aanzetten.</translation>
 <translation id="982497069985795632">Spellingcontrole aanzetten</translation>
 <translation id="983256325512298435">Een lijst definiëren met protocollen die een externe app waarvan de herkomst in een lijst wordt vermeld, kunnen starten zonder prompt aan de gebruiker</translation>
 <translation id="984365509386992443">Als je dit beleid toepast of niet instelt, kan de gebruiker enquêtes over Safe Browsing krijgen.
