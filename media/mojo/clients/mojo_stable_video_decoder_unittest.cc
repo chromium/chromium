@@ -152,18 +152,27 @@ class TestEndpoints {
   // destroyed on that task runner.
   explicit TestEndpoints(
       scoped_refptr<base::SequencedTaskRunner> media_task_runner)
-      : media_task_runner_(std::move(media_task_runner)) {
+      : client_media_log_(std::make_unique<NullMediaLog>()),
+        media_task_runner_(std::move(media_task_runner)) {
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
         mojo_stable_vd_pending_remote;
     service_ = std::make_unique<StrictMock<MockStableVideoDecoderService>>(
         mojo_stable_vd_pending_remote.InitWithNewPipeAndPassReceiver());
     client_ = std::make_unique<MojoStableVideoDecoder>(
-        media_task_runner_, &client_media_log_,
+        media_task_runner_, client_media_log_.get(),
         std::move(mojo_stable_vd_pending_remote));
   }
 
   ~TestEndpoints() {
+    // The |client_| must be destroyed on the |media_task_runner_|, but the
+    // TestEndpoints instance can be destroyed on the main test thread.
+    // Therefore, we must post a task to destroy the |client_|. However,
+    // *|client_| has a raw pointer to *|client_media_log_|. In order to prevent
+    // that pointer from becoming dangling while waiting for the destroy task to
+    // run, we also post a task to the |media_task_runner_| to destroy the
+    // |client_media_log_|.
     media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_));
+    media_task_runner_->DeleteSoon(FROM_HERE, std::move(client_media_log_));
   }
 
   MojoStableVideoDecoder* client() const { return client_.get(); }
@@ -187,7 +196,7 @@ class TestEndpoints {
   }
 
  private:
-  NullMediaLog client_media_log_;
+  std::unique_ptr<NullMediaLog> client_media_log_;
   StrictMock<base::MockRepeatingCallback<void(scoped_refptr<VideoFrame>)>>
       client_output_cb_;
   StrictMock<base::MockRepeatingCallback<void(WaitingReason)>>
