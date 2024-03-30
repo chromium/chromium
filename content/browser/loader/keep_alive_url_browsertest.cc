@@ -122,12 +122,7 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
                                                 GetDisabledFeatures());
     ContentBrowserTest::SetUp();
   }
-  virtual const FeaturesType& GetEnabledFeatures() {
-    static const FeaturesType enabled_features =
-        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{blink::features::kKeepAliveInBrowserMigration, {}}});
-    return enabled_features;
-  }
+  virtual const FeaturesType& GetEnabledFeatures() = 0;
   virtual const DisabledFeaturesType& GetDisabledFeatures() {
     static const DisabledFeaturesType disabled_features =
         GetDefaultDisabledBackForwardCacheFeaturesForTesting();
@@ -137,8 +132,10 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
-    loaders_observer_ = std::make_unique<KeepAliveURLLoadersTestObserver>(
-        web_contents()->GetBrowserContext());
+    if (loader_service()) {
+      loaders_observer_ = std::make_unique<KeepAliveURLLoadersTestObserver>(
+          web_contents()->GetBrowserContext());
+    }
 
     // Initialize an HTTPS server. Subclass may choose to use HTTPS by calling
     // `SetUseHttps()`.
@@ -227,33 +224,49 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
   using FetchKeepAliveRequestMetricType =
       KeepAliveURLLoader::FetchKeepAliveRequestMetricType;
 
+  // Note: `renderer` is made optional to support the use cases where its
+  // loggings happen after unloading a renderer, as the browser process might
+  // not be able to fetch UMA logged by renderer in time before the latter is
+  // shutting down, as described in https://crbug.com/40109064.
+  // It should be made required once the bug is resolved.
   struct ExpectedRequestHistogram {
     int browser = 0;
-    int renderer = 0;
+    std::optional<int> renderer = std::nullopt;
   };
+  using ExpectedTotalRequests = ExpectedRequestHistogram;
+  using ExpectedStartedRequests = ExpectedRequestHistogram;
+  using ExpectedSucceededRequests = ExpectedRequestHistogram;
+  using ExpectedFailedRequests = ExpectedRequestHistogram;
+
+  // A helper to assert on the number of UMA logged from both browser and
+  // renderer processes.
   void ExpectFetchKeepAliveHistogram(
       const FetchKeepAliveRequestMetricType& expected_sample,
-      const ExpectedRequestHistogram& total,
-      const ExpectedRequestHistogram& started_count,
-      const ExpectedRequestHistogram& succeeded_count,
-      const ExpectedRequestHistogram& failed_count) {
+      const ExpectedTotalRequests& total,
+      const ExpectedStartedRequests& started_count,
+      const ExpectedSucceededRequests& succeeded_count,
+      const ExpectedFailedRequests& failed_count) {
     // Collect metrics recorded in the renderer processes, if expecting any.
-    while ((total.renderer > 0 &&
-            histogram_tester()
-                .GetAllSamples("FetchKeepAlive.Requests.Total.Renderer")
-                .empty()) ||
-           (started_count.renderer > 0 &&
-            histogram_tester()
-                .GetAllSamples("FetchKeepAlive.Requests.Started.Renderer")
-                .empty()) ||
-           (succeeded_count.renderer > 0 &&
-            histogram_tester()
-                .GetAllSamples("FetchKeepAlive.Requests.Succeeded.Renderer")
-                .empty()) ||
-           (failed_count.renderer > 0 &&
-            histogram_tester()
-                .GetAllSamples("FetchKeepAlive.Requests.Failed.Renderer")
-                .empty())) {
+    for (size_t retries = 0;
+         retries < 20 &&
+         ((total.renderer.has_value() && *total.renderer > 0 &&
+           histogram_tester()
+               .GetAllSamples("FetchKeepAlive.Requests2.Total.Renderer")
+               .empty()) ||
+          (started_count.renderer.has_value() && *started_count.renderer > 0 &&
+           histogram_tester()
+               .GetAllSamples("FetchKeepAlive.Requests2.Started.Renderer")
+               .empty()) ||
+          (succeeded_count.renderer.has_value() &&
+           *succeeded_count.renderer > 0 &&
+           histogram_tester()
+               .GetAllSamples("FetchKeepAlive.Requests2.Succeeded.Renderer")
+               .empty()) ||
+          (failed_count.renderer.has_value() && *failed_count.renderer > 0 &&
+           histogram_tester()
+               .GetAllSamples("FetchKeepAlive.Requests2.Failed.Renderer")
+               .empty()));
+         retries++) {
       FetchHistogramsFromChildProcesses();
     }
 
@@ -265,28 +278,37 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
             ? static_cast<int>(FetchKeepAliveRequestMetricType::kPing)
             : static_cast<int>(expected_sample);
     histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Total.Browser", browser_sample, total.browser);
+        "FetchKeepAlive.Requests2.Total.Browser", browser_sample,
+        total.browser);
+    if (total.renderer.has_value()) {
+      histogram_tester().ExpectUniqueSample(
+          "FetchKeepAlive.Requests2.Total.Renderer", renderer_sample,
+          *total.renderer);
+    }
     histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Total.Renderer", renderer_sample,
-        total.renderer);
-    histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Started.Browser", browser_sample,
+        "FetchKeepAlive.Requests2.Started.Browser", browser_sample,
         started_count.browser);
+    if (started_count.renderer.has_value()) {
+      histogram_tester().ExpectUniqueSample(
+          "FetchKeepAlive.Requests2.Started.Renderer", renderer_sample,
+          *started_count.renderer);
+    }
     histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Started.Renderer", renderer_sample,
-        started_count.renderer);
-    histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Succeeded.Browser", browser_sample,
+        "FetchKeepAlive.Requests2.Succeeded.Browser", browser_sample,
         succeeded_count.browser);
+    if (succeeded_count.renderer.has_value()) {
+      histogram_tester().ExpectUniqueSample(
+          "FetchKeepAlive.Requests2.Succeeded.Renderer", renderer_sample,
+          *succeeded_count.renderer);
+    }
     histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Succeeded.Renderer", renderer_sample,
-        succeeded_count.renderer);
-    histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Failed.Browser", browser_sample,
+        "FetchKeepAlive.Requests2.Failed.Browser", browser_sample,
         failed_count.browser);
-    histogram_tester().ExpectUniqueSample(
-        "FetchKeepAlive.Requests.Failed.Renderer", renderer_sample,
-        failed_count.renderer);
+    if (failed_count.renderer.has_value()) {
+      histogram_tester().ExpectUniqueSample(
+          "FetchKeepAlive.Requests2.Failed.Renderer", renderer_sample,
+          *failed_count.renderer);
+    }
   }
 
   WebContentsImpl* web_contents() const {
@@ -329,18 +351,7 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-// Contains the integration tests for loading fetch(url, {keepalive: true})
-// requests via browser process that are difficult to reliably reproduce in web
-// tests.
-//
-// Note that due to using different approach, tests to cover implementation
-// before `kKeepAliveInBrowserMigration`, i.e. loading via delaying renderer
-// shutdown, cannot be verified with inspecting KeepAliveURLLoaderService here
-// and still live in a different file
-// content/browser/renderer_host/render_process_host_browsertest.cc
-class KeepAliveURLBrowserTest
-    : public KeepAliveURLBrowserTestBase,
-      public ::testing::WithParamInterface<std::string> {
+class FetchKeepAliveCommonTestBase : public KeepAliveURLBrowserTestBase {
  protected:
   // Navigates to a page specified by `keepalive_page_url`, which must fire a
   // fetch keepalive request.
@@ -358,17 +369,24 @@ class KeepAliveURLBrowserTest
     DisableBackForwardCache(web_contents());
     // Ensure the keepalive request is sent before leaving the current page.
     keepalive_request_handler->WaitForRequest();
-    ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+    if (loader_service()) {
+      ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+    }
     // Collects any potential histogram before the process is gone.
     FetchHistogramsFromChildProcesses();
 
     // Navigate to cross-origin page to ensure the 1st page can be unloaded.
     ASSERT_TRUE(NavigateToURL(web_contents(), GetCrossOriginPageURL()));
+    ASSERT_NE(current_frame_host(), rfh_1.get());
     // Ensure the 1st page has been unloaded.
     ASSERT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
-    // The disconnected loader is still pending to receive response.
-    ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
-    ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 1u);
+    if (loader_service()) {
+      // Ensure there is still a loader pending to receive response.
+      ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+      // While the 1st page is unloaded, the disconnection may not propagate to
+      // browser process in time, such that assertion on the number of
+      // disconnected loader here might become flaky.
+    }
 
     // Send back response to terminate in-browser request handling for the
     // pending request from 1st page.
@@ -416,6 +434,27 @@ class KeepAliveURLBrowserTest
   }
 };
 
+// Contains the integration tests for loading fetch(url, {keepalive: true})
+// requests via browser process that are difficult to reliably reproduce in web
+// tests.
+//
+// Note that due to using different approach, tests to cover implementation
+// before `kKeepAliveInBrowserMigration`, i.e. loading via delaying renderer
+// shutdown, cannot be verified with inspecting KeepAliveURLLoaderService here
+// and still live in a different file
+// content/browser/renderer_host/render_process_host_browsertest.cc
+class KeepAliveURLBrowserTest
+    : public FetchKeepAliveCommonTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ protected:
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features =
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{blink::features::kKeepAliveInBrowserMigration, {}}});
+    return enabled_features;
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     KeepAliveURLBrowserTest,
@@ -447,11 +486,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
 }
 
 // Verify keepalive request loading works given 2 concurrent requests to the
@@ -558,18 +596,27 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 }
 
+// TODO(crbug.com/40236167): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReceiveResponseAfterPageUnload \
+  DISABLED_ReceiveResponseAfterPageUnload
+#else
+#define MAYBE_ReceiveResponseAfterPageUnload ReceiveResponseAfterPageUnload
+#endif
 // Delays response to a keepalive ping until after the page making the keepalive
 // ping has been unloaded. The browser must ensure the response is received and
 // processed by the browser.
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
-                       ReceiveResponseAfterPageUnload) {
+                       MAYBE_ReceiveResponseAfterPageUnload) {
   const std::string method = GetParam();
   auto request_handler =
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(server()->Start());
 
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(method), request_handler.get(), k200TextResponse);
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(method), request_handler.get(),
+          k200TextResponse));
 
   // The response should be processed in browser.
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
@@ -577,11 +624,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
 }
 
 // Delays response to a keepalive ping until after the page making the keepalive
@@ -626,11 +672,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
 }
 
 // Tests fetch(..., {keepalive: true}) with a cross-origin & CORS-safelisted
@@ -690,11 +735,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, MultipleRedirectsRequest) {
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
 }
 
 // Tests fetch(..., {keepalive: true}) with a cross-origin & CORS-safelisted
@@ -727,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   )",
                                beacon_url),
                      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  // TODO(crbug.com/40236167): Figure out how to reliably wait for # loaders.
 
   // The in-browser logic should handle all redirects in browser first.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
@@ -746,11 +790,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1));
 }
 
 // Tests fetch(..., {keepalive: true}) with a cross-origin & CORS-safelisted
@@ -809,11 +852,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1));
 }
 
 // Delays handling redirect for a keepalive ping until after the page making the
@@ -830,9 +872,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Sets up redirects according to the following redirect chain:
   // fetch("http://a.test:<port>/beacon", keepalive: true)
   // --> http://a.test:<port>/beacon-redirected
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(method), request_handlers[0].get(),
-      base::StringPrintf(k301Response, redirect_target));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(method), request_handlers[0].get(),
+          base::StringPrintf(k301Response, redirect_target)));
 
   // The in-browser logic should process the redirect.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
@@ -850,11 +893,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
 }
 
 // Delays handling an unsafe redirect for a keepalive ping until after the page
@@ -871,21 +913,23 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Set up redirects according to the following redirect chain:
   // fetch("http://a.test:<port>/beacon", keepalive: true)
   // --> chrome://settings
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(method), request_handler.get(),
-      base::StringPrintf(k301Response, unsafe_redirect_target));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(method), request_handler.get(),
+          base::StringPrintf(k301Response, unsafe_redirect_target)));
 
   // The redirect is unsafe, so the loader is terminated.
-  loaders_observer().WaitForTotalOnCompleteProcessed(
-      {net::ERR_UNSAFE_REDIRECT});
+  // While the 1st page is unloaded, the disconnection may not propagate to
+  // browser process in time, such that calling
+  // `WaitforTotalCompleteProcessed()` here might be flaky.
+  loaders_observer().WaitForTotalOnComplete({net::ERR_UNSAFE_REDIRECT});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/0));
 }
 
 // Delays handling an violating CSP redirect for a keepalive ping until after
@@ -903,24 +947,27 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Set up redirects according to the following redirect chain:
   // fetch("http://a.test:<port>/beacon", keepalive: true)
   // --> http://b.test/beacon-redirected
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(
-          method, /*num_requests=*/1,
-          GetConnectSrcCSPHeader(url::Origin::Create(allowed_csp_url))),
-      request_handler.get(),
-      base::StringPrintf(k301Response, violating_csp_redirect_target));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(
+              method, /*num_requests=*/1,
+              GetConnectSrcCSPHeader(url::Origin::Create(allowed_csp_url))),
+          request_handler.get(),
+          base::StringPrintf(k301Response, violating_csp_redirect_target)));
 
   // The redirect doesn't match CSP source from the 1st page, so the loader is
   // terminated.
-  loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_BLOCKED_BY_CSP});
+  // While the 1st page is unloaded, the disconnection may not propagate to
+  // browser process in time, such that calling
+  // `WaitforTotalCompleteProcessed()` here might be flaky.
+  loaders_observer().WaitForTotalOnComplete({net::ERR_BLOCKED_BY_CSP});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/0));
 }
 
 // Verifies a redirect to mixed content target URL is not loaded.
@@ -943,9 +990,9 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, ReceiveMixedContentRedirect) {
   // --> http://a.test:<port>/beacon-redirected  => blocked by mixed content
   // Although it's also a CORS request, it will be blocked by mixed content
   // before reaching network service.
-  LoadPageWithKeepAliveRequestAndSendResponse(
+  ASSERT_NO_FATAL_FAILURE(LoadPageWithKeepAliveRequestAndSendResponse(
       GetKeepAlivePageURL(method), request_handler.get(),
-      base::StringPrintf(k301Response, mixed_content_target.c_str()));
+      base::StringPrintf(k301Response, mixed_content_target.c_str())));
 
   // The redirect is mixed content, so the redirect is aborted.
   loaders_observer().WaitForTotalOnReceiveRedirectForwarded(1);
@@ -959,11 +1006,12 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, ReceiveMixedContentRedirect) {
 
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      // TODO(crbug.com/40109064): Figure out why UMA from renderer cannot be
+      // fetched by FetchHistogramsFromChildProcesses().
+      ExpectedFailedRequests(/*browser=*/1));
 }
 
 // Verifies a redirect to mixed content target URL is allowed by
@@ -991,9 +1039,10 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Sets up redirects according to the following redirect chain:
   // fetch("https://a.test:<port>/beacon", keepalive: true)
   // --> http://a.test:<port>/beacon-redirected
-  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(method), request_handler.get(),
-      base::StringPrintf(k301Response, mixed_content_target.c_str()));
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(method), request_handler.get(),
+          base::StringPrintf(k301Response, mixed_content_target.c_str())));
 
   redirected_request_handler->WaitForRequest();
   redirected_request_handler->Send(
@@ -1014,19 +1063,26 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
 }
 
+// TODO(crbug.com/40236167): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReceiveViolatingCSPRedirectInChildFrame \
+  DISABLED_ReceiveViolatingCSPRedirectInChildFrame
+#else
+#define MAYBE_ReceiveViolatingCSPRedirectInChildFrame \
+  ReceiveViolatingCSPRedirectInChildFrame
+#endif
 // Ensures that a keepalive request in a child frame use its RFH's data instead
 // of its parent frame's:
 // The main frame CSP allows `kAllowedCspHost`, while the child frame CSP does
 // not. See also https://w3c.github.io/webappsec-csp/#security-inherit-csp.
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
-                       ReceiveViolatingCSPRedirectInChildFrame) {
+                       MAYBE_ReceiveViolatingCSPRedirectInChildFrame) {
   const std::string method = GetParam();
   auto request_handler =
       std::move(RegisterRequestHandlers({GetKeepAliveEndpoint("main")})[0]);
@@ -1110,16 +1166,104 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Total 2 requests, and of them 1 fails.
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kFetch,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/2, /*renderer=*/2),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/2, /*renderer=*/2),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
+      ExpectedTotalRequests(/*browser=*/2, /*renderer=*/2),
+      ExpectedStartedRequests(/*browser=*/2, /*renderer=*/2),
+      ExpectedSucceededRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1));
+}
+
+// Contains the browser tests for loading fetch(url, {keepalive: true})
+// requests **without** routing to browser process.
+class FetchKeepAlivePreMigrationBrowserTest
+    : public FetchKeepAliveCommonTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ protected:
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features =
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{features::kBackForwardCache, {}}});
+    return enabled_features;
+  }
+  const DisabledFeaturesType& GetDisabledFeatures() override {
+    static const DisabledFeaturesType disabled_features =
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            {blink::features::kKeepAliveInBrowserMigration,
+             blink::features::kFetchLaterAPI});
+    return disabled_features;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FetchKeepAlivePreMigrationBrowserTest,
+    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
+                      net::HttpRequestHeaders::kPostMethod),
+    [](const testing::TestParamInfo<
+        FetchKeepAlivePreMigrationBrowserTest::ParamType>& info) {
+      return info.param;
+    });
+
+IN_PROC_BROWSER_TEST_P(FetchKeepAlivePreMigrationBrowserTest, OneRequest) {
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), GetKeepAlivePageURL(method)));
+  // Ensure the keepalive request is sent, but delay response.
+  request_handler->WaitForRequest();
+
+  // End the keepalive request by sending back response.
+  request_handler->Send(k200TextResponse);
+  request_handler->Done();
+
+  TitleWatcher watcher(web_contents(), kPromiseResolvedPageTitle);
+  EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/0, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/0, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/1),
+      ExpectedFailedRequests(/*browser=*/0, /*renderer=*/0));
+}
+
+IN_PROC_BROWSER_TEST_P(FetchKeepAlivePreMigrationBrowserTest,
+                       ReceiveResponseAfterPageUnload) {
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(method), request_handler.get(),
+          k200TextResponse));
+
+  // The response should be processed in renderer.
+  ExpectFetchKeepAliveHistogram(
+      FetchKeepAliveRequestMetricType::kFetch,
+      ExpectedTotalRequests(/*browser=*/0, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/0, /*renderer=*/1),
+      // Due to https://crbug.com/40109064, succeeded_count and failed_count
+      // logging from renderer are flaky.
+      ExpectedSucceededRequests(/*browser=*/0),
+      // The pre-migration implementation in
+      // `blink::ResourceLoader::DidResponseResponseInternal()` triggers error
+      // handling if a document is detached even if the renderer has received
+      // the response.
+      ExpectedFailedRequests(/*browser=*/0));
 }
 
 class SendBeaconBrowserTestBase : public KeepAliveURLBrowserTestBase {
  protected:
   virtual std::string beacon_payload_type() const = 0;
+
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features =
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{blink::features::kKeepAliveInBrowserMigration, {}}});
+    return enabled_features;
+  }
 
   GURL GetBeaconPageURL(
       const GURL& beacon_url,
@@ -1360,11 +1504,10 @@ IN_PROC_BROWSER_TEST_F(SendBeaconBlobBrowserTest,
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
   ExpectFetchKeepAliveHistogram(
       FetchKeepAliveRequestMetricType::kBeacon,
-      /*total=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*started_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1),
-      /*succeeded_count=*/
-      ExpectedRequestHistogram(/*browser=*/0, /*renderer=*/0),
-      /*failed_count=*/ExpectedRequestHistogram(/*browser=*/1, /*renderer=*/1));
+      ExpectedTotalRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedStartedRequests(/*browser=*/1, /*renderer=*/1),
+      ExpectedSucceededRequests(/*browser=*/0, /*renderer=*/0),
+      ExpectedFailedRequests(/*browser=*/1, /*renderer=*/1));
 }
 
 // A base class to help testing JS fetchLater() API behaviors.

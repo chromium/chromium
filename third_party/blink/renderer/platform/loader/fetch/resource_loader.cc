@@ -321,6 +321,12 @@ void ResourceLoader::Trace(Visitor* visitor) const {
 void ResourceLoader::Start() {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
+  if (request.GetKeepalive()) {
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        request.GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kStarted);
+  }
+
   if (!resource_->Url().ProtocolIsData()) {
     network_resource_request_ = CreateNetworkRequest(request, request_body_);
     if (is_cache_aware_loading_activated_) {
@@ -774,6 +780,15 @@ void ResourceLoader::DidReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!response.IsNull());
+
+  if (resource_->GetResourceRequest().GetKeepalive()) {
+    // Logs when a keepalive request succeeds. It does not matter whether the
+    // response is a multipart resource or not.
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        resource_->GetResourceRequest().GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kSucceeded);
+  }
+
   DidReceiveResponseInternal(response.ToResourceResponse(),
                              std::move(cached_metadata));
   if (!IsLoading() || !body) {
@@ -1146,6 +1161,12 @@ void ResourceLoader::CountFeature(blink::mojom::WebFeature feature) {
 }
 
 void ResourceLoader::HandleError(const ResourceError& error) {
+  if (resource_->GetResourceRequest().GetKeepalive()) {
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        resource_->GetResourceRequest().GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kFailed);
+  }
+
   if (error.CorsErrorStatus() &&
       error.CorsErrorStatus()
           ->has_authorization_covered_by_wildcard_on_preflight) {

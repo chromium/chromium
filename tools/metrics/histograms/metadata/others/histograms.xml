@@ -5856,7 +5856,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FetchKeepAlive.Requests.{RequestState}.{Process}"
+<histogram name="FetchKeepAlive.Requests2.{RequestState}.{Process}"
     enum="FetchKeepAliveRequestMetricType" expires_after="2024-09-22">
   <owner>mych@chromium.org</owner>
   <owner>chrome-bfcache@google.com</owner>

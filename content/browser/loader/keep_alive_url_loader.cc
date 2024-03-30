@@ -961,7 +961,7 @@ void KeepAliveURLLoader::LogFetchKeepAliveRequestMetric(
   CHECK(request_state_name == "Total" || request_state_name == "Started" ||
         request_state_name == "Succeeded" || request_state_name == "Failed");
 
-  base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests.",
+  base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests2.",
                                               request_state_name, ".Browser"}),
                                 sample_type);
 }

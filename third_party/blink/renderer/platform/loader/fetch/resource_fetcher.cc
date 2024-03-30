@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
@@ -2124,14 +2123,6 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     }
   }
 
-  if (resource->GetResourceRequest().GetKeepalive()) {
-    // Logs when a keepalive request succeeds. It does not matter whether the
-    // response is a multipart resource or not.
-    FetchUtils::LogFetchKeepAliveRequestMetric(
-        resource->GetResourceRequest().GetRequestContext(),
-        FetchUtils::FetchKeepAliveRequestState::kSucceeded);
-  }
-
   if (IsControlledByServiceWorker() ==
       mojom::blink::ControllerServiceWorkerMode::kControlled) {
     if (resource->GetResponse().WasFetchedViaServiceWorker()) {
@@ -2217,12 +2208,6 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
 
   DCHECK_LE(inflight_keepalive_bytes, inflight_keepalive_bytes_);
   inflight_keepalive_bytes_ -= inflight_keepalive_bytes;
-
-  if (resource->GetResourceRequest().GetKeepalive()) {
-    FetchUtils::LogFetchKeepAliveRequestMetric(
-        resource->GetResourceRequest().GetRequestContext(),
-        FetchUtils::FetchKeepAliveRequestState::kFailed);
-  }
 
   RemoveResourceLoader(resource->Loader());
   PendingResourceTimingInfo info = resource_timing_info_map_.Take(resource);
@@ -2354,12 +2339,6 @@ bool ResourceFetcher::StartLoad(
 
     StorePerformanceTimingInitiatorInformation(resource,
                                                render_blocking_behavior);
-  }
-
-  if (resource->GetResourceRequest().GetKeepalive()) {
-    FetchUtils::LogFetchKeepAliveRequestMetric(
-        resource->GetResourceRequest().GetRequestContext(),
-        FetchUtils::FetchKeepAliveRequestState::kStarted);
   }
 
   loader->Start();

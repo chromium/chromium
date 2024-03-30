@@ -272,7 +272,7 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
   }
   CHECK(!request_state_name.empty());
 
-  base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests.",
+  base::UmaHistogramEnumeration(base::StrCat({"FetchKeepAlive.Requests2.",
                                               request_state_name, ".Renderer"}),
                                 sample_type);
 }
