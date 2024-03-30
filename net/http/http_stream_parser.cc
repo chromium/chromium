@@ -916,6 +916,13 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   } else {
     CalculateResponseBodySize();
 
+    // Record the response start time if this response is not informational
+    // (non-1xx).
+    if (response_->headers->response_code() / 100 != 1) {
+      DCHECK(non_informational_response_start_time_.is_null());
+      non_informational_response_start_time_ = current_response_start_time_;
+    }
+
     // If the body is zero length, the caller may not call ReadResponseBody,
     // which is where any extra data is copied to read_buf_, so we move the
     // data here.
@@ -951,13 +958,6 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         io_state_ = STATE_DONE;
       }
       return OK;
-    }
-
-    // Record the response start time if this response is not informational
-    // (non-1xx).
-    if (response_->headers->response_code() / 100 != 1) {
-      DCHECK(non_informational_response_start_time_.is_null());
-      non_informational_response_start_time_ = current_response_start_time_;
     }
 
     // Only set keep-alive based on final set of headers.
