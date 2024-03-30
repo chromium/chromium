@@ -137,9 +137,6 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // process (or this thread object, in single-process mode).
   void DisconnectChildProcessHost();
 
-  virtual void RunServiceDeprecated(const std::string& service_name,
-                                    mojo::ScopedMessagePipeHandle service_pipe);
-
   virtual void BindServiceInterface(mojo::GenericPendingReceiver receiver);
 
   virtual void OnBindReceiver(mojo::GenericPendingReceiver receiver);

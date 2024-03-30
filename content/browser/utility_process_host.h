@@ -29,12 +29,6 @@
 #include "content/public/common/zygote/zygote_handle.h"
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include "base/functional/callback.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#endif
-
 namespace base {
 class Thread;
 }  // namespace base
@@ -110,17 +104,6 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // Starts the utility process.
   bool Start();
-
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Instructs the utility process to run an instance of the named service,
-  // bound to |service_pipe|. This is DEPRECATED and should never be used.
-  using RunServiceDeprecatedCallback =
-      base::OnceCallback<void(std::optional<base::ProcessId>)>;
-  void RunServiceDeprecated(const std::string& service_name,
-                            mojo::ScopedMessagePipeHandle service_pipe,
-                            RunServiceDeprecatedCallback callback);
-#endif
 
   // Sets the name of the process to appear in the task manager.
   void SetName(const std::u16string& name);
@@ -220,13 +203,6 @@ class CONTENT_EXPORT UtilityProcessHost
     kLaunchFailed,
   };
   LaunchState launch_state_ = LaunchState::kLaunchInProgress;
-
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Collection of callbacks to be run once the process is actually started (or
-  // fails to start).
-  std::vector<RunServiceDeprecatedCallback> pending_run_service_callbacks_;
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool allowed_gpu_;

@@ -26,7 +26,6 @@ namespace shell {
 class CastContentBrowserClient;
 class CastContentGpuClient;
 class CastContentRendererClient;
-class CastContentUtilityClient;
 
 class CastMainDelegate : public content::ContentMainDelegate {
  public:
@@ -53,7 +52,6 @@ class CastMainDelegate : public content::ContentMainDelegate {
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentGpuClient* CreateContentGpuClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
-  content::ContentUtilityClient* CreateContentUtilityClient() override;
 
  private:
   void InitializeResourceBundle();
@@ -61,7 +59,6 @@ class CastMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<CastContentBrowserClient> browser_client_;
   std::unique_ptr<CastContentGpuClient> gpu_client_;
   std::unique_ptr<CastContentRendererClient> renderer_client_;
-  std::unique_ptr<CastContentUtilityClient> utility_client_;
   std::unique_ptr<CastResourceDelegate> resource_delegate_;
   CastContentClient content_client_;
 

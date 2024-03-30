@@ -31,7 +31,6 @@
 #include "chromecast/common/global_descriptors.h"
 #include "chromecast/gpu/cast_content_gpu_client.h"
 #include "chromecast/renderer/cast_content_renderer_client.h"
-#include "chromecast/utility/cast_content_utility_client.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -357,11 +356,6 @@ content::ContentRendererClient*
 CastMainDelegate::CreateContentRendererClient() {
   renderer_client_ = CastContentRendererClient::Create();
   return renderer_client_.get();
-}
-
-content::ContentUtilityClient* CastMainDelegate::CreateContentUtilityClient() {
-  utility_client_ = CastContentUtilityClient::Create();
-  return utility_client_.get();
 }
 
 }  // namespace shell

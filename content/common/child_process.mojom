@@ -71,14 +71,6 @@ interface ChildProcess {
   // cleanup, generating a crash report).
   CrashHungProcess();
 
-  // Tells the child process to run an instance of a service named
-  // |service_name|, binding it to |receiver|. This is used by the browser to
-  // support launching of packaged services within Utility or GPU processes.
-  //
-  // DEPRECATED: |BindServiceInterface()| should be used instead. This will be
-  // removed soon.
-  RunServiceDeprecated(string service_name, handle<message_pipe> service_pipe);
-
   // Requests that the process bind a receiving pipe targeting the service
   // interface named by |receiver|.
   //

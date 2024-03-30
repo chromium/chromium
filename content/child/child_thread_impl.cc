@@ -351,15 +351,6 @@ class ChildThreadImpl::IOThreadState
     LOG(FATAL) << "Crashing because hung";
   }
 
-  void RunServiceDeprecated(
-      const std::string& service_name,
-      mojo::ScopedMessagePipeHandle service_pipe) override {
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ChildThreadImpl::RunServiceDeprecated,
-                                  weak_main_thread_, service_name,
-                                  std::move(service_pipe)));
-  }
-
   void BindServiceInterface(mojo::GenericPendingReceiver receiver) override {
     if (service_binder_)
       service_binder_.Run(&receiver);
@@ -926,12 +917,6 @@ void ChildThreadImpl::GetBackgroundTracingAgentProvider(
 
 void ChildThreadImpl::DisconnectChildProcessHost() {
   child_process_host_.reset();
-}
-
-void ChildThreadImpl::RunServiceDeprecated(
-    const std::string& service_name,
-    mojo::ScopedMessagePipeHandle service_pipe) {
-  DLOG(ERROR) << "Ignoring unhandled request to run service: " << service_name;
 }
 
 void ChildThreadImpl::BindServiceInterface(

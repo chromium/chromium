@@ -20,13 +20,6 @@
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include <string>
-
-#include "mojo/public/cpp/system/message_pipe.h"
-#endif
-
 namespace base {
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 class File;
@@ -193,15 +186,6 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // directory once they log in.
   virtual void ReinitializeLogging(uint32_t logging_dest,
                                    base::ScopedFD log_file_descriptor) = 0;
-#endif
-
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Instructs the child process to run an instance of the named service. This
-  // is DEPRECATED and should never be used.
-  virtual void RunServiceDeprecated(
-      const std::string& service_name,
-      mojo::ScopedMessagePipeHandle service_pipe) = 0;
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)

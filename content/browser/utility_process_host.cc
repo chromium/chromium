@@ -188,28 +188,6 @@ bool UtilityProcessHost::Start() {
   return StartProcess();
 }
 
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-void UtilityProcessHost::RunServiceDeprecated(
-    const std::string& service_name,
-    mojo::ScopedMessagePipeHandle service_pipe,
-    RunServiceDeprecatedCallback callback) {
-  if (launch_state_ == LaunchState::kLaunchFailed) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-
-  process_->GetHost()->RunServiceDeprecated(service_name,
-                                            std::move(service_pipe));
-  if (launch_state_ == LaunchState::kLaunchComplete) {
-    std::move(callback).Run(process_->GetProcess().Pid());
-  } else {
-    DCHECK_EQ(launch_state_, LaunchState::kLaunchInProgress);
-    pending_run_service_callbacks_.push_back(std::move(callback));
-  }
-}
-#endif
-
 void UtilityProcessHost::SetMetricsName(const std::string& metrics_name) {
   metrics_name_ = metrics_name;
 }
@@ -491,24 +469,12 @@ bool UtilityProcessHost::StartProcess() {
 
 void UtilityProcessHost::OnProcessLaunched() {
   launch_state_ = LaunchState::kLaunchComplete;
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  for (auto& callback : pending_run_service_callbacks_)
-    std::move(callback).Run(process_->GetProcess().Pid());
-  pending_run_service_callbacks_.clear();
-#endif
   if (client_)
     client_->OnProcessLaunched(process_->GetProcess());
 }
 
 void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
   launch_state_ = LaunchState::kLaunchFailed;
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  for (auto& callback : pending_run_service_callbacks_)
-    std::move(callback).Run(std::nullopt);
-  pending_run_service_callbacks_.clear();
-#endif
 }
 
 void UtilityProcessHost::OnProcessCrashed(int exit_code) {

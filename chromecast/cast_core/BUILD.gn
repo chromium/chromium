@@ -18,7 +18,6 @@ cast_source_set("core_runtime_lib_simple") {
     "//chromecast/browser:simple_main_parts",
     "//chromecast/cast_core/runtime/browser:browser_simple",
     "//chromecast/cast_core/runtime/renderer:renderer_simple",
-    "//chromecast/utility:simple_client",
   ]
 }
 

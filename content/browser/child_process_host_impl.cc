@@ -201,15 +201,6 @@ base::Process& ChildProcessHostImpl::GetPeerProcess() {
   return peer_process_;
 }
 
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-void ChildProcessHostImpl::RunServiceDeprecated(
-    const std::string& service_name,
-    mojo::ScopedMessagePipeHandle service_pipe) {
-  child_process_->RunServiceDeprecated(service_name, std::move(service_pipe));
-}
-#endif
-
 void ChildProcessHostImpl::ForceShutdown() {
   child_process_->ProcessShutdown();
 }

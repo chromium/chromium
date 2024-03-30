@@ -91,13 +91,6 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
                            base::ScopedFD log_file_descriptor) override;
 #endif
 
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  void RunServiceDeprecated(
-      const std::string& service_name,
-      mojo::ScopedMessagePipeHandle service_pipe) override;
-#endif
-
   base::Process& GetPeerProcess();
   mojom::ChildProcess* child_process() { return child_process_.get(); }
 

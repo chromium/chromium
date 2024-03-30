@@ -42,8 +42,6 @@ class MockChildProcess : public mojom::ChildProcess {
                void(mojo::PendingReceiver<
                     tracing::mojom::BackgroundTracingAgentProvider>));
   MOCK_METHOD0(CrashHungProcess, void());
-  MOCK_METHOD2(RunServiceDeprecated,
-               void(const std::string&, mojo::ScopedMessagePipeHandle));
   MOCK_METHOD1(BindServiceInterface,
                void(mojo::GenericPendingReceiver receiver));
   MOCK_METHOD1(BindReceiver, void(mojo::GenericPendingReceiver receiver));

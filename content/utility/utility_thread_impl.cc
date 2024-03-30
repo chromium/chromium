@@ -27,7 +27,6 @@
 #include "content/utility/browser_exposed_utility_interfaces.h"
 #include "content/utility/services.h"
 #include "content/utility/utility_blink_platform_with_sandbox_support_impl.h"
-#include "content/utility/utility_service_factory.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
@@ -262,15 +261,6 @@ void UtilityThreadImpl::Init() {
   mojo::BinderMap binders;
   content::ExposeUtilityInterfacesToBrowser(&binders);
   ExposeInterfacesToBrowser(std::move(binders));
-
-  service_factory_ = std::make_unique<UtilityServiceFactory>();
-}
-
-void UtilityThreadImpl::RunServiceDeprecated(
-    const std::string& service_name,
-    mojo::ScopedMessagePipeHandle service_pipe) {
-  DCHECK(service_factory_);
-  service_factory_->RunService(service_name, std::move(service_pipe));
 }
 
 constexpr ServiceCurrentProcessType kCurrentProcessTypes[] = {

@@ -32,8 +32,6 @@ source_set("utility") {
     "utility_blink_platform_with_sandbox_support_impl.cc",
     "utility_blink_platform_with_sandbox_support_impl.h",
     "utility_main.cc",
-    "utility_service_factory.cc",
-    "utility_service_factory.h",
     "utility_thread_impl.cc",
     "utility_thread_impl.h",
   ]

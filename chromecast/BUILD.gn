@@ -535,7 +535,6 @@ if (!is_fuchsia) {
       "//chromecast/browser",
       "//chromecast/common",
       "//chromecast/renderer",
-      "//chromecast/utility",
     ]
   }
 
@@ -546,7 +545,6 @@ if (!is_fuchsia) {
       "//chromecast/browser:simple_client",
       "//chromecast/browser:simple_main_parts",
       "//chromecast/renderer:simple_client",
-      "//chromecast/utility:simple_client",
     ]
   }
 
