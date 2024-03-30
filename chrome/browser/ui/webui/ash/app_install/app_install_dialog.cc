@@ -22,6 +22,15 @@
 
 namespace ash::app_install {
 
+namespace {
+
+// Amount of vertical padding from the top of the parent window to show the
+// app install dialog. Chosen to overlap the search bar in browser as security
+// measure to show that the dialog is not spoofed.
+const int kPaddingFromParentTop = 75;
+
+}  // namespace
+
 // static
 bool AppInstallDialog::IsEnabled() {
   return base::FeatureList::IsEnabled(
@@ -69,6 +78,8 @@ void AppInstallDialog::Show(
 
   this->set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
   this->ShowSystemDialog(parent);
+
+  this->RepositionNearTopOf(parent);
 }
 
 void AppInstallDialog::SetInstallComplete(const std::string* app_id) {
@@ -95,6 +106,36 @@ void AppInstallDialog::CleanUpDialogIfNotShown() {
 
 bool AppInstallDialog::ShouldShowCloseButton() const {
   return false;
+}
+
+void AppInstallDialog::RepositionNearTopOf(gfx::NativeWindow parent) {
+  if (!parent) {
+    return;
+  }
+
+  views::Widget* host_widget = views::Widget::GetWidgetForNativeWindow(parent);
+
+  if (!host_widget) {
+    return;
+  }
+
+  views::Widget* dialog_widget =
+      views::Widget::GetWidgetForNativeWindow(dialog_window());
+
+  gfx::Size size = dialog_widget->GetSize();
+
+  int host_width = host_widget->GetWindowBoundsInScreen().width();
+  int dialog_width = size.width();
+  gfx::Point relative_dialog_position =
+      gfx::Point(host_width / 2 - dialog_width / 2, kPaddingFromParentTop);
+
+  gfx::Rect dialog_bounds(relative_dialog_position, size);
+
+  const gfx::Rect absolute_bounds =
+      dialog_bounds +
+      host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
+
+  dialog_widget->SetBounds(absolute_bounds);
 }
 
 base::WeakPtr<AppInstallDialog> AppInstallDialog::GetWeakPtr() {

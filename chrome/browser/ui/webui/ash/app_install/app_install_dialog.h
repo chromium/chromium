@@ -48,6 +48,8 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   ~AppInstallDialog() override;
   bool ShouldShowCloseButton() const override;
 
+  void RepositionNearTopOf(gfx::NativeWindow parent);
+
   base::WeakPtr<AppInstallDialog> GetWeakPtr();
 
   mojom::DialogArgsPtr dialog_args_;
