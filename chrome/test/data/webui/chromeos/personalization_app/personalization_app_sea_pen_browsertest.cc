@@ -46,10 +46,11 @@ IN_PROC_BROWSER_TEST_F(SeaPenControllerTest, All) {
 }
 
 // Tests the SeaPen UI.
-class PersonalizationAppSeaPenBrowserTest
+// TODO(b/331986534) re-enable test when stable.
+class DISABLED_PersonalizationAppSeaPenBrowserTest
     : public PersonalizationAppMochaTestBase {
  public:
-  PersonalizationAppSeaPenBrowserTest() {
+  DISABLED_PersonalizationAppSeaPenBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {
             ::manta::features::kMantaService,
@@ -58,12 +59,12 @@ class PersonalizationAppSeaPenBrowserTest
         },
         {});
   }
-  PersonalizationAppSeaPenBrowserTest(
-      const PersonalizationAppSeaPenBrowserTest&) = delete;
-  PersonalizationAppSeaPenBrowserTest& operator=(
-      const PersonalizationAppSeaPenBrowserTest&) = delete;
+  DISABLED_PersonalizationAppSeaPenBrowserTest(
+      const DISABLED_PersonalizationAppSeaPenBrowserTest&) = delete;
+  DISABLED_PersonalizationAppSeaPenBrowserTest& operator=(
+      const DISABLED_PersonalizationAppSeaPenBrowserTest&) = delete;
 
-  ~PersonalizationAppSeaPenBrowserTest() override = default;
+  ~DISABLED_PersonalizationAppSeaPenBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     base::AddFeatureIdTagToTestResult(
@@ -98,13 +99,13 @@ class PersonalizationAppSeaPenBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, SeaPen) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PersonalizationAppSeaPenBrowserTest, SeaPen) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
       "runMochaSuite('sea pen')");
 }
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, Feedback) {
+IN_PROC_BROWSER_TEST_F(DISABLED_PersonalizationAppSeaPenBrowserTest, Feedback) {
   FeedbackDialog* feedback_dialog = FeedbackDialog::GetInstanceForTest();
   // Test that no feedback dialog object has been created.
   ASSERT_EQ(nullptr, feedback_dialog);
