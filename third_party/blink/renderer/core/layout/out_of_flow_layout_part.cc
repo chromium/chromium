@@ -1772,21 +1772,15 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   } while (!offset_info && --attempts_left != 0 && has_try_options &&
            iter.MoveToNextStyle());
 
-  bool invisible_if_no_overflow = false;
-  if (!offset_info) {
-    // None of the options worked out.
-    // Fall back to style without any options applied.
-    iter.MoveToStyleWithoutOptions();
-    // And hide the subtree for "position-visibility: no-overflow".
-    invisible_if_no_overflow = true;
-  }
-
-  node_info.node.GetLayoutBox()->Layer()->SetInvisibleForPositionVisibility(
-      PositionVisibility::kNoOverflow,
-      has_no_overflow_visibility && invisible_if_no_overflow);
-
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
       try_fit_available_space) {
+    bool overflows_containing_block = false;
+    if (!offset_info) {
+      // None of the options worked out.
+      // Fall back to style without any options applied.
+      iter.MoveToStyleWithoutOptions();
+      overflows_containing_block = true;
+    }
     // Once the position-try-options placement has been decided, calculate the
     // offset again, using the non-base style.
     const ComputedStyle& style = iter.ActivateStyleForChosenOption();
@@ -1795,6 +1789,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     offset_info = TryCalculateOffset(
         node_info, style, anchor_evaluator, anchor_queries,
         /* try_fit_available_space */ false, &non_overflowing_range_unused);
+    offset_info->overflows_containing_block = overflows_containing_block;
   }
   CHECK(offset_info);
 
@@ -2126,6 +2121,36 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
   layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
       offset_info.non_overflowing_scroll_ranges);
+
+  if (RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
+    PaintLayer* layer =
+        oof_node_to_layout.node_info.node.GetLayoutBox()->Layer();
+    CHECK(layer);
+    bool has_no_overflow_visibility =
+        oof_node_to_layout.node_info.node.Style().HasPositionVisibility(
+            PositionVisibility::kNoOverflow);
+    layer->SetInvisibleForPositionVisibility(
+        PositionVisibility::kNoOverflow,
+        has_no_overflow_visibility && offset_info.overflows_containing_block);
+
+    // TODO(https://github.com/w3c/csswg-drafts/issues/7758#issuecomment-2026137829):
+    // For now we hide the anchored element if it's not anchor positioned. We
+    // need to revisit based on the final decision for the spec of
+    // position-visibility: anchors-valid.
+    bool has_anchors_valid_visibility =
+        oof_node_to_layout.node_info.node.Style().HasPositionVisibility(
+            PositionVisibility::kAnchorsValid);
+    layer->SetInvisibleForPositionVisibility(
+        PositionVisibility::kAnchorsValid,
+        has_anchors_valid_visibility &&
+            // TODO(wangxianzhu): For now this seems equivalent to something
+            // like is_anchor_positioned, but we may change these flags to
+            // actually reflect the needs of scroll adjustments. For example,
+            // we may not need scroll adjustment if the anchor and the anchored
+            // have the same containing block, but for now these flags are true.
+            !offset_info.needs_scroll_adjustment_in_x &&
+            !offset_info.needs_scroll_adjustment_in_y);
+  }
 
   return layout_result;
 }

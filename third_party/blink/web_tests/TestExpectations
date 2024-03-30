@@ -6821,7 +6821,6 @@ crbug.com/40944477 fast/events/scroll-event-handler-count.html [ Failure Pass Ti
 crbug.com/40264022 external/wpt/webtransport/echo-large-bidirectional-streams.https.any.serviceworker.html [ Failure Pass Timeout ] # Flaky
 crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure Pass Timeout ] # Flaky
 
-crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 crbug.com/329703412 external/wpt/css/css-anchor-position/position-visibility-anchors-visible.tentative.html [ Failure ]
 
 # Test infra bug

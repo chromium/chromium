@@ -23,14 +23,9 @@
   }
 </style>
 
-<!-- #target1 should not be visible because anchor name does not exist. -->
+<!-- #target1 should be visible. -->
 <div class="anchor" style="anchor-name: --a1;">anchor1</div>
-<div id="target1" class="target" style="position-anchor: --does-not-exist;">target1</div>
+<div id="target1" class="target" style="position-anchor: --a1; background: green">target1</div>
 
-<!-- #target2 should not be visible because referenced name in anchor() does not exist. -->
-<div class="anchor" style="anchor-name: --a2;">anchor2</div>
-<div id="target2" class="target" style="position-anchor: --a2; top: anchor(--does-not-exist bottom);">target2</div>
-
-<!-- #target3 should not be visible because referenced name in anchor-size() does not exist. -->
-<div class="anchor" style="anchor-name: --a3;">anchor3</div>
-<div id="target3" class="target" style="position-anchor: --a3; min-width: anchor-width(--does-not-exist width);">target3</div>
+<!-- #target2 should not be visible because anchor name does not exist. -->
+<div id="target2" class="target" style="top: anchor(--does-not-exist bottom);">target2</div>

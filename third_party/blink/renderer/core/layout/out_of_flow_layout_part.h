@@ -220,6 +220,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool needs_scroll_adjustment_in_x = false;
     bool needs_scroll_adjustment_in_y = false;
 
+    // True if the element overflows the inset-modified containing block.
+    bool overflows_containing_block = false;
+
     void Trace(Visitor* visitor) const;
   };
 
