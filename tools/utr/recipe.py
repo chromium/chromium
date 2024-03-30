@@ -109,6 +109,7 @@ class LegacyRunner:
     self._recipes_py = recipes_py
     self._swarming_server = swarming_server
     self._skip_prompts = skip_prompts
+    self._console_printer = console.Console()
     assert self._recipes_py.exists()
 
     # Add UTR recipe props. Its schema is located at:
@@ -217,7 +218,7 @@ class LegacyRunner:
       returncode = asyncio.run(exec_recipe())
 
       # Try to pull out the summary markdown from the recipe run.
-      failure_md = None
+      failure_md = ''
       if not output_path.exists():
         logging.error('Recipe output json not found')
       else:
@@ -262,14 +263,15 @@ class LegacyRunner:
     for _ in range(10):
       exit_code, failure_md, rerun_prop_options = self._run(
           adapter, props_to_use)
+      # For in-line code snippets in markdown, style them as python. This
+      # seems the least weird-looking.
+      pretty_md = markdown.Markdown(failure_md, inline_code_lexer='python')
       if not rerun_prop_options:
         if exit_code:
           # Use the markdown printer from "rich" to better format the text in
           # a terminal.
-          failure_md = failure_md if failure_md else 'Uknown error'
-          console_printer = console.Console()
-          md = markdown.Markdown(failure_md)
-          console_printer.print(md, style='red')
+          md = pretty_md if pretty_md else 'Unknown error'
+          self._console_printer.print(md, style='red')
         else:
           logging.info(output_adapter.as_green('Success!'))
         results_link = adapter.GetTestResultsLink()
@@ -279,7 +281,7 @@ class LegacyRunner:
           logging.info(results_link)
         return exit_code, 'Build/test failure' if exit_code else None
       logging.warning('')
-      logging.warning(failure_md)
+      self._console_printer.print(pretty_md)
       logging.warning('')
       if not self._skip_prompts:
         props_to_use = get_prompt_resp(rerun_prop_options)
