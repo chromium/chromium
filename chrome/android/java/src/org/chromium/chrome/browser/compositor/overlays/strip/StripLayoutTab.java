@@ -104,21 +104,7 @@ public class StripLayoutTab extends StripLayoutView {
                 }
             };
 
-    /** A property for animations to use for changing the drawX of the tab. */
-    public static final FloatProperty<StripLayoutTab> DRAW_X =
-            new FloatProperty<>("drawX") {
-                @Override
-                public void setValue(StripLayoutTab object, float value) {
-                    object.setDrawX(value);
-                }
-
-                @Override
-                public Float get(StripLayoutTab object) {
-                    return object.getDrawX();
-                }
-            };
-
-    /** A property for animations to use for changing the drawX of the tab. */
+    /** A property for animations to use for changing the bottom margin of the tab. */
     public static final FloatProperty<StripLayoutTab> BOTTOM_MARGIN =
             new FloatProperty<>("bottomMargin") {
                 @Override

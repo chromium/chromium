@@ -359,6 +359,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean mMultiStepTabCloseAnimRunning;
     private boolean mTabGroupMarginAnimRunning;
     private boolean mTabResizeAnimRunning;
+    private boolean mStripViewSliding;
     private boolean mTabCreating;
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
@@ -1417,6 +1418,21 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             }
             currTab.setEndDividerVisible(endDividerVisible);
         }
+    }
+
+    @VisibleForTesting
+    protected int getStripTabRootId(StripLayoutTab stripTab) {
+        if (mModel == null || stripTab == null || getTabById(stripTab.getId()) == null) {
+            return Tab.INVALID_TAB_ID;
+        }
+        return getTabById(stripTab.getId()).getRootId();
+    }
+
+    private boolean isStripTabInTabGroup(StripLayoutTab stripTab) {
+        if (stripTab == null || getTabById(stripTab.getId()) == null) {
+            return false;
+        }
+        return mTabGroupModelFilter.isTabInTabGroup(getTabById(stripTab.getId()));
     }
 
     /**
@@ -2556,6 +2572,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return TabModel.INVALID_TAB_INDEX;
     }
 
+    private int findStripViewIndexForStripTab(int curIndexInStripTab) {
+        assert curIndexInStripTab < mStripTabs.length;
+        StripLayoutTab curTab = mStripTabs[curIndexInStripTab];
+        if (mStripViews == null || curTab == null) return TabModel.INVALID_TAB_INDEX;
+        for (int i = 0; i < mStripViews.length; i++) {
+            if (mStripViews[i] instanceof StripLayoutTab tab && curTab == tab) return i;
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
     int getNumLiveTabs() {
         int numLiveTabs = 0;
 
@@ -2760,7 +2786,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 if (LocalizationUtils.isLayoutRtl()) {
                     drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
                 }
-                view.setDrawX(tabPosition + drawXOffset);
+
+                if (!mStripViewSliding) {
+                    view.setDrawX(tabPosition + drawXOffset);
+                }
                 delta = view.getWidth() + deltaOffset;
             }
 
@@ -3426,15 +3455,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param offset The distance the interacting tab has been dragged from its ideal x-position.
      * @param curIndex The index of the interacting tab.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @param threshold the drag distance threshold to determine whether a tab is moving out of the
+     *     tab group.
      * @return The new index for the interacting tab if it has been removed from its tab group and
      *     the INVALID_TAB_INDEX otherwise.
      */
     private int maybeMoveOutOfGroupForTabGroupIndicators(
-            float offset, int curIndex, boolean towardEnd) {
+            float offset, int curIndex, boolean towardEnd, float threshold) {
         // If past threshold, trigger reorder.
-        // @TODO(crbug.com/327506847): Update drag distance threshold for dragging out through the
-        // title indicator. We likely need to scale this threshold with the title indicator length.
-        if (Math.abs(offset) > mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE) {
+        if (Math.abs(offset) > threshold) {
             final int tabId = mInteractingTab.getId();
 
             // Get the interacting group title.
@@ -3509,13 +3538,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param offset The distance the interacting tab has been dragged from its ideal x-position.
      * @param curIndex The index of the interacting tab.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @param threshold the drag distance threshold to determine whether a tab is merging into the
+     *     tab group.
      * @return The new index for the interacting tab if it has been moved into a neighboring tab
      *     group and the INVALID_TAB_INDEX otherwise.
      */
     @VisibleForTesting
     protected int maybeMergeToGroupForTabGroupIndicators(
-            float offset, int curIndex, boolean towardEnd) {
-        float threshold = mHalfTabWidth - mTabOverlapWidth;
+            float offset, int curIndex, boolean towardEnd, float threshold) {
         if (Math.abs(offset) < threshold) {
             return TabModel.INVALID_TAB_INDEX;
         }
@@ -3692,33 +3722,53 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean isDraggingInteractWithGroup =
                 towardEnd ? isDraggingEndInteractWithGroup : isDraggingStartInteractWithGroup;
 
+        int direction = towardEnd ? 1 : -1;
+        float tabGroupDragThreshold =
+                isDraggingInteractWithGroup
+                        ? calculateTabGroupThreshold(curIndex, isInGroup, towardEnd)
+                        : 0.f;
+        StripLayoutGroupTitle interactingGroupTitle =
+                isDraggingInteractWithGroup ? getInteractingGroupTitle(curIndex, towardEnd) : null;
+        boolean draggingToAnotherGroup =
+                isDraggingThroughGroupTitleToAnotherGroup(
+                        curIndex, curIndex + direction, towardEnd);
+
+        // TODO(crbug.com/331978481) Refactor by moving the TabGroupIndicators code to a new method
+        //  and simplify it.
         if (isDraggingInteractWithGroup) {
-            if (isInGroup) {
-                // 2.a. Tab is in a group and being dragged for reordering. Maybe drag out of group.
-                if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
-                    destIndex = maybeMoveOutOfGroup(offset, curIndex, towardEnd);
-                } else {
+            if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
+                if (isInGroup) {
+                    // 2.a. Tab is in a group and being dragged for reordering. Maybe drag out of
+                    // group for tab group indicators.
                     destIndex =
-                            maybeMoveOutOfGroupForTabGroupIndicators(offset, curIndex, towardEnd);
+                            maybeMoveOutOfGroupForTabGroupIndicators(
+                                    offset, curIndex, towardEnd, tabGroupDragThreshold);
+                } else {
+                    // 2.b. Reorder immediately when tab is dragged past threshold for tab group
+                    // indicators.
+                    destIndex =
+                            maybeMergeToGroupForTabGroupIndicators(
+                                    offset, curIndex, towardEnd, tabGroupDragThreshold);
                 }
             } else {
-                if (!ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
-                    // 2.b. Tab is not in a group and being dragged for reordering. Maybe target tab
+                if (isInGroup) {
+                    // 2.c. Tab is in a group and being dragged for reordering. Maybe drag out of
+                    // group.
+                    destIndex = maybeMoveOutOfGroup(offset, curIndex, towardEnd);
+                } else {
+                    // 2.d. Tab is not in a group and being dragged for reordering. Maybe target tab
                     // group.
                     destIndex = updateHoveringOverGroup(offset, curIndex, towardEnd);
 
-                    // 2.c. Tab is not in a group and being dragged for reordering. Maybe drag past
+                    // 2.e. Tab is not in a group and being dragged for reordering. Maybe drag past
                     // group.
                     if (destIndex == TabModel.INVALID_TAB_INDEX) {
                         destIndex = maybeMovePastGroup(offset, curIndex, towardEnd);
                     }
-                } else {
-                    // 2.d. Reorder immediately when tab is dragged past threshold.
-                    destIndex = maybeMergeToGroupForTabGroupIndicators(offset, curIndex, towardEnd);
                 }
             }
         } else {
-            // 2.e Tab is not interacting with tab groups. Reorder as normal.
+            // 2.f Tab is not interacting with tab groups. Reorder as normal.
             boolean pastLeftThreshold = offset < -flipThreshold;
             boolean pastRightThreshold = offset > flipThreshold;
             boolean isNotRightMost = curIndex < mStripTabs.length - 1;
@@ -3742,9 +3792,16 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // 3. a. Reset internal state.
             mHoveringOverGroup = false;
 
-            // 3.b. Swap the tabs.
-            reorderTab(mInteractingTab.getId(), curIndex, destIndex, true);
-            mModel.moveTab(mInteractingTab.getId(), destIndex);
+            // 3.b. Swap the tabs or stripView when interacting with group title.
+            if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                    && interactingGroupTitle != null
+                    && !draggingToAnotherGroup) {
+                reorderStripViewForTabGroupIndicator(
+                        mInteractingTab.getId(), curIndex, towardEnd, true);
+            } else {
+                reorderTab(mInteractingTab.getId(), curIndex, destIndex, true);
+                mModel.moveTab(mInteractingTab.getId(), destIndex);
+            }
 
             // 3.c. Re-compute tab group margins if necessary.
             float oldIdealX = mInteractingTab.getIdealX();
@@ -3757,23 +3814,29 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
-            // TODO(crbug.com/1524185): Account for non-tab views when setting the new offset.
+            boolean shouldFlip = LocalizationUtils.isLayoutRtl() ? !towardEnd : towardEnd;
             if (isDraggingInteractWithGroup) {
-                offset -= (mInteractingTab.getIdealX() - oldIdealX);
-                // When the strip is scrolling, deltaX is already accounted for by idealX. This is
-                // because idealX uses the scroll offset which has already been adjusted by deltaX.
-                if (mLastReorderScrollTime != 0) offset -= deltaX;
+                // Account for group title offset.
+                if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                        && interactingGroupTitle != null
+                        && !draggingToAnotherGroup) {
+                    float groupTitleWidth = interactingGroupTitle.getWidth();
+                    offset += MathUtils.flipSignIf((groupTitleWidth), shouldFlip);
+                } else {
+                    offset -= (mInteractingTab.getIdealX() - oldIdealX);
+                    // When the strip is scrolling, deltaX is already accounted for by idealX. This
+                    // is because idealX uses the scroll offset which has already been adjusted by
+                    // deltaX.
+                    if (mLastReorderScrollTime != 0) offset -= deltaX;
 
-                // Tab group margins can affect minScrollOffset. When a dragged tab is near the
-                // strip's edge, the scrollOffset being clamped can affect the apparent position.
-                offset -=
-                        MathUtils.flipSignIf(
-                                (mScrollOffset - oldOffset), LocalizationUtils.isLayoutRtl());
+                    // Tab group margins can affect minScrollOffset. When a dragged tab is near the
+                    // strip's edge, the scrollOffset being clamped can affect the apparent
+                    // position.
+                    offset -=
+                            MathUtils.flipSignIf(
+                                    (mScrollOffset - oldOffset), LocalizationUtils.isLayoutRtl());
+                }
             } else {
-                boolean shouldFlip =
-                        LocalizationUtils.isLayoutRtl()
-                                ? destIndex < curIndex
-                                : destIndex > curIndex;
                 offset += MathUtils.flipSignIf(flipWidth, shouldFlip);
             }
 
@@ -3785,22 +3848,122 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 4. Limit offset based on tab position.  First tab can't drag left, last tab can't drag
-        // right.
+        // right. For Tab Group Indicators, since tab group margins were removed, we need to allow
+        // dragging left by the drag threshold when first tab is in group, and the same applies for
+        // dragging right when last tab is in group.
+        // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
+        //  tab's trailing margin.
         if (curIndex == 0) {
-            offset =
-                    LocalizationUtils.isLayoutRtl()
-                            ? Math.min(mStripStartMarginForReorder, offset)
-                            : Math.max(-mStripStartMarginForReorder, offset);
+            if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                    && mStripViews[0] instanceof StripLayoutGroupTitle) {
+                float threshold = calculateTabGroupThreshold(0, true, false);
+                offset =
+                        LocalizationUtils.isLayoutRtl()
+                                ? Math.min(threshold, offset)
+                                : Math.max(-threshold, offset);
+            } else {
+                offset =
+                        LocalizationUtils.isLayoutRtl()
+                                ? Math.min(mStripStartMarginForReorder, offset)
+                                : Math.max(-mStripStartMarginForReorder, offset);
+            }
         }
         if (curIndex == mStripTabs.length - 1) {
-            offset =
-                    LocalizationUtils.isLayoutRtl()
-                            ? Math.max(-mStripTabs[curIndex].getTrailingMargin(), offset)
-                            : Math.min(mStripTabs[curIndex].getTrailingMargin(), offset);
+            if (ChromeFeatureList.sTabStripGroupIndicators.isEnabled()
+                    && isStripTabInTabGroup(mStripTabs[mStripTabs.length - 1])) {
+                float threshold = calculateTabGroupThreshold(mStripTabs.length - 1, true, true);
+                offset =
+                        LocalizationUtils.isLayoutRtl()
+                                ? Math.max(-threshold, offset)
+                                : Math.min(threshold, offset);
+            } else {
+                offset =
+                        LocalizationUtils.isLayoutRtl()
+                                ? Math.max(-mStripTabs[curIndex].getTrailingMargin(), offset)
+                                : Math.min(mStripTabs[curIndex].getTrailingMargin(), offset);
+            }
         }
 
         // 5. Set the new offset.
         mInteractingTab.setOffsetX(offset);
+    }
+
+    /**
+     * This method determines whether this tab drag is interacting with tab group title indicator.
+     *
+     * @param curIndexInStripTab The index of the interacting tab in mStripTabs.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @return Whether this tab drag is interacting with tab group title indicator.
+     */
+    private StripLayoutGroupTitle getInteractingGroupTitle(
+            int curIndexInStripTab, boolean towardEnd) {
+        int curIndexInStripView = findStripViewIndexForStripTab(curIndexInStripTab);
+        if (towardEnd) {
+            if (curIndexInStripView == mStripViews.length - 1) {
+                return null;
+            }
+            return mStripViews[curIndexInStripView + 1] instanceof StripLayoutGroupTitle groupTitle
+                    ? groupTitle
+                    : null;
+        } else {
+            if (curIndexInStripView == 0) {
+                return null;
+            }
+            return mStripViews[curIndexInStripView - 1] instanceof StripLayoutGroupTitle groupTitle
+                    ? groupTitle
+                    : null;
+        }
+    }
+
+    /**
+     * This method determines the drag threshold for either merge into or move out of a tab group
+     * for Tab Group Indicators.
+     *
+     * @param curIndexInStripTab The index of the interacting tab in mStripTabs.
+     * @param isInGroup Whether the current tab is in a tab group.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @return The drag threshold float for either merge into or move out of a tab group for Tab
+     *     Group Indicators.
+     */
+    @VisibleForTesting
+    protected float calculateTabGroupThreshold(
+            int curIndexInStripTab, boolean isInGroup, boolean towardEnd) {
+        int curIndexInStripView = findStripViewIndexForStripTab(curIndexInStripTab);
+        float dragOutThreshold = mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        float dragInThreshold = mHalfTabWidth - mTabOverlapWidth;
+
+        assert curIndexInStripView != TabModel.INVALID_TAB_INDEX;
+        if (isInGroup) {
+            if (curIndexInStripView > 0 && !towardEnd) {
+                return dragOutThreshold + mStripViews[curIndexInStripView - 1].getWidth();
+            } else {
+                return dragOutThreshold;
+            }
+        } else {
+            return dragInThreshold;
+        }
+    }
+
+    /**
+     * This method determines whether a grouped tab is being dragged to merge to another group
+     * through group title indicator.
+     *
+     * @param curIndex The index of the interacting tab.
+     * @param adjIndex The index of the interacting tab is being dragged into.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @return Whether a grouped tab is being dragged to merge to another group through group title
+     *     indicator.
+     */
+    private boolean isDraggingThroughGroupTitleToAnotherGroup(
+            int curIndex, int adjIndex, boolean towardEnd) {
+        if (!towardEnd || adjIndex < 0 || adjIndex >= mStripTabs.length) {
+            return false;
+        }
+        StripLayoutTab curTab = mStripTabs[curIndex];
+        StripLayoutTab adjTab = mStripTabs[adjIndex];
+        return isStripTabInTabGroup(curTab)
+                && isStripTabInTabGroup(adjTab)
+                && getStripTabRootId(curTab) != getStripTabRootId(adjTab);
     }
 
     private float adjustXForTabDrop(float x) {
@@ -3914,6 +4077,83 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Swap the tabs.
         moveElement(mStripTabs, index, newIndex);
+        if (!mMovingGroup) {
+            // When tab groups are moved, each tab is moved one-by-one. During this process, the
+            // invariant that tab groups must be contiguous is temporarily broken, so we suppress
+            // rebuilding until the entire group is moved. See https://crbug.com/329318567.
+            // TODO(crbug.com/329335086): Investigate reordering (with #moveElement) instead of
+            // rebuilding here.
+            rebuildStripViews();
+        }
+    }
+
+    /**
+     * This method reorders the StripLayoutView when tab drag is interacting with group title for
+     * Tab Group Indicators.
+     *
+     * @param id The tabId of the interacting tab.
+     * @param oldIndex The starting index of the reorder.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     * @param animate Whether to animate the view swapping.
+     */
+    private void reorderStripViewForTabGroupIndicator(
+            int id, int oldIndex, boolean towardEnd, boolean animate) {
+        int direction = towardEnd ? 1 : -1;
+        int oldIndexInStripView = findStripViewIndexForStripTab(oldIndex);
+        boolean isLeftMost = oldIndexInStripView == 0;
+        boolean isRightMost = oldIndexInStripView >= mStripViews.length - 1;
+
+        StripLayoutTab tab = findTabById(id);
+        if (tab == null || (isLeftMost && !towardEnd) || (isRightMost && towardEnd)) return;
+
+        int newIndexInStripView = oldIndexInStripView + direction;
+
+        // 1. If the view is already at the right spot, don't do anything.
+        int index = findIndexForTab(id);
+        int curIndexInStripView = findStripViewIndexForStripTab(index);
+        if (curIndexInStripView == newIndexInStripView) return;
+
+        // 2. Check if it's the view we are dragging, but we have an old source index.  Ignore in
+        // this case because we probably just already moved it.
+        if (mInReorderMode
+                && curIndexInStripView != oldIndexInStripView
+                && tab == mInteractingTab) {
+            return;
+        }
+
+        // 3. Animate if necessary.
+        if (animate && !mAnimationsDisabledForTesting) {
+
+            final float flipWidth = mCachedTabWidth - mTabOverlapWidth;
+            final float animationLength =
+                    MathUtils.flipSignIf(direction * flipWidth, !LocalizationUtils.isLayoutRtl());
+
+            finishAnimationsAndPushTabUpdates();
+            ArrayList<Animator> slideAnimationList = new ArrayList<>();
+            StripLayoutView slideView = mStripViews[newIndexInStripView];
+            CompositorAnimator animator =
+                    CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            slideView,
+                            StripLayoutView.DRAW_X,
+                            slideView.getDrawX(),
+                            slideView.getDrawX() + animationLength,
+                            ANIM_TAB_MOVE_MS);
+            slideAnimationList.add(animator);
+
+            mStripViewSliding = true;
+            startAnimationList(
+                    slideAnimationList,
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mStripViewSliding = false;
+                        }
+                    });
+        }
+
+        // 4. Swap the views.
+        moveElement(mStripViews, curIndexInStripView, newIndexInStripView);
         if (!mMovingGroup) {
             // When tab groups are moved, each tab is moved one-by-one. During this process, the
             // invariant that tab groups must be contiguous is temporarily broken, so we suppress

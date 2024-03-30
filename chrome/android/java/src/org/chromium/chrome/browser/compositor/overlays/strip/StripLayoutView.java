@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.util.FloatProperty;
+
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 
 import java.util.List;
@@ -14,6 +16,21 @@ import java.util.List;
  * the GL canvas.
  */
 public abstract class StripLayoutView implements VirtualView {
+
+    /** A property for animations to use for changing the drawX of the view. */
+    public static final FloatProperty<StripLayoutView> DRAW_X =
+            new FloatProperty<>("drawX") {
+                @Override
+                public void setValue(StripLayoutView object, float value) {
+                    object.setDrawX(value);
+                }
+
+                @Override
+                public Float get(StripLayoutView object) {
+                    return object.getDrawX();
+                }
+            };
+
     boolean mVisible = true;
 
     /**

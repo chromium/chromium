@@ -2238,8 +2238,8 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab thirdTab = tabs[2];
-        int oldSecondTabId = tabs[1].getId();
         groupTabs(0, 2);
+        int oldSecondTabId = tabs[1].getId();
 
         // Assert: first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -2250,7 +2250,7 @@ public class StripLayoutHelperTest {
         float tabWidth = views[1].getWidth();
         float expectedStartWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 2, groupTitle);
         float expectedEndWidth = calculateExpectedBottomIndicatorWidth(tabWidth, 3, groupTitle);
-        float threshold = tabWidth / 2 - TAB_OVERLAP_WIDTH;
+        float expectedThreshold = mStripLayoutHelper.calculateTabGroupThreshold(2, false, false);
 
         // Assert: bottom indicator start width.
         assertEquals(
@@ -2269,7 +2269,8 @@ public class StripLayoutHelperTest {
         // Verify interacting tab was merged into group.
         verify(mTabGroupModelFilter)
                 .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
-        mStripLayoutHelper.maybeMergeToGroupForTabGroupIndicators(-threshold - 1, 2, false);
+        mStripLayoutHelper.maybeMergeToGroupForTabGroupIndicators(
+                -expectedThreshold - 1, 2, false, expectedThreshold);
         assertEquals(
                 "Bottom indicator end width is incorrect",
                 expectedEndWidth,
