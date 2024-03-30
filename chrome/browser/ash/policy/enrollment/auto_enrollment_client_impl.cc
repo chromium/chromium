@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,6 +24,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state_message_processor.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_token_provider.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/common/pref_names.h"
@@ -560,6 +562,43 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   CompletionCallback completion_callback_;
 };
 
+// Stubbed out ServerStateAvailabilityRequester that always succeeds and
+// indicates that server state should be retrieved.
+class AutoEnrollmentClientImpl::FlexAutoEnrollmentStateAvailabilityRequester
+    : public ServerStateAvailabilityRequester {
+ public:
+  explicit FlexAutoEnrollmentStateAvailabilityRequester(
+      std::optional<std::string> flex_enrollment_token,
+      PrefService* local_state)
+      : flex_enrollment_token_(std::move(flex_enrollment_token)),
+        local_state_(local_state) {
+    local_state_->SetInteger(
+        prefs::kEnrollmentPsmResult,
+        em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
+    local_state_->SetBoolean(prefs::kShouldRetrieveDeviceState, true);
+  }
+  FlexAutoEnrollmentStateAvailabilityRequester(
+      const FlexAutoEnrollmentStateAvailabilityRequester&) = delete;
+  FlexAutoEnrollmentStateAvailabilityRequester& operator=(
+      const FlexAutoEnrollmentStateAvailabilityRequester&) = delete;
+
+  void Start(CompletionCallback callback) override {
+    std::move(callback).Run(ServerStateAvailabilitySuccess::kSuccess);
+  }
+
+  std::optional<bool> GetServerStateIfObtained() const override {
+    // This should always return true (as this class _should_ only be
+    // instantiated after determining that a Flex token is present). Check the
+    // optional again anyways though for defensive programming purposes.
+    DCHECK(flex_enrollment_token_.has_value());
+    return flex_enrollment_token_.has_value();
+  }
+
+ private:
+  const std::optional<std::string> flex_enrollment_token_;
+  raw_ptr<PrefService> local_state_;
+};
+
 // Responsible fro resolving server state status for both force re-enrollment
 // and initial enrollment.
 class AutoEnrollmentClientImpl::ServerStateRetriever {
@@ -605,6 +644,7 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
       case INITIAL_MODE_ENROLLMENT_ENFORCED:
       case RESTORE_MODE_REENROLLMENT_ZERO_TOUCH:
       case INITIAL_MODE_ENROLLMENT_ZERO_TOUCH:
+      case INITIAL_MODE_ENROLLMENT_TOKEN_ENROLLMENT:
         return AutoEnrollmentResult::kEnrollment;
     }
   }
@@ -752,17 +792,30 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& device_serial_number,
     const std::string& device_brand_code,
-    std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client) {
+    std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client,
+    ash::OobeConfiguration* oobe_config) {
+  std::unique_ptr<ServerStateAvailabilityRequester>
+      server_state_availability_requester;
+  const std::optional<std::string> flex_enrollment_token =
+      GetFlexEnrollmentToken(oobe_config);
+  if (flex_enrollment_token.has_value()) {
+    server_state_availability_requester =
+        std::make_unique<FlexAutoEnrollmentStateAvailabilityRequester>(
+            flex_enrollment_token, local_state);
+  } else {
+    server_state_availability_requester =
+        std::make_unique<InitialServerStateAvailabilityRequester>(
+            std::move(psm_rlwe_dmserver_client), local_state);
+  }
   return base::WrapUnique(new AutoEnrollmentClientImpl(
-      progress_callback,
-      std::make_unique<InitialServerStateAvailabilityRequester>(
-          std::move(psm_rlwe_dmserver_client), local_state),
+      progress_callback, std::move(server_state_availability_requester),
       std::make_unique<ServerStateRetriever>(
           device_management_service, url_loader_factory, local_state,
           /*device_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
           kUMASuffixInitialEnrollment,
           AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
-              device_serial_number, device_brand_code))));
+              device_serial_number, device_brand_code,
+              flex_enrollment_token))));
 }
 
 // static

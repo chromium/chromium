@@ -17,8 +17,11 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
@@ -26,7 +29,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -64,6 +70,14 @@ const bool kWithLicense = true;
 
 const char kNoLicenseType[] = "";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kFlexEnrollmentToken[] = "test_flex_token";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+const char kFlexEnrollmentTokenOobeConfig[] = R"({
+  "flexToken": "test_flex_token"
+})";
+
 // Start and limit powers for the hash dance clients.
 const int kPowerStart = 4;
 const int kPowerLimit = 8;
@@ -93,10 +107,12 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
         local_state_(scoped_testing_local_state_.Get()),
         protocol_(protocol) {
+    ash::OobeConfigurationClient::InitializeFake();
     CreateClient(kPowerStart, kPowerLimit);
   }
 
   ~AutoEnrollmentClientImplBaseTest() override {
+    ash::OobeConfigurationClient::Shutdown();
     // Flush any deletion tasks.
     base::RunLoop().RunUntilIdle();
   }
@@ -130,7 +146,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              std::move(fake_psm_rlwe_dmserver_client));
+              std::move(fake_psm_rlwe_dmserver_client), &oobe_configuration_);
     }
   }
 
@@ -378,6 +394,18 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     EXPECT_EQ(*actual_license_type, expected_license_type);
   }
 
+  void SetUpFlexEnrollmentToken() {
+    static_cast<ash::FakeOobeConfigurationClient*>(
+        ash::OobeConfigurationClient::Get())
+        ->SetConfiguration(kFlexEnrollmentTokenOobeConfig);
+    oobe_configuration_.CheckConfiguration();
+  }
+
+  void SetUpFlexDevice() {
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kRevenBranding);
+  }
+
   const em::DeviceAutoEnrollmentRequest& auto_enrollment_request() {
     return last_request_.auto_enrollment_request();
   }
@@ -395,6 +423,8 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
 
+  ash::OobeConfiguration oobe_configuration_;
+  base::test::ScopedCommandLine command_line_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
@@ -1904,6 +1934,121 @@ TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
   VerifyServerBackedState("example.com", kDeviceStateModeDisabled,
                           kDisabledMessage, kNotWithLicense, kNoLicenseType);
 }
+
+// Essentially the same as PsmSucceedAndStateRetrievalSucceed, but also verifies
+// that a Flex token doesn't impact Zero Touch state determination (in case a
+// token is present on a non-Flex device for some reason).
+TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
+       FlexEnrollmentTokenIgnoredWhenNotOnFlex) {
+  SetUpFlexEnrollmentToken();
+  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
+  ServerWillSendState(
+      "example.com",
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
+      kDisabledMessage, kWithLicense,
+      em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
+
+  PsmWillReplyWith(true, kExpectedPsmDeterminationTimestamp);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify PSM result.
+  EXPECT_EQ(GetStateDiscoveryResult(),
+            StateDiscoveryResult::kSuccessHasServerSideState);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_FALSE(last_request_.device_initial_enrollment_state_request()
+                   .has_enrollment_token());
+  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AutoEnrollmentResult::kEnrollment);
+  VerifyServerBackedState(
+      "example.com", kDeviceStateRestoreModeReEnrollmentEnforced,
+      kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEnterprise);
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
+       FlexAutoEnrollmentServerRespondsWithSuccess) {
+  SetUpFlexDevice();
+  SetUpFlexEnrollmentToken();
+  CreateClient(kPowerStart, kPowerLimit);
+  ServerWillSendStateForInitialEnrollment(
+      "example.com", kNotWithLicense,
+      em::DeviceInitialEnrollmentStateResponse::NOT_EXIST,
+      em::DeviceInitialEnrollmentStateResponse::
+          INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
+  EXPECT_EQ(last_request_.device_initial_enrollment_state_request()
+                .enrollment_token(),
+            kFlexEnrollmentToken);
+  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AutoEnrollmentResult::kEnrollment);
+  VerifyServerBackedState("example.com", kDeviceStateInitialModeTokenEnrollment,
+                          /*expected_disabled_message=*/"", kNotWithLicense,
+                          kNoLicenseType);
+}
+
+// Note this isn't an expected production case, if there's a client error
+// with the state retrieval request, the server should still return
+// TOKEN_ENROLLMENT and all errors should be handled in the subsequent
+// enrollment request/response.
+TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
+       FlexAutoEnrollmentServerRespondsWithEnrollmentModeNone) {
+  SetUpFlexDevice();
+  SetUpFlexEnrollmentToken();
+  CreateClient(kPowerStart, kPowerLimit);
+  ServerWillSendStateForInitialEnrollment(
+      "", kNotWithLicense, em::DeviceInitialEnrollmentStateResponse::NOT_EXIST,
+      em::DeviceInitialEnrollmentStateResponse::INITIAL_ENROLLMENT_MODE_NONE);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
+  EXPECT_EQ(last_request_.device_initial_enrollment_state_request()
+                .enrollment_token(),
+            kFlexEnrollmentToken);
+  EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, AutoEnrollmentResult::kNoEnrollment);
+  VerifyServerBackedState(
+      /*expected_management_domain=*/"", /*expected_restore_mode=*/"",
+      /*expected_disabled_message*/ "", kNotWithLicense, kNoLicenseType);
+}
+
+TEST_F(AutoEnrollmentClientImplInitialEnrollmentTest,
+       FlexAutoEnrollmentServerRespondsWithError) {
+  SetUpFlexDevice();
+  SetUpFlexEnrollmentToken();
+  CreateClient(kPowerStart, kPowerLimit);
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT);
+  EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE}));
+}
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class AutoEnrollmentClientImplInitialEnrollmentInternalErrorTest
     : public AutoEnrollmentClientImplInitialEnrollmentTest,

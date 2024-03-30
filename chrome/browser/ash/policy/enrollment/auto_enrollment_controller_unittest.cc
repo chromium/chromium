@@ -16,6 +16,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -127,8 +128,8 @@ class ProxyAutoEnrollmentClientFactory : public AutoEnrollmentClient::Factory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& device_serial_number,
       const std::string& device_brand_code,
-      std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client)
-      override {
+      std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client,
+      ash::OobeConfiguration* oobe_config) override {
     mock_->SetProgressCallback(progress_callback);
     return std::make_unique<ProxyAutoEnrollmentClient>(mock_);
   }

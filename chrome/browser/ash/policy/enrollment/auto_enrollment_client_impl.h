@@ -24,6 +24,10 @@ namespace policy::psm {
 class RlweDmserverClient;
 }  // namespace policy::psm
 
+namespace ash {
+class OobeConfiguration;
+}  // namespace ash
+
 namespace policy {
 
 class DeviceManagementService;
@@ -58,8 +62,8 @@ class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         const std::string& device_serial_number,
         const std::string& device_brand_code,
-        std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client)
-        override;
+        std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client,
+        ash::OobeConfiguration* oobe_config) override;
   };
 
   // Registers preferences in local state.
@@ -85,6 +89,11 @@ class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
   // Responsible for resolving server state availability status via private
   // membership check requests for initial enrollment.
   class InitialServerStateAvailabilityRequester;
+
+  // Responsible for resolving availability status by checking Flex enrollment
+  // token presence, to determine whether the device should retrieve server
+  // state for Flex Auto Enrollment.
+  class FlexAutoEnrollmentStateAvailabilityRequester;
 
   enum class ServerStateAvailabilitySuccess;
   using ServerStateAvailabilityResult =

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -16,6 +17,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
@@ -293,9 +296,9 @@ bool AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (!command_line->HasSwitch(
-          ash::switches::kEnterpriseEnableInitialEnrollment))
-    return IsOfficialGoogleChrome();
-
+          ash::switches::kEnterpriseEnableInitialEnrollment)) {
+    return IsOfficialGoogleChrome() || IsOfficialGoogleFlex();
+  }
   std::string command_line_mode = command_line->GetSwitchValueASCII(
       ash::switches::kEnterpriseEnableInitialEnrollment);
   if (command_line_mode == kInitialEnrollmentAlways)
@@ -303,7 +306,7 @@ bool AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled() {
 
   if (command_line_mode.empty() ||
       command_line_mode == kInitialEnrollmentOfficialBuild) {
-    return IsOfficialGoogleChrome();
+    return IsOfficialGoogleChrome() || IsOfficialGoogleFlex();
   }
 
   if (command_line_mode == kInitialEnrollmentNever)
@@ -468,6 +471,17 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
     LOG(WARNING)
         << "Skip Initial State Determination due to missing brand code.";
     return InitialStateDeterminationRequirement::kNotRequired;
+  }
+
+  if (IsOfficialGoogleFlex()) {
+    const std::string* flex_token =
+        ash::OobeConfiguration::Get()->configuration().FindString(
+            ash::configuration::kFlexToken);
+    if (!flex_token || flex_token->empty()) {
+      LOG(WARNING) << "Skipping Initial State Determination on Flex as no Flex "
+                      "token was found.";
+      return InitialStateDeterminationRequirement::kNotRequired;
+    }
   }
 
   switch (embargo_state) {

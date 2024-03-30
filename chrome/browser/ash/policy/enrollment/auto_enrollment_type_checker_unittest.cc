@@ -15,8 +15,11 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -36,6 +39,9 @@ constexpr char kSerialNumberValue[] = "a_value";
 constexpr char kBrandCodeValue[] = "brand_code";
 constexpr char kActivateDateValue[] = "activated";
 constexpr char kMalformedEmbargoDateValue[] = "adventure_time";
+constexpr char kFlexTokenOobeConfig[] = R"({
+  "flexToken": "test_flex_token"
+})";
 
 std::string ToUTCString(const base::Time& time) {
   return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd",
@@ -51,6 +57,10 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   AutoEnrollmentTypeCheckerTest() = default;
   ~AutoEnrollmentTypeCheckerTest() override = default;
 
+  void SetUp() override { ash::OobeConfigurationClient::InitializeFake(); }
+
+  void TearDown() override { ash::OobeConfigurationClient::Shutdown(); }
+
  protected:
   void SetUpFlexDevice() {
     fake_statistics_provider_.SetMachineStatistic(
@@ -65,6 +75,13 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
         AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+  }
+
+  void SetUpFlexToken(const char config[] = kFlexTokenOobeConfig) {
+    static_cast<ash::FakeOobeConfigurationClient*>(
+        ash::OobeConfigurationClient::Get())
+        ->SetConfiguration(config);
+    ash::OobeConfiguration::Get()->CheckConfiguration();
   }
 
   void SetupFREEnabled() {
@@ -146,6 +163,7 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   static constexpr bool is_google_branded_ = false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  ash::OobeConfiguration oobe_configuration_;
   base::test::ScopedCommandLine command_line_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
@@ -433,6 +451,92 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                 &fake_statistics_provider_),
             AutoEnrollmentTypeChecker::FRERequirement::kDisabled);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerTest,
+       DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
+  SetUpFlexDevice();
+  SetUpFlexToken();
+  fake_statistics_provider_.SetMachineStatistic(
+      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
+                                                kBrandCodeValue);
+
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
+            is_google_branded_);
+  AutoEnrollmentTypeChecker::CheckType check_type =
+      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+          true, &fake_statistics_provider_, false);
+
+  AutoEnrollmentTypeChecker::CheckType expected_check_type =
+      is_google_branded_
+          ? AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination
+          : AutoEnrollmentTypeChecker::CheckType::kNone;
+  EXPECT_EQ(check_type, expected_check_type);
+}
+
+// If there is a flex_token present for whatever reason on a non-Flex device,
+// auto_enrollment_type_checker should ignore it and continue initial state
+// determination as normal (though the token won't be included in the state
+// retrieval request).
+TEST_F(AutoEnrollmentTypeCheckerTest,
+       DetermineAutoEnrollmentCheckTypeNotOnFlexWhenTokenPresent) {
+  SetUpFlexToken();
+  fake_statistics_provider_.SetMachineStatistic(
+      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
+                                                kBrandCodeValue);
+
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
+            is_google_branded_);
+  AutoEnrollmentTypeChecker::CheckType check_type =
+      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+          true, &fake_statistics_provider_, false);
+
+  AutoEnrollmentTypeChecker::CheckType expected_check_type =
+      is_google_branded_
+          ? AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination
+          : AutoEnrollmentTypeChecker::CheckType::kNone;
+
+  EXPECT_EQ(check_type, expected_check_type);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerTest,
+       DetermineAutoEnrollmentCheckTypeOnFlexWithoutTokenPresent) {
+  SetUpFlexDevice();
+  fake_statistics_provider_.SetMachineStatistic(
+      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
+                                                kBrandCodeValue);
+
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
+            is_google_branded_);
+  AutoEnrollmentTypeChecker::CheckType check_type =
+      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+          true, &fake_statistics_provider_, false);
+
+  EXPECT_EQ(check_type, AutoEnrollmentTypeChecker::CheckType::kNone);
+}
+
+TEST_F(AutoEnrollmentTypeCheckerTest,
+       DetermineAutoEnrollmentCheckTypeOnFlexWithEmptyToken) {
+  constexpr char kEmptyFlexTokenOobeConfig[] = R"({
+    "flexToken": ""
+  })";
+  SetUpFlexToken(kEmptyFlexTokenOobeConfig);
+  SetUpFlexDevice();
+  fake_statistics_provider_.SetMachineStatistic(
+      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
+                                                kBrandCodeValue);
+
+  EXPECT_EQ(AutoEnrollmentTypeChecker::IsInitialEnrollmentEnabled(),
+            is_google_branded_);
+  AutoEnrollmentTypeChecker::CheckType check_type =
+      AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+          true, &fake_statistics_provider_, false);
+
+  EXPECT_EQ(check_type, AutoEnrollmentTypeChecker::CheckType::kNone);
 }
 
 class AutoEnrollmentTypeCheckerInitializationTest

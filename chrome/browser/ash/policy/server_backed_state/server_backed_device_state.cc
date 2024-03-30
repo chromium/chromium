@@ -26,6 +26,7 @@ const char kDeviceStateAssignedUpgradeType[] = "assigned_upgrade_type";
 const char kDeviceStateInitialModeEnrollmentEnforced[] = "enrollment-enforced";
 const char kDeviceStateInitialModeEnrollmentZeroTouch[] =
     "enrollment-zero-touch";
+const char kDeviceStateInitialModeTokenEnrollment[] = "token-enrollment";
 // Modes for a device after secondary state determination (FRE).
 const char kDeviceStateRestoreModeReEnrollmentRequested[] =
     "re-enrollment-requested";
@@ -64,6 +65,9 @@ DeviceStateMode GetDeviceStateMode() {
     return INITIAL_MODE_ENROLLMENT_ENFORCED;
   if (*device_state_mode == kDeviceStateInitialModeEnrollmentZeroTouch)
     return INITIAL_MODE_ENROLLMENT_ZERO_TOUCH;
+  if (*device_state_mode == kDeviceStateInitialModeTokenEnrollment) {
+    return INITIAL_MODE_ENROLLMENT_TOKEN_ENROLLMENT;
+  }
 
   NOTREACHED();
   return RESTORE_MODE_NONE;

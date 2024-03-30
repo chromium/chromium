@@ -67,10 +67,6 @@ std::string ConvertInitialEnrollmentMode(
         initial_enrollment_mode) {
   switch (initial_enrollment_mode) {
     case em::DeviceInitialEnrollmentStateResponse::INITIAL_ENROLLMENT_MODE_NONE:
-    // Do nothing initially with token-based enrollment mode.
-    // TODO(b/320497143): Return correct prefs constant instead of empty string.
-    case em::DeviceInitialEnrollmentStateResponse::
-        INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED:
       return std::string();
     case em::DeviceInitialEnrollmentStateResponse::
         INITIAL_ENROLLMENT_MODE_ENROLLMENT_ENFORCED:
@@ -81,6 +77,9 @@ std::string ConvertInitialEnrollmentMode(
     case em::DeviceInitialEnrollmentStateResponse::
         INITIAL_ENROLLMENT_MODE_DISABLED:
       return kDeviceStateModeDisabled;
+    case em::DeviceInitialEnrollmentStateResponse::
+        INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED:
+      return kDeviceStateInitialModeTokenEnrollment;
   }
 }
 
@@ -126,9 +125,11 @@ class InitialEnrollmentStateMessageProcessor
  public:
   InitialEnrollmentStateMessageProcessor(
       const std::string& device_serial_number,
-      const std::string& device_brand_code)
+      const std::string& device_brand_code,
+      const std::optional<std::string> flex_enrollment_token)
       : device_serial_number_(device_serial_number),
-        device_brand_code_(device_brand_code) {}
+        device_brand_code_(device_brand_code),
+        flex_enrollment_token_(std::move(flex_enrollment_token)) {}
 
   DeviceManagementService::JobConfiguration::JobType GetJobType()
       const override {
@@ -141,6 +142,9 @@ class InitialEnrollmentStateMessageProcessor
         request->mutable_device_initial_enrollment_state_request();
     inner_request->set_brand_code(device_brand_code_);
     inner_request->set_serial_number(device_serial_number_);
+    if (flex_enrollment_token_.has_value()) {
+      inner_request->set_enrollment_token(flex_enrollment_token_.value());
+    }
   }
 
   std::optional<ParsedResponse> ParseResponse(
@@ -216,6 +220,8 @@ class InitialEnrollmentStateMessageProcessor
   std::string device_serial_number_;
   // 4-character brand code of the device.
   std::string device_brand_code_;
+
+  const std::optional<std::string> flex_enrollment_token_;
 };
 
 // Generates a request to download the device state during Forced Re-Enrollment
@@ -313,9 +319,11 @@ AutoEnrollmentStateMessageProcessor::CreateForFRE(
 std::unique_ptr<AutoEnrollmentStateMessageProcessor>
 AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
     const std::string& device_serial_number,
-    const std::string& device_brand_code) {
+    const std::string& device_brand_code,
+    std::optional<std::string> flex_enrollment_token) {
   return std::make_unique<InitialEnrollmentStateMessageProcessor>(
-      device_serial_number, device_brand_code);
+      device_serial_number, device_brand_code,
+      std::move(flex_enrollment_token));
 }
 
 }  // namespace policy

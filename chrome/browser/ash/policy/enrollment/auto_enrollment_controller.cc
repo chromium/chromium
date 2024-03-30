@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
@@ -519,7 +520,8 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       std::string(rlz_brand_code.value()),
       std::make_unique<psm::RlweDmserverClientImpl>(
           device_management_service_, shared_url_loader_factory_, plaintext_id,
-          psm_rlwe_client_factory_));
+          psm_rlwe_client_factory_),
+      ash::OobeConfiguration::Get());
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();

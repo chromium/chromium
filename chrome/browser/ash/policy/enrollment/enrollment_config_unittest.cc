@@ -35,7 +35,7 @@ struct ZeroTouchParam {
         auth_mechanism_after_oobe(auth_after_oobe) {}
 };
 
-class EnrollmentConfigTest : public testing::TestWithParam<ZeroTouchParam> {
+class EnrollmentConfigTest : public testing::Test {
  protected:
   EnrollmentConfigTest() {
     RegisterLocalState(local_state_.registry());
@@ -45,15 +45,34 @@ class EnrollmentConfigTest : public testing::TestWithParam<ZeroTouchParam> {
                                              "fake-hardware");
   }
 
-  void SetupZeroTouchCommandLineSwitch();
-
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
 };
 
-void EnrollmentConfigTest::SetupZeroTouchCommandLineSwitch() {
+// TODO(b/329271128): Remove this test once token enrollment is supported.
+TEST_F(EnrollmentConfigTest,
+       TokenEnrollmentModeYieldsEnrollmentConfigModeNone) {
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+
+  EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
+      &local_state_, install_attributes_, &statistics_provider_);
+
+  EXPECT_EQ(config.mode, EnrollmentConfig::MODE_NONE);
+  EXPECT_FALSE(config.should_enroll());
+}
+
+class EnrollmentConfigZeroTouchTest
+    : public EnrollmentConfigTest,
+      public testing::WithParamInterface<ZeroTouchParam> {
+ protected:
+  void SetupZeroTouchCommandLineSwitch();
+};
+
+void EnrollmentConfigZeroTouchTest::SetupZeroTouchCommandLineSwitch() {
   const ZeroTouchParam& param = GetParam();
   if (param.enable_zero_touch_flag != nullptr) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -62,7 +81,7 @@ void EnrollmentConfigTest::SetupZeroTouchCommandLineSwitch() {
   }
 }
 
-TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
+TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   SetupZeroTouchCommandLineSwitch();
 
   // Default configuration is empty.
@@ -140,7 +159,7 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 }
 
-TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
+TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   SetupZeroTouchCommandLineSwitch();
 
   // If OOBE is complete, we may re-enroll to the domain configured in install
@@ -182,7 +201,7 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
 
 INSTANTIATE_TEST_SUITE_P(
     ZeroTouchFlag,
-    EnrollmentConfigTest,
+    EnrollmentConfigZeroTouchTest,
     ::testing::Values(
         ZeroTouchParam(nullptr,  // No flag set.
                        EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,

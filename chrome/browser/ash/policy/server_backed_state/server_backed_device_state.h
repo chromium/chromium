@@ -19,6 +19,7 @@ extern const char kDeviceStateAssignedUpgradeType[];
 // kDeviceStateMode dictionary entry.
 extern const char kDeviceStateInitialModeEnrollmentEnforced[];
 extern const char kDeviceStateInitialModeEnrollmentZeroTouch[];
+extern const char kDeviceStateInitialModeTokenEnrollment[];
 // String constants used to persist the restorative action in the
 // kDeviceStateMode dictionary entry.
 extern const char kDeviceStateRestoreModeReEnrollmentRequested[];
@@ -56,6 +57,9 @@ enum DeviceStateMode {
   INITIAL_MODE_ENROLLMENT_ENFORCED = 5,
   // Enterprise initial enrollment is enforced and cannot be skipped.
   INITIAL_MODE_ENROLLMENT_ZERO_TOUCH = 6,
+  // Enterprise initial enrollment is enforced by presence of enrollment
+  // token, and cannot be skipped.
+  INITIAL_MODE_ENROLLMENT_TOKEN_ENROLLMENT = 7
 };
 
 // Parses the contents of the kDeviceStateMode dictionary entry and

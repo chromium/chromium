@@ -18,6 +18,10 @@ namespace policy::psm {
 class RlweDmserverClient;
 }
 
+namespace ash {
+class OobeConfiguration;
+}  // namespace ash
+
 namespace policy {
 
 class DeviceManagementService;
@@ -55,8 +59,8 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         const std::string& device_serial_number,
         const std::string& device_brand_code,
-        std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client)
-        override;
+        std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client,
+        ash::OobeConfiguration* oobe_config) override;
 
    private:
     base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>
