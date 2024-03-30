@@ -7247,7 +7247,7 @@
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630117778953264026">セキュリティの強化</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> が、自身を自動的に認証できるよう、証明書への恒久的なアクセス許可を求めています。</translation>
-<translation id="6635362468090274700">デバイスを非公開に設定している場合、誰もあなたとコンテンツを共有できません。<ph name="BR" /><ph name="BR" />一時的に公開するには、ステータス領域を開いて、ニアバイシェアをオンにします。</translation>
+<translation id="6635362468090274700">デバイスを公開するまでは、誰もあなたとコンテンツを共有できません。<ph name="BR" /><ph name="BR" />一時的に公開するには、ステータス領域を開いて、ニアバイシェアをオンにします。</translation>
 <translation id="6635674640674343739">ネットワーク接続を確立できません。ネットワーク接続を確認して、もう一度お試しください。</translation>
 <translation id="663569763553406962">拡張機能がサイトから読み取りまたは変更できる内容を確認する</translation>
 <translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
