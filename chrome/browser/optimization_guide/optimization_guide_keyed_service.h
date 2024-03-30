@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -116,9 +117,18 @@ class OptimizationGuideKeyedService
 
   // optimization_guide::OptimizationGuideModelExecutor implementation:
   std::unique_ptr<Session> StartSession(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const std::optional<optimization_guide::SessionConfigParams>&
+          config_params);
+  std::unique_ptr<Session> StartSession(
       optimization_guide::proto::ModelExecutionFeature feature,
       const std::optional<optimization_guide::SessionConfigParams>&
           config_params) override;
+  void ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const google::protobuf::MessageLite& request_metadata,
+      optimization_guide::OptimizationGuideModelExecutionResultCallback
+          callback);
   void ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request_metadata,
@@ -137,11 +147,15 @@ class OptimizationGuideKeyedService
   // Note that the return value here may not match the feature enable state on
   // chrome settings page since the latter takes effect on browser restart.
   // Virtualized for testing.
+  bool ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::UserVisibleFeatureKey feature) const;
   virtual bool ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature feature) const;
 
   // Returns whether the `feature` should be currently allowed for logging model
   // quality logs.
+  bool ShouldFeatureBeCurrentlyAllowedForLogging(
+      optimization_guide::UserVisibleFeatureKey feature) const;
   virtual bool ShouldFeatureBeCurrentlyAllowedForLogging(
       optimization_guide::proto::ModelExecutionFeature feature) const;
 

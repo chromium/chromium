@@ -43,6 +43,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
@@ -572,6 +573,15 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
 OptimizationGuideKeyedService::StartSession(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    const std::optional<optimization_guide::SessionConfigParams>&
+        config_params) {
+  return StartSession(optimization_guide::ToModelExecutionFeatureProto(feature),
+                      config_params);
+}
+
+std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+OptimizationGuideKeyedService::StartSession(
     optimization_guide::proto::ModelExecutionFeature feature,
     const std::optional<optimization_guide::SessionConfigParams>&
         config_params) {
@@ -579,6 +589,15 @@ OptimizationGuideKeyedService::StartSession(
     return nullptr;
   }
   return model_execution_manager_->StartSession(feature, config_params);
+}
+
+void OptimizationGuideKeyedService::ExecuteModel(
+    optimization_guide::ModelBasedCapabilityKey feature,
+    const google::protobuf::MessageLite& request_metadata,
+    optimization_guide::OptimizationGuideModelExecutionResultCallback
+        callback) {
+  ExecuteModel(optimization_guide::ToModelExecutionFeatureProto(feature),
+               request_metadata, std::move(callback));
 }
 
 void OptimizationGuideKeyedService::ExecuteModel(
@@ -676,6 +695,12 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
 }
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
+    optimization_guide::UserVisibleFeatureKey feature) const {
+  return ShouldFeatureBeCurrentlyEnabledForUser(
+      optimization_guide::ToModelExecutionFeatureProto(feature));
+}
+
+bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
     optimization_guide::proto::ModelExecutionFeature feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_features_controller_) {
@@ -683,6 +708,12 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
   }
   return model_execution_features_controller_
       ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
+}
+
+bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForLogging(
+    optimization_guide::UserVisibleFeatureKey feature) const {
+  return ShouldFeatureBeCurrentlyAllowedForLogging(
+      optimization_guide::ToModelExecutionFeatureProto(feature));
 }
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForLogging(

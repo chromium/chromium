@@ -12,6 +12,7 @@
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/version_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -47,6 +48,11 @@ ChromeModelQualityLogsUploaderService::ChromeModelQualityLogsUploaderService(
 
 ChromeModelQualityLogsUploaderService::
     ~ChromeModelQualityLogsUploaderService() = default;
+
+bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
+    optimization_guide::UserVisibleFeatureKey feature) {
+  return CanUploadLogs(ToModelExecutionFeatureProto(feature));
+}
 
 bool ChromeModelQualityLogsUploaderService::CanUploadLogs(
     optimization_guide::proto::ModelExecutionFeature feature) {

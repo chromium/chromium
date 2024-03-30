@@ -33,6 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -385,11 +386,11 @@ class OptimizationGuideKeyedServiceBrowserTest
     identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
   }
 
-  bool IsSettingVisible(
-      optimization_guide::proto::ModelExecutionFeature feature) {
+  bool IsSettingVisible(optimization_guide::UserVisibleFeatureKey feature) {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
                browser()->profile())
-        ->IsSettingVisible(feature);
+        ->IsSettingVisible(
+            optimization_guide::ToModelExecutionFeatureProto(feature));
   }
 
   void SetMetricsConsent(bool consent) {
@@ -802,7 +803,7 @@ class TestSettingsEnabledObserver
     : public optimization_guide::SettingsEnabledObserver {
  public:
   explicit TestSettingsEnabledObserver(
-      optimization_guide::proto::ModelExecutionFeature feature)
+      optimization_guide::UserVisibleFeatureKey feature)
       : SettingsEnabledObserver(feature) {}
   void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override {
     count_feature_enabled_state_changes_++;
@@ -816,47 +817,39 @@ class TestSettingsEnabledObserver
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        SettingsVisibilitySignedOutVsSignedIn) {
   // User is not signed-in.
-  EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   // Visibility of tab organizer is allowed for unsigned users.
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   // Visibility of this feature is enabled via finch but the feature is still
   // not visible.
   EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_COMPOSE));
+      IsSettingVisible(optimization_guide::UserVisibleFeatureKey::kCompose));
 
-  // MODEL_EXECUTION_FEATURE_COMPOSE should now be visible after
+  // kCompose should now be visible after
   // sign-in.
   EnableSignIn();
 
-  EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
+
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_COMPOSE));
+      IsSettingVisible(optimization_guide::UserVisibleFeatureKey::kCompose));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // SignOut not supported on ChromeOS.
   SignOut();
   // Tab Organizer is visible to unsigned users.
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_COMPOSE));
+      IsSettingVisible(optimization_guide::UserVisibleFeatureKey::kCompose));
 #endif
 }
 
@@ -866,61 +859,50 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        SettingsVisibilityUpdatedCorrectly) {
   EnableSignIn();
 
-  EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   // Visibility of tab organizer is enabled via finch.
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   // Visibility of compose is enabled via finch.
   EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_COMPOSE));
+      IsSettingVisible(optimization_guide::UserVisibleFeatureKey::kCompose));
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 
   // Restarting the browser should cause wallpaper setting to be visible since
   // the feature is enabled.
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
+
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_COMPOSE));
+      IsSettingVisible(optimization_guide::UserVisibleFeatureKey::kCompose));
 
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(
           optimization_guide::prefs::FeatureOptInState::kDisabled));
 
   // Restarting the browser should cause wallpaper setting to be not visible
   // since the feature is no-longer enabled.
-  EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
+
+  EXPECT_TRUE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-
-  EXPECT_TRUE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_COMPOSE));
+      IsSettingVisible(optimization_guide::UserVisibleFeatureKey::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -931,64 +913,52 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EnableSignIn();
 
   TestSettingsEnabledObserver wallpaper_search_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH);
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch);
   TestSettingsEnabledObserver compose_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE);
+      optimization_guide::UserVisibleFeatureKey::kCompose);
 
   ogks->AddModelExecutionSettingsEnabledObserver(&wallpaper_search_observer);
   ogks->AddModelExecutionSettingsEnabledObserver(&compose_observer);
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   EXPECT_EQ(1, wallpaper_search_observer.count_feature_enabled_state_changes_);
   EXPECT_TRUE(wallpaper_search_observer.is_currently_enabled_);
   EXPECT_EQ(0, compose_observer.count_feature_enabled_state_changes_);
 
   EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // SignOut not supported on ChromeOS.
   SignOut();
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
   EXPECT_EQ(2, wallpaper_search_observer.count_feature_enabled_state_changes_);
   EXPECT_FALSE(wallpaper_search_observer.is_currently_enabled_);
@@ -1005,53 +975,43 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EnableSignIn();
 
   TestSettingsEnabledObserver wallpaper_search_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH);
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch);
   TestSettingsEnabledObserver compose_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE);
+      optimization_guide::UserVisibleFeatureKey::kCompose);
 
   ogks->AddModelExecutionSettingsEnabledObserver(&wallpaper_search_observer);
   ogks->AddModelExecutionSettingsEnabledObserver(&compose_observer);
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   EXPECT_EQ(1, wallpaper_search_observer.count_feature_enabled_state_changes_);
   EXPECT_TRUE(wallpaper_search_observer.is_currently_enabled_);
   EXPECT_EQ(0, compose_observer.count_feature_enabled_state_changes_);
 
   EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(
           optimization_guide::prefs::FeatureOptInState::kDisabled));
   EXPECT_EQ(2, wallpaper_search_observer.count_feature_enabled_state_changes_);
@@ -1059,16 +1019,13 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_EQ(0, compose_observer.count_feature_enabled_state_changes_);
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 }
 
 // Verifies that Model Execution Features Controller updates feature prefs
@@ -1081,30 +1038,24 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EnableSignIn();
 
   TestSettingsEnabledObserver wallpaper_search_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH);
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch);
   TestSettingsEnabledObserver compose_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE);
+      optimization_guide::UserVisibleFeatureKey::kCompose);
   TestSettingsEnabledObserver tab_observer(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION);
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization);
 
   ogks->AddModelExecutionSettingsEnabledObserver(&wallpaper_search_observer);
   ogks->AddModelExecutionSettingsEnabledObserver(&compose_observer);
   ogks->AddModelExecutionSettingsEnabledObserver(&tab_observer);
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Enable the main feature toggle. This should enable the compose and tab
   // organizer features on restart.
@@ -1121,16 +1072,13 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(tab_observer.is_currently_enabled_);
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Disable main toggle. The tab organizer feature should be disabled on
   // restart.
@@ -1147,22 +1095,19 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_FALSE(tab_observer.is_currently_enabled_);
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_EQ(optimization_guide::prefs::FeatureOptInState::kNotInitialized,
-            static_cast<optimization_guide::prefs::FeatureOptInState>(
-                prefs->GetInteger(
-                    optimization_guide::prefs::GetSettingEnabledPrefName(
-                        optimization_guide::proto::ModelExecutionFeature::
-                            MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH))));
+      optimization_guide::UserVisibleFeatureKey::kCompose));
+  EXPECT_EQ(
+      optimization_guide::prefs::FeatureOptInState::kNotInitialized,
+      static_cast<
+          optimization_guide::prefs::FeatureOptInState>(prefs->GetInteger(
+          optimization_guide::prefs::GetSettingEnabledPrefName(
+              optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))));
 }
 
 // Verifies that Model Execution Features Controller returns null for incognito
@@ -1185,13 +1130,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 
   EXPECT_FALSE(otr_ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1267,21 +1210,17 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   guest_prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+          optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
 
   EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_FALSE(guest_ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
 #endif
 
@@ -1327,13 +1266,12 @@ IN_PROC_BROWSER_TEST_P(
     SettingsNotVisible) {
   EnableSignIn();
 
-  EXPECT_FALSE(
-      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_EQ(ShouldFeatureBeEnabled(),
-            IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
-                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+            IsSettingVisible(
+                optimization_guide::UserVisibleFeatureKey::kTabOrganization));
 }
 
 class OptimizationGuideKeyedServicePermissionsCheckDisabledTest
@@ -1505,7 +1443,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   EXPECT_FALSE(
       ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+          optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Upload should be disabled as there is no metrics consent, so total
   // histogram bucket count will be 1.
@@ -1561,8 +1499,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   auto* profile = browser()->profile();
   OptimizationGuideKeyedService* ogks =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
-      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto compose_feature = optimization_guide::UserVisibleFeatureKey::kCompose;
   auto* prefs = profile->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
@@ -1594,8 +1531,9 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   ogks->UploadModelQualityLogs(std::move(log_entry_1));
 
   // Disable logging via via the enterprise policy to kDisable state.
-  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    optimization_guide::model_execution::prefs::
                        ModelExecutionEnterprisePolicyValue::kDisable)),
@@ -1615,8 +1553,9 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   // Enable logging via via the enterprise policy to state kAllow this shouldn't
   // stop upload.
-  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    optimization_guide::model_execution::prefs::
                        ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -1631,7 +1570,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   EXPECT_TRUE(
       ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+          optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Create a new ModelQualityLogEntry and pass it to the
   // UploadModelQualityLogs.
@@ -1658,8 +1597,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   auto* profile = browser()->profile();
   OptimizationGuideKeyedService* ogks =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
-      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto compose_feature = optimization_guide::UserVisibleFeatureKey::kCompose;
   auto* prefs = profile->GetPrefs();
   prefs->SetInteger(
       optimization_guide::prefs::GetSettingEnabledPrefName(compose_feature),
@@ -1686,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   EXPECT_FALSE(
       ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+          optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Disable logging via via the enterprise policy to kDisable state this should
   // return ChromeModelQualityLogsUploaderService::CanUploadLogs to false.
@@ -1705,7 +1643,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   EXPECT_FALSE(
       ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+          optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Enable logging via via the enterprise policy to state kAllow this shouldn't
   // stop upload and should return
@@ -1727,7 +1665,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   EXPECT_TRUE(
       ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+          optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Upload should be disabled twice when logging is disabled via enterprise
   // policy, total count should be 2.
@@ -1747,8 +1685,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   auto* profile = browser()->profile();
   OptimizationGuideKeyedService* ogks =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  auto compose_feature = optimization_guide::proto::ModelExecutionFeature::
-      MODEL_EXECUTION_FEATURE_COMPOSE;
+  auto compose_feature = optimization_guide::UserVisibleFeatureKey::kCompose;
   auto* prefs = profile->GetPrefs();
   policy::PolicyMap policies;
 
@@ -1772,7 +1709,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   EXPECT_TRUE(
       ogks->GetChromeModelQualityLogsUploaderServiceForTesting()->CanUploadLogs(
-          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE));
+          optimization_guide::UserVisibleFeatureKey::kCompose));
 
   // Create a new ModelQualityLogEntry for compose.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =

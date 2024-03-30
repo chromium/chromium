@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_MODEL_QUALITY_LOGS_UPLOADER_SERVICE_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_MODEL_QUALITY_LOGS_UPLOADER_SERVICE_H_
 
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
-
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
 class PrefService;
 namespace network {
@@ -39,6 +39,7 @@ class ChromeModelQualityLogsUploaderService
 
   // Checks user consent, enterprise check for logging. Returns false if any one
   // of the check is not enabled.
+  bool CanUploadLogs(UserVisibleFeatureKey feature);
   bool CanUploadLogs(proto::ModelExecutionFeature feature) override;
 
   // Sets system profile proto for logging.

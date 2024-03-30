@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SETTINGS_ENABLED_OBSERVER_H_
 
 #include "base/observer_list_types.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace optimization_guide {
@@ -14,6 +15,7 @@ namespace optimization_guide {
 // `feature`.
 class SettingsEnabledObserver : public base::CheckedObserver {
  public:
+  explicit SettingsEnabledObserver(UserVisibleFeatureKey feature);
   explicit SettingsEnabledObserver(proto::ModelExecutionFeature feature);
   ~SettingsEnabledObserver() override;
 
