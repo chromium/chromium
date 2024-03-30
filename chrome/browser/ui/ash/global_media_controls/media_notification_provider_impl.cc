@@ -278,11 +278,6 @@ void MediaNotificationProviderImpl::OnMediaItemUISizeChanged() {
   }
 }
 
-void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
-    const std::string& id) {
-  item_ui_observer_set_.StopObserving(id);
-}
-
 void MediaNotificationProviderImpl::OnDeviceServiceRegistered(
     global_media_controls::mojom::DeviceService* device_service) {
   device_service->SetDevicePickerProvider(

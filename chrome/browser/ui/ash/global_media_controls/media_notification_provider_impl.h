@@ -98,7 +98,6 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   // global_media_controls::MediaItemUIObserver:
   void OnMediaItemUISizeChanged() override;
-  void OnMediaItemUIDestroyed(const std::string& id) override;
 
   // crosapi::MediaUIAsh::Observer:
   void OnDeviceServiceRegistered(
