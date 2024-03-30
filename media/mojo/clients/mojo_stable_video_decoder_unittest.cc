@@ -26,18 +26,49 @@
 #include "ui/gfx/geometry/size.h"
 
 using testing::_;
+using testing::InSequence;
 using testing::Mock;
 using testing::StrictMock;
+using testing::WithArgs;
 
 namespace media {
 
 namespace {
 
-VideoDecoderConfig CreateValidVideoDecoderConfig() {
+std::vector<SupportedVideoDecoderConfig> CreateListOfSupportedConfigs() {
+  return {
+      {/*profile_min=*/H264PROFILE_MIN, /*profile_max=*/H264PROFILE_MAX,
+       /*coded_size_min=*/gfx::Size(320, 180),
+       /*coded_size_max=*/gfx::Size(1280, 720), /*allow_encrypted=*/false,
+       /*require_encrypted=*/false},
+      {/*profile_min=*/VP9PROFILE_MIN, /*profile_max=*/VP9PROFILE_MAX,
+       /*coded_size_min=*/gfx::Size(8, 8),
+       /*coded_size_max=*/gfx::Size(640, 360), /*allow_encrypted=*/true,
+       /*require_encrypted=*/true},
+  };
+}
+
+VideoDecoderConfig CreateValidSupportedVideoDecoderConfig() {
   // Note: the StableVideoDecoder Mojo interface doesn't support
   // VideoTransformation.
   const VideoDecoderConfig config(
       VideoCodec::kH264, VideoCodecProfile::H264PROFILE_BASELINE,
+      VideoDecoderConfig::AlphaMode::kHasAlpha, VideoColorSpace::REC709(),
+      VideoTransformation(),
+      /*coded_size=*/gfx::Size(640, 368),
+      /*visible_rect=*/gfx::Rect(1, 1, 630, 360),
+      /*natural_size=*/gfx::Size(1260, 720),
+      /*extra_data=*/std::vector<uint8_t>{1, 2, 3},
+      EncryptionScheme::kUnencrypted);
+  DCHECK(config.IsValidConfig());
+  return config;
+}
+
+VideoDecoderConfig CreateValidUnsupportedVideoDecoderConfig() {
+  // Note: the StableVideoDecoder Mojo interface doesn't support
+  // VideoTransformation.
+  const VideoDecoderConfig config(
+      VideoCodec::kAV1, VideoCodecProfile::AV1PROFILE_PROFILE_MAIN,
       VideoDecoderConfig::AlphaMode::kHasAlpha, VideoColorSpace::REC709(),
       VideoTransformation(),
       /*coded_size=*/gfx::Size(640, 368),
@@ -223,8 +254,10 @@ class MojoStableVideoDecoderTest : public testing::Test {
  protected:
   // Creates and initializes a new MojoStableVideoDecoder connected to a
   // MockStableVideoDecoderService (verifying the initialization expectations
-  // along the way). Returns all relevant endpoints or nullptr on failure.
-  std::unique_ptr<TestEndpoints> CreateAndInitializeMojoStableVideoDecoder() {
+  // along the way). Returns all relevant endpoints or nullptr if initialization
+  // did not complete successfully.
+  std::unique_ptr<TestEndpoints> CreateAndInitializeMojoStableVideoDecoder(
+      const VideoDecoderConfig& config) {
     auto endpoints = std::make_unique<TestEndpoints>(media_task_runner_);
 
     // The first time Initialize() is called on the MojoStableVideoDecoder in a
@@ -246,15 +279,15 @@ class MojoStableVideoDecoderTest : public testing::Test {
               received_get_supported_configs_cb = std::move(callback);
             });
 
+    constexpr bool kLowDelayToInitializeWith = false;
     StrictMock<base::MockOnceCallback<void(DecoderStatus)>> init_cb;
     media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MojoStableVideoDecoder::Initialize,
-                       base::Unretained(endpoints->client()),
-                       CreateValidVideoDecoderConfig(),
-                       /*low_delay=*/false, /*cdm_context=*/nullptr,
-                       init_cb.Get(), endpoints->client_output_cb()->Get(),
-                       endpoints->client_waiting_cb()->Get()));
+        FROM_HERE, base::BindOnce(&MojoStableVideoDecoder::Initialize,
+                                  base::Unretained(endpoints->client()), config,
+                                  kLowDelayToInitializeWith,
+                                  /*cdm_context=*/nullptr, init_cb.Get(),
+                                  endpoints->client_output_cb()->Get(),
+                                  endpoints->client_waiting_cb()->Get()));
     task_environment_.RunUntilIdle();
     if (!Mock::VerifyAndClearExpectations(endpoints->service())) {
       return nullptr;
@@ -264,26 +297,75 @@ class MojoStableVideoDecoderTest : public testing::Test {
       return nullptr;
     }
 
-    // Now we'll reply with a list of supported configurations. When the
-    // MojoStableVideoDecoder receives those, it should then create the
-    // OOPVideoDecoder which should result in a call to Construct() on the
-    // service.
+    // Now we'll reply with a list of supported configurations. Depending on
+    // whether |config| is supported according to that list, the
+    // MojoStableVideoDecoder should do the following:
+    //
+    // - If |config| is supported, the MojoStableVideoDecoder should then create
+    //   the OOPVideoDecoder which should result in a call to Construct() on the
+    //   service. Then, it should call OOPVideoDecoder::Initialize() which
+    //   should result in an Initialize() call on the service. In this case,
+    //   we'll store the Initialize() reply callback that the service sees as
+    //   |received_initialize_cb| so that we can call it later.
+    //
+    // - If |config| is not supported, the MojoStableVideoDecoder should not
+    //   create the OOPVideoDecoder, so no messages should be received by the
+    //   service. Instead, the MojoStableVideoDecoder should call the
+    //   Initialize() callback with kUnsupportedConfig.
     constexpr VideoDecoderType kDecoderTypeToReplyWith =
         VideoDecoderType::kVaapi;
     const std::vector<SupportedVideoDecoderConfig>
-        supported_configs_to_reply_with({
-            {/*profile_min=*/H264PROFILE_MIN, /*profile_max=*/H264PROFILE_MAX,
-             /*coded_size_min=*/gfx::Size(320, 180),
-             /*coded_size_max=*/gfx::Size(1280, 720), /*allow_encrypted=*/false,
-             /*require_encrypted=*/false},
-            {/*profile_min=*/VP9PROFILE_MIN, /*profile_max=*/VP9PROFILE_MAX,
-             /*coded_size_min=*/gfx::Size(8, 8),
-             /*coded_size_max=*/gfx::Size(640, 360), /*allow_encrypted=*/true,
-             /*require_encrypted=*/true},
-        });
-    EXPECT_CALL(*endpoints->service(), DoConstruct(_));
+        supported_configs_to_reply_with = CreateListOfSupportedConfigs();
+    stable::mojom::StableVideoDecoder::InitializeCallback
+        received_initialize_cb;
+    const bool config_is_supported =
+        IsVideoDecoderConfigSupported(supported_configs_to_reply_with, config);
+    if (config_is_supported) {
+      InSequence sequence;
+      EXPECT_CALL(*endpoints->service(), DoConstruct(_));
+      EXPECT_CALL(*endpoints->service(),
+                  Initialize(_, kLowDelayToInitializeWith, _, _))
+          .WillOnce(WithArgs<0, 3>(
+              [&](const VideoDecoderConfig& received_config,
+                  stable::mojom::StableVideoDecoder::InitializeCallback
+                      callback) {
+                EXPECT_TRUE(received_config.Matches(config));
+                received_initialize_cb = std::move(callback);
+              }));
+    } else {
+      EXPECT_CALL(init_cb,
+                  Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig)));
+    }
     std::move(received_get_supported_configs_cb)
         .Run(supported_configs_to_reply_with, kDecoderTypeToReplyWith);
+    task_environment_.RunUntilIdle();
+    if (!Mock::VerifyAndClearExpectations(endpoints->service())) {
+      return nullptr;
+    }
+    if (!Mock::VerifyAndClearExpectations(&init_cb)) {
+      return nullptr;
+    }
+    if (!config_is_supported) {
+      // When |config| is not supported, there are no further expectations.
+      return nullptr;
+    }
+    if (!received_initialize_cb) {
+      ADD_FAILURE() << "Did not receive a valid InitializeCallback";
+      return nullptr;
+    }
+
+    // Now we'll reply to the Initialize() call on the service which should
+    // propagate all the way to the |init_cb|, i.e., the Initialize() reply
+    // callback passed to the MojoStableVideoDecoder.
+    const DecoderStatus kDecoderStatusToReplyWith = DecoderStatus::Codes::kOk;
+    constexpr bool kNeedsBitstreamConversionToReplyWith = true;
+    constexpr int32_t kMaxDecodeRequestsToReplyWith = 123;
+    constexpr bool kNeedsTranscryptionToReplyWith = false;
+    EXPECT_CALL(init_cb, Run(kDecoderStatusToReplyWith));
+    std::move(received_initialize_cb)
+        .Run(kDecoderStatusToReplyWith, kNeedsBitstreamConversionToReplyWith,
+             kMaxDecodeRequestsToReplyWith, kDecoderTypeToReplyWith,
+             kNeedsTranscryptionToReplyWith);
     task_environment_.RunUntilIdle();
 
     return endpoints;
@@ -293,10 +375,72 @@ class MojoStableVideoDecoderTest : public testing::Test {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 };
 
-TEST_F(MojoStableVideoDecoderTest, InitializeConstructsStableVideoDecoder) {
+TEST_F(MojoStableVideoDecoderTest,
+       InitializeWithSupportedConfigConstructsStableVideoDecoder) {
+  const VideoDecoderConfig config = CreateValidSupportedVideoDecoderConfig();
   std::unique_ptr<TestEndpoints> endpoints =
-      CreateAndInitializeMojoStableVideoDecoder();
+      CreateAndInitializeMojoStableVideoDecoder(config);
   ASSERT_TRUE(endpoints);
+}
+
+TEST_F(MojoStableVideoDecoderTest,
+       InitializeWithUnsupportedConfigDoesNotConstructStableVideoDecoder) {
+  const VideoDecoderConfig config = CreateValidUnsupportedVideoDecoderConfig();
+  std::unique_ptr<TestEndpoints> endpoints =
+      CreateAndInitializeMojoStableVideoDecoder(config);
+  ASSERT_FALSE(endpoints);
+}
+
+TEST_F(MojoStableVideoDecoderTest,
+       TwoInitializationsWithSupportedConfigsConstructStableVideoDecoderOnce) {
+  // This does the first initialization.
+  const VideoDecoderConfig first_config =
+      CreateValidSupportedVideoDecoderConfig();
+  std::unique_ptr<TestEndpoints> endpoints =
+      CreateAndInitializeMojoStableVideoDecoder(first_config);
+  ASSERT_TRUE(endpoints);
+
+  // Let's now do the second initialization.
+  const VideoDecoderConfig second_config =
+      CreateValidSupportedVideoDecoderConfig();
+  constexpr bool kLowDelayToInitializeWith = true;
+
+  stable::mojom::StableVideoDecoder::InitializeCallback received_initialize_cb;
+  EXPECT_CALL(*endpoints->service(),
+              Initialize(_, kLowDelayToInitializeWith, _, _))
+      .WillOnce(WithArgs<0, 3>(
+          [&](const VideoDecoderConfig& received_config,
+              stable::mojom::StableVideoDecoder::InitializeCallback callback) {
+            EXPECT_TRUE(received_config.Matches(second_config));
+            received_initialize_cb = std::move(callback);
+          }));
+
+  StrictMock<base::MockOnceCallback<void(DecoderStatus)>> init_cb;
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&MojoStableVideoDecoder::Initialize,
+                                base::Unretained(endpoints->client()),
+                                second_config, kLowDelayToInitializeWith,
+                                /*cdm_context=*/nullptr, init_cb.Get(),
+                                endpoints->client_output_cb()->Get(),
+                                endpoints->client_waiting_cb()->Get()));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(Mock::VerifyAndClearExpectations(endpoints->service()));
+  ASSERT_TRUE(received_initialize_cb);
+
+  // Now we'll reply to the Initialize() call on the service which should
+  // propagate all the way to the |init_cb|, i.e., the Initialize() reply
+  // callback passed to the MojoStableVideoDecoder.
+  const DecoderStatus kDecoderStatusToReplyWith = DecoderStatus::Codes::kOk;
+  constexpr bool kNeedsBitstreamConversionToReplyWith = false;
+  constexpr int32_t kMaxDecodeRequestsToReplyWith = 456;
+  constexpr VideoDecoderType kDecoderTypeToReplyWith = VideoDecoderType::kVaapi;
+  constexpr bool kNeedsTranscryptionToReplyWith = false;
+  EXPECT_CALL(init_cb, Run(kDecoderStatusToReplyWith));
+  std::move(received_initialize_cb)
+      .Run(kDecoderStatusToReplyWith, kNeedsBitstreamConversionToReplyWith,
+           kMaxDecodeRequestsToReplyWith, kDecoderTypeToReplyWith,
+           kNeedsTranscryptionToReplyWith);
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace media

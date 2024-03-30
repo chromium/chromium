@@ -16,7 +16,9 @@
 
 namespace media {
 
+class FrameResource;
 class MediaLog;
+class OOPVideoDecoder;
 
 // A MojoStableVideoDecoder is analogous to a MojoVideoDecoder but for the
 // stable::mojom::StableVideoDecoder interface, so in essence, it's just an
@@ -71,8 +73,20 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   // the supported configurations are known and before calling
   // OOPVideoDecoder::Initialize().
   void InitializeOnceSupportedConfigsAreKnown(
+      const VideoDecoderConfig& config,
+      bool low_delay,
+      CdmContext* cdm_context,
+      InitCB init_cb,
+      const OutputCB& output_cb,
+      const WaitingCB& waiting_cb,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder>
           pending_remote_decoder);
+
+  void OnFrameResourceDecoded(scoped_refptr<FrameResource> frame_resource);
+
+  OOPVideoDecoder* oop_video_decoder();
+
+  const OOPVideoDecoder* oop_video_decoder() const;
 
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -95,6 +109,8 @@ class MojoStableVideoDecoder final : public VideoDecoder {
   // merge OOPVideoDecoder into MojoStableVideoDecoder and get rid of it.
   std::unique_ptr<VideoDecoder> oop_video_decoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  OutputCB output_cb_;
 
   base::WeakPtrFactory<MojoStableVideoDecoder> weak_this_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);

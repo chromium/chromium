@@ -4,6 +4,8 @@
 
 #include "media/mojo/clients/mojo_stable_video_decoder.h"
 
+#include "media/base/supported_video_decoder_config.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
 namespace media {
@@ -44,7 +46,8 @@ void MojoStableVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(pending_remote_decoder_),
       base::BindOnce(
           &MojoStableVideoDecoder::InitializeOnceSupportedConfigsAreKnown,
-          weak_this_factory_.GetWeakPtr()));
+          weak_this_factory_.GetWeakPtr(), config, low_delay, cdm_context,
+          std::move(init_cb), output_cb, waiting_cb));
 }
 
 void MojoStableVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -89,24 +92,74 @@ VideoDecoderType MojoStableVideoDecoder::GetDecoderType() const {
 }
 
 void MojoStableVideoDecoder::InitializeOnceSupportedConfigsAreKnown(
+    const VideoDecoderConfig& config,
+    bool low_delay,
+    CdmContext* cdm_context,
+    InitCB init_cb,
+    const OutputCB& output_cb,
+    const WaitingCB& waiting_cb,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder>
         pending_remote_decoder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The OOPVideoDecoder initialization path assumes that a higher layer checks
+  // that the VideoDecoderConfig is supported. That higher layer is the
+  // MojoStableVideoDecoder in this case.
+  std::optional<SupportedVideoDecoderConfigs> supported_configs =
+      OOPVideoDecoder::GetSupportedConfigs();
+  // InitializeOnceSupportedConfigsAreKnown() gets called only once the
+  // supported configurations are known.
+  CHECK(supported_configs.has_value());
+  if (!IsVideoDecoderConfigSupported(supported_configs.value(), config)) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
+    return;
+  }
+
   if (!oop_video_decoder_) {
     // This should correspond to the first MojoStableVideoDecoder::Initialize()
-    // call, so |pending_remote_decoder| and |media_log_| must be valid.
+    // call with a supported configuration, so |pending_remote_decoder| and
+    // |media_log_| must be valid.
     CHECK(pending_remote_decoder);
     CHECK(media_log_);
+
+    // |media_task_runner_| is expected to correspond to |sequence_checker_| and
+    // is the sequence on which |oop_video_decoder_| will be used.
+    CHECK(media_task_runner_->RunsTasksInCurrentSequence());
+
     oop_video_decoder_ = OOPVideoDecoder::Create(
         std::move(pending_remote_decoder), media_log_->Clone(),
         /*decoder_task_runner=*/media_task_runner_,
         /*client=*/nullptr);
     CHECK(oop_video_decoder_);
+
     media_log_ = nullptr;
   }
 
-  // TODO(b/327268445): finish the initialization of the |oop_video_decoder_|.
+  output_cb_ = output_cb;
+
+  oop_video_decoder()->Initialize(
+      config, low_delay, cdm_context, std::move(init_cb),
+      base::BindRepeating(&MojoStableVideoDecoder::OnFrameResourceDecoded,
+                          weak_this_factory_.GetWeakPtr()),
+      waiting_cb);
+}
+
+void MojoStableVideoDecoder::OnFrameResourceDecoded(
+    scoped_refptr<FrameResource> frame_resource) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/327268445): convert the |frame_resource| to a gpu::Mailbox-backed
+  // VideoFrame in order to call |output_cb_|.
   NOTIMPLEMENTED();
+}
+
+OOPVideoDecoder* MojoStableVideoDecoder::oop_video_decoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return static_cast<OOPVideoDecoder*>(oop_video_decoder_.get());
+}
+
+const OOPVideoDecoder* MojoStableVideoDecoder::oop_video_decoder() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return static_cast<const OOPVideoDecoder*>(oop_video_decoder_.get());
 }
 
 }  // namespace media
