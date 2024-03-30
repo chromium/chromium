@@ -127,6 +127,8 @@ void LocalDataLossWarningScreen::OnRemovedUserDirectory(
   // related to cryptohome state.
   context()->user_context->ResetAuthSessionIds();
   context()->user_context->ClearAuthFactorsConfiguration();
+  context()->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kInitialSetup;
 
   // Move online password back so that it can be used as key.
   // See `ShowImpl()` to see where it was stored.
