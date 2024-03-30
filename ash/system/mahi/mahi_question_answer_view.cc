@@ -30,6 +30,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -40,11 +41,13 @@ constexpr gfx::Insets kInteriorMargin = gfx::Insets(8);
 constexpr gfx::Insets kTextBubbleInteriorMargin = gfx::Insets::VH(8, 12);
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kTextBubbleCornerRadius = 12;
+constexpr int kTextBubbleDefaultMaixmumWidth = 300;
 
 // Creates a text bubble that will be populated with `text` and styled
 // to be a question or answer based on `is_question`.
-std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
-                                              bool is_question) {
+views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
+    const std::u16string& text,
+    bool is_question) {
   return views::Builder<views::FlexLayoutView>()
       .SetInteriorMargin(kTextBubbleInteriorMargin)
       .SetBackground(views::CreateThemedRoundedRectBackground(
@@ -72,6 +75,13 @@ std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
                                        views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kPreferred,
                                        /*adjust_height_for_width=*/true));
+
+                // TODO(crbug.com/1349528): Multiline label right now doesn't
+                // work well with `FlexLayout`. The size constraint is not
+                // passed down from the views tree in the first round of layout,
+                // so we impose a maximum width constraint so that the first
+                // layout handle the width and height constraint correctly.
+                label->SetMaximumWidth(kTextBubbleDefaultMaixmumWidth);
               }))
               .SetText(text)
               .SetTooltipText(text)
@@ -83,7 +93,39 @@ std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
               .SetAutoColorReadabilityEnabled(false)
               .SetSubpixelRenderingEnabled(false)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-                  TypographyToken::kCrosBody2)))
+                  TypographyToken::kCrosBody2)));
+}
+
+// Create a row within the `MahiQuestionAnswerView`, corresponding to a question
+// or an answer.
+std::unique_ptr<views::View> CreateQuestionAnswerRow(const std::u16string& text,
+                                                     bool is_question) {
+  views::Builder<views::FlexLayoutView> row_builder =
+      views::Builder<views::FlexLayoutView>().SetOrientation(
+          views::LayoutOrientation::kHorizontal);
+
+  views::Builder<views::FlexLayoutView> spacer =
+      views::Builder<views::FlexLayoutView>().CustomConfigure(
+          base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetProperty(views::kFlexBehaviorKey,
+                                views::FlexSpecification(
+                                    views::MinimumFlexSizeRule::kScaleToZero,
+                                    views::MaximumFlexSizeRule::kUnbounded,
+                                    /*adjust_height_for_width=*/true));
+          }));
+
+  if (is_question) {
+    // Add a `FlexLayoutView` that is stretched the remaining space to the
+    // left of the text bubble.
+    return std::move(row_builder)
+        .AddChildren(spacer, CreateTextBubbleBuilder(text, is_question))
+        .Build();
+  }
+
+  // Add a `FlexLayoutView` that is stretched the remaining space to the right
+  // of the text bubble.
+  return std::move(row_builder)
+      .AddChildren(CreateTextBubbleBuilder(text, is_question), spacer)
       .Build();
 }
 
@@ -104,7 +146,7 @@ MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
 MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;
 
 void MahiQuestionAnswerView::OnAnswerLoaded(const std::u16string& answer) {
-  AddChildView(CreateTextBubble(answer, /*is_question=*/false));
+  AddChildView(CreateQuestionAnswerRow(answer, /*is_question=*/false));
 }
 
 void MahiQuestionAnswerView::OnContentsRefreshInitiated() {
@@ -120,8 +162,8 @@ void MahiQuestionAnswerView::OnStateChanged(
       return;
     case MahiUiController::State::kQuestionAndAnswer:
       SetVisible(true);
-      AddChildView(CreateTextBubble(std::get<std::u16string>(*payload),
-                                    /*is_question=*/true));
+      AddChildView(CreateQuestionAnswerRow(std::get<std::u16string>(*payload),
+                                           /*is_question=*/true));
       return;
     case MahiUiController::State::kSummaryAndOutlines:
       SetVisible(false);

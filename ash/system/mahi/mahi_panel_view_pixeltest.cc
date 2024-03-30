@@ -1,0 +1,138 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_panel_view.h"
+#include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/test/mock_mahi_manager.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
+#include "ash/test/ash_test_util.h"
+#include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/strings/strcat.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/views_test_utils.h"
+#include "ui/views/widget/widget.h"
+
+namespace ash {
+
+// Pixel tests for Chrome OS Status Area. This relates to all tray buttons in
+// the bottom right corner.
+class MahiPanelViewPixelTest : public AshTestBase {
+ public:
+  // AshTestBase:
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    return pixel_test::InitParams();
+  }
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
+        &mock_mahi_manager_);
+
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+    panel_view_ = widget_->SetContentsView(
+        std::make_unique<MahiPanelView>(&ui_controller_));
+  }
+
+  void TearDown() override {
+    panel_view_ = nullptr;
+    widget_.reset();
+    scoped_setter_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
+
+  MahiPanelView* panel_view() { return panel_view_; }
+
+  views::Widget* widget() { return widget_.get(); }
+
+ private:
+  testing::NiceMock<MockMahiManager> mock_mahi_manager_;
+  std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
+  MahiUiController ui_controller_;
+  raw_ptr<MahiPanelView> panel_view_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
+};
+
+TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  const std::u16string answer(u"test answer");
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [&answer](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(answer,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  // Set a valid text in the question textfield.
+  const std::u16string question(u"question");
+  question_textfield->SetText(question);
+
+  // Pressing the send button should create a question and answer text bubble.
+  LeftClickOn(send_button);
+
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "question_answer_view_basic", /*revision_number=*/0,
+      question_answer_view));
+}
+
+TEST_F(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const question_textfield = views::AsViewClass<views::Textfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  const std::u16string answer =
+      base::StrCat(std::vector<std::u16string>(15, u"Long Answer "));
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [&answer](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(answer,
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  // Set a valid text in the question textfield.
+  const std::u16string question =
+      base::StrCat(std::vector<std::u16string>(15, u"Long Question "));
+  question_textfield->SetText(question);
+
+  // Pressing the send button should create a question and answer text bubble.
+  LeftClickOn(send_button);
+
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "question_answer_view_long_text", /*revision_number=*/0,
+      question_answer_view));
+}
+
+}  // namespace ash
