@@ -55,6 +55,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest,
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, OnboardingChooseWipeDevicePage) {
+  RunTest("chromeos/shimless_rma/onboarding_choose_wipe_device_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

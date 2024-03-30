@@ -312,7 +312,8 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
         'setDifferentOwner', State.kChooseDestination);
   }
 
-  setWipeDevice(): Promise<{stateResult: StateResult}> {
+  setWipeDevice(_shouldWipeDevice: boolean):
+      Promise<{stateResult: StateResult}> {
     return this.getNextStateForMethod('setWipeDevice', State.kChooseWipeDevice);
   }
 

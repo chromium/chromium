@@ -2,66 +2,66 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://shimless-rma/shimless_rma.js';
+
+import {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingChooseWipeDevicePage} from 'chrome://shimless-rma/onboarding_choose_wipe_device_page.js';
-import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-
 suite('onboardingChooseWipeDevicePageTest', function() {
-  /** @type {?OnboardingChooseWipeDevicePage} */
-  let component = null;
+  let component: OnboardingChooseWipeDevicePage|null = null;
 
-  /** @type {?FakeShimlessRmaService} */
-  let service = null;
+  let service: FakeShimlessRmaService|null = null;
 
   setup(() => {
-    document.body.innerHTML = trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     service = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
-    component.remove();
+    component?.remove();
     component = null;
-    service.reset();
+    service = null;
   });
 
-  /**
-   * @return {!Promise}
-   */
-  function initializeChooseWipeDevicePage() {
-    assertFalse(!!component);
-
-    component = /** @type {!OnboardingChooseWipeDevicePage} */ (
-        document.createElement('onboarding-choose-wipe-device-page'));
-    assertTrue(!!component);
+  function initializeChooseWipeDevicePage(): Promise<void> {
+    assert(!component);
+    component = document.createElement(OnboardingChooseWipeDevicePage.is);
+    assert(component);
     document.body.appendChild(component);
-
     return flushTasks();
   }
 
+  // Verify the page is initialized.
   test('ChooseWipeDevicePageInitializes', async () => {
     await initializeChooseWipeDevicePage();
-
-    assertTrue(!!component);
+    assert(component);
   });
 
+  // Verify the correct values are sent when "Wipe Device" is selected.
   test('ChooseWipeDevicePageSelectWipeDevice', async () => {
-    const resolver = new PromiseResolver();
+    const resolver = new PromiseResolver<{stateResult: StateResult}>();
     await initializeChooseWipeDevicePage();
 
     let shouldWipeDevice = false;
-    service.setWipeDevice = (wipeDevice) => {
+    assert(service);
+    service.setWipeDevice = (wipeDevice: boolean) => {
       shouldWipeDevice = wipeDevice;
       return resolver.promise;
     };
 
-    const wipeDeviceOption =
-        component.shadowRoot.querySelector('cr-radio-button[name=wipeDevice]');
+    assert(component);
+    const wipeDeviceOption = strictQuery(
+        'cr-radio-button[name=wipeDevice]', component.shadowRoot,
+        CrRadioButtonElement);
     wipeDeviceOption.click();
     assertTrue(wipeDeviceOption.checked);
 
@@ -70,18 +70,22 @@ suite('onboardingChooseWipeDevicePageTest', function() {
     assertTrue(shouldWipeDevice);
   });
 
+  // Verify the correct values are sent when "Preserve Data" is selected.
   test('ChooseWipeDevicePageSelectPreserveData', async () => {
-    const resolver = new PromiseResolver();
+    const resolver = new PromiseResolver<{stateResult: StateResult}>();
     await initializeChooseWipeDevicePage();
 
     let shouldWipeDevice = true;
-    service.setWipeDevice = (wipeDevice) => {
+    assert(service);
+    service.setWipeDevice = (wipeDevice: boolean) => {
       shouldWipeDevice = wipeDevice;
       return resolver.promise;
     };
 
-    const wipeDeviceOption = component.shadowRoot.querySelector(
-        'cr-radio-button[name=preserveData]');
+    assert(component);
+    const wipeDeviceOption = strictQuery(
+        'cr-radio-button[name=preserveData]', component.shadowRoot,
+        CrRadioButtonElement);
     wipeDeviceOption.click();
     assertTrue(wipeDeviceOption.checked);
 
