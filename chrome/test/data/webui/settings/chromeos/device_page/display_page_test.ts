@@ -901,10 +901,17 @@ suite('<settings-display>', () => {
     await fakeSystemDisplay.getLayoutCalled.promise;
     assertEquals(1, displayPage.displays.length);
 
-    const displayBrightness =
+    // Brightness slider should not be present when the flag is disabled.
+    const displayBrightnessWrapper =
         displayPage.shadowRoot!.querySelector<HTMLDivElement>(
             '#brightnessSliderWrapper');
-    assertFalse(!!displayBrightness);
+    assertFalse(!!displayBrightnessWrapper);
+
+    // Auto-brightness toggle should not be present when the flag is disabled.
+    const displayAutoBrightnessToggle =
+        displayPage.shadowRoot!.querySelector<CrToggleElement>(
+            '#autoBrightnessToggle');
+    assertFalse(!!displayAutoBrightnessToggle);
   });
 
   test('Display brightness, flag enabled on internal display', async () => {
@@ -920,11 +927,19 @@ suite('<settings-display>', () => {
     assertEquals(1, displayPage.displays.length);
     flush();
 
-    // Display brightness slider should be present on the internal display.
-    const displayBrightness =
+    // Display brightness slider should be present on the internal display when
+    // the flag is enabled.
+    const displayBrightnessWrapper =
         displayPage.shadowRoot!.querySelector<HTMLDivElement>(
             '#brightnessSliderWrapper');
-    assertTrue(!!displayBrightness);
+    assertTrue(!!displayBrightnessWrapper);
+
+    // Auto-brightness toggle should be present on the internal display when the
+    // flag is enabled.
+    const displayAutoBrightnessToggle =
+        displayPage.shadowRoot!.querySelector<CrToggleElement>(
+            '#autoBrightnessToggle');
+    assertTrue(!!displayAutoBrightnessToggle);
   });
 
   test('Display brightness, flag enabled on external display', async () => {
@@ -967,6 +982,12 @@ suite('<settings-display>', () => {
 
     // Display brightness slider should not be present on external displays.
     assertFalse(!!displayBrightness);
+
+    // Auto-brightness toggle should not be present on external displays.
+    const displayAutoBrightnessToggle =
+        displayPage.shadowRoot!.querySelector<CrToggleElement>(
+            '#autoBrightnessToggle');
+    assertFalse(!!displayAutoBrightnessToggle);
   });
 
   test(

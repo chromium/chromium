@@ -925,6 +925,15 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   /**
+   * Returns true if the auto-brightness toggle should be shown.
+   */
+  private showAutoBrightnessToggle_(): boolean {
+    // TODO(cambickel): Update this logic to check whether the device has an
+    // ambient light sensor.
+    return isDisplayBrightnessControlInSettingsEnabled();
+  }
+
+  /**
    * Returns true if the ambient color setting should be shown for |display|.
    */
   showAmbientColorSetting(

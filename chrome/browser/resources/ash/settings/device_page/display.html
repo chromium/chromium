@@ -177,6 +177,18 @@
   <!-- Display brightness controls -->
   <template is="dom-if" restamp
       if="[[showBrightnessControls_(selectedDisplay)]]">
+    <template is="dom-if" restamp
+        if="[[showAutoBrightnessToggle_()]]">
+      <!-- TODO(cambickel): Update this toggle to read from the auto-brightness
+        pref, and add an on-change handler. -->
+      <!-- Note: Until a pref is added, this will show an error saying "pref not
+        found". This is okay, because this section is behind a flag, and a pref
+        will be added before the flag is enabled by default. -->
+      <settings-toggle-button id="autoBrightnessToggle" class="indented hr"
+          noSetPref="true" label="$i18n{displayAutoBrightnessToggleLabel}"
+          sub-label="$i18n{displayAutoBrightnessToggleSubtitle}">
+      </settings-toggle-button>
+    </template>
     <div class="settings-box indented">
       <div id="brightnessControlsTitle" class="start" aria-hidden="true">
         $i18n{displayBrightnessLabel}
