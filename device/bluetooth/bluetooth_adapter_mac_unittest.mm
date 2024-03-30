@@ -11,10 +11,13 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #import "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
+
+using ::testing::Return;
 
 class BluetoothAdapterMacTest : public testing::Test {
  public:
@@ -39,6 +42,17 @@ class BluetoothAdapterMacTest : public testing::Test {
           state.classic_powered = powered;
           return state;
         }));
+  }
+
+  void AddClassicDevice(const std::string& device_address,
+                        BluetoothDevice::UUIDSet uuids) {
+    auto device = std::make_unique<testing::NiceMock<MockBluetoothDevice>>(
+        adapter_mac_,
+        /*bluetooth_class=*/0, "device-name", device_address,
+        /*initially_paired=*/true,
+        /*connected=*/false);
+    EXPECT_CALL(*device, GetUUIDs).WillRepeatedly(Return(uuids));
+    adapter_mac_->ClassicDeviceAdded(std::move(device));
   }
 
  protected:
@@ -75,6 +89,31 @@ TEST_F(BluetoothAdapterMacTest, PollAndChangePower) {
   EXPECT_EQ(2, observer_.powered_changed_count());
   EXPECT_FALSE(observer_.last_powered());
   EXPECT_FALSE(adapter_mac_->IsPowered());
+}
+
+TEST_F(BluetoothAdapterMacTest, ClassicDeviceAddedAndChanged) {
+  // Simulate a paired Bluetooth Classic device with one service UUID.
+  std::string device_address = "AA:BB:CC:DD:EE:FF";
+  BluetoothDevice::UUIDSet uuids;
+  uuids.insert(BluetoothUUID("110b"));
+  AddClassicDevice(device_address, uuids);
+  EXPECT_EQ(1, observer_.device_added_count());
+  EXPECT_EQ(0, observer_.device_changed_count());
+  EXPECT_EQ(observer_.last_device_address(), device_address);
+  observer_.Reset();
+
+  // Adding the same device again does not notify observers.
+  AddClassicDevice(device_address, uuids);
+  EXPECT_EQ(0, observer_.device_added_count());
+  EXPECT_EQ(0, observer_.device_changed_count());
+  observer_.Reset();
+
+  // Update the device by adding a second service UUID.
+  uuids.insert(BluetoothUUID("110c"));
+  AddClassicDevice(device_address, uuids);
+  EXPECT_EQ(0, observer_.device_added_count());
+  EXPECT_EQ(1, observer_.device_changed_count());
+  EXPECT_EQ(observer_.last_device_address(), device_address);
 }
 
 }  // namespace device

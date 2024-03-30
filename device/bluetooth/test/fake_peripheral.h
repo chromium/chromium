@@ -130,6 +130,9 @@ class FakePeripheral : public device::BluetoothDevice {
       GattConnectionCallback callback,
       std::optional<device::BluetoothUUID> service_uuid) override;
   bool IsGattServicesDiscoveryComplete() const override;
+#if BUILDFLAG(IS_APPLE)
+  bool IsLowEnergyDevice() override;
+#endif  // BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_CHROMEOS)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;

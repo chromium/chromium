@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -329,6 +330,13 @@ bool FakePeripheral::IsGattServicesDiscoveryComplete() const {
 
   return discovery_complete;
 }
+
+#if BUILDFLAG(IS_APPLE)
+bool FakePeripheral::IsLowEnergyDevice() {
+  NOTIMPLEMENTED();
+  return true;
+}
+#endif  // BUILDFLAG(IS_APPLE)
 
 void FakePeripheral::CreateGattConnectionImpl(
     std::optional<device::BluetoothUUID>) {

@@ -21,12 +21,12 @@
 
 namespace device {
 
+class BluetoothAdapter;
 class BluetoothRemoteGattService;
-class MockBluetoothAdapter;
 
 class MockBluetoothDevice : public BluetoothDevice {
  public:
-  MockBluetoothDevice(MockBluetoothAdapter* adapter,
+  MockBluetoothDevice(BluetoothAdapter* adapter,
                       uint32_t bluetooth_class,
                       const char* name,
                       const std::string& address,
@@ -105,6 +105,9 @@ class MockBluetoothDevice : public BluetoothDevice {
                      std::vector<BluetoothRemoteGattService*>());
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothRemoteGattService*(const std::string&));
+#if BUILDFLAG(IS_APPLE)
+  MOCK_METHOD0(IsLowEnergyDevice, bool());
+#endif  // BUILDFLAG(IS_APPLE)
   MOCK_METHOD1(CreateGattConnectionImpl,
                void(std::optional<BluetoothUUID> service_uuid));
   MOCK_METHOD0(DisconnectGatt, void());

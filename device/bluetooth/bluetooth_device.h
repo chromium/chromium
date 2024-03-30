@@ -647,6 +647,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // it hasn't been called yet.
   virtual base::Time GetLastUpdateTime() const;
 
+#if BUILDFLAG(IS_APPLE)
+  // Returns true if this device is a Low Energy device.
+  virtual bool IsLowEnergyDevice() = 0;
+#endif  // BUILDFLAG(IS_APPLE)
+
   // Called by BluetoothAdapter when a new Advertisement is seen for this
   // device. This replaces previously seen Advertisement Data. The order of
   // arguments matches the order of their corresponding Data Type specified in

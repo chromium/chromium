@@ -8,6 +8,7 @@
 #include <IOKit/IOReturn.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -139,7 +140,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   // Registers that a new |device| has replied to an Inquiry, is paired, or has
   // connected to the local host.
-  void ClassicDeviceAdded(IOBluetoothDevice* device);
+  void ClassicDeviceAdded(std::unique_ptr<BluetoothDevice> device);
 
   // Updates |devices_| to include the currently paired devices and notifies
   // observers.
@@ -175,6 +176,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   BluetoothLowEnergyAdapterApple::GetDevicePairedStatusCallback
       device_paired_status_callback_;
+
+  // The paired device count the last time the adapter was polled, or nullopt if
+  // the adapter has not been polled.
+  std::optional<uint32_t> paired_count_;
 
   base::WeakPtrFactory<BluetoothAdapterMac> weak_ptr_factory_{this};
 };
