@@ -230,6 +230,8 @@ void MultiDeviceSetupImpl::GetEligibleActiveHostDevices(
   base::UmaHistogramBoolean(
       "MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames",
       has_duplicate_host_name);
+  base::UmaHistogramBoolean("MultiDevice.Setup.EligibleHostDeviceListCount",
+                            eligible_active_hosts.size());
 
   std::move(callback).Run(std::move(eligible_active_hosts));
 }

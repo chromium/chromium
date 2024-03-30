@@ -1948,6 +1948,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.Setup.EligibleHostDeviceListCount" units="count"
+    expires_after="2025-03-29">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the number of devices in the list of eligible host phones. This list
+    is shown to users during multi-device setup, and if we get to the setup and
+    the list retrieved is empty, it means that the host status was incorrect
+    that there was an eligible device available to begin setup. Metric emitted
+    when the user starts multi-device setup.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
     enum="BooleanDuplicate" expires_after="2024-07-07">
   <owner>hansenmichael@google.com</owner>
