@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">hafan y porwr</translation>
 <translation id="1526389707933164996">Animeiddiad arbedwr sgrîn</translation>
 <translation id="152892567002884378">Codi'r sain</translation>
-<translation id="1531886272553347340">blodyn menyn</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="155865706765934889">Pad cyffwrdd</translation>
 <translation id="1561927818299383735">lliw ôl-oleuedig</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">eliffantod</translation>
 <translation id="3632579075709132555">Togl sgrîn preifatrwydd</translation>
 <translation id="3651050199673793219">Dewiswch uned tymheredd</translation>
-<translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> pelydrol yn blodeuo</translation>
 <translation id="3662461537616691585">Lliw gwin a browngoch</translation>
 <translation id="3668449597372804501">Papur wal llif cwmwl</translation>
 <translation id="3675132884790542448">moch</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">Math o IP</translation>
 <translation id="5389159777326897627">Papur wal ac arddull</translation>
 <translation id="5389224261615877010">Enfys</translation>
-<translation id="5396811372860835203">lili calla</translation>
 <translation id="5400907029458559844">Mae'r ddyfais yn cysylltu.</translation>
 <translation id="5401938042319910061">Rhedeg Pob Arfer</translation>
 <translation id="5410755018770633464">cŵn poeth</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Mewnol yn unig</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">crynodeb</translation>
-<translation id="5654356773042347102">lili'r dyffrynnoedd</translation>
 <translation id="5655283760733841251">Disgleirdeb y bysellfwrdd i fyny</translation>
 <translation id="5655296450510165335">Cofrestru dyfais</translation>
 <translation id="5655776422854483175">Dim tasgau argraffu</translation>
@@ -1012,7 +1008,6 @@
 <translation id="6977381486153291903">Adolygiad cadarnwedd</translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
 <translation id="6982462588253070448">twyni tywod</translation>
-<translation id="6988803763488977828">blodyn gwynt</translation>
 <translation id="7005833343836210400">Mae'r ddyfais all-lein</translation>
 <translation id="7028979494427204405">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae ganddo fynediad at holl weithgarwch y defnyddiwr, gan gynnwys tudalennau gwe yr ymwelwyd â nhw, cyfrineiriau, ac e-byst.</translation>
 <translation id="7035168792582749309">tatws</translation>

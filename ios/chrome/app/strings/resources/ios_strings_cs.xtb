@@ -1285,7 +1285,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7583004045319035904">Anonymní karty odemknete pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Jazyk <ph name="LANGUAGE" /> nikdy nepřekládat</translation>
 <translation id="7603852183842204213">Blokována vyskakovací okna (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Skupiny karet</translation>
 <translation id="7607521702806708809">Smazat heslo</translation>
 <translation id="7609559547731036746">Záložky</translation>
 <translation id="7638584964844754484">Nesprávná heslová fráze</translation>
@@ -1500,6 +1499,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8637431369725868556">Získejte ochranu před nebezpečnými weby.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Žádná prolomená hesla}=1{{COUNT} prolomené heslo}few{{COUNT} prolomená hesla}many{{COUNT} prolomeného hesla}other{{COUNT} prolomených hesel}}</translation>
 <translation id="8640430998629397789">Skrýt možnost Verze webu pro počítače</translation>
+<translation id="8643403533759285912">Smazat skupinu</translation>
 <translation id="8654802032646794042">Zrušit</translation>
 <translation id="8663764600409216912">Používáte hesla, která pravděpodobně není snadné uhodnout</translation>
 <translation id="8668210798914567634">Tato stránka byla uložena do seznamu četby.</translation>

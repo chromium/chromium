@@ -1285,7 +1285,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7583004045319035904">Brug <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til at låse dine inkognitofaner op.</translation>
 <translation id="7600965453749440009">Oversæt aldrig <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop op-vinduer er blokeret (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Fanegrupper</translation>
 <translation id="7607521702806708809">Slet adgangskode</translation>
 <translation id="7609559547731036746">Bogmærker</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
@@ -1500,6 +1499,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8637431369725868556">Bliv beskyttet mod farlige websites.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ingen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
 <translation id="8640430998629397789">Skjul Vis computerversion</translation>
+<translation id="8643403533759285912">Slet gruppe</translation>
 <translation id="8654802032646794042">Annuller</translation>
 <translation id="8663764600409216912">Du bruger adgangskoder, der er svære at gætte</translation>
 <translation id="8668210798914567634">Denne side er gemt på din læseliste.</translation>

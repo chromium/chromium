@@ -1115,6 +1115,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3154987252551138431">Algo correu mal ao utilizar a funcionalidade Partilhar na proximidade</translation>
 <translation id="315504272643575312">A sua conta é gerida por <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Reiniciar o Chromium</translation>
+<translation id="3156511682997763015">Avançar 10 segundos</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">A rede Wi-Fi que está a utilizar pode exigir que visite a respetiva página de início de sessão.</translation>
@@ -1215,6 +1216,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="334438173029876234">Equipamento de skate</translation>
 <translation id="3347146863028219517">Esqui e snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Repetir 10 segundos</translation>
 <translation id="3352881017886802007">Jogos de desporto</translation>
 <translation id="3355823806454867987">Alterar definições de proxy...</translation>
 <translation id="335809815767823">Exportadas</translation>
@@ -2671,7 +2673,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Eletrónica de consumo</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
-<translation id="6197467523841310553">Clique com o botão direito do rato para preencher as informações guardadas em formulários online com menos escrita</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separadores completos</translation>
 <translation id="6203231073485539293">Rever a ligação à Internet</translation>
@@ -3055,6 +3056,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6944557544071529399">Jogos de estratégia</translation>
 <translation id="6944692733090228304">Introduziu a palavra-passe num site que não é gerido pela <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger a conta, não reutilize a sua palavra-passe noutras aplicações e sites.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
+<translation id="6946949206576443118">Pesquise na Web no Chrome</translation>
 <translation id="6948051842255602737">Fim do jogo. A sua pontuação é <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para ver os métodos de recolha e os requisitos, selecione um endereço</translation>
 <translation id="6948874830249067134">A1x3</translation>

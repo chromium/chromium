@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">Използвайте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за отключване на разделите в режим „инкогнито“.</translation>
 <translation id="7600965453749440009">Никога да не се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Блок. изск. прозорци (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Групи раздели</translation>
 <translation id="7607521702806708809">Изтриване на паролата</translation>
 <translation id="7609559547731036746">Отметки</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">Получете защита срещу опасни сайтове.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="8640430998629397789">Скриване на „Заявка за настолния сайт“</translation>
+<translation id="8643403533759285912">Изтриване на групата</translation>
 <translation id="8654802032646794042">Отказ</translation>
 <translation id="8663764600409216912">Използвате пароли, които изглеждат трудни за отгатване</translation>
 <translation id="8668210798914567634">Тази страница е запазена в списъка ви за четене.</translation>

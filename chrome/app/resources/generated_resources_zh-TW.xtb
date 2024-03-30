@@ -4105,6 +4105,7 @@
 <translation id="4090103403438682346">啟用已驗證存取權</translation>
 <translation id="4090947011087001172">要重設 <ph name="SITE" /> 的網站權限嗎？</translation>
 <translation id="4092636882861724179">你可以前往 <ph name="GOOGLE_PASSWORD_MANAGER" />查看及管理已儲存的密碼。</translation>
+<translation id="4092709865241032354">請新增你在這個網站的使用者名稱，Google 密碼管理工具才能儲存登入資訊</translation>
 <translation id="4093865285251893588">個人資料圖片</translation>
 <translation id="4093955363990068916">本機檔案：</translation>
 <translation id="4094647278880271855">你使用了系統不支援的環境變數 (<ph name="BAD_VAR" />)，這會影響穩定性與安全性。</translation>
@@ -4679,7 +4680,6 @@
 <translation id="4546692474302123343">Google 助理語音輸入</translation>
 <translation id="4547659257713117923">沒有在其他裝置上開啟的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
-<translation id="4548858987594081919">請新增你在這個網站的使用者名稱，Google 密碼管理工具才能儲存登入資訊</translation>
 <translation id="4549791035683739768">你的安全金鑰沒有儲存任何指紋</translation>
 <translation id="4550737096585299960">請過幾分鐘後再試。</translation>
 <translation id="4550926046134589611">某些支援連結仍會在「<ph name="APP_NAME" />」中開啟。</translation>
@@ -6544,7 +6544,6 @@
 <translation id="6030719887161080597">管理網站用來評估廣告成效的資訊</translation>
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />新功能推出後會立即提供給使用者，但可用的功能會因裝置而異</translation>
 <translation id="603539183851330738">復原自動更正內容的按鈕，還原為「<ph name="TYPED_WORD" />」。按下 Enter 鍵即可還原，按 Esc 鍵則為取消。</translation>
 <translation id="6038929619733116134">封鎖干擾性或誤導性的網站廣告</translation>
 <translation id="6039651071822577588">網路屬性字典格式錯誤</translation>
@@ -7048,7 +7047,6 @@
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被擁有者鎖定。</translation>
 <translation id="6425556984042222041">文字轉語音的速率</translation>
 <translation id="642729974267661262">不得播放音效</translation>
-<translation id="6427608534767366138">「<ph name="NETWORK_ID" />」需要 Proxy 驗證</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{未儲存密碼。}=1{正在檢查 {COUNT} 個密碼...}other{正在檢查 {COUNT} 個密碼...}}</translation>
 <translation id="6429384232893414837">更新錯誤</translation>
 <translation id="6430814529589430811">Base64-編碼 ASCII，單一憑證</translation>

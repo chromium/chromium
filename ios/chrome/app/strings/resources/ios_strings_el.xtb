@@ -1286,7 +1286,6 @@
 <translation id="7583004045319035904">Χρήση <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> για ξεκλείδωμα των καρτελών ανώνυμης περιήγησης.</translation>
 <translation id="7600965453749440009">Να μην γίνεται ποτέ μετάφραση από <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Αποκλεισμ. αναδ. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Ομάδες καρτελών</translation>
 <translation id="7607521702806708809">Διαγραφή κωδικού πρόσβασης</translation>
 <translation id="7609559547731036746">Σελιδοδείκτες</translation>
 <translation id="7638584964844754484">Εσφαλμένη φράση πρόσβασης</translation>
@@ -1501,6 +1500,7 @@
 <translation id="8637431369725868556">Προστατευτείτε από επικίνδυνους ιστοτόπους.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="8640430998629397789">Απόκρυψη της επιλογής Αίτημα για ιστότοπο για υπολογιστές</translation>
+<translation id="8643403533759285912">Διαγραφή ομάδας</translation>
 <translation id="8654802032646794042">Ακύρωση</translation>
 <translation id="8663764600409216912">Χρησιμοποιείτε κωδικούς πρόσβασης που δεν μπορεί κάποιος να μαντέψει εύκολα</translation>
 <translation id="8668210798914567634">Αυτή η σελίδα αποθηκεύτηκε στη λίστα ανάγνωσης</translation>

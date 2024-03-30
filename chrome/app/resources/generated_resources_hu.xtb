@@ -4119,6 +4119,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4090103403438682346">Ellenőrzött hozzáférés engedélyezése</translation>
 <translation id="4090947011087001172">Visszavonja a(z) <ph name="SITE" /> minden webhelyengedélyét?</translation>
 <translation id="4092636882861724179">Megtekintheti és kezelheti mentett jelszavait itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Adja meg felhasználónevét ehhez a webhelyhez, hogy a Google Jelszókezelő menteni tudja a bejelentkezési adatait.</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="4093955363990068916">Helyi fájl:</translation>
 <translation id="4094647278880271855">Nem támogatott környezeti változót használ: <ph name="BAD_VAR" />. Ennek a stabilitás és a biztonság látja kárát.</translation>
@@ -4694,7 +4695,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4546692474302123343">Google Segéd-hangbevitel</translation>
 <translation id="4547659257713117923">Nincs más eszközről származó lap</translation>
 <translation id="4547672827276975204">Automatikus beállítás</translation>
-<translation id="4548858987594081919">Adja meg felhasználónevét ehhez a webhelyhez, hogy a Google Jelszókezelő menteni tudja a bejelentkezési adatait.</translation>
 <translation id="4549791035683739768">A biztonsági kulcs nem tárol ujjlenyomatokat</translation>
 <translation id="4550737096585299960">Próbálkozz újra néhány perc múlva.</translation>
 <translation id="4550926046134589611">Egyes támogatott linkek továbbra is a(z) <ph name="APP_NAME" /> alkalmazásban nyílnak meg.</translation>
@@ -6563,7 +6563,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6030719887161080597">A webhelyek által a hirdetésteljesítmény méréséhez használt adatok kezelése</translation>
 <translation id="6031600495088157824">Beviteli lehetőségek az eszköztáron</translation>
 <translation id="6032715498678347852">Ha hozzáférést szeretne adni a kívánt bővítménynek ehhez a webhelyhez, kattintson rá.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />A megjelenő új funkciók felkínálása; a funkciók eszközönként eltérők lehetnek.</translation>
 <translation id="603539183851330738">Automatikus javítás visszavonásának gombja. Visszaállítás erre: <ph name="TYPED_WORD" />.  Az aktiváláshoz nyomja le az Enter, az elvetéshez az Escape gombot.</translation>
 <translation id="6038929619733116134">Letiltás, ha a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg</translation>
 <translation id="6039651071822577588">A hálózatitulajdonság-szótár formátuma hibás</translation>
@@ -7068,7 +7067,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="642469772702851743">Az eszközt (sorozatszám: <ph name="SERIAL_NUMBER" />) zárolta a tulajdonos.</translation>
 <translation id="6425556984042222041">Szövegfelolvasó sebessége</translation>
 <translation id="642729974267661262">Nem játszhatnak le hangot</translation>
-<translation id="6427608534767366138">Proxyhitelesítés szükséges itt: „<ph name="NETWORK_ID" />”</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Nincsenek mentett jelszavak.}=1{{COUNT} jelszó ellenőrzése…}other{{COUNT} jelszó ellenőrzése…}}</translation>
 <translation id="6429384232893414837">Frissítési hiba</translation>
 <translation id="6430814529589430811">Base64 kódolású ASCII, egyedüli tanúsítvány</translation>

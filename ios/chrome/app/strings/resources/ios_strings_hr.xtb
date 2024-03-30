@@ -878,6 +878,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5548760955356983418">Handoff vam omogućuje da počnete pregledavati web-lokaciju na ovom uređaju i nastavite na Macu. Trenutačno otvorena web-lokacija pojavit će se u Docku na vašem Macu.
 
 Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaji moraju upotrebljavati isti iCloud račun.</translation>
+<translation id="5551825465462320939">Pratite vijesti, sport i druge teme na temelju svojih interesa.</translation>
 <translation id="5551897871312988470">Ponudi prijevod</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="555749644339804659">Provjera zaporki…</translation>
@@ -1285,7 +1286,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7583004045319035904">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje anonimnih kartica.</translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Blokirani skočni (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupe kartica</translation>
 <translation id="7607521702806708809">Izbriši zaporku</translation>
 <translation id="7609559547731036746">Oznake</translation>
 <translation id="7638584964844754484">Pogrešna zaporka</translation>
@@ -1500,6 +1500,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8637431369725868556">Zaštitite se od opasnih web-lokacija.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nema ugroženih zaporki}=1{{COUNT} ugrožena zaporka}one{{COUNT} ugrožena zaporka}few{{COUNT} ugrožene zaporke}other{{COUNT} ugroženih zaporki}}</translation>
 <translation id="8640430998629397789">Sakrij stavku Zatraži web-lokaciju za računala</translation>
+<translation id="8643403533759285912">Izbriši grupu</translation>
 <translation id="8654802032646794042">Odustani</translation>
 <translation id="8663764600409216912">Upotrebljavate zaporke koje je teško pogoditi</translation>
 <translation id="8668210798914567634">Ova je stranica spremljena na vaš popis za čitanje.</translation>

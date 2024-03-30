@@ -4106,6 +4106,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4090103403438682346">Gaitu egiaztatutako sarbidea</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> webgunearen baimenak berrezarri nahi dituzu?</translation>
 <translation id="4092636882861724179">Gordetako pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan ikusi eta kudea ditzakezu.</translation>
+<translation id="4092709865241032354">Google-ren Pasahitz-kudeatzailea zerbitzuari saioa hasteko informazioa gordetzen laguntzeko, gehitu webgune honetarako darabilzun erabiltzaile-izena</translation>
 <translation id="4093865285251893588">Profileko irudia</translation>
 <translation id="4093955363990068916">Fitxategi lokala:</translation>
 <translation id="4094647278880271855">Onartzen ez den ingurune-aldagai bat erabiltzen ari zara: <ph name="BAD_VAR" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
@@ -4680,7 +4681,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4546692474302123343">Google-ren Laguntzailea zerbitzuaren ahozko idazketa</translation>
 <translation id="4547659257713117923">Ez dago beste gailuetako fitxarik</translation>
 <translation id="4547672827276975204">Ezarri automatikoki</translation>
-<translation id="4548858987594081919">Google-ren Pasahitz-kudeatzailea zerbitzuari saioa hasteko informazioa gordetzen laguntzeko, gehitu webgune honetarako darabilzun erabiltzaile-izena</translation>
 <translation id="4549791035683739768">Segurtasun-giltzak ez dauka hatz-markarik gordeta</translation>
 <translation id="4550737096585299960">Saiatu berriro minutu batzuk barru.</translation>
 <translation id="4550926046134589611">Onartzen diren esteka batzuek <ph name="APP_NAME" /> aplikazioan irekitzen jarraituko dute.</translation>
@@ -6545,7 +6545,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6030719887161080597">Kudeatu webguneek iragarkien errendimendua neurtzeko erabiltzen duten informazioa</translation>
 <translation id="6031600495088157824">Idatzi aukerak tresna-barran</translation>
 <translation id="6032715498678347852">Luzapen bati webgune honetarako sarbidea eman nahi badiozu, saka ezazu.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Eskuratu eginbide berriak erabilgarri dauden bezain laster. Eginbideak gailuen araberakoak dira.</translation>
 <translation id="603539183851330738">Zuzenketa automatikoak desegiteko botoia. Leheneratu eta erabili "<ph name="TYPED_WORD" />".  Sakatu "Sartu" tekla aktibatzeko edo Ihes tekla baztertzeko.</translation>
 <translation id="6038929619733116134">Webguneak iragarki oztopatzaile edo iruzurrezkoak erakusten baditu, blokea itzazu</translation>
 <translation id="6039651071822577588">Sarearen propietateen hiztegiak formatu okerra du</translation>
@@ -7050,7 +7049,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="642469772702851743">Jabeak blokeatu du gailua (serie-zk.: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Testua ahots bihurtzeko eginbidearen abiadura</translation>
 <translation id="642729974267661262">Ezin dute erreproduzitu soinurik</translation>
-<translation id="6427608534767366138">"<ph name="NETWORK_ID" />" sarearen proxya autentifikatu behar da</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Ez dago pasahitzik gordeta.}=1{{COUNT} pasahitz egiaztatzen…}other{{COUNT} pasahitz egiaztatzen…}}</translation>
 <translation id="6429384232893414837">Errore bat gertatu da eguneratzean</translation>
 <translation id="6430814529589430811">Base64 bidez kodetutako ASCII, ziurtagiri bakarra</translation>

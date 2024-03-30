@@ -655,7 +655,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4420409367264901497">Breyta bókamerki</translation>
 <translation id="4431224949908513835">Veldu greiðslumáta til að fylla inn.</translation>
 <translation id="4442550905108052454">Opnaðu <ph name="BEGIN_BOLD" />stillingar<ph name="END_BOLD" /></translation>
-<translation id="4454246407045105932">Bæta við tungumáli</translation>
+<translation id="4454246407045105932">Bæta tungumáli við</translation>
 <translation id="4455710003856931944">Strjúktu brúnina til að fara áfram eða til baka.</translation>
 <translation id="4460014764210899310">Sundra hópi</translation>
 <translation id="4461286950227634995">Bjóðast til að vista aðgangsorð</translation>
@@ -734,7 +734,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4808646838864186379">Hætt var við afhendingu</translation>
 <translation id="4808744395915275922">Uppfærslur</translation>
 <translation id="4813345808229079766">Tenging</translation>
-<translation id="4818522717893377262">Bæta við tungumáli...</translation>
+<translation id="4818522717893377262">Bæta tungumáli við...</translation>
 <translation id="481968316161811770">Fótspor, gögn vefsvæða</translation>
 <translation id="4821595350501541683">Flipum var lokað og vefskoðunargögnum eytt</translation>
 <translation id="4824480232751123840">Hljóðstyrkur</translation>
@@ -1285,7 +1285,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7583004045319035904">Notaðu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til að taka huliðsflipana þína úr lás.</translation>
 <translation id="7600965453749440009">Þýða aldrei <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Sprettigluggar útilokaðir (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Flipahópar</translation>
 <translation id="7607521702806708809">Eyða aðgangsorði</translation>
 <translation id="7609559547731036746">Bókamerki</translation>
 <translation id="7638584964844754484">Rangt aðgangsorð</translation>
@@ -1500,6 +1499,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8637431369725868556">Verðu þig fyrir hættulegum vefsvæðum.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Engin aðgangsorð í hættu}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
 <translation id="8640430998629397789">Fela „Biðja um tölvuvef“</translation>
+<translation id="8643403533759285912">Eyða hópi</translation>
 <translation id="8654802032646794042">Hætta við</translation>
 <translation id="8663764600409216912">Þú ert að nota aðgangsorð sem líta út fyrir að erfitt sé að giska á</translation>
 <translation id="8668210798914567634">Síðan var vistuð á leslistann þinn.</translation>

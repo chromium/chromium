@@ -1114,6 +1114,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3154987252551138431">Podczas używania Udostępniania w pobliżu wystąpił błąd</translation>
 <translation id="315504272643575312">Tym kontem zarządza <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Ponownie uruchom Chromium</translation>
+<translation id="3156511682997763015">Przewiń do przodu o 10 sekund</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158539265159265653">Dysk</translation>
 <translation id="3162559335345991374">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony logowania.</translation>
@@ -1214,6 +1215,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="334438173029876234">Sprzęt do jazdy na deskorolce</translation>
 <translation id="3347146863028219517">Narty i snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Przewiń do tyłu o 10 sekund</translation>
 <translation id="3352881017886802007">Gry sportowe</translation>
 <translation id="3355823806454867987">Zmień ustawienia serwera proxy...</translation>
 <translation id="335809815767823">Wyeksportowano</translation>
@@ -2670,7 +2672,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elektronika użytkowa</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
-<translation id="6197467523841310553">Kliknij prawym przyciskiem myszy, aby ograniczyć konieczność pisania podczas wypełniania zapisanych informacji w dowolnym formularzu online</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pełne wycięte zakładki</translation>
 <translation id="6203231073485539293">Sprawdź połączenie z internetem</translation>
@@ -3054,6 +3055,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6944557544071529399">Gry strategiczne</translation>
 <translation id="6944692733090228304">Wpisałeś swoje hasło na stronie, którą nie zarządza <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Aby chronić konto, nie używaj swojego hasła w innych aplikacjach ani witrynach.</translation>
 <translation id="6945221475159498467">Wybierz</translation>
+<translation id="6946949206576443118">Wyszukaj w internecie w Chrome</translation>
 <translation id="6948051842255602737">Koniec gry. Twój wynik to: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Aby zobaczyć metody odbioru oraz wymagania, wybierz adres</translation>
 <translation id="6948874830249067134">A1x3</translation>

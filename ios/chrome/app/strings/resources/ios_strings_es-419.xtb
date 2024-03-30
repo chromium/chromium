@@ -1285,7 +1285,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7583004045319035904">Desbloquea tus pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Vent.emerg.bloq. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupos de pestañas</translation>
 <translation id="7607521702806708809">Borrar contraseña</translation>
 <translation id="7609559547731036746">Favoritos</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
@@ -1500,6 +1499,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8637431369725868556">Obtén protección contra sitios peligrosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="8640430998629397789">Ocultar la opción Solicitar sitio para computadoras</translation>
+<translation id="8643403533759285912">Borrar grupo</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8663764600409216912">Usas contraseñas que parecen difíciles de adivinar</translation>
 <translation id="8668210798914567634">Esta página se guardó en tu lista de lectura.</translation>

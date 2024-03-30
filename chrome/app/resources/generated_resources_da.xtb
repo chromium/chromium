@@ -4122,6 +4122,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4090103403438682346">Aktivér Verificeret adgang</translation>
 <translation id="4090947011087001172">Vil du nulstille tilladelserne for <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Du kan se og administrere dine gemte adgangskoder i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du bruger en variabel for miljøet, der ikke understøttes: <ph name="BAD_VAR" />. Dette går ud over stabiliteten og sikkerheden.</translation>
@@ -4697,7 +4698,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4546692474302123343">Indtaling i Google Assistent</translation>
 <translation id="4547659257713117923">Ingen faner fra andre enheder</translation>
 <translation id="4547672827276975204">Indstil automatisk</translation>
-<translation id="4548858987594081919">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
 <translation id="4549791035683739768">Der er ikke gemt nogen fingeraftryk i din sikkerhedsnøgle</translation>
 <translation id="4550737096585299960">Prøv igen om et par minutter.</translation>
 <translation id="4550926046134589611">Nogle understøttede links åbnes fortsat i <ph name="APP_NAME" />.</translation>
@@ -6565,7 +6565,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6030719887161080597">Administrer oplysninger, der anvendes af websites til at måle annonceeffektivitet</translation>
 <translation id="6031600495088157824">Indtastningsmuligheder i værktøjslinjen</translation>
 <translation id="6032715498678347852">Du kan give en udvidelse adgang til dette website ved at klikke på udvidelsen.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Nye funktioner tilbydes, efterhånden som de bliver tilgængelige. Funktionerne varierer, alt efter hvilken enhed du har</translation>
 <translation id="603539183851330738">Knap til at fortryde automatisk rettelse. Vend tilbage til <ph name="TYPED_WORD" />  Tryk på Enter for at aktivere, tryk på Escape for at afvise.</translation>
 <translation id="6038929619733116134">Bloker, hvis websitet viser påtrængende eller vildledende annoncer</translation>
 <translation id="6039651071822577588">Forkert ordbog for netværksegenskaber</translation>
@@ -7070,7 +7069,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="642469772702851743">Denne enhed (serienummer: <ph name="SERIAL_NUMBER" />) blev låst af ejeren.</translation>
 <translation id="6425556984042222041">Hastighed ved oplæsning</translation>
 <translation id="642729974267661262">Har ikke tilladelse til at afspille lyd</translation>
-<translation id="6427608534767366138">Proxygodkendelse er påkrævet for "<ph name="NETWORK_ID" />"</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Der er ingen gemte adgangskoder.}=1{Tjekker {COUNT} adgangskode...}one{Tjekker {COUNT} adgangskode...}other{Tjekker {COUNT} adgangskoder...}}</translation>
 <translation id="6429384232893414837">Opdateringsfejl</translation>
 <translation id="6430814529589430811">Base64-kodet ASCII, enkeltcertifikat</translation>

@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">ໜ້າຫຼັກຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="1526389707933164996">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
-<translation id="1531886272553347340">ຣານັນຄູລັສ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1561927818299383735">ສີຂອງແສງຈາກສາກຫຼັງ</translation>
@@ -448,7 +447,6 @@
 <translation id="3621072146987826699">ຊ້າງ</translation>
 <translation id="3632579075709132555">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="3651050199673793219">ເລືອກຫົວໜ່ວຍອຸນຫະພູມ</translation>
-<translation id="3654530588944650786"><ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> ສົດໃສກຳລັງເບັ່ງບານ</translation>
 <translation id="3661106764436337772">ຂຽນໄດ້ໄວຂຶ້ນ ແລະ ມີຄວາມໝັ້ນໃຈຫຼາຍຂຶ້ນ</translation>
 <translation id="3662461537616691585">ສີເບີກັນດີ ແລະ ສີນ້ຳຕານແດງ</translation>
 <translation id="3668449597372804501">ຮູບພື້ນຫຼັງການເຄື່ອນທີ່ຂອງເມກ</translation>
@@ -742,7 +740,6 @@
 <translation id="5378184552853359930">ປະເພດ IP</translation>
 <translation id="5389159777326897627">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="5389224261615877010">ຮຸ້ງ</translation>
-<translation id="5396811372860835203">ຄາລລ່າ ລິລີ</translation>
 <translation id="5400907029458559844">ອຸປະກອນກຳລັງເຊື່ອມຕໍ່ຢູ່.</translation>
 <translation id="5401938042319910061">ເອີ້ນໃຊ້ສິ່ງທີ່ເຮັດປະຈຳທັງໝົດ</translation>
 <translation id="5410755018770633464">ຮັອດດັອກ</translation>
@@ -777,7 +774,6 @@
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5630438231335788050">ສະຖາບັນເບົາເຮົາສ໌</translation>
 <translation id="5631759159893697722">ບົດຄັດຫຍໍ້</translation>
-<translation id="5654356773042347102">ລິລີຫຸບເຂົາ</translation>
 <translation id="5655283760733841251">ແປ້ນພິມເພີ່ມຄວາມສະຫວ່າງ</translation>
 <translation id="5655296450510165335">ການລົງທະບຽນອຸປະກອນ</translation>
 <translation id="5655776422854483175">ບໍ່​ມີ​ວຽກ​​ການ​ພິມ</translation>
@@ -1020,7 +1016,6 @@
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
 <translation id="6982462588253070448">ເນີນຊາຍ</translation>
-<translation id="6988803763488977828">ດອກໄມ້ແຫ່ງສາຍລົມ</translation>
 <translation id="7005833343836210400">ອຸປະກອນອອບລາຍຢູ່</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7035168792582749309">ມັນຝຣັ່ງ</translation>

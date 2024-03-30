@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">ბრაუზერის მთავარი გვერდი</translation>
 <translation id="1526389707933164996">ეკრანმზოგის ანიმაცია</translation>
 <translation id="152892567002884378">ხმის აწევა</translation>
-<translation id="1531886272553347340">ბაია</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">ფონური განათების ფერი</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">სპილოები</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
-<translation id="3654530588944650786">აყვავებული კაშკაშა <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="3662461537616691585">ღვინისფერი და წაბლისფერი</translation>
 <translation id="3668449597372804501">ღრუბლების ნაკადის ფონი</translation>
 <translation id="3675132884790542448">ღორები</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP-ს ტიპი</translation>
 <translation id="5389159777326897627">ფონი და სტილი</translation>
 <translation id="5389224261615877010">ცისარტყელისფერი</translation>
-<translation id="5396811372860835203">კალა</translation>
 <translation id="5400907029458559844">მოწყობილობა უკავშირდება.</translation>
 <translation id="5401938042319910061">ყველა რუტინის გაშვება</translation>
 <translation id="5410755018770633464">ჰოთ-დოგები</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
 <translation id="5630438231335788050">ბაუჰაუსი</translation>
 <translation id="5631759159893697722">რეზიუმე</translation>
-<translation id="5654356773042347102">მაისის შროშანა</translation>
 <translation id="5655283760733841251">კლავიატურის სიკაშკაშის მომატება</translation>
 <translation id="5655296450510165335">მოწყობილობის რეგისტრაცია</translation>
 <translation id="5655776422854483175">ბეჭდვის დავალებები არ არის</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="6982462588253070448">ქვიშის დიუნები</translation>
-<translation id="6988803763488977828">ფრინტა</translation>
 <translation id="7005833343836210400">მოწყობილობა ხაზგარეშე რეჟიმშია</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="7035168792582749309">კარტოფილები</translation>

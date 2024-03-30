@@ -4121,6 +4121,7 @@
 <translation id="4090103403438682346">인증 액세스 서비스 사용</translation>
 <translation id="4090947011087001172"><ph name="SITE" />의 사이트 권한을 재설정하시겠습니까?</translation>
 <translation id="4092636882861724179"><ph name="GOOGLE_PASSWORD_MANAGER" />에서 저장된 비밀번호를 확인하고 관리할 수 있습니다.</translation>
+<translation id="4092709865241032354">Google 비밀번호 관리자에서 로그인 정보를 저장하도록 이 사이트의 사용자 이름을 추가하세요.</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="4093955363990068916">로컬 파일:</translation>
 <translation id="4094647278880271855">지원되지 않는 환경 변수(<ph name="BAD_VAR" />)를 사용 중이므로 안정성 및 보안에 문제가 발생할 수 있습니다.</translation>
@@ -4696,7 +4697,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4546692474302123343">Google 어시스턴트 음성 입력</translation>
 <translation id="4547659257713117923">다른 기기의 탭 없음</translation>
 <translation id="4547672827276975204">자동 설정</translation>
-<translation id="4548858987594081919">Google 비밀번호 관리자에서 로그인 정보를 저장하도록 이 사이트의 사용자 이름을 추가하세요.</translation>
 <translation id="4549791035683739768">보안 키에 저장된 지문이 없습니다.</translation>
 <translation id="4550737096585299960">잠시 후 다시 시도해 주세요.</translation>
 <translation id="4550926046134589611">지원되는 링크 일부는 <ph name="APP_NAME" />에서 계속 열 수 있습니다.</translation>
@@ -6564,7 +6564,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6030719887161080597">사이트에서 광고 실적을 측정하는 데 사용하는 정보 관리</translation>
 <translation id="6031600495088157824">툴바의 입력 옵션</translation>
 <translation id="6032715498678347852">사이트 액세스를 허용하려면 확장 프로그램을 클릭하세요.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />새로운 기능이 출시되는 대로 즉시 제공됩니다. 기능은 기기에 따라 다를 수 있습니다.</translation>
 <translation id="603539183851330738">자동 수정 실행취소 버튼입니다. <ph name="TYPED_WORD" />(으)로 되돌립니다.  활성화하려면 Enter를, 닫으려면 Esc를 누르세요.</translation>
 <translation id="6038929619733116134">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시하는 경우 광고를 차단합니다.</translation>
 <translation id="6039651071822577588">네트워크 속성 사전 형식이 잘못되었습니다.</translation>
@@ -7069,7 +7068,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="642469772702851743">소유자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>
 <translation id="6425556984042222041">텍스트 음성 변환 속도</translation>
 <translation id="642729974267661262">소리 재생이 허용되지 않음</translation>
-<translation id="6427608534767366138">"<ph name="NETWORK_ID" />"에 프록시 인증이 필요합니다.</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{저장된 비밀번호 없음}=1{비밀번호 {COUNT}개 확인 중...}other{비밀번호 {COUNT}개 확인 중…}}</translation>
 <translation id="6429384232893414837">업데이트 오류</translation>
 <translation id="6430814529589430811">Base64-인코딩 ASCII, 단일 인증서</translation>

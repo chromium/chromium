@@ -4118,6 +4118,7 @@
 <translation id="4090103403438682346">पडताळणीने दिलेला ॲक्सेस सक्षम करा</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> साठी साइट परवानग्या रीसेट करायच्या?</translation>
 <translation id="4092636882861724179">सेव्ह केलेले पासवर्ड तुम्ही <ph name="GOOGLE_PASSWORD_MANAGER" /> मध्ये पाहू आणि व्यवस्थापित करू शकता.</translation>
+<translation id="4092709865241032354">Google Password Manager ला तुमची साइन-इनसंबंधित माहिती सेव्ह करण्यात मदत करण्यासाठी, या साइटवर तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="4093955363990068916">स्थानिक फाईल:</translation>
 <translation id="4094647278880271855">तुम्ही सपोर्ट नसलेले पर्यावरण व्हेरिएबल वापरत आहात: <ph name="BAD_VAR" />. स्थिरता आणि सुरक्षेवर परिणाम होईल.</translation>
@@ -4693,7 +4694,6 @@
 <translation id="4546692474302123343">Google Assistant व्हॉइस इनपुट</translation>
 <translation id="4547659257713117923">अन्य डिव्हाइसवरील कोणतेही टॅब नाहीत</translation>
 <translation id="4547672827276975204">आपोआप सेट करा</translation>
-<translation id="4548858987594081919">Google Password Manager ला तुमची साइन-इनसंबंधित माहिती सेव्ह करण्यात मदत करण्यासाठी, या साइटवर तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="4549791035683739768">तुमच्या सिक्युरिटी कीवर कोणतीही फिंगरप्रिंट स्टोअर केलेली नाहीत</translation>
 <translation id="4550737096585299960">कृपया काही मिनिटांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="4550926046134589611">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> मध्ये उघडतील.</translation>
@@ -6562,7 +6562,6 @@
 <translation id="6030719887161080597">जाहिरातीच्या परफॉर्मन्सचे मापन करण्यासाठी साइट वापरत असलेल्या माहितीचे व्यवस्थापन करा</translation>
 <translation id="6031600495088157824">टूलबारमध्ये इनपुट पर्याय</translation>
 <translation id="6032715498678347852">या साइटला एक्स्टेंशन अ‍ॅक्सेस देण्यासाठी, त्यावर क्लिक करा.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />नवीन वैशिष्ट्ये उपलब्ध होतील तशी देऊ करा आणि ही वैशिष्ट्ये डिव्हाइसनुसार बदलू शकतात</translation>
 <translation id="603539183851330738">पहिल्यासारखे करा ऑटोकरेक्ट बटण. <ph name="TYPED_WORD" /> वर परत जा.  अ‍ॅक्टिव्हेट करण्यासाठी एंटर आणि डिसमिस करण्यासाठी एस्केप प्रेस करा.</translation>
 <translation id="6038929619733116134">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवत असल्यास ब्लॉक करा</translation>
 <translation id="6039651071822577588">नेटवर्क प्रॉपर्टी शब्दकोश विकृत झाला आहे</translation>
@@ -7067,7 +7066,6 @@
 <translation id="642469772702851743">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) मालकाने लॉक केले होते.</translation>
 <translation id="6425556984042222041">टेक्‍स्‍ट टू स्‍पीच रेट</translation>
 <translation id="642729974267661262">आवाज प्ले करण्याची अनुमती नाही</translation>
-<translation id="6427608534767366138">"<ph name="NETWORK_ID" />" साठी प्रॉक्सी ऑथेंटिकेशन आवश्यक आहे</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{No saved passwords.}=1{{COUNT} पासवर्ड तपासत आहे...}other{{COUNT} पासवर्ड तपासत आहे...}}</translation>
 <translation id="6429384232893414837">अपडेट एरर</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, एकल सर्टिफिकेट</translation>

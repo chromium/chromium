@@ -262,7 +262,6 @@
 <translation id="2034971124472263449">このまま保存</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> のショートカットは現在無効になっています</translation>
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
-<translation id="206377500836174974">フル</translation>
 <translation id="2064048859448024834">カメラ プレビューがオンになっています</translation>
 <translation id="2067602449040652523">キーボードの明るさ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />を切り替えます。<ph name="CAPTURE_MEDIUM" />は<ph name="CAPTURE_STATE" />です</translation>
@@ -1257,7 +1256,6 @@
 <translation id="5955304353782037793">アプリ</translation>
 <translation id="5958529069007801266">監視対象ユーザー</translation>
 <translation id="5960410286721553511">スマートフォンの最近の写真やメディアを表示します</translation>
-<translation id="5961960957587052807">低</translation>
 <translation id="5965524703725988602">ダークモードのオンとオフを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">ウィンドウ間を順方向に移動する</translation>
 <translation id="5978382165065462689">リモート サポート経由で画面の制御を共有しています。</translation>

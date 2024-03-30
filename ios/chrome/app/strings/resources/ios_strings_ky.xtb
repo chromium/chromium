@@ -1285,7 +1285,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7583004045319035904">Жашыруун өтмөктөрүңүздүн кулпусун <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен ачыңыз.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> эч качан которулбасын</translation>
 <translation id="7603852183842204213">Калкп чыкм бөгөтт (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Өтмөктөр тобу</translation>
 <translation id="7607521702806708809">Сырсөздү жок кылуу</translation>
 <translation id="7609559547731036746">Кыстармалар</translation>
 <translation id="7638584964844754484">Туура эмес купуя сөз айкашы</translation>
@@ -1500,6 +1499,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8637431369725868556">Кооптуу сайттардан коргонуңуз.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Уурдалган сырсөздөр жок}=1{{COUNT} уурдалган сырсөз бар}other{{COUNT} уурдалган сырсөз бар}}</translation>
 <translation id="8640430998629397789">"Компьютердик версияны сурануу" дегенди жашыруу</translation>
+<translation id="8643403533759285912">Топту өчүрүү</translation>
 <translation id="8654802032646794042">Жокко чыгаруу</translation>
 <translation id="8663764600409216912">Божомолдоп билип алууга мүмкүн болбогон сырсөздөрдү колдонуп жатасыз</translation>
 <translation id="8668210798914567634">Бул барак Окуу тизмеңизге сакталды.</translation>

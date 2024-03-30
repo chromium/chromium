@@ -4105,6 +4105,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4090103403438682346">Activa l'accés verificat</translation>
 <translation id="4090947011087001172">Vols restablir els permisos del lloc web <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Pots veure i gestionar les contrasenyes desades al <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Per ajudar el gestor de contrasenyes de Google a desar la teva informació d'inici de sessió, afegeix el teu nom d'usuari per a aquest lloc web</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="4093955363990068916">Fitxer local:</translation>
 <translation id="4094647278880271855">Utilitzes una variable d'entorn que no és compatible: <ph name="BAD_VAR" />. L'estabilitat i la seguretat quedaran afectades.</translation>
@@ -4679,7 +4680,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4546692474302123343">Entrada de veu de l'Assistent de Google</translation>
 <translation id="4547659257713117923">Cap pestanya d'altres dispositius</translation>
 <translation id="4547672827276975204">Defineix automàticament</translation>
-<translation id="4548858987594081919">Per ajudar el gestor de contrasenyes de Google a desar la teva informació d'inici de sessió, afegeix el teu nom d'usuari per a aquest lloc web</translation>
 <translation id="4549791035683739768">La clau de seguretat no té empremtes digitals emmagatzemades</translation>
 <translation id="4550737096585299960">Torna-ho a provar d'aquí a uns quants minuts.</translation>
 <translation id="4550926046134589611">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" />.</translation>
@@ -6546,7 +6546,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6030719887161080597">Gestiona la informació que utilitzen els llocs web per mesurar el rendiment dels anuncis</translation>
 <translation id="6031600495088157824">Opcions d'introducció de text a la barra d'eines</translation>
 <translation id="6032715498678347852">Per permetre que una extensió accedeixi a aquest lloc web, fes-hi clic.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" /> S'ofereixen funcions noves a mesura que estan disponibles; les funcions varien segons el dispositiu.</translation>
 <translation id="603539183851330738">Botó Desfés de la correcció automàtica. Restableix <ph name="TYPED_WORD" />.  Prem la tecla d'introducció per activar i la tecla d'escapada per ignorar.</translation>
 <translation id="6038929619733116134">Bloqueja els anuncis si el lloc web mostra publicitat intrusiva o enganyosa</translation>
 <translation id="6039651071822577588">El diccionari de propietat de xarxa no està ben format</translation>
@@ -7051,7 +7050,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="642469772702851743">El propietari ha bloquejat aquest dispositiu (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Velocitat de text a parla</translation>
 <translation id="642729974267661262">Sense permís per reproduir so</translation>
-<translation id="6427608534767366138">Es requereix l'autenticació del servidor intermediari per a "<ph name="NETWORK_ID" />"</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{No hi ha cap contrasenya desada.}=1{S'està comprovant {COUNT} contrasenya...}other{S'estan comprovant {COUNT} contrasenyes…}}</translation>
 <translation id="6429384232893414837">Error d'actualització</translation>
 <translation id="6430814529589430811">ASCII codificat en Base64, certificat únic</translation>

@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">դիտարկիչի գլխավոր էջ</translation>
 <translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
-<translation id="1531886272553347340">հրանուկ</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
 <translation id="1561927818299383735">ֆոնային լուսավորության գույնը</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">փղեր</translation>
 <translation id="3632579075709132555">Գաղտնիության էկրանի փոխանջատիչ</translation>
 <translation id="3651050199673793219">Ընտրել ջերմաստիճանի միավոր</translation>
-<translation id="3654530588944650786">Ծաղկած փայլուն <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="3662461537616691585">բորդո և շագանակագույն</translation>
 <translation id="3668449597372804501">«Ամպերի հոսք» պաստառ</translation>
 <translation id="3675132884790542448">խոզեր</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP-ի տեսակը</translation>
 <translation id="5389159777326897627">Պաստառ և ոճ</translation>
 <translation id="5389224261615877010">Ծիածան</translation>
-<translation id="5396811372860835203">զանտեդեսկիա</translation>
 <translation id="5400907029458559844">Սարքը միանում է։</translation>
 <translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
 <translation id="5410755018770633464">հոթդոգներ</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5630438231335788050">բաուհաուս</translation>
 <translation id="5631759159893697722">համառոտ շարադրանք</translation>
-<translation id="5654356773042347102">հովտաշուշան</translation>
 <translation id="5655283760733841251">Ստեղնաշարի պայծառության ավելացում</translation>
 <translation id="5655296450510165335">Սարքի գրանցում</translation>
 <translation id="5655776422854483175">Տպման աշխատանքներ չկան</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6982462588253070448">ավազաթմբեր</translation>
-<translation id="6988803763488977828">հողմածաղիկ</translation>
 <translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7035168792582749309">կարտոֆիլ</translation>

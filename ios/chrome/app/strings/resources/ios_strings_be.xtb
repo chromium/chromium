@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">Выкарыстоўвайце <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблакіроўкі ўкладак у рэжыме інкогніта</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Успл. вокны заблак. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Групы ўкладак</translation>
 <translation id="7607521702806708809">Выдаліць пароль</translation>
 <translation id="7609559547731036746">Закладкі</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">Абараніцеся ад небяспечных сайтаў.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="8640430998629397789">Схаваць пункт "Запытаць сайт для ПК"</translation>
+<translation id="8643403533759285912">Выдаліць групу</translation>
 <translation id="8654802032646794042">Скасаваць</translation>
 <translation id="8663764600409216912">Вы выкарыстоўваеце паролі, якія цяжка падабраць</translation>
 <translation id="8668210798914567634">Гэта старонка была захавана ў спіс чытання.</translation>

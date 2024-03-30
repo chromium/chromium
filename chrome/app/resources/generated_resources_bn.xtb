@@ -4121,6 +4121,7 @@
 <translation id="4090103403438682346">যাচাইকৃত অ্যাক্সেস সক্ষম করুন</translation>
 <translation id="4090947011087001172"><ph name="SITE" />-এর জন্য সাইট সম্পর্কিত অনুমতি রিসেট করবেন?</translation>
 <translation id="4092636882861724179">আপনি <ph name="GOOGLE_PASSWORD_MANAGER" /> থেকে সেভ করা পাসওয়ার্ড দেখতে এবং ম্যানেজ করতে পারবেন।</translation>
+<translation id="4092709865241032354">এই সাইটের জন্য আপনার ব্যবহারকারীর নাম যোগ করুন, যাতে Google Password Manager আপনার সাইন-ইন সংক্রান্ত তথ্য সেভ করতে পারে</translation>
 <translation id="4093865285251893588">প্রোফাইল ছবি</translation>
 <translation id="4093955363990068916">স্থানীয় ফাইল:</translation>
 <translation id="4094647278880271855">আপনি অসমর্থিত এনভায়রনমেন্ট ভেরিয়েবল ব্যবহার করছেন: <ph name="BAD_VAR" /> স্থিতিশীলতা এবং নিরাপত্তা ক্ষতিগ্রস্ত হতে পারে।</translation>
@@ -4697,7 +4698,6 @@
 <translation id="4546692474302123343">Google Assistant-এর ভয়েস ইনপুট</translation>
 <translation id="4547659257713117923">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="4547672827276975204">অটোমেটিক সেট হবে</translation>
-<translation id="4548858987594081919">এই সাইটের জন্য আপনার ব্যবহারকারীর নাম যোগ করুন, যাতে Google Password Manager আপনার সাইন-ইন সংক্রান্ত তথ্য সেভ করতে পারে</translation>
 <translation id="4549791035683739768">আপনার 'নিরাপত্তা কী'-তে কোনও ফিঙ্গারপ্রিন্ট সেভ করা নেই</translation>
 <translation id="4550737096585299960">কয়েক মিনিট পরে আবার চেষ্টা করুন।</translation>
 <translation id="4550926046134589611">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" /> এখনও খুলবে।</translation>
@@ -6567,7 +6567,6 @@
 <translation id="6030719887161080597">বিজ্ঞাপন সংক্রান্ত পারফর্ম্যান্স পরিমাপ করতে সাইটের মাধ্যমে ব্যবহার করা তথ্য ম্যানেজ করুন</translation>
 <translation id="6031600495088157824">টুলবারে ইনপুটের বিকল্প</translation>
 <translation id="6032715498678347852">এই সাইটে এক্সটেনশন অ্যাক্সেস দিতে এটি ক্লিক করুন।</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />নতুন ফিচার উপলভ্য হলে তা অফার করা হয় এবং ডিভাইস অনুযায়ী ফিচার আলাদা হতে পারে</translation>
 <translation id="603539183851330738">অটোমেটিক সংশোধন আগের অবস্থায় ফেরানোর বোতাম। <ph name="TYPED_WORD" />-এ ফিরে যান।  অ্যাক্টিভেট করতে Enter আর বাতিল করতে Escape প্রেস করুন।</translation>
 <translation id="6038929619733116134">সাইটে থাকা ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন ব্লক করুন</translation>
 <translation id="6039651071822577588">নেটওয়ার্ক সম্পত্তি অভিধান বিকৃত</translation>
@@ -7073,7 +7072,6 @@
 <translation id="642469772702851743">এই ডিভাইসের (SN: <ph name="SERIAL_NUMBER" />) মালিক এটি লক করেছেন।</translation>
 <translation id="6425556984042222041">টেক্সট-টু-স্পিচ রেট</translation>
 <translation id="642729974267661262">সাউন্ড চালানোর অনুমতি দেওয়া হয়নি</translation>
-<translation id="6427608534767366138">"<ph name="NETWORK_ID" />"-এর জন্য প্রক্সি যাচাইকরণ প্রয়োজন</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{কোনও সেভ করা পাসওয়ার্ড নেই।}=1{{COUNT}টি পাসওয়ার্ড চেক করা হচ্ছে...}one{{COUNT}টি পাসওয়ার্ড চেক করা হচ্ছে...}other{{COUNT}টি পাসওয়ার্ড চেক করা হচ্ছে...}}</translation>
 <translation id="6429384232893414837">আপডেট করতে সমস্যা হয়েছে</translation>
 <translation id="6430814529589430811">Base64-এনকোডেড ASCII, একক সার্টিফিকেট</translation>

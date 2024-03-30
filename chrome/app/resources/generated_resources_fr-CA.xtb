@@ -4109,6 +4109,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4090103403438682346">Activer l'accès validé</translation>
 <translation id="4090947011087001172">Réinitialiser les autorisations du site <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Vous pouvez afficher et gérer les mots de passe enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Pour aider le gestionnaire de mots de passe Google à enregistrer vos renseignements de connexion, ajoutez votre nom d'utilisateur pour ce site</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="4093955363990068916">Fichier local :</translation>
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement incompatible : <ph name="BAD_VAR" />. Cela aura un impact sur la stabilité et la sécurité.</translation>
@@ -4683,7 +4684,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4546692474302123343">Entrée vocale pour l'Assistant Google</translation>
 <translation id="4547659257713117923">Pas d'onglets provenant d'autres appareils</translation>
 <translation id="4547672827276975204">Définir automatiquement</translation>
-<translation id="4548858987594081919">Pour aider le gestionnaire de mots de passe Google à enregistrer vos informations de connexion, ajoutez votre nom d'utilisateur pour ce site</translation>
 <translation id="4549791035683739768">Votre clé de sécurité ne contient aucune empreinte digitale enregistrée</translation>
 <translation id="4550737096585299960">Veuillez réessayer dans quelques minutes.</translation>
 <translation id="4550926046134589611">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" />.</translation>
@@ -6551,7 +6551,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6030719887161080597">Gérer les informations utilisées par les sites pour mesurer les performances des annonces</translation>
 <translation id="6031600495088157824">Options d'entrée dans la barre d'outils</translation>
 <translation id="6032715498678347852">Pour autoriser une extension à accéder à ce site, cliquez dessus.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" /> Les fonctionnalités peuvent varier en fonction de l'appareil, et de nouvelles fonctionnalités peuvent être ajoutées au fur et à mesure de leur disponibilité</translation>
 <translation id="603539183851330738">Bouton d'annulation de la correction automatique. Revenir à <ph name="TYPED_WORD" />.  Appuyez sur Entrée pour activer cette action, ou sur Échap pour l'ignorer.</translation>
 <translation id="6038929619733116134">Bloquer si le site diffuse des annonces intrusives ou trompeuses</translation>
 <translation id="6039651071822577588">Dictionnaire des propriétés du réseau non valide</translation>
@@ -7056,7 +7055,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="642469772702851743">Cet appareil (numéro de série : <ph name="SERIAL_NUMBER" />) a été verrouillé par son propriétaire.</translation>
 <translation id="6425556984042222041">Vitesse de la synthèse vocale</translation>
 <translation id="642729974267661262">Non autorisés à faire jouer des sons</translation>
-<translation id="6427608534767366138">L'authentification par mandataire est requise pour « <ph name="NETWORK_ID" /> »</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Aucun mot de passe enregistré.}=1{Vérification de {COUNT} mot de passe…}one{Vérification de {COUNT} mots de passe...}other{Vérification de {COUNT} mots de passe...}}</translation>
 <translation id="6429384232893414837">Erreur de mise à jour</translation>
 <translation id="6430814529589430811">Certificat unique codé base64 ASCII</translation>

@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">ביטול הנעילה של כרטיסיות מצב אנונימי יתבצע באמצעות <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">איני רוצה לקבל תרגום מ<ph name="LANGUAGE" /> בכלל</translation>
 <translation id="7603852183842204213">חלונות קופצים שנחסמו (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">קבוצות של כרטיסיות</translation>
 <translation id="7607521702806708809">מחיקת הסיסמה</translation>
 <translation id="7609559547731036746">סימניות</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">הגנה מפני אתרים מסוכנים.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({COUNT}) שנחשפה}one{יש {COUNT} סיסמאות שנחשפו}two{יש {COUNT} סיסמאות שנחשפו}other{יש {COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="8640430998629397789">הסתרה של 'בקשת אתר שמותאם למחשב'</translation>
+<translation id="8643403533759285912">מחיקת הקבוצה</translation>
 <translation id="8654802032646794042">ביטול</translation>
 <translation id="8663764600409216912">בחרת סיסמאות שקשה לנחש</translation>
 <translation id="8668210798914567634">דף זה נשמר ברשימת הקריאה שלך.</translation>

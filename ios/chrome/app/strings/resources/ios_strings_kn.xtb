@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿ.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ಅನ್ನು ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡ</translation>
 <translation id="7603852183842204213">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="7607521702806708809">ಪಾಸ್‌ವರ್ಡ್ ಅಳಿಸಿ</translation>
 <translation id="7609559547731036746">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="7638584964844754484">ತಪ್ಪಾದ ಪಾಸ್‌ಫ್ರೇಸ್</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳಿಂದ ರಕ್ಷಣೆ ಪಡೆಯಿರಿ.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ಅಪಾಯಕ್ಕೀಡಾಗಬಹುದಾದ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ}=1{{COUNT} ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{{COUNT} ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="8640430998629397789">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್‌ಗೆ ವಿನಂತಿಸಿ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="8643403533759285912">ಗುಂಪನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8654802032646794042">ರದ್ದುಮಾಡಿ</translation>
 <translation id="8663764600409216912">ಊಹಿಸಲು ಕಷ್ಟವಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನೀವು ಬಳಸುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="8668210798914567634">ಈ ಪುಟವನ್ನು ನಿಮ್ಮ ಓದುವಿಕೆ ಪಟ್ಟಿಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>

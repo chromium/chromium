@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">selain etusivu</translation>
 <translation id="1526389707933164996">Näytönsäästäjän animaatio</translation>
 <translation id="152892567002884378">Lisää äänenvoimakkuutta</translation>
-<translation id="1531886272553347340">aitoleinikki</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1561927818299383735">taustavalon väri</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">norsut</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3651050199673793219">Valitse lämpötilan yksikkö</translation>
-<translation id="3654530588944650786">Kirkas <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> kukassa</translation>
 <translation id="3662461537616691585">viininpuna ja punaruskea</translation>
 <translation id="3668449597372804501">Pilvien kulku ‑taustakuva</translation>
 <translation id="3675132884790542448">siat</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP-tyyppi</translation>
 <translation id="5389159777326897627">Taustakuva ja tyyli</translation>
 <translation id="5389224261615877010">Sateenkaari</translation>
-<translation id="5396811372860835203">huonevehka</translation>
 <translation id="5400907029458559844">Laite muodostaa yhteyttä.</translation>
 <translation id="5401938042319910061">Suorita kaikki ohjelmat</translation>
 <translation id="5410755018770633464">hodarit</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">tiivistelmä</translation>
-<translation id="5654356773042347102">kielo</translation>
 <translation id="5655283760733841251">Lisää näppäimistön kirkkautta</translation>
 <translation id="5655296450510165335">Laitteen rekisteröinti</translation>
 <translation id="5655776422854483175">Ei tulostustöitä</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
 <translation id="6981982820502123353">Saavutettavuus</translation>
 <translation id="6982462588253070448">hiekkadyynit</translation>
-<translation id="6988803763488977828">vuokko</translation>
 <translation id="7005833343836210400">Laite on offline-tilassa</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7035168792582749309">perunat</translation>

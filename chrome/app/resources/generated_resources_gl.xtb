@@ -4108,6 +4108,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4090103403438682346">Activar acceso verificado</translation>
 <translation id="4090947011087001172">Queres restablecer os permisos do sitio <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Podes ver e xestionar os contrasinais gardados no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Para axudar ao xestor de contrasinais de Google a gardar a túa información de inicio de sesión, engade o teu nome de usuario para este sitio</translation>
 <translation id="4093865285251893588">Imaxe do perfil</translation>
 <translation id="4093955363990068916">Ficheiro local:</translation>
 <translation id="4094647278880271855">Estás usando unha variable de ambiente non compatible: <ph name="BAD_VAR" />. A estabilidade e a seguranza veranse afectadas.</translation>
@@ -4682,7 +4683,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4546692474302123343">Entrada de voz do Asistente de Google</translation>
 <translation id="4547659257713117923">Non hai pestanas doutros dispositivos</translation>
 <translation id="4547672827276975204">Definir automaticamente</translation>
-<translation id="4548858987594081919">Para axudar ao xestor de contrasinais de Google a gardar a túa información de inicio de sesión, engade o teu nome de usuario para este sitio</translation>
 <translation id="4549791035683739768">A túa chave de seguranza non ten impresións dixitais almacenadas</translation>
 <translation id="4550737096585299960">Téntao de novo dentro duns minutos.</translation>
 <translation id="4550926046134589611">Algunhas ligazóns compatibles seguirán abríndose na aplicación <ph name="APP_NAME" />.</translation>
@@ -6547,7 +6547,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6030719887161080597">Xestiona a información que usan os sitios para medir o rendemento publicitario</translation>
 <translation id="6031600495088157824">Opcións de entrada na barra de ferramentas</translation>
 <translation id="6032715498678347852">Para permitir o acceso dunha extensión a este sitio, fai clic nela.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Ofreceranse novas funcións a medida que estean dispoñibles. Estas funcións varían segundo o dispositivo</translation>
 <translation id="603539183851330738">Botón para desfacer a autocorrección. Volver a "<ph name="TYPED_WORD" />".  Preme Introducir para accionar o botón ou Escape para ignorar a opción.</translation>
 <translation id="6038929619733116134">Bloquear se o sitio mostra anuncios enganosos ou intrusivos</translation>
 <translation id="6039651071822577588">Dicionario de propiedades da rede incorrecto</translation>
@@ -7052,7 +7051,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="642469772702851743">O propietario bloqueou este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Velocidade da saída de texto a voz</translation>
 <translation id="642729974267661262">Sitios que non poden reproducir son</translation>
-<translation id="6427608534767366138">Requírese autenticación proxy para "<ph name="NETWORK_ID" />"</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Non hai contrasinais gardados.}=1{Comprobando {COUNT} contrasinal…}other{Comprobando {COUNT} contrasinais…}}</translation>
 <translation id="6429384232893414837">Produciuse un erro na actualización</translation>
 <translation id="6430814529589430811">ASCII con codificación Base64, certificado único</translation>

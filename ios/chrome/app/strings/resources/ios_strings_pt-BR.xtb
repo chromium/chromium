@@ -1285,7 +1285,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7583004045319035904">Use o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear suas guias anônimas.</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupos de guias</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
 <translation id="7609559547731036746">Favoritos</translation>
 <translation id="7638584964844754484">Senha incorreta</translation>
@@ -1500,6 +1499,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="8640430998629397789">Ocultar "Acessar o site para computador"</translation>
+<translation id="8643403533759285912">Excluir grupo</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8663764600409216912">Você está usando senhas difíceis de adivinhar</translation>
 <translation id="8668210798914567634">Esta página foi salva na sua lista de leitura.</translation>

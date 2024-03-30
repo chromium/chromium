@@ -4112,6 +4112,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4090103403438682346">Luba kinnitatud juurdepääs</translation>
 <translation id="4090947011087001172">Kas lähtestada saidi <ph name="SITE" /> load?</translation>
 <translation id="4092636882861724179">Saate salvestatud paroole vaadata ja hallata rakenduses <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Selleks et aidata Google'i paroolihalduril teie sisselogimisteavet salvestada, lisage sellele saidile oma kasutajanimi</translation>
 <translation id="4093865285251893588">Profiilipilt</translation>
 <translation id="4093955363990068916">Kohalik fail:</translation>
 <translation id="4094647278880271855">Kasutate keskkonna toetamata muutujat: <ph name="BAD_VAR" />. See vähendab stabiilsust ja turvalisust.</translation>
@@ -4686,7 +4687,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4546692474302123343">Google'i assistendi häälsisend</translation>
 <translation id="4547659257713117923">Muudest seadmetest pärinevaid vahelehti ei ole</translation>
 <translation id="4547672827276975204">Määra automaatselt</translation>
-<translation id="4548858987594081919">Selleks et aidata Google'i paroolihalduril teie sisselogimisteavet salvestada, lisage sellele saidile oma kasutajanimi</translation>
 <translation id="4549791035683739768">Teie turvavõtmele ei ole sõrmejälgi salvestatud</translation>
 <translation id="4550737096585299960">Proovige mõne minuti pärast uuesti.</translation>
 <translation id="4550926046134589611">Mõned toetatud lingid avanevad endiselt rakenduses <ph name="APP_NAME" />.</translation>
@@ -6554,7 +6554,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6030719887161080597">Saate hallata teavet, mida saidid kasutavad reklaami toimivuse mõõtmiseks</translation>
 <translation id="6031600495088157824">Sisestamisvalikud tööriistaribal</translation>
 <translation id="6032715498678347852">Selleks et anda laiendusele juurdepääs sellele saidile, klõpsake laiendusel.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Funktsioonid on seadmete lõikes erinevad ja lisada võidakse uusi funktsioone, kui need muutuvad kättesaadavaks</translation>
 <translation id="603539183851330738">Automaatkorrektuuri tagasivõtmise nupp. Ennista tekstiks „<ph name="TYPED_WORD" />”.  Aktiveerimiseks vajutage sisestusklahvi, loobumiseks paoklahvi.</translation>
 <translation id="6038929619733116134">Blokeeri, kui sait kuvab sekkuvaid või eksitavaid reklaame</translation>
 <translation id="6039651071822577588">Võrguatribuudi sõnastiku vorming on vale</translation>
@@ -7059,7 +7058,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="642469772702851743">Selle seadme (seerianumber: <ph name="SERIAL_NUMBER" />) lukustas omanik.</translation>
 <translation id="6425556984042222041">Kõnesünteesi kiirus</translation>
 <translation id="642729974267661262">Pole lubatud heli esitada</translation>
-<translation id="6427608534767366138">Võrgu „<ph name="NETWORK_ID" />“ jaoks on vajalik puhverserveri autentimine</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Salvestatud paroole ei ole.}=1{{COUNT} parooli kontrollimine …}other{{COUNT} parooli kontrollimine …}}</translation>
 <translation id="6429384232893414837">Viga värskendamisel</translation>
 <translation id="6430814529589430811">Base64 kodeeritud ASCII, üks sertifikaat</translation>

@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">arakatzailearen orri nagusia</translation>
 <translation id="1526389707933164996">Pantaila-babeslearen animazioa</translation>
 <translation id="152892567002884378">Igo bolumena</translation>
-<translation id="1531886272553347340">Urrebotoi</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
 <translation id="1561927818299383735">atzeko argiaren kolorea</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">elefanteak</translation>
 <translation id="3632579075709132555">Pribatutasun-pantaila aldatzeko etengailua</translation>
 <translation id="3651050199673793219">Hautatu tenperatura-unitatea</translation>
-<translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> eder bat loratzen</translation>
 <translation id="3662461537616691585">gorrimina eta granatea</translation>
 <translation id="3668449597372804501">Hodeien fluxua erakusten duen horma-papera</translation>
 <translation id="3675132884790542448">txerriak</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP mota</translation>
 <translation id="5389159777326897627">Horma-papera eta estiloa</translation>
 <translation id="5389224261615877010">Ostadarra</translation>
-<translation id="5396811372860835203">Kala</translation>
 <translation id="5400907029458559844">Gailua konektatzen ari da.</translation>
 <translation id="5401938042319910061">Exekutatu errutina guztiak</translation>
 <translation id="5410755018770633464">saltxitxa-ogitartekoak</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Barnekoa soilik</translation>
 <translation id="5630438231335788050">bauhaus-a</translation>
 <translation id="5631759159893697722">laburpena</translation>
-<translation id="5654356773042347102">Mugeta</translation>
 <translation id="5655283760733841251">Teklatuaren distira igotzeko tekla</translation>
 <translation id="5655296450510165335">Gailuaren erregistroa</translation>
 <translation id="5655776422854483175">Ez dago inprimatze-lanik</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Firmwarearen berrikuspena</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="6982462588253070448">hondarrezko dunak</translation>
-<translation id="6988803763488977828">Eguerdilili</translation>
 <translation id="7005833343836210400">Deskonektatuta dago gailua</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7035168792582749309">patatak</translation>

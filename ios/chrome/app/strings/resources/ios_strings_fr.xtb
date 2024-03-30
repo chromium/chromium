@@ -1286,7 +1286,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7583004045319035904">Utilisez "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
 <translation id="7603852183842204213">Pop-up bloqués (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Groupes d'onglets</translation>
 <translation id="7607521702806708809">Supprimer le mot de passe</translation>
 <translation id="7609559547731036746">Favoris</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
@@ -1501,6 +1500,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8637431369725868556">Protégez-vous contre les sites dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8640430998629397789">Masquer "Demander la version pour ordinateur"</translation>
+<translation id="8643403533759285912">Supprimer le groupe</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8663764600409216912">Vos mots de passe semblent difficiles à deviner</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>

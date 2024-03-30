@@ -1114,6 +1114,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3154987252551138431">Došlo je do pogreške prilikom dijeljenja u blizini</translation>
 <translation id="315504272643575312">Vašim računom upravlja <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Ponovo pokreni Chromium</translation>
+<translation id="3156511682997763015">10 sekundi unaprijed</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Za Wi-Fi koji upotrebljavate možda ćete morati posjetiti stranicu za prijavu.</translation>
@@ -1214,6 +1215,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="334438173029876234">Oprema za skateboarding</translation>
 <translation id="3347146863028219517">Skijanje i snowboarding</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Ponovno reproduciraj 10 s</translation>
 <translation id="3352881017886802007">Sportske igre</translation>
 <translation id="3355823806454867987">Promijeni proxy postavke...</translation>
 <translation id="335809815767823">Izvezeno</translation>
@@ -2669,7 +2671,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Potrošačka elektronika</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
-<translation id="6197467523841310553">Kliknite desnom tipkom da biste popunili spremljene podatke u bilo kojem online obrascu uz manje tipkanja</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Potpuno izrezane kartice</translation>
 <translation id="6203231073485539293">Provjerite internetsku vezu</translation>
@@ -3053,6 +3054,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6944557544071529399">Strateške igre</translation>
 <translation id="6944692733090228304">Unijeli ste zaporku na web-lokaciju kojom ne upravlja <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da biste zaštitili račun, nemojte upotrebljavati tu zaporku za druge aplikacije i web-lokacije.</translation>
 <translation id="6945221475159498467">Odaberi</translation>
+<translation id="6946949206576443118">Pretraživanje weba u Chromeu</translation>
 <translation id="6948051842255602737">Igra je gotova, vaš je rezultat <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Odaberite adresu za prikaz načina preuzimanja i zahtjeva za preuzimanje</translation>
 <translation id="6948874830249067134">A1x3</translation>

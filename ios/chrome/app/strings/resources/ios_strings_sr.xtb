@@ -1285,7 +1285,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Блокирани искачући прозори (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Групе картица</translation>
 <translation id="7607521702806708809">Избриши лозинку</translation>
 <translation id="7609559547731036746">Обележивачи</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
@@ -1500,6 +1499,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8637431369725868556">Заштитите се од опасних сајтова.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема угрожених лозинки}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="8640430998629397789">Сакриј опцију Прикажи верзију сајта за рачунар</translation>
+<translation id="8643403533759285912">Избриши групу</translation>
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8663764600409216912">Користите лозинке које тешко могу да се погоде</translation>
 <translation id="8668210798914567634">Ова страница је сачувана на Листи за читање.</translation>

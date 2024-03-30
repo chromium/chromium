@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">böngésző kezdőlapja</translation>
 <translation id="1526389707933164996">Animált képernyőkímélő</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
-<translation id="1531886272553347340">boglárka</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1561927818299383735">háttérvilágítás színe</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">elefántok</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
-<translation id="3654530588944650786">Ragyogó <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> virágzik</translation>
 <translation id="3662461537616691585">burgundi és gesztenyevörös</translation>
 <translation id="3668449597372804501">Szálló felhők háttérkép</translation>
 <translation id="3675132884790542448">sertések</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP-típus</translation>
 <translation id="5389159777326897627">Háttérkép és stílus</translation>
 <translation id="5389224261615877010">Szivárvány</translation>
-<translation id="5396811372860835203">tölcsérvirág</translation>
 <translation id="5400907029458559844">Az eszköz csatlakozása folyamatban van.</translation>
 <translation id="5401938042319910061">Összes rutin futtatása</translation>
 <translation id="5410755018770633464">hot dogok</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">absztrakt</translation>
-<translation id="5654356773042347102">liliom</translation>
 <translation id="5655283760733841251">Billentyűzet fényerejének növelése</translation>
 <translation id="5655296450510165335">Eszközregisztráció</translation>
 <translation id="5655776422854483175">Nincs nyomtatási feladat</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6982462588253070448">homokdűnék</translation>
-<translation id="6988803763488977828">szellőrózsa</translation>
 <translation id="7005833343836210400">Az eszköz offline állapotú</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="7035168792582749309">burgonyák</translation>

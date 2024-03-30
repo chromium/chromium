@@ -71,6 +71,7 @@
 <translation id="1125573121925420732">Gli avvisi potrebbero essere frequenti durante l'aggiornamento della sicurezza dei siti web. La situazione dovrebbe migliorare a breve.</translation>
 <translation id="112840717907525620">Cache dei criteri integra</translation>
 <translation id="1131264053432022307">Immagine copiata</translation>
+<translation id="1138458427267715730">Ricevi avvisi quando il prezzo cala su qualsiasi sito del web</translation>
 <translation id="1142713751288681188">Tipo di carta</translation>
 <translation id="1142846828089312304">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="1144136880160289237">Non hai ancora argomenti attivi</translation>
@@ -1114,6 +1115,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3154987252551138431">Si è verificato un errore durante l'utilizzo di Condivisione nelle vicinanze</translation>
 <translation id="315504272643575312">Il tuo account è gestito da <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Riavvia Chromium</translation>
+<translation id="3156511682997763015">Avanti di 10 secondi</translation>
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">La rete Wi-Fi in uso potrebbe richiedere la visita della relativa pagina di accesso.</translation>
@@ -1211,6 +1213,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="334438173029876234">Attrezzature e articoli per skateboard</translation>
 <translation id="3347146863028219517">Sci e snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Riproduci nuovamente 10 secondi</translation>
 <translation id="3352881017886802007">Giochi di sport</translation>
 <translation id="3355823806454867987">Modifica impostazioni proxy...</translation>
 <translation id="335809815767823">Criteri esportati</translation>
@@ -2666,7 +2669,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elettronica di consumo</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
-<translation id="6197467523841310553">Fai clic con il tasto destro del mouse per inserire le informazioni salvate in qualsiasi modulo online digitando meno parole</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Schede a taglio completo</translation>
 <translation id="6203231073485539293">Controlla la connessione a internet</translation>
@@ -3050,6 +3052,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6944557544071529399">Giochi di strategia</translation>
 <translation id="6944692733090228304">Hai inserito la password in un sito non gestito da <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Per proteggere il tuo account, non riutilizzare la password con altri siti e app.</translation>
 <translation id="6945221475159498467">Seleziona</translation>
+<translation id="6946949206576443118">Cerca nel web su Chrome</translation>
 <translation id="6948051842255602737">Game over, il tuo punteggio è <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Seleziona un indirizzo per conoscere i requisiti e i metodi di ritiro</translation>
 <translation id="6948874830249067134">A1x3</translation>

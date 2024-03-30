@@ -262,7 +262,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2034971124472263449">Salvesta ikkagi</translation>
 <translation id="204259843076055848">Otsetee <ph name="SIX_PACK_KEY_NAME" /> on praegu välja lülitatud</translation>
 <translation id="2049240716062114887">Töölaua nimeks määrati <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Täielik</translation>
 <translation id="2064048859448024834">Kaamera eelvaade on sisse lülitatud</translation>
 <translation id="2067602449040652523">Klaviatuuri eredus</translation>
 <translation id="2075520525463668108">Lülitage <ph name="CAPTURE_MEDIUM" /> sisse/välja. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" />.</translation>
@@ -1258,7 +1257,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5955304353782037793">rak</translation>
 <translation id="5958529069007801266">Valvatav kasutaja</translation>
 <translation id="5960410286721553511">Vaadake oma telefoni hiljutisi fotosid ja meediat</translation>
-<translation id="5961960957587052807">Hele</translation>
 <translation id="5965524703725988602">Tumeda teema oleku sisse-/väljalülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Kerige läbi akna edasi</translation>
 <translation id="5978382165065462689">Ekraani juhtimise jagamine kaugabi kaudu.</translation>

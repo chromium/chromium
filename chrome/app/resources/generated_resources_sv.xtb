@@ -4121,6 +4121,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4090103403438682346">Aktivera verifierad åtkomst</translation>
 <translation id="4090947011087001172">Vill du återställa behörigheterna för webbplatsen <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Du kan se och hantera sparade lösenord i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Hjälp Google Lösenordshantering att spara dina inloggningsuppgifter genom att lägga till ditt användarnamn för den här webbplatsen</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du använder en miljövariabel som inte stöds: <ph name="BAD_VAR" />. Detta påverkar stabilitet och säkerhet negativt.</translation>
@@ -4696,7 +4697,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4546692474302123343">Röstinmatning för Google Assistent</translation>
 <translation id="4547659257713117923">Inga flikar från andra enheter</translation>
 <translation id="4547672827276975204">Ange automatiskt</translation>
-<translation id="4548858987594081919">Hjälp Google Lösenordshantering att spara dina inloggningsuppgifter genom att lägga till ditt användarnamn för den här webbplatsen</translation>
 <translation id="4549791035683739768">Det finns inga sparade fingeravtryck på säkerhetsnyckeln.</translation>
 <translation id="4550737096585299960">Försök igen om några minuter.</translation>
 <translation id="4550926046134589611">Vissa länkar som stöds öppnas fortfarande i <ph name="APP_NAME" />.</translation>
@@ -6564,7 +6564,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6030719887161080597">Hantera information som används av webbplatser för att mäta annonsresultat</translation>
 <translation id="6031600495088157824">Inmatningsalternativ i verktygsfältet</translation>
 <translation id="6032715498678347852">Klicka på tillägget om du vill ge det åtkomst till den här webbplatsen.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Erbjud nya funktioner när de blir tillgängliga. Funktionerna varierar beroende på enhet.</translation>
 <translation id="603539183851330738">Knapp för att ångra autokorrigering. Återställ till <ph name="TYPED_WORD" />.  Tryck på Retur för att aktivera och på Esc för att ignorera.</translation>
 <translation id="6038929619733116134">Blockera om påträngande eller vilseledande annonser visas på webbplatsen</translation>
 <translation id="6039651071822577588">Ordboken för nätverksegenskaper har felaktigt format</translation>
@@ -7069,7 +7068,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="642469772702851743">Enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av ägaren.</translation>
 <translation id="6425556984042222041">Hastighet för text till tal</translation>
 <translation id="642729974267661262">Får inte spela upp ljud</translation>
-<translation id="6427608534767366138">Proxyautentisering krävs för <ph name="NETWORK_ID" /></translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Inga sparade lösenord.}=1{{COUNT} lösenord kontrolleras …}other{{COUNT} lösenord kontrolleras …}}</translation>
 <translation id="6429384232893414837">Uppdateringsfel</translation>
 <translation id="6430814529589430811">Base64-kodad ASCII, enstaka certifikat</translation>

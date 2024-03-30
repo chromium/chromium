@@ -1285,7 +1285,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7583004045319035904">برای باز کردن قفل «برگه‌های ناشناس» از <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> استفاده کنید.</translation>
 <translation id="7600965453749440009">هرگز <ph name="LANGUAGE" /> ترجمه نشود</translation>
 <translation id="7603852183842204213">پنجره‌های بازشوی مسدود (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">گروه برگه</translation>
 <translation id="7607521702806708809">حذف گذرواژه</translation>
 <translation id="7609559547731036746">نشانک‌ها</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
@@ -1500,6 +1499,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8637431369725868556">از خودتان دربرابر سایت‌های خطرناک محافظت کنید.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="8640430998629397789">پنهان کردن «درخواست سایت ویژه رایانه»</translation>
+<translation id="8643403533759285912">حذف گروه</translation>
 <translation id="8654802032646794042">لغو</translation>
 <translation id="8663764600409216912">از گذرواژه‌هایی استفاده می‌کنید که حدس زدنشان سخت به‌نظر می‌رسد</translation>
 <translation id="8668210798914567634">این صفحه در «فهرست خواندن» شما ذخیره شده است.</translation>

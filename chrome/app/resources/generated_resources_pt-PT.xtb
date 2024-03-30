@@ -4114,6 +4114,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4090103403438682346">Ativar acesso confirmado</translation>
 <translation id="4090947011087001172">Quer repor as autorizações de sites para <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Pode ver e gerir as palavras-passe guardadas no <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Para ajudar o Gestor de Palavras-passe da Google a guardar as suas informações de início de sessão, adicione o seu nome de utilizador para este site</translation>
 <translation id="4093865285251893588">Imagem do perfil</translation>
 <translation id="4093955363990068916">Ficheiro local:</translation>
 <translation id="4094647278880271855">Está a utilizar uma variável de ambiente não suportada: <ph name="BAD_VAR" />. A estabilidade e a segurança serão afetadas.</translation>
@@ -4689,7 +4690,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4546692474302123343">Entrada de texto por voz do Assistente Google</translation>
 <translation id="4547659257713117923">Sem separadores de outros dispositivos</translation>
 <translation id="4547672827276975204">Definir automaticamente</translation>
-<translation id="4548858987594081919">Para ajudar o Gestor de Palavras-passe da Google a guardar as suas informações de início de sessão, adicione o seu nome de utilizador para este site</translation>
 <translation id="4549791035683739768">A sua chave de segurança não tem impressões digitais armazenadas.</translation>
 <translation id="4550737096585299960">Tente novamente dentro de alguns minutos.</translation>
 <translation id="4550926046134589611">Alguns links suportados continuarão a ser abertos na app <ph name="APP_NAME" />.</translation>
@@ -6559,7 +6559,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6030719887161080597">Faça a gestão das informações usadas pelos sites para medir o desempenho dos anúncios</translation>
 <translation id="6031600495088157824">Opções de introdução na barra de ferramentas</translation>
 <translation id="6032715498678347852">Para conceder a uma extensão o acesso a este site, clique na mesma</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" /> Oferta de novas funcionalidades à medida que ficam disponíveis; as funcionalidades variam consoante o dispositivo</translation>
 <translation id="603539183851330738">Botão de anulação da correção automática. Reverter para <ph name="TYPED_WORD" />.  Prima Enter para ativar, Esc para ignorar.</translation>
 <translation id="6038929619733116134">Bloquear se o site apresentar anúncios intrusivos ou enganadores</translation>
 <translation id="6039651071822577588">Dicionário de propriedades de rede formatado incorretamente</translation>
@@ -7064,7 +7063,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="642469772702851743">Este dispositivo (SN: <ph name="SERIAL_NUMBER" />) foi bloqueado pelo proprietário.</translation>
 <translation id="6425556984042222041">Taxa da conversão de texto em voz</translation>
 <translation id="642729974267661262">Sem autorização para reproduzir som</translation>
-<translation id="6427608534767366138">A autenticação de proxy é necessária para "<ph name="NETWORK_ID" />"</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Não existem palavras-passe guardadas.}=1{A verificar {COUNT} palavra-passe…}other{A verificar {COUNT} palavras-passe…}}</translation>
 <translation id="6429384232893414837">Atualizar erro</translation>
 <translation id="6430814529589430811">Certificado único, ASCII codificado em Base64</translation>

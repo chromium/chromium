@@ -4108,6 +4108,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4090103403438682346">Tekshirilgan ruxsat xizmatini yoqish</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> saytidagi ruxsatlar asliga qaytarilsinmi?</translation>
 <translation id="4092636882861724179">Saqlangan parollarni <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali koʻrish va boshqarish mumkin.</translation>
+<translation id="4092709865241032354">Google Parollar menejeriga kirish maʼlumotlaringizni saqlashga yordam berish uchun ushbu sayt uchun foydalanuvchi nomini kiriting</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="4093955363990068916">Lokal fayl:</translation>
 <translation id="4094647278880271855">Siz moslanmagan muhit qiymatidan foydalanyapsiz: <ph name="BAD_VAR" />. Barqarorlik va xavfsizlikka zarar tegishi mumkin.</translation>
@@ -4683,7 +4684,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4546692474302123343">Google Assistentda ovoz bilan yozish</translation>
 <translation id="4547659257713117923">Boshqa qurilmalarda ochilgan tablar yo‘q</translation>
 <translation id="4547672827276975204">Avtomatik aniqlansin</translation>
-<translation id="4548858987594081919">Google Parollar menejeriga kirish maʼlumotlaringizni saqlashga yordam berish uchun ushbu sayt uchun foydalanuvchi nomini kiriting</translation>
 <translation id="4549791035683739768">Elektron kalitingizda barmoq izlari topilmadi</translation>
 <translation id="4550737096585299960">Bir necha daqiqadan keyin qayta urining.</translation>
 <translation id="4550926046134589611">Ayrim tegishli havolalar <ph name="APP_NAME" /> ilovasida ochilaveradi.</translation>
@@ -6551,7 +6551,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6030719887161080597">Reklama unumdorligini hisoblash uchun saytlar ishlatadigan maʼlumotlarni boshqarish</translation>
 <translation id="6031600495088157824">Asboblar panelida kiritish sozlamalarini chiqarish</translation>
 <translation id="6032715498678347852">Kengaytmani bosib, unga bu sayt uchun ruxsat berish mumkin.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Yangi funksiyalar chiqishi bilan taklif qilinadi va qurilmaga qarab farqlanadi</translation>
 <translation id="603539183851330738">Avtomatik tuzatishni bekor qilish tugmasi. <ph name="TYPED_WORD" /> soʻzi qaytarildi.  Faollashtirish uchun enter, yopish uchun escape tugmasini bosing.</translation>
 <translation id="6038929619733116134">Saytda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin</translation>
 <translation id="6039651071822577588">Tarmoq xususiyatlari lug‘ati shikastlangan</translation>
@@ -7056,7 +7055,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="642469772702851743">Bu qurilma (seriya raqami: <ph name="SERIAL_NUMBER" />) egasi tomonidan qulflangan.</translation>
 <translation id="6425556984042222041">Matnni nutqqa aylantirish tezligi</translation>
 <translation id="642729974267661262">Ovozni ijro qilish taqiqlangan</translation>
-<translation id="6427608534767366138">“<ph name="NETWORK_ID" />” nomli tarmoq uchun proksi autentifikatsiyasi zarur</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Hech qanday parol saqlanmagan.}=1{{COUNT} ta parol tekshirilmoqda...}other{{COUNT} ta parol tekshirilmoqda...}}</translation>
 <translation id="6429384232893414837">Yangilashda xatolik yuz berdi</translation>
 <translation id="6430814529589430811">Base64 shifrida kodlangan ASCII yagona sertifikati</translation>

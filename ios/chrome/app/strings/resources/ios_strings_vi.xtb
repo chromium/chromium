@@ -1285,7 +1285,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="7583004045319035904">Dùng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> để mở khóa các thẻ Ẩn danh.</translation>
 <translation id="7600965453749440009">Không bao giờ dịch <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Cửa sổ bật lên đã bị chặn (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Nhóm thẻ</translation>
 <translation id="7607521702806708809">Xóa mật khẩu</translation>
 <translation id="7609559547731036746">Dấu trang</translation>
 <translation id="7638584964844754484">Cụm mật khẩu không chính xác</translation>
@@ -1500,6 +1499,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8637431369725868556">Được bảo vệ khỏi các trang web nguy hiểm.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Không có mật khẩu nào bị lộ}=1{{COUNT} mật khẩu bị lộ}other{{COUNT} mật khẩu bị lộ}}</translation>
 <translation id="8640430998629397789">Ẩn tuỳ chọn Yêu cầu trang web dành cho máy tính</translation>
+<translation id="8643403533759285912">Xoá nhóm</translation>
 <translation id="8654802032646794042">Huỷ</translation>
 <translation id="8663764600409216912">Bạn đang sử dụng các mật khẩu khá khó đoán</translation>
 <translation id="8668210798914567634">Trang này đã được lưu vào danh sách đọc của bạn.</translation>

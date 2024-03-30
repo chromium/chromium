@@ -2162,7 +2162,7 @@
 <translation id="2586561813241011046">Не може да се инсталира <ph name="APP_NAME" />. Обидете се повторно или контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2586672484245266891">Внесете пократка URL-адреса</translation>
-<translation id="2587922766792651800">Истече</translation>
+<translation id="2587922766792651800">Времето истече</translation>
 <translation id="2588636910004461974">Уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Никогаш не прикажувај датотеки на Drive</translation>
 <translation id="25899519884572181">Излезете од режим на читач</translation>
@@ -4122,6 +4122,7 @@
 <translation id="4090103403438682346">Овозможи потврден пристап</translation>
 <translation id="4090947011087001172">Да се ресетираат дозволите за <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Може да ги прегледате и да управувате со зачуваните лозинки во <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">За да му помогнете на Google Password Manager да ги зачува вашите податоци за најавување, додајте го вашето корисничко име за сајтов</translation>
 <translation id="4093865285251893588">Профилна слика</translation>
 <translation id="4093955363990068916">Локална датотека:</translation>
 <translation id="4094647278880271855">Користите неподдржана променлива за средината: <ph name="BAD_VAR" />. Ќе настрадаат стабилноста и безбедноста.</translation>
@@ -4697,7 +4698,6 @@
 <translation id="4546692474302123343">Гласовно внесување на „Помошникот на Google“</translation>
 <translation id="4547659257713117923">Нема картички од други уреди</translation>
 <translation id="4547672827276975204">Постави автоматски</translation>
-<translation id="4548858987594081919">За да му помогнете на Google Password Manager да ги зачува вашите податоци за најавување, додајте го вашето корисничко име за сајтов</translation>
 <translation id="4549791035683739768">Вашиот безбедносен клуч нема складирани отпечатоци</translation>
 <translation id="4550737096585299960">Обидете се повторно за неколку минути.</translation>
 <translation id="4550926046134589611">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />.</translation>
@@ -6565,7 +6565,6 @@
 <translation id="6030719887161080597">Управувајте со податоците што ги користат сајтовите за мерење на перформансите на рекламите</translation>
 <translation id="6031600495088157824">Опции за внесување во алатникот</translation>
 <translation id="6032715498678347852">Кликнете на екстензијата за да ѝ дадете пристап до сајтов.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Понуда на нови функции кога ќе станат достапни. Функциите се разликуваат зависно од уредот</translation>
 <translation id="603539183851330738">Копче за враќање на автокорекцијата. Врати на <ph name="TYPED_WORD" />.  Притиснете го копчето Enter за да активирате или копчето Escape за да отфрлите.</translation>
 <translation id="6038929619733116134">Блокирај ако сајтот прикажува нападни или лажни реклами</translation>
 <translation id="6039651071822577588">Деформиран мрежен речник на својства</translation>
@@ -7070,7 +7069,6 @@
 <translation id="642469772702851743">Сопственикот го заклучил овој уред (СБ: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6425556984042222041">Брзина на говорот за „Од текст во говор“</translation>
 <translation id="642729974267661262">Не им е дозволено да пуштаат звук</translation>
-<translation id="6427608534767366138">Потребна е автентикација на прокси за „<ph name="NETWORK_ID" />“</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Немате зачувани лозинки.}=1{Се проверува {COUNT} лозинка…}one{Се проверуваат {COUNT} лозинка…}other{Се проверуваат {COUNT} лозинки…}}</translation>
 <translation id="6429384232893414837">Грешка при ажурирање</translation>
 <translation id="6430814529589430811">Base64-шифриран ASCII, еден сертификат</translation>

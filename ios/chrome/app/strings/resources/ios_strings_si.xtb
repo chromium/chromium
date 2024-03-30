@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">ඔබගේ අප්‍රකට ටැබ අගුලු හැරීමට <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> භාවිත කරන්න.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> කිසිදා පරිවර්තනය නොකරන්න</translation>
 <translation id="7603852183842204213">උත්පතන අවහිරයි ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
-<translation id="7606639338662398635">පටිති සමූහ</translation>
 <translation id="7607521702806708809">මුරපදය මකන්න</translation>
 <translation id="7609559547731036746">පිටුසන්</translation>
 <translation id="7638584964844754484">රහස්පදය වැරදියි</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">භයානක අඩවිවලින් ආරක්ෂණය ලබා ගන්න.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{සමථයට පත් වූ මුරපද නැත}=1{සමථයට පත් වූ {COUNT} මුරපදයක්}one{සමථයට පත් වූ මුරපද {COUNT}ක්}other{සමථයට පත් වූ මුරපද {COUNT}ක්}}</translation>
 <translation id="8640430998629397789">ඩෙස්ක්ටොප් අඩවිය ඉල්ලීම සඟවන්න</translation>
+<translation id="8643403533759285912">සමූහය මකන්න</translation>
 <translation id="8654802032646794042">අවලංගු කරන්න</translation>
 <translation id="8663764600409216912">ඔබ අනුමාන කිරීමට අපහසු මුරපද භාවිත කරයි</translation>
 <translation id="8668210798914567634">මෙම පිටුව ඔබගේ කියවීමේ ලැයිස්තුවට සුරකින ලදි.</translation>

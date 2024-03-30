@@ -262,7 +262,6 @@
 <translation id="2034971124472263449">仍然保存</translation>
 <translation id="204259843076055848">“<ph name="SIX_PACK_KEY_NAME" />”对应的快捷键目前处于停用状态</translation>
 <translation id="2049240716062114887">桌面名称已更改为“<ph name="DESK_NAME" />”</translation>
-<translation id="206377500836174974">完全</translation>
 <translation id="2064048859448024834">已显示相机预览画面</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2075520525463668108">开启/关闭<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
@@ -1255,7 +1254,6 @@
 <translation id="5955304353782037793">应用</translation>
 <translation id="5958529069007801266">受监管用户</translation>
 <translation id="5960410286721553511">查看手机中近期拍摄的照片和播放的媒体</translation>
-<translation id="5961960957587052807">轻微</translation>
 <translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
 <translation id="5975235751479998104">正向浏览各个窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>

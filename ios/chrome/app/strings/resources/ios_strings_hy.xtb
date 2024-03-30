@@ -1285,7 +1285,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Ներդիրների խմբեր</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>
 <translation id="7609559547731036746">Էջանիշներ</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
@@ -1500,6 +1499,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8637431369725868556">Պաշտպանեք ձեզ վտանգավոր կայքերից։</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="8640430998629397789">Թաքցնել «Պահանջել կայքի համակարգչային տարբերակը» գործողությունը</translation>
+<translation id="8643403533759285912">Ջնջել խումբը</translation>
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8663764600409216912">Դուք օգտագործում եք գաղտնաբառեր, որոնք դժվար է կռահել</translation>
 <translation id="8668210798914567634">Այս էջը պահվեց ձեր ընթերցանության ցանկում:</translation>

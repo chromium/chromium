@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">хөтчийн үндсэн нүүр</translation>
 <translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
-<translation id="1531886272553347340">булцуут цэцэг</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="155865706765934889">Мэдрэгч самбар</translation>
 <translation id="1561927818299383735">арын гэрлийн өнгө</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">заанууд</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
-<translation id="3654530588944650786">Дэлбээлж буй гэрэлтсэн <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="3662461537616691585">хүрэн ягаан, элгэн хүрэн</translation>
 <translation id="3668449597372804501">Үүл нүүхийг харуулсан дэлгэцийн зураг</translation>
 <translation id="3675132884790542448">гахайнууд</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP төрөл</translation>
 <translation id="5389159777326897627">Дэлгэцийн зураг &amp; стиль</translation>
 <translation id="5389224261615877010">Солонго</translation>
-<translation id="5396811372860835203">гоодаль цэцэг</translation>
 <translation id="5400907029458559844">Төхөөрөмж холбогдож байна.</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
 <translation id="5410755018770633464">халуун зайдаснууд</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">хураангуй</translation>
-<translation id="5654356773042347102">хөндийн сараана цэцэг</translation>
 <translation id="5655283760733841251">Гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="5655296450510165335">Төхөөрөмж бүртгүүлэх</translation>
 <translation id="5655776422854483175">Ямар ч хэвлэх ажил байхгүй</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="6982462588253070448">элсэн манхнууд</translation>
-<translation id="6988803763488977828">сэгсгэр яргуйжин цэцэг</translation>
 <translation id="7005833343836210400">Төхөөрөмж офлайн байна</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="7035168792582749309">төмснүүд</translation>

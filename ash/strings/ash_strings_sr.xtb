@@ -262,7 +262,6 @@
 <translation id="2034971124472263449">Ипак сачувај</translation>
 <translation id="204259843076055848">Пречица <ph name="SIX_PACK_KEY_NAME" /> је тренутно искључена</translation>
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Пуно</translation>
 <translation id="2064048859448024834">Преглед камере је укључен</translation>
 <translation id="2067602449040652523">Осветљеност тастатуре</translation>
 <translation id="2075520525463668108">Укључи/искључи функцију <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
@@ -1258,7 +1257,6 @@
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
 <translation id="5960410286721553511">Прегледајте недавне слике и медијски садржај са телефона</translation>
-<translation id="5961960957587052807">Светло</translation>
 <translation id="5965524703725988602">Укључите/искључите тамну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Кретање кроз прозоре унапред</translation>
 <translation id="5978382165065462689">Делите контролу над екраном преко Даљинске помоћи.</translation>

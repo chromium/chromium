@@ -262,7 +262,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2034971124472263449">Salva comunque</translation>
 <translation id="204259843076055848">La scorciatoia <ph name="SIX_PACK_KEY_NAME" /> è attualmente disattivata</translation>
 <translation id="2049240716062114887">Il nome della scrivania è stato modificato in <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Totale</translation>
 <translation id="2064048859448024834">Anteprima della videocamera attiva</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
 <translation id="2075520525463668108">Attiva/disattiva <ph name="CAPTURE_MEDIUM" />. La funzionalità <ph name="CAPTURE_MEDIUM" /> è <ph name="CAPTURE_STATE" /></translation>
@@ -337,6 +336,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2405664212338326887">Non connessa</translation>
 <translation id="2408955596600435184">Inserisci il codice PIN</translation>
 <translation id="2412593942846481727">Aggiornamento disponibile</translation>
+<translation id="2416438829169535743">Uscire dalla visualizzazione?</translation>
 <translation id="2417486498593892439">Accedi alla rete</translation>
 <translation id="2426051945783024481">Fotocamera centrata automaticamente da Zoom automatico</translation>
 <translation id="2427507373259914951">Clic con il pulsante sinistro</translation>
@@ -1151,9 +1151,11 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5555639311269196631">Disattiva l'hotspot</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5558091555391176027">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze</translation>
+<translation id="5558314826121965174">Creatività</translation>
 <translation id="556042886152191864">Pulsante</translation>
 <translation id="5570122939431135380">Apri nuova scheda in nuova finestra di navigazione in incognito</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
+<translation id="5572632238877308040">Essenziali</translation>
 <translation id="557563299383177668">Paragrafo successivo</translation>
 <translation id="5577082622442191756">Attiva/disattiva il Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Verifica che il Bluetooth sia attivato sul telefono per utilizzare Phone Hub</translation>
@@ -1178,6 +1180,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5662075790140998213">Scrivania 10</translation>
 <translation id="5662709761327382534">Registrazione con microfono <ph name="CURRENT_STATE" />, Premi Invio per attivare la registrazione del microfono <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Attivazione</translation>
+<translation id="5672890847723042801">Utilità</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
 <translation id="5675363643668471212">Elemento barra delle app</translation>
 <translation id="5677928146339483299">Autorizzazione bloccata</translation>
@@ -1254,7 +1257,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utente supervis.</translation>
 <translation id="5960410286721553511">Visualizza le foto e i contenuti multimediali recenti del tuo telefono</translation>
-<translation id="5961960957587052807">Leggera</translation>
 <translation id="5965524703725988602">Attiva/disattiva il tema scuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Spostati avanti tra le finestre</translation>
 <translation id="5978382165065462689">Condividi il controllo dello schermo tramite Assistenza remota.</translation>
@@ -1360,6 +1362,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6351032674660237738">APP SUGGERITE</translation>
 <translation id="6352082849089527770">Reti sconosciute</translation>
 <translation id="6359587239691116345">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Se rifiuti questo aggiornamento, il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza.</translation>
+<translation id="6362833380917912748">Scopri le app integrate</translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
 <translation id="6378515133128829137">Blocca la finestra a destra</translation>
 <translation id="6381109794406942707">Per sbloccare il dispositivo, inserisci il PIN.</translation>
@@ -1846,6 +1849,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
+<translation id="8287009018010202411">Produttività</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
 <translation id="8308637677604853869">Menu precedente</translation>
@@ -1917,6 +1921,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Ordina le app per nome o colore</translation>
 <translation id="8609384513243082612">Apre una nuova scheda</translation>
+<translation id="861045123704058818">Le app sono temporaneamente organizzate per categoria</translation>
 <translation id="8612216344243590325">Conserva i file importanti in <ph name="HOLDING_SPACE_TITLE" /> anziché sul desktop. Basta trascinare i file in <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Le notifiche delle app <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1954,6 +1959,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
+<translation id="8756799553341497810">Puoi iniziare a personalizzare il layout delle app quando esci da questa visualizzazione.</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
 <translation id="8763883995157866248">Attiva la modalità di sospensione sul dispositivo</translation>
 <translation id="877404052021108314">90 °F in °C</translation>

@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">ब्राउजर होम</translation>
 <translation id="1526389707933164996">स्क्रिन सेभरको एनिमेसन</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
-<translation id="1531886272553347340">रानुन्कुलुस</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="155865706765934889">टचप्याड</translation>
 <translation id="1561927818299383735">ब्याकलिटको रङ</translation>
@@ -448,7 +447,6 @@
 <translation id="3621072146987826699">हात्तीहरू</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
-<translation id="3654530588944650786">फक्रिरहेको <ph name="FLOWER_COLOR" /> रङको सुन्दर <ph name="FLOWER_TYPE" /></translation>
 <translation id="3661106764436337772">अझ छिटो र अझ धेरै आत्मविश्वासका साथ लेख्नुहोस्</translation>
 <translation id="3662461537616691585">बर्गन्डी र मरुन</translation>
 <translation id="3668449597372804501">क्लाउड फ्लो वालपेपर</translation>
@@ -742,7 +740,6 @@
 <translation id="5378184552853359930">IP को प्रकार</translation>
 <translation id="5389159777326897627">वालपेपर र शैली</translation>
 <translation id="5389224261615877010">इन्द्रेणी</translation>
-<translation id="5396811372860835203">क्याला लिली</translation>
 <translation id="5400907029458559844">डिभाइस कनेक्ट गरिँदै छ।</translation>
 <translation id="5401938042319910061">सबै रुटिनहरू चलाउनुहोस्</translation>
 <translation id="5410755018770633464">हटडगहरू</translation>
@@ -777,7 +774,6 @@
 <translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5630438231335788050">बाउहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
-<translation id="5654356773042347102">लिली अफ द भ्याली</translation>
 <translation id="5655283760733841251">किबोर्डको चमक बढाउने की</translation>
 <translation id="5655296450510165335">डिभाइस दर्ता गर्ने प्रक्रिया</translation>
 <translation id="5655776422854483175">कुनै पनि प्रिन्टसम्बन्धी कार्य भइरहेको छैन</translation>
@@ -1020,7 +1016,6 @@
 <translation id="6977381486153291903">फर्मवेयरको पुनरावृत्ति</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="6982462588253070448">बालुवाका स्तूपहरू</translation>
-<translation id="6988803763488977828">जङ्गली फूल</translation>
 <translation id="7005833343836210400">डिभाइस अफलाइन छ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="7035168792582749309">आलुहरू</translation>

@@ -262,7 +262,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2034971124472263449">Spara ändå</translation>
 <translation id="204259843076055848">Kortkommandot <ph name="SIX_PACK_KEY_NAME" /> är inaktiverat</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Fullständig</translation>
 <translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2075520525463668108">Aktivera och inaktivera <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> är <ph name="CAPTURE_STATE" /></translation>
@@ -337,6 +336,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2405664212338326887">Inte ansluten</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2412593942846481727">Det finns en uppdatering</translation>
+<translation id="2416438829169535743">Vill du stänga vyn?</translation>
 <translation id="2417486498593892439">Logga in på nätverket</translation>
 <translation id="2426051945783024481">Kameraramen har centrerats automatiskt</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
@@ -1154,9 +1154,11 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5555639311269196631">Inaktivera surfzon</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5558091555391176027">Aktivera och inaktivera Närdelning med hög synlighet</translation>
+<translation id="5558314826121965174">Kreativitet</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5570122939431135380">Öppna en ny flik i ett nytt inkognitofönster</translation>
 <translation id="5571066253365925590">Bluetooth aktiverad</translation>
+<translation id="5572632238877308040">Det viktigaste</translation>
 <translation id="557563299383177668">Nästa stycke</translation>
 <translation id="5577082622442191756">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Kontrollera att Bluetooth är aktiverat på telefonen om du vill använda Phone Hub</translation>
@@ -1181,6 +1183,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5662075790140998213">Skrivbord 10</translation>
 <translation id="5662709761327382534">Inspelning med mikrofon <ph name="CURRENT_STATE" />, Tryck på Retur för att slå <ph name="NEW_STATE" /> mikrofoninspelning</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
+<translation id="5672890847723042801">Verktyg</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>
 <translation id="5675363643668471212">Hyllobjekt</translation>
 <translation id="5677928146339483299">Blockerat</translation>
@@ -1257,7 +1260,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Kontrollerad användare</translation>
 <translation id="5960410286721553511">Visa de senaste bilderna och mediefilerna från telefonen</translation>
-<translation id="5961960957587052807">Ljus</translation>
 <translation id="5965524703725988602">Aktivera och inaktivera Mörkt tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Bläddra framåt bland fönster</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
@@ -1363,6 +1365,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6351032674660237738">APPFÖRSLAG</translation>
 <translation id="6352082849089527770">Okända nätverk</translation>
 <translation id="6359587239691116345">Få de senaste funktionerna och säkerhetsförbättringarna. Om du inte godkänner uppdateringen kan det hända att enheten slutar fungerar som den ska och det kan uppstå säkerhets- och prestandaproblem.</translation>
+<translation id="6362833380917912748">Lär känna dina inbyggda appar</translation>
 <translation id="6376931439017688372">Bluetooth är aktiverat</translation>
 <translation id="6378515133128829137">Fäst fönstret till höger</translation>
 <translation id="6381109794406942707">Lås upp enheten genom att ange pinkoden.</translation>
@@ -1849,6 +1852,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8262312463845990408">Aktivera och inaktivera uppspelning</translation>
 <translation id="8270450402312105425">{0,plural, =1{Byt till en tidigare version av enheten inom en timme}other{Byt till en tidigare version av enheten inom # timmar}}</translation>
 <translation id="8277261673056602147">Markera text på skärmen</translation>
+<translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>
 <translation id="8308637677604853869">Föregående meny</translation>
@@ -1920,6 +1924,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sortera apparna efter namn eller färg</translation>
 <translation id="8609384513243082612">Öppna ny flik</translation>
+<translation id="861045123704058818">Apparna ordnas tillfälligt efter kategori</translation>
 <translation id="8612216344243590325">Spara viktiga filer i ditt <ph name="HOLDING_SPACE_TITLE" /> i stället för på skrivbordet. Dra bara filerna till <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Aviseringar från <ph name="APP_1_TITLE" /> och <ph name="APP_2_TITLE" /> har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1963,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifiera din identitet: <ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="875593634123171288">Visa VPN-inställningar</translation>
+<translation id="8756799553341497810">Du kan börja anpassa appens layout när du har stängt den här vyn.</translation>
 <translation id="8759408218731716181">Det går inte att starta multiinloggning</translation>
 <translation id="8763883995157866248">Sätt enheten i viloläge</translation>
 <translation id="877404052021108314">90 °F i C</translation>

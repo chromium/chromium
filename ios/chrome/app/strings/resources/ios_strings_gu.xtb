@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">તમારી છૂપી ટૅબને અનલૉક કરવા માટે <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />નો ઉપયોગ કરો.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) અવરોધિત પૉપ-અપ્સ</translation>
-<translation id="7606639338662398635">ટૅબના ગ્રૂપ</translation>
 <translation id="7607521702806708809">પાસવર્ડ ડિલીટ કરો</translation>
 <translation id="7609559547731036746">બુકમાર્ક</translation>
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">જોખમી સાઇટથી સુરક્ષા મેળવો.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="8640430998629397789">'ડેસ્કટૉપ સાઇટની વિનંતી કરો' છુપાવો</translation>
+<translation id="8643403533759285912">ગ્રૂપ ડિલીટ કરો</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
 <translation id="8663764600409216912">તમે એવા પાસવર્ડનો ઉપયોગ કરી રહ્યાં છો જેનું અનુમાન લગાવવું મુશ્કેલ છે</translation>
 <translation id="8668210798914567634">આ પેજ, તમારી વાંચન સૂચિમાં સાચવવામાં આવ્યું છે.</translation>

@@ -1286,7 +1286,6 @@
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">ट्याब समूह</translation>
 <translation id="7607521702806708809">पासवर्ड मेट्नुहोस्</translation>
 <translation id="7609559547731036746">बुकमार्कहरू</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
@@ -1502,6 +1501,7 @@
 <translation id="8637431369725868556">खतरनाक साइटहरूबाट सुरक्षित रहनुहोस्।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
 <translation id="8640430998629397789">"डेस्कटप साइट देखाउन अनुरोध गर्नुहोस्" लुकाइयोस्</translation>
+<translation id="8643403533759285912">समूह मेटाउनुहोस्</translation>
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
 <translation id="8663764600409216912">तपाईंले अनुमान लगाउन कठिन हुने पासवर्डहरू प्रयोग गर्नुभएको छ</translation>
 <translation id="8668210798914567634">यस पृष्ठलाई तपाईंको पाठ्य सूचीमा सुरक्षित गरिएको छ।</translation>

@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">pagrindinis naršyklės puslapis</translation>
 <translation id="1526389707933164996">Ekrano užsklandos animacija</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
-<translation id="1531886272553347340">vėdrynas</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
 <translation id="1561927818299383735">fono spalva</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">drambliai</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
 <translation id="3651050199673793219">Pasirinkti temperatūros matavimo vienetą</translation>
-<translation id="3654530588944650786">Švytinti žydinti <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="3662461537616691585">vyšninės ir kaštoninės spalvų</translation>
 <translation id="3668449597372804501">Debesies srauto ekrano fonas</translation>
 <translation id="3675132884790542448">kiaulės</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP tipas</translation>
 <translation id="5389159777326897627">Ekrano fonas ir stilius</translation>
 <translation id="5389224261615877010">Vaivorykštė</translation>
-<translation id="5396811372860835203">kalija</translation>
 <translation id="5400907029458559844">Prijungiamas įrenginys.</translation>
 <translation id="5401938042319910061">Vykdyti visas veiksmų sekas</translation>
 <translation id="5410755018770633464">dešrainiai</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5630438231335788050">bauhauzas</translation>
 <translation id="5631759159893697722">santrauka</translation>
-<translation id="5654356773042347102">paprastoji pakalnutė</translation>
 <translation id="5655283760733841251">Padidinti klaviatūros šviesumą</translation>
 <translation id="5655296450510165335">Įrenginio registracija</translation>
 <translation id="5655776422854483175">Nėra jokių spausdinimo užduočių</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="6982462588253070448">kopos</translation>
-<translation id="6988803763488977828">plukė</translation>
 <translation id="7005833343836210400">Įrenginys neprijungtas prie interneto</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
 <translation id="7035168792582749309">bulvės</translation>

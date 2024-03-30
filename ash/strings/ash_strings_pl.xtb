@@ -262,7 +262,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2034971124472263449">Zapisz mimo to</translation>
 <translation id="204259843076055848">Skrót symulujący działanie klawisza <ph name="SIX_PACK_KEY_NAME" /> jest obecnie wyłączony</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Pełne</translation>
 <translation id="2064048859448024834">Podgląd z aparatu jest włączony</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2075520525463668108">Przełącz: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" /></translation>
@@ -337,6 +336,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2405664212338326887">Brak połączenia</translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
+<translation id="2416438829169535743">Zamknąć widok?</translation>
 <translation id="2417486498593892439">Zaloguj się do sieci</translation>
 <translation id="2426051945783024481">Kadr kamery jest automatycznie wyśrodkowany</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
@@ -1154,9 +1154,11 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5555639311269196631">Wyłączanie hotspota</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5558091555391176027">Przełącz dużą widoczność Udostępniania w pobliżu</translation>
+<translation id="5558314826121965174">Kreatywność</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5570122939431135380">Otwórz nową kartę w nowym oknie incognito</translation>
 <translation id="5571066253365925590">Bluetooth włączony</translation>
+<translation id="5572632238877308040">Najważniejsze aplikacje</translation>
 <translation id="557563299383177668">Następny akapit</translation>
 <translation id="5577082622442191756">Przełącz Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Aby korzystać ze sterowania telefonem, na telefonie musi być włączony Bluetooth</translation>
@@ -1181,6 +1183,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5662075790140998213">Biurko 10</translation>
 <translation id="5662709761327382534">Nagrywanie z mikrofonu: <ph name="CURRENT_STATE" />. Naciśnij enter, by przełączyć na: <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
+<translation id="5672890847723042801">Narzędzia</translation>
 <translation id="5673434351075758678">Z języka: „<ph name="FROM_LOCALE" />” na „<ph name="TO_LOCALE" />” po zsynchronizowaniu ustawień.</translation>
 <translation id="5675363643668471212">Element na półce</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
@@ -1257,7 +1260,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5955304353782037793">aplikacja</translation>
 <translation id="5958529069007801266">Użytkownik nadzorowany</translation>
 <translation id="5960410286721553511">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu</translation>
-<translation id="5961960957587052807">Oświetlenie</translation>
 <translation id="5965524703725988602">Przełącz ciemny motyw. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Przełączaj się do przodu między oknami</translation>
 <translation id="5978382165065462689">Udostępnianie sterowania ekranem przy użyciu pomocy zdalnej.</translation>
@@ -1363,6 +1365,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6351032674660237738">SUGEROWANE APLIKACJE</translation>
 <translation id="6352082849089527770">Nieznane sieci</translation>
 <translation id="6359587239691116345">Zainstaluj najnowsze funkcje i poprawki zabezpieczeń. Jeśli odrzucisz tę aktualizację, urządzenie może przestać działać prawidłowo i możesz mieć problemy z bezpieczeństwem i wydajnością.</translation>
+<translation id="6362833380917912748">Poznaj wbudowane aplikacje</translation>
 <translation id="6376931439017688372">Bluetooth jest włączony</translation>
 <translation id="6378515133128829137">Przypnij okno z prawej strony</translation>
 <translation id="6381109794406942707">Aby odblokować urządzenie, wpisz kod PIN.</translation>
@@ -1848,6 +1851,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
+<translation id="8287009018010202411">Produktywność</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8308637677604853869">Poprzednie menu</translation>
@@ -1919,6 +1923,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Posortuj aplikacje według nazwy lub koloru</translation>
 <translation id="8609384513243082612">Otwórz nową kartę</translation>
+<translation id="861045123704058818">Aplikacje są tymczasowo uporządkowane według kategorii</translation>
 <translation id="8612216344243590325">Ważne pliki przechowuj w obszarze <ph name="HOLDING_SPACE_TITLE" />, a nie na pulpicie. Po prostu przeciągnij je do obszaru <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1957,6 +1962,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
+<translation id="8756799553341497810">Po zamknięciu tego widoku możesz zacząć dostosowywać układ aplikacji.</translation>
 <translation id="8759408218731716181">Nie można skonfigurować wielokrotnego logowania</translation>
 <translation id="8763883995157866248">Przełącz urządzenie w tryb uśpienia</translation>
 <translation id="877404052021108314">90°F w C</translation>

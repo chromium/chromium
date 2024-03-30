@@ -217,6 +217,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1164891049599601209">Inserita in un sito ingannevole</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1166212789817575481">Chiudi schede a destra</translation>
+<translation id="1166457390969131095">Usa e salva password e passkey del tuo Account Google</translation>
 <translation id="1166583374608765787">Controlla l'aggiornamento del nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
 <translation id="1167262726334064738">Prova una nuova password</translation>
@@ -761,6 +762,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1575741822946219011">Lingue e metodi di immissione</translation>
 <translation id="1576594961618857597">Avatar bianco predefinito</translation>
 <translation id="1576729678809834061">Segnala questo risultato di ricerca</translation>
+<translation id="1578488449637163638">Scuro</translation>
 <translation id="1578558981922970608">Termina</translation>
 <translation id="157931050206866263">Scopri di più sulle scansioni di malware</translation>
 <translation id="1580772913177567930">Contatta l'amministratore</translation>
@@ -1230,6 +1232,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1915734383465415025">Numero del negozio</translation>
 <translation id="1916260783734263714">Scheda corrente</translation>
 <translation id="1916502483199172559">Avatar rosso predefinito</translation>
+<translation id="1918127774159128277">Aggiorna funzionalità WiFi Direct</translation>
 <translation id="1918141783557917887">Più &amp;piccolo</translation>
 <translation id="1919872106782726755">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in alto a destra della tastiera, accanto al tasto di accensione. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Puoi creare il tuo gruppo di schede.</translation>
@@ -1284,6 +1287,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954597385941141174">I siti possono chiedere di connettersi ai dispositivi USB</translation>
 <translation id="1954813140452229842">Errore durante il montaggio della condivisione. Verifica le tue credenziali e riprova.</translation>
+<translation id="1955749740583837857">Ignora consiglio</translation>
 <translation id="1956050014111002555">Il file conteneva più certificati, che non sono stati importati:</translation>
 <translation id="1956167375087861299">Non autorizzati a usare identificatori per riprodurre contenuti protetti</translation>
 <translation id="1956390763342388273">Verranno caricati tutti i file da "<ph name="FOLDER_PATH" />". Esegui questa operazione solo se ritieni il sito affidabile.</translation>
@@ -2384,6 +2388,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2764920001292228569">Inserisci un nome per il profilo</translation>
 <translation id="2765100602267695013">Contatta il tuo operatore di telefonia mobile</translation>
 <translation id="2765217105034171413">Piccola</translation>
+<translation id="2765820627968019645">Chiaro</translation>
 <translation id="2766006623206032690">In&amp;colla e vai</translation>
 <translation id="2766161002040448006">Rivolgiti a un genitore</translation>
 <translation id="2767077837043621282">Impossibile aggiornare Chromebook. Riprova più tardi.</translation>
@@ -2643,6 +2648,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2960942820860729477">Frequenza di aggiornamento</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (estensione approvata)</translation>
 <translation id="2961695502793809356">Fai clic per andare avanti, tieni premuto per vedere la cronologia</translation>
+<translation id="29618148602069201">Oggetto</translation>
 <translation id="2963151496262057773">Il seguente plug-in non risponde: <ph name="PLUGIN_NAME" />. Interrompere l'esecuzione?</translation>
 <translation id="2964193600955408481">Disattiva Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilità Condivisione nelle vicinanze</translation>
@@ -3614,6 +3620,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3729506734996624908">Siti consentiti</translation>
 <translation id="3729957991398443677">Per visualizzare la tua password o aggiungere una nota, seleziona gestisci le tue password nella barra di ricerca e degli indirizzi</translation>
 <translation id="3730076362938942381">App di scrittura con stilo</translation>
+<translation id="3730298295914858769">Funzionalità WiFi Direct:</translation>
 <translation id="3732078975418297900">Errore nella riga <ph name="ERROR_LINE" /></translation>
 <translation id="3732414796052961578">Continua come <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Il PIN deve contenere massimo 63 caratteri</translation>
@@ -4106,6 +4113,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4090103403438682346">Attiva Accesso verificato</translation>
 <translation id="4090947011087001172">Reimpostare le autorizzazioni per il sito <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Puoi visualizzare e gestire le password salvate in <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">Per aiutare Gestore delle password di Google a salvare i tuoi dati di accesso, aggiungi il tuo nome utente per questo sito</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="4093955363990068916">File locale:</translation>
 <translation id="4094647278880271855">Stai utilizzando una variabile di ambiente non supportata: <ph name="BAD_VAR" />. Sicurezza e stabilità ne risentiranno.</translation>
@@ -4335,6 +4343,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4279129444466079448">Puoi installare fino a <ph name="PROFILE_LIMIT" /> profili eSIM su questo dispositivo. Per aggiungere un altro profilo, prima rimuovine uno esistente.</translation>
 <translation id="4280325816108262082">Il dispositivo si disconnetterà automaticamente quando verrà spento o non sarà in uso</translation>
 <translation id="4281637354026226955">Consenti alle app e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del tuo dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
+<translation id="4281789858103154731">Crea</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4281849573951338030">Personalizza i pulsanti della penna</translation>
 <translation id="4282196459431406533">Funzione Smart Lock attiva</translation>
@@ -4680,7 +4689,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4546692474302123343">Input vocale dell'Assistente Google</translation>
 <translation id="4547659257713117923">Nessuna scheda di altri dispositivi</translation>
 <translation id="4547672827276975204">Imposta automaticamente</translation>
-<translation id="4548858987594081919">Per aiutare Gestore delle password di Google a salvare le informazioni di accesso, aggiungi il tuo nome utente per questo sito</translation>
 <translation id="4549791035683739768">Nel token di sicurezza non sono archiviate impronte</translation>
 <translation id="4550737096585299960">Riprova tra qualche minuto.</translation>
 <translation id="4550926046134589611">Alcuni link supportati saranno comunque aperti nell'app <ph name="APP_NAME" />.</translation>
@@ -5437,6 +5445,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5146235736676876345">Scegli la tua password</translation>
 <translation id="5146896637028965135">Voce di sistema</translation>
 <translation id="5147097165869384760">Stai cercando la pagina del sistema operativo? Visita<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
+<translation id="5147113439721488265">Consiglio</translation>
 <translation id="5147516217412920887">Segui le istruzioni sullo smartphone per verificare il codice</translation>
 <translation id="5147992672778369947">Usa password consigliata</translation>
 <translation id="5148285448107770349">La password deve avere almeno 8 caratteri</translation>
@@ -6545,7 +6554,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6030719887161080597">Gestisci le informazioni utilizzate dai siti per misurare il rendimento dell'annuncio</translation>
 <translation id="6031600495088157824">Opzioni di immissione nella barra degli strumenti</translation>
 <translation id="6032715498678347852">Per consentire a un'estensione di accedere a questo sito, fai clic sull'estensione.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" /> Le funzionalità possono variare in base al dispositivo e potrebbero esserne aggiunte di nuove una volta rese disponibili</translation>
 <translation id="603539183851330738">Pulsante per annullare la correzione automatica. Ripristina <ph name="TYPED_WORD" />.  Premi Invio per attivare o Esc per ignorare.</translation>
 <translation id="6038929619733116134">Blocca se il sito mostra annunci invasivi o fuorvianti</translation>
 <translation id="6039651071822577588">Formato del dizionario delle proprietà di rete non corretto</translation>
@@ -7050,7 +7058,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="642469772702851743">Questo dispositivo (numero di serie <ph name="SERIAL_NUMBER" />) è stato bloccato dal proprietario.</translation>
 <translation id="6425556984042222041">Velocità sintesi vocale</translation>
 <translation id="642729974267661262">Non possono riprodurre suoni</translation>
-<translation id="6427608534767366138">L'autenticazione del proxy è obbligatoria per "<ph name="NETWORK_ID" />"</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Nessuna password salvata.}=1{Controllo di {COUNT} password in corso…}other{Controllo di {COUNT} password in corso…}}</translation>
 <translation id="6429384232893414837">Errore di aggiornamento</translation>
 <translation id="6430814529589430811">ASCII con codifica Base64, singolo certificato</translation>
@@ -7474,6 +7481,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6770042910635026163">Siti visitati che definiscono i tuoi interessi</translation>
 <translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del Web</translation>
 <translation id="6771503742377376720">È un'autorità di certificazione</translation>
+<translation id="6772974422346500939">Apri e modifica</translation>
 <translation id="6774710250118040929">Aggiungi nuova password</translation>
 <translation id="6775163072363532304">I dispositivi disponibili verranno mostrati qui.</translation>
 <translation id="677646486571529447">Aggiungi una nota</translation>
@@ -7856,6 +7864,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7049293980323620022">Conservare il file?</translation>
 <translation id="7049524156282610342">Dati di navigazione di: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configurazione hotspot non valida</translation>
+<translation id="7051222203795962489">{COUNT,plural, =1{Password salvata nel tuo Account Google: <ph name="USER_EMAIL" />}other{Password salvate nel tuo Account Google: <ph name="USER_EMAIL" />}}</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7055152154916055070">Reindirizzamento bloccato:</translation>
 <translation id="7055451306017383754">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Parallels Desktop.</translation>

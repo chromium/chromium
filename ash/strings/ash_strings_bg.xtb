@@ -262,7 +262,6 @@
 <translation id="2034971124472263449">Запазване въпреки това</translation>
 <translation id="204259843076055848">Понастоящем прекият път с клавиша <ph name="SIX_PACK_KEY_NAME" /> е изключен</translation>
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
-<translation id="206377500836174974">Пълно</translation>
 <translation id="2064048859448024834">Визуализацията на камерата е включена</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
 <translation id="2075520525463668108">Превключване на „<ph name="CAPTURE_MEDIUM" />“. „<ph name="CAPTURE_MEDIUM" />“ е <ph name="CAPTURE_STATE" /></translation>
@@ -1257,7 +1256,6 @@
 <translation id="5955304353782037793">приложение</translation>
 <translation id="5958529069007801266">Контролиран потребител</translation>
 <translation id="5960410286721553511">Преглед на скорошните снимки и мултимедийни файлове на телефона ви</translation>
-<translation id="5961960957587052807">Леко</translation>
 <translation id="5965524703725988602">Превключване на тъмната тема. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Циклично придвижване напред през прозорците</translation>
 <translation id="5978382165065462689">Споделяте контрола върху екрана си чрез отдалечено съдействие.</translation>

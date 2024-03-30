@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">மறைநிலைத் தாவல்களை அன்லாக் செய்ய <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ஐ எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="7603852183842204213">பாப்-அப்கள் தடுக்கப்பட்டன (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">பக்கக் குழுக்கள்</translation>
 <translation id="7607521702806708809">கடவுச்சொல்லை நீக்கு</translation>
 <translation id="7609559547731036746">புக்மார்க்குகள்</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">ஆபத்தான தளங்களில் இருந்து பாதுகாப்பாக இருங்கள்.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{களவாடப்பட்ட கடவுச்சொல்: {COUNT}}other{களவாடப்பட்ட கடவுச்சொற்கள்: {COUNT}}}</translation>
 <translation id="8640430998629397789">‘டெஸ்க்டாப் தளத்தைக் காட்டு’ என்பதை மறை</translation>
+<translation id="8643403533759285912">குழுவை நீக்கு</translation>
 <translation id="8654802032646794042">ரத்துசெய்</translation>
 <translation id="8663764600409216912">நீங்கள் பயன்படுத்தும் கடவுச்சொற்களை யூகிப்பது கடினம்</translation>
 <translation id="8668210798914567634">இந்தப் பக்கம் உங்கள் வாசிப்புப் பட்டியலில் சேமிக்கப்பட்டது.</translation>

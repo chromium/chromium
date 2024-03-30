@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">Используйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблокировки вкладок инкогнито.</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
-<translation id="7606639338662398635">Группы вкладок</translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
 <translation id="7609559547731036746">Закладки</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">Защитите себя от опасных сайтов.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нет раскрытых паролей}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>
 <translation id="8640430998629397789">Скрыть действие "Версия для ПК"</translation>
+<translation id="8643403533759285912">Удалить группу</translation>
 <translation id="8654802032646794042">Отмена</translation>
 <translation id="8663764600409216912">Вы используете надежные пароли</translation>
 <translation id="8668210798914567634">Страница сохранена в список для чтения.</translation>

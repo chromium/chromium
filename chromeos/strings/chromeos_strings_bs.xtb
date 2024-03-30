@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">početna stranica preglednika</translation>
 <translation id="1526389707933164996">Animacija čuvara ekrana</translation>
 <translation id="152892567002884378">Pojačavanje zvuka</translation>
-<translation id="1531886272553347340">žabnjak ljutić</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna podloga</translation>
 <translation id="1561927818299383735">boja pozadinskog osvjetljenja</translation>
@@ -272,6 +271,7 @@
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2465272316171730950">Dostigli smo maksimalni kapacitet. Vratite se uskoro.</translation>
+<translation id="2472215337771558851">Koristite Pomoć za pisanje koju omogućava Google AI da kreirate nedovršenu verziju ili poboljšajte postojeći rad.</translation>
 <translation id="2480572840229215612">Rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s WiFi mrežom da vidite sadržaj za pomoć.</translation>
 <translation id="2486301288428798846">drveta</translation>
@@ -329,10 +329,12 @@
 <translation id="2860473693272905224">Stavite drugu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2873483161362553159">Kretanje u pregledniku</translation>
+<translation id="2873939192640533085">Unesite upit poput "zvuči samopouzdanije"</translation>
 <translation id="2874939134665556319">Prethodna numera</translation>
 <translation id="2875812231449496375">Uključite ovo za najbolje rezultate s ovom pozadinskom slikom. Možete isključiti ovu postavku bilo kada.</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="2880569433548999039">Čuvar ekrana s oblacima</translation>
+<translation id="2888298276507578975">Unesite upit poput "napiši zahvalnicu za pomoć"</translation>
 <translation id="2890557891229184386">tropsko ostrvo</translation>
 <translation id="2895772081848316509">tamno</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
@@ -377,6 +379,7 @@
 <translation id="3226405216343213872">Traženje skenera</translation>
 <translation id="3226657629376379887">Raspored menija radnji</translation>
 <translation id="3227186760713762082">Podijelite vrijednost <ph name="CATEGORY_TEXT" /> s brojem <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Ponovno pisanje</translation>
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
 <translation id="324961752321393509">Administrator ne dozvoljava zatvaranje aplikacije</translation>
 <translation id="3268178239013324452">Nije uspjelo – poklopac je otvoren</translation>
@@ -415,6 +418,7 @@
 <translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3484914941826596830">Nemojte iskopčati ovaj vanjski uređaj ili isključiti računar dok traje ažuriranje firmvera. Ovaj prozor možete minimizirati. Ovo ažuriranje može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
+<translation id="3487866404496702283">Povratne informacije o funkciji Mahi</translation>
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija u stilu "<ph name="OFFICE_STYLE" />" u nijansama boje "<ph name="OFFICE_COLOR" />"</translation>
 <translation id="3493187369049186498">Podatke mjeri Chromebook. Ovo se može razlikovati od podataka pružaoca usluge.</translation>
@@ -443,7 +447,7 @@
 <translation id="3621072146987826699">Slonovi</translation>
 <translation id="3632579075709132555">Uključivanje/isključivanje Ekrana privatnosti</translation>
 <translation id="3651050199673793219">Odaberite jedinicu temperature</translation>
-<translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> u cvatu, u žarkoj boji "<ph name="FLOWER_COLOR" />"</translation>
+<translation id="3661106764436337772">Pišite brže i samopouzdanije</translation>
 <translation id="3662461537616691585">tamnocrveno-kestenjastoj</translation>
 <translation id="3668449597372804501">Pozadinska slika s oblacima</translation>
 <translation id="3675132884790542448">Svinje</translation>
@@ -736,7 +740,6 @@
 <translation id="5378184552853359930">Vrsta IP-a</translation>
 <translation id="5389159777326897627">Pozadinska slika i stil</translation>
 <translation id="5389224261615877010">Duga</translation>
-<translation id="5396811372860835203">kala</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
 <translation id="5401938042319910061">Pokreni sve rutine</translation>
 <translation id="5410755018770633464">Hotdogovi</translation>
@@ -771,7 +774,6 @@
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">sažetak</translation>
-<translation id="5654356773042347102">đurđevak</translation>
 <translation id="5655283760733841251">Pojačavanje osvjetljenja tastature</translation>
 <translation id="5655296450510165335">Prijava uređaja</translation>
 <translation id="5655776422854483175">Nema nijednog zadatka štampanja</translation>
@@ -879,6 +881,7 @@
 <translation id="6235460611964961764">Ručno poništi prijenos podataka</translation>
 <translation id="6243280677745499710">Trenutno postavljeno</translation>
 <translation id="6250316632541035980">Slanina i jaja</translation>
+<translation id="6255213378196499011">Postavke Pomoći za pisanje</translation>
 <translation id="6275224645089671689">Strelica udesno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1013,7 +1016,6 @@
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6982462588253070448">pješčane dine</translation>
-<translation id="6988803763488977828">šumarica</translation>
 <translation id="7005833343836210400">Uređaj je offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="7035168792582749309">Krompiri</translation>

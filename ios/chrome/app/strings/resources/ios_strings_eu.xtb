@@ -1285,7 +1285,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7583004045319035904">Erabili <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ezkutuko moduko fitxak desblokeatzeko.</translation>
 <translation id="7600965453749440009">Ez itzuli <ph name="LANGUAGE" /> inoiz</translation>
 <translation id="7603852183842204213"><ph name="NUMBER_OF_BLOCKED_POPUPS" /> leiho blokeatuta</translation>
-<translation id="7606639338662398635">Fitxa taldeak</translation>
 <translation id="7607521702806708809">Ezabatu pasahitza</translation>
 <translation id="7609559547731036746">Laster-markak</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
@@ -1500,6 +1499,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8637431369725868556">Babestu zeure burua webgune arriskutsuen aurrean.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ez dago pasahitzik arriskuan}=1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
 <translation id="8640430998629397789">Ezkutatu "Eskatu ordenagailuetarako webgunea"</translation>
+<translation id="8643403533759285912">Ezabatu taldea</translation>
 <translation id="8654802032646794042">Utzi</translation>
 <translation id="8663764600409216912">Asmatzen zailak diruditen pasahitzak darabiltzazu</translation>
 <translation id="8668210798914567634">Irakurketa-zerrendan dago gordeta orri hau.</translation>

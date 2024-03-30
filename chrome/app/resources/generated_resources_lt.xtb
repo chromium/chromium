@@ -4124,6 +4124,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4090103403438682346">Įgalinti patvirtintą prieigą</translation>
 <translation id="4090947011087001172">Iš naujo nustatyti <ph name="SITE" /> svetainės leidimus?</translation>
 <translation id="4092636882861724179">Peržiūrėti ir tvarkyti išsaugotus slaptažodžius galite skiltyje „<ph name="GOOGLE_PASSWORD_MANAGER" />“</translation>
+<translation id="4092709865241032354">Kad padėtumėte „Google“ slaptažodžių tvarkyklei išsaugoti prisijungimo informaciją, pridėkite šios svetainės naudotojo vardą</translation>
 <translation id="4093865285251893588">Profilio nuotrauka</translation>
 <translation id="4093955363990068916">Vietinis failas:</translation>
 <translation id="4094647278880271855">Naudojate nepalaikomą aplinkos kintamąjį: <ph name="BAD_VAR" />. Tai neigiamai paveiks stabilumą ir saugą.</translation>
@@ -4699,7 +4700,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4546692474302123343">„Google“ padėjėjo įvestis balsu</translation>
 <translation id="4547659257713117923">Nėra skirtukų iš kitų įrenginių</translation>
 <translation id="4547672827276975204">Nustatyti automatiškai</translation>
-<translation id="4548858987594081919">Kad padėtumėte „Google“ slaptažodžių tvarkyklei išsaugoti prisijungimo informaciją, pridėkite šios svetainės naudotojo vardą</translation>
 <translation id="4549791035683739768">Saugos rakte nėra išsaugota kontrolinių kodų</translation>
 <translation id="4550737096585299960">Po kelių minučių bandykite dar kartą.</translation>
 <translation id="4550926046134589611">Kai kurios palaikomos nuorodos vis tiek bus atidarytos „<ph name="APP_NAME" />“.</translation>
@@ -6568,7 +6568,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6030719887161080597">Tvarkykite svetainių naudojamą informaciją skelbimų našumui įvertinti</translation>
 <translation id="6031600495088157824">Įvesties parinktys įrankių juostoje</translation>
 <translation id="6032715498678347852">Norėdami suteikti plėtiniui prieigą prie šios svetainės, spustelėkite jį.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Siūlykite naujas funkcijas, kai jos bus pasiekiamos. Funkcijos skiriasi atsižvelgiant į įrenginį</translation>
 <translation id="603539183851330738">Automatinio taisymo anuliavimo mygtukas. Grąžinti žodį „<ph name="TYPED_WORD" />“.  Paspauskite „Enter“, kad suaktyvintumėte, arba „Escape“, kad atsisakytumėte.</translation>
 <translation id="6038929619733116134">Blokuoti, jei svetainėje rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="6039651071822577588">Tinklo ypatybių žodynas netinkamai suformatuotas</translation>
@@ -7073,7 +7072,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="642469772702851743">Šį įrenginį (serijos Nr. <ph name="SERIAL_NUMBER" />) užrakino savininkas.</translation>
 <translation id="6425556984042222041">Teksto į kalbą sparta</translation>
 <translation id="642729974267661262">Neleidžiama leisti garso</translation>
-<translation id="6427608534767366138">Būtinas „<ph name="NETWORK_ID" />“ tarpinio serverio autentifikavimas</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Nėra išsaugotų slaptažodžių.}=1{Tikrinamas {COUNT} slaptažodis...}one{Tikrinamas {COUNT} slaptažodis…}few{Tikrinami {COUNT} slaptažodžiai…}many{Tikrinama {COUNT} slaptažodžio…}other{Tikrinama {COUNT} slaptažodžių…}}</translation>
 <translation id="6429384232893414837">Atnaujinimo klaida</translation>
 <translation id="6430814529589430811">„Base64“ užkoduotas ASCII, vienas sertifikatas</translation>

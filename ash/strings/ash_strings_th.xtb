@@ -262,7 +262,6 @@
 <translation id="2034971124472263449">บันทึกเลย</translation>
 <translation id="204259843076055848">แป้นพิมพ์ลัดสำหรับการ<ph name="SIX_PACK_KEY_NAME" />ปิดอยู่</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
-<translation id="206377500836174974">เต็ม</translation>
 <translation id="2064048859448024834">การแสดงตัวอย่างจากกล้องถ่ายรูปเปิดอยู่</translation>
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
 <translation id="2075520525463668108">เปิด/ปิด<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
@@ -1256,7 +1255,6 @@
 <translation id="5955304353782037793">แอป</translation>
 <translation id="5958529069007801266">ผู้ใช้ภายใต้การควบคุมดูแล</translation>
 <translation id="5960410286721553511">ดูรูปภาพและสื่อล่าสุดของโทรศัพท์</translation>
-<translation id="5961960957587052807">น้อย</translation>
 <translation id="5965524703725988602">เปิด/ปิดธีมมืด <ph name="STATE_TEXT" /></translation>
 <translation id="5975235751479998104">สลับระหว่างหน้าต่าง (ไปข้างหน้า)</translation>
 <translation id="5978382165065462689">กำลังแชร์การควบคุมหน้าจอผ่านความช่วยเหลือระยะไกล</translation>

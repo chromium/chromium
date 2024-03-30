@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">የአሳሽ መነሻ</translation>
 <translation id="1526389707933164996">የማያ ገፅ አሳራፊ እነማ</translation>
 <translation id="152892567002884378">ድምፅ ጨምር</translation>
-<translation id="1531886272553347340">ራንኩሉስ</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
@@ -272,6 +271,7 @@
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
 <translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2465272316171730950">ሙሉ አቅም ላይ ነን። እባክዎ ትንሽ ቆይተው ተመለሱ።</translation>
+<translation id="2472215337771558851">በGoogle ሰው ሰራሽ አስተውሎት የተጎላበተ፣ ረቂቅ ለመፍጠር ወይም የነበረን ስራ ለማጥራት እንድጽፍ እርዳኝን ይጠቀሙ</translation>
 <translation id="2480572840229215612">ሸርጣኖች</translation>
 <translation id="248546197012830854">መሣሪያ ከመስመር ውጭ ነው። የእገዛ ይዘትን ለመመልከት ከWi-Fi አውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="2486301288428798846">እንጨት</translation>
@@ -329,10 +329,12 @@
 <translation id="2860473693272905224">በቃኚው ላይ ሌላ ገፅ ያስቀምጡ</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="2873483161362553159">የአሰሳ አሳሽ</translation>
+<translation id="2873939192640533085">እንደ «የበለጠ ራስ መተማመን ያለው ምሰል» የሚል ጥያቄ ያስገቡ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
 <translation id="2875812231449496375">በዚህ ልጣፍ ለበለጠ ውጤት ይህንን ያብሩት። ይህን ቅንብር በማንኛውም ጊዜ ማጥፋት ይችላሉ።</translation>
 <translation id="2878387241690264070">በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ <ph name="RATE" /> ሞልቷል።</translation>
 <translation id="2880569433548999039">የደመና ፍሰት የማያ ገፅ ቆጣቢ</translation>
+<translation id="2888298276507578975">እንደ «የምስጋና ማስታወሻ ጻፍ» የሚል ጥያቄ ያስገቡ</translation>
 <translation id="2890557891229184386">የሐሩር ደሴት</translation>
 <translation id="2895772081848316509">ጨለማ</translation>
 <translation id="2926057806159140518">የእርስዎ የተጠቃሚ ስም እና የይለፍ ቃል ያስገቡ ወይም QR ኮድዎን ይቃኙ</translation>
@@ -377,6 +379,7 @@
 <translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3226657629376379887">የአቀማመጥ እርምጃዎች ምናሌ</translation>
 <translation id="3227186760713762082">የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
+<translation id="3237710083340813756">እንደገና ይጻፉ</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="324961752321393509">አስተዳዳሪዎ ይህን መተግበሪያ መዝጋትን አይፈቅድም</translation>
 <translation id="3268178239013324452">አልተሳካም - በር ክፍት ነው</translation>
@@ -415,6 +418,7 @@
 <translation id="346539236881580388">ዳግም አንሳ</translation>
 <translation id="3484914941826596830">ፊርምዌር በማዘመን ላይ ሳለ ይህን ውጫዊ መሣሪያ አይንቀሉት ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ዝማኔ ጥቂት ደቂቃዎች ሊወስድ ይችላል፣ እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="3486220673238053218">ብየና</translation>
+<translation id="3487866404496702283">ለmahi ባህሪ ግብረመልስ</translation>
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3492882532495507361">የ<ph name="OFFICE_COLOR" /> ቃና ያለው የ<ph name="OFFICE_STYLE" /> ቢሮ</translation>
 <translation id="3493187369049186498">ውሂብ የሚለካው በእርስዎ Chromebook ነው። ይህ ከአቅራቢው ውሂብ የተለየ ሊሆን ይችላል።</translation>
@@ -443,7 +447,7 @@
 <translation id="3621072146987826699">ዝሆኖች</translation>
 <translation id="3632579075709132555">የግላዊነት ማያ ገፅ መቀየሪያ</translation>
 <translation id="3651050199673793219">የሙቀት መጠን አሃድ ይምረጡ</translation>
-<translation id="3654530588944650786">እየፈካ ያለ የሚያበራ <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
+<translation id="3661106764436337772">በፍጥነት እና በበለጠ በራስ መተማመን ይጻፉ</translation>
 <translation id="3662461537616691585">በርገንዲ እና ማሩን</translation>
 <translation id="3668449597372804501">የደመና ፍሰት ልጣፍ</translation>
 <translation id="3675132884790542448">አሳማዎች</translation>
@@ -736,7 +740,6 @@
 <translation id="5378184552853359930">የአይፒ ዓይነት</translation>
 <translation id="5389159777326897627">ልጣፍ እና ቅጥ</translation>
 <translation id="5389224261615877010">ቀስተ ደመና</translation>
-<translation id="5396811372860835203">ካላ ሊሊ</translation>
 <translation id="5400907029458559844">መሣሪያው እየተገናኘ ነው።</translation>
 <translation id="5401938042319910061">ሁሉንም የዕለት ተዕለት ተግባራት አሂድ</translation>
 <translation id="5410755018770633464">ሆት ዶጎች</translation>
@@ -771,7 +774,6 @@
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5630438231335788050">ባውሃስ</translation>
 <translation id="5631759159893697722">ረቂቅ</translation>
-<translation id="5654356773042347102">የሸለቆው ሊሊ</translation>
 <translation id="5655283760733841251">የቁልፍ ሰሌዳ ብሩህነት መጨመሪያ</translation>
 <translation id="5655296450510165335">የመሣሪያ ምዝገባ</translation>
 <translation id="5655776422854483175">ምንም የህትመት ሥራዎች የሉም</translation>
@@ -879,6 +881,7 @@
 <translation id="6235460611964961764">የውሂብ አጠቃቀምን በራስዎ ዳግም ያስጀምሩ</translation>
 <translation id="6243280677745499710">በአሁኑ ጊዜ የተቀናበረ</translation>
 <translation id="6250316632541035980">የአሳማ ስጋ እና እንቁላሎች</translation>
+<translation id="6255213378196499011">ቅንብሮችን እንድጽፍ አግዘኝ</translation>
 <translation id="6275224645089671689">የቀኝ ቀስት</translation>
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6280912520669706465">ኤአርሲ</translation>
@@ -1013,7 +1016,6 @@
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="6982462588253070448">የአሸዋ ክምር</translation>
-<translation id="6988803763488977828">የንፋስ አበባ</translation>
 <translation id="7005833343836210400">መሣሪያ ከመስመር ውጭ ነው</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="7035168792582749309">ድንቾች</translation>

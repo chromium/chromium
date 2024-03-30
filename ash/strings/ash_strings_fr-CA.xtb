@@ -262,7 +262,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="204259843076055848">Le raccourci <ph name="SIX_PACK_KEY_NAME" /> est actuellement désactivé</translation>
 <translation id="2049240716062114887">Le bureau a été renommé : <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Complet</translation>
 <translation id="2064048859448024834">Aperçu de la caméra affiché</translation>
 <translation id="2067602449040652523">Luminosité du clavier</translation>
 <translation id="2075520525463668108">Basculer la fonctionnalité <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> est <ph name="CAPTURE_STATE" />.</translation>
@@ -1256,7 +1255,6 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
 <translation id="5960410286721553511">Affichez les photos et les fichiers multimédias récents de votre téléphone</translation>
-<translation id="5961960957587052807">Léger</translation>
 <translation id="5965524703725988602">Activer/désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Faire défiler les fenêtres par l'avant</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>

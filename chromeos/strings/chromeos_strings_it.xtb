@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">home page del browser</translation>
 <translation id="1526389707933164996">Animazione del salvaschermo</translation>
 <translation id="152892567002884378">Alza il volume</translation>
-<translation id="1531886272553347340">ranuncoli</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">colore retroilluminato</translation>
@@ -272,6 +271,7 @@
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2465272316171730950">Siamo al completo. Riprova tra poco.</translation>
+<translation id="2472215337771558851">Utilizza Aiutami a scrivere per creare una bozza o perfezionare il lavoro esistente con l'IA di Google integrata</translation>
 <translation id="2480572840229215612">granchi</translation>
 <translation id="248546197012830854">Il dispositivo è offline. Connettiti alla rete Wi-Fi per vedere i contenuti di assistenza.</translation>
 <translation id="2486301288428798846">legno</translation>
@@ -329,10 +329,12 @@
 <translation id="2860473693272905224">Posiziona un'altra pagina sullo scanner</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2873483161362553159">Navigazione nel browser</translation>
+<translation id="2873939192640533085">Inserisci una richiesta come "scrivi con più sicurezza"</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
 <translation id="2875812231449496375">Attiva questa impostazione per ottenere risultati ottimali con questo sfondo. Puoi disattivare questa impostazione in qualsiasi momento.</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2880569433548999039">Salvaschermo Flusso di nuvole</translation>
+<translation id="2888298276507578975">Inserisci una richiesta come "scrivi un biglietto di ringraziamento"</translation>
 <translation id="2890557891229184386">un'isola tropicale</translation>
 <translation id="2895772081848316509">scuro</translation>
 <translation id="2926057806159140518">Inserisci il tuo nome utente e la password o scansiona il codice QR</translation>
@@ -377,6 +379,7 @@
 <translation id="3226405216343213872">Ricerca di scanner in corso…</translation>
 <translation id="3226657629376379887">Menu azioni del layout</translation>
 <translation id="3227186760713762082">Dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
+<translation id="3237710083340813756">Riscrivi</translation>
 <translation id="3246869037381808805">I processi di stampa risalenti a oltre 1 giorno fa verranno rimossi</translation>
 <translation id="324961752321393509">L'amministratore non consente di chiudere questa app</translation>
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
@@ -415,6 +418,7 @@
 <translation id="346539236881580388">Nuovo scatto</translation>
 <translation id="3484914941826596830">Durante l'aggiornamento del firmware, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questo aggiornamento potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
 <translation id="3486220673238053218">definizione</translation>
+<translation id="3487866404496702283">Feedback per la funzionalità mahi</translation>
 <translation id="3488065109653206955">Attivato parzialmente</translation>
 <translation id="3492882532495507361">Un ufficio <ph name="OFFICE_STYLE" /> con toni <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">I dati vengono misurati dal tuo Chromebook e potrebbero essere diversi dai dati del fornitore.</translation>
@@ -443,7 +447,7 @@
 <translation id="3621072146987826699">elefanti</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
-<translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> in fiore di un <ph name="FLOWER_COLOR" /> vivace</translation>
+<translation id="3661106764436337772">Scrivi più velocemente e con maggiore sicurezza</translation>
 <translation id="3662461537616691585">bordeaux e granata</translation>
 <translation id="3668449597372804501">Sfondo Flusso di nuvole</translation>
 <translation id="3675132884790542448">maiali</translation>
@@ -736,7 +740,6 @@
 <translation id="5378184552853359930">Tipo di IP</translation>
 <translation id="5389159777326897627">Sfondo e stile</translation>
 <translation id="5389224261615877010">Arcobaleno</translation>
-<translation id="5396811372860835203">gigli</translation>
 <translation id="5400907029458559844">Il dispositivo si sta collegando.</translation>
 <translation id="5401938042319910061">Avvia tutte le routine</translation>
 <translation id="5410755018770633464">hot dog</translation>
@@ -771,7 +774,6 @@
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
-<translation id="5654356773042347102">mughetti</translation>
 <translation id="5655283760733841251">Aumenta la luminosità della tastiera</translation>
 <translation id="5655296450510165335">Registrazione dei dispositivi</translation>
 <translation id="5655776422854483175">Nessun processo di stampa</translation>
@@ -879,6 +881,7 @@
 <translation id="6235460611964961764">Reimposta manualmente l'utilizzo dei dati</translation>
 <translation id="6243280677745499710">Attualmente impostato</translation>
 <translation id="6250316632541035980">uova e pancetta</translation>
+<translation id="6255213378196499011">Impostazioni di Aiutami a scrivere</translation>
 <translation id="6275224645089671689">Freccia destra</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -1013,7 +1016,6 @@
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6982462588253070448">dune di sabbia</translation>
-<translation id="6988803763488977828">anemoni</translation>
 <translation id="7005833343836210400">Il dispositivo è offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7035168792582749309">patate</translation>

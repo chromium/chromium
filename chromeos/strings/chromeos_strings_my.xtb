@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">ဘရောင်ဇာ ပင်မစာမျက်နှာ</translation>
 <translation id="1526389707933164996">စခရင်နားချိန်ပုံ လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
-<translation id="1531886272553347340">ရန်နန်ကျူးလပ်စ်ပန်း</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
 <translation id="1561927818299383735">နောက်ခံမီးအရောင်</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">ဆင်</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
-<translation id="3654530588944650786">ရွှန်းစိုနေသော <ph name="FLOWER_COLOR" /> ဖြင့် ဖူးပွင့်နေသည့် <ph name="FLOWER_TYPE" /></translation>
 <translation id="3662461537616691585">အနီမှိုင်းရောင်နှင့် ကြက်သွေးရင့်ရောင်</translation>
 <translation id="3668449597372804501">တိမ်များလွှင့်နေသည့် နောက်ခံ</translation>
 <translation id="3675132884790542448">ဝက်</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP အမျိုးအစား</translation>
 <translation id="5389159777326897627">နောက်ခံနှင့် စတိုင်</translation>
 <translation id="5389224261615877010">သက်သန့်</translation>
-<translation id="5396811372860835203">လက်ထပ်ပန်း</translation>
 <translation id="5400907029458559844">ကိရိယာ ချိတ်ဆက်နေသည်။</translation>
 <translation id="5401938042319910061">'ပုံမှန်အစီအစဉ်" အားလုံး အသုံးပြုရန်</translation>
 <translation id="5410755018770633464">ဟော့ဒေါ့</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
 <translation id="5630438231335788050">ဘောင်းဟောက်စ်</translation>
 <translation id="5631759159893697722">ကောက်နုတ်ချက်</translation>
-<translation id="5654356773042347102">နတ်သမီးရေခွက်ပန်း</translation>
 <translation id="5655283760733841251">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
 <translation id="5655296450510165335">စက်ပစ္စည်း စာရင်းသွင်းခြင်း</translation>
 <translation id="5655776422854483175">ပရင့်ထုတ်ရန် ဖိုင်များ မရှိပါ</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="6982462588253070448">သဲခုံ</translation>
-<translation id="6988803763488977828">အနီမိုနီပန်း</translation>
 <translation id="7005833343836210400">စက်အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7035168792582749309">အာလူး</translation>

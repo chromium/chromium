@@ -4125,6 +4125,7 @@
 <translation id="4090103403438682346">প্ৰমাণিত এক্সেছ সক্ষম কৰক</translation>
 <translation id="4090947011087001172"><ph name="SITE" />ৰ ছাইট অনুমতি ৰিছেট কৰিব নেকি?</translation>
 <translation id="4092636882861724179">আপুনি <ph name="GOOGLE_PASSWORD_MANAGER" />ত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ চাব আৰু পৰিচালনা কৰিব পাৰে।</translation>
+<translation id="4092709865241032354">Google Password Managerক আপোনাৰ ছাইন ইনৰ তথ্য ছেভ কৰাত সহায় কৰিবলৈ, এই ছাইটটোৰ বাবে আপোনাৰ ব্যৱহাৰকাৰী নামটো যোগ দিয়ক</translation>
 <translation id="4093865285251893588">প্ৰ’ফাইলৰ প্রতিচ্ছবি</translation>
 <translation id="4093955363990068916">স্থানীয় ফাইল:</translation>
 <translation id="4094647278880271855">আপুনি এটা অসমর্থিত পাৰিপাৰ্শ্বিক চলক ব্যৱহাৰ কৰি আছে: <ph name="BAD_VAR" />। স্থিৰতা আৰু সুৰক্ষাত বেয়া প্ৰভাৱ পৰিব।</translation>
@@ -4701,7 +4702,6 @@
 <translation id="4546692474302123343">Google Assistantৰ ভইচ ইনপুট</translation>
 <translation id="4547659257713117923">অন্য ডিভাইচৰ কোনো টেব নাই</translation>
 <translation id="4547672827276975204">স্বয়ংক্ৰিয়াভাৱে ছেট কৰক</translation>
-<translation id="4548858987594081919">Google Password Managerক আপোনাৰ ছাইন ইনৰ তথ্য ছেভ কৰাত সহায় কৰিবলৈ, এই ছাইটটোৰ বাবে আপোনাৰ ব্যৱহাৰকাৰী নামটো যোগ দিয়ক</translation>
 <translation id="4549791035683739768">আপোনাৰ সুৰক্ষা চাবিটোত কোনো ফিংগাৰপ্ৰিণ্ট ষ্ট’ৰ হৈ নাই</translation>
 <translation id="4550737096585299960">অনুগ্ৰহ কৰি কেইমিনিটমান পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4550926046134589611"><ph name="APP_NAME" />ত কিছুমান সমৰ্থিত লিংক তথাপিও খুলিব।</translation>
@@ -6570,7 +6570,6 @@
 <translation id="6030719887161080597">বিজ্ঞাপনৰ পাৰদৰ্শিতা জুখিবলৈ ছাইটসমূহে ব্যৱহাৰ কৰা তথ্য পৰিচালনা কৰক</translation>
 <translation id="6031600495088157824">টুলবাৰত থকা ইনপুটৰ বিকল্পসমূহ</translation>
 <translation id="6032715498678347852">কোনো এক্সটেনশ্বনক এই ছাইটটোলৈ এক্সেছ দিবলৈ এইটোত ক্লিক কৰক।</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />নতুন সুবিধাসমূহ উপলব্ধ হোৱাৰ লগে লগেই আগবঢ়োৱা হয় আৰু ডিভাইচ অনুসৰি সুবিধাসমূহ ভিন্ন হয়</translation>
 <translation id="603539183851330738">স্বয়ংক্ৰিয় শুধৰণি আনডু কৰা বুটাম। পুনৰ <ph name="TYPED_WORD" />লৈ সলনি কৰক।  সক্ৰিয় কৰিবলৈ এণ্টাৰ টিপক, অগ্ৰাহ্য কৰিবলৈ এস্কে’প টিপক।</translation>
 <translation id="6038929619733116134">ছাইটে অননুমোদিত বা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুৱালে সেয়া অৱৰোধ কৰক</translation>
 <translation id="6039651071822577588">নেটৱৰ্ক সম্পত্তিৰ অভিধান ভুল হৈছে</translation>
@@ -7075,7 +7074,6 @@
 <translation id="642469772702851743">এই ডিভাইচটো (SN: <ph name="SERIAL_NUMBER" />) গৰাকীজনে লক কৰিছিল।</translation>
 <translation id="6425556984042222041">পাঠৰ পৰা কথনৰ হাৰ</translation>
 <translation id="642729974267661262">ধ্বনি প্লে’ কৰাৰ অনুমতি নাই</translation>
-<translation id="6427608534767366138">"<ph name="NETWORK_ID" />"ৰ বাবে প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{কোনো ছেভ কৰা পাছৱৰ্ড নাই।}=1{{COUNT} টা পাছৱৰ্ড পৰীক্ষা কৰি থকা হৈছে...}one{{COUNT} টা পাছৱৰ্ড পৰীক্ষা কৰি থকা হৈছে...}other{{COUNT} টা পাছৱৰ্ড পৰীক্ষা কৰি থকা হৈছে...}}</translation>
 <translation id="6429384232893414837">আপডে’টৰ আসোঁৱাহ</translation>
 <translation id="6430814529589430811">Base64-এনক’ড কৰা ASCII, একক প্ৰমাণপত্ৰ</translation>

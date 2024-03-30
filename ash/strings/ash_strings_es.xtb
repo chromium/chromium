@@ -262,7 +262,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="204259843076055848">La combinación de teclas <ph name="SIX_PACK_KEY_NAME" /> está desactivada en este momento</translation>
 <translation id="2049240716062114887">Se ha cambiado el nombre del escritorio a <ph name="DESK_NAME" /></translation>
-<translation id="206377500836174974">Completo</translation>
 <translation id="2064048859448024834">Vista previa de cámara activada</translation>
 <translation id="2067602449040652523">Brillo del teclado</translation>
 <translation id="2075520525463668108">Activar/Desactivar <ph name="CAPTURE_MEDIUM" />. Estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
@@ -1258,7 +1257,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5955304353782037793">aplic</translation>
 <translation id="5958529069007801266">Usuario supervis.</translation>
 <translation id="5960410286721553511">Consulta las fotos y el contenido multimedia recientes de tu teléfono</translation>
-<translation id="5961960957587052807">Suave</translation>
 <translation id="5965524703725988602">Activar o desactivar tema oscuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">Desplazarse hacia delante por las ventanas</translation>
 <translation id="5978382165065462689">Compartiendo control de la pantalla a través de Asistencia remota.</translation>

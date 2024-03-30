@@ -4121,6 +4121,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4090103403438682346">Enable Verified Access</translation>
 <translation id="4090947011087001172">Reset site permissions for <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">You can view and manage saved passwords in <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4092709865241032354">To help Google Password Manager save your sign-in info, add your username for this site</translation>
 <translation id="4093865285251893588">Profile image</translation>
 <translation id="4093955363990068916">Local file:</translation>
 <translation id="4094647278880271855">You are using an unsupported environment variable: <ph name="BAD_VAR" />. Stability and security will suffer.</translation>
@@ -4696,7 +4697,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4546692474302123343">Google Assistant voice input</translation>
 <translation id="4547659257713117923">No Tabs From Other Devices</translation>
 <translation id="4547672827276975204">Set automatically</translation>
-<translation id="4548858987594081919">To help Google Password Manager save your sign-in info, add your username for this site</translation>
 <translation id="4549791035683739768">Your security key has no fingerprints stored</translation>
 <translation id="4550737096585299960">Please try again in a few minutes.</translation>
 <translation id="4550926046134589611">Some supported links will still open in <ph name="APP_NAME" />.</translation>
@@ -6564,7 +6564,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6030719887161080597">Manage info used by sites to measure ad performance</translation>
 <translation id="6031600495088157824">Input options in toolbar</translation>
 <translation id="6032715498678347852">To give an extension access to this site, click it.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Offer new features as they become available, and features vary by device</translation>
 <translation id="603539183851330738">Undo autocorrect button. Revert to <ph name="TYPED_WORD" />.  Press enter to activate, escape to dismiss.</translation>
 <translation id="6038929619733116134">Block if site shows intrusive or misleading ads</translation>
 <translation id="6039651071822577588">Network property dictionary malformed</translation>
@@ -7069,7 +7068,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="642469772702851743">This device (SN: <ph name="SERIAL_NUMBER" />) was locked by the owner.</translation>
 <translation id="6425556984042222041">Text-to-speech rate</translation>
 <translation id="642729974267661262">Not allowed to play sound</translation>
-<translation id="6427608534767366138">Proxy authentication is required for '<ph name="NETWORK_ID" />'</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{No saved passwords.}=1{Checking {COUNT} password…}other{Checking {COUNT} passwords…}}</translation>
 <translation id="6429384232893414837">Update error</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, single certificate</translation>

@@ -1285,7 +1285,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7583004045319035904">Utiliza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear as pestanas do modo de incógnito.</translation>
 <translation id="7600965453749440009">Non traducir nunca do <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Ventás emerxentes bloqueadas (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupos de pestanas</translation>
 <translation id="7607521702806708809">Eliminar contrasinal</translation>
 <translation id="7609559547731036746">Marcadores</translation>
 <translation id="7638584964844754484">Contrasinal incorrecto</translation>
@@ -1500,6 +1499,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8637431369725868556">Protéxete contra os sitios perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="8640430998629397789">Ocultar Solicitar sitio para ordenadores</translation>
+<translation id="8643403533759285912">Eliminar grupo</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8663764600409216912">Estás usando contrasinais difíciles de adiviñar</translation>
 <translation id="8668210798914567634">Gardouse esta páxina na túa lista de lectura.</translation>

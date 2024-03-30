@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁。</translation>
 <translation id="7600965453749440009">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">分頁群組</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
 <translation id="7609559547731036746">書籤</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">守護網頁瀏覽安全，有效防堵危險網站。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{沒有任何密碼外洩}=1{有 {COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="8640430998629397789">隱藏「切換為電腦版網站」</translation>
+<translation id="8643403533759285912">刪除群組</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">目前使用的密碼不容易讓人猜中</translation>
 <translation id="8668210798914567634">此網頁內容已儲存至你的閱讀清單。</translation>

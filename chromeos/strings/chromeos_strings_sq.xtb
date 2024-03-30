@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">faqja kryesore e shfletuesit</translation>
 <translation id="1526389707933164996">Animacioni i mbrojtësit të ekranit</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
-<translation id="1531886272553347340">zhabinë</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
 <translation id="1561927818299383735">ngjyra e ndriçimit të sfondit</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">elefantë</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
-<translation id="3654530588944650786">Një <ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> që rrezaton në lulëzim</translation>
 <translation id="3662461537616691585">burgundi dhe gështenjë</translation>
 <translation id="3668449597372804501">Imazhi i sfondit për rrjedhën e reve</translation>
 <translation id="3675132884790542448">derra</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">Lloji i adresës IP</translation>
 <translation id="5389159777326897627">Imazhi i sfondit dhe stili</translation>
 <translation id="5389224261615877010">Ylber</translation>
-<translation id="5396811372860835203">zambak i bardhë</translation>
 <translation id="5400907029458559844">Pajisja po lidhet.</translation>
 <translation id="5401938042319910061">Ekzekuto të gjitha rutinat</translation>
 <translation id="5410755018770633464">hot-dogë</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
-<translation id="5654356773042347102">zambak në luginë</translation>
 <translation id="5655283760733841251">Ngritja e ndriçimit të tastierës</translation>
 <translation id="5655296450510165335">Regjistrimi i pajisjes</translation>
 <translation id="5655776422854483175">Asnjë printim</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6982462588253070448">duna rëre</translation>
-<translation id="6988803763488977828">anemonë</translation>
 <translation id="7005833343836210400">Pajisja është offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7035168792582749309">patate</translation>

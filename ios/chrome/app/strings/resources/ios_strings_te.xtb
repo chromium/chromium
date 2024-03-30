@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">మీ అజ్ఞాత ట్యాబ్‌లను అన్‌లాక్ చేయడానికి <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ను ఉపయోగించండి.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7603852183842204213">పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="7607521702806708809">పాస్‌వర్డ్‌ను తొలగించండి</translation>
 <translation id="7609559547731036746">బుక్‌మార్క్‌లు</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">ప్రమాదకరమైన సైట్‌ల నుండి రక్షణ పొందండి.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="8640430998629397789">డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయండి ఆప్షన్‌ను దాచండి</translation>
+<translation id="8643403533759285912">గ్రూప్‌ను తొలగించడం</translation>
 <translation id="8654802032646794042">రద్దు చేయండి</translation>
 <translation id="8663764600409216912">మీరు ఊహించడానికి కష్టంగా కనిపించే పాస్‌వర్డ్‌లను ఉపయోగిస్తున్నారు</translation>
 <translation id="8668210798914567634">ఈ పేజీ మీ పఠన లిస్ట్‌కు సేవ్ చేయబడింది.</translation>

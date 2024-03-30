@@ -878,6 +878,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5548760955356983418">Dzięki funkcji Handoff możesz rozpocząć przeglądanie strony na tym urządzeniu, a następnie płynnie kontynuować na Macu. Aktualnie otwarta strona internetowa wyświetli się w Docku na Macu.
 
 Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urządzenie musi używać tego samego konta iCloud.</translation>
+<translation id="5551825465462320939">Śledź m.in. wiadomości, sport i inne informacje zgodne z Twoimi zainteresowaniami.</translation>
 <translation id="5551897871312988470">Proponuj tłumaczenie</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="555749644339804659">Sprawdzam hasła…</translation>
@@ -1285,7 +1286,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Zablokowano pop-upy (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupy kart</translation>
 <translation id="7607521702806708809">Usuń hasło</translation>
 <translation id="7609559547731036746">Zakładki</translation>
 <translation id="7638584964844754484">Nieprawidłowe hasło wielowyrazowe</translation>
@@ -1500,6 +1500,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8637431369725868556">Uzyskaj ochronę przed niebezpiecznymi stronami.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Brak przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="8640430998629397789">Ukryj opcję Wersja na komputer</translation>
+<translation id="8643403533759285912">Usuń grupę</translation>
 <translation id="8654802032646794042">Anuluj</translation>
 <translation id="8663764600409216912">Używasz haseł, które są trudne do odgadnięcia</translation>
 <translation id="8668210798914567634">Ta strona została zapisana na Twojej liście Do przeczytania.</translation>

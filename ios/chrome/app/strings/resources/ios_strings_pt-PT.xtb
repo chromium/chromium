@@ -878,6 +878,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5548760955356983418">A Entrega permite-lhe começar a navegar num Website neste dispositivo e, em seguida, continuar facilmente no seu Mac. O Website atualmente aberto aparece na Dock do seu Mac.
 
 A Entrega também tem de estar ativada na secção Geral das Definições e os seus dispositivos têm de utilizar a mesma conta iCloud.</translation>
+<translation id="5551825465462320939">Mantenha-se a par de notícias, desporto e muito mais com base nos seus interesses.</translation>
 <translation id="5551897871312988470">Propor tradução</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="555749644339804659">A verificar palav.-passe…</translation>
@@ -1286,7 +1287,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7583004045319035904">Utilize <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear os seus separadores de navegação anónima.</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupos de separadores</translation>
 <translation id="7607521702806708809">Eliminar palavra-passe</translation>
 <translation id="7609559547731036746">Marcadores</translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
@@ -1502,6 +1502,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma palavra-passe comprometida}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="8640430998629397789">Ocultar Pedir site para computador</translation>
+<translation id="8643403533759285912">Apagar grupo</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8663764600409216912">Está a usar palavras-passe que parecem ser difíceis de adivinhar</translation>
 <translation id="8668210798914567634">Esta página foi guardada na sua lista de leitura.</translation>

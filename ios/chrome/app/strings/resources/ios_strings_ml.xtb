@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യാൻ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിക്കുക.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="7603852183842204213">പോപ്പ്-അപ്പുകൾ തടഞ്ഞു (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">ടാബ് ഗ്രൂപ്പുകൾ</translation>
 <translation id="7607521702806708809">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
 <translation id="7609559547731036746">Bookmarks</translation>
 <translation id="7638584964844754484">പാസ്‌ഫ്രെയ്‌സ് തെറ്റാണ്</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് പരിരക്ഷ നേടുക.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="8640430998629397789">'ഡെസ്‌ക്ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക' മറയ്ക്കുക</translation>
+<translation id="8643403533759285912">ഗ്രൂപ്പ് ഇല്ലാതാക്കുക</translation>
 <translation id="8654802032646794042">റദ്ദാക്കുക</translation>
 <translation id="8663764600409216912">ഊഹിക്കാൻ പ്രയാസമുണ്ടെന്ന് തോന്നുന്ന പാസ്‌വേഡുകളാണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="8668210798914567634">ഈ പേജ് നിങ്ങളുടെ വായന ലിസ്‌റ്റിൽ സംരക്ഷിച്ചു</translation>

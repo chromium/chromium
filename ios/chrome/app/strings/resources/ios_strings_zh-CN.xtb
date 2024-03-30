@@ -1285,7 +1285,6 @@
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
-<translation id="7606639338662398635">标签页分组</translation>
 <translation id="7607521702806708809">删除密码</translation>
 <translation id="7609559547731036746">书签</translation>
 <translation id="7638584964844754484">密码不正确</translation>
@@ -1500,6 +1499,7 @@
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="8640430998629397789">隐藏“请求切换到桌面版网站”</translation>
+<translation id="8643403533759285912">删除组</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>

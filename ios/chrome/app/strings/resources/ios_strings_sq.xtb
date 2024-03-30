@@ -1285,7 +1285,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7583004045319035904">Përdor <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> për të shkyçur skedat "e fshehta".</translation>
 <translation id="7600965453749440009">Asnjëherë mos përkthe <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Dritare kërcyese të bllokuara (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Grupet e skedave</translation>
 <translation id="7607521702806708809">Fshi fjalëkalimin</translation>
 <translation id="7609559547731036746">Faqeshënuesit</translation>
 <translation id="7638584964844754484">Shprehje kalimi e pasaktë</translation>
@@ -1500,6 +1499,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8637431369725868556">Merr mbrojtjen nga sajtet e rrezikshme.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="8640430998629397789">Fshih "Kërko sajtin për desktop"</translation>
+<translation id="8643403533759285912">Fshi grupin</translation>
 <translation id="8654802032646794042">Anulo</translation>
 <translation id="8663764600409216912">Po përdor fjalëkalime që duken të vështira për t'u hamendësuar</translation>
 <translation id="8668210798914567634">Kjo faqe është ruajtur në "Listën tënde të leximit".</translation>

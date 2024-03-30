@@ -4108,6 +4108,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4090103403438682346">Iespējot verificētu piekļuvi</translation>
 <translation id="4090947011087001172">Vai atiestatīt vietnes <ph name="SITE" /> atļaujas?</translation>
 <translation id="4092636882861724179">Varat skatīt un pārvaldīt saglabātās paroles pakalpojumā <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="4092709865241032354">Lai palīdzētu Google paroļu pārvaldniekā saglabāt pierakstīšanās informāciju, pievienojiet savu lietotājvārdu šajā vietnē.</translation>
 <translation id="4093865285251893588">Profila attēls</translation>
 <translation id="4093955363990068916">Lokālais fails:</translation>
 <translation id="4094647278880271855">Jūs izmantojat neatbalstītu vides mainīgo: <ph name="BAD_VAR" />. Pasliktināsies stabilitāte un drošība.</translation>
@@ -4682,7 +4683,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4546692474302123343">Google asistenta balss ievade</translation>
 <translation id="4547659257713117923">Nav ciļņu no citām ierīcēm</translation>
 <translation id="4547672827276975204">Iestatīt automātiski</translation>
-<translation id="4548858987594081919">Lai palīdzētu Google paroļu pārvaldniekā saglabāt informāciju par pierakstīšanos, pievienojiet savu lietotājvārdu šajā vietnē.</translation>
 <translation id="4549791035683739768">Jūsu drošības atslēgā nav saglabātu pirkstu nospiedumu</translation>
 <translation id="4550737096585299960">Pēc dažām minūtēm, lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="4550926046134589611">Dažas atbalstītas saites joprojām tiks atvērtas lietotnē <ph name="APP_NAME" />.</translation>
@@ -6547,7 +6547,6 @@ Ja šī funkcija tiks izslēgta, Android ierīce atrašanās vietas noteikšanai
 <translation id="6030719887161080597">Pārvaldiet informāciju, ko izmanto vietnes, lai novērtētu reklāmu veiktspēju.</translation>
 <translation id="6031600495088157824">Ievades iespējas rīkjoslā</translation>
 <translation id="6032715498678347852">Lai piešķirtu paplašinājumam piekļuvi šai vietnei, noklikšķiniet uz tā.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" /> Tiek piedāvātas jaunas funkcijas, kad tās kļūst pieejamas. Dažādās ierīcēs funkcijas var atšķirties.</translation>
 <translation id="603539183851330738">Poga, ar ko var atsaukt automātiskās pareizrakstības pārbaudes labojumus. Atjaunot uz vārdu <ph name="TYPED_WORD" />.  Lai aktivizētu, nospiediet taustiņu Enter. Lai noraidītu, nospiediet taustiņu Esc.</translation>
 <translation id="6038929619733116134">Bloķēt, ja vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
 <translation id="6039651071822577588">Nepareizi veidota tīklu rekvizītu vārdnīca</translation>
@@ -7052,7 +7051,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="642469772702851743">Šo ierīci (sērijas numurs: <ph name="SERIAL_NUMBER" />) bloķēja īpašnieks.</translation>
 <translation id="6425556984042222041">Teksta pārvēršanas runā ātrums</translation>
 <translation id="642729974267661262">Nedrīkst atskaņot skaņu</translation>
-<translation id="6427608534767366138">Tīklam “<ph name="NETWORK_ID" />” ir nepieciešama starpniekservera autentificēšana</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Nav saglabātu paroļu.}=1{Notiek {COUNT} paroles pārbaude…}zero{Notiek {COUNT} paroļu pārbaude…}one{Notiek {COUNT} paroles pārbaude…}other{Notiek {COUNT} paroļu pārbaude…}}</translation>
 <translation id="6429384232893414837">Atjaunināšanas kļūda</translation>
 <translation id="6430814529589430811">Base64 kodēts ASCII, viens sertifikāts</translation>

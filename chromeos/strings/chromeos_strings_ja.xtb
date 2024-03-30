@@ -100,7 +100,6 @@
 <translation id="1515129336378114413">ブラウザのホーム</translation>
 <translation id="1526389707933164996">スクリーン セーバーのアニメーション</translation>
 <translation id="152892567002884378">音量を上げる</translation>
-<translation id="1531886272553347340">ラナンキュラス</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="155865706765934889">タッチパッド</translation>
 <translation id="1561927818299383735">バックライトの色</translation>
@@ -443,7 +442,6 @@
 <translation id="3621072146987826699">ゾウ</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
-<translation id="3654530588944650786">輝く <ph name="FLOWER_COLOR" /> の咲いている <ph name="FLOWER_TYPE" /></translation>
 <translation id="3662461537616691585">バーガンディとマルーン</translation>
 <translation id="3668449597372804501">「雲の流れ」の壁紙</translation>
 <translation id="3675132884790542448">ブタ</translation>
@@ -736,7 +734,6 @@
 <translation id="5378184552853359930">IP タイプ</translation>
 <translation id="5389159777326897627">壁紙とスタイル</translation>
 <translation id="5389224261615877010">虹</translation>
-<translation id="5396811372860835203">カラー</translation>
 <translation id="5400907029458559844">デバイスは接続中です。</translation>
 <translation id="5401938042319910061">ルーティンをすべて実行</translation>
 <translation id="5410755018770633464">ホットドッグ</translation>
@@ -771,7 +768,6 @@
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5630438231335788050">バウハウス</translation>
 <translation id="5631759159893697722">概要</translation>
-<translation id="5654356773042347102">スズラン</translation>
 <translation id="5655283760733841251">キーボードの明るさを上げる</translation>
 <translation id="5655296450510165335">デバイスの登録</translation>
 <translation id="5655776422854483175">印刷ジョブなし</translation>
@@ -1013,7 +1009,6 @@
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6982462588253070448">砂丘</translation>
-<translation id="6988803763488977828">ウィンドフラワー</translation>
 <translation id="7005833343836210400">デバイスはオフラインです</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7035168792582749309">ジャガイモ</translation>

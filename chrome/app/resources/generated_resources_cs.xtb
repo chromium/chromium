@@ -4107,6 +4107,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4090103403438682346">Aktivuje ověřený přístup.</translation>
 <translation id="4090947011087001172">Resetovat oprávnění webu <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Uložená hesla můžete zobrazit a spravovat v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
+<translation id="4092709865241032354">Pomozte Správci hesel Google s uložením vašich přihlašovacích údajů tím, že zadáte své uživatelské jméno pro tento web</translation>
 <translation id="4093865285251893588">Profilová fotka</translation>
 <translation id="4093955363990068916">Místní soubor:</translation>
 <translation id="4094647278880271855">Používáte nepodporované proměnné prostředí: <ph name="BAD_VAR" />. Bude to mít negativní vliv na stabilitu a zabezpečení.</translation>
@@ -4681,7 +4682,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4546692474302123343">Hlasový vstup Asistenta Google</translation>
 <translation id="4547659257713117923">Žádné karty z jiných zařízení</translation>
 <translation id="4547672827276975204">Nastavit automaticky</translation>
-<translation id="4548858987594081919">Pomozte Správci hesel Google s uložením vašich přihlašovacích údajů tím, že zadáte své uživatelské jméno pro tento web</translation>
 <translation id="4549791035683739768">V bezpečnostním klíči nejsou uloženy žádné otisky</translation>
 <translation id="4550737096585299960">Zkuste to znovu za několik minut.</translation>
 <translation id="4550926046134589611">Některé podporované odkazy se budou nadále otevírat v aplikaci <ph name="APP_NAME" />.</translation>
@@ -6546,7 +6546,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6030719887161080597">Spravovat informace, pomocí nichž weby měří výkon reklam</translation>
 <translation id="6031600495088157824">Možnosti zadávání na liště</translation>
 <translation id="6032715498678347852">Chcete-li rozšíření udělit přístup k tomuto webu, klikněte na něj.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Funkce se mohou lišit podle zařízení a postupně mohou být nabízeny nové</translation>
 <translation id="603539183851330738">Tlačítko vrácení automatické opravy zpět. Vrátit na <ph name="TYPED_WORD" />.  Klávesou Enter opravu vrátíte zpět, klávesou Escape akci zrušíte.</translation>
 <translation id="6038929619733116134">Blokovat, pokud web zobrazuje rušivé nebo zavádějící reklamy</translation>
 <translation id="6039651071822577588">Slovník vlastností sítě je v nesprávném tvaru</translation>
@@ -7051,7 +7050,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="642469772702851743">Toto zařízení (sériové číslo: <ph name="SERIAL_NUMBER" />) vlastník uzamkl.</translation>
 <translation id="6425556984042222041">Rychlost převodu textu na řeč</translation>
 <translation id="642729974267661262">Zákaz přehrávat zvuk</translation>
-<translation id="6427608534767366138">K přístupu k síti „<ph name="NETWORK_ID" />“ je vyžadováno ověření proxy serveru</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Nemáte žádná uložená hesla.}=1{Kontrola {COUNT} hesla…}few{Kontrola {COUNT} hesel…}many{Kontrola {COUNT} hesla…}other{Kontrola {COUNT} hesel…}}</translation>
 <translation id="6429384232893414837">Chyba aktualizace</translation>
 <translation id="6430814529589430811">Soubor ASCII kódovaný Base64, jeden certifikát</translation>

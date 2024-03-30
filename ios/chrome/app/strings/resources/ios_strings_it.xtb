@@ -878,6 +878,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
 La funzione Handoff deve anche essere attivata nella sezione Generali di Impostazioni e sui dispositivi deve essere in uso lo stesso account iCloud.</translation>
+<translation id="5551825465462320939">Ricevi aggiornamenti su notizie, sport e altro in base ai tuoi interessi.</translation>
 <translation id="5551897871312988470">Proponi di tradurre</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="555749644339804659">Controllo delle password…</translation>
@@ -1182,6 +1183,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6989674195860388998">Cambia nelle Impostazioni…</translation>
 <translation id="6998989275928107238">A</translation>
 <translation id="699954956411469731">Notifiche mobile</translation>
+<translation id="699985840472413751">Chiudi download</translation>
 <translation id="7004032350256606903">La tua organizzazione ti richiede di navigare in privato.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Schede recenti</translation>
@@ -1285,7 +1287,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
-<translation id="7606639338662398635">Gruppi di schede</translation>
 <translation id="7607521702806708809">Elimina password</translation>
 <translation id="7609559547731036746">Preferiti</translation>
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
@@ -1472,6 +1473,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="850600235656508448">Apri in modalità di navigazione in incognito</translation>
 <translation id="8517375800490286174">Licenze open source</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} password e altri elementi vengono salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google {email}.}other{{count} password e altri elementi vengono salvati solo su questo dispositivo. Per usarli su altri dispositivi, salvali nel tuo Account Google {email}.}}</translation>
+<translation id="8522813812888400223">Annulla download</translation>
 <translation id="8524799873541103884">Schede <ph name="INCOGNITO" /> dalla <ph name="FIRST_VISIBLE_TAB" /> alla <ph name="LAST_VISIBLE_TAB" /> di <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="852576975834694248">Il tuo account verrà disconnesso e le schede verranno chiuse</translation>
 <translation id="8528009254289981965">Apri link da altre app in incognito</translation>
@@ -1500,6 +1502,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8640430998629397789">Nascondi Richiedi sito desktop</translation>
+<translation id="8643403533759285912">Elimina gruppo</translation>
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8663764600409216912">Stai utilizzando password che sembrano difficili da indovinare</translation>
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>

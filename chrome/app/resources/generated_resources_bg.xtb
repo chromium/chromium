@@ -4118,6 +4118,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4090103403438682346">Активиране на удостоверения достъп</translation>
 <translation id="4090947011087001172">Да се нулират ли разрешенията за сайта <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">В <ph name="GOOGLE_PASSWORD_MANAGER" /> можете да преглеждате и управлявате запазените пароли.</translation>
+<translation id="4092709865241032354">За да помогнете на Google Мениджър на пароли да запази данните ви за вход, добавете потребителското си име за този сайт</translation>
 <translation id="4093865285251893588">Изображение на потребителския профил</translation>
 <translation id="4093955363990068916">Локален файл:</translation>
 <translation id="4094647278880271855">Използвате неподдържана променлива на средата: <ph name="BAD_VAR" />. Стабилността и сигурността ще пострадат.</translation>
@@ -4693,7 +4694,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4546692474302123343">Гласово въвеждане с Google Асистент</translation>
 <translation id="4547659257713117923">Няма раздели от други устройства</translation>
 <translation id="4547672827276975204">Автоматично задаване</translation>
-<translation id="4548858987594081919">За да помогнете на Google Мениджър на пароли да запази данните ви за вход, добавете потребителското си име за този сайт</translation>
 <translation id="4549791035683739768">В ключа ви за сигурност няма съхранени отпечатъци</translation>
 <translation id="4550737096585299960">Моля, опитайте отново след няколко минути.</translation>
 <translation id="4550926046134589611">Някои поддържани връзки ще продължат да се отварят в(ъв) <ph name="APP_NAME" />.</translation>
@@ -6562,7 +6562,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6030719887161080597">Управление на информацията, използвана от сайтовете с цел измерване на ефективността на рекламите</translation>
 <translation id="6031600495088157824">Опции за въвеждане в лентата с инструменти</translation>
 <translation id="6032715498678347852">Kликнете върху дадено разширение, за да му предоставите достъп до този сайт.</translation>
-<translation id="6035127750423896892"><ph name="FOOTNOTE_POINTER" />Предлагане на нови функции, когато станат достъпни. Функциите варират в зависимост от устройството</translation>
 <translation id="603539183851330738">Бутон за отмяна на автоматичното коригиране. Връщане към <ph name="TYPED_WORD" />.  Натиснете Enter за активиране или Escape за отхвърляне.</translation>
 <translation id="6038929619733116134">Блокиране, ако на сайта се показват натрапчиви или подвеждащи реклами</translation>
 <translation id="6039651071822577588">Неправилно образуван речник на свойствата на мрежата</translation>
@@ -7067,7 +7066,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="642469772702851743">Това устройство (сериен № <ph name="SERIAL_NUMBER" />) бе заключено от собственика.</translation>
 <translation id="6425556984042222041">Скорост на синтезирания говор</translation>
 <translation id="642729974267661262">Сайтове без разрешение за възпроизвеждане на звук</translation>
-<translation id="6427608534767366138">За „<ph name="NETWORK_ID" />“ се изисква удостоверяване чрез прокси сървър</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Няма запазени пароли.}=1{Проверява се {COUNT} парола...}other{Проверяват се {COUNT} пароли...}}</translation>
 <translation id="6429384232893414837">Грешка при актуализирането</translation>
 <translation id="6430814529589430811">ASCII с кодиране Base64, единичен сертификат</translation>
