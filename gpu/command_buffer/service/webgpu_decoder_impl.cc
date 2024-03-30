@@ -1165,6 +1165,8 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
   known_device_metadata_.clear();
   wire_server_ = nullptr;
 
+  dawn_instance_->DisconnectDawnPlatform();
+
   destroyed_ = true;
 }
 
