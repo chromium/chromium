@@ -1,5 +1,75 @@
 This is a testharness.js-based test.
-Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSSFontFaceDescriptors interface: existence and properties of interface object
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface object length
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface object name
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute src
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontFamily
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-family
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontStyle
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-style
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontWeight
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-weight
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontStretch
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-stretch
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontWidth
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-width
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute unicodeRange
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute unicode-range
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontFeatureSettings
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-feature-settings
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontVariationSettings
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-variation-settings
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontNamedInstance
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-named-instance
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontDisplay
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-display
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute fontLanguageOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute font-language-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute ascentOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute ascent-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute descentOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute descent-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute lineGapOverride
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
+[FAIL] CSSFontFaceDescriptors interface: attribute line-gap-override
+  assert_own_property: self does not have own property "CSSFontFaceDescriptors" expected property "CSSFontFaceDescriptors" missing
 [FAIL] CSSFontFeatureValuesRule interface: existence and properties of interface object
   assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 [FAIL] CSSFontFeatureValuesRule interface object length

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSRule interface: constant MARGIN_RULE on interface object
   assert_own_property: expected property "MARGIN_RULE" missing
 [FAIL] CSSRule interface: constant MARGIN_RULE on interface prototype object
@@ -16,6 +16,42 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "string" but got "object"
 [FAIL] CSSRule interface: sheet.cssRules[0] must inherit property "MARGIN_RULE" with the proper type
   assert_inherits: property "MARGIN_RULE" not found in prototype chain
+[FAIL] CSSPageDescriptors interface: existence and properties of interface object
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface object length
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface object name
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute margin
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute marginTop
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute marginRight
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute marginBottom
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute marginLeft
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute margin-top
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute margin-right
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute margin-bottom
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute margin-left
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute size
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute marks
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute bleed
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
 [FAIL] CSSPageRule interface: existence and properties of interface object
   assert_equals: prototype of CSSPageRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
 [FAIL] CSSPageRule interface: existence and properties of interface prototype object
@@ -112,7 +148,19 @@ Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading '0')"
 [FAIL] CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "parentRule" with the proper type
   assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading '0')"
-[FAIL] CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "cssFloat" with the proper type
-  assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read properties of undefined (reading '0')"
+[FAIL] CSSStyleProperties interface: existence and properties of interface object
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
+[FAIL] CSSStyleProperties interface object length
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
+[FAIL] CSSStyleProperties interface object name
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
+[FAIL] CSSStyleProperties interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
+[FAIL] CSSStyleProperties interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
+[FAIL] CSSStyleProperties interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
+[FAIL] CSSStyleProperties interface: attribute cssFloat
+  assert_own_property: self does not have own property "CSSStyleProperties" expected property "CSSStyleProperties" missing
 Harness: the test ran to completion.
 
