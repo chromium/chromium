@@ -8,19 +8,11 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
-
-class TestChromeAutofillClient : public ChromeAutofillClient {
- public:
-  explicit TestChromeAutofillClient(content::WebContents* web_contents)
-      : ChromeAutofillClient(web_contents) {}
-  ~TestChromeAutofillClient() override = default;
-};
 
 class MockVirtualCardEnrollBubbleController
     : public VirtualCardEnrollBubbleControllerImpl {
@@ -47,6 +39,7 @@ class ChromePaymentsAutofillClientTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    ChromeAutofillClient::CreateForWebContents(web_contents());
     auto mock_virtual_card_bubble_controller =
         std::make_unique<MockVirtualCardEnrollBubbleController>(web_contents());
     web_contents()->SetUserData(
@@ -56,8 +49,7 @@ class ChromePaymentsAutofillClientTest
 
   payments::ChromePaymentsAutofillClient* chrome_payments_client() {
     return static_cast<payments::ChromePaymentsAutofillClient*>(
-        test_autofill_client_injector_[web_contents()]
-            ->GetPaymentsAutofillClient());
+        client()->GetPaymentsAutofillClient());
   }
 
   MockVirtualCardEnrollBubbleController& virtual_card_bubble_controller() {
@@ -66,13 +58,11 @@ class ChromePaymentsAutofillClientTest
   }
 
   ChromeAutofillClient* client() {
-    return test_autofill_client_injector_[web_contents()];
+    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestAutofillClientInjector<TestChromeAutofillClient>
-      test_autofill_client_injector_;
 };
 
 #if !BUILDFLAG(IS_ANDROID)
