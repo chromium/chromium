@@ -372,6 +372,34 @@ TEST_F(NonClientFrameViewAshTest, OpeningAppsInTabletMode) {
             delegate->GetNonClientFrameViewTopBorderHeight());
 }
 
+// Regression test for https://b/331238593. See bug for more details.
+TEST_F(NonClientFrameViewAshTest,
+       NoCrashOnTabletChangesWithinWindowDestruction) {
+  class WindowTestObserver : public aura::WindowObserver {
+   public:
+    explicit WindowTestObserver(aura::Window* window) {
+      window_observation_.Observe(window);
+    }
+    ~WindowTestObserver() override = default;
+
+    void OnWindowDestroying(aura::Window* window) override {
+      // Simulate a tablet state change from within window destruction. It's not
+      // clear how this may happen in production, but it triggers the same
+      // reported crash stack.
+      TabletModeControllerTestApi().EnterTabletMode();
+      window_observation_.Reset();
+    }
+
+   private:
+    base::ScopedObservation<aura::Window, aura::WindowObserver>
+        window_observation_{this};
+  };
+
+  auto test_window = CreateTestWindow(gfx::Rect(200, 200));
+  WindowTestObserver obs(test_window.get());
+  test_window.reset();
+}
+
 // Test if creating a new window in tablet mode uses maximzied state
 // and immersive mode.
 TEST_F(NonClientFrameViewAshTest, GetPreferredOnScreenHeightInTabletMaximzied) {
