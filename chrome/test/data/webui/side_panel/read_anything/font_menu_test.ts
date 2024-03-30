@@ -63,15 +63,18 @@ suite('FontMenu', () => {
     function updateFonts(supportedFonts: string[]): void {
       chrome.readingMode.supportedFonts = supportedFonts;
       toolbar.updateFonts();
+      // We need an extra call to fontMenu.get here just to ensure the
+      // menu has rendered before we query the dropdown item elements.
+      toolbar.$.fontMenu.get();
       flush();
-      fontMenuOptions =
-          Array.from(toolbar.$.fontMenu.querySelectorAll<HTMLButtonElement>(
+      fontMenuOptions = Array.from(
+          toolbar.$.fontMenu.get().querySelectorAll<HTMLButtonElement>(
               '.dropdown-item'));
     }
 
     test('is dropdown menu', () => {
       menuButton!.click();
-      assertTrue(toolbar.$.fontMenu.open);
+      assertTrue(toolbar.$.fontMenu.get().open);
     });
 
     test('shows only supported fonts', () => {
@@ -130,7 +133,7 @@ suite('FontMenu', () => {
       test('closes menu', () => {
         fontMenuOptions.forEach((option) => {
           option.click();
-          assertFalse(toolbar.$.fontMenu.open);
+          assertFalse(toolbar.$.fontMenu.get().open);
         });
       });
     });

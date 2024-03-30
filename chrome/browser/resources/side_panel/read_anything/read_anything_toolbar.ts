@@ -8,12 +8,14 @@ import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/md_select.css.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import './voice_selection_menu.js';
 import './icons.html.js';
 
 import type {CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -32,7 +34,7 @@ export interface ReadAnythingToolbarElement {
     colorMenu: CrActionMenuElement,
     lineSpacingMenu: CrActionMenuElement,
     letterSpacingMenu: CrActionMenuElement,
-    fontMenu: CrActionMenuElement,
+    fontMenu: CrLazyRenderElement<CrActionMenuElement>,
     fontSizeMenu: CrActionMenuElement,
     moreOptionsMenu: CrActionMenuElement,
     voiceSelectionMenu: VoiceSelectionMenuElement,
@@ -340,7 +342,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
             id: 'font',
             icon: 'read-anything:font',
             ariaLabel: loadTimeData.getString('fontNameTitle'),
-            menuToOpen: () => this.$.fontMenu,
+            menuToOpen: () => this.$.fontMenu.get(),
           },
       );
 
@@ -402,7 +404,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const currentFontIndex =
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
     if (this.isReadAloudEnabled_) {
-      this.setCheckMarkForMenu_(this.$.fontMenu, currentFontIndex);
+      this.setCheckMarkForLazyMenu_(
+          this.$.fontMenu.getIfExists(), currentFontIndex);
 
     } else {
       const select = this.$.fontSelect;
@@ -454,6 +457,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
   }
 
+  private isFontItemSelected_(item: number): boolean {
+    return item !== this.fontOptions_.indexOf(chrome.readingMode.fontName);
+  }
+
   private playPauseButtonAriaLabel_(paused: boolean) {
     return paused ? loadTimeData.getString('playLabel') :
                     loadTimeData.getString('pauseLabel');
@@ -468,7 +475,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.$.colorMenu.close();
     this.$.lineSpacingMenu.close();
     this.$.letterSpacingMenu.close();
-    this.$.fontMenu.close();
+    this.$.fontMenu.getIfExists()?.close();
   }
 
   private emitEvent_(name: string, eventDetail?: any) {
@@ -595,7 +602,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.COUNT);
     const fontName = event.model.item;
     this.propagateFontChange_(fontName);
-    this.setCheckMarkForMenu_(this.$.fontMenu, event.model.index);
+    this.setCheckMarkForLazyMenu_(
+        this.$.fontMenu.getIfExists(), event.model.index);
 
     this.closeMenus_();
   }
@@ -642,6 +650,35 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
     const checkMark = checkMarks[index] as IronIconElement;
     ReadAnythingToolbarElement.showElement(checkMark);
+  }
+
+  // TODO(b/329676284): Once all menus have been updated to use CrLazyMenu,
+  // remove the current setCheckMarkForMenu_ and rename this method back to
+  // setCheckMarkForMenu_.
+  private setCheckMarkForLazyMenu_(
+      menu: CrActionMenuElement|null, index: number) {
+    // If the menu has not yet been rendered, don't attempt to set any check
+    // marks yet.
+    if (!menu) {
+      return;
+    }
+    const checked =
+        Array.from(menu.getElementsByClassName('check-mark-hidden-false'));
+    checked.forEach(element => {
+      const iconElement = element as IronIconElement;
+      // TODO(crbug.com/1465029): Ensure this works with screen readers
+      if (iconElement) {
+        iconElement.classList.toggle('check-mark-hidden-true', true);
+        iconElement.classList.toggle('check-mark-hidden-false', false);
+      }
+    });
+
+    const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
+    const checkMark = checkMarks[index] as IronIconElement;
+    if (checkMark) {
+      checkMark.classList.toggle('check-mark-hidden-true', false);
+      checkMark.classList.toggle('check-mark-hidden-false', true);
+    }
   }
 
   private onFontSizeIncreaseClick_() {

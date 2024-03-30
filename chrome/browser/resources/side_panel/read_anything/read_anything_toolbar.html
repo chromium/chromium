@@ -58,8 +58,13 @@
     font-size: 13px;
   }
   .check-mark {
-    visibility: hidden;
     margin: 0;
+  }
+  .check-mark-hidden-true {
+    visibility: hidden;
+  }
+  .check-mark-hidden-false {
+    visibility: visible;
   }
   .toolbar-container {
     padding: 6px 8px;
@@ -306,14 +311,20 @@
       </button>
     </template>
   </cr-action-menu>
-  <cr-action-menu id="fontMenu">
-  <template is="dom-repeat" items="[[fontOptions_]]">
-    <button class="dropdown-item" on-click="onFontClick_"
-          style$="font-family:[[item]]">
-      <iron-icon class="button-image check-mark"
-          icon="read-anything-20:check-mark"></iron-icon>
-      [[item]]
-    </button>
-  </template>
-  </cr-action-menu>
+  <cr-lazy-render id="fontMenu">
+    <template>
+      <cr-action-menu>
+        <template is="dom-repeat" items="[[fontOptions_]]" index-as="index">
+          <button class="dropdown-item" on-click="onFontClick_"
+              style$="font-family:[[item]]">
+            <iron-icon
+              class$="button-image check-mark
+              check-mark-hidden-[[isFontItemSelected_(index)]]"
+              icon="read-anything-20:check-mark"></iron-icon>
+            [[item]]
+          </button>
+        </template>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
 </div>
