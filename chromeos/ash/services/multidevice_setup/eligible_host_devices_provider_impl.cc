@@ -138,6 +138,8 @@ void EligibleHostDevicesProviderImpl::UpdateEligibleDevicesSet() {
     device_sync_client_->GetDevicesActivityStatus(base::BindOnce(
         &EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus,
         base::Unretained(this)));
+  } else {
+    NotifyObserversEligibleDevicesSynced();
   }
 }
 
@@ -147,6 +149,7 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
         devices_activity_status_optional) {
   if (network_result != device_sync::mojom::NetworkRequestResult::kSuccess ||
       !devices_activity_status_optional) {
+    NotifyObserversEligibleDevicesSynced();
     return;
   }
 
@@ -312,6 +315,8 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
             }),
         eligible_active_devices_from_last_sync_.end());
   }
+
+  NotifyObserversEligibleDevicesSynced();
 }
 
 }  // namespace multidevice_setup

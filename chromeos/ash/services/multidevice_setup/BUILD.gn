@@ -16,6 +16,7 @@ static_library("multidevice_setup") {
     "android_sms_app_installing_status_observer.h",
     "device_with_connectivity_status.cc",
     "device_with_connectivity_status.h",
+    "eligible_host_devices_provider.cc",
     "eligible_host_devices_provider.h",
     "eligible_host_devices_provider_impl.cc",
     "eligible_host_devices_provider_impl.h",

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_H_
 #define CHROMEOS_ASH_SERVICES_MULTIDEVICE_SETUP_ELIGIBLE_HOST_DEVICES_PROVIDER_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/multidevice_setup/device_with_connectivity_status.h"
 
@@ -15,11 +17,29 @@ namespace multidevice_setup {
 // Provides all remote devices which are eligible to be MultiDevice hosts.
 class EligibleHostDevicesProvider {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Call when new devices synced from
+    // `DeviceSyncClient::OnNewDevicesSynced()` have been processed by the
+    // `EligibleHostDevicesProvider`, which  entails filtering out devices
+    // that do not support BETTER_TOGETHER, and that are inactive. Observers
+    // should wait on`EligibleHostDevicesProvider::OnEligibleDevicesSynced()`
+    // rather than `DeviceSyncClient::OnNewDevicesSynced()` to calculate the
+    // host status to prevent calculating host status from an outdated
+    // eligible device cache.
+    virtual void OnEligibleDevicesSynced() = 0;
+  };
+
   EligibleHostDevicesProvider(const EligibleHostDevicesProvider&) = delete;
   EligibleHostDevicesProvider& operator=(const EligibleHostDevicesProvider&) =
       delete;
 
-  virtual ~EligibleHostDevicesProvider() = default;
+  virtual ~EligibleHostDevicesProvider();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  void NotifyObserversEligibleDevicesSynced();
 
   // Returns all eligible host devices sorted by the last time they were updated
   // on (i.e. enrolled with) the server. In this context, this means that the
@@ -36,7 +56,10 @@ class EligibleHostDevicesProvider {
   GetEligibleActiveHostDevices() const = 0;
 
  protected:
-  EligibleHostDevicesProvider() = default;
+  EligibleHostDevicesProvider();
+
+ private:
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace multidevice_setup

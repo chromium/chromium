@@ -60,12 +60,11 @@ HostStatusProviderImpl::HostStatusProviderImpl(
     : eligible_host_devices_provider_(eligible_host_devices_provider),
       host_backend_delegate_(host_backend_delegate),
       host_verifier_(host_verifier),
-      device_sync_client_(device_sync_client),
       current_status_and_device_(mojom::HostStatus::kNoEligibleHosts,
                                  std::nullopt /* host_device */) {
   host_backend_delegate_->AddObserver(this);
   host_verifier_->AddObserver(this);
-  device_sync_client_->AddObserver(this);
+  eligible_host_devices_provider_->AddObserver(this);
 
   CheckForUpdatedStatusAndNotifyIfChanged(
       /*force_notify_host_status_change=*/false);
@@ -80,7 +79,7 @@ HostStatusProviderImpl::HostStatusProviderImpl(
 HostStatusProviderImpl::~HostStatusProviderImpl() {
   host_backend_delegate_->RemoveObserver(this);
   host_verifier_->RemoveObserver(this);
-  device_sync_client_->RemoveObserver(this);
+  eligible_host_devices_provider_->RemoveObserver(this);
 }
 
 HostStatusProvider::HostStatusWithDevice
@@ -103,7 +102,7 @@ void HostStatusProviderImpl::OnHostVerified() {
       /*force_notify_host_status_change=*/false);
 }
 
-void HostStatusProviderImpl::OnNewDevicesSynced() {
+void HostStatusProviderImpl::OnEligibleDevicesSynced() {
   CheckForUpdatedStatusAndNotifyIfChanged(
       /*force_notify_host_status_change=*/true);
 }

@@ -29,7 +29,8 @@ const size_t kNumTestDevices = 6;
 }  // namespace
 
 class MultiDeviceSetupEligibleHostDevicesProviderImplTest
-    : public ::testing::TestWithParam<std::tuple<bool, bool, bool, bool>> {
+    : public ::testing::TestWithParam<std::tuple<bool, bool, bool, bool>>,
+      public EligibleHostDevicesProvider::Observer {
  public:
   MultiDeviceSetupEligibleHostDevicesProviderImplTest(
       const MultiDeviceSetupEligibleHostDevicesProviderImplTest&) = delete;
@@ -84,7 +85,10 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
 
     provider_ = EligibleHostDevicesProviderImpl::Factory::Create(
         fake_device_sync_client_.get());
+    provider_->AddObserver(this);
   }
+
+  void TearDown() override { provider_->RemoveObserver(this); }
 
   device_sync::FakeDeviceSyncClient* fake_device_sync_client() {
     return fake_device_sync_client_.get();
@@ -120,6 +124,11 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
         multidevice::SoftwareFeatureState::kNotSupported;
   }
 
+  // EligibleHostDevicesProvider::Observer:
+  void OnEligibleDevicesSynced() override {
+    notified_eligible_devices_synced_ = true;
+  }
+
   bool use_get_devices_activity_status() const {
     return use_get_devices_activity_status_;
   }
@@ -138,6 +147,10 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
     return use_last_activity_time_to_dedup_;
   }
 
+  bool notified_eligible_devices_synced() const {
+    return notified_eligible_devices_synced_;
+  }
+
  private:
   multidevice::RemoteDeviceRefList test_devices_;
 
@@ -149,6 +162,7 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
   bool use_connectivity_status_;
   bool always_use_active_eligible_devices_;
   bool use_last_activity_time_to_dedup_;
+  bool notified_eligible_devices_synced_ = false;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -170,7 +184,28 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, NoEligibleDevices) {
   fake_device_sync_client()->set_synced_devices(devices);
   fake_device_sync_client()->NotifyNewDevicesSynced();
 
+  if (use_get_devices_activity_status()) {
+    std::vector<device_sync::mojom::DeviceActivityStatusPtr>
+        device_activity_statuses;
+    device_activity_statuses.emplace_back(
+        device_sync::mojom::DeviceActivityStatus::New(
+            test_devices()[0].instance_id(),
+            /*last_activity_time=*/base::Time::FromTimeT(50),
+            cryptauthv2::ConnectivityStatus::ONLINE,
+            /*last_update_time=*/base::Time::FromTimeT(4)));
+    device_activity_statuses.emplace_back(
+        device_sync::mojom::DeviceActivityStatus::New(
+            test_devices()[1].instance_id(),
+            /*last_activity_time=*/base::Time::FromTimeT(100),
+            cryptauthv2::ConnectivityStatus::ONLINE,
+            /*last_update_time=*/base::Time::FromTimeT(2)));
+    fake_device_sync_client()->InvokePendingGetDevicesActivityStatusCallback(
+        device_sync::mojom::NetworkRequestResult::kSuccess,
+        std::move(device_activity_statuses));
+  }
+
   EXPECT_TRUE(provider()->GetEligibleHostDevices().empty());
+  EXPECT_TRUE(notified_eligible_devices_synced());
 }
 
 // Regression test for b/207089877
@@ -184,7 +219,28 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
   fake_device_sync_client()->set_synced_devices(devices);
   fake_device_sync_client()->NotifyNewDevicesSynced();
 
+  if (use_get_devices_activity_status()) {
+    std::vector<device_sync::mojom::DeviceActivityStatusPtr>
+        device_activity_statuses;
+    device_activity_statuses.emplace_back(
+        device_sync::mojom::DeviceActivityStatus::New(
+            test_devices()[0].instance_id(),
+            /*last_activity_time=*/base::Time::FromTimeT(50),
+            cryptauthv2::ConnectivityStatus::ONLINE,
+            /*last_update_time=*/base::Time::FromTimeT(4)));
+    device_activity_statuses.emplace_back(
+        device_sync::mojom::DeviceActivityStatus::New(
+            test_devices()[1].instance_id(),
+            /*last_activity_time=*/base::Time::FromTimeT(100),
+            cryptauthv2::ConnectivityStatus::ONLINE,
+            /*last_update_time=*/base::Time::FromTimeT(2)));
+    fake_device_sync_client()->InvokePendingGetDevicesActivityStatusCallback(
+        device_sync::mojom::NetworkRequestResult::kSuccess,
+        std::move(device_activity_statuses));
+  }
+
   EXPECT_TRUE(provider()->GetEligibleHostDevices().empty());
+  EXPECT_TRUE(notified_eligible_devices_synced());
 }
 
 TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, Sorting) {
@@ -335,6 +391,8 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, Sorting) {
                 eligible_active_device.connectivity_status);
     }
   }
+
+  EXPECT_TRUE(notified_eligible_devices_synced());
 }
 
 TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
@@ -420,6 +478,8 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
       EXPECT_EQ(eligible_devices[i], eligible_active_devices[i].remote_device);
     }
   }
+
+  EXPECT_TRUE(notified_eligible_devices_synced());
 }
 
 TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
@@ -456,6 +516,7 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
   EXPECT_EQ(test_devices()[1], eligible_devices[1]);
   EXPECT_EQ(test_devices()[2], eligible_devices[2]);
   EXPECT_EQ(test_devices()[3], eligible_devices[3]);
+  EXPECT_TRUE(notified_eligible_devices_synced());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
