@@ -9,6 +9,8 @@
 
 namespace recordreplay {
 
+void InitPaintCallback() {}
+
 void OnCommitPaint() {}
 
 void OnReadyToCommit() {}

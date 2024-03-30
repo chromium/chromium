@@ -23,6 +23,9 @@ namespace recordreplay {
 // can then be encoded to base64 images and reported to the record/replay
 // driver and sent to clients inspecting the recording.
 
+// Initialize relevant render logic.
+void InitPaintCallback();
+
 // Called on the main thread when changes have been committed to the layer tree
 // and the thread is about to block until the compositor thread is ready to commit.
 void OnCommitPaint();

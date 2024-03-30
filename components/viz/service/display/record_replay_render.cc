@@ -216,6 +216,14 @@ static std::atomic<size_t> gCurrentPaintBookmark;
 // Bookmark for the last point where a paint was committed on the main thread.
 static size_t gLastCommitBookmark;
 
+void InitPaintCallback() {
+  static bool hasPaints = false;
+  if (!hasPaints) {
+    hasPaints = true;
+    V8RecordReplaySetPaintCallback(PaintCallback);
+  }
+}
+
 void OnCommitPaint() {
   // Record/replay state has to be initialized before the first paint
   // starts, as a checkpoint must have been taken.
@@ -244,12 +252,6 @@ static std::atomic<char*> gRepaintResult;
 static std::atomic<gfx::Size> gDeviceViewportSize;
 
 void OnPaintFinished(const SkPixmap& pixmap) {
-  static bool hasPaints = false;
-  if (!hasPaints) {
-    hasPaints = true;
-    V8RecordReplaySetPaintCallback(PaintCallback);
-  }
-
   gCurrentPixmap = &pixmap;
   if (gOutputSurface) {
     // Obtain device size on impl thread.
@@ -321,7 +323,7 @@ static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
   // Wait for the repainting frame to complete.
   bool signaled = event.TimedWait(base::Milliseconds(3000));
   if (!signaled) {
-    Print("Failed waiting to get a repaint.");
+    Print("[RuntimeError] Failed waiting to get a repaint.");
     gRepaintResult = nullptr;
   }
 
