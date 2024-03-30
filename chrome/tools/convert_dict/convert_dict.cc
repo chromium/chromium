@@ -16,6 +16,7 @@
 
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
@@ -34,8 +35,7 @@ namespace {
 bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
                  const std::string& serialized) {
   hunspell::BDictReader reader;
-  if (!reader.Init(reinterpret_cast<const unsigned char*>(serialized.data()),
-                   serialized.size())) {
+  if (!reader.Init(base::as_byte_span(serialized))) {
     printf("BDict is invalid\n");
     return false;
   }

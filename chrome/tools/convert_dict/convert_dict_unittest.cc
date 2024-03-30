@@ -27,9 +27,7 @@ namespace {
 bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
                  const std::string& serialized) {
   hunspell::BDictReader reader;
-  EXPECT_TRUE(
-      reader.Init(reinterpret_cast<const unsigned char*>(serialized.data()),
-      serialized.size()));
+  EXPECT_TRUE(reader.Init(base::as_byte_span(serialized)));
 
   hunspell::WordIterator iter = reader.GetAllWordIterator();
 

@@ -93,7 +93,7 @@ class HunspellImpl
 {
 public:
 #ifdef HUNSPELL_CHROME_CLIENT
-  HunspellImpl(const unsigned char* bdict_data, size_t bdict_length);
+  explicit HunspellImpl(base::span<const unsigned char> bdict_data);
 #else
   HunspellImpl(const char* affpath, const char* dpath, const char* key);
 #endif
@@ -170,8 +170,8 @@ private:
 };
 
 #ifdef HUNSPELL_CHROME_CLIENT
-Hunspell::Hunspell(const unsigned char* bdict_data, size_t bdict_length)
-  : m_Impl(new HunspellImpl(bdict_data, bdict_length)) {
+Hunspell::Hunspell(base::span<const unsigned char> bdict_data)
+  : m_Impl(new HunspellImpl(bdict_data)) {
 #else
 Hunspell::Hunspell(const char* affpath, const char* dpath, const char* key)
   : m_Impl(new HunspellImpl(affpath, dpath, key)) {
@@ -179,7 +179,7 @@ Hunspell::Hunspell(const char* affpath, const char* dpath, const char* key)
 }
 
 #ifdef HUNSPELL_CHROME_CLIENT
-HunspellImpl::HunspellImpl(const unsigned char* bdict_data, size_t bdict_length) {
+HunspellImpl::HunspellImpl(base::span<const unsigned char> bdict_data) {
 #else
 HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* key) {
 #endif
@@ -192,7 +192,7 @@ HunspellImpl::HunspellImpl(const char* affpath, const char* dpath, const char* k
 
 #ifdef HUNSPELL_CHROME_CLIENT
   bdict_reader = new hunspell::BDictReader;
-  bdict_reader->Init(bdict_data, bdict_length);
+  bdict_reader->Init(bdict_data);
 
   /* first set up the hash manager */
   m_HMgrs.push_back(new HashMgr(bdict_reader));

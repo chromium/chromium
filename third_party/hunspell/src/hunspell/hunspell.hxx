@@ -80,6 +80,7 @@
 #include <vector>
 
 #ifdef HUNSPELL_CHROME_CLIENT
+#include "base/containers/span.h"
 #include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
@@ -120,7 +121,7 @@ class LIBHUNSPELL_DLL_EXPORTED Hunspell {
    * with system-dependent character encoding instead of _wfopen()).
    */
 #ifdef HUNSPELL_CHROME_CLIENT
-  Hunspell(const unsigned char* bdict_data, size_t bdict_length);
+  explicit Hunspell(base::span<const unsigned char> bdict_data);
 #else
   Hunspell(const char* affpath, const char* dpath, const char* key = NULL);
 #endif

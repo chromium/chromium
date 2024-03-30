@@ -33,7 +33,7 @@
 //     Array of NULL terminated strings. It will end in a double-NULL.
 //
 //   Affix rules table:
-//     List of LF termianted lines. NULL terminated.
+//     List of LF terminated lines. NULL terminated.
 //
 //   Replacements table:
 //     List of pairs of NULL teminated words. The end is indicated by a
@@ -43,7 +43,7 @@
 //     for replacing ("foo" with "bar") and ("a" with "b").
 //
 //   Other rules table:
-//     List of LF termianted lines. NULL terminated.
+//     List of LF terminated lines. NULL terminated.
 //
 //
 // Dic table. This stores the .dic file which contains the words in the

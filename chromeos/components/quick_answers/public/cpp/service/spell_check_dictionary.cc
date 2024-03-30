@@ -27,8 +27,7 @@ bool SpellCheckDictionary::Initialize(base::File file) {
     return false;
   }
 
-  hunspell_ = std::make_unique<Hunspell>(mapped_dict_file_->data(),
-                                         mapped_dict_file_->length());
+  hunspell_ = std::make_unique<Hunspell>(mapped_dict_file_->bytes());
 
   return true;
 }

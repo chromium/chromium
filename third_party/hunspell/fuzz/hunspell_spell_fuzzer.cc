@@ -15,8 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!size)
     return 0;
 
-  static Hunspell* hunspell =
-      new Hunspell(kHunspellDictionary, sizeof(kHunspellDictionary));
+  static Hunspell* hunspell = new Hunspell(kHunspellDictionary);
 
   std::string data_string(reinterpret_cast<const char*>(data), size);
 
