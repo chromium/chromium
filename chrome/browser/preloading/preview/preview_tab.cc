@@ -52,8 +52,8 @@ std::unique_ptr<views::Widget> CreateWidget(content::WebContents& parent,
   params.bounds =
       gfx::Rect(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2,
                 rect.width() / 2, rect.height() / 2);
-#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  params.requires_accelerated_widget = true;
+#if BUILDFLAG(IS_OZONE)
+  params.use_accelerated_widget_override = true;
 #endif
 
   std::unique_ptr<views::Widget> widget =

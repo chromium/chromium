@@ -425,11 +425,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If set, the window size will follow the content preferred size.
     bool autosize = false;
 
-#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-    // Indicates whether the desktop native widget is required for the widget.
-    // This may enforce changing the type of the underlying platform window.
+#if BUILDFLAG(IS_OZONE)
+    // Specifies whether the Widget should use a desktop native widget.
+    //   true: desktop native widget will always be used
+    //   false: desktop native widget will never be used
+    //   unspecified: depends on experiment kOzoneBubblesUsePlatformWidgets and
+    //     whether the platform actually supports desktop native subwindows (see
+    //     ozone_platform.h `supports_subwindows_as_accelerated_widgets`)
     // See crbug.com/1280332
-    bool requires_accelerated_widget = false;
+    std::optional<bool> use_accelerated_widget_override;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

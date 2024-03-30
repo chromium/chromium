@@ -4,8 +4,13 @@
 
 #include "ui/views/test/views_test_utils.h"
 
+#include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace views::test {
 
@@ -26,6 +31,18 @@ void RunScheduledLayout(View* view) {
     parent_view = parent_view->parent();
   if (parent_view->needs_layout())
     parent_view->DeprecatedLayoutImmediately();
+}
+
+bool IsOzoneBubblesUsingPlatformWidgets() {
+#if BUILDFLAG(IS_OZONE)
+  return base::FeatureList::IsEnabled(
+             features::kOzoneBubblesUsePlatformWidgets) &&
+         ui::OzonePlatform::GetInstance()
+             ->GetPlatformRuntimeProperties()
+             .supports_subwindows_as_accelerated_widgets;
+#else
+  return false;
+#endif
 }
 
 }  // namespace views::test

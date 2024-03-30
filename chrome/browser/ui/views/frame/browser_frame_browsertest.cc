@@ -120,6 +120,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, ChildWidgetsReceiveThemeUpdates) {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = browser_view->GetWidget()->GetNativeView();
   params.child = true;
+  // TODO(https://crbug.com/329271186): Theme updates do not propagate to bubble
+  // in a separate platform widget.
+#if BUILDFLAG(IS_OZONE)
+  params.use_accelerated_widget_override = false;
+#endif
   child_widget->Init(std::move(params));
 
   // Add a bubble widget and set up the theme change observer.

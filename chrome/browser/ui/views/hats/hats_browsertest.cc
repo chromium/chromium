@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -322,6 +323,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
+  // TODO(https://crbug.com/329235190): render_frame_metadata is skipped,
+  // causing no UpdateWidgetSize() call.
+  if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto* dialog = new MockHatsNextWebDialog(
@@ -345,6 +352,12 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
+  // TODO(https://crbug.com/329235190): render_frame_metadata is skipped,
+  // causing no UpdateWidgetSize() call.
+  if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_CALL(*hats_service(), HatsNextDialogClosed);

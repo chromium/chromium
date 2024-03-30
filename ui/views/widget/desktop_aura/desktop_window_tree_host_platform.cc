@@ -99,8 +99,7 @@ ui::PlatformWindowOpacity GetPlatformWindowOpacity(
 }
 
 ui::PlatformWindowType GetPlatformWindowType(
-    Widget::InitParams::Type window_type,
-    bool requires_accelerated_widget) {
+    Widget::InitParams::Type window_type) {
   switch (window_type) {
     case Widget::InitParams::TYPE_WINDOW:
       return ui::PlatformWindowType::kWindow;
@@ -111,8 +110,7 @@ ui::PlatformWindowType GetPlatformWindowType(
     case Widget::InitParams::TYPE_DRAG:
       return ui::PlatformWindowType::kDrag;
     case Widget::InitParams::TYPE_BUBBLE:
-      return requires_accelerated_widget ? ui::PlatformWindowType::kTooltip
-                                         : ui::PlatformWindowType::kBubble;
+      return ui::PlatformWindowType::kBubble;
     default:
       return ui::PlatformWindowType::kPopup;
   }
@@ -134,11 +132,10 @@ ui::PlatformWindowShadowType GetPlatformWindowShadowType(
 
 ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     const Widget::InitParams& params,
-    bool requires_accelerated_widget,
     float device_scale_factor) {
   ui::PlatformWindowInitProperties properties;
-  properties.type =
-      GetPlatformWindowType(params.type, requires_accelerated_widget);
+  properties.type = GetPlatformWindowType(params.type);
+  properties.accept_events = params.accept_events;
   properties.activatable =
       params.activatable == Widget::InitParams::Activatable::kYes;
   properties.force_show_in_taskbar = params.force_show_in_taskbar;
@@ -273,14 +270,8 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
   if (params.type == Widget::InitParams::TYPE_WINDOW)
     GetContentWindow()->SetProperty(aura::client::kAnimationsDisabledKey, true);
 
-#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  const bool requires_accelerated_widget = params.requires_accelerated_widget;
-#else
-  const bool requires_accelerated_widget = false;
-#endif
   ui::PlatformWindowInitProperties properties =
-      ConvertWidgetInitParamsToInitProperties(
-          params, requires_accelerated_widget, device_scale_factor());
+      ConvertWidgetInitParamsToInitProperties(params, device_scale_factor());
   AddAdditionalInitProperties(params, &properties);
 
 #if BUILDFLAG(IS_CHROMEOS)

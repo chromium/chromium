@@ -18,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace translate {
 
@@ -49,6 +50,14 @@ class TranslateIconViewTest : public InProcessBrowserTest {
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.type = views::Widget::InitParams::TYPE_WINDOW;
     widget->Init(std::move(params));
+    // TODO(https://crbug.com/329235190): The bubble child of a widget that is
+    // invisible will not be mapped through wayland and hence never shown so
+    // widget must be shown. However, showing widget causes
+    // RunAccessibilityPaintChecks() to fail when this feature is disabled due
+    // to node_data.GetNameFrom() == kContents.
+    if (views::test::IsOzoneBubblesUsingPlatformWidgets()) {
+      widget->Show();
+    }
 
     return widget;
   }

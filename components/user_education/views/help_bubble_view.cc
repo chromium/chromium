@@ -1026,7 +1026,9 @@ void HelpBubbleView::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
   // issues in Weston, the windowing environment used on chrome's Wayland
   // testbots:
   // https://gitlab.freedesktop.org/wayland/weston/-/issues/669
-  params->requires_accelerated_widget = (GetAnchorAsMenuItem(this) != nullptr);
+  if (GetAnchorAsMenuItem(this) != nullptr) {
+    params->use_accelerated_widget_override = true;
+  }
 #endif
 }
 

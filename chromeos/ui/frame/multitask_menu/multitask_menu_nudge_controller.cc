@@ -73,6 +73,11 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   params.name = "MultitaskNudgeWidget";
   params.accept_events = false;
   params.parent = window->parent();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This widget must not set `use_accelerated_widget_override` b/c this
+  // widget's window will be reparented to `window`.
+  params.use_accelerated_widget_override = false;
+#endif
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   const int message_id = display::Screen::GetScreen()->InTabletMode()
