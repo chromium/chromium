@@ -14,9 +14,10 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -58,7 +59,6 @@ namespace remoting {
 class AudioPacket;
 class ClientSessionControl;
 class DesktopSessionConnector;
-struct DesktopSessionProxyTraits;
 class IpcAudioCapturer;
 class IpcMouseCursorMonitor;
 class IpcKeyboardLayoutMonitor;
@@ -71,17 +71,16 @@ class ScreenControls;
 // and the stubs, since stubs can out-live their DesktopEnvironment.
 //
 // DesktopSessionProxy objects are ref-counted but are always deleted on
-// the |caller_task_runner_| thread. This makes it possible to continue
+// the |caller_task_runner| thread. This makes it possible to continue
 // to receive IPC messages after the ref-count has dropped to zero, until
 // the proxy is deleted. DesktopSessionProxy must therefore avoid creating new
-// references to the itself while handling IPC messages and desktop
+// references to itself while handling IPC messages and desktop
 // attach/detach notifications.
 //
 // All public methods of DesktopSessionProxy are called on
-// the |caller_task_runner_| thread unless it is specified otherwise.
+// the |caller_task_runner| thread unless it is specified otherwise.
 class DesktopSessionProxy
-    : public base::RefCountedThreadSafe<DesktopSessionProxy,
-                                        DesktopSessionProxyTraits>,
+    : public base::RefCountedDeleteOnSequence<DesktopSessionProxy>,
       public IPC::Listener,
       public IpcFileOperations::RequestHandler,
       public mojom::DesktopSessionEventHandler,
@@ -140,7 +139,7 @@ class DesktopSessionProxy
       const base::WeakPtr<IpcMouseCursorMonitor>& mouse_cursor_monitor);
 
   // Stores |keyboard_layout_monitor| to be used to post keyboard layout
-  // changes. Called on the |caller_task_runner_| thread.
+  // changes.
   void SetKeyboardLayoutMonitor(
       const base::WeakPtr<IpcKeyboardLayoutMonitor>& keyboard_layout_monitor);
   const std::optional<protocol::KeyboardLayout>& GetKeyboardCurrentLayout()
@@ -193,8 +192,8 @@ class DesktopSessionProxy
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 
  private:
+  friend class base::RefCountedDeleteOnSequence<DesktopSessionProxy>;
   friend class base::DeleteHelper<DesktopSessionProxy>;
-  friend struct DesktopSessionProxyTraits;
 
   ~DesktopSessionProxy() override;
 
@@ -221,10 +220,9 @@ class DesktopSessionProxy
   // Task runners:
   //   - |audio_capturer_| is called back on |audio_capture_task_runner_|.
   //   - public methods of this class (with some exceptions) are called on
-  //     |caller_task_runner_|.
+  //     |caller_task_runner| passed in the constructor.
   //   - background I/O is served on |io_task_runner_|.
   scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
 
@@ -232,79 +230,91 @@ class DesktopSessionProxy
   base::WeakPtr<IpcAudioCapturer> audio_capturer_;
 
   // Points to the client stub passed to StartInputInjector().
-  std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
+  std::unique_ptr<protocol::ClipboardStub> client_clipboard_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to disconnect the client session.
-  base::WeakPtr<ClientSessionControl> client_session_control_;
+  base::WeakPtr<ClientSessionControl> client_session_control_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to trigger events on the client session.
-  base::WeakPtr<ClientSessionEvents> client_session_events_;
+  base::WeakPtr<ClientSessionEvents> client_session_events_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to create a desktop session and receive notifications every time
   // the desktop process is replaced.
-  base::WeakPtr<DesktopSessionConnector> desktop_session_connector_;
+  base::WeakPtr<DesktopSessionConnector> desktop_session_connector_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Points to the video capturer receiving captured video frames.
-  base::WeakPtr<IpcVideoFrameCapturer> video_capturer_;
+  base::WeakPtr<IpcVideoFrameCapturer> video_capturer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Points to the mouse cursor monitor receiving mouse cursor changes.
-  base::WeakPtr<IpcMouseCursorMonitor> mouse_cursor_monitor_;
+  base::WeakPtr<IpcMouseCursorMonitor> mouse_cursor_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Points to the keyboard layout monitor receiving keyboard layout changes.
-  base::WeakPtr<IpcKeyboardLayoutMonitor> keyboard_layout_monitor_;
+  base::WeakPtr<IpcKeyboardLayoutMonitor> keyboard_layout_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to create IpcFileOperations instances and route result messages.
-  IpcFileOperationsFactory ipc_file_operations_factory_;
+  IpcFileOperationsFactory ipc_file_operations_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // IPC channel to the desktop session agent.
-  std::unique_ptr<IPC::ChannelProxy> desktop_channel_;
+  std::unique_ptr<IPC::ChannelProxy> desktop_channel_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keeps the desired screen resolution so it can be passed to a newly attached
   // desktop session agent.
-  ScreenResolution screen_resolution_;
+  ScreenResolution screen_resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // True if |this| has been connected to the desktop session.
-  bool is_desktop_session_connected_;
+  bool is_desktop_session_connected_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  DesktopEnvironmentOptions options_;
+  DesktopEnvironmentOptions options_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stores the session id for the proxied desktop process.
   uint32_t desktop_session_id_ = UINT32_MAX;
 
   // Caches the last keyboard layout received so it can be provided when Start
   // is called on IpcKeyboardLayoutMonitor.
-  std::optional<protocol::KeyboardLayout> keyboard_layout_;
+  std::optional<protocol::KeyboardLayout> keyboard_layout_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to notify registered handlers when the IPC channel is disconnected.
-  base::OnceClosureList disconnect_handlers_;
+  base::OnceClosureList disconnect_handlers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // |desktop_session_agent_| is only valid when |desktop_channel_| is
   // connected.
-  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent_;
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // |desktop_session_control_| is only valid when |desktop_channel_| is
   // connected. The desktop process can be detached and reattached several times
   // during a session (e.g. transitioning between the login screen and user
   // desktop) so the validity of this remote must be checked before calling a
   // method on it.
-  mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
+  mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::AssociatedReceiver<mojom::DesktopSessionEventHandler>
-      desktop_session_event_handler_{this};
+      desktop_session_event_handler_ GUARDED_BY_CONTEXT(sequence_checker_){
+          this};
   mojo::AssociatedReceiver<mojom::DesktopSessionStateHandler>
-      desktop_session_state_handler_{this};
+      desktop_session_state_handler_ GUARDED_BY_CONTEXT(sequence_checker_){
+          this};
 
   UrlForwarderConfigurator::IsUrlForwarderSetUpCallback
-      is_url_forwarder_set_up_callback_;
+      is_url_forwarder_set_up_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   UrlForwarderConfigurator::SetUpUrlForwarderCallback
-      set_up_url_forwarder_callback_;
-  mojom::UrlForwarderState current_url_forwarder_state_ =
-      mojom::UrlForwarderState::kUnknown;
-};
+      set_up_url_forwarder_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  mojom::UrlForwarderState current_url_forwarder_state_ GUARDED_BY_CONTEXT(
+      sequence_checker_) = mojom::UrlForwarderState::kUnknown;
 
-// Destroys |DesktopSessionProxy| instances on the caller's thread.
-struct DesktopSessionProxyTraits {
-  static void Destruct(const DesktopSessionProxy* desktop_session_proxy);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

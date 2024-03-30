@@ -457,7 +457,12 @@ void IpcDesktopEnvironmentTest::DeleteDesktopEnvironment() {
   url_forwarder_configurator_.reset();
 
   // Trigger CloseDesktopSession().
-  desktop_environment_.reset();
+  // `desktop_environment_` should be torn down asynchronously. Many of these
+  // tests pass DeleteDesktopEnvironment() inside callbacks that are run by
+  // DesktopSessionProxy, and these should not synchronously delete
+  // DesktopSessionProxy.
+  task_environment_.GetMainThreadTaskRunner()->DeleteSoon(
+      FROM_HERE, desktop_environment_.release());
 }
 
 void IpcDesktopEnvironmentTest::ReflectClipboardEvent(
