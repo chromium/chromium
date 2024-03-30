@@ -70767,7 +70767,7 @@
       ]
      ],
      "position-visibility-anchors-valid.tentative.html": [
-      "05a04445d386d39f5a21f394a1411052ca0dbf7b",
+      "bf6792163961a893ea08d7eb654bacc71afd650b",
       [
        null,
        [
@@ -70786,6 +70786,19 @@
        [
         [
          "/css/css-anchor-position/position-visibility-anchors-visible-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "position-visibility-no-overflow-stacked-child.tentative.html": [
+      "f748fda33eb20e1810072b0a8c14b34ab1b65312",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-visibility-no-overflow-ref.html",
          "=="
         ]
        ],
@@ -300663,7 +300676,7 @@
       []
      ],
      "position-visibility-anchors-valid-ref.html": [
-      "3f86fdc90187a13634f9ef5155f1abb76becf671",
+      "96b4e865512c2adf1215e7aaae43bc1053bd6356",
       []
      ],
      "position-visibility-anchors-visible-ref.html": [
@@ -345769,6 +345782,10 @@
      "918997b1646d73d71a79c302953ab9f0f8ed69cc",
      []
     ],
+    "fn-lang-expected.txt": [
+     "e9898b11d39100fc617cb5610885755b0e665fdd",
+     []
+    ],
     "helpers.js": [
      "0805bd682b48461588250a22018a6bd90990d002",
      []
@@ -367755,7 +367772,7 @@
      "invokers": {
       "resources": {
        "invoker-utils.js": [
-        "317945502d4dcbb2f7ec298872a01becd9d47ddb",
+        "8420f24b6f738a33511b63d78c89978736f188c8",
         []
        ]
       }
@@ -370219,10 +370236,6 @@
       ],
       "test.js": [
        "e725107b80d89996bef6cd4d484304130f246170",
-       []
-      ],
-      "unclosed-svg-script-expected.txt": [
-       "3a76f4a1dddb8c47bfc269b4b8476d3553c8e776",
        []
       ]
      },
@@ -386188,7 +386201,7 @@
      []
     ],
     "selection-direction.tentative-expected.txt": [
-     "0d890016fbcfcc727230019ed61bffd97dc65877",
+     "44160314dd22de27518ca3bd6e446c4311d5a998",
      []
     ],
     "selection-getComposedRanges.tentative-expected.txt": [
@@ -394951,7 +394964,7 @@
       ]
      },
      "utils.js": [
-      "a153e39709631d5987a11f57067bb85075967aa1",
+      "d1dc0675a7f5e75d3faca852e70b8a43d6722ced",
       []
      ],
      "utils_validation.js": [
@@ -482380,7 +482393,7 @@
      ]
     ],
     "fn-lang.html": [
-     "c7c102945d070a4ea65cae0e30ea6ec64bb82c95",
+     "1fbd0a2ee4d419275c6d78f54e3425135cf838a1",
      [
       null,
       {}
@@ -575341,6 +575354,15 @@
           null,
           {}
          ]
+        ],
+        "selectedoption.tentative.html": [
+         "41ed34a9a2a444abb3fa67b58fed38aa08062a7b",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
         ]
        }
       },
@@ -576501,6 +576523,26 @@
       ],
       "invoketarget-on-details-invalid-behavior.tentative.html": [
        "d5e90af9c0e43246c468025b12ef0e8cec115aeb",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
+      "invoketarget-on-dialog-behavior.tentative.html": [
+       "9f73e092b0342d461b4b25657c9f795294fad4b3",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
+      "invoketarget-on-dialog-invalid-behavior.tentative.html": [
+       "af84c22594a47e311d76485144ce3ed2c8a94b34",
        [
         null,
         {
@@ -630745,7 +630787,7 @@
      ]
     ],
     "selection-direction.tentative.html": [
-     "d18b45a3ad6e7706295d16cde25ff1f1b3fc1f42",
+     "b5b3f6044c7da188b5f1e4b3eb78eba8b1d14122",
      [
       null,
       {
@@ -667940,7 +667982,7 @@
       ]
      ],
      "buffer.https.any.js": [
-      "5b0f46dae0211276fe1468ec15ffcde142d9de67",
+      "9391be8dbf0b8e1049ad9fa28f44080cd29928b0",
       [
        "webnn/conformance_tests/buffer.https.any.html",
        {
@@ -668757,7 +668799,7 @@
        ]
       ],
       "buffer.https.any.js": [
-       "66bba9ef4afc66cd4e3c3c9a761d4ea526530a6c",
+       "225bc401858ce62388d7e8c3321251ff32ecc87e",
        [
         "webnn/conformance_tests/gpu/buffer.https.any.html",
         {
