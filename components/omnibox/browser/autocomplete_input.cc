@@ -765,7 +765,6 @@ void AutocompleteInput::Clear() {
   omit_asynchronous_matches_ = false;
   focus_type_ = metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
-  query_tile_id_.reset();
   https_port_for_testing_ = 0;
   use_fake_https_for_https_upgrade_testing_ = false;
 }
@@ -781,9 +780,6 @@ size_t AutocompleteInput::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(desired_tld_);
   res +=
       base::trace_event::EstimateMemoryUsage(terms_prefixed_by_http_or_https_);
-  res += query_tile_id_.has_value()
-             ? base::trace_event::EstimateMemoryUsage(query_tile_id_.value())
-             : 0u;
 
   return res;
 }

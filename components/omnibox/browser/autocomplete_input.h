@@ -265,19 +265,6 @@ class AutocompleteInput {
     return terms_prefixed_by_http_or_https_;
   }
 
-  // Returns the ID of the query tile selected by the user, if any.
-  // If no tile was selected, returns std::nullopt.
-  const std::optional<std::string>& query_tile_id() const {
-    return query_tile_id_;
-  }
-
-  // Called to indicate that the query tile represented by |tile_id| was
-  // clicked by the user. In the absence of a |query_tile_id_|, top level tiles
-  // will be displayed.
-  void set_query_tile_id(const std::string& tile_id) {
-    query_tile_id_ = tile_id;
-  }
-
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -337,7 +324,6 @@ class AutocompleteInput {
   metrics::OmniboxFocusType focus_type_ =
       metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
-  std::optional<std::string> query_tile_id_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;
