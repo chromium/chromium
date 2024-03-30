@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
@@ -127,6 +128,55 @@ void BrowserAccessibilityManagerWin::UserIsReloading() {
   if (GetBrowserAccessibilityRoot())
     FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_RELOAD,
                               GetBrowserAccessibilityRoot());
+}
+
+void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
+    BrowserAccessibility* node,
+    const std::string& announcement,
+    const std::string& notification_id,
+    ax::mojom::AriaNotificationInterrupt interrupt_property,
+    ax::mojom::AriaNotificationPriority priority_property) {
+  DCHECK(node);
+
+  auto MapPropertiesToUiaNotificationProcessing =
+      [&]() -> NotificationProcessing {
+    switch (interrupt_property) {
+      case ax::mojom::AriaNotificationInterrupt::kNone:
+        switch (priority_property) {
+          case ax::mojom::AriaNotificationPriority::kNone:
+            return NotificationProcessing_All;
+          case ax::mojom::AriaNotificationPriority::kImportant:
+            return NotificationProcessing_ImportantAll;
+        }
+      case ax::mojom::AriaNotificationInterrupt::kAll:
+        switch (priority_property) {
+          case ax::mojom::AriaNotificationPriority::kNone:
+            return NotificationProcessing_MostRecent;
+          case ax::mojom::AriaNotificationPriority::kImportant:
+            return NotificationProcessing_ImportantMostRecent;
+        }
+      case ax::mojom::AriaNotificationInterrupt::kPending:
+        switch (priority_property) {
+          case ax::mojom::AriaNotificationPriority::kNone:
+            return NotificationProcessing_CurrentThenMostRecent;
+          case ax::mojom::AriaNotificationPriority::kImportant:
+            // This is resolved the same as `AriaNotificationInterrupt::kAll`,
+            // but UIA doesn't have a specific enum value for these options yet.
+            return NotificationProcessing_ImportantMostRecent;
+        }
+    }
+    NOTREACHED_NORETURN();
+  };
+
+  const base::win::ScopedBstr announcement_bstr(base::UTF8ToWide(announcement));
+  const base::win::ScopedBstr notification_id_bstr(
+      base::UTF8ToWide(notification_id));
+
+  UiaRaiseNotificationEvent(ToBrowserAccessibilityWin(node)->GetCOM(),
+                            NotificationKind_ActionCompleted,
+                            MapPropertiesToUiaNotificationProcessing(),
+                            announcement_bstr.Get(),
+                            notification_id_bstr.Get());
 }
 
 void BrowserAccessibilityManagerWin::FireFocusEvent(ui::AXNode* node) {
