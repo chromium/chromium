@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">Няма връзка</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
+<translation id="2416438829169535743">Искате ли да излезете от изгледа?</translation>
 <translation id="2417486498593892439">Вход в мрежата</translation>
 <translation id="2426051945783024481">Рамката на камерата бе центрирана автоматично</translation>
 <translation id="2427507373259914951">Кликване с левия бутон</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">Изключване на точката за достъп</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5558091555391176027">Превключване на увеличената видимост за „Споделяне наблизо“</translation>
+<translation id="5558314826121965174">Творчество</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5570122939431135380">Отваряне на нов раздел в нов прозорец в режим „инкогнито“</translation>
 <translation id="5571066253365925590">Bluetooth е активиран</translation>
+<translation id="5572632238877308040">Основни</translation>
 <translation id="557563299383177668">Следващ абзац</translation>
 <translation id="5577082622442191756">Превключване на Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Функцията за Bluetooth трябва да е активирана на телефона ви, за да използвате Phone Hub</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">Работен кът 10</translation>
 <translation id="5662709761327382534">Записването от микрофона e <ph name="CURRENT_STATE" />. Натиснете Enter, за да бъде <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Активира се</translation>
+<translation id="5672890847723042801">Помощни приложения</translation>
 <translation id="5673434351075758678">От <ph name="FROM_LOCALE" /> към <ph name="TO_LOCALE" /> след синхронизиране на настройките ви.</translation>
 <translation id="5675363643668471212">Елемент в лавицата</translation>
 <translation id="5677928146339483299">Блокирано</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">ПРЕДЛОЖЕНИЯ ЗА ПРИЛОЖЕНИЯ</translation>
 <translation id="6352082849089527770">Неизвестни мрежи</translation>
 <translation id="6359587239691116345">Получавайте най-новите функции и подобрения в сигурността. Ако отхвърлите тази актуализация, устройството ви може вече да не работи правилно и може да имате проблеми със сигурността и производителността.</translation>
+<translation id="6362833380917912748">Опознайте вградените си приложения</translation>
 <translation id="6376931439017688372">Функцията за Bluetooth е включена</translation>
 <translation id="6378515133128829137">Фиксиране на прозореца отдясно</translation>
 <translation id="6381109794406942707">Въведете ПИН кода си, за да отключите устройството.</translation>
@@ -1847,6 +1852,7 @@
 <translation id="8262312463845990408">Превключване на възпроизвеждането</translation>
 <translation id="8270450402312105425">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един час}other{Връщане на устройството към предишна версия в рамките на # часа}}</translation>
 <translation id="8277261673056602147">Открояване на текста на екрана</translation>
+<translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8308637677604853869">Предишно меню</translation>
@@ -1918,6 +1924,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Сортиране на приложенията ви по име или цвят</translation>
 <translation id="8609384513243082612">Отваряне на нов раздел</translation>
+<translation id="861045123704058818">Приложенията временно са организирани по категория</translation>
 <translation id="8612216344243590325">Съхранявайте важните файлове в(ъв) <ph name="HOLDING_SPACE_TITLE" /> вместо на работния плот. Трябва само да ги преместите в(ъв) <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Известията от <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> са скрити, тъй като защитата срещу надничане е включена</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1956,6 +1963,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Потвърждаване на самоличността ви: <ph name="ORIGIN_NAME" /> иска да потвърди, че това сте вие</translation>
 <translation id="875593634123171288">Показване на настройките за VPN</translation>
+<translation id="8756799553341497810">Можете да започнете да персонализирате оформлението на приложението си, след като излезете от този изглед.</translation>
 <translation id="8759408218731716181">Централизираният вход не може да се настрои</translation>
 <translation id="8763883995157866248">Включване на спящия режим на устройството</translation>
 <translation id="877404052021108314">90°F в C</translation>

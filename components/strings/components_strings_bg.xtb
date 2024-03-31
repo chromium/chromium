@@ -1114,6 +1114,7 @@
 <translation id="3154987252551138431">При използването на „Споделяне наблизо“ нещо се обърка</translation>
 <translation id="315504272643575312">Профилът ви се управлява от <ph name="MANAGER" />.</translation>
 <translation id="3155163173539279776">Рестартиране на Chromium</translation>
+<translation id="3156511682997763015">Превъртане с 10 секунди напред</translation>
 <translation id="3157931365184549694">Възстановяване</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Използваната от вас Wi-Fi мрежа може да изисква да посетите страницата й за вход.</translation>
@@ -1214,6 +1215,7 @@
 <translation id="334438173029876234">Оборудване за скейтборд</translation>
 <translation id="3347146863028219517">Ски и сноуборд</translation>
 <translation id="3349952286488694786">SRA2</translation>
+<translation id="3350450887151703713">Повтаряне на 10 секунди</translation>
 <translation id="3352881017886802007">Спортни игри</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
 <translation id="335809815767823">Експортирани</translation>
@@ -3053,6 +3055,7 @@
 <translation id="6944557544071529399">Стратегически игри</translation>
 <translation id="6944692733090228304">Въведохте паролата си на сайт, който не се управлява от <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="6945221475159498467">Избиране</translation>
+<translation id="6946949206576443118">Търсене в мрежата в Chrome</translation>
 <translation id="6948051842255602737">Край на играта. Резултатът ви е <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">За да видите начините на вземане и изискванията, изберете адрес</translation>
 <translation id="6948874830249067134">A1 x 3</translation>

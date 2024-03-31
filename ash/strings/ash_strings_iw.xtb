@@ -336,6 +336,7 @@
 <translation id="2405664212338326887">לא מחובר</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
+<translation id="2416438829169535743">לצאת מהתצוגה?</translation>
 <translation id="2417486498593892439">כניסה לרשת</translation>
 <translation id="2426051945783024481">פריים המצלמה מורכז באופן אוטומטי</translation>
 <translation id="2427507373259914951">לחיצה שמאלית</translation>
@@ -1153,9 +1154,11 @@
 <translation id="5555639311269196631">כיבוי הנקודה לשיתוף אינטרנט</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5558091555391176027">החלפת מצב השיתוף בקרבת מקום במידת חשיפה גבוהה</translation>
+<translation id="5558314826121965174">יצירתיות</translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5570122939431135380">פתיחת כרטיסייה חדשה בחלון פרטי חדש</translation>
 <translation id="5571066253365925590">‏Bluetooth מופעל</translation>
+<translation id="5572632238877308040">האפליקציות שחייבים להכיר</translation>
 <translation id="557563299383177668">הפסקה הבאה</translation>
 <translation id="5577082622442191756">‏הפעלה או השבתה של Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">‏יש לבדוק שה-Bluetooth פועל בטלפון כדי להשתמש ב-Phone Hub</translation>
@@ -1180,6 +1183,7 @@
 <translation id="5662075790140998213">שולחן עבודה וירטואלי מספר 10</translation>
 <translation id="5662709761327382534">‏הקלטת המיקרופון <ph name="CURRENT_STATE" />, יש להקיש על Enter כדי להעביר את הקלטת המיקרופון למצב <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
+<translation id="5672890847723042801">כלים לתחזוקת המחשב</translation>
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
 <translation id="5675363643668471212">פריט מדף</translation>
 <translation id="5677928146339483299">חסום</translation>
@@ -1361,6 +1365,7 @@
 <translation id="6351032674660237738">הצעות לאפליקציות</translation>
 <translation id="6352082849089527770">רשתות לא ידועות</translation>
 <translation id="6359587239691116345">קבלה של התכונות ושיפורי האבטחה האחרונים. ללא הסכמתך לעדכון הזה, המכשיר שלך עשוי להפסיק לפעול כמו שצריך ויכול להיות שיהיו בעיות באבטחה ובביצועים.</translation>
+<translation id="6362833380917912748">כדאי להכיר את האפליקציות המובנות</translation>
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6378515133128829137">הצמדת החלון לצד ימין</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
@@ -1849,6 +1854,7 @@
 <translation id="8262312463845990408">הפעלה או השהיה של הקראת הטקסט</translation>
 <translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}one{שינוי המכשיר לגרסה קודמת בתוך # שעות}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
+<translation id="8287009018010202411">פרודוקטיביות</translation>
 <translation id="828708037801473432">כבויה</translation>
 <translation id="8297006494302853456">חלש</translation>
 <translation id="8308637677604853869">התפריט הקודם</translation>
@@ -1920,6 +1926,7 @@
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">מיון אפליקציות לפי שם או לפי צבע</translation>
 <translation id="8609384513243082612">פתיחת כרטיסייה חדשה</translation>
+<translation id="861045123704058818">האפליקציות מאורגנות באופן זמני לפי קטגוריות</translation>
 <translation id="8612216344243590325">עדיף לשמור קבצים חשובים בתיקייה <ph name="HOLDING_SPACE_TITLE" /> במקום בשולחן העבודה. פשוט גוררים קבצים אל <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> מוסתרות כי מופעלת הגנה על תצוגה</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -1958,6 +1965,7 @@
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">אימות הזהות שלך: על מנת להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="875593634123171288">‏צפייה בהגדרות VPN</translation>
+<translation id="8756799553341497810">אחרי היציאה מהתצוגה הזו אפשר להתחיל להתאים אישית את הפריסה של האפליקציה.</translation>
 <translation id="8759408218731716181">לא ניתן להגדיר כניסה עם מספר חשבונות</translation>
 <translation id="8763883995157866248">העברת המכשיר למצב שינה</translation>
 <translation id="877404052021108314">90° פרנהייט בצלזיוס</translation>
