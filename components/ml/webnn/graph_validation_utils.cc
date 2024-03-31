@@ -1288,6 +1288,107 @@ base::expected<std::vector<Operand>, std::string> ValidateGruAndInferOutput(
   return outputs;
 }
 
+GruCellAttributes::GruCellAttributes() = default;
+GruCellAttributes::~GruCellAttributes() = default;
+
+GruCellAttributes::GruCellAttributes(GruCellAttributes&& other) = default;
+GruCellAttributes& GruCellAttributes::operator=(GruCellAttributes&& other) =
+    default;
+
+base::expected<Operand, std::string> ValidateGruCellAndInferOutput(
+    const Operand& input,
+    const Operand& weight,
+    const Operand& recurrent_weight,
+    const Operand& hidden_state,
+    uint32_t hidden_size,
+    const GruCellAttributes& attributes) {
+  if (hidden_size <= 0) {
+    return base::unexpected("The hidden size must be greater than 0.");
+  }
+
+  // Validate the weight operand.
+  // TODO(crbug.com/331055053): Specify the operand data type constraints of
+  // operation.
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The data type of input must be one of the floating point types.");
+  }
+  const std::vector<uint32_t>& input_dimensions = input.dimensions;
+  if (input_dimensions.size() != 2) {
+    return base::unexpected("The input must be a 2-D tensor.");
+  }
+  const uint32_t batch_size = input_dimensions[0];
+  const uint32_t input_size = input_dimensions[1];
+  auto checked_three_times_hidden_size = base::MakeCheckedNum(hidden_size) * 3;
+  uint32_t three_times_hidden_size;
+  if (!checked_three_times_hidden_size.AssignIfValid(
+          &three_times_hidden_size)) {
+    return base::unexpected("The hidden size is too large.");
+  }
+
+  // Validate the weight operand.
+  std::array<uint32_t, 2> expected_weight_shape = {three_times_hidden_size,
+                                                   input_size};
+  base::expected<void, std::string> weight_validation_result =
+      ValidateRecurrentNetworkOperand(weight, "weight", expected_weight_shape,
+                                      input.data_type);
+  if (!weight_validation_result.has_value()) {
+    return base::unexpected(weight_validation_result.error());
+  }
+
+  // Validate the recurrent weight operand.
+  std::array<uint32_t, 2> expected_recurrent_weight_shape = {
+      three_times_hidden_size, hidden_size};
+  base::expected<void, std::string> recurrent_weight_validation_result =
+      ValidateRecurrentNetworkOperand(recurrent_weight, "recurrent weight",
+                                      expected_recurrent_weight_shape,
+                                      input.data_type);
+  if (!recurrent_weight_validation_result.has_value()) {
+    return base::unexpected(recurrent_weight_validation_result.error());
+  }
+
+  // Validate the hidden state operand.
+  std::array<uint32_t, 2> expected_hidden_state_shape = {batch_size,
+                                                         hidden_size};
+  auto hidden_state_validation_result = ValidateRecurrentNetworkOperand(
+      hidden_state, "hidden state", expected_hidden_state_shape,
+      input.data_type);
+  if (!hidden_state_validation_result.has_value()) {
+    return base::unexpected(hidden_state_validation_result.error());
+  }
+
+  // Validate the bias operand.
+  std::array<uint32_t, 1> expected_bias_shape = {three_times_hidden_size};
+  if (attributes.bias) {
+    const Operand& bias = attributes.bias.value();
+    auto bias_validation_result = ValidateRecurrentNetworkOperand(
+        bias, "bias", expected_bias_shape, input.data_type);
+    if (!bias_validation_result.has_value()) {
+      return base::unexpected(bias_validation_result.error());
+    }
+  }
+
+  // Validate the recurrent bias operand.
+  std::array<uint32_t, 1> expected_recurrent_bias_shape = {
+      three_times_hidden_size};
+  if (attributes.recurrent_bias) {
+    const Operand& recurrent_bias = attributes.recurrent_bias.value();
+    auto recurrent_bias_validation_result = ValidateRecurrentNetworkOperand(
+        recurrent_bias, "recurrent bias", expected_recurrent_bias_shape,
+        input.data_type);
+    if (!recurrent_bias_validation_result.has_value()) {
+      return base::unexpected(recurrent_bias_validation_result.error());
+    }
+  }
+
+  if (attributes.activation_count != 2) {
+    return base::unexpected("The number of activations must be 2.");
+  }
+
+  std::vector<uint32_t> output_shape{batch_size, hidden_size};
+  return Operand(input.data_type, std::move(output_shape));
+}
+
 InstanceNormalizationAttributes::InstanceNormalizationAttributes() = default;
 InstanceNormalizationAttributes::~InstanceNormalizationAttributes() = default;
 

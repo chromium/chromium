@@ -337,6 +337,7 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kGather:
       case mojom::Operation::Tag::kGemm:
       case mojom::Operation::Tag::kGru:
+      case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kHardSigmoid:
       case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:

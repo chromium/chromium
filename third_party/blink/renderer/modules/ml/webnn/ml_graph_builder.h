@@ -35,6 +35,7 @@ class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
 class MLGruOptions;
+class MLGruCellOptions;
 class MLGraph;
 class MLHardSigmoidOptions;
 class MLInstanceNormalizationOptions;
@@ -207,6 +208,14 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                           const uint32_t hidden_size,
                                           MLGruOptions* options,
                                           ExceptionState& exception_state);
+
+  MLOperand* gruCell(const MLOperand* input,
+                     const MLOperand* weight,
+                     const MLOperand* recurrent_weight,
+                     const MLOperand* hidden_state,
+                     const uint32_t hidden_size,
+                     MLGruCellOptions* options,
+                     ExceptionState& exception_state);
 
   MLOperand* hardSigmoid(const MLOperand* input,
                          const MLHardSigmoidOptions* options,

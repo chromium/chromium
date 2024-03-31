@@ -267,7 +267,7 @@ class GraphInfoBuilder final {
   //   bool reset_after;
   //   bool return_sequence;
   //   mojom::RecurrentNetworkDirection direction;
-  //   mojom::Gru::GruWeightLayout layout;
+  //   mojom::GruWeightLayout layout;
   //   std::vector<Activation> activations;
   // };
   template <typename GruAttributes>
@@ -300,6 +300,37 @@ class GraphInfoBuilder final {
     }
 
     graph_info_->operations.push_back(mojom::Operation::NewGru(std::move(gru)));
+  }
+
+  // A `GruCellAttributes` type should have the following members:
+  // struct GruCellAttributes {
+  //   std::optional<uint64_t> bias_operand_id;
+  //   std::optional<uint64_t> recurrent_bias_operand_id;
+  //   bool reset_after;
+  //   mojom::GruWeightLayout layout;
+  //   std::vector<Activation> activations;
+  // };
+  template <typename GruCellAttributes>
+  void BuildGruCell(uint64_t input_operand_id,
+                    uint64_t weight_operand_id,
+                    uint64_t recurrent_weight_operand_id,
+                    uint64_t hidden_state_operand_id,
+                    uint64_t output_operand_id,
+                    uint32_t hidden_size,
+                    const GruCellAttributes& attributes) {
+    std::vector<mojom::ActivationPtr> activations;
+    activations.reserve(attributes.activations.size());
+    for (const auto& activation : attributes.activations) {
+      activations.push_back(CreateActivation(activation));
+    }
+    mojom::GruCellPtr gru_cell = mojom::GruCell::New(
+        input_operand_id, weight_operand_id, recurrent_weight_operand_id,
+        hidden_state_operand_id, hidden_size, output_operand_id,
+        attributes.bias_operand_id, attributes.recurrent_bias_operand_id,
+        attributes.reset_after, attributes.layout, std::move(activations));
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewGruCell(std::move(gru_cell)));
   }
 
   void BuildHardSigmoid(uint64_t input_operand_id,

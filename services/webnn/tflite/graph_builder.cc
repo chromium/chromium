@@ -379,6 +379,8 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("gather is not implemented");
     case mojom::Operation::Tag::kGru:
       return base::unexpected("gru is not implemented");
+    case mojom::Operation::Tag::kGruCell:
+      return base::unexpected("gruCell is not implemented");
     case mojom::Operation::Tag::kHardSigmoid:
       return base::unexpected("hardSigmoid is not implemented");
     case mojom::Operation::Tag::kLayerNormalization:

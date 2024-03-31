@@ -83,6 +83,14 @@ dictionary MLGruOptions {
   sequence<MLActivation> activations;
 };
 
+dictionary MLGruCellOptions {
+  MLOperand bias;
+  MLOperand recurrentBias;
+  boolean resetAfter = true;
+  MLGruWeightLayout layout = "zrn";
+  sequence<MLActivation> activations;
+};
+
 dictionary MLHardSigmoidOptions {
   float alpha = 0.2;
   float beta = 0.5;
@@ -265,6 +273,9 @@ dictionary MLTriangularOptions {
   [RaisesException] sequence<MLOperand> gru(MLOperand input, MLOperand weight, MLOperand recurrentWeight,
                     [EnforceRange] unsigned long steps, [EnforceRange] unsigned long hiddenSize,
                     optional MLGruOptions options = {});
+
+  [RaisesException] MLOperand gruCell(MLOperand input, MLOperand weight, MLOperand recurrentWeight, MLOperand hiddenState,
+                    [EnforceRange] unsigned long hiddenSize, optional MLGruCellOptions options = {});
 
   [RaisesException] MLOperand hardSigmoid(MLOperand x, optional MLHardSigmoidOptions options = {});
   [RaisesException] MLActivation hardSigmoid(optional MLHardSigmoidOptions options = {});

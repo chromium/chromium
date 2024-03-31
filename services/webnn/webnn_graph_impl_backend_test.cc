@@ -4867,7 +4867,7 @@ struct GruTester {
     bool return_sequence = false;
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
-    mojom::Gru::GruWeightLayout layout = mojom::Gru::GruWeightLayout::kZrn;
+    mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
     std::vector<Activation> activations{
         Activation{.kind = mojom::Activation::Tag::kSigmoid},
         Activation{.kind = mojom::Activation::Tag::kTanh}};
@@ -5196,6 +5196,159 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGru) {
               .values = {-725., -725., -725., -725., -725., -2399., -2399.,
                          -2399., -2399., -2399., -5045., -5045., -5045., -5045.,
                          -5045.}}}}
+        .Test();
+  }
+}
+
+// TODO(https://issues.chromium.org/issues/331250158): Delete the test cases
+// after the WPT conformance tests are completed.
+template <typename T>
+struct GruCellTester {
+  struct GruCellAttributes {
+    std::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> recurrent_bias_operand_id;
+    bool reset_after = true;
+    mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
+    std::vector<Activation> activations{
+        Activation{.kind = mojom::Activation::Tag::kSigmoid},
+        Activation{.kind = mojom::Activation::Tag::kTanh}};
+  };
+
+  OperandInfo<T> input;
+  OperandInfo<T> weight;
+  OperandInfo<T> recurrent_weight;
+  OperandInfo<T> hidden_state;
+  uint32_t hidden_size;
+  std::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> recurrent_bias;
+  GruCellAttributes attributes;
+  OperandInfo<T> output;
+
+  void Test(BuildAndComputeExpectation expectation =
+                BuildAndComputeExpectation::kSuccess) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", weight.dimensions, weight.type);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", recurrent_weight.dimensions, recurrent_weight.type);
+    uint64_t hidden_state_operand_id = builder.BuildInput(
+        "hiddenState", hidden_state.dimensions, hidden_state.type);
+
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    if (recurrent_bias.has_value()) {
+      attributes.recurrent_bias_operand_id = builder.BuildInput(
+          "recurrentBias", recurrent_bias->dimensions, recurrent_bias->type);
+    }
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+
+    builder.BuildGruCell(input_operand_id, weight_operand_id,
+                         recurrent_weight_operand_id, hidden_state_operand_id,
+                         output_operand_id, hidden_size, std::move(attributes));
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"weight", VectorToBigBuffer(weight.values)});
+    named_inputs.insert(
+        {"recurrentWeight", VectorToBigBuffer(recurrent_weight.values)});
+    named_inputs.insert(
+        {"hiddenState", VectorToBigBuffer(hidden_state.values)});
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    if (recurrent_bias.has_value()) {
+      named_inputs.insert(
+          {"recurrentBias", VectorToBigBuffer(recurrent_bias->values)});
+    }
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs, expectation);
+
+    if (expectation == BuildAndComputeExpectation::kSuccess) {
+      VerifyIsEqual(std::move(named_outputs["output"]), output);
+    }
+  }
+};
+
+// Test building and computing a graph with single operator gruCell.
+TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorGruCell) {
+  // Test gruCell without bias and initial hidden state.
+  {
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    GruCellTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3 * hidden_size, input_size},
+                   .values =
+                       std::vector<float>(3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3 * hidden_size, hidden_size},
+                             .values = std::vector<float>(
+                                 3 * hidden_size * hidden_size, 1)},
+        .hidden_state = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {batch_size, hidden_size},
+                         .values =
+                             std::vector<float>(batch_size * hidden_size, 0)},
+        .hidden_size = hidden_size,
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {batch_size, hidden_size},
+                   .values = {-30., -30., -30., -30., -30., -210., -210., -210.,
+                              -210., -210., -552., -552., -552., -552., -552.}}}
+        .Test();
+  }
+  // Test gruCell with bias and recurrentbias.
+  {
+    const uint32_t batch_size = 3;
+    const uint32_t input_size = 3;
+    const uint32_t hidden_size = 5;
+    GruCellTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {batch_size, input_size},
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3 * hidden_size, input_size},
+                   .values =
+                       std::vector<float>(3 * hidden_size * input_size, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3 * hidden_size, hidden_size},
+                             .values = std::vector<float>(
+                                 3 * hidden_size * hidden_size, 1)},
+        .hidden_state = {.type = mojom::Operand::DataType::kFloat32,
+                         .dimensions = {batch_size, hidden_size},
+                         .values =
+                             std::vector<float>(batch_size * hidden_size, 0)},
+        .hidden_size = hidden_size,
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {3 * hidden_size},
+                                   .values =
+                                       std::vector<float>(3 * hidden_size, 1)},
+        .recurrent_bias =
+            OperandInfo<float>{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {3 * hidden_size},
+                .values = std::vector<float>(3 * hidden_size, 0)},
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {batch_size, hidden_size},
+                   .values = {-42., -42., -42., -42., -42., -240., -240., -240.,
+                              -240., -240., -600., -600., -600., -600., -600.}}}
         .Test();
   }
 }

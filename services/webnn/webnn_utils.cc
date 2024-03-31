@@ -32,6 +32,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "gemm";
     case mojom::Operation::Tag::kGru:
       return "gru";
+    case mojom::Operation::Tag::kGruCell:
+      return "gruCell";
     case mojom::Operation::Tag::kHardSigmoid:
       return "hardSigmoid";
     case mojom::Operation::Tag::kHardSwish:

@@ -286,6 +286,25 @@ struct GruAttributes {
   uint32_t activation_count;
 };
 
+// Contains the attributes of gruCell operator.
+struct GruCellAttributes {
+  GruCellAttributes();
+  ~GruCellAttributes();
+
+  GruCellAttributes(GruCellAttributes&& other);
+  GruCellAttributes& operator=(GruCellAttributes&& other);
+
+  GruCellAttributes(const GruCellAttributes&) = delete;
+  GruCellAttributes& operator=(const GruCellAttributes&) = delete;
+
+  // The bias operand.
+  std::optional<Operand> bias;
+  // The recurrent bias operand.
+  std::optional<Operand> recurrent_bias;
+  // The number of activations.
+  uint32_t activation_count;
+};
+
 // Contains the attributes of instanceNormalization operator.
 struct InstanceNormalizationAttributes {
   InstanceNormalizationAttributes();
@@ -497,6 +516,16 @@ base::expected<std::vector<Operand>, std::string> ValidateGruAndInferOutput(
     uint32_t steps,
     uint32_t hidden_size,
     const GruAttributes& attributes);
+
+// Validate and infer output information of gruCell operator defined in WebIDL
+// here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-grucell.
+base::expected<Operand, std::string> ValidateGruCellAndInferOutput(
+    const Operand& input,
+    const Operand& weight,
+    const Operand& recurrent_weight,
+    const Operand& hidden_state,
+    uint32_t hidden_size,
+    const GruCellAttributes& attributes);
 
 // Validate and infer output information of instanceNormalization operator
 // defined in WebIDL here

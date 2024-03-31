@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
@@ -85,13 +86,13 @@ blink_mojom::LstmWeightLayout BlinkLstmWeightLayoutToMojo(
   }
 }
 
-blink_mojom::Gru::GruWeightLayout BlinkGruWeightLayoutToMojo(
+blink_mojom::GruWeightLayout BlinkGruWeightLayoutToMojo(
     blink::V8MLGruWeightLayout::Enum layout) {
   switch (layout) {
     case blink::V8MLGruWeightLayout::Enum::kZrn:
-      return blink_mojom::Gru::GruWeightLayout::kZrn;
+      return blink_mojom::GruWeightLayout::kZrn;
     case blink::V8MLGruWeightLayout::Enum::kRzn:
-      return blink_mojom::Gru::GruWeightLayout::kRzn;
+      return blink_mojom::GruWeightLayout::kRzn;
   }
 }
 
@@ -656,6 +657,7 @@ OperationPtr CreateGruOperation(const OperandToIdMap& operand_to_id_map,
       mojo::BlinkGruWeightLayoutToMojo(options->layout().AsEnum());
 
   const auto& activations = options->activations();
+  CHECK_EQ(activations.size(), 2u);
   gru_mojo->activations.reserve(activations.size());
   for (const auto& activation : activations) {
     gru_mojo->activations.push_back(
@@ -670,6 +672,65 @@ OperationPtr CreateGruOperation(const OperandToIdMap& operand_to_id_map,
   }
 
   return blink_mojom::Operation::NewGru(std::move(gru_mojo));
+}
+
+base::expected<OperationPtr, String> CreateGruCellOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* gru_cell) {
+  uint64_t input_operand_id =
+      GetOperatorInputId(gru_cell, operand_to_id_map, 0);
+  uint64_t weight_operand_id =
+      GetOperatorInputId(gru_cell, operand_to_id_map, 1);
+  uint64_t recurrent_weight_operand_id =
+      GetOperatorInputId(gru_cell, operand_to_id_map, 2);
+  uint64_t hidden_state_operand_id =
+      GetOperatorInputId(gru_cell, operand_to_id_map, 3);
+
+  const auto* gru_cell_operator =
+      static_cast<const MLGruCellOperator*>(gru_cell);
+  uint32_t hidden_size = gru_cell_operator->hidden_size();
+
+  const auto* options =
+      static_cast<const MLGruCellOptions*>(gru_cell->Options());
+  CHECK(options);
+
+  std::optional<uint64_t> bias_operand_id;
+  if (options->hasBias()) {
+    bias_operand_id = operand_to_id_map.at(options->bias());
+  }
+  std::optional<uint64_t> recurrent_bias_operand_id;
+  if (options->hasRecurrentBias()) {
+    recurrent_bias_operand_id = operand_to_id_map.at(options->recurrentBias());
+  }
+  // gru_cell_mojo->reset_after = options->resetAfter();
+  // gru_cell_mojo->layout =
+  //     mojo::BlinkGruWeightLayoutToMojo(options->layout().AsEnum());
+
+  // const auto& activations = options->activations();
+  const HeapVector<Member<MLActivation>>& ml_activations =
+      options->activations();
+  CHECK_EQ(ml_activations.size(), 2u);
+  Vector<ActivationPtr> activations;
+  activations.reserve(ml_activations.size());
+  for (const auto& activation : ml_activations) {
+    base::expected<ActivationPtr, String> validated_activation =
+        CreateActivation(operand_to_id_map, activation);
+    if (!validated_activation.has_value()) {
+      return base::unexpected(validated_activation.error());
+    }
+    activations.push_back(std::move(validated_activation.value()));
+  }
+
+  uint64_t output_operand_id = GetOperatorOutputId(gru_cell, operand_to_id_map);
+
+  auto gru_cell_mojo = blink_mojom::GruCell::New(
+      input_operand_id, weight_operand_id, recurrent_weight_operand_id,
+      hidden_state_operand_id, hidden_size, output_operand_id, bias_operand_id,
+      recurrent_bias_operand_id, options->resetAfter(),
+      mojo::BlinkGruWeightLayoutToMojo(options->layout().AsEnum()),
+      std::move(activations));
+
+  return blink_mojom::Operation::NewGruCell(std::move(gru_cell_mojo));
 }
 
 OperationPtr CreateHardSwishOperation(const OperandToIdMap& operand_to_id_map,
@@ -1228,6 +1289,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateGemmOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kGru:
       return CreateGruOperation(operand_to_id_map, op);
+    case blink_mojom::Operation::Tag::kGruCell:
+      return CreateGruCellOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kHardSigmoid:
       return blink_mojom::Operation::NewHardSigmoid(
           CreateHardSigmoid(operand_to_id_map, op, false));

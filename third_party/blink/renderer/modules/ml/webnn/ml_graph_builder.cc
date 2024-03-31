@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
@@ -402,6 +403,35 @@ webnn::GruAttributes ConvertToGruAttributes(MLGraphBuilder* builder,
   attributes.return_sequence = options->returnSequence();
   attributes.direction =
       BlinkRecurrentNetworkDirectionToComponent(options->direction().AsEnum());
+  // If the activations are not specified, create a default activation sequence
+  // [sigmoid, tanh] as defined in the spec.
+  if (!options->hasActivations()) {
+    MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
+        builder, webnn::mojom::blink::Activation::Tag::kSigmoid);
+    MLActivation* activation_tanh = MakeGarbageCollected<MLActivation>(
+        builder, webnn::mojom::blink::Activation::Tag::kTanh);
+    options->setActivations({activation_sigmoid, activation_tanh});
+  }
+  attributes.activation_count = options->activations().size();
+
+  return attributes;
+}
+
+webnn::GruCellAttributes ConvertToGruCellAttributes(
+    MLGraphBuilder* builder,
+    blink::MLGruCellOptions* options) {
+  CHECK(options);
+  webnn::GruCellAttributes attributes;
+
+  if (options->hasBias()) {
+    attributes.bias = ConvertToComponentOperand(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    attributes.recurrent_bias =
+        ConvertToComponentOperand(options->recurrentBias());
+  }
+  // If the activations are not specified, create a default activation sequence
+  // [sigmoid, tanh] as defined in the spec.
   if (!options->hasActivations()) {
     MLActivation* activation_sigmoid = MakeGarbageCollected<MLActivation>(
         builder, webnn::mojom::blink::Activation::Tag::kSigmoid);
@@ -1299,6 +1329,52 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::gru(
 
   gru->Connect(std::move(inputs), outputs);
   return outputs;
+}
+
+MLOperand* MLGraphBuilder::gruCell(const MLOperand* input,
+                                   const MLOperand* weight,
+                                   const MLOperand* recurrent_weight,
+                                   const MLOperand* hidden_state,
+                                   const uint32_t hidden_size,
+                                   MLGruCellOptions* options,
+                                   ExceptionState& exception_state) {
+  HeapVector<Member<const MLOperand>> inputs = {input, weight, recurrent_weight,
+                                                hidden_state};
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+  if (options->hasRecurrentBias()) {
+    inputs.push_back(options->recurrentBias());
+  }
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  if (options->hasActivations()) {
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivations(options->activations()),
+                                   nullptr);
+  }
+
+  auto validated_output = webnn::ValidateGruCellAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+      ConvertToComponentOperand(recurrent_weight),
+      ConvertToComponentOperand(hidden_state), hidden_size,
+      ConvertToGruCellAttributes(this, options));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
+    return {};
+  }
+  auto* gru_cell =
+      MakeGarbageCollected<MLGruCellOperator>(this, hidden_size, options);
+
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), gru_cell);
+  if (!output.has_value()) {
+    exception_state.ThrowTypeError(output.error());
+    return {};
+  }
+
+  gru_cell->Connect(std::move(inputs), {output.value()});
+  return output.value();
 }
 
 MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,

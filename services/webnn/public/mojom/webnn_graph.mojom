@@ -523,14 +523,14 @@ enum RecurrentNetworkDirection {
   kBoth,
 };
 
+// The ordering of the weight for the update (z), reset (r), new (n) gates.
+enum GruWeightLayout {
+  kZrn,
+  kRzn,
+};
+
 // Represents the Gated Recurrent Unit [GRU] recurrent network.
 struct Gru {
-  // The ordering of the weight for the update (z), reset (r), new (n) gates.
-  enum GruWeightLayout {
-    kZrn,
-    kRzn,
-  };
-
   // The id of the input operand.
   uint64 input_operand_id;
   // The id of the weight operand.
@@ -558,6 +558,35 @@ struct Gru {
   bool return_sequence;
   // The processing direction of the input sequence.
   RecurrentNetworkDirection direction;
+  // The ordering of the weight and bias vectors for the internal gates of GRU.
+  GruWeightLayout layout;
+  // Specifies a pair of activation functions for the update, reset and new
+  // gates.
+  array<Activation, 2> activations;
+};
+
+// Represents a single step of Gated Recurrent Unit [GRU] recurrent network.
+struct GruCell {
+  // The id of the input operand.
+  uint64 input_operand_id;
+  // The id of the weight operand.
+  uint64 weight_operand_id;
+  // The id of the recurrent weight operand.
+  uint64 recurrent_weight_operand_id;
+  // The id of the hidden state operand.
+  uint64 hidden_state_operand_id;
+  // The number of features in the hidden state.
+  uint32 hidden_size;
+  // The id of the output operand must be distinct from other operand ids.
+  uint64 output_operand_id;
+
+  // The id of the bias operand.
+  uint64? bias_operand_id;
+  // The id of the recurrent bias operand.
+  uint64? recurrent_bias_operand_id;
+  // Indicates whether to apply the reset gate after or before matrix
+  // multiplication.
+  bool reset_after;
   // The ordering of the weight and bias vectors for the internal gates of GRU.
   GruWeightLayout layout;
   // Specifies a pair of activation functions for the update, reset and new
@@ -971,6 +1000,7 @@ union Operation {
   Gather gather;
   Gemm gemm;
   Gru gru;
+  GruCell gru_cell;
   HardSigmoid hard_sigmoid;
   HardSwish hard_swish;
   LayerNormalization layer_normalization;

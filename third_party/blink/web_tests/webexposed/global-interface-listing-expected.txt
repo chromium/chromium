@@ -5721,6 +5721,7 @@ interface MLGraphBuilder
     method greater
     method greaterOrEqual
     method gru
+    method gruCell
     method hardSigmoid
     method hardSwish
     method identity

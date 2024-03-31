@@ -1966,6 +1966,7 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case webnn::mojom::blink::Operation::Tag::kExpand:
     case webnn::mojom::blink::Operation::Tag::kGather:
     case webnn::mojom::blink::Operation::Tag::kGru:
+    case webnn::mojom::blink::Operation::Tag::kGruCell:
     case webnn::mojom::blink::Operation::Tag::kHardSigmoid:
     case webnn::mojom::blink::Operation::Tag::kLayerNormalization:
     case webnn::mojom::blink::Operation::Tag::kInstanceNormalization:

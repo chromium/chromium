@@ -504,6 +504,26 @@ webnn::GruAttributes ConvertToGruAttributes(
   return component_attributes;
 }
 
+webnn::GruCellAttributes ConvertToGruCellAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const webnn::mojom::GruCell& gru_cell) {
+  webnn::GruCellAttributes component_attributes;
+  if (gru_cell.bias_operand_id.has_value()) {
+    const auto* bias =
+        GetMojoOperand(id_to_operand_map, gru_cell.bias_operand_id.value());
+    component_attributes.bias = ConvertToComponentOperand(bias);
+  }
+  if (gru_cell.recurrent_bias_operand_id.has_value()) {
+    const auto* recurrent_bias = GetMojoOperand(
+        id_to_operand_map, gru_cell.recurrent_bias_operand_id.value());
+    component_attributes.recurrent_bias =
+        ConvertToComponentOperand(recurrent_bias);
+  }
+  component_attributes.activation_count = gru_cell.activations.size();
+
+  return component_attributes;
+}
+
 webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalizationPtr& instance_normalization) {
@@ -1101,6 +1121,80 @@ bool ValidateGru(const IdToOperandMap& id_to_operand_map,
   }
 
   for (const auto& activation : gru->activations) {
+    if (!ValidateActivation(activation)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool ValidateGruCell(const IdToOperandMap& id_to_operand_map,
+                     const mojom::GruCell& gru_cell,
+                     base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(gru_cell.input_operand_id) ||
+      !processed_operands.contains(gru_cell.weight_operand_id) ||
+      !processed_operands.contains(gru_cell.recurrent_weight_operand_id) ||
+      !processed_operands.contains(gru_cell.hidden_state_operand_id)) {
+    return false;
+  }
+
+  const mojom::Operand* input =
+      GetMojoOperand(id_to_operand_map, gru_cell.input_operand_id);
+  const mojom::Operand* weight =
+      GetMojoOperand(id_to_operand_map, gru_cell.weight_operand_id);
+  const mojom::Operand* recurrent_weight =
+      GetMojoOperand(id_to_operand_map, gru_cell.recurrent_weight_operand_id);
+  const mojom::Operand* hidden_state =
+      GetMojoOperand(id_to_operand_map, gru_cell.hidden_state_operand_id);
+  if (!input || !weight || !recurrent_weight || !hidden_state) {
+    return false;
+  }
+
+  const std::optional<uint32_t>& bias_operand_id = gru_cell.bias_operand_id;
+  if (bias_operand_id.has_value() &&
+      (!id_to_operand_map.contains(bias_operand_id.value()) ||
+       !processed_operands.contains(gru_cell.bias_operand_id))) {
+    return false;
+  }
+  const std::optional<uint32_t>& recurrent_bias_operand_id =
+      gru_cell.recurrent_bias_operand_id;
+  if (recurrent_bias_operand_id.has_value() &&
+      (!id_to_operand_map.contains(recurrent_bias_operand_id.value()) ||
+       !processed_operands.contains(gru_cell.recurrent_bias_operand_id))) {
+    return false;
+  }
+
+  if (gru_cell.output_operand_id == gru_cell.input_operand_id ||
+      gru_cell.output_operand_id == gru_cell.weight_operand_id ||
+      gru_cell.output_operand_id == gru_cell.recurrent_weight_operand_id ||
+      gru_cell.output_operand_id == gru_cell.hidden_state_operand_id ||
+      gru_cell.output_operand_id == bias_operand_id ||
+      gru_cell.output_operand_id == recurrent_bias_operand_id) {
+    return false;
+  }
+  processed_operands.insert(gru_cell.output_operand_id);
+
+  const base::expected<webnn::Operand, std::string> validated_output =
+      ValidateGruCellAndInferOutput(
+          ConvertToComponentOperand(input), ConvertToComponentOperand(weight),
+          ConvertToComponentOperand(recurrent_weight),
+          ConvertToComponentOperand(hidden_state), gru_cell.hidden_size,
+          ConvertToGruCellAttributes(id_to_operand_map, gru_cell));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+
+  const mojom::Operand* output =
+      GetMojoOperand(id_to_operand_map, gru_cell.output_operand_id);
+  if (!output) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  for (const auto& activation : gru_cell.activations) {
     if (!ValidateActivation(activation)) {
       return false;
     }
@@ -1932,6 +2026,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
     case mojom::Operation::Tag::kGru:
       return ValidateGru(id_to_operand_map, operation->get_gru(),
                          processed_operands);
+    case mojom::Operation::Tag::kGruCell:
+      return ValidateGruCell(id_to_operand_map, *operation->get_gru_cell(),
+                             processed_operands);
     case mojom::Operation::Tag::kHardSigmoid:
       return ValidateHardSigmoid(
           id_to_operand_map, operation->get_hard_sigmoid(), processed_operands);

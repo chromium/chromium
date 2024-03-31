@@ -138,6 +138,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kGru:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "gru";
+    case webnn::mojom::blink::Operation::Tag::kGruCell:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "gruCell";
     case webnn::mojom::blink::Operation::Tag::kHardSigmoid:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "hardSigmoid";
@@ -336,6 +339,17 @@ MLGruOperator::MLGruOperator(MLGraphBuilder* builder,
       hidden_size_(hidden_size) {}
 
 MLGruOperator::~MLGruOperator() = default;
+
+MLGruCellOperator::MLGruCellOperator(MLGraphBuilder* builder,
+                                     uint32_t hidden_size,
+                                     const bindings::DictionaryBase* options)
+    : MLOperator(builder,
+                 webnn::mojom::blink::Operation::Tag::kGruCell,
+                 /*sub_kind=*/absl::monostate{},
+                 options),
+      hidden_size_(hidden_size) {}
+
+MLGruCellOperator::~MLGruCellOperator() = default;
 
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
                              const Vector<uint32_t>& beginning_padding,

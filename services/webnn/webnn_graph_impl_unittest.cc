@@ -2952,7 +2952,7 @@ struct GruTester {
     bool return_sequence = false;
     mojom::RecurrentNetworkDirection direction =
         mojom::RecurrentNetworkDirection::kForward;
-    mojom::Gru::GruWeightLayout layout = mojom::Gru::GruWeightLayout::kZrn;
+    mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
     std::vector<Activation> activations = {
         Activation{.kind = mojom::Activation::Tag::kSigmoid},
         Activation{.kind = mojom::Activation::Tag::kTanh}};
@@ -3210,6 +3210,454 @@ TEST_F(WebNNGraphImplTest, GruTest) {
         {initial_hidden_state_operand_id}, steps, hidden_size,
         GruTester::GruAttributes{.initial_hidden_state_operand_id =
                                      initial_hidden_state_operand_id});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
+struct GruCellTester {
+  struct GruCellAttributes {
+    std::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> recurrent_bias_operand_id;
+    bool reset_after = true;
+    mojom::GruWeightLayout layout = mojom::GruWeightLayout::kZrn;
+    std::vector<Activation> activations = {
+        Activation{.kind = mojom::Activation::Tag::kSigmoid},
+        Activation{.kind = mojom::Activation::Tag::kTanh}};
+  };
+
+  OperandInfo input;
+  OperandInfo weight;
+  OperandInfo recurrent_weight;
+  OperandInfo hidden_state;
+  uint32_t hidden_size;
+  std::optional<OperandInfo> bias;
+  std::optional<OperandInfo> recurrent_bias;
+  GruCellAttributes attributes;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", weight.dimensions, weight.type);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", recurrent_weight.dimensions, recurrent_weight.type);
+    uint64_t hidden_state_operand_id = builder.BuildInput(
+        "hiddenState", hidden_state.dimensions, hidden_state.type);
+
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    if (recurrent_bias.has_value()) {
+      attributes.recurrent_bias_operand_id = builder.BuildInput(
+          "recurrentBias", recurrent_bias->dimensions, recurrent_bias->type);
+    }
+
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+
+    builder.BuildGruCell(input_operand_id, weight_operand_id,
+                         recurrent_weight_operand_id, hidden_state_operand_id,
+                         output_operand_id, hidden_size, std::move(attributes));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GruCellTest) {
+  uint32_t batch_size = 2;
+  uint32_t input_size = 4;
+  uint32_t hidden_size = 6;
+
+  OperandInfo valid_input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {batch_size, input_size}};
+  OperandInfo valid_weight = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {3 * hidden_size, input_size}};
+  OperandInfo valid_recurrent_weight = {
+      .type = mojom::Operand::DataType::kFloat32,
+      .dimensions = {3 * hidden_size, hidden_size}};
+  OperandInfo valid_hidden_state = {.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {batch_size, hidden_size}};
+  OperandInfo valid_bias = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3 * hidden_size}};
+  OperandInfo valid_recurrent_bias = {
+      .type = mojom::Operand::DataType::kFloat32,
+      .dimensions = {3 * hidden_size}};
+  OperandInfo valid_output = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {batch_size, hidden_size}};
+
+  {
+    // Test the valid gruCell operator.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the data type of the input is incorrect.
+    GruCellTester{.input = {.type = mojom::Operand::DataType::kInt8,
+                            .dimensions = {batch_size, input_size}},
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of the input is incorrect.
+    GruCellTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {1, input_size}},
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of the input is incorrect.
+    GruCellTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {input_size}},
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the data type of the weight is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = {.type = mojom::Operand::DataType::kInt8,
+                             .dimensions = {3 * hidden_size, input_size}},
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of the weight is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4 * hidden_size, input_size}},
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of the weight is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3 * hidden_size}},
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the data type of the recurrent weight is
+    // incorrect.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = {.type = mojom::Operand::DataType::kInt8,
+                             .dimensions = {3 * hidden_size, hidden_size}},
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .bias = valid_bias,
+        .recurrent_bias = valid_recurrent_bias,
+        .attributes = {.reset_after = true},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of the recurrent weight is
+    // incorrect.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3 * hidden_size, input_size}},
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .bias = valid_bias,
+        .recurrent_bias = valid_recurrent_bias,
+        .attributes = {.reset_after = true},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of the recurrent weight is
+    // incorrect.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3 * hidden_size}},
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .bias = valid_bias,
+        .recurrent_bias = valid_recurrent_bias,
+        .attributes = {.reset_after = true},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the hidden_size is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = 1000,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the data type of the bias is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = OperandInfo{.type = mojom::Operand::DataType::kUint8,
+                                      .dimensions = {3 * hidden_size}},
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of the bias is incorrect.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = valid_recurrent_weight,
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {4 * hidden_size}},
+        .recurrent_bias = valid_recurrent_bias,
+        .attributes = {.reset_after = true},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of the bias is incorrect.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = valid_recurrent_weight,
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3 * hidden_size, hidden_size}},
+        .recurrent_bias = valid_recurrent_bias,
+        .attributes = {.reset_after = true},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the data type of the recurrent bias is
+    // incorrect.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = valid_recurrent_weight,
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .bias = valid_bias,
+        .recurrent_bias = OperandInfo{.type = mojom::Operand::DataType::kUint8,
+                                      .dimensions = {3 * hidden_size}},
+        .attributes = {.reset_after = true},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the shape of the recurrent bias is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias =
+                      OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {4 * hidden_size}},
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the rank of the recurrent bias is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias =
+                      OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {3 * hidden_size, hidden_size}},
+                  .attributes = {.reset_after = true},
+                  .output = valid_output,
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the the number of activation is not 2.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = valid_recurrent_weight,
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .attributes = {.activations =
+                           {Activation{.kind =
+                                           mojom::Activation::Tag::kSigmoid},
+                            Activation{.kind = mojom::Activation::Tag::kTanh},
+                            Activation{.kind = mojom::Activation::Tag::kTanh}}},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the clamp activation has incorrect
+    // attributes.
+    GruCellTester{
+        .input = valid_input,
+        .weight = valid_weight,
+        .recurrent_weight = valid_recurrent_weight,
+        .hidden_state = valid_hidden_state,
+        .hidden_size = hidden_size,
+        .attributes =
+            {.activations = {Activation{.kind =
+                                            mojom::Activation::Tag::kSigmoid},
+                             Activation{
+                                 .kind = mojom::Activation::Tag::kClamp,
+                                 .clamp_attributes =
+                                     ClampTester::ClampAttributes{
+                                         .min_value = 3.0, .max_value = 2.0}}}},
+        .output = valid_output,
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output data type is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {batch_size, hidden_size}},
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output shape is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {batch_size, 3 * hidden_size}},
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output rank is incorrect.
+    GruCellTester{.input = valid_input,
+                  .weight = valid_weight,
+                  .recurrent_weight = valid_recurrent_weight,
+                  .hidden_state = valid_hidden_state,
+                  .hidden_size = hidden_size,
+                  .bias = valid_bias,
+                  .recurrent_bias = valid_recurrent_bias,
+                  .attributes = {.reset_after = true},
+                  .output = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {hidden_size}},
+                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the hidden state has the same id as the
+    // output.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {batch_size, input_size}, mojom::Operand::DataType::kFloat32);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", {3 * hidden_size, input_size},
+                           mojom::Operand::DataType::kFloat32);
+    uint64_t recurrent_weight_operand_id =
+        builder.BuildInput("recurrentWeight", {3 * hidden_size, hidden_size},
+                           mojom::Operand::DataType::kFloat32);
+
+    uint64_t hidden_state_operand_id =
+        builder.BuildInput("hiddenState", {batch_size, hidden_size},
+                           mojom::Operand::DataType::kFloat32);
+
+    builder.BuildGruCell(input_operand_id, weight_operand_id,
+                         recurrent_weight_operand_id, hidden_state_operand_id,
+                         hidden_state_operand_id, hidden_size,
+                         GruCellTester::GruCellAttributes{.reset_after = true});
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
 }
