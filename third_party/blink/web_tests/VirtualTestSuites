@@ -1169,6 +1169,17 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "gethtml-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/shadow-dom/declarative",
+      "shadow-dom"
+    ],
+    "args": ["--disable-blink-features=ElementGetHTML"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "details-styling-disabled",
     "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
     "platforms": ["Linux"],

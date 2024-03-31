@@ -5385,7 +5385,9 @@ ShadowRoot& Element::AttachShadowRootInternal(
   DCHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed)
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
-  CHECK(!serializable || RuntimeEnabledFeatures::ElementGetHTMLEnabled());
+  CHECK(!serializable ||
+        RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled());
+  CHECK(!clonable || RuntimeEnabledFeatures::ShadowRootClonableEnabled());
 
   GetDocument().SetContainsShadowRoot();
 
