@@ -571,19 +571,6 @@ auto GraphBuilder::InsertPadOperation(const mojom::Operand& input_operand,
   const auto padding_rank = paddings.size();
   CHECK_EQ(padding_rank, 4u);
 
-  // TfLite padding is an integer tensor array filled with pre and post padding.
-  // For NHWC input layout, the sequence will be [[0, 0], [beginning_height,
-  // ending_height], [beginning_width, ending_width], [0, 0]].
-  std::array<uint32_t, 8> tflite_paddings;
-  base::ranges::copy(paddings, tflite_paddings.begin() + 2);
-
-  // The shape of padding is [n, 2], where n is the rank of input as described
-  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
-  std::array<int32_t, 2> paddings_shape = {
-      base::checked_cast<int32_t>(padding_rank), 2};
-  const int32_t padding_tensor_index = SerializeTensorWithBuffer<uint32_t>(
-      std::move(tflite_paddings), std::move(paddings_shape));
-
   // Create `tflite::Tensor` for the output operand of explicit padding operator
   // with the dimensions and data type.
   const std::vector<uint32_t>& input_shape = input_operand.dimensions;
@@ -614,6 +601,20 @@ auto GraphBuilder::InsertPadOperation(const mojom::Operand& input_operand,
   tensors_.emplace_back(::tflite::CreateTensor(
       builder_, builder_.CreateVector<int32_t>(output_shape),
       input_tensor_type));
+
+  // TfLite padding is a signed integer tensor array filled with pre and post
+  // padding. For NHWC input layout, the sequence will be [[0, 0],
+  // [beginning_height, ending_height], [beginning_width, ending_width], [0,
+  // 0]].
+  std::array<int32_t, 8> tflite_paddings = {};
+  base::ranges::copy(paddings, tflite_paddings.begin() + 2);
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  std::array<int32_t, 2> paddings_shape = {
+      base::checked_cast<int32_t>(padding_rank), 2};
+  const int32_t padding_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      std::move(tflite_paddings), std::move(paddings_shape));
 
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
