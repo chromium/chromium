@@ -45,6 +45,8 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
 
   ~JsToBrowserMessaging() override;
 
+  void OnRenderFrameHostActivated();
+
   // mojom::JsToBrowserMessaging implementation.
   void PostMessage(blink::WebMessagePayload message,
                    std::vector<blink::MessagePortDescriptor> ports) override;
@@ -55,7 +57,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
  private:
   class ReplyProxyImpl;
 
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   std::unique_ptr<ReplyProxyImpl> reply_proxy_;
   raw_ptr<WebMessageHostFactory, AcrossTasksDanglingUntriaged>
       connection_factory_;

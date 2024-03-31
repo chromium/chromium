@@ -12,6 +12,7 @@
 #include "components/js_injection/browser/web_message_reply_proxy.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -36,6 +37,33 @@ std::string GetOriginString(const url::Origin& source_origin) {
              ? "null"
              : source_origin.Serialize();
 }
+
+// Used for queueing messages posted during prerendering. DocumentUserData
+// should be appropriate for managing them as the messages should be discarded
+// when an associated document is gone.
+class JsToBrowserMessagingDocumentUserData
+    : public content::DocumentUserData<JsToBrowserMessagingDocumentUserData> {
+ public:
+  ~JsToBrowserMessagingDocumentUserData() override = default;
+
+  std::vector<std::unique_ptr<WebMessage>>& queued_messages() {
+    return queued_messages_;
+  }
+
+ private:
+  friend class DocumentUserData<JsToBrowserMessagingDocumentUserData>;
+
+  explicit JsToBrowserMessagingDocumentUserData(
+      content::RenderFrameHost* render_frame_host)
+      : content::DocumentUserData<JsToBrowserMessagingDocumentUserData>(
+            render_frame_host) {}
+
+  std::vector<std::unique_ptr<WebMessage>> queued_messages_;
+
+  DOCUMENT_USER_DATA_KEY_DECL();
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(JsToBrowserMessagingDocumentUserData);
 
 }  // namespace
 
@@ -74,12 +102,33 @@ JsToBrowserMessaging::JsToBrowserMessaging(
 
 JsToBrowserMessaging::~JsToBrowserMessaging() = default;
 
+void JsToBrowserMessaging::OnRenderFrameHostActivated() {
+  JsToBrowserMessagingDocumentUserData* data =
+      JsToBrowserMessagingDocumentUserData::GetForCurrentDocument(
+          render_frame_host_);
+  if (!data) {
+    return;
+  }
+
+  if (!host_) {
+    return;
+  }
+
+  for (auto& message : data->queued_messages()) {
+    host_->OnPostMessage(std::move(message));
+  }
+  data->queued_messages().clear();
+}
+
 void JsToBrowserMessaging::PostMessage(
     blink::WebMessagePayload message,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 
-  if (render_frame_host_->IsInactiveAndDisallowActivation(
+  // For prerendering, messages will be queued until activation.
+  if (!render_frame_host_->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering) &&
+      render_frame_host_->IsInactiveAndDisallowActivation(
           content::DisallowActivationReasonId::kJsInjectionPostMessage)) {
     return;
   }
@@ -108,7 +157,9 @@ void JsToBrowserMessaging::PostMessage(
     const std::string top_level_origin_string =
         GetOriginString(top_level_origin);
     const std::string origin_string = GetOriginString(source_origin);
-    const bool is_main_frame = render_frame_host_->IsInPrimaryMainFrame();
+
+    // Check if this is the main frame of the primary or prerendered page.
+    const bool is_main_frame = !render_frame_host_->GetParentOrOuterDocument();
 
     host_ =
         connection_factory_->CreateHost(top_level_origin_string, origin_string,
@@ -126,11 +177,23 @@ void JsToBrowserMessaging::PostMessage(
 #if DCHECK_IS_ON()
   DCHECK_EQ(GetOriginString(top_level_origin), top_level_origin_string_);
   DCHECK_EQ(GetOriginString(source_origin), origin_string_);
-  DCHECK_EQ(is_main_frame_, render_frame_host_->IsInPrimaryMainFrame());
+  DCHECK_EQ(is_main_frame_, !render_frame_host_->GetParentOrOuterDocument());
 #endif
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
   web_message->message = std::move(message);
   web_message->ports = std::move(ports);
+
+  if (render_frame_host_->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    // Queue `WebMessage`s received while prerendering. They are flushed on
+    // `OnRenderFrameHostActivated`.
+    JsToBrowserMessagingDocumentUserData* data =
+        JsToBrowserMessagingDocumentUserData::GetOrCreateForCurrentDocument(
+            render_frame_host_);
+    data->queued_messages().push_back(std::move(web_message));
+    return;
+  }
+
   host_->OnPostMessage(std::move(web_message));
 }
 
@@ -139,6 +202,8 @@ void JsToBrowserMessaging::SetBrowserToJsMessaging(
         java_to_js_messaging) {
   // TODO(https://crbug.com/1183557): this should really call
   // IsInactiveAndDisallowReactivation().
+
+  // TODO(crbug.com/331250166): If an associated page is bfcached, evict it.
 
   // A RenderFrame may inject JsToBrowserMessaging in the JavaScript context
   // more than once because of reusing of RenderFrame.

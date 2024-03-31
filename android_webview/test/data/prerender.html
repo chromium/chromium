@@ -1,16 +1,25 @@
 <html>
-<script>
+  <script>
+    // Objects starting with the "aw" prefix are injected by AwPrerenderTest.
+
     function wasActivated() {
       return self.performance?.getEntriesByType?.('navigation')[0]?.activationStart > 0;
     }
 
     const wasPrerendered = document.prerendering || wasActivated();
 
-    // `activationFuture` is injected by AwPrerenderTest.
     if (wasActivated()) {
-      activationFuture.activated();
+      awActivationFuture.activated();
     } else {
-      document.onprerenderingchange = () => activationFuture.activated();
+      document.onprerenderingchange = () => awActivationFuture.activated();
     }
+
+    // Post a message to Java (AwPrerenderTest.java). This should be deferred
+    // until activation.
+    awMessagePort.postMessage(
+        wasPrerendered ? "Prerendered" : "Not prerendered");
+    // Notify Java that the message was posted. This notification should not be
+    // deferred even during prerendering.
+    awPostMessageFuture.done();
   </script>
 </html>

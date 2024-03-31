@@ -138,6 +138,9 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     std::unique_ptr<WebMessageHostFactory> factory,
     const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules) {
+  // TODO(crbug.com/331250164): Cancel all bfcached / prerendered pages when
+  // addWebMessageListener() is called.
+
   OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
       allowed_origin_rules, origin_matcher);
@@ -198,6 +201,24 @@ void JsCommunicationHost::RenderFrameCreated(
 void JsCommunicationHost::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   js_to_browser_messagings_.erase(render_frame_host->GetGlobalId());
+}
+
+void JsCommunicationHost::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  auto iter = js_to_browser_messagings_.find(render_frame_host->GetGlobalId());
+  if (iter == js_to_browser_messagings_.end()) {
+    return;
+  }
+
+  using LifecycleState = content::RenderFrameHost::LifecycleState;
+  if (old_state == LifecycleState::kPrerendering &&
+      new_state == LifecycleState::kActive) {
+    for (auto& js_to_browser_messaging_ptr : iter->second) {
+      js_to_browser_messaging_ptr->OnRenderFrameHostActivated();
+    }
+  }
 }
 
 void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(

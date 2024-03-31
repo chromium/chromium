@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
+import android.net.Uri;
 import android.webkit.JavascriptInterface;
 
 import androidx.test.InstrumentationRegistry;
@@ -68,6 +69,9 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private String mPrerenderingUrl;
 
     private SettableFuture<Boolean> mActivationFuture;
+    private SettableFuture<Boolean> mPostMessageFuture;
+
+    private TestWebMessageListener mWebMessageListener;
 
     @Before
     public void setUp() throws Exception {
@@ -76,10 +80,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
+        mWebMessageListener = new TestWebMessageListener();
+
         // This future is used for waiting until the JS prerenderingchange event is fired on the
         // prerendered page.
         mActivationFuture = SettableFuture.create();
-        String name = "activationFuture";
+        String name = "awActivationFuture";
         Object injectedObject =
                 new Object() {
                     @JavascriptInterface
@@ -88,6 +94,18 @@ public class AwPrerenderTest extends AwParameterizedTest {
                     }
                 };
         AwActivityTestRule.addJavascriptInterfaceOnUiThread(mAwContents, injectedObject, name);
+
+        // This future is used for waiting until the prerendered page posts a message to Java.
+        mPostMessageFuture = SettableFuture.create();
+        Object injectedObjectForPostMessage =
+                new Object() {
+                    @JavascriptInterface
+                    public void done() {
+                        mPostMessageFuture.set(true);
+                    }
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                mAwContents, injectedObjectForPostMessage, "awPostMessageFuture");
 
         mTestServer =
                 AwEmbeddedTestServer.createAndStartServer(
@@ -186,6 +204,18 @@ public class AwPrerenderTest extends AwParameterizedTest {
         } catch (UnsupportedEncodingException e) {
             throw new AssertionError(e);
         }
+    }
+
+    private static void assertUrlHasOrigin(final String url, final Uri origin) {
+        Assert.assertEquals("The origin URI must not contain a path", "", origin.getPath());
+        Assert.assertEquals("The origin URI must not contain any queries", null, origin.getQuery());
+        Assert.assertEquals(
+                "The origin URI must not contain a fragment", null, origin.getFragment());
+
+        Uri uriFromServer = Uri.parse(url);
+        Assert.assertEquals(uriFromServer.getScheme(), origin.getScheme());
+        Assert.assertEquals(uriFromServer.getHost(), origin.getHost());
+        Assert.assertEquals(uriFromServer.getPort(), origin.getPort());
     }
 
     // Tests basic end-to-end behavior of speculation rules prerendering on WebView.
@@ -357,5 +387,49 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNull(
                 "activation naivgation should have null requestHeaders.",
                 shouldOverrideUrlLoadingHelper.requestHeaders());
+    }
+
+    // Tests postMessage() from JS to Java during prerendering are deferred until activation.
+    // TODO(crbug.com/41490450): Test postMessage() from iframes.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPostMessageDuringPrerendering() throws Throwable {
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents, "awMessagePort", new String[] {"*"}, mWebMessageListener);
+
+        injectSpeculationRules(mPrerenderingUrl);
+
+        OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
+        // onPageStarted should never be called for prerender initial navigation.
+        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
+
+        // This future is notified after a message is posted. However, messages posted by
+        // prerendered pages are deferred until prerender activation, so
+        // `WebMessageListener.onPostMessage` would not be called yet.
+        //
+        // Note that these checks are not ideal because there is no strict message ordering
+        // guarantee between the future and the posted message. For example, the message could be
+        // delivered after the future is done but before activation happens. It would be great if we
+        // could have a mechanism to make sure the deferral logic in a deterministic way.
+        Assert.assertEquals(
+                true, mPostMessageFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(mWebMessageListener.hasNoMoreOnPostMessage());
+
+        activatePage(mPrerenderingUrl);
+
+        // The page is activated. Now the deferred messages should be delivered.
+        TestWebMessageListener.Data data = mWebMessageListener.waitForOnPostMessage();
+
+        assertUrlHasOrigin(mPrerenderingUrl, data.mTopLevelOrigin);
+        assertUrlHasOrigin(mPrerenderingUrl, data.mSourceOrigin);
+        Assert.assertEquals("Prerendered", data.getAsString());
+        Assert.assertTrue(data.mIsMainFrame);
+        Assert.assertEquals(0, data.mPorts.length);
+
+        Assert.assertTrue(mWebMessageListener.hasNoMoreOnPostMessage());
     }
 }

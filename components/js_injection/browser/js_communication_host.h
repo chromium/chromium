@@ -104,6 +104,10 @@ class JsCommunicationHost : public content::WebContentsObserver {
   // content::WebContentsObserver implementations
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostStateChanged(
+      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost::LifecycleState old_state,
+      content::RenderFrameHost::LifecycleState new_state) override;
 
  private:
   void NotifyFrameForWebMessageListener(
