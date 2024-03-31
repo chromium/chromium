@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
 #include "ui/ozone/platform/wayland/host/xdg_output.h"
 
 #include <xdg-output-unstable-v1-client-protocol.h>
@@ -63,7 +65,17 @@ void XDGOutput::UpdateMetrics(bool surface_submission_in_pixel_coordinates,
         std::max(physical_size.width(), physical_size.height());
     const float max_logical_side =
         std::max(logical_size.width(), logical_size.height());
-    metrics.scale_factor = max_physical_side / max_logical_side;
+
+    std::unique_ptr<base::Environment> env = base::Environment::Create();
+    switch (base::nix::GetDesktopEnvironment(env.get())) {
+      case base::nix::DESKTOP_ENVIRONMENT_KDE5:
+      case base::nix::DESKTOP_ENVIRONMENT_KDE6:
+        metrics.scale_factor = std::round((max_physical_side / max_logical_side) * 100) / 100.0f;
+        break;
+      default:
+        metrics.scale_factor = max_physical_side / max_logical_side;
+        break;
+    }
   }
 }
 
