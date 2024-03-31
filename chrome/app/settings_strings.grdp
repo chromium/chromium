@@ -2562,7 +2562,7 @@
     Not allowed to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION" desc="Description of the auto-picture-in-picture content setting.">
-    Sites use this setting to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
+    Sites use this feature to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_ALLOWED" desc="Label for the enabled option of the auto-picture-in-picture content setting.">
     Sites can enter picture-in-picture automatically
@@ -2604,7 +2604,7 @@
     Don't allow sites to connect to Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_DESCRIPTION" desc="Description of the Captured Surface Control content setting.">
-    Sites use this setting to scroll and zoom shared tabs
+    Sites use this feature to scroll and zoom shared tabs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAPTURED_SURFACE_CONTROL_ALLOWED" desc="Label for the enabled option of the Captured Surface Control content setting.">
     Sites can ask to scroll and zoom shared tabs
@@ -2709,7 +2709,7 @@
     Not allowed to use fonts installed on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_DESCRIPTION" desc="Label explaining the automatic fullscreen content setting.">
-    Sites use this setting to offer immersive fullscreen experiences regardless of user gestures
+    Sites use this feature to offer immersive fullscreen experiences regardless of user gestures
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_FULLSCREEN_BLOCK" desc="Label explaining that automatic fullscreen is blocked by default, meaning a user gesture is required.">
     Entering fullscreen requires a user gesture by default
