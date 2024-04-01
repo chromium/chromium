@@ -5,12 +5,25 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_UI_H_
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;
 }
+
+class ComponentsUI;
+
+// WebUIConfig for chrome://components
+class ComponentsUIConfig : public content::DefaultWebUIConfig<ComponentsUI> {
+ public:
+  ComponentsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIComponentsHost) {}
+};
 
 class ComponentsUI : public content::WebUIController {
  public:

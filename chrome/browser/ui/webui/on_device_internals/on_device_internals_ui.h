@@ -7,11 +7,25 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+class OnDeviceInternalsUI;
+
+// WebUIConfig for chrome://on-device-internals
+class OnDeviceInternalsUIConfig
+    : public content::DefaultWebUIConfig<OnDeviceInternalsUI> {
+ public:
+  OnDeviceInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIOnDeviceInternalsHost) {}
+};
 
 // A dev UI for testing the OnDeviceModelService.
 class OnDeviceInternalsUI : public ui::MojoWebUIController,
