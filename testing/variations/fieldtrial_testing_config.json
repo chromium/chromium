@@ -978,10 +978,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240328",
                     "enable_features": [
-                        "AshUrgentDiscardingFromPerformanceManager",
-                        "ContainerAppKiller"
+                        "AshUrgentDiscardingFromPerformanceManager"
                     ]
                 }
             ]
