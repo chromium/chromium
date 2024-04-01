@@ -29,7 +29,7 @@ found in the LICENSE file.
     </style>
 
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
-    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge">
+    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge.V35">
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_80</item>
         <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
@@ -50,7 +50,7 @@ found in the LICENSE file.
     </style>
 
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar">
+    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar.V35">
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_80</item>
         <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
