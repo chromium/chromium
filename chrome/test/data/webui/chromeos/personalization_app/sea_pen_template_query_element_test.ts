@@ -147,7 +147,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         'the options chips should show after clicking a chip');
     const optionToSelect =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button:not([aria-selected])');
+            '#container cr-button[aria-checked=false]');
     const optionText = optionToSelect!.innerText;
     assertTrue(
         optionText !== chip.innerText,
@@ -187,7 +187,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         options.length > 0, 'there should be options available to select');
     const selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button[aria-selected]');
+            '#container cr-button[aria-checked=true]');
     const chipText = chipToSelect.shadowRoot!.getElementById('chipText');
     assertEquals(
         chipText!.innerText, selectedOption!.innerText,
@@ -226,7 +226,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         options.length > 0, 'there should be options available to select');
     const selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button[aria-selected]');
+            '#container cr-button[aria-checked=true]');
     assertTrue(
         !!selectedOption!.querySelector('img'),
         'the selected option should contain a preview image');
@@ -264,7 +264,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         'the options chips should show after clicking a chip');
     const optionToSelect =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button:not([aria-selected])');
+            '#container cr-button[aria-checked=false]');
     const optionText = optionToSelect!.innerText;
     const chipText = chip.shadowRoot!.getElementById('chipText');
     assertTrue(
@@ -276,7 +276,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     let selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button[aria-selected]');
+            '#container cr-button[aria-checked=true]');
     assertEquals(
         selectedOption!.innerText, optionText,
         'the new option should now be selected');
@@ -297,7 +297,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button[aria-selected]');
+            '#container cr-button[aria-checked=true]');
     assertTrue(!selectedOption, 'Clicking the chip again will hide options.');
   });
 
@@ -334,8 +334,8 @@ suite('SeaPenTemplateQueryElementTest', function() {
         !!seaPenOptionsElement,
         'the options chips should show after clicking a chip');
     const optionToSelect =
-        seaPenOptionsElement.shadowRoot!.querySelector(
-            '#container cr-button:not([aria-selected])') as HTMLElement;
+        seaPenOptionsElement.shadowRoot!.querySelector<HTMLElement>(
+            '#container cr-button[aria-checked=false]');
     assertTrue(!!optionToSelect, 'option should be available to select');
 
     optionToSelect!.click();
@@ -376,7 +376,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
         'the options chips should show after clicking a chip');
     let selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button[aria-selected]');
+            '#container cr-button[aria-checked=true]');
     let optionText = selectedOption!.innerText;
     const chipText0 = chips[0]!.shadowRoot!.getElementById('chipText');
     assertTrue(
@@ -388,7 +388,7 @@ suite('SeaPenTemplateQueryElementTest', function() {
 
     selectedOption =
         seaPenOptionsElement.shadowRoot!.querySelector<CrButtonElement>(
-            '#container cr-button[aria-selected]');
+            '#container cr-button[aria-checked=true]');
     optionText = selectedOption!.innerText;
     const chipText1 = chips[1]!.shadowRoot!.getElementById('chipText');
     assertTrue(

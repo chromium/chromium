@@ -19,6 +19,8 @@ import './sea_pen_feedback_element.js';
 import './sea_pen_image_loading_element.js';
 import './sea_pen_zero_state_svg_element.js';
 
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {Query, SeaPenImageId} from './constants.js';
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenWallpaper} from './sea_pen_controller.js';
@@ -209,6 +211,13 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     if (this.cameraFeed_) {
       this.cameraFeed_.style.display = 'none';
     }
+
+    // focus on the first thumbnail if the thumbnails are generated
+    // successfully.
+    afterNextRender(this, () => {
+      window.scrollTo(0, 0);
+      this.shadowRoot!.querySelector<HTMLElement>('.sea-pen-image')?.focus();
+    });
   }
 
   private onThumbnailsLoadingChanged_(thumbnailsLoading: boolean) {
@@ -277,6 +286,24 @@ export class SeaPenImagesElement extends WithSeaPenStore {
 
   private getAriaIndex_(i: number): number {
     return i + 1;
+  }
+
+  private getAriaDescription_(
+      thumbnail: Tile|undefined, currentSelected: SeaPenImageId|null,
+      pendingSelected: SeaPenImageId|SeaPenThumbnail|null): string {
+    // TODO(b/331657978): update the real string for aria-description of Sea Pen
+    // image.
+    if (this.isThumbnailPendingSelected_(thumbnail, pendingSelected)) {
+      // Do not show upscaling message for Vc Background.
+      return isPersonalizationApp() ? this.i18n('seaPenCreatingHighResImage') :
+                                      '';
+    }
+    if (this.isThumbnailSelected_(
+            thumbnail, currentSelected, pendingSelected)) {
+      return isPersonalizationApp() ? this.i18n('seaPenSetWallpaper') :
+                                      this.i18n('seaPenSetCameraBackground');
+    }
+    return '';
   }
 
   private isThumbnailSelected_(

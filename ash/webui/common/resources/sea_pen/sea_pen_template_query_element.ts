@@ -16,6 +16,7 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen_chip_text_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSeaPenTemplates, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mojom-webui.js';
@@ -146,7 +147,27 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     this.updateFromStore();
   }
 
-  clearSelectedChipState() {
+  // After exiting from the option selection (by "Esc" key or clicking on
+  // anywhere), clear the selected chip state and set focus on the last selected
+  // chip.
+  onOptionSelectionDone() {
+    if (!this.selectedChip_) {
+      return;
+    }
+    const selectedChipIndex =
+        Array
+            .from(this.shadowRoot!.querySelectorAll<HTMLElement>(
+                '.chip-container'))
+            .findIndex(elem => elem.classList.contains('selected'));
+    this.clearSelectedChipState_();
+    afterNextRender(this, () => {
+      this.shadowRoot!
+          .querySelectorAll<HTMLElement>('.chip-text')[selectedChipIndex]
+          ?.focus();
+    });
+  }
+
+  private clearSelectedChipState_() {
     if (this.selectedChip_) {
       this.selectedChip_ = null;
       this.options_ = null;
@@ -155,7 +176,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private onClick_(): void {
-    this.clearSelectedChipState();
+    this.onOptionSelectionDone();
   }
 
   private computeSeaPenTemplate_(templateId: string|null) {
@@ -172,7 +193,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private onClickChip_(event: Event&{model: {token: ChipToken}}) {
     assert(this.isChip_(event.model.token), 'Token must be a chip');
     if (this.selectedChip_?.id === event.model.token.id) {
-      this.clearSelectedChipState();
+      this.clearSelectedChipState_();
     } else {
       this.selectedChip_ = event.model.token;
       assert(
@@ -207,7 +228,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
     const selectedOptions = getDefaultOptions(template);
-    this.clearSelectedChipState();
+    this.clearSelectedChipState_();
     this.selectedOptions_ = selectedOptions;
     this.templateTokens_ =
         getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
@@ -277,10 +298,11 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private onClickSearchButton_(event: Event) {
-    this.clearSelectedChipState();
+    this.clearSelectedChipState_();
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());
+
     // Stop the event propagation, otherwise, the event will be passed to parent
     // element, this.onClick_ will be triggered improperly.
     event.preventDefault();
@@ -319,6 +341,10 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     // selected.
     return getTransitionEnabled() && !!selectedChip &&
         selectedChip.id === token.id;
+  }
+
+  private getTemplateAriaLabel_() {
+    return this.getUserVisibleQueryInfo_().text;
   }
 }
 

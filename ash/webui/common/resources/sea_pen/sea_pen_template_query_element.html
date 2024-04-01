@@ -112,7 +112,8 @@
     <sea-pen-options
         options="[[options_]]"
         selected-chip="[[selectedChip_]]"
-        selected-options="{{selectedOptions_}}">
+        selected-options="{{selectedOptions_}}"
+        on-sea-pen-option-escape="onOptionSelectionDone">
     </sea-pen-options>
   </template>
   <div id="template">
@@ -123,13 +124,16 @@
           <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
             <div class="underline"></div>
             <sea-pen-chip-text
+                aria-label$="[[token.translation]]"
+                aria-description$="[[getTemplateAriaLabel_(templateTokens_)]]"
                 text-animation-enabled="[[shouldEnableTextAnimation(selectedChip_, token)]]"
                 chip-text="[[token.translation]]"
                 class="chip-text"
                 tabindex="0"
                 on-click="onClickChip_"
-                on-keypress="onClickChip_">
-              [[token.translation]]
+                on-keypress="onClickChip_"
+                role="combobox">
+              <span aria-hidden="true">[[token.translation]]</span>
             </sea-pen-chip-text>
           </template>
           <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
@@ -148,7 +152,9 @@
   </div>
   <div id="searchButtons">
     <template is="dom-if" if="[[thumbnailsLoading_]]">
-      <span id="thumbnailsLoadingText">[[i18n('seaPenThumbnailsLoading')]]</span>
+      <span id="thumbnailsLoadingText" aria-live="polite">
+        [[i18n('seaPenThumbnailsLoading')]]
+      </span>
     </template>
     <template is="dom-if" if="[[!thumbnailsLoading_]]">
       <cr-button id="inspire" on-click="onClickInspire_">

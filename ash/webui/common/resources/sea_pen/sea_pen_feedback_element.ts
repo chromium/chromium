@@ -33,14 +33,14 @@ export class SeaPenFeedbackElement extends WithSeaPenStore {
         type: String,
         value: FeedbackOption.UNSPECIFIED,
       },
-      thumbnail: {
-        type: Object,
-      },
+      thumbnail: Object,
+      inheritTabIndex: Number,
     };
   }
 
   selectedFeedbackOption: FeedbackOption;
   thumbnail: SeaPenThumbnail;
+  inheritTabIndex: number;
 
   private notifySelectedOptionChanged_(isThumbsUp: boolean) {
     this.dispatchEvent(new CustomEvent('selected-feedback-changed', {

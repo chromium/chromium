@@ -52,6 +52,13 @@ void AddSeaPenStrings(content::WebUIDataSource* source) {
       {"seaPenExpandOptionsButton", IDS_SEA_PEN_EXPAND_OPTIONS_BUTTON},
       {"seaPenRecentImageMenuButton", IDS_SEA_PEN_RECENT_IMAGE_MENU_BUTTON},
       {"seaPenMenuRoleDescription", IDS_SEA_PEN_MENU_ROLE_DESCRIPTION},
+      {"seaPenCustomizeAiPrompt", IDS_SEA_PEN_CUSTOMIZE_AI_PROMPT},
+      {"seaPenFeedbackDescription", IDS_SEA_PEN_FEEDBACK_DESCRIPTION},
+      {"seaPenFeedbackPositive", IDS_SEA_PEN_FEEDBACK_POSITIVE},
+      {"seaPenFeedbackNegative", IDS_SEA_PEN_FEEDBACK_NEGATIVE},
+      {"seaPenSetWallpaper", IDS_SEA_PEN_SET_WALLPAPER},
+      {"seaPenSetCameraBackground", IDS_SEA_PEN_SET_CAMERA_BACKGROUND},
+      {"seaPenLabel", IDS_SEA_PEN_LABEL},
 
       {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING},
   };

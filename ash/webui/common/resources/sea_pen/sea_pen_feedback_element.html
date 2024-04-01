@@ -21,12 +21,19 @@
   }
 </style>
 <div class="feedback-buttons-container">
+  <!-- TODO(b/331657978): add the real string for aria-label. -->
   <cr-icon-button id="thumbsUp"
+      tabindex$="[[inheritTabIndex]]"
+      aria-label$="[[i18n('seaPenFeedbackPositive')]]"
+      aria-description$="[[i18n('seaPenFeedbackDescription')]]"
       iron-icon="[[getThumbsUpIcon_(selectedFeedbackOption)]]"
       role="button"
       on-click="onClickThumbsUp_">
   </cr-icon-button>
   <cr-icon-button id="thumbsDown"
+      tabindex$="[[inheritTabIndex]]"
+      aria-label="[[i18n('seaPenFeedbackNegative')]]"
+      aria-description$="[[i18n('seaPenFeedbackDescription')]]"
       iron-icon="[[getThumbsDownIcon_(selectedFeedbackOption)]]"
       role="button"
       on-click="onClickThumbsDown_">

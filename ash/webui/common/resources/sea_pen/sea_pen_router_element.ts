@@ -176,9 +176,11 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   }
 
   private onBottomContainerClicked_(): void {
+    // close the chip option selection if it is open (or selected chip state is
+    // set).
     this.shadowRoot!
         .querySelector<SeaPenTemplateQueryElement>('sea-pen-template-query')
-        ?.clearSelectedChipState();
+        ?.onOptionSelectionDone();
   }
 
   private getTemplateIdFromQueryParams_(templateId: string): SeaPenTemplateId

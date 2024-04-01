@@ -12,6 +12,8 @@ import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SeaPenOption} from './constants.js';
@@ -21,10 +23,27 @@ import {ChipToken, isNonEmptyArray} from './sea_pen_utils.js';
 
 const SeaPenOptionsElementBase = I18nMixin(PolymerElement);
 
+export class SeaPenOptionEscapeEvent extends CustomEvent<null> {
+  static readonly EVENT_NAME = 'sea-pen-option-escape';
+
+  constructor() {
+    super(
+        SeaPenOptionEscapeEvent.EVENT_NAME,
+        {
+          bubbles: true,
+          composed: true,
+          detail: null,
+        },
+    );
+  }
+}
+
 export interface SeaPenOptionsElement {
   $: {
     container: HTMLDivElement,
     expandButton: CrButtonElement,
+    optionKeys: IronA11yKeysElement,
+    optionSelector: IronSelectorElement,
   };
 }
 
@@ -62,6 +81,8 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
         type: Boolean,
         value: false,
       },
+
+      ironSelectedOption_: Object,
     };
   }
 
@@ -77,6 +98,7 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
           this.calculateHiddenOptions_();
         });
   };
+  private ironSelectedOption_: HTMLElement;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -88,6 +110,56 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     super.disconnectedCallback();
 
     window.removeEventListener('resize', this.onResized_);
+  }
+
+  // set focus on the nth option of the option list.
+  private focusOnTargetOption_(n: number) {
+    const prevButton = this.ironSelectedOption_;
+    // Remove focus state of previous option button.
+    if (prevButton) {
+      prevButton.removeAttribute('tabindex');
+    }
+
+    // update focus state on the nth option.
+    this.$.optionSelector.selectIndex(n);
+    this.ironSelectedOption_.setAttribute('tabindex', '0');
+    this.ironSelectedOption_.focus();
+  }
+
+  // handle keyboard navigation.
+  private onOptionKeyPressed_(
+      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
+    const selector = this.$.optionSelector;
+    const prevButton = this.ironSelectedOption_;
+
+    switch (e.detail.key) {
+      case 'left':
+        selector.selectPrevious();
+        break;
+      case 'right':
+        selector.selectNext();
+        break;
+      case 'esc':
+        this.dispatchEvent(new SeaPenOptionEscapeEvent());
+        return;
+      default:
+        return;
+    }
+    // Remove focus state of previous button.
+    if (prevButton) {
+      prevButton.removeAttribute('tabindex');
+    }
+    // Add focus state for new button.
+    if (this.ironSelectedOption_) {
+      // if the next option is hidden, select and focus the expand button.
+      if (this.ironSelectedOption_.classList.contains('hidden')) {
+        const expandButton = selector.querySelector('#expandButton');
+        selector.selectIndex(selector.indexOf(expandButton!));
+      }
+      this.ironSelectedOption_.setAttribute('tabindex', '0');
+      this.ironSelectedOption_.focus();
+    }
+    e.detail.keyboardEvent.preventDefault();
   }
 
   private onClickOption_(event: Event&{model: {option: SeaPenOption}}) {
@@ -111,6 +183,18 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     return !!selectedOptions && !!selectedChip &&
         selectedOptions.has(selectedChip.id) &&
         option === selectedOptions.get(selectedChip.id);
+  }
+
+  private getOptionTabIndex_(
+      option: SeaPenOption, selectedChip: ChipToken|null,
+      selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): string {
+    return this.isSelected_(option, selectedChip, selectedOptions) ? '0' : '-1';
+  }
+
+  private getOptionAriaChecked_(
+      option: SeaPenOption, selectedChip: ChipToken|null,
+      selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): string {
+    return this.isSelected_(option, selectedChip, selectedOptions).toString();
   }
 
   private calculateHiddenOptions_() {
@@ -170,8 +254,22 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
   private onClickExpandButton_(event: Event) {
     this.chipsExpanded_ = true;
     this.shouldShowExpandButton_ = false;
-    this.shadowRoot!.querySelectorAll('.option').forEach(
-        option => option.classList.remove('hidden'));
+    let firstHiddenIndex = -1;
+    this.shadowRoot!.querySelectorAll('.option').forEach((option, index) => {
+      if (firstHiddenIndex === -1 && option.classList.contains('hidden')) {
+        firstHiddenIndex = index;
+      }
+      option.classList.remove('hidden');
+    });
+
+    if (firstHiddenIndex >= 0) {
+      afterNextRender(this, () => {
+        // focus on the option that was first hidden before clicking on expand
+        // button.
+        this.focusOnTargetOption_(firstHiddenIndex);
+      });
+    }
+
     // Stop the event propagation, otherwise, the event will be passed to parent
     // element (sea pen template query element), onClick_ on template query
     // element will be triggered improperly.
@@ -185,6 +283,8 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     afterNextRender(this, () => {
       // Called when the options are fully rendered.
       this.calculateHiddenOptions_();
+      // focus on the first option of the list when clicking on a chip.
+      this.focusOnTargetOption_(0);
     });
   }
 
