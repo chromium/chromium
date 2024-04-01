@@ -5918,7 +5918,7 @@
   {
     "name": "observable-api",
     "owners": [ "dom@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 129
   },
   {
     "name": "offline-auto-fetch",
