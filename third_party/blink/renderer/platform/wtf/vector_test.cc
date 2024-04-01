@@ -31,6 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
@@ -40,6 +41,26 @@ HashSet<void*> g_constructed_wrapped_ints;
 unsigned LivenessCounter::live_ = 0;
 
 namespace {
+
+struct SameSizeAsVector {
+  void* buffer;
+  wtf_size_t capacity;
+  wtf_size_t size;
+};
+
+ASSERT_SIZE(Vector<int>, SameSizeAsVector);
+
+#define FAIL_COMPILE 0
+#if FAIL_COMPILE
+// This code should trigger static_assert failure in Vector::TypeConstraints.
+struct StackAllocatedType {
+  STACK_ALLOCATED();
+};
+
+TEST(VectorTest, FailCompile) {
+  Vector<StackAllocatedType> v;
+}
+#endif
 
 TEST(VectorTest, Basic) {
   Vector<int> int_vector;

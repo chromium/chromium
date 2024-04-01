@@ -21,20 +21,14 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   DISALLOW_NEW();
 
  public:
-  HeapDeque() { CheckType(); }
+  HeapDeque() = default;
 
-  explicit HeapDeque(wtf_size_t size) : Deque<T, 0, HeapAllocator>(size) {
-    CheckType();
-  }
+  explicit HeapDeque(wtf_size_t size) : Deque<T, 0, HeapAllocator>(size) {}
 
   HeapDeque(wtf_size_t size, const T& val)
-      : Deque<T, 0, HeapAllocator>(size, val) {
-    CheckType();
-  }
+      : Deque<T, 0, HeapAllocator>(size, val) {}
 
-  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {
-    CheckType();
-  }
+  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {}
 
   HeapDeque& operator=(const HeapDeque& other) {
     Deque<T, 0, HeapAllocator>::operator=(other);
@@ -42,9 +36,7 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   }
 
   HeapDeque(HeapDeque&& other) noexcept
-      : Deque<T, 0, HeapAllocator>(std::move(other)) {
-    CheckType();
-  }
+      : Deque<T, 0, HeapAllocator>(std::move(other)) {}
 
   HeapDeque& operator=(HeapDeque&& other) noexcept {
     Deque<T, 0, HeapAllocator>::operator=(std::move(other));
@@ -56,15 +48,19 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   }
 
  private:
-  static constexpr void CheckType() {
-    static_assert(WTF::IsMemberType<T>::value,
-                  "HeapDeque supports only Member.");
-    static_assert(std::is_trivially_destructible<HeapDeque>::value,
-                  "HeapDeque must be trivially destructible.");
-    static_assert(WTF::IsTraceable<T>::value,
-                  "For vectors without traceable elements, use Deque<> instead "
-                  "of HeapDeque<>");
-  }
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(WTF::IsMemberType<T>::value,
+                    "HeapDeque supports only Member.");
+      static_assert(std::is_trivially_destructible_v<HeapDeque>,
+                    "HeapDeque must be trivially destructible.");
+      static_assert(
+          WTF::IsTraceable<T>::value,
+          "For vectors without traceable elements, use Deque<> instead "
+          "of HeapDeque<>");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 }  // namespace blink

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -24,33 +25,25 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   using BaseVector = Vector<T, inlineCapacity, HeapAllocator>;
 
  public:
-  HeapVector() { CheckType(); }
+  HeapVector() = default;
 
-  explicit HeapVector(wtf_size_t size) : BaseVector(size) { CheckType(); }
+  explicit HeapVector(wtf_size_t size) : BaseVector(size) {}
 
-  HeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {
-    CheckType();
-  }
+  HeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {}
 
   template <wtf_size_t otherCapacity>
   HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
-      : BaseVector(other) {
-    CheckType();
-  }
+      : BaseVector(other) {}
 
   HeapVector(const HeapVector& other)
-      : BaseVector(static_cast<const BaseVector&>(other)) {
-    CheckType();
-  }
+      : BaseVector(static_cast<const BaseVector&>(other)) {}
 
   template <
       typename Proj,
       typename = std::enable_if_t<
           std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
   HeapVector(const HeapVector& other, Proj proj)
-      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {
-    CheckType();
-  }
+      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
 
   template <
       typename U,
@@ -59,16 +52,12 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
       typename = std::enable_if_t<
           std::is_invocable_v<Proj, typename BaseVector::const_reference>>>
   HeapVector(const HeapVector<U, otherSize>& other, Proj proj)
-      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {
-    CheckType();
-  }
+      : BaseVector(static_cast<const BaseVector&>(other), std::move(proj)) {}
 
   template <typename Collection,
             typename =
                 typename std::enable_if<std::is_class<Collection>::value>::type>
-  explicit HeapVector(const Collection& other) : BaseVector(other) {
-    CheckType();
-  }
+  explicit HeapVector(const Collection& other) : BaseVector(other) {}
 
   HeapVector& operator=(const HeapVector& other) {
     BaseVector::operator=(other);
@@ -82,9 +71,7 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   }
 
   HeapVector(HeapVector&& other) noexcept
-      : BaseVector(static_cast<BaseVector&&>(std::move(other))) {
-    CheckType();
-  }
+      : BaseVector(static_cast<BaseVector&&>(std::move(other))) {}
 
   HeapVector& operator=(HeapVector&& other) noexcept {
     BaseVector::operator=(std::move(other));
@@ -92,9 +79,7 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   }
 
   HeapVector(std::initializer_list<T> elements)
-      : BaseVector(std::move(elements)) {
-    CheckType();
-  }
+      : BaseVector(std::move(elements)) {}
 
   HeapVector& operator=(std::initializer_list<T> elements) {
     BaseVector::operator=(std::move(elements));
@@ -104,42 +89,35 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   void Trace(Visitor* visitor) const { BaseVector::Trace(visitor); }
 
  private:
-  template <typename U>
-  struct IsHeapVector {
-   private:
-    typedef char YesType;
-    struct NoType {
-      char padding[8];
-    };
-
-    template <typename X, wtf_size_t Y>
-    static YesType SubclassCheck(HeapVector<X, Y>*);
-    static NoType SubclassCheck(...);
-    static U* u_;
-
-   public:
-    static const bool value = sizeof(SubclassCheck(u_)) == sizeof(YesType);
+  struct TypeConstraints {
+    constexpr TypeConstraints();
   };
-
-  static constexpr void CheckType() {
-    static_assert(
-        std::is_trivially_destructible<HeapVector>::value || inlineCapacity,
-        "HeapVector must be trivially destructible.");
-    static_assert(!WTF::IsWeak<T>::value,
-                  "Weak types are not allowed in HeapVector.");
-    static_assert(
-        !WTF::IsGarbageCollectedType<T>::value || IsHeapVector<T>::value,
-        "GCed types should not be inlined in a HeapVector.");
-    static_assert(!WTF::IsPointerToGced<T>::value,
-                  "Don't use raw pointers or reference to garbage collected "
-                  "types in HeapVector. Use Member<> instead.");
-
-    // HeapVector may hold non-traceable types. This is useful for vectors held
-    // by garbage collected objects such that the vectors' backing stores are
-    // accounted as memory held by the GC. HeapVectors of non-traceable types
-    // should only be used as fields of garbage collected objects.
-  }
+  static_assert(std::is_empty_v<TypeConstraints>);
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
+
+template <typename T>
+concept IsHeapVector = requires { typename HeapVector<T>; };
+
+template <typename T, wtf_size_t inlineCapacity>
+constexpr HeapVector<T, inlineCapacity>::TypeConstraints::TypeConstraints() {
+  static_assert(std::is_trivially_destructible_v<HeapVector> || inlineCapacity,
+                "HeapVector must be trivially destructible.");
+  static_assert(!WTF::IsWeak<T>::value,
+                "Weak types are not allowed in HeapVector.");
+  static_assert(!WTF::IsGarbageCollectedType<T>::value || IsHeapVector<T>,
+                "GCed types should not be inlined in a HeapVector.");
+  static_assert(!WTF::IsPointerToGced<T>::value,
+                "Don't use raw pointers or reference to garbage collected "
+                "types in HeapVector. Use Member<> instead.");
+
+  // HeapVector may hold non-traceable types. This is useful for vectors held
+  // by garbage collected objects such that the vectors' backing stores are
+  // accounted as memory held by the GC. HeapVectors of non-traceable types
+  // should only be used as fields of traceable types.
+}
+
+ASSERT_SIZE(Vector<int>, HeapVector<int>);
 
 }  // namespace blink
 

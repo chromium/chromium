@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
@@ -19,23 +20,28 @@ class HeapHashSet final
   DISALLOW_NEW();
 
  public:
-  HeapHashSet() { CheckType(); }
+  HeapHashSet() = default;
 
   void Trace(Visitor* visitor) const {
     HashSet<ValueArg, TraitsArg, HeapAllocator>::Trace(visitor);
   }
 
  private:
-  static constexpr void CheckType() {
-    static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
-                  "HeapHashSet supports only Member and WeakMember.");
-    static_assert(std::is_trivially_destructible<HeapHashSet>::value,
-                  "HeapHashSet must be trivially destructible.");
-    static_assert(WTF::IsTraceable<ValueArg>::value,
-                  "For hash sets without traceable elements, use HashSet<> "
-                  "instead of HeapHashSet<>.");
-  }
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
+                    "HeapHashSet supports only Member and WeakMember.");
+      static_assert(std::is_trivially_destructible_v<HeapHashSet>,
+                    "HeapHashSet must be trivially destructible.");
+      static_assert(WTF::IsTraceable<ValueArg>::value,
+                    "For hash sets without traceable elements, use HashSet<> "
+                    "instead of HeapHashSet<>.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
+
+ASSERT_SIZE(HeapHashSet<int>, HashSet<int>);
 
 }  // namespace blink
 

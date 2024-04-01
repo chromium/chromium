@@ -72,13 +72,7 @@ class HashSet {
       const_iterator;
   typedef typename HashTableType::AddResult AddResult;
 
-  HashSet() {
-    static_assert(!IsStackAllocatedType<ValueArg>);
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<ValueArg>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
-  }
+  HashSet() = default;
   HashSet(const HashSet&) = default;
   HashSet& operator=(const HashSet&) = default;
   HashSet(HashSet&&) = default;
@@ -157,6 +151,17 @@ class HashSet {
 
  private:
   HashTableType impl_;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<ValueArg>);
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<ValueArg>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 struct IdentityExtractor {
@@ -198,11 +203,6 @@ struct HashSetTranslatorAdapter {
 template <typename Value, typename Traits, typename Allocator>
 HashSet<Value, Traits, Allocator>::HashSet(
     std::initializer_list<ValueType> elements) {
-  static_assert(!IsStackAllocatedType<Value>);
-  static_assert(Allocator::kIsGarbageCollected ||
-                    !IsPointerToGarbageCollectedType<Value>::value,
-                "Cannot put raw pointers to garbage-collected classes into "
-                "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
   if (elements.size()) {
     impl_.ReserveCapacityForSize(
         base::checked_cast<wtf_size_t>(elements.size()));

@@ -49,14 +49,7 @@ class HashCountedSet {
   typedef typename ImplType::const_iterator const_iterator;
   typedef typename ImplType::AddResult AddResult;
 
-  HashCountedSet() {
-    static_assert(!IsStackAllocatedType<Value>);
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<Value>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashCountedSet. Use "
-                  "HeapHashCountedSet<Member<T>> instead.");
-  }
+  HashCountedSet() = default;
 
   HashCountedSet(const HashCountedSet&) = default;
   HashCountedSet& operator=(const HashCountedSet&) = default;
@@ -116,6 +109,18 @@ class HashCountedSet {
 
  private:
   ImplType impl_;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<Value>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashCountedSet. Use "
+                    "HeapHashCountedSet<Member<T>> instead.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename T, typename U, typename V>

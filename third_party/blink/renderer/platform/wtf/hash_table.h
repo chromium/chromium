@@ -919,6 +919,20 @@ class HashTable final
             typename X,
             typename Y>
   friend struct WeakProcessingHashTableHelper;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<Key>);
+      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(
+          Allocator::kIsGarbageCollected ||
+              (!IsPointerToGarbageCollectedType<Key>::value &&
+               !IsPointerToGarbageCollectedType<Value>::value),
+          "Cannot put raw pointers to garbage-collected classes into an "
+          "off-heap collection.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename Key,
@@ -949,13 +963,6 @@ inline HashTable<Key,
       stats_(nullptr)
 #endif
 {
-  static_assert(!IsStackAllocatedType<Key>);
-  static_assert(!IsStackAllocatedType<Value>);
-  static_assert(Allocator::kIsGarbageCollected ||
-                    (!IsPointerToGarbageCollectedType<Key>::value &&
-                     !IsPointerToGarbageCollectedType<Value>::value),
-                "Cannot put raw pointers to garbage-collected classes into an "
-                "off-heap collection.");
 }
 
 inline unsigned CalculateCapacity(unsigned size) {

@@ -110,18 +110,7 @@ class HashMap {
   class HashMapValuesProxy;
 
  public:
-  HashMap() {
-    static_assert(!IsStackAllocatedType<KeyArg>);
-    static_assert(!IsStackAllocatedType<MappedArg>);
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<KeyArg>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashMap.  Use HeapHashMap<> instead.");
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<MappedArg>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashMap.  Use HeapHashMap<> instead.");
-  }
+  HashMap() = default;
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   void DumpStats() { impl_.DumpStats(); }
@@ -226,6 +215,22 @@ class HashMap {
   AddResult InlineAdd(IncomingKeyType&&, IncomingMappedType&&);
 
   HashTableType impl_;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<KeyArg>);
+      static_assert(!IsStackAllocatedType<MappedArg>);
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<KeyArg>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashMap.  Use HeapHashMap<> instead.");
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<MappedArg>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashMap.  Use HeapHashMap<> instead.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename KeyArg,
@@ -341,16 +346,6 @@ template <typename KeyArg,
           typename Allocator>
 HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::HashMap(
     std::initializer_list<ValueType> elements) {
-  static_assert(!IsStackAllocatedType<KeyArg>);
-  static_assert(!IsStackAllocatedType<MappedArg>);
-  static_assert(Allocator::kIsGarbageCollected ||
-                    !IsPointerToGarbageCollectedType<KeyArg>::value,
-                "Cannot put raw pointers to garbage-collected classes into "
-                "an off-heap HashMap.  Use HeapHashMap<> instead.");
-  static_assert(Allocator::kIsGarbageCollected ||
-                    !IsPointerToGarbageCollectedType<MappedArg>::value,
-                "Cannot put raw pointers to garbage-collected classes into "
-                "an off-heap HashMap.  Use HeapHashMap<> instead.");
   if (elements.size()) {
     impl_.ReserveCapacityForSize(
         base::checked_cast<wtf_size_t>(elements.size()));
