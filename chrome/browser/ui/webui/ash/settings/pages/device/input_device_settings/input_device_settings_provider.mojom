@@ -132,6 +132,9 @@ interface InputDeviceSettingsProvider {
   SetGraphicsTabletSettings(
       uint32 device_id, ash.mojom.GraphicsTabletSettings settings);
 
+  // Sets the keyboard brightness to a specified level.
+  SetKeyboardBrightness(double percent);
+
   // Starts observing customizable button presses for the device with the given
   // `device_id`.
   StartObserving(uint32 device_id);

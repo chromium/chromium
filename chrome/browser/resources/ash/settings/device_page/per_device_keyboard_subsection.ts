@@ -30,6 +30,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {SettingsSliderElement} from '../controls/settings_slider.js';
 import {KeyboardBrightnessObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
@@ -236,6 +237,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }
+  }
+
+  private onKeyboardBrightnessSliderChanged(): void {
+    const slider = this.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#keyboardBrightnessSlider');
+    this.inputDeviceSettingsProvider.setKeyboardBrightness(slider!.pref.value);
   }
 
   private onSettingsChanged(): void {

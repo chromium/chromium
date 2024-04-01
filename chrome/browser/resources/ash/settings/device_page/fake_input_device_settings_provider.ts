@@ -91,6 +91,7 @@ export class FakeInputDeviceSettingsProvider implements
   private keyboardBrightnessObserver: KeyboardBrightnessObserverInterface|null =
       null;
   private observedIds: number[] = [];
+  private keyboardBrightness: number = 40;
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
     setMouseSettings: 0,
@@ -248,6 +249,14 @@ export class FakeInputDeviceSettingsProvider implements
 
   getSetGraphicsTabletSettingsCallCount(): number {
     return this.callCounts_.setGraphicsTabletSettings;
+  }
+
+  setKeyboardBrightness(percent: number): void {
+    this.keyboardBrightness = percent;
+  }
+
+  getKeyboardBrightness(): number {
+    return this.keyboardBrightness;
   }
 
   notifyKeboardListUpdated(): void {

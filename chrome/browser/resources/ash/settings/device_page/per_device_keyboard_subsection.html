@@ -35,7 +35,8 @@
           $i18n{keyboardBrightnessLabel}
         </div>
         <settings-slider id="keyboardBrightnessSlider"
-            pref="{{keyboardBrightnessPercentPref}}">
+            pref="{{keyboardBrightnessPercentPref}}"
+            on-cr-slider-value-changed="onKeyboardBrightnessSliderChanged">
         </settings-slider>
       </div>
     </template>

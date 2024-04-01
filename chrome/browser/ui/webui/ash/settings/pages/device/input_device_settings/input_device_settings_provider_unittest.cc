@@ -13,6 +13,7 @@
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -301,6 +302,26 @@ class FakeKeyboardBrightnessObserver
   double keyboard_brightness_ = 0;
 };
 
+class FakeKeyboardBrightnessControlDelegate
+    : public KeyboardBrightnessControlDelegate {
+ public:
+  FakeKeyboardBrightnessControlDelegate() = default;
+  ~FakeKeyboardBrightnessControlDelegate() override = default;
+
+  // override methods:
+  void HandleKeyboardBrightnessDown() override {}
+  void HandleKeyboardBrightnessUp() override {}
+  void HandleToggleKeyboardBacklight() override {}
+  void HandleSetKeyboardBrightness(double percent, bool gradual) override {
+    keyboard_brightness_ = percent;
+  }
+
+  double keyboard_brightness() { return keyboard_brightness_; }
+
+ private:
+  double keyboard_brightness_ = 0;
+};
+
 class FakeInputDeviceSettingsController
     : public MockInputDeviceSettingsController {
  public:
@@ -498,11 +519,14 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
     controller_ = std::make_unique<FakeInputDeviceSettingsController>();
     provider_ = std::make_unique<InputDeviceSettingsProvider>();
     provider_->SetWidgetForTesting(widget_.get());
+    keyboard_brightness_control_delegate_ =
+        std::make_unique<FakeKeyboardBrightnessControlDelegate>();
   }
 
   void TearDown() override {
     provider_.reset();
     controller_.reset();
+    keyboard_brightness_control_delegate_.reset();
     scoped_resetter_.reset();
     widget_.reset();
     views::ViewsTestBase::TearDown();
@@ -512,6 +536,8 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
  protected:
   std::unique_ptr<FakeInputDeviceSettingsController> controller_;
   std::unique_ptr<InputDeviceSettingsProvider> provider_;
+  std::unique_ptr<FakeKeyboardBrightnessControlDelegate>
+      keyboard_brightness_control_delegate_;
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>
       scoped_resetter_;
@@ -1045,6 +1071,20 @@ TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
 
   EXPECT_EQ(expected_brightness, fake_observer.keyboard_brightness());
   EXPECT_EQ(1, fake_observer.num_times_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, SetKeyboardBrightness) {
+  double adjustedBrightness = 60.9;
+  keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
+      adjustedBrightness, /*gradual=*/false);
+  EXPECT_EQ(adjustedBrightness,
+            keyboard_brightness_control_delegate_->keyboard_brightness());
+
+  adjustedBrightness = 20.3;
+  keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
+      adjustedBrightness, /*gradual=*/false);
+  EXPECT_EQ(adjustedBrightness,
+            keyboard_brightness_control_delegate_->keyboard_brightness());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverFollowsWindowFocus) {

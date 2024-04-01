@@ -425,4 +425,31 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     await flushTasks();
     assertEquals(secondAdjustedBrightness, slider.pref!.value);
   });
+
+  test('Set keyboard brightness via slider', async () => {
+    await changeIsExternalState(false);
+    const slider = subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#keyboardBrightnessSlider');
+    assertTrue(!!slider);
+
+    const initialBrightness = 40;
+    const firstAdjustedBrightness = 60.5;
+    const secondAdjustedBrightness = 20.5;
+
+    // Default brightness is 40.
+    assertEquals(initialBrightness, slider.pref.value);
+    assertEquals(initialBrightness, provider.getKeyboardBrightness());
+
+    // Set keyboard brightness via slider.
+    slider.pref.value = firstAdjustedBrightness;
+    slider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+    await flushTasks();
+    assertEquals(firstAdjustedBrightness, provider.getKeyboardBrightness());
+
+    // Set keyboard brightness via slider again.
+    slider.pref.value = secondAdjustedBrightness;
+    slider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+    await flushTasks();
+    assertEquals(secondAdjustedBrightness, provider.getKeyboardBrightness());
+  });
 });

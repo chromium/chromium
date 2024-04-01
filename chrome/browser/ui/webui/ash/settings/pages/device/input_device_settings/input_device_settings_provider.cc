@@ -11,6 +11,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
+#include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
@@ -333,6 +334,15 @@ void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
   if (!InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
           device_id, std::move(settings))) {
     NotifyGraphicsTabletUpdated();
+  }
+}
+
+void InputDeviceSettingsProvider::SetKeyboardBrightness(double percent) {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  KeyboardBrightnessControlDelegate* delegate =
+      Shell::Get()->keyboard_brightness_control_delegate();
+  if (delegate) {
+    delegate->HandleSetKeyboardBrightness(percent, /*gradual=*/true);
   }
 }
 
