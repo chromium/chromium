@@ -795,7 +795,6 @@
     "linux-wpt-content-shell-leak-detection": "try/linux-wpt-content-shell-leak-detection/gn-args.json",
     "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
-    "linux_chromium_asan_siso_rel_ng": "try/linux_chromium_asan_siso_rel_ng/gn-args.json",
     "linux_chromium_cfi_rel_ng": "try/linux_chromium_cfi_rel_ng/gn-args.json",
     "linux_chromium_chromeos_asan_rel_ng": "try/linux_chromium_chromeos_asan_rel_ng/gn-args.json",
     "linux_chromium_chromeos_msan_rel_ng": "try/linux_chromium_chromeos_msan_rel_ng/gn-args.json",
@@ -805,7 +804,6 @@
     "linux_chromium_dbg_ng": "try/linux_chromium_dbg_ng/gn-args.json",
     "linux_chromium_msan_rel_ng": "try/linux_chromium_msan_rel_ng/gn-args.json",
     "linux_chromium_tsan_rel_ng": "try/linux_chromium_tsan_rel_ng/gn-args.json",
-    "linux_chromium_tsan_siso_rel_ng": "try/linux_chromium_tsan_siso_rel_ng/gn-args.json",
     "linux_optional_gpu_tests_rel": "try/linux_optional_gpu_tests_rel/gn-args.json",
     "linux_upload_clang": "try/linux_upload_clang/gn-args.json",
     "network_service_linux": "try/network_service_linux/gn-args.json"

@@ -111,7 +111,6 @@ chromium/try/linux-webkit-asan-rel
 chromium/try/linux-webkit-msan-rel
 chromium/try/linux_chromium_archive_rel_ng
 chromium/try/linux_chromium_asan_rel_ng
-chromium/try/linux_chromium_asan_siso_rel_ng
 chromium/try/linux_chromium_cfi_rel_ng
 chromium/try/linux_chromium_chromeos_asan_rel_ng
 chromium/try/linux_chromium_chromeos_msan_rel_ng
@@ -120,7 +119,6 @@ chromium/try/linux_chromium_compile_rel_ng
 chromium/try/linux_chromium_dbg_ng
 chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
-chromium/try/linux_chromium_tsan_siso_rel_ng
 chromium/try/mac-arm64-clobber-rel
 chromium/try/mac-arm64-dawn-rel
 chromium/try/mac-arm64-on-arm64-rel

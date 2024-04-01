@@ -525,37 +525,6 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "linux_chromium_asan_siso_rel_ng",
-    description_html = """\
-This builder shadows linux_chromium_asan_rel_ng builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux_chromium_asan_rel_ng from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux_chromium_asan_rel_ng"),
-    builder_config_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    gn_args = "try/linux_chromium_asan_rel_ng",
-    compilator = "linux_chromium_asan_siso_rel_ng-compilator",
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
-    # Many concurrent compile jobs may cause the slowness.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-)
-
-try_.compilator_builder(
-    name = "linux_chromium_asan_siso_rel_ng-compilator",
-    main_list_view = "try",
-)
-
 try_.builder(
     name = "linux_chromium_cfi_rel_ng",
     mirrors = [
@@ -766,37 +735,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
-    main_list_view = "try",
-)
-
-# TODO: crbug.com/1502025 - Reduce duplicated configs from the shadow builder.
-try_.orchestrator_builder(
-    name = "linux_chromium_tsan_siso_rel_ng",
-    description_html = """\
-This builder shadows linux_chromium_tsan_rel_ng builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux_chromium_tsan_rel_ng from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux_chromium_tsan_rel_ng"),
-    builder_config_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    gn_args = "try/linux_chromium_tsan_rel_ng",
-    compilator = "linux_chromium_tsan_siso_rel_ng-compilator",
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    # b/311312613 - Siso's sanitizer builds are slower than Ninja builds.
-    # Many concurrent compile jobs may cause the slowness.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-)
-
-try_.compilator_builder(
-    name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
 )
 

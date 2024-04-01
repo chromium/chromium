@@ -124,7 +124,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
         "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
 
-        # Fallback happens with follwoing args.gn (try/linux_chromium_asan_rel_ng, or try/linux_chromium_asan_siso_rel_ng-compilator).
+        # Fallback happens with follwoing args.gn (try/linux_chromium_asan_rel_ng).
         # dcheck_always_on = true
         # fail_on_san_warnings = true
         # is_asan = true

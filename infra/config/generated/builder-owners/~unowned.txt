@@ -403,8 +403,6 @@ try/linux-wpt-content-shell-leak-detection
 try/linux_chromium_archive_rel_ng
 try/linux_chromium_asan_rel_ng
 try/linux_chromium_asan_rel_ng-compilator
-try/linux_chromium_asan_siso_rel_ng
-try/linux_chromium_asan_siso_rel_ng-compilator
 try/linux_chromium_cfi_rel_ng
 try/linux_chromium_chromeos_asan_rel_ng
 try/linux_chromium_chromeos_msan_rel_ng
@@ -415,8 +413,6 @@ try/linux_chromium_dbg_ng
 try/linux_chromium_msan_rel_ng
 try/linux_chromium_tsan_rel_ng
 try/linux_chromium_tsan_rel_ng-compilator
-try/linux_chromium_tsan_siso_rel_ng
-try/linux_chromium_tsan_siso_rel_ng-compilator
 try/linux_optional_gpu_tests_rel
 try/linux_upload_clang
 try/linux_upload_rust
