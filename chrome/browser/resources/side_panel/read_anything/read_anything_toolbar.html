@@ -253,15 +253,20 @@
       </cr-icon-button>
     </template>
   </cr-action-menu>
-  <cr-action-menu id="rateMenu">
-    <template is="dom-repeat" items="[[rateOptions_]]">
-      <button class="dropdown-item" on-click="onRateClick_">
-        <iron-icon class="button-image check-mark"
-            icon="read-anything-20:check-mark"></iron-icon>
-        [[item]]x
-      </button>
+  <cr-lazy-render id="rateMenu">
+    <template>
+      <cr-action-menu>
+        <template is="dom-repeat" items="[[rateOptions_]]" index-as="index">
+          <button class="dropdown-item" on-click="onRateClick_">
+            <iron-icon class$="button-image check-mark-for-lazy-render
+              check-mark-hidden-[[isRateItemSelected_(index)]]"
+                icon="read-anything-20:check-mark"></iron-icon>
+            [[item]]x
+          </button>
+        </template>
+      </cr-action-menu>
     </template>
-  </cr-action-menu>
+  </cr-lazy-render>
   <cr-lazy-render id="fontSizeMenu" on-keydown="onFontSizeMenuKeyDown_">
     <template>
       <cr-action-menu>

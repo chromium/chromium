@@ -31,7 +31,7 @@ import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export interface ReadAnythingToolbarElement {
   $: {
-    rateMenu: CrActionMenuElement,
+    rateMenu: CrLazyRenderElement<CrActionMenuElement>,
     colorMenu: CrActionMenuElement,
     lineSpacingMenu: CrActionMenuElement,
     letterSpacingMenu: CrActionMenuElement,
@@ -429,10 +429,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.updateLinkToggleButton();
 
     if (this.isReadAloudEnabled_) {
-      const speechRate = parseFloat(chrome.readingMode.speechRate.toFixed(1));
+      const speechRate = this.getCurrentSpeechRate();
       this.setRateIcon_(speechRate);
-      this.setCheckMarkForMenu_(
-          this.$.rateMenu, this.rateOptions_.indexOf(speechRate));
+      this.setCheckMarkForLazyMenu_(
+          this.$.rateMenu.getIfExists(), this.rateOptions_.indexOf(speechRate));
 
       this.setHighlightState_(
           chrome.readingMode.highlightGranularity ===
@@ -470,6 +470,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     return item !== this.fontOptions_.indexOf(chrome.readingMode.fontName);
   }
 
+  private isRateItemSelected_(item: number): boolean {
+    return item !== this.rateOptions_.indexOf(this.getCurrentSpeechRate());
+  }
+
+  private getCurrentSpeechRate(): number {
+    return parseFloat(chrome.readingMode.speechRate.toFixed(1));
+  }
+
   // Instead of using areFontsLoaded_ directly in this method, we pass
   // the variable through HTML to force a re-render when the variable changes.
   private getFontItemLabel_(item: string, areFontsLoaded: boolean): string {
@@ -491,7 +499,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private closeMenus_() {
-    this.$.rateMenu.close();
+    this.$.rateMenu.getIfExists()?.close();
     this.$.colorMenu.close();
     this.$.lineSpacingMenu.close();
     this.$.letterSpacingMenu.close();
@@ -519,7 +527,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onShowRateMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
+    this.openMenu_(this.$.rateMenu.get(), event.target as HTMLElement);
   }
 
   private onMoreOptionsClick_(event: MouseEvent) {
@@ -647,7 +655,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       rate: event.model.item,
     });
     this.setRateIcon_(event.model.item);
-    this.setCheckMarkForMenu_(this.$.rateMenu, event.model.index);
+    this.setCheckMarkForLazyMenu_(
+        this.$.rateMenu.getIfExists(), event.model.index);
 
     this.closeMenus_();
   }
@@ -693,7 +702,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       }
     });
 
-    const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
+    const checkMarks =
+        Array.from(menu.getElementsByClassName('check-mark-for-lazy-render'));
     const checkMark = checkMarks[index] as IronIconElement;
     if (checkMark) {
       checkMark.classList.toggle('check-mark-hidden-true', false);

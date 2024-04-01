@@ -47,7 +47,7 @@ suite('RateSelection', () => {
     });
 
     test('menu is not open', () => {
-      assertFalse(toolbar.$.rateMenu.open);
+      assertFalse(toolbar.$.rateMenu.get().open);
     });
   });
 
@@ -56,13 +56,14 @@ suite('RateSelection', () => {
 
     setup(() => {
       rateButton.click();
-      options =
-          Array.from(toolbar.$.rateMenu.querySelectorAll<HTMLButtonElement>(
+      flush();
+      options = Array.from(
+          toolbar.$.rateMenu.get().querySelectorAll<HTMLButtonElement>(
               '.dropdown-item'));
     });
 
     test('opens menu', () => {
-      assertTrue(toolbar.$.rateMenu.open);
+      assertTrue(toolbar.$.rateMenu.get().open);
     });
 
     test('has multiple options', () => {
@@ -101,7 +102,7 @@ suite('RateSelection', () => {
       });
 
       test('closes menu', () => {
-        assertFalse(toolbar.$.rateMenu.open);
+        assertFalse(toolbar.$.rateMenu.get().open);
       });
     });
   });
