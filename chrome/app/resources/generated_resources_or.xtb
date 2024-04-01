@@ -4093,6 +4093,7 @@
 <translation id="4090103403438682346">ଯାଞ୍ଚ ହୋଇଥିବା ଆକ୍ସେସ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> ପାଇଁ ସାଇଟ୍ ଅନୁମତିଗୁଡ଼ିକୁ ରିସେଟ୍ କରିବେ କି?</translation>
 <translation id="4092636882861724179">ଆପଣ <ph name="GOOGLE_PASSWORD_MANAGER" />ରେ ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିପାରିବେ ଏବଂ ପରିଚାଳନା କରିପାରିବେ।</translation>
+<translation id="4092709865241032354">Google Password Managerକୁ ଆପଣଙ୍କ ସାଇନ-ଇନ ସୂଚନା ସେଭ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ଏହି ସାଇଟ ପାଇଁ ଆପଣଙ୍କ ୟୁଜରନେମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4093865285251893588">ପ୍ରୋଫାଇଲ୍ ଛବି</translation>
 <translation id="4093955363990068916">ସ୍ଥାନୀୟ ଫାଇଲ୍:</translation>
 <translation id="4094647278880271855">ଆପଣ ଏକ ଅଣସମର୍ଥିତ ପରିବେଶ ଭିନ୍ନତା ବ୍ୟବହାର କରୁଛନ୍ତି: <ph name="BAD_VAR" />। ସ୍ଥିରତା ଏବଂ ସୁରକ୍ଷାରେ ଅସୁବିଧା ହେବ।</translation>
@@ -4664,7 +4665,6 @@
 <translation id="4546692474302123343">Google Assistant ଭଏସ୍ ଇନପୁଟ୍</translation>
 <translation id="4547659257713117923">ଅନ୍ୟ ଡିଭାଇସ୍‌ରୁ କୌଣସି ଟାବ୍ ନାହିଁ</translation>
 <translation id="4547672827276975204">ସ୍ଵଚାଳିତ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
-<translation id="4548858987594081919">Google Password Managerକୁ ଆପଣଙ୍କ ସାଇନ-ଇନ ସୂଚନା ସେଭ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ଏହି ସାଇଟ ପାଇଁ ଆପଣଙ୍କ ୟୁଜରନେମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4549791035683739768">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀରେ କୌଣସି ଟିପଚିହ୍ନ ଷ୍ଟୋର୍ କରାଯାଇନାହିଁ</translation>
 <translation id="4550737096585299960">କିଛି ମିନିଟ୍ ପରେ ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4550926046134589611">କିଛି ସମର୍ଥିତ ଲିଙ୍କ ଏବେ ବି <ph name="APP_NAME" />ରେ ଖୋଲିବ।</translation>
