@@ -24,7 +24,14 @@ namespace multidevice_setup {
 
 namespace {
 
-const size_t kNumTestDevices = 6;
+const size_t kNumTestDevices = 7;
+
+const char kBluetoothAddress0[] = "01:01:01:01:01:00";
+const char kBluetoothAddress1[] = "01:01:01:01:01:01";
+const char kBluetoothAddress2[] = "01:01:01:01:01:02";
+const char kBluetoothAddress3[] = "01:01:01:01:01:03";
+const char kBluetoothAddress4[] = "01:01:01:01:01:04";
+const char kBluetoothAddress5[] = "01:01:01:01:01:05";
 
 }  // namespace
 
@@ -103,25 +110,44 @@ class MultiDeviceSetupEligibleHostDevicesProviderImplTest
     GetMutableRemoteDevice(test_devices()[0])
         ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kSupported;
+    GetMutableRemoteDevice(test_devices()[0])->bluetooth_public_address =
+        kBluetoothAddress0;
     GetMutableRemoteDevice(test_devices()[1])
         ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kSupported;
+    GetMutableRemoteDevice(test_devices()[1])->bluetooth_public_address =
+        kBluetoothAddress1;
     GetMutableRemoteDevice(test_devices()[2])
         ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kSupported;
+    GetMutableRemoteDevice(test_devices()[2])->bluetooth_public_address =
+        kBluetoothAddress2;
     GetMutableRemoteDevice(test_devices()[3])
         ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kSupported;
+    GetMutableRemoteDevice(test_devices()[3])->bluetooth_public_address =
+        kBluetoothAddress3;
 
     // Device 4 is enabled.
     GetMutableRemoteDevice(test_devices()[4])
         ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kEnabled;
+    GetMutableRemoteDevice(test_devices()[4])->bluetooth_public_address =
+        kBluetoothAddress4;
 
     // Device 5 is not supported.
     GetMutableRemoteDevice(test_devices()[5])
         ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kNotSupported;
+    GetMutableRemoteDevice(test_devices()[5])->bluetooth_public_address =
+        kBluetoothAddress5;
+
+    // Device 6 is supported, and has the same bluetooth address as Device 0.
+    GetMutableRemoteDevice(test_devices()[6])
+        ->software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
+        multidevice::SoftwareFeatureState::kSupported;
+    GetMutableRemoteDevice(test_devices()[6])->bluetooth_public_address =
+        kBluetoothAddress0;
   }
 
   // EligibleHostDevicesProvider::Observer:
@@ -411,9 +437,10 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
       },
       nullptr, nullptr);
 
-  multidevice::RemoteDeviceRefList devices{
-      test_devices()[0], test_devices()[1], test_devices()[2],
-      test_devices()[3], test_devices()[4], test_devices()[5]};
+  multidevice::RemoteDeviceRefList devices{test_devices()[0], test_devices()[1],
+                                           test_devices()[2], test_devices()[3],
+                                           test_devices()[4], test_devices()[5],
+                                           test_devices()[6]};
   fake_device_sync_client()->set_synced_devices(devices);
   fake_device_sync_client()->NotifyNewDevicesSynced();
 
@@ -459,6 +486,13 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
               EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays));
 
   // Do not filter out test_devices()[4]; no device activity status returned.
+
+  // Filter out because match of public bluetooth address with Device 0.
+  device_activity_statuses.emplace_back(
+      device_sync::mojom::DeviceActivityStatus::New(
+          test_devices()[6].instance_id(), /*last_activity_time=*/base::Time(),
+          cryptauthv2::ConnectivityStatus::OFFLINE,
+          /*last_update_time=*/base::Time()));
 
   fake_device_sync_client()->InvokePendingGetDevicesActivityStatusCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
