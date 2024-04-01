@@ -256,6 +256,15 @@ void ArcVolumeMounterBridge::OnMountEvent(
              << " is null during MountEvent " << event;
   }
 
+  if (device_label.empty()) {
+    // To make volume labels consistent with Files app, we follow how Files
+    // generates a volume label when the volume doesn't have specific label.
+    // That is, we use the base name of mount path instead in such cases.
+    // TODO: b/255485048 - Share the implementation with Files app and Settings.
+    device_label =
+        base::FilePath(mount_info.mount_path).BaseName().AsUTF8Unsafe();
+  }
+
   const bool visible = IsVisibleToAndroidApps(fs_uuid);
   switch (event) {
     case DiskMountManager::MountEvent::MOUNTING:
