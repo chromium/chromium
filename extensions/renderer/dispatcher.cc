@@ -122,8 +122,12 @@ namespace {
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
-void CrashOnException(const v8::TryCatch& trycatch) {
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+void LogOnException(const std::string& from, const v8::TryCatch& try_catch) {
+  // This is called synchronously from a script evaluation failing, so the
+  // current isolate is correct.
+  LOG(ERROR) << "Unexpected error in \"" << from << "\": "
+             << gin::V8ToString(v8::Isolate::GetCurrent(),
+                                try_catch.Message()->Get());
 }
 
 // Calls a method |method_name| in a module |module_name| belonging to the
@@ -561,17 +565,17 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   // Run service_worker.js to get the main function.
   v8::Local<v8::Function> main_function;
   {
+    // This *should* always succeed and always be a function (because the
+    // script is included as part of Chrome). However, it may not be in the
+    // case of e.g. binary corruption, or if certain JS hooks ran before the
+    // script (though that should be rare, since this is running right after
+    // the context is created).
+    // https://crbug.com/1260773 and https://crbug.com/41487802.
     v8::Local<v8::Value> result = context->RunScript(
         v8_helpers::ToV8StringUnsafe(isolate, "service_worker"), script,
-        base::BindOnce(&CrashOnException));
-    // This *should* always be a function (because the script is included as
-    // part of Chrome). However, it may not be in the case of e.g. binary
-    // corruption, or if certain JS hooks ran before the script (though that
-    // should be rare, since this is running right after the context is
-    // created).
-    // https://crbug.com/1260773.
+        base::BindOnce(&LogOnException, "service worker internal script"));
     if (!result->IsFunction()) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      LOG(ERROR) << "Unexpected result from service worker internal script.";
       return;
     }
     main_function = result.As<v8::Function>();
