@@ -10,6 +10,8 @@ import androidx.core.util.Predicate;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 
 import java.lang.annotation.Retention;
@@ -130,6 +132,7 @@ public class LanguagesManager {
         int ALWAYS_LANGUAGES = 4;
     }
 
+    // TODO(crbug/40254448): Convert to ProfileKeyedMap and replace getInstance with getForProfile.
     private static LanguagesManager sManager;
 
     private final Map<String, LanguageItem> mLanguagesMap;
@@ -139,7 +142,8 @@ public class LanguagesManager {
     private LanguagesManager() {
         // Get all language data from native.
         mLanguagesMap = new LinkedHashMap<>();
-        for (LanguageItem item : TranslateBridge.getChromeLanguageList()) {
+        for (LanguageItem item :
+                TranslateBridge.getChromeLanguageList(ProfileManager.getLastUsedRegularProfile())) {
             mLanguagesMap.put(item.getCode(), item);
         }
     }
@@ -158,7 +162,8 @@ public class LanguagesManager {
      */
     public List<LanguageItem> getUserAcceptLanguageItems() {
         // Always read the latest user accept language code list from native.
-        List<String> codes = TranslateBridge.getUserLanguageCodes();
+        List<String> codes =
+                TranslateBridge.getUserLanguageCodes(ProfileManager.getLastUsedRegularProfile());
 
         List<LanguageItem> results = new ArrayList<>();
         // Keep the same order as accept language codes list.
@@ -173,19 +178,22 @@ public class LanguagesManager {
      * Get the list of potential languages to show in the {@link SelectLanguageFragment} based on
      * which list or preference a language will be added to. By default the potential languages for
      * the Accept-Language list is returned.
+     *
      * @param LanguageListType key to select which languages to get.
      * @return A list of LanguageItems to choose from for the given preference.
      */
     public List<LanguageItem> getPotentialLanguages(@LanguageListType int potentialLanguages) {
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         switch (potentialLanguages) {
             case LanguageListType.ALWAYS_LANGUAGES:
                 return getPotentialTranslateLanguages(
-                        TranslateBridge.getAlwaysTranslateLanguages());
+                        TranslateBridge.getAlwaysTranslateLanguages(profile));
             case LanguageListType.NEVER_LANGUAGES:
-                return getPotentialTranslateLanguages(TranslateBridge.getNeverTranslateLanguages());
+                return getPotentialTranslateLanguages(
+                        TranslateBridge.getNeverTranslateLanguages(profile));
             case LanguageListType.TARGET_LANGUAGES:
                 return getPotentialTranslateLanguages(
-                        Arrays.asList(TranslateBridge.getTargetLanguageForChromium()));
+                        Arrays.asList(TranslateBridge.getTargetLanguageForChromium(profile)));
             case LanguageListType.UI_LANGUAGES:
                 return getPotentialUiLanguages();
             case LanguageListType.ACCEPT_LANGUAGES:
@@ -256,11 +264,15 @@ public class LanguagesManager {
 
     /**
      * Get a list of potential Accept-Languages excluding the current Accept-Languages.
+     *
      * @return A list of LanguageItems, excluding the current user's accept languages.
      */
     private List<LanguageItem> getPotentialAcceptLanguages() {
         // Always read the latest user accept language code list from native.
-        HashSet<String> codesToSkip = new HashSet(TranslateBridge.getUserLanguageCodes());
+        HashSet<String> codesToSkip =
+                new HashSet(
+                        TranslateBridge.getUserLanguageCodes(
+                                ProfileManager.getLastUsedRegularProfile()));
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         addItemsToResult(
                 results, mLanguagesMap.values(), (item) -> !codesToSkip.contains(item.getCode()));
@@ -288,11 +300,14 @@ public class LanguagesManager {
     /**
      * Get a list of LanguageItems that the user has set to always translate. The list is sorted
      * alphabetically by display name.
+     *
      * @return List of LanguageItems.
      */
     public Collection<LanguageItem> getAlwaysTranslateLanguageItems() {
         // Get the latest always translate list from native. This list has no guaranteed order.
-        List<String> codes = TranslateBridge.getAlwaysTranslateLanguages();
+        List<String> codes =
+                TranslateBridge.getAlwaysTranslateLanguages(
+                        ProfileManager.getLastUsedRegularProfile());
         TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
         for (String code : codes) {
             if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
@@ -303,11 +318,14 @@ public class LanguagesManager {
     /**
      * Get a list of LanguageItems that the user has set to never prompt for translation. The list
      * is sorted alphabetically by display name.
+     *
      * @return List of LanguageItems.
      */
     public Collection<LanguageItem> getNeverTranslateLanguageItems() {
         // Get the latest never translate list from native. This list has no guaranteed order.
-        List<String> codes = TranslateBridge.getNeverTranslateLanguages();
+        List<String> codes =
+                TranslateBridge.getNeverTranslateLanguages(
+                        ProfileManager.getLastUsedRegularProfile());
         TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
         for (String code : codes) {
             if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
@@ -333,19 +351,23 @@ public class LanguagesManager {
 
     /**
      * Add a language to the current user's accept languages.
+     *
      * @param code The language code to remove.
      */
     public void addToAcceptLanguages(String code) {
-        TranslateBridge.updateUserAcceptLanguages(code, /* add= */ true);
+        TranslateBridge.updateUserAcceptLanguages(
+                ProfileManager.getLastUsedRegularProfile(), code, /* add= */ true);
         notifyAcceptLanguageObserver();
     }
 
     /**
      * Remove a language from the current user's accept languages.
+     *
      * @param code The language code to remove.
      */
     public void removeFromAcceptLanguages(String code) {
-        TranslateBridge.updateUserAcceptLanguages(code, /* add= */ false);
+        TranslateBridge.updateUserAcceptLanguages(
+                ProfileManager.getLastUsedRegularProfile(), code, /* add= */ false);
         notifyAcceptLanguageObserver();
     }
 
@@ -359,7 +381,8 @@ public class LanguagesManager {
     public void moveLanguagePosition(String code, int offset, boolean reload) {
         if (offset == 0) return;
 
-        TranslateBridge.moveAcceptLanguage(code, offset);
+        TranslateBridge.moveAcceptLanguage(
+                ProfileManager.getLastUsedRegularProfile(), code, offset);
         recordAction(LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
         if (reload) notifyAcceptLanguageObserver();
     }
@@ -371,7 +394,7 @@ public class LanguagesManager {
      * @param reload True iff the language list should be reloaded.
      */
     public void setOrder(String[] codes, boolean reload) {
-        TranslateBridge.setLanguageOrder(codes);
+        TranslateBridge.setLanguageOrder(ProfileManager.getLastUsedRegularProfile(), codes);
         recordAction(LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
         if (reload) notifyAcceptLanguageObserver();
     }

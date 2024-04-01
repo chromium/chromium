@@ -142,7 +142,7 @@ public class ContextualSearchManager
     private final ViewTreeObserver.OnGlobalFocusChangeListener mOnFocusChangeListener;
     private final FullscreenManager.Observer mFullscreenObserver;
 
-    @VisibleForTesting protected final ContextualSearchTranslation mTranslateController;
+    private final ContextualSearchTranslation mTranslateController;
     private final ContextualSearchSelectionClient mContextualSearchSelectionClient;
 
     private final ScrimCoordinator mScrimCoordinator;
@@ -328,7 +328,7 @@ public class ContextualSearchManager
                 new ContextualSearchSelectionController(activity, this, mTabSupplier);
         mNetworkCommunicator = this;
         mPolicy = new ContextualSearchPolicy(mProfile, mSelectionController, mNetworkCommunicator);
-        mTranslateController = new ContextualSearchTranslationImpl();
+        mTranslateController = new ContextualSearchTranslationImpl(mProfile);
         mInternalStateController =
                 new ContextualSearchInternalStateController(
                         mPolicy, getContextualSearchInternalStateHandler());

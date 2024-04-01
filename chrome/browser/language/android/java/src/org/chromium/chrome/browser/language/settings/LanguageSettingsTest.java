@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -58,10 +60,14 @@ public class LanguageSettingsTest {
             new SettingsActivityTestRule<>(LanguageSettings.class);
 
     private SettingsActivity mActivity;
+    private Profile mProfile;
 
     @Before
     public void setUp() throws Exception {
         mActivity = mSettingsActivityTestRule.startSettingsActivity();
+        mProfile =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> ProfileManager.getLastUsedRegularProfile());
     }
 
     private void addLanguage() {
@@ -147,7 +153,7 @@ public class LanguageSettingsTest {
                 () -> {
                     Assert.assertFalse(
                             "Language should not be blocked when 'offer to translate' is on.",
-                            TranslateBridge.isBlockedLanguage(languageItem.getCode()));
+                            TranslateBridge.isBlockedLanguage(mProfile, languageItem.getCode()));
                 });
 
         RecyclerViewTestUtils.waitForStableRecyclerView(acceptLanguageList);
@@ -180,7 +186,7 @@ public class LanguageSettingsTest {
                 () -> {
                     Assert.assertTrue(
                             "Language should be blocked when 'offer to translate' is off.",
-                            TranslateBridge.isBlockedLanguage(languageItem.getCode()));
+                            TranslateBridge.isBlockedLanguage(mProfile, languageItem.getCode()));
                 });
 
         // Open popup menu to verify the drawable (blue tick) is invisible.

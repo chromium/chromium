@@ -58,12 +58,12 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected void onLanguageAdded(String code) {
-        TranslateBridge.setLanguageBlockedState(code, true);
+        TranslateBridge.setLanguageBlockedState(getProfile(), code, true);
     }
 
     @Override
     protected void onLanguageRemoved(String code) {
-        TranslateBridge.setLanguageBlockedState(code, false);
+        TranslateBridge.setLanguageBlockedState(getProfile(), code, false);
     }
 
     /**

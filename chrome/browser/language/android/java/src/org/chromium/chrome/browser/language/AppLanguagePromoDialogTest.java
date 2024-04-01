@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.LocaleUtils;
@@ -19,6 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog.LanguageItemAdapter;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 
@@ -32,6 +35,8 @@ import java.util.LinkedHashSet;
 @Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private Profile mProfile;
 
     LanguageItem mFollowSystem;
     LanguageItem mLangAf;
@@ -48,6 +53,7 @@ public class AppLanguagePromoDialogTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         LanguageTestUtils.initializeResourceBundleForTesting();
         mFollowSystem = LanguageItem.makeFollowSystemLanguageItem();
         mLangAf = new LanguageItem("af", "Afrikaans", "Afrikaans", true);
@@ -293,24 +299,24 @@ public class AppLanguagePromoDialogTest {
         // Prompt should not be shown if the top ULP has a base match with the current default
         // locale ("en-US" in tests).
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("en-AU"));
-        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
+        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr"));
-        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
+        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr", "en-US"));
-        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
+        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
 
         // Prompt should not be shown if not online.
-        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(!online));
+        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(mProfile, !online));
 
         // Prompt should not be shown if ULP languages are empty.
         mFakeLanguageBridge.setULPLanguages(new ArrayList<>());
-        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
+        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
 
         // Prompt is not shown if it has been shown before.
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr"));
-        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(online));
+        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
         mFakeTranslateBridge.setAppLanguagePromptShown(true);
-        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(online));
+        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
     }
 
     private static LanguageItemAdapter makeLanguageItemAdapter(

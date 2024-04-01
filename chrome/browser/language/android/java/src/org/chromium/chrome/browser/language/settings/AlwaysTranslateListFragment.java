@@ -57,12 +57,12 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected void onLanguageAdded(String code) {
-        TranslateBridge.setLanguageAlwaysTranslateState(code, true);
+        TranslateBridge.setLanguageAlwaysTranslateState(getProfile(), code, true);
     }
 
     @Override
     protected void onLanguageRemoved(String code) {
-        TranslateBridge.setLanguageAlwaysTranslateState(code, false);
+        TranslateBridge.setLanguageAlwaysTranslateState(getProfile(), code, false);
     }
 
     /**

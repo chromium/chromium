@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.translate;
 
 import org.chromium.chrome.browser.language.settings.LanguageItem;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -66,12 +67,12 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void getChromeAcceptLanguages(List<LanguageItem> list) {
+    public void getChromeAcceptLanguages(Profile profile, List<LanguageItem> list) {
         list.addAll(mChromeLanguages.values());
     }
 
     @Override
-    public String[] getUserAcceptLanguages() {
+    public String[] getUserAcceptLanguages(Profile profile) {
         return mUserAcceptLanguages.toArray(new String[mUserAcceptLanguages.size()]);
     }
 
@@ -79,7 +80,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
      * Reset the user Accept-Languages to the default list and prepend |defaultLocale| if needed.
      */
     @Override
-    public void resetAcceptLanguages(String defaultLocale) {
+    public void resetAcceptLanguages(Profile profile, String defaultLocale) {
         mUserAcceptLanguages = new ArrayList<>();
         if (!mDefaultUserAcceptLanguages.contains(defaultLocale)) {
             mUserAcceptLanguages.add(defaultLocale);
@@ -89,12 +90,12 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
 
     /** Set the Accept-Languages to the new list of strings. */
     @Override
-    public void setLanguageOrder(String[] codes) {
+    public void setLanguageOrder(Profile profile, String[] codes) {
         mUserAcceptLanguages = new ArrayList<>(Arrays.asList(codes));
     }
 
     @Override
-    public void updateUserAcceptLanguages(String language, boolean add) {
+    public void updateUserAcceptLanguages(Profile profile, String language, boolean add) {
         if (!add) {
             mUserAcceptLanguages.remove(language);
         } else if (!mUserAcceptLanguages.contains(language)) {
@@ -103,22 +104,23 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String getTargetLanguage() {
+    public String getTargetLanguage(Profile profile) {
         return mTargetLanguage;
     }
 
     @Override
-    public void setDefaultTargetLanguage(String targetLanguage) {
+    public void setDefaultTargetLanguage(Profile profile, String targetLanguage) {
         mTargetLanguage = targetLanguage;
     }
 
     @Override
-    public String[] getAlwaysTranslateLanguages() {
+    public String[] getAlwaysTranslateLanguages(Profile profile) {
         return mAlwaysLanguages.toArray(new String[mAlwaysLanguages.size()]);
     }
 
     @Override
-    public void setLanguageAlwaysTranslateState(String language, boolean alwaysTranslate) {
+    public void setLanguageAlwaysTranslateState(
+            Profile profile, String language, boolean alwaysTranslate) {
         if (alwaysTranslate) {
             mAlwaysLanguages.add(language);
         } else if (!mAlwaysLanguages.contains(language)) {
@@ -127,12 +129,12 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public String[] getNeverTranslateLanguages() {
+    public String[] getNeverTranslateLanguages(Profile profile) {
         return mNeverLanguages.toArray(new String[mNeverLanguages.size()]);
     }
 
     @Override
-    public void setLanguageBlockedState(String language, boolean blocked) {
+    public void setLanguageBlockedState(Profile profile, String language, boolean blocked) {
         if (blocked) {
             mNeverLanguages.add(language);
         } else {
@@ -141,17 +143,17 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public boolean isBlockedLanguage(String language) {
+    public boolean isBlockedLanguage(Profile profile, String language) {
         return mNeverLanguages.contains(language);
     }
 
     @Override
-    public boolean getAppLanguagePromptShown() {
+    public boolean getAppLanguagePromptShown(Profile profile) {
         return mAppLanguagePromptShown;
     }
 
     @Override
-    public void setAppLanguagePromptShown() {
+    public void setAppLanguagePromptShown(Profile profile) {
         mAppLanguagePromptShown = true;
     }
 
@@ -229,7 +231,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     }
 
     @Override
-    public void moveAcceptLanguage(String language, int offset) {
+    public void moveAcceptLanguage(Profile profile, String language, int offset) {
         throw new UnsupportedOperationException();
     }
 

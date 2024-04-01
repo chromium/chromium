@@ -1314,7 +1314,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
         return AppLanguagePromoDialog.maybeShowPrompt(
-                mActivity, mModalDialogManagerSupplier, () -> ApplicationLifetime.terminate(true));
+                mActivity,
+                profile,
+                mModalDialogManagerSupplier,
+                () -> ApplicationLifetime.terminate(true));
     }
 
     public static void setDisableTopControlsAnimationsForTesting(boolean disable) {

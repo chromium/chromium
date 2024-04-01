@@ -95,7 +95,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
         ContentLanguagesPreference mLanguageListPref =
                 (ContentLanguagesPreference) findPreference(PREFERRED_LANGUAGES_KEY);
-        mLanguageListPref.initialize(this, getPrefService());
+        mLanguageListPref.initialize(this, getProfile(), getPrefService());
 
         ChromeSwitchPreference translateSwitch =
                 (ChromeSwitchPreference) findPreference(TRANSLATE_SWITCH_KEY);
@@ -143,7 +143,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
         ContentLanguagesPreference mLanguageListPref =
                 (ContentLanguagesPreference) findPreference(CONTENT_LANGUAGES_KEY);
-        mLanguageListPref.initialize(this, getPrefService());
+        mLanguageListPref.initialize(this, getProfile(), getPrefService());
 
         setupTranslateSection(mLanguageListPref);
     }
@@ -191,7 +191,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         // Setup target language preference.
         LanguageItemPickerPreference targetLanguagePreference =
                 (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
-        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguageForChromium());
+        targetLanguagePreference.setLanguageItem(
+                TranslateBridge.getTargetLanguageForChromium(getProfile()));
         setSelectLanguageLauncher(
                 targetLanguagePreference,
                 LanguagesManager.LanguageListType.TARGET_LANGUAGES,
@@ -201,7 +202,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                 Pref.PREF_TRANSLATE_RECENT_TARGET,
                 () -> {
                     targetLanguagePreference.setLanguageItem(
-                            TranslateBridge.getTargetLanguageForChromium());
+                            TranslateBridge.getTargetLanguageForChromium(getProfile()));
                 });
 
         // Setup always translate preference.
@@ -288,12 +289,12 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                                 .getLanguage();
             }
             // Set the default target language to match the new app language.
-            TranslateBridge.setDefaultTargetLanguage(code);
+            TranslateBridge.setDefaultTargetLanguage(getProfile(), code);
         } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE) {
             LanguageItemPickerPreference targetLanguagePreference =
                     (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
             targetLanguagePreference.setLanguageItem(code);
-            TranslateBridge.setDefaultTargetLanguage(code);
+            TranslateBridge.setDefaultTargetLanguage(getProfile(), code);
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_TARGET_LANGUAGE);
         }

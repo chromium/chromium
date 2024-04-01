@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -22,6 +23,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.LanguageTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
@@ -38,10 +41,12 @@ public class LanguagesManagerTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         LanguageTestUtils.initializeResourceBundleForTesting();
         // Setup fake translate and language preferences.
         List<LanguageItem> chromeLanguages = FakeTranslateBridgeJni.getSimpleLanguageItemList();
@@ -166,7 +171,7 @@ public class LanguagesManagerTest {
         Assert.assertEquals(items.get(0).getCode(), "sw");
 
         // Set the target language to "fil" (Filipino) which is "tl" as a Translate language.
-        TranslateBridge.setDefaultTargetLanguage("fil");
+        TranslateBridge.setDefaultTargetLanguage(mProfile, "fil");
         items =
                 LanguagesManager.getInstance()
                         .getPotentialLanguages(LanguagesManager.LanguageListType.TARGET_LANGUAGES);
@@ -174,7 +179,7 @@ public class LanguagesManagerTest {
         Assert.assertTrue(containsLanguage(items, "en"));
 
         // Set the target language to "sw" (Swahili).
-        TranslateBridge.setDefaultTargetLanguage("sw");
+        TranslateBridge.setDefaultTargetLanguage(mProfile, "sw");
         items =
                 LanguagesManager.getInstance()
                         .getPotentialLanguages(LanguagesManager.LanguageListType.TARGET_LANGUAGES);
@@ -200,8 +205,8 @@ public class LanguagesManagerTest {
         Assert.assertEquals(items.get(0).getCode(), "sw");
 
         // Add English and Filipino to always translate languages.
-        TranslateBridge.setLanguageAlwaysTranslateState("en", true);
-        TranslateBridge.setLanguageAlwaysTranslateState("fil", true);
+        TranslateBridge.setLanguageAlwaysTranslateState(mProfile, "en", true);
+        TranslateBridge.setLanguageAlwaysTranslateState(mProfile, "fil", true);
 
         items =
                 LanguagesManager.getInstance()
@@ -230,8 +235,8 @@ public class LanguagesManagerTest {
         // Check that the second language is "sw" from the Accept-Languages.
         Assert.assertEquals(items.get(0).getCode(), "sw");
 
-        TranslateBridge.setLanguageBlockedState("fil", true);
-        TranslateBridge.setLanguageBlockedState("sw", true);
+        TranslateBridge.setLanguageBlockedState(mProfile, "fil", true);
+        TranslateBridge.setLanguageBlockedState(mProfile, "sw", true);
 
         items =
                 LanguagesManager.getInstance()
@@ -260,6 +265,6 @@ public class LanguagesManagerTest {
         for (LanguageItem item : languages) {
             codes[i++] = item.getCode();
         }
-        TranslateBridge.setLanguageOrder(codes);
+        TranslateBridge.setLanguageOrder(mProfile, codes);
     }
 }
