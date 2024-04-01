@@ -59,6 +59,7 @@ import org.chromium.net.test.ServerCertificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for detached resource requests. */
@@ -581,13 +582,15 @@ public class DetachedResourceRequestTest {
                     Assert.assertTrue(mConnection.canDoParallelRequest(token, ORIGIN));
                 });
 
+        // Launching a CCT and loading a URL takes more time than usual. Gives a longer timeout.
+        // See crbug.com/40737671.
         mContext.startActivity(intent);
-        callback.waitForRequest(0, 1);
-        callback.waitForCompletion(0, 1);
+        callback.waitForRequest(0, 1, 10, TimeUnit.SECONDS);
+        callback.waitForCompletion(0, 1, 10, TimeUnit.SECONDS);
 
         mContext.startActivity(intent);
-        callback.waitForRequest(1, 1);
-        callback.waitForCompletion(1, 1);
+        callback.waitForRequest(1, 1, 10, TimeUnit.SECONDS);
+        callback.waitForCompletion(1, 1, 10, TimeUnit.SECONDS);
     }
 
     private void testCanStartParallelRequest(boolean afterNative) throws Exception {
@@ -816,6 +819,11 @@ public class DetachedResourceRequestTest {
             mRequestedWaiter.waitForCallback(currentCallCount, numberOfCallsToWaitFor);
         }
 
+        public void waitForRequest(int currentCount, int expectCount, int timeout, TimeUnit unit)
+                throws TimeoutException {
+            mRequestedWaiter.waitForCallback(currentCount, expectCount, timeout, unit);
+        }
+
         public void waitForCompletion() throws TimeoutException {
             mCompletionWaiter.waitForFirst();
         }
@@ -823,6 +831,11 @@ public class DetachedResourceRequestTest {
         public void waitForCompletion(int currentCallCount, int numberOfCallsToWaitFor)
                 throws TimeoutException {
             mCompletionWaiter.waitForCallback(currentCallCount, numberOfCallsToWaitFor);
+        }
+
+        public void waitForCompletion(int currentCount, int expectCount, int timeout, TimeUnit unit)
+                throws TimeoutException {
+            mCompletionWaiter.waitForCallback(currentCount, expectCount, timeout, unit);
         }
     }
 }

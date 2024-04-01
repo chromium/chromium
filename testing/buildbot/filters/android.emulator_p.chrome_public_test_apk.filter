@@ -66,9 +66,6 @@
 # crbug.com/1067673
 -org.chromium.chrome.browser.ntp.cards.NewTabPageRecyclerViewTest.testDismissArticleWithContextMenu
 
-# crbug.com/1159805
--org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testRepeatedIntents
-
 # crbug.com/1187536
 -org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
 
