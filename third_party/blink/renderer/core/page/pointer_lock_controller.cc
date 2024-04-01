@@ -140,9 +140,8 @@ void PointerLockController::RequestPointerLock(
           WTF::BindOnce(
               &PointerLockController::ChangeLockRequestCallback,
               WrapWeakPersistent(this), WrapWeakPersistent(target),
-              WTF::BindOnce(
-                  &PointerLockController::ProcessResultScriptPromiseUntyped,
-                  WrapPersistent(resolver)),
+              WTF::BindOnce(&PointerLockController::ProcessResultPromise,
+                            WrapPersistent(resolver)),
               unadjusted_movement_requested));
       return;
     }
@@ -159,9 +158,8 @@ void PointerLockController::RequestPointerLock(
         WTF::BindOnce(
             &PointerLockController::LockRequestCallback,
             WrapWeakPersistent(this),
-            WTF::BindOnce(
-                &PointerLockController::ProcessResultScriptPromiseUntyped,
-                WrapPersistent(resolver)),
+            WTF::BindOnce(&PointerLockController::ProcessResultPromise,
+                          WrapPersistent(resolver)),
             unadjusted_movement_requested));
     lock_pending_ = true;
     element_ = target;
@@ -201,7 +199,7 @@ void PointerLockController::LockRequestCallback(
   }
 }
 
-void PointerLockController::ProcessResultScriptPromiseUntyped(
+void PointerLockController::ProcessResultPromise(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     mojom::blink::PointerLockResult result) {
   if (result == mojom::blink::PointerLockResult::kSuccess) {

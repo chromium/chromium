@@ -159,14 +159,13 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       // <spec step="10">Perform
       // FinishDynamicImport(referencingScriptOrModule, specifier,
       // promiseCapability, promise).</spec>
-      ScriptPromiseUntyped promise = result.GetPromise(script_state);
       auto* callback_success = MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ModuleResolutionSuccessCallback>(
                             promise_resolver_, module_script));
       auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ModuleResolutionFailureCallback>(
                             promise_resolver_));
-      promise.Then(callback_success, callback_failure);
+      result.GetPromise(script_state).Then(callback_success, callback_failure);
       break;
     }
   }

@@ -129,7 +129,7 @@ v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForClassicForTesting()
   return value_;
 }
 
-ScriptPromiseUntyped ScriptEvaluationResult::GetPromise(
+ScriptPromise<IDLAny> ScriptEvaluationResult::GetPromise(
     ScriptState* script_state) const {
 #if DCHECK_IS_ON()
   DCHECK_EQ(script_type_, mojom::blink::ScriptType::kModule);
@@ -137,16 +137,16 @@ ScriptPromiseUntyped ScriptEvaluationResult::GetPromise(
 
   switch (result_type_) {
     case ResultType::kSuccess:
-      return ScriptPromiseUntyped(script_state, GetSuccessValue());
+      return ScriptPromise<IDLAny>::FromV8Promise(
+          script_state, GetSuccessValue().As<v8::Promise>());
 
     case ResultType::kException:
-      return ScriptPromiseUntyped::Reject(script_state,
-                                          GetExceptionForModule());
+      return ScriptPromise<IDLAny>::Reject(script_state,
+                                           GetExceptionForModule());
 
     case ResultType::kNotRun:
     case ResultType::kAborted:
-      NOTREACHED();
-      return ScriptPromiseUntyped::Reject(script_state, v8::Local<v8::Value>());
+      NOTREACHED_NORETURN();
   }
 }
 

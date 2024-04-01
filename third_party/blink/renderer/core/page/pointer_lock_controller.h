@@ -103,7 +103,7 @@ class CORE_EXPORT PointerLockController final
                      bool unadjusted_movement_requested,
                      mojom::blink::PointerLockResult result);
 
-  static void ProcessResultScriptPromiseUntyped(
+  static void ProcessResultPromise(
       ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PointerLockResult result);
   static DOMException* ConvertResultToException(

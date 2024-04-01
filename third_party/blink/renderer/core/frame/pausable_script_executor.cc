@@ -119,12 +119,11 @@ PromiseAggregator::PromiseAggregator(ScriptState* script_state,
       continue;
 
     ++outstanding_;
-    // ScriptPromiseUntyped::FromUntypedValueForBindings() will turn any
-    // non-promise into a promise that resolves to the value. Calling
-    // ScriptPromiseUntyped::FromUntypedValueForBindings().Then() will either
+    // ToResolvedPromise<> will turn any non-promise into a promise that
+    // resolves to the value. Calling ToResolvedPromise<>.Then() will either
     // wait for the promise (or then-able) to settle, or will immediately finish
     // with the value. Thus, it's safe to just do this for every value.
-    ScriptPromiseUntyped::FromUntypedValueForBindings(script_state, values[i])
+    ToResolvedPromise<IDLAny>(script_state, values[i])
         .Then(OnSettled::New(script_state, this, i, /*was_fulfilled=*/true),
               OnSettled::New(script_state, this, i, /*was_fulfilled=*/false));
   }

@@ -45,7 +45,7 @@ ScriptPromise<IDLUndefined> DocumentFullscreen::exitFullscreen(
 }
 
 void DocumentFullscreen::webkitExitFullscreen(Document& document) {
-  ScriptPromiseUntyped promise = Fullscreen::ExitFullscreen(document);
+  auto promise = Fullscreen::ExitFullscreen(document);
   DCHECK(promise.IsEmpty());
 }
 
