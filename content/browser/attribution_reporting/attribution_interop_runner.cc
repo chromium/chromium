@@ -373,7 +373,7 @@ void Handle(const AttributionSimulationEvent::Response& event,
   data_host_manager.NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
       event.reporting_origin->GetURL(),
-      network::AttributionReportingRuntimeFeatures(),
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*trigger_verification=*/{});
 }
 

@@ -22,6 +22,7 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_interop_runner.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,6 +125,14 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   if (dict.FindBool("needs_trigger_context_id").value_or(false)) {
     enabled_features.emplace_back(
         attribution_reporting::features::kAttributionReportingTriggerContextId);
+  }
+
+  std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
+      scoped_api_state;
+  if (dict.FindBool("needs_cross_app_web")) {
+    enabled_features.emplace_back(
+        network::features::kAttributionReportingCrossAppWeb);
+    scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
