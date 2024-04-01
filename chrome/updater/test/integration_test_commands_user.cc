@@ -79,9 +79,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
                      const GURL& device_management_url,
+                     const GURL& app_logo_url,
                      const base::TimeDelta& idle_timeout) const override {
     updater::test::EnterTestMode(update_url, crash_upload_url,
-                                 device_management_url, idle_timeout);
+                                 device_management_url, app_logo_url,
+                                 idle_timeout);
   }
 
   void ExitTestMode() const override {

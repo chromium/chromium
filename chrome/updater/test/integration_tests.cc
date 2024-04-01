@@ -184,7 +184,7 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(ExpectClean());
     ASSERT_NO_FATAL_FAILURE(EnterTestMode(
         GURL("http://localhost:1234"), GURL("http://localhost:1235"),
-        GURL("http://localhost:1236"), base::Minutes(5)));
+        GURL("http://localhost:1236"), {}, base::Minutes(5)));
     ASSERT_NO_FATAL_FAILURE(SetMachineManaged(false));
 #if BUILDFLAG(IS_LINUX)
     // On LUCI the XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS environment
@@ -273,9 +273,11 @@ class IntegrationTest : public ::testing::Test {
   void EnterTestMode(const GURL& update_url,
                      const GURL& crash_upload_url,
                      const GURL& device_management_url,
+                     const GURL& app_logo_url,
                      const base::TimeDelta& idle_timeout) {
     test_commands_->EnterTestMode(update_url, crash_upload_url,
-                                  device_management_url, idle_timeout);
+                                  device_management_url, app_logo_url,
+                                  idle_timeout);
   }
 
   void ExitTestMode() { test_commands_->ExitTestMode(); }
@@ -1597,6 +1599,32 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
   ASSERT_TRUE(WaitForUpdaterExit());
 }
+
+TEST_F(IntegrationTest, AppLogoUrl) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+
+  EnterTestMode(GURL("http://update.server.not_exist/update"),
+                GURL("http://crash.report.not_exist/crash"),
+                GURL("http://dm.server.not_exist/dmapi"),
+                test_server.app_logo_url(), base::Minutes(5));
+  test_server.ExpectOnce(
+      {
+          request::GetPathMatcher(base::StringPrintf(
+              "%s%s.bmp\\?lang=%s", test_server.app_logo_path().c_str(), "test",
+              base::WideToUTF8(GetPreferredLanguage()).c_str())),
+      },
+      {});
+  ASSERT_NO_FATAL_FAILURE(
+      InstallUpdaterAndApp(kAppId, /*is_silent_install=*/false, "usagestats=1",
+                           base::WideToUTF8(GetLocalizedStringF(
+                               IDS_NO_NETWORK_PRESENT_ERROR_BASE,
+                               GetExecutableRelativePath().value()))));
+
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
@@ -1833,7 +1861,7 @@ TEST_F(IntegrationTest, IdleServerExits) {
 #endif
   ASSERT_NO_FATAL_FAILURE(EnterTestMode(
       GURL("http://localhost:1234"), GURL("http://localhost:1234"),
-      GURL("http://localhost:1234"), base::Seconds(1)));
+      GURL("http://localhost:1234"), {}, base::Seconds(1)));
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(RunServer(kErrorIdle, true));
@@ -2709,7 +2737,7 @@ TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
   const GURL update_check_url = GURL("http://update.server.not_exist/update");
   const GURL dm_server_url = GURL("http://dm.server.not_exist/dmapi");
   EnterTestMode(update_check_url, test_server_->crash_upload_url(),
-                dm_server_url, base::Minutes(5));
+                dm_server_url, {}, base::Minutes(5));
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
                                            omaha_settings, false, false,
                                            dm_server_url);

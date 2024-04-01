@@ -78,6 +78,9 @@ class ScopedServer {
     return test_server_->GetURL(device_management_path());
   }
 
+  std::string app_logo_path() const { return "/applogo/"; }
+  GURL app_logo_url() const { return test_server_->GetURL(app_logo_path()); }
+
   std::string proxy_url_no_path() const {
     std::string proxy = test_server_->base_url().spec();
     // A valid proxy string should not have any path component. Strip the root
