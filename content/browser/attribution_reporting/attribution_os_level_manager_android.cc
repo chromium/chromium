@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
@@ -142,10 +143,14 @@ void AttributionOsLevelManagerAndroid::Register(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(registration.registration_items.size(), is_debug_key_allowed.size());
 
+  // TODO(apaseltiner): Ideally `OsRegistration` wouldn't even be able to
+  // represent `kDisabled` at this point in the processing pipeline.
+  const OsReportType report_type = registration.report_type;
+  CHECK_NE(report_type, OsReportType::kDisabled);
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
-  OsReportType report_type = registration.report_type;
   std::vector<base::android::ScopedJavaLocalRef<jobject>> registration_urls;
   base::ranges::transform(
       registration.registration_items, std::back_inserter(registration_urls),
@@ -185,7 +190,7 @@ void AttributionOsLevelManagerAndroid::Register(
           break;
         }
         case OsReportType::kDisabled:
-          return;
+          NOTREACHED_NORETURN();
       }
       break;
     }
@@ -211,7 +216,7 @@ void AttributionOsLevelManagerAndroid::Register(
           break;
         }
         case OsReportType::kDisabled:
-          return;
+          NOTREACHED_NORETURN();
       }
       break;
     }
