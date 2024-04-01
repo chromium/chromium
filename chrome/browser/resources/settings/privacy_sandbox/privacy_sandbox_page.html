@@ -40,47 +40,49 @@
 </template>
 <template is="dom-if" if="[[enablePsReAP_]]">
   <template is="dom-if" if="[[!isPrivacySandboxRestricted_]]">
-    <settings-toggle-button disabled="[[!enablePsReAPToggles_]]"
-        id="topicsToggle"
-        pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
+    <cr-link-row
+        id="privacySandboxTopicsLinkRowV2"
+        start-icon="settings20:interests"
         label="$i18n{topicsPageToggleLabel}"
-        icon="settings20:interests"
         sub-label="$i18n{topicsPageToggleSubLabelV2}"
-        on-settings-boolean-control-change="onToggleChange_">
-    </settings-toggle-button>
-    <cr-link-row
-        id="privacySandboxTopicsMoreLinkRow"
-        label="$i18n{adPrivacyPageTopicsLinkRowLabelV2}"
         on-click="onPrivacySandboxTopicsClick_">
+      <cr-toggle
+          id="topicsToggle"
+          disabled="[[!enablePsReAPToggles_]]"
+          on-change="onToggleChange_"
+          checked="[[isTopicsEnabled_(
+            prefs.privacy_sandbox.m1.topics_enabled.value)]]">
+      </cr-toggle>
     </cr-link-row>
-
-    <settings-toggle-button disabled="[[!enablePsReAPToggles_]]"
-        class="hr"
-        id="fledgeToggle"
-        pref="{{prefs.privacy_sandbox.m1.fledge_enabled}}"
-        label="$i18n{fledgePageToggleLabel}"
-        icon="settings20:checklist"
-        sub-label="$i18n{fledgePageToggleSubLabel}"
-        on-settings-boolean-control-change="onToggleChange_">
-    </settings-toggle-button>
     <cr-link-row
-        id="privacySandboxFledgeMoreLinkRow"
-        label="$i18n{adPrivacyPageFledgeLinkRowLabelV2}"
+        id="privacySandboxFledgeLinkRowV2"
+        start-icon="settings20:checklist"
+        class="hr"
+        label="$i18n{fledgePageToggleLabel}"
+        sub-label="$i18n{fledgePageToggleSubLabel}"
         on-click="onPrivacySandboxFledgeClick_">
+      <cr-toggle
+          id="fledgeToggle"
+          disabled="[[!enablePsReAPToggles_]]"
+          on-change="onToggleChange_"
+          checked="[[isFledgeEnabled_(
+            prefs.privacy_sandbox.m1.fledge_enabled.value)]]">
+      </cr-toggle>
     </cr-link-row>
   </template>
-  <settings-toggle-button disabled="[[!enablePsReAPToggles_]]"
-      class="hr"
-      id="adMeasurementToggle"
-      pref="{{prefs.privacy_sandbox.m1.ad_measurement_enabled}}"
-      label="$i18n{adMeasurementPageToggleLabel}"
-      icon="settings20:bar-chart"
-      sub-label="$i18n{adMeasurementPageToggleSubLabel}"
-      on-settings-boolean-control-change="onToggleChange_">
-  </settings-toggle-button>
   <cr-link-row
-      id="privacySandboxAdMeasurementMoreLinkRow"
-      label="$i18n{adPrivacyPageAdMeasurementLinkRowLabelV2}"
+      id="privacySandboxAdMeasurementLinkRowV2"
+      start-icon="settings20:bar-chart"
+      class="hr"
+      label="$i18n{adMeasurementPageToggleLabel}"
+      sub-label="$i18n{adMeasurementPageToggleSubLabel}"
       on-click="onPrivacySandboxAdMeasurementClick_">
-  </cr-link-row>
+    <cr-toggle
+        id="adMeasurementToggle"
+        disabled="[[!enablePsReAPToggles_]]"
+        on-change="onToggleChange_"
+        checked="[[isAdMeasurementEnabled_(
+          prefs.privacy_sandbox.m1.ad_measurement_enabled.value)]]">
+    </cr-toggle>
+    </cr-link-row>
 </template>

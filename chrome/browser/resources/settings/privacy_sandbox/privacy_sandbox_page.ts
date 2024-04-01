@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/prefs/prefs.js';
 
+import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -22,6 +23,8 @@ import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
+import type {PrivacySandboxBrowserProxy} from './privacy_sandbox_browser_proxy.js';
+import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_page.html.js';
 
 export interface SettingsPrivacySandboxPageElement {
@@ -83,6 +86,8 @@ export class SettingsPrivacySandboxPageElement extends
   private enablePsReAPToggles_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
+      PrivacySandboxBrowserProxyImpl.getInstance();
 
   override currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.PRIVACY_SANDBOX) {
@@ -120,25 +125,22 @@ export class SettingsPrivacySandboxPageElement extends
   }
 
   private computePrivacySandboxTopicsSublabel_(): string {
-    const enabled = this.getPref('privacy_sandbox.m1.topics_enabled').value;
     return this.i18n(
-        enabled ? 'adPrivacyPageTopicsLinkRowSubLabelEnabled' :
-                  'adPrivacyPageTopicsLinkRowSubLabelDisabled');
+        this.isTopicsEnabled_() ? 'adPrivacyPageTopicsLinkRowSubLabelEnabled' :
+                                  'adPrivacyPageTopicsLinkRowSubLabelDisabled');
   }
 
   private computePrivacySandboxFledgeSublabel_(): string {
-    const enabled = this.getPref('privacy_sandbox.m1.fledge_enabled').value;
     return this.i18n(
-        enabled ? 'adPrivacyPageFledgeLinkRowSubLabelEnabled' :
-                  'adPrivacyPageFledgeLinkRowSubLabelDisabled');
+        this.isFledgeEnabled_() ? 'adPrivacyPageFledgeLinkRowSubLabelEnabled' :
+                                  'adPrivacyPageFledgeLinkRowSubLabelDisabled');
   }
 
   private computePrivacySandboxAdMeasurementSublabel_(): string {
-    const enabled =
-        this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
     return this.i18n(
-        enabled ? 'adPrivacyPageAdMeasurementLinkRowSubLabelEnabled' :
-                  'adPrivacyPageAdMeasurementLinkRowSubLabelDisabled');
+        this.isAdMeasurementEnabled_() ?
+            'adPrivacyPageAdMeasurementLinkRowSubLabelEnabled' :
+            'adPrivacyPageAdMeasurementLinkRowSubLabelDisabled');
   }
 
   private onPrivacySandboxTopicsClick_() {
@@ -157,6 +159,42 @@ export class SettingsPrivacySandboxPageElement extends
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.AdMeasurement.Opened');
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+  }
+
+  private isTopicsEnabled_() {
+    return this.getPref('privacy_sandbox.m1.topics_enabled').value;
+  }
+
+  private isFledgeEnabled_() {
+    return this.getPref('privacy_sandbox.m1.fledge_enabled').value;
+  }
+
+  private isAdMeasurementEnabled_() {
+    return this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
+  }
+
+  private onToggleChange_(e: Event) {
+    const target = e.target as CrToggleElement;
+    if (target.id === 'topicsToggle') {
+      this.metricsBrowserProxy_.recordAction(
+          target.checked ? 'Settings.PrivacySandbox.Topics.Enabled' :
+                           'Settings.PrivacySandbox.Topics.Disabled');
+
+      this.privacySandboxBrowserProxy_.topicsToggleChanged(target.checked);
+    }
+    if (target.id === 'fledgeToggle') {
+      this.metricsBrowserProxy_.recordAction(
+          target.checked ? 'Settings.PrivacySandbox.Fledge.Enabled' :
+                           'Settings.PrivacySandbox.Fledge.Disabled');
+      this.setPrefValue('privacy_sandbox.m1.fledge_enabled', target.checked);
+    }
+    if (target.id === 'adMeasurementToggle') {
+      this.metricsBrowserProxy_.recordAction(
+          target.checked ? 'Settings.PrivacySandbox.AdMeasurement.Enabled' :
+                           'Settings.PrivacySandbox.AdMeasurement.Disabled');
+      this.setPrefValue(
+          'privacy_sandbox.m1.ad_measurement_enabled', target.checked);
+    }
   }
 }
 
