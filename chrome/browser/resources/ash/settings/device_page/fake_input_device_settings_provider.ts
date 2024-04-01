@@ -375,6 +375,12 @@ export class FakeInputDeviceSettingsProvider implements
     }
   }
 
+  sendKeyboardBrightnessChange(percent: number): void {
+    if (this.keyboardBrightnessObserver) {
+      this.keyboardBrightnessObserver.onKeyboardBrightnessChanged(percent);
+    }
+  }
+
   hasLauncherButton(): Promise<{hasLauncherButton: boolean}> {
     return this.methods.resolveMethod('fakeHasLauncherButton');
   }

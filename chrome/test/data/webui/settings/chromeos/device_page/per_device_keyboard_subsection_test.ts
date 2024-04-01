@@ -20,7 +20,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
   let provider: FakeInputDeviceSettingsProvider;
 
   setup(async () => {
-    await initializePerDeviceKeyboardSubsection(fakeKeyboards);
+    await initializePerDeviceKeyboardSubsection(fakeKeyboards, true);
   });
 
   teardown(() => {
@@ -28,11 +28,11 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  function initializePerDeviceKeyboardSubsection(fakeKeyboards: Keyboard[]):
-      Promise<void> {
+  function initializePerDeviceKeyboardSubsection(
+      fakeKeyboards: Keyboard[], rgbKeyboardSupported: boolean): Promise<void> {
     provider = new FakeInputDeviceSettingsProvider();
     provider.setFakeKeyboards(fakeKeyboards);
-    provider.setFakeIsRgbKeyboardSupported(true);
+    provider.setFakeIsRgbKeyboardSupported(rgbKeyboardSupported);
     setInputDeviceSettingsProviderForTesting(provider);
 
     subsection =
@@ -381,7 +381,8 @@ suite('<settings-per-device-keyboard-subsection>', () => {
 
     // Disable keyboard backlight control flag and reinitialize.
     setKeyboardBacklightControlEnabled(false);
-    await initializePerDeviceKeyboardSubsection(fakeKeyboards);
+    await initializePerDeviceKeyboardSubsection(fakeKeyboards, true);
+    await changeIsExternalState(false);
 
     // Both elements should be hidden after flag is disabled.
     assertFalse(isVisible(rgbKeyboardControlLink()));
@@ -389,11 +390,39 @@ suite('<settings-per-device-keyboard-subsection>', () => {
 
     // Enable flag but disable RGB keyboard support, then reinitialize.
     setKeyboardBacklightControlEnabled(true);
-    provider.setFakeIsRgbKeyboardSupported(false);
-    await initializePerDeviceKeyboardSubsection(fakeKeyboards);
+    await initializePerDeviceKeyboardSubsection(fakeKeyboards, false);
+    await changeIsExternalState(false);
 
-    // Both elements should remain hidden since RGB keyboard support is false.
+    // Link should be hidden while slider should remain visible.
     assertFalse(isVisible(rgbKeyboardControlLink()));
-    assertFalse(isVisible(keyboardBrightnessSlider()));
+    assertTrue(isVisible(keyboardBrightnessSlider()));
+  });
+
+  test('observe keyboard brightness change', async () => {
+    await changeIsExternalState(false);
+
+    const slider = subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#keyboardBrightnessSlider');
+    assertTrue(!!slider);
+
+    // Define initial and test values for keyboard brightness to improve
+    // readability.
+    const initialBrightness = 40;
+    const firstAdjustedBrightness = 60.5;
+    const secondAdjustedBrightness = 20.5;
+
+    // Verify initial brightness is set correctly.
+    assertEquals(initialBrightness, slider.pref!.value);
+
+    // Simulate a keyboard brightness change and verify the slider updates
+    // accordingly.
+    provider.sendKeyboardBrightnessChange(firstAdjustedBrightness);
+    await flushTasks();
+    assertEquals(firstAdjustedBrightness, slider.pref!.value);
+
+    // Simulate another keyboard brightness change.
+    provider.sendKeyboardBrightnessChange(secondAdjustedBrightness);
+    await flushTasks();
+    assertEquals(secondAdjustedBrightness, slider.pref!.value);
   });
 });

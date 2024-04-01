@@ -30,6 +30,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {KeyboardBrightnessObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
 import {Route, Router, routes} from '../router.js';
@@ -176,6 +177,8 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       getInputDeviceSettingsProvider();
   private personalizationHubBrowserProxy: PersonalizationHubBrowserProxy =
       PersonalizationHubBrowserProxyImpl.getInstance();
+  private keyboardBrightnessObserverReceiver:
+      KeyboardBrightnessObserverReceiver;
   private keyboardIndex: number;
   private isLastDevice: boolean;
   private isRgbKeyboardSupported: boolean;
@@ -183,6 +186,13 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
+
+    // Add keyboardBrightnessChange observer.
+    this.keyboardBrightnessObserverReceiver =
+        new KeyboardBrightnessObserverReceiver(this);
+    this.inputDeviceSettingsProvider.observeKeyboardBrightness(
+        this.keyboardBrightnessObserverReceiver.$.bindNewPipeAndPassRemote());
+
     if (this.isKeyboardBacklightControlInSettingsEnabled) {
       this.isRgbKeyboardSupported =
         (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
@@ -246,6 +256,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     this.keyboard.settings = newSettings;
     this.inputDeviceSettingsProvider.setKeyboardSettings(
         this.keyboard.id, this.keyboard.settings);
+  }
+
+  onKeyboardBrightnessChanged(keyboardBrightnessPercent: number): void {
+    this.set('keyboardBrightnessPercentPref.value', keyboardBrightnessPercent);
   }
 
   private getNumRemappedSixPackKeys(): number {
