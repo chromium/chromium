@@ -39,6 +39,7 @@
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event_rewriter.h"
 #include "ui/events/types/event_type.h"
@@ -221,6 +222,7 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
   EventCapturer event_capturer_;
 
   ui::test::FakeEventRewriterAshDelegate event_rewriter_ash_delegate_;
+  ui::StubKeyboardLayoutEngine keyboard_layout_engine_;
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_{
       ui::KeyboardCapability::CreateStubKeyboardCapability()};
   input_method::FakeImeKeyboard fake_ime_keyboard_;
@@ -230,7 +232,8 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
   ui::KeyboardModifierEventRewriter keyboard_modifier_event_rewriter_{
       std::make_unique<KeyboardModifierEventRewriterDelegate>(
           &event_rewriter_ash_delegate_),
-      keyboard_capability_.get(), &fake_ime_keyboard_};
+      &keyboard_layout_engine_, keyboard_capability_.get(),
+      &fake_ime_keyboard_};
   ui::EventRewriterAsh event_rewriter_ash_{&event_rewriter_ash_delegate_,
                                            keyboard_capability_.get(), nullptr,
                                            false, &fake_ime_keyboard_};

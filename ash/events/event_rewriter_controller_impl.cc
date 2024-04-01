@@ -26,6 +26,7 @@
 #include "ui/events/ash/keyboard_modifier_event_rewriter.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
 namespace ash {
 namespace {
@@ -133,6 +134,7 @@ void EventRewriterControllerImpl::Initialize(
         std::make_unique<ui::KeyboardModifierEventRewriter>(
             std::make_unique<KeyboardModifierEventRewriterDelegateImpl>(
                 event_rewriter_delegate),
+            ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
             Shell::Get()->keyboard_capability(),
             ash::input_method::InputMethodManager::Get()->GetImeKeyboard());
     AddEventRewriter(std::move(keyboard_modifier_event_rewriter));

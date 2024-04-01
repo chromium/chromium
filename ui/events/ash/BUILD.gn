@@ -43,6 +43,7 @@ source_set("ash") {
     "//ui/events/devices",
     "//ui/events/ozone/evdev",
     "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/layout",
   ]
   if (ozone_platform_x11) {
     deps += [
