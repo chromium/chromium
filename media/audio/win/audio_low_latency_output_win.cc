@@ -1103,7 +1103,7 @@ void WASAPIAudioOutputStream::SetupWaveFormat() {
     format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
     format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
     packet_size_frames_ = 512;
-    packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatS16);
+    packet_size_bytes_ = params_.GetBytesPerBuffer(kSampleFormatS16);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   SendLogMessage("%s => (audio engine format=[%s])", __func__,
