@@ -6655,10 +6655,6 @@ crbug.com/1494242 [ Mac13 Release ] external/wpt/background-fetch/fetch.https.wi
 # Gardener 2023-10-23
 crbug.com/1363683 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
 
-
-# Gardener 2023-10-31
-crbug.com/1497825 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-aggregation-coordinator.https.html [ Pass Timeout ]
-
 # Gardener 2023-11-10
 crbug.com/1486131 [ Debug Linux ] external/wpt/html/browsers/history/the-history-interface/001.html [ Failure Pass ]
 
