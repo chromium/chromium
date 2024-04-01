@@ -954,20 +954,20 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
   ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(layout_engine.get());
 
   const std::vector<ui::StubKeyboardLayoutEngine::CustomLookupEntry> us_table =
-      {{ui::DomCode::MINUS, /*character=*/u'-', /*character_shifted=*/u'_',
-        ui::KeyboardCode::VKEY_OEM_MINUS},
-       {ui::DomCode::BRACKET_LEFT, /*character=*/u'[',
-        /*character_shifted=*/u'{', ui::KeyboardCode::VKEY_OEM_4}};
+      {{ui::DomCode::MINUS, ui::DomKey::FromCharacter(u'-'),
+        ui::DomKey::FromCharacter(u'_'), ui::KeyboardCode::VKEY_OEM_MINUS},
+       {ui::DomCode::BRACKET_LEFT, ui::DomKey::FromCharacter(u'['),
+        ui::DomKey::FromCharacter(u'{'), ui::KeyboardCode::VKEY_OEM_4}};
 
   // Provide a custom layout that mimics behavior of a de-DE keyboard.
   // In the German keyboard, VKEY_OEM_4 is located at DomCode position MINUS
   // with DomKey `ß`. With positional remapping, VKEY_OEM_4 is remapped to
   // search for DomCode BRACKET_LEFT, resulting in DomKey `ü`.
   const std::vector<ui::StubKeyboardLayoutEngine::CustomLookupEntry> de_table =
-      {{ui::DomCode::MINUS, /*character=*/u'ß', /*character_shifted=*/u'?',
-        ui::KeyboardCode::VKEY_OEM_4},
-       {ui::DomCode::BRACKET_LEFT, /*character=*/u'ü',
-        /*character_shifted=*/u'Ü', ui::KeyboardCode::VKEY_OEM_1}};
+      {{ui::DomCode::MINUS, ui::DomKey::FromCharacter(u'ß'),
+        ui::DomKey::FromCharacter(u'?'), ui::KeyboardCode::VKEY_OEM_4},
+       {ui::DomCode::BRACKET_LEFT, ui::DomKey::FromCharacter(u'ü'),
+        ui::DomKey::FromCharacter(u'Ü'), ui::KeyboardCode::VKEY_OEM_1}};
 
   layout_engine->SetCustomLookupTableForTesting(us_table);
 

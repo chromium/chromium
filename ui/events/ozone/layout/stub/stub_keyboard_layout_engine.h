@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 
@@ -18,8 +20,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) StubKeyboardLayoutEngine
  public:
   struct CustomLookupEntry {
     ui::DomCode dom_code;
-    char16_t character;
-    char16_t character_shifted;
+    ui::DomKey dom_key;
+    ui::DomKey dom_key_shifted;
     ui::KeyboardCode key_code;
   };
 

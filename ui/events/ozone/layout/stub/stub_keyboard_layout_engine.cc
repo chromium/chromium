@@ -13,11 +13,9 @@
 
 namespace ui {
 
-StubKeyboardLayoutEngine::StubKeyboardLayoutEngine() {
-}
+StubKeyboardLayoutEngine::StubKeyboardLayoutEngine() = default;
 
-StubKeyboardLayoutEngine::~StubKeyboardLayoutEngine() {
-}
+StubKeyboardLayoutEngine::~StubKeyboardLayoutEngine() = default;
 
 bool StubKeyboardLayoutEngine::CanSetCurrentLayout() const {
   return false;
@@ -50,23 +48,19 @@ bool StubKeyboardLayoutEngine::Lookup(DomCode dom_code,
   if (!custom_lookup_.empty()) {
     for (const auto& entry : custom_lookup_) {
       if (entry.dom_code == dom_code) {
-        int shift_down = ((flags & EF_SHIFT_DOWN) == EF_SHIFT_DOWN);
-        char16_t ch;
-        if (shift_down) {
-          ch = entry.character_shifted;
-        } else {
-          ch = entry.character;
-        }
-        if ((flags & EF_CAPS_LOCK_ON) == EF_CAPS_LOCK_ON) {
-          if ((ch >= 'a') && (ch <= 'z')) {
-            if (shift_down) {
-              ch = entry.character;
-            } else {
-              ch = entry.character_shifted;
-            }
+        bool shift_down = flags & EF_SHIFT_DOWN;
+        DomKey key = shift_down ? entry.dom_key_shifted : entry.dom_key;
+
+        // Caps is effect only for alphabet keys.
+        bool caps_on = flags & EF_CAPS_LOCK_ON;
+        if (caps_on && key.IsCharacter()) {
+          uint32_t ch = key.ToCharacter();
+          if (ch >= 'a' && ch <= 'z') {
+            key = shift_down ? entry.dom_key : entry.dom_key_shifted;
           }
         }
-        *out_dom_key = DomKey::FromCharacter(ch);
+
+        *out_dom_key = key;
         *out_key_code = entry.key_code;
         return true;
       }

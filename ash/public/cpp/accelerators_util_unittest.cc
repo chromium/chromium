@@ -60,10 +60,10 @@ TEST_F(AcceleratorsUtilTest, PositionalKeyCode) {
   // with DomKey `ß`. With positional remapping, VKEY_OEM_4 is remapped to
   // search for DomCode BRACKET_LEFT, resulting in DomKey `ü`.
   const std::vector<ui::StubKeyboardLayoutEngine::CustomLookupEntry> table = {
-      {ui::DomCode::MINUS, /**character=*/u'ß', /**character_shifted=*/u'?',
-       ui::KeyboardCode::VKEY_OEM_4},
-      {ui::DomCode::BRACKET_LEFT, /**character=*/u'ü',
-       /**character_shifted=*/u'Ü', ui::KeyboardCode::VKEY_OEM_1}};
+      {ui::DomCode::MINUS, ui::DomKey::FromCharacter(u'ß'),
+       ui::DomKey::FromCharacter(u'?'), ui::KeyboardCode::VKEY_OEM_4},
+      {ui::DomCode::BRACKET_LEFT, ui::DomKey::FromCharacter(u'ü'),
+       ui::DomKey::FromCharacter(u'Ü'), ui::KeyboardCode::VKEY_OEM_1}};
 
   layout_engine_->SetCustomLookupTableForTesting(table);
 
