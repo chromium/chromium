@@ -163,5 +163,33 @@ TEST_F(SeaPenUtilsTest, IsValidTemplate_duplicateChips) {
   EXPECT_FALSE(IsValidTemplateQuery(template_query));
 }
 
+TEST_F(SeaPenUtilsTest, GetFeedbackText) {
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeRose},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerColorBlue}});
+  ash::personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+          ash::personalization_app::mojom::SeaPenTemplateId::kFlower, options,
+          ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title"));
+
+  ash::personalization_app::mojom::SeaPenFeedbackMetadataPtr metadata =
+      ash::personalization_app::mojom::SeaPenFeedbackMetadata::New();
+  metadata->log_id = "Flower";
+  metadata->is_positive = true;
+  metadata->generation_seed = 1234567890;
+
+  std::string feedback_text =
+      "#AIWallpaper Positive: test template query\ntemplate: Flower\noptions: "
+      "(0:0)(1:12)\ngeneration_seed: 1234567890\n";
+  EXPECT_EQ(feedback_text, GetFeedbackText(template_query, metadata));
+}
+
 }  // namespace
 }  // namespace wallpaper_handlers

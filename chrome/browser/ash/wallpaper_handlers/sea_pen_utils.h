@@ -37,6 +37,10 @@ manta::proto::Request CreateMantaRequest(
     const gfx::Size& size,
     manta::proto::FeatureName feature_name);
 
+std::string GetFeedbackText(
+    const ash::personalization_app::mojom::SeaPenTemplateQueryPtr& query,
+    const ash::personalization_app::mojom::SeaPenFeedbackMetadataPtr& metadata);
+
 }  // namespace wallpaper_handlers
 
 #endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_UTILS_H_

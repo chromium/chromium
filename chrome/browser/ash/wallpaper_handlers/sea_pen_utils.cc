@@ -8,6 +8,7 @@
 
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils_generated.h"
 #include "components/manta/proto/manta.pb.h"
 #include "ui/display/display.h"
@@ -131,6 +132,33 @@ manta::proto::Request CreateMantaRequest(
     }
   }
   return request;
+}
+
+std::string GetFeedbackText(
+    const ash::personalization_app::mojom::SeaPenTemplateQueryPtr& query,
+    const ash::personalization_app::mojom::SeaPenFeedbackMetadataPtr&
+        metadata) {
+  if (!IsValidTemplateQuery(query)) {
+    return "";
+  }
+
+  std::string feedback_text;
+  base::StringAppendF(&feedback_text, "%s %s: %s\n",
+                      metadata->log_id.starts_with("VcBackground")
+                          ? "#VCBackground"
+                          : "#AIWallpaper",
+                      metadata->is_positive ? "Positive" : "Negative",
+                      query->user_visible_query->text.c_str());
+  base::StringAppendF(&feedback_text, "template: %s\n",
+                      metadata->log_id.c_str());
+  base::StringAppendF(&feedback_text, "options: ");
+  for (const auto& [chip, option] : query->options) {
+    base::StringAppendF(&feedback_text, "(%d:%d)", static_cast<int32_t>(chip),
+                        static_cast<int32_t>(option));
+  }
+  base::StringAppendF(&feedback_text, "\ngeneration_seed: %d\n",
+                      metadata->generation_seed);
+  return feedback_text;
 }
 
 }  // namespace wallpaper_handlers

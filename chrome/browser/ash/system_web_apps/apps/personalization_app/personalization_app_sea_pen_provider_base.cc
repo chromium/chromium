@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
+#include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -246,45 +247,23 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
 
 void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
     const mojom::SeaPenFeedbackMetadataPtr metadata) {
-  const std::string hashtag = metadata->log_id.starts_with("VcBackground")
-                                  ? "#VCBackground"
-                                  : "#AIWallpaper";
-  const std::string feedback_type =
-      metadata->is_positive ? "Positive" : "Negative";
   CHECK(last_query_);
   // Text query is not supported.
   if (last_query_->is_text_query()) {
     return;
   }
-  const std::string user_visible_query_text =
-      last_query_->get_template_query()->user_visible_query->text;
-  const std::string description_template =
-      hashtag + " " + feedback_type + ": " + user_visible_query_text + "\n";
+
+  std::string feedback_text = wallpaper_handlers::GetFeedbackText(
+      last_query_->get_template_query(), metadata);
 
   base::Value::Dict ai_metadata;
   ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");
-  ai_metadata.Set("template_id", metadata->log_id);
-
-  base::Value::List options;
-  for (const auto& [chip, option] :
-       last_query_->get_template_query()->options) {
-    options.Append(
-        base::Value::Dict()
-            .Set("chip", base::NumberToString(static_cast<int32_t>(chip)))
-            .Set("options",
-                 base::NumberToString(static_cast<int32_t>(option))));
-  }
-  std::string options_json;
-  base::JSONWriter::Write(options, &options_json);
-  ai_metadata.Set("template_options", std::move(options_json));
-  ai_metadata.Set(
-      "generation_seed",
-      base::NumberToString(static_cast<int32_t>(metadata->generation_seed)));
 
   base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
   chrome::ShowFeedbackPage(
       /*browser=*/chrome::FindBrowserWithProfile(profile_),
-      /*source=*/chrome::kFeedbackSourceAI, description_template,
+      /*source=*/chrome::kFeedbackSourceAI,
+      /*description_template=*/feedback_text,
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(
           l10n_util::GetStringUTF16(IDS_SEA_PEN_FEEDBACK_PLACEHOLDER)),
