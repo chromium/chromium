@@ -462,6 +462,9 @@ void BirchModel::OnCalendarPrefChanged() {
   if (!prefs->GetBoolean(prefs::kBirchUseCalendar)) {
     calendar_items_.clear();
     attachment_items_.clear();  // Attachments come from the same provider.
+  } else {
+    is_calendar_data_fresh_ = false;
+    is_attachment_data_fresh_ = false;
   }
 }
 
@@ -469,6 +472,8 @@ void BirchModel::OnFileSuggestPrefChanged() {
   PrefService* prefs = GetPrefService();
   if (!prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
     file_suggest_items_.clear();
+  } else {
+    is_files_data_fresh_ = false;
   }
 }
 
@@ -476,6 +481,8 @@ void BirchModel::OnRecentTabPrefChanged() {
   PrefService* prefs = GetPrefService();
   if (!prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
     recent_tab_items_.clear();
+  } else {
+    is_release_notes_data_fresh_ = false;
   }
 }
 
@@ -483,6 +490,8 @@ void BirchModel::OnWeatherPrefChanged() {
   PrefService* prefs = GetPrefService();
   if (!prefs->GetBoolean(prefs::kBirchUseWeather)) {
     weather_items_.clear();
+  } else {
+    is_weather_data_fresh_ = false;
   }
 }
 
@@ -490,6 +499,8 @@ void BirchModel::OnReleaseNotesPrefChanged() {
   PrefService* prefs = GetPrefService();
   if (!prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
     release_notes_items_.clear();
+  } else {
+    is_release_notes_data_fresh_ = false;
   }
 }
 
