@@ -246,18 +246,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(top_point));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1494785): Find out why the test fails and fix it. May require
-// ui_controls for global touch events.
-#define MAYBE_TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip \
-  DISABLED_TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip
-#else
-#define MAYBE_TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip \
-  TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip
-#endif
 IN_PROC_BROWSER_TEST_F(
     BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip,
-    MAYBE_TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip) {
+    TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip) {
   if (!IsSnapWindowSupported()) {
     GTEST_SKIP() << "Ash is too old.";
   }
@@ -273,9 +264,10 @@ IN_PROC_BROWSER_TEST_F(
   EnterTabletMode();
   SnapWindow(widget->GetNativeWindow(), crosapi::mojom::SnapPosition::kPrimary);
 
-  // A point above the window, but not in the center horizontally, as a swipe
-  // down from the top center will show the chromeos tablet mode multitask menu.
-  gfx::Point edge_point(100, -1);
+  // A point at the top of the window, but not in the center horizontally, as a
+  // swipe down from the top center will show the chromeos tablet mode multitask
+  // menu.
+  gfx::Point edge_point(100, 0);
 
   ASSERT_FALSE(browser_view->webui_tab_strip()->GetVisible());
   aura::Window* window = widget->GetNativeWindow();
