@@ -139,12 +139,6 @@ END_METADATA
 }  // namespace
 
 void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
-  if (initial_setup &&
-      info_->model()->GetState() == download::DownloadItem::IN_PROGRESS) {
-    AnnounceInProgressAlert();
-    accessible_alert_in_progress_timer_.Reset();
-  }
-
   RecordMetricsOnUpdate();
   SetIcon();
   UpdateButtons();
@@ -334,11 +328,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       browser_(std::move(browser)),
       inkdrop_container_(
           AddChildView(std::make_unique<views::InkDropContainerView>())),
-      accessible_alert_in_progress_timer_(
-          FROM_HERE,
-          base::Minutes(3),
-          base::BindRepeating(&DownloadBubbleRowView::AnnounceInProgressAlert,
-                              base::Unretained(this))),
       update_status_text_timer_(
           FROM_HERE,
           base::Minutes(1),
@@ -952,11 +941,6 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
                      base::RepeatingClosure());
 }
 
-void DownloadBubbleRowView::AnnounceInProgressAlert() {
-  GetViewAccessibility().AnnounceText(
-      info_->model()->GetInProgressAccessibleAlertText());
-}
-
 void DownloadBubbleRowView::UpdateStatusText() {
   secondary_label_->SetText(info_->model()->GetStatusTextForLabel(
       secondary_label_->font_list(), secondary_label_->width()));
@@ -1047,32 +1031,6 @@ void DownloadBubbleRowView::OnInfoChanged() {
   // (primary_label_ or secondary_label_) is updated.
   PreferredSizeChanged();
   navigation_handler_->ResizeDialog();
-}
-
-void DownloadBubbleRowView::OnDownloadStateChanged(
-    download::DownloadItem::DownloadState old_state,
-    download::DownloadItem::DownloadState new_state) {
-  CHECK(old_state != new_state);
-
-  // Announce completion of downloads
-  if (new_state == download::DownloadItem::COMPLETE) {
-    const std::u16string alert_text = l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT,
-        info_->model()->GetFileNameToReportUser().LossyDisplayName());
-    GetViewAccessibility().AnnounceText(alert_text);
-  }
-
-  // When in progress, announce the progress immediately and start the timer for
-  // further updates.
-  if (new_state == download::DownloadItem::IN_PROGRESS) {
-    AnnounceInProgressAlert();
-    accessible_alert_in_progress_timer_.Reset();
-  }
-
-  // When no longer in progress, stop announcing.
-  if (old_state == download::DownloadItem::IN_PROGRESS) {
-    accessible_alert_in_progress_timer_.Stop();
-  }
 }
 
 void DownloadBubbleRowView::SimulateMainButtonClickForTesting(

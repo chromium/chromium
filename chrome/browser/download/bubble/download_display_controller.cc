@@ -20,6 +20,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
@@ -67,6 +68,25 @@ bool HasRecentCompleteDownload(base::TimeDelta interval,
   return time_since_last_completion < interval;
 }
 
+// `profile` must be non-null. `app_id` can be null, signifying no app. This
+// returns the most recent browser for the profile which matches the given app
+// or lack thereof.
+Browser* FindMostRecentBrowserForProfileMatchingWebApp(
+    Profile* profile,
+    const webapps::AppId* app_id) {
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile)) {
+    const webapps::AppId* browser_app_id = GetWebAppIdForBrowser(browser);
+    bool app_ids_match =
+        (!app_id && !browser_app_id) ||
+        (app_id && browser_app_id && *app_id == *browser_app_id);
+    if (!app_ids_match) {
+      continue;
+    }
+    return browser;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 DownloadDisplayController::DownloadDisplayController(
@@ -93,6 +113,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
     return;
   }
 
+  HandleAccessibleAlerts();
   UpdateButtonStateFromUpdateService();
   if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
@@ -118,6 +139,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
+  HandleAccessibleAlerts();
   const DownloadBubbleDisplayInfo& info = UpdateButtonStateFromUpdateService();
   bool will_show_details = may_show_details && is_done && IsAllDone(info);
   if (is_done) {
@@ -231,6 +253,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
 }
 
 void DownloadDisplayController::OnResume() {
+  HandleAccessibleAlerts();
   UpdateButtonStateFromUpdateService();
 }
 
@@ -304,6 +327,20 @@ DownloadDisplayController::UpdateButtonStateFromUpdateService() {
   UpdateToolbarButtonState(info, progress_info);
 
   return info;
+}
+
+void DownloadDisplayController::HandleAccessibleAlerts() {
+  // Don't attempt to announce through more than one browser.
+  const webapps::AppId* app_id = GetWebAppIdForBrowser(browser_);
+  if (browser_ != FindMostRecentBrowserForProfileMatchingWebApp(
+                      browser_->profile(), app_id)) {
+    return;
+  }
+  for (const std::u16string& alert :
+       bubble_controller_->update_service()
+           ->TakeAccessibleAlertsForAnnouncement(app_id)) {
+    display_->AnnounceAccessibleAlertNow(alert);
+  }
 }
 
 void DownloadDisplayController::ScheduleToolbarDisappearance(

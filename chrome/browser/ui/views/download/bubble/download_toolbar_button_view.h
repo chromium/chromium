@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -106,6 +107,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void ShowDetails() override;
   void HideDetails() override;
   bool IsShowingDetails() const override;
+  void AnnounceAccessibleAlertNow(const std::u16string& alert_text) override;
   bool IsFullscreenWithParentViewHidden() const override;
   bool ShouldShowExclusiveAccessBubble() const override;
   void OpenSecuritySubpage(

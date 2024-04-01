@@ -155,17 +155,12 @@ class DownloadBubbleRowView : public views::View,
   void OnActionButtonPressed(DownloadCommands::Command command,
                              const ui::Event& event);
 
-  void AnnounceInProgressAlert();
-
   // Registers/unregisters copy accelerator for copy/paste support.
   void RegisterAccelerators(views::FocusManager* focus_manager);
   void UnregisterAccelerators(views::FocusManager* focus_manager);
 
   // DownloadBubbleRowViewInfoObserver implementation:
   void OnInfoChanged() override;
-  void OnDownloadStateChanged(
-      download::DownloadItem::DownloadState old_state,
-      download::DownloadItem::DownloadState new_state) override;
 
   // The icon for the file. We get platform-specific file type icons from
   // IconLoader (see below).
@@ -247,9 +242,6 @@ class DownloadBubbleRowView : public views::View,
   // Whether the download's completion has already been logged. This is used to
   // avoid inaccurate repeated logging.
   bool has_download_completion_been_logged_ = false;
-
-  // A timer for accessible alerts of progress updates
-  base::RepeatingTimer accessible_alert_in_progress_timer_;
 
   // A timer for updating the status text string.
   base::RepeatingTimer update_status_text_timer_;

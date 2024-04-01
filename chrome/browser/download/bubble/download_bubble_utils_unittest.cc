@@ -130,8 +130,8 @@ TEST(DownloadBubbleUtilsTest, GetAccessibleAlertForModel_DeepScanning) {
       item.get(), std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()};
 
   Alert alert = GetAccessibleAlertForModel(model);
-  EXPECT_THAT(alert, MatchesAlert(u"being scanned",
-                                  Alert::Urgency::kAlertWhenAppropriate));
+  EXPECT_THAT(alert,
+              MatchesAlert(u"being scanned", Alert::Urgency::kAlertSoon));
 }
 
 TEST(DownloadBubbleUtilsTest, GetAccessibleAlertForModel_Insecure) {

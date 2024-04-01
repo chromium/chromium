@@ -388,6 +388,11 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
   }
 }
 
+void DownloadToolbarButtonView::AnnounceAccessibleAlertNow(
+    const std::u16string& alert_text) {
+  GetViewAccessibility().AnnounceText(alert_text);
+}
+
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
 #if BUILDFLAG(IS_MAC)
   if (fullscreen_utils::IsInContentFullscreen(browser_)) {

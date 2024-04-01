@@ -117,8 +117,9 @@ class DownloadBubbleUpdateService
   // they were taken. May return an empty vector. Removes those alerts from
   // `accessible_alerts_`. If |web_app_id| is non-null, the results are limited
   // to downloads initiated by the specified web app, otherwise the results are
-  // limited to downloads initiated by normal Chrome windows.
-  std::vector<std::u16string> TakeAccessibleAlertsForAnnouncement(
+  // limited to downloads initiated by normal Chrome windows. Virtual for
+  // testing.
+  virtual std::vector<std::u16string> TakeAccessibleAlertsForAnnouncement(
       const webapps::AppId* web_app_id);
 
   // Notifies the appropriate browser windows that a download item was added.
