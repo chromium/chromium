@@ -179,7 +179,9 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                      MockPlatformWindowDelegate* delegate,
                      int id,
                      const gfx::Point& location) override {
-    EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
+    EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
+      EXPECT_EQ(ET_TOUCH_PRESSED, event->type());
+    });
     WaylandDragDropTest::SendTouchDown(window, delegate, id, location);
     Mock::VerifyAndClearExpectations(delegate);
     EXPECT_EQ(window,
@@ -190,7 +192,6 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                        int id,
                        const gfx::Point& location) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
-      EXPECT_TRUE(event->IsTouchEvent());
       EXPECT_EQ(ET_TOUCH_MOVED, event->type());
     });
     WaylandDragDropTest::SendTouchMotion(window, delegate, id, location);
@@ -319,9 +320,10 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
 
   // While in |kAttached| state, motion events are expected to be dispatched
   // plain ET_TOUCH_MOVED events.
-  EXPECT_EQ(State::kAttached, drag_controller()->state());
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
+    EXPECT_EQ(State::kAttached, drag_controller()->state());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // On Lacros, touch event will not update the cursor position.
     EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
@@ -345,7 +347,6 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
       .WillOnce([&](Event* event) {
         EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
         ASSERT_EQ(kDropping, test_step);
-        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
     // Ensure PlatformScreen keeps consistent.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -369,7 +370,8 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
         EXPECT_TRUE(change.origin_changed);
 
         test_step = kDropping;
-        SendDndDrop();
+        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndDrop,
+                                        base::Unretained(this)));
       });
 
   // While in |kDetached| state, motion events are expected to be propagated
