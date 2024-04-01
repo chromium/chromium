@@ -10,6 +10,7 @@
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/mojom/appfuse.mojom.h"
+#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "ash/components/arc/mojom/audio.mojom.h"
 #include "ash/components/arc/mojom/auth.mojom.h"
 #include "ash/components/arc/mojom/backup_settings.mojom.h"
@@ -116,6 +117,11 @@ void ArcBridgeHostImpl::OnAppPermissionsInstanceReady(
 void ArcBridgeHostImpl::OnAppfuseInstanceReady(
     mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) {
   OnInstanceReady(arc_bridge_service_->appfuse(), std::move(appfuse_remote));
+}
+
+void ArcBridgeHostImpl::OnArcWifiInstanceReady(
+    mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) {
+  OnInstanceReady(arc_bridge_service_->arc_wifi(), std::move(arc_wifi_remote));
 }
 
 void ArcBridgeHostImpl::OnAudioInstanceReady(

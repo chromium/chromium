@@ -29,6 +29,8 @@ class AppInstance;
 class AppPermissionsInstance;
 class AppfuseHost;
 class AppfuseInstance;
+class ArcWifiHost;
+class ArcWifiInstance;
 class AudioHost;
 class AudioInstance;
 class AuthHost;
@@ -173,6 +175,9 @@ class ArcBridgeService {
   }
   ConnectionHolder<mojom::AppfuseInstance, mojom::AppfuseHost>* appfuse() {
     return &appfuse_;
+  }
+  ConnectionHolder<mojom::ArcWifiInstance, mojom::ArcWifiHost>* arc_wifi() {
+    return &arc_wifi_;
   }
   ConnectionHolder<mojom::AudioInstance, mojom::AudioHost>* audio() {
     return &audio_;
@@ -355,6 +360,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::AppInstance, mojom::AppHost> app_;
   ConnectionHolder<mojom::AppPermissionsInstance> app_permissions_;
   ConnectionHolder<mojom::AppfuseInstance, mojom::AppfuseHost> appfuse_;
+  ConnectionHolder<mojom::ArcWifiInstance, mojom::ArcWifiHost> arc_wifi_;
   ConnectionHolder<mojom::AudioInstance, mojom::AudioHost> audio_;
   ConnectionHolder<mojom::AuthInstance, mojom::AuthHost> auth_;
   ConnectionHolder<mojom::BackupSettingsInstance> backup_settings_;

@@ -82,6 +82,9 @@ void FakeArcBridgeHost::OnAppPermissionsInstanceReady(
 void FakeArcBridgeHost::OnAppfuseInstanceReady(
     mojo::PendingRemote<mojom::AppfuseInstance> app_remote) {}
 
+void FakeArcBridgeHost::OnArcWifiInstanceReady(
+    mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) {}
+
 void FakeArcBridgeHost::OnAudioInstanceReady(
     mojo::PendingRemote<mojom::AudioInstance> audio_remote) {}
 

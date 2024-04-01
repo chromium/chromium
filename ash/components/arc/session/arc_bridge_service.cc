@@ -10,6 +10,7 @@
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/mojom/appfuse.mojom.h"
 #include "ash/components/arc/mojom/arc_bridge.mojom.h"
+#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "ash/components/arc/mojom/audio.mojom.h"
 #include "ash/components/arc/mojom/auth.mojom.h"
 #include "ash/components/arc/mojom/backup_settings.mojom.h"

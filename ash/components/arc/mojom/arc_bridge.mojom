@@ -9,6 +9,7 @@ import "ash/components/arc/mojom/adbd.mojom";
 import "ash/components/arc/mojom/appfuse.mojom";
 import "ash/components/arc/mojom/app.mojom";
 import "ash/components/arc/mojom/app_permissions.mojom";
+import "ash/components/arc/mojom/arc_wifi.mojom";
 import "ash/components/arc/mojom/audio.mojom";
 import "ash/components/arc/mojom/auth.mojom";
 import "ash/components/arc/mojom/backup_settings.mojom";
@@ -63,9 +64,9 @@ import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 
-// Next MinVersion: 66
+// Next MinVersion: 67
 // Deprecated method IDs: 101, 105, 121, 132, 134, 136, 137, 153, 154, 160
-// Next method ID: 171
+// Next method ID: 172
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -90,6 +91,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the AppfuseInstance interface is ready.
   [MinVersion=40] OnAppfuseInstanceReady@145(
       pending_remote<AppfuseInstance> instance_remote);
+
+  // Notifies Chrome that the ArcWifiInstance interface is ready.
+  [MinVersion=66] OnArcWifiInstanceReady@171(
+      pending_remote<ArcWifiInstance> instance_remote);
 
   // Notifies Chrome that the AudioInstance interface is ready.
   [MinVersion=8] OnAudioInstanceReady@115(
