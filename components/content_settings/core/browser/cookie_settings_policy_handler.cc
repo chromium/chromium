@@ -28,7 +28,8 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
 
   if (third_party_cookie_blocking) {
-    if (base::FeatureList::IsEnabled(
+    if (base::FeatureList::GetInstance() &&
+        base::FeatureList::IsEnabled(
             privacy_sandbox::kTrackingProtectionSettingsLaunch)) {
       bool block_3pc = third_party_cookie_blocking->GetBool();
       prefs->SetBoolean(prefs::kBlockAll3pcToggleEnabled, block_3pc);
