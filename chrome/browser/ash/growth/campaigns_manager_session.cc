@@ -49,7 +49,10 @@ void MaybeTriggerNudgeCampaigns() {
 }
 
 void MaybeTriggerCampaignsWhenAppOpened() {
-  // App open triggering point.
+  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+    return;
+  }
+
   MaybeTriggerNudgeCampaigns();
 }
 

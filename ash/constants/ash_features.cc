@@ -1408,6 +1408,13 @@ BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
              "GrowthCampaignsExperimentTagTargeting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether growth campaigns triggering by app open event is enabled.
+// This flag is used as a kill switch to disable the feature in the case that
+// the feature introduces any unexpected behaviours.
+BASE_FEATURE(kGrowthCampaignsTriggerByAppOpen,
+             "GrowthCampaignsTriggerByAppOpen",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables new on-device recognition for legacy handwriting input.
 // This flag should be OVERRIDDEN for devices which do not have on-device
 // handwriting (b/316981973). Please check before using this flag.
@@ -3629,6 +3636,10 @@ bool IsGrowthCampaignsCrOSEventsEnabled() {
 
 bool IsGrowthCampaignsExperimentTagTargetingEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsExperimentTagTargeting);
+}
+
+bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByAppOpen);
 }
 
 bool IsGrowthCampaignsInConsumerSessionEnabled() {

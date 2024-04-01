@@ -454,6 +454,8 @@ BASE_DECLARE_FEATURE(kGrowthCampaignsInConsumerSession);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsExperimentTagTargeting);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByAppOpen);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHandwritingLegacyRecognition);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonWithText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1069,6 +1071,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsExperimentTagTargetingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsInConsumerSessionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsTriggerByAppOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthFrameworkEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
