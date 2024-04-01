@@ -122,16 +122,22 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   tile->SetLabel(text);
   tile->SetTooltipText(text);
   tile->SetButtonCornerRadius(kTileCornerRadius);
-  // Set background colors.
+
+  // Default state colors.
   tile->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
-  tile->SetBackgroundToggledColorId(cros_tokens::kCrosSysPrimary);
-  tile->SetBackgroundDisabledColorId(cros_tokens::kCrosSysSystemOnBaseOpaque);
-  // Set the label's foreground colors.
   tile->SetForegroundColorId(cros_tokens::kCrosSysOnSurface);
-  tile->SetForegroundToggledColorId(cros_tokens::kCrosSysOnPrimary);
-  // Set the sub-label's foreground colors.
   tile->SetForegroundOptionalColorId(cros_tokens::kCrosSysOnSurface);
-  tile->SetForegroundOptionalToggledColorId(cros_tokens::kCrosSysOnPrimary);
+
+  // Toggled state colors.
+  tile->SetBackgroundToggledColorId(
+      cros_tokens::kCrosSysSystemPrimaryContainer);
+  tile->SetForegroundToggledColorId(
+      cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  tile->SetForegroundOptionalToggledColorId(
+      cros_tokens::kCrosSysSystemOnPrimaryContainer);
+
+  // Disabled state colors.
+  tile->SetBackgroundDisabledColorId(cros_tokens::kCrosSysSystemOnBaseOpaque);
 
   if (sub_label.has_value()) {
     tile->SetSubLabel(sub_label.value());
