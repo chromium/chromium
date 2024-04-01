@@ -19,6 +19,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class ViewShadow;
+}  // namespace views
+
 namespace ash {
 
 class ApplicationDragAndDropHost;
@@ -34,7 +38,6 @@ class ButtonFocusSkipper;
 class FolderBackgroundView;
 class SearchBoxView;
 class SearchResultPageDialogController;
-class ViewShadow;
 
 // Contains the views for the bubble version of the launcher. It looks like a
 // system tray bubble. It does not derive from TrayBubbleView because it takes
@@ -148,7 +151,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void InitializeUIForBubbleView();
 
   AppListBubblePage current_page_for_test() { return current_page_; }
-  ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
+  views::ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
   SearchBoxView* search_box_view_for_test() { return search_box_view_; }
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
@@ -202,7 +205,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // during animations.
   AppListBubblePage current_page_ = AppListBubblePage::kNone;
 
-  std::unique_ptr<ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 
   // The individual views are implementation details and are intentionally not
   // exposed via getters (except for tests).

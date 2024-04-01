@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/view_shadow.h"
+#include "ui/views/view_shadow.h"
 
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
-namespace ash {
+namespace views {
 
-ViewShadow::ViewShadow(views::View* view, int elevation)
+ViewShadow::ViewShadow(View* view, int elevation)
     : view_(view), shadow_(std::make_unique<ui::Shadow>()) {
   if (!view_->layer())
     view_->SetPaintToLayer();
   shadow_->Init(elevation);
-  view_->AddLayerToRegion(shadow_->layer(), views::LayerRegion::kBelow);
+  view_->AddLayerToRegion(shadow_->layer(), LayerRegion::kBelow);
   shadow_->SetContentBounds(view_->layer()->bounds());
-  view_->AddObserver(this);
-  shadow_->AddObserver(this);
+  view_observation_.Observe(view_);
+  shadow_observation_.Observe(shadow_.get());
 }
 
 ViewShadow::~ViewShadow() {
@@ -34,18 +35,18 @@ void ViewShadow::OnLayerRecreated(ui::Layer* old_layer) {
   if (!view_)
     return;
   view_->RemoveLayerFromRegionsKeepInLayerTree(old_layer);
-  view_->AddLayerToRegion(shadow_->layer(), views::LayerRegion::kBelow);
+  view_->AddLayerToRegion(shadow_->layer(), LayerRegion::kBelow);
 }
 
-void ViewShadow::OnViewLayerBoundsSet(views::View* view) {
+void ViewShadow::OnViewLayerBoundsSet(View* view) {
   shadow_->SetContentBounds(view->layer()->bounds());
 }
 
-void ViewShadow::OnViewIsDeleting(views::View* view) {
-  shadow_->RemoveObserver(this);
+void ViewShadow::OnViewIsDeleting(View* view) {
+  shadow_observation_.Reset();
   shadow_.reset();
-  view_->RemoveObserver(this);
+  view_observation_.Reset();
   view_ = nullptr;
 }
 
-}  // namespace ash
+}  // namespace views

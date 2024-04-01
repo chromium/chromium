@@ -373,8 +373,6 @@ component("cpp") {
     "tablet_mode.h",
     "tablet_mode_observer.h",
     "update_types.h",
-    "view_shadow.cc",
-    "view_shadow.h",
     "views_text_services_context_menu_ash.cc",
     "views_text_services_context_menu_ash.h",
     "vm_camera_mic_constants.cc",
@@ -527,7 +525,6 @@ source_set("unit_tests") {
     "tab_cluster/clusterer_unittest.cc",
     "tab_cluster/correlation_clusterer_unittest.cc",
     "tab_cluster/undirected_graph_unittest.cc",
-    "view_shadow_unittest.cc",
   ]
 
   deps = [

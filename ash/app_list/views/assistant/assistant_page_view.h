@@ -24,11 +24,14 @@ namespace display {
 enum class TableState;
 }  // namespace display
 
+namespace views {
+class ViewShadow;
+}  // namespace views
+
 namespace ash {
 
 class AssistantMainView;
 class AssistantViewDelegate;
-class ViewShadow;
 
 // The Assistant page for the app list.
 class ASH_EXPORT AssistantPageView : public AppListPage,
@@ -91,7 +94,7 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
 
   int min_height_dip_;
 
-  std::unique_ptr<ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

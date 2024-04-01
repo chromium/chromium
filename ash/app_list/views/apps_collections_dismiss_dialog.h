@@ -17,11 +17,10 @@
 namespace views {
 class Button;
 class Label;
+class ViewShadow;
 }  // namespace views
 
 namespace ash {
-
-class ViewShadow;
 
 // AppsCollectionsDismissDialog displays a confirmation dialog for dismissing
 // the apps collections view.
@@ -45,7 +44,7 @@ class AppsCollectionsDismissDialog : public views::WidgetDelegateView {
 
  private:
   base::OnceClosure confirm_callback_;
-  std::unique_ptr<ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Button> cancel_button_ = nullptr;

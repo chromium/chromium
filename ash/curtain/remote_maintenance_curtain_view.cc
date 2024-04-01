@@ -10,7 +10,6 @@
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/oobe_dialog_util.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/check_deref.h"
@@ -19,6 +18,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
+#include "ui/views/view_shadow.h"
 
 namespace ash::curtain {
 
@@ -82,7 +82,7 @@ void RemoteMaintenanceCurtainView::AddCurtainWebView() {
                                        StackLayout::VerticalAlignment::kCenter);
 
   // Add a shadow
-  curtain_view_shadow_ = std::make_unique<ViewShadow>(
+  curtain_view_shadow_ = std::make_unique<views::ViewShadow>(
       curtain_view_.get(), util().GetShadowElevation());
   curtain_view_shadow_->SetRoundedCornerRadius(util().GetCornerRadius());
 

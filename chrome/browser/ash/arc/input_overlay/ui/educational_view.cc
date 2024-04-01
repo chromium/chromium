@@ -273,7 +273,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
 
 void EducationalView::AddShadow() {
   view_shadow_ =
-      std::make_unique<ash::ViewShadow>(this, kDialogShadowElevation);
+      std::make_unique<views::ViewShadow>(this, kDialogShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kDialogCornerRadius);
 }
 

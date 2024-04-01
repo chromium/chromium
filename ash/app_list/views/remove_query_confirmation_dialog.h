@@ -15,11 +15,10 @@
 namespace views {
 class Button;
 class Label;
+class ViewShadow;
 }  // namespace views
 
 namespace ash {
-
-class ViewShadow;
 
 // RemoveQueryConfirmationDialog displays the confirmation dialog for removing
 // a recent query suggestion.
@@ -52,7 +51,7 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
 
  private:
   RemovalConfirmationCallback confirm_callback_;
-  std::unique_ptr<ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 
   // Whether Jelly style feature is enabled.
   bool is_jellyroll_enabled_ = false;

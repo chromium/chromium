@@ -35,7 +35,6 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
@@ -75,6 +74,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_shadow.h"
 
 using views::BoxLayout;
 
@@ -873,7 +873,7 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
   // consistency with bubbles in status area. Add it when status area bubbles
   // get updated.
   if (!chromeos::features::IsJellyEnabled()) {
-    view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
+    view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
     view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
   }
 }

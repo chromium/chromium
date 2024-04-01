@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_VIEW_SHADOW_H_
-#define ASH_PUBLIC_CPP_VIEW_SHADOW_H_
+#ifndef UI_VIEWS_VIEW_SHADOW_H_
+#define UI_VIEWS_VIEW_SHADOW_H_
 
 #include <memory>
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/views_export.h"
 
 namespace ui {
 class Shadow;
 }
 
-namespace ash {
+namespace views {
 
 // Manages the shadow for a view. This forces |view| to paint to layer if it's
 // not.
-class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
-                                     public ui::LayerOwner::Observer {
+class VIEWS_EXPORT ViewShadow : public ViewObserver,
+                                public ui::LayerOwner::Observer {
  public:
-  ViewShadow(views::View* view, int elevation);
+  ViewShadow(View* view, int elevation);
 
   ViewShadow(const ViewShadow&) = delete;
   ViewShadow& operator=(const ViewShadow&) = delete;
@@ -40,14 +41,18 @@ class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
   const ui::Shadow* shadow() const { return shadow_.get(); }
 
  private:
-  // views::ViewObserver:
-  void OnViewLayerBoundsSet(views::View* view) override;
-  void OnViewIsDeleting(views::View* view) override;
+  // ViewObserver:
+  void OnViewLayerBoundsSet(View* view) override;
+  void OnViewIsDeleting(View* view) override;
 
-  raw_ptr<views::View> view_;
+  raw_ptr<View> view_;
   std::unique_ptr<ui::Shadow> shadow_;
+
+  base::ScopedObservation<View, ViewObserver> view_observation_{this};
+  base::ScopedObservation<ui::Shadow, ui::LayerOwner::Observer>
+      shadow_observation_{this};
 };
 
-}  // namespace ash
+}  // namespace views
 
-#endif  // ASH_PUBLIC_CPP_VIEW_SHADOW_H_
+#endif  // UI_VIEWS_VIEW_SHADOW_H_

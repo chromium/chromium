@@ -14,7 +14,6 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
@@ -41,6 +40,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
+#include "ui/views/view_shadow.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -174,8 +174,8 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
 
     if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.
-      view_shadow_ = std::make_unique<ViewShadow>(oobe_view_.get(),
-                                                  kOobeDialogShadowElevation);
+      view_shadow_ = std::make_unique<views::ViewShadow>(
+          oobe_view_.get(), kOobeDialogShadowElevation);
       view_shadow_->SetRoundedCornerRadius(kOobeDialogCornerRadius);
     }
   }
@@ -226,7 +226,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   raw_ptr<OobeUIDialogDelegate, DanglingUntriaged> dialog_delegate_ =
       nullptr;                                      // Owned by us.
   raw_ptr<OobeWebDialogView> oobe_view_ = nullptr;  // Owned by views hierarchy.
-  std::unique_ptr<ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 
   // Indicates whether Oobe web view should fully occupy the hosting widget.
   bool fullscreen_ = false;

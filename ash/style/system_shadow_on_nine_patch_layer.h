@@ -5,13 +5,13 @@
 #ifndef ASH_STYLE_SYSTEM_SHADOW_ON_NINE_PATCH_LAYER_H_
 #define ASH_STYLE_SYSTEM_SHADOW_ON_NINE_PATCH_LAYER_H_
 
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/style/system_shadow.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_shadow.h"
 
 namespace ui {
 class ColorProvider;
@@ -93,7 +93,7 @@ class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer,
   ui::Shadow* shadow() override;
   const ui::Shadow* shadow() const override;
 
-  ViewShadow view_shadow_;
+  views::ViewShadow view_shadow_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 };

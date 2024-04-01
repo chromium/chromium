@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/view_shadow.h"
+#include "ui/views/view_shadow.h"
 
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
@@ -10,19 +10,19 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
-namespace ash {
+namespace views {
 
-using ViewShadowTest = views::ViewsTestBase;
+using ViewShadowTest = ViewsTestBase;
 
 TEST_F(ViewShadowTest, UseShadow) {
-  views::View root;
+  View root;
   root.SetPaintToLayer();
 
-  views::View* v1 = root.AddChildView(std::make_unique<views::View>());
+  View* v1 = root.AddChildView(std::make_unique<View>());
   v1->SetPaintToLayer();
-  views::View* v2 = root.AddChildView(std::make_unique<views::View>());
+  View* v2 = root.AddChildView(std::make_unique<View>());
   v2->SetPaintToLayer();
-  views::View* v3 = root.AddChildView(std::make_unique<views::View>());
+  View* v3 = root.AddChildView(std::make_unique<View>());
   v3->SetPaintToLayer();
 
   auto shadow = std::make_unique<ViewShadow>(v2, 1);
@@ -41,7 +41,7 @@ TEST_F(ViewShadowTest, UseShadow) {
 }
 
 TEST_F(ViewShadowTest, ShadowBoundsFollowView) {
-  views::View view;
+  View view;
   view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
 
   ViewShadow shadow(&view, 1);
@@ -53,13 +53,13 @@ TEST_F(ViewShadowTest, ShadowBoundsFollowView) {
 }
 
 TEST_F(ViewShadowTest, ShadowBoundsFollowIndirectViewBoundsChange) {
-  views::View root;
+  View root;
   root.SetPaintToLayer();
   root.SetBoundsRect(gfx::Rect(100, 100, 200, 200));
 
-  views::View* parent = root.AddChildView(std::make_unique<views::View>());
+  View* parent = root.AddChildView(std::make_unique<View>());
   parent->SetBoundsRect(gfx::Rect(10, 20, 70, 80));
-  views::View* view = parent->AddChildView(std::make_unique<views::View>());
+  View* view = parent->AddChildView(std::make_unique<View>());
   view->SetBoundsRect(gfx::Rect(5, 10, 20, 30));
 
   ViewShadow shadow(view, 1);
@@ -70,11 +70,11 @@ TEST_F(ViewShadowTest, ShadowBoundsFollowIndirectViewBoundsChange) {
 }
 
 TEST_F(ViewShadowTest, ViewDestruction) {
-  views::View root;
+  View root;
   root.SetPaintToLayer();
   root.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
 
-  views::View* v1 = root.AddChildView(std::make_unique<views::View>());
+  View* v1 = root.AddChildView(std::make_unique<View>());
   ViewShadow shadow(v1, 1);
   EXPECT_EQ(2u, root.layer()->children().size());
 
@@ -83,7 +83,7 @@ TEST_F(ViewShadowTest, ViewDestruction) {
 }
 
 TEST_F(ViewShadowTest, ShadowKeepsLayerType) {
-  views::View view;
+  View view;
   view.SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
   ViewShadow shadow(&view, 1);
@@ -94,10 +94,10 @@ TEST_F(ViewShadowTest, ShadowKeepsLayerType) {
 // Tests the shadow layer will not shift when the view's layer is reparented to
 // another layer.
 TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
-  views::View root1;
+  View root1;
   root1.SetPaintToLayer();
 
-  views::View* view = root1.AddChildView(std::make_unique<views::View>());
+  View* view = root1.AddChildView(std::make_unique<View>());
   view->SetPaintToLayer();
   view->SetBoundsRect(gfx::Rect(10, 20, 30, 40));
 
@@ -107,13 +107,11 @@ TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
   const gfx::Point pos = shadow.shadow()->layer()->bounds().origin();
 
   // Reparent the view's layer to another layer.
-  views::View root2;
+  View root2;
   root2.SetPaintToLayer();
   root2.AddChildView(view);
   // Check if the shadow layer shifted.
   EXPECT_EQ(pos, shadow.shadow()->layer()->bounds().origin());
-
-  //
 }
 
-}  // namespace ash
+}  // namespace views

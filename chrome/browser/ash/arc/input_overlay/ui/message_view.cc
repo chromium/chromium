@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
@@ -16,6 +15,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/view_shadow.h"
 
 namespace arc::input_overlay {
 
@@ -111,7 +111,7 @@ MessageView::MessageView(DisplayOverlayController* controller,
 MessageView::~MessageView() = default;
 
 void MessageView::AddShadow() {
-  view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
+  view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
 }

@@ -16,6 +16,7 @@ include_rules = [
   "+ui/base",
   "+ui/color",
   "+ui/compositor",
+  "+ui/compositor_extra",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",

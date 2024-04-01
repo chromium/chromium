@@ -19,7 +19,6 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -41,6 +40,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/layout/layout_manager_base.h"
+#include "ui/views/view_shadow.h"
 
 namespace ash {
 
@@ -410,7 +410,7 @@ void AssistantPageView::InitLayout() {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
 
-  view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
+  view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
       kSearchBoxBorderCornerRadiusSearchResult);
 
