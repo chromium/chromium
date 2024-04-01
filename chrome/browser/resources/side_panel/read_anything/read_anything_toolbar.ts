@@ -40,7 +40,6 @@ export interface ReadAnythingToolbarElement {
     moreOptionsMenu: CrActionMenuElement,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     toolbarContainer: HTMLElement,
-    fontSelect: HTMLSelectElement,
     more: CrIconButtonElement,
   };
 }
@@ -417,7 +416,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           this.$.fontMenu.getIfExists(), currentFontIndex);
 
     } else {
-      const select = this.$.fontSelect;
+      const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
+          '#font-select');
       assert(select, 'no font select menu');
       select.selectedIndex = currentFontIndex;
     }
@@ -778,7 +778,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // Allow focusing the font selection if it's visible.
     if (!this.isReadAloudEnabled_) {
-      const select = this.$.fontSelect;
+      const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
+          '#font-select');
       assert(select, 'no font select menu');
       focusableElements.unshift(select);
     }
