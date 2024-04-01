@@ -2427,7 +2427,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=LCPCriticalPathPredictor:lcpp_adjust_image_load_priority/true",
+      "--enable-features=LCPCriticalPathPredictor:lcpp_adjust_image_load_priority/true,LCPTimingPredictorPrerender2",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 10, 2024",

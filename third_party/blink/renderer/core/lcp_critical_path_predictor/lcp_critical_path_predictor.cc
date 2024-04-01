@@ -92,6 +92,8 @@ void LCPCriticalPathPredictor::Reset() {
 }
 
 void LCPCriticalPathPredictor::AddLCPPredictedCallback(LCPCallback callback) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kLCPTimingPredictorPrerender2));
   if (are_predicted_callbacks_called_) {
     std::move(callback).Run(/*lcp_element=*/nullptr);
     return;
@@ -124,7 +126,9 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     const Element& lcp_element,
     std::optional<const KURL> maybe_image_url) {
   if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) ||
-      base::FeatureList::IsEnabled(features::kLCPPLazyLoadImagePreload)) {
+      base::FeatureList::IsEnabled(features::kLCPPLazyLoadImagePreload) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kLCPTimingPredictorPrerender2)) {
     std::string lcp_element_locator_string =
         element_locator::OfElement(lcp_element).SerializeAsString();
 
@@ -314,6 +318,10 @@ bool LCPCriticalPathPredictor::IsLcpInfluencerScript(const KURL& url) {
 }
 
 void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kLCPTimingPredictorPrerender2)) {
+    return;
+  }
   is_outermost_main_frame_document_loaded_ = true;
   // Call callbacks as fallback because we can not detect
   // which is lcp in the lcps before onload.
