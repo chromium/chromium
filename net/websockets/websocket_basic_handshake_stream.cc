@@ -313,6 +313,7 @@ void WebSocketBasicHandshakeStream::Close(bool not_reusable) {
   StreamSocket* socket = state_.connection()->socket();
   if (socket)
     socket->Disconnect();
+  parser()->OnConnectionClose();
   state_.connection()->Reset();
 }
 

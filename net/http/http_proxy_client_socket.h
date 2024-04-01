@@ -140,10 +140,9 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   HttpResponseInfo response_;
 
   scoped_refptr<GrowableIOBuffer> parser_buf_;
-  std::unique_ptr<HttpStreamParser> http_stream_parser_;
   scoped_refptr<IOBuffer> drain_buf_;
-
   std::unique_ptr<StreamSocket> socket_;
+  std::unique_ptr<HttpStreamParser> http_stream_parser_;
 
   // Whether or not |socket_| has been previously used. Once auth credentials
   // are sent, set to true.
