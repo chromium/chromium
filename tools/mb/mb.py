@@ -1136,11 +1136,9 @@ class MetaBuildWrapper:
 
     # Write all generated targets to a JSON file called project.json
     # in the build dir.
-    # TODO(crbug.com/330760869): Enable this conditional once the bots that
-    # need it are passing down the "--write-ide-json" flag.
-    #if self.args.write_ide_json:
-    cmd.append('--ide=json')
-    cmd.append('--json-file-name=project.json')
+    if self.args.write_ide_json:
+      cmd.append('--ide=json')
+      cmd.append('--json-file-name=project.json')
 
     ret, output, _ = self.Run(cmd)
     if ret != 0:
