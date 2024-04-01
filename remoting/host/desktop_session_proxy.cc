@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -48,13 +49,13 @@ using SetUpUrlForwarderResponse =
 
 DesktopSessionProxy::DesktopSessionProxy(
     scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control,
     base::WeakPtr<ClientSessionEvents> client_session_events,
     base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
     const DesktopEnvironmentOptions& options)
-    : base::RefCountedDeleteOnSequence<DesktopSessionProxy>(caller_task_runner),
+    : base::RefCountedDeleteOnSequence<DesktopSessionProxy>(
+          base::SequencedTaskRunner::GetCurrentDefault()),
       audio_capture_task_runner_(audio_capture_task_runner),
       io_task_runner_(io_task_runner),
       client_session_control_(client_session_control),
@@ -62,9 +63,7 @@ DesktopSessionProxy::DesktopSessionProxy(
       desktop_session_connector_(desktop_session_connector),
       ipc_file_operations_factory_(this),
       is_desktop_session_connected_(false),
-      options_(options) {
-  DCHECK(caller_task_runner->BelongsToCurrentThread());
-}
+      options_(options) {}
 
 std::unique_ptr<ActionExecutor> DesktopSessionProxy::CreateActionExecutor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

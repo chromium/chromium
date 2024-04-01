@@ -41,7 +41,6 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
     const DesktopEnvironmentOptions& options)
     : desktop_session_proxy_(
           base::MakeRefCounted<DesktopSessionProxy>(audio_task_runner,
-                                                    caller_task_runner,
                                                     io_task_runner,
                                                     client_session_control,
                                                     client_session_events,
