@@ -75,8 +75,9 @@ class MockWPTGitHub(object):
             self.pull_requests_created.append((remote_branch_name, desc_title,
                                                body))
 
+        pr_number = 5678 + self.create_pr_index
         self.create_pr_index += 1
-        return 5678
+        return pr_number
 
     def update_pr(self, pr_number, desc_title=None, body=None, state=None):
         self.calls.append('update_pr')
