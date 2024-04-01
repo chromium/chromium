@@ -19166,7 +19166,6 @@ from previous Chrome versions.
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-799444168" label="WebApkInstallFailureNotification:enabled"/>
   <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
-  <int value="-798521418" label="ArcInputOverlayBeta:disabled"/>
   <int value="-798200573" label="NotificationInteractionHistory:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
@@ -22708,7 +22707,6 @@ from previous Chrome versions.
   <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
-  <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
   <int value="784664314" label="CompanyEntityIconAdjustment:disabled"/>
   <int value="784856302" label="EnableBorderlessPrinting:disabled"/>
   <int value="785159660" label="NotificationsIgnoreRequireInteraction:enabled"/>

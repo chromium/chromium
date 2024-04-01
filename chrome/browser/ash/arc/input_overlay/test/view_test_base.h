@@ -31,7 +31,6 @@ class ViewTestBase : public views::ViewsTestBase {
   ViewTestBase();
   ~ViewTestBase() override;
 
-  void InitWithFeature(std::optional<base::test::FeatureRef> feature);
   void SetDisplayMode(DisplayMode display_mode);
 
   // test::Test:

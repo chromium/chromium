@@ -130,10 +130,6 @@ void UpdateFlagAndProperty(aura::Window* window,
 }
 
 bool IsBeta() {
-  return ash::features::IsArcInputOverlayBetaEnabled();
-}
-
-bool IsGameDashboardFlagOn() {
   return ash::features::IsGameDashboardEnabled();
 }
 

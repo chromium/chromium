@@ -146,7 +146,6 @@ class ActionViewTest : public ViewTestBase {
  private:
   void SetUp() override {
     ViewTestBase::SetUp();
-    InitWithFeature(std::nullopt);
     SetRepositionController();
   }
 };

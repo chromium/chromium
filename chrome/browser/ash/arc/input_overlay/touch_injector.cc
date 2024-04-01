@@ -276,7 +276,7 @@ void TouchInjector::ParseActions(const base::Value::Dict& root) {
 }
 
 void TouchInjector::UpdateFlags(bool is_o4c) {
-  if (!IsBeta() && !IsGameDashboardFlagOn()) {
+  if (!IsBeta()) {
     return;
   }
 

@@ -158,11 +158,9 @@ class VersionArcInputOverlayManagerTest
   void SetUp() override {
     ArcInputOverlayManagerTest::SetUp();
     if (IsBetaVersion()) {
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kGameDashboard, ash::features::kArcInputOverlayBeta},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(ash::features::kGameDashboard);
     } else {
-      scoped_feature_list_.InitWithFeatures({}, {});
+      scoped_feature_list_.InitAndDisableFeature(ash::features::kGameDashboard);
     }
 
     profile_ = std::make_unique<TestingProfile>();

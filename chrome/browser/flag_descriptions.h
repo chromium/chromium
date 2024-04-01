@@ -4053,9 +4053,6 @@ extern const char kRenderArcNotificationsByChromeDescription[];
 extern const char kArcWindowPredictorName[];
 extern const char kArcWindowPredictorDescription[];
 
-extern const char kArcInputOverlayNameBeta[];
-extern const char kArcInputOverlayDescriptionBeta[];
-
 extern const char kArcInputOverlayNameAlphaV2[];
 extern const char kArcInputOverlayDescriptionAlphaV2[];
 

@@ -73,8 +73,6 @@ void UpdateFlagAndProperty(aura::Window* window,
 
 // TODO(b/253646354): This will be removed when removing the flag.
 bool IsBeta();
-// TODO(b/288155422): This will be removed when removing the flag.
-bool IsGameDashboardFlagOn();
 
 }  // namespace arc::input_overlay
 

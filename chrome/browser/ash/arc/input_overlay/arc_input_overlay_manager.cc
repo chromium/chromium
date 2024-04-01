@@ -687,8 +687,8 @@ void ArcInputOverlayManager::ResetForPendingTouchInjector(
   // If `window` is destroyed, it will be removed from `loading_data_window_` by
   // OnWindowDestroying(). So it is safe to call Window class functions after
   // checking `loading_data_window_`.
-  if ((IsGameDashboardFlagOn() || IsBeta()) &&
-      loading_data_windows_.contains(window) && !window->is_destroying()) {
+  if (IsBeta() && loading_data_windows_.contains(window) &&
+      !window->is_destroying()) {
     // GIO status is known here and GIO is not available.
     window->SetProperty(ash::kArcGameControlsFlagsKey,
                         ash::ArcGameControlsFlag::kKnown);

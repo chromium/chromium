@@ -55,8 +55,7 @@ void GameControlsTestBase::SetUp() {
 
   ash::AshTestBase::SetUp();
 
-  scoped_feature_list_.InitWithFeatures(
-      {ash::features::kGameDashboard, ash::features::kArcInputOverlayBeta}, {});
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kGameDashboard);
 
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.set_wait_compatibility_mode(true);

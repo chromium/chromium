@@ -9,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
@@ -122,6 +123,7 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
 
  private:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kGameDashboard);
     exo::test::ExoTestBase::SetUp();
     arc_test_window_ = std::make_unique<test::ArcTestWindow>(
         exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
@@ -143,6 +145,8 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
     arc_test_window_.reset();
     exo::test::ExoTestBase::TearDown();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TouchInjector> touch_injector_;
   std::unique_ptr<test::ArcTestWindow> arc_test_window_;

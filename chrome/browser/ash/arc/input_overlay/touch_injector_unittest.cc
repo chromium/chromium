@@ -286,11 +286,11 @@ class TouchInjectorTest : public views::ViewsTestBase {
   std::unique_ptr<TouchInjector> injector_;
 
  protected:
-  void InitWithFeature(std::optional<base::test::FeatureRef> feature) {
-    if (feature) {
-      scoped_feature_list_.InitWithFeatures({*feature}, {});
+  void InitWithFeature(const base::test::FeatureRef& feature, bool enable) {
+    if (enable) {
+      scoped_feature_list_.InitAndEnableFeature(*feature);
     } else {
-      scoped_feature_list_.InitWithFeatures({}, {});
+      scoped_feature_list_.InitAndDisableFeature(*feature);
     }
     Init();
   }
@@ -332,7 +332,7 @@ class TouchInjectorTest : public views::ViewsTestBase {
 };
 
 TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
-  InitWithFeature(ash::features::kArcInputOverlayBeta);
+  InitWithFeature(ash::features::kGameDashboard, /*enable=*/true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -456,7 +456,7 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
-  InitWithFeature(ash::features::kArcInputOverlayBeta);
+  InitWithFeature(ash::features::kGameDashboard, /*enable=*/true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -530,10 +530,7 @@ class VersionTouchInjectorTest : public TouchInjectorTest,
   // TouchInjectorTest:
   void SetUp() override {
     TouchInjectorTest::SetUp();
-    InitWithFeature(IsBetaVersion()
-                        ? std::make_optional<base::test::FeatureRef>(
-                              ash::features::kArcInputOverlayBeta)
-                        : std::nullopt);
+    InitWithFeature(ash::features::kGameDashboard, IsBetaVersion());
   }
 
  private:

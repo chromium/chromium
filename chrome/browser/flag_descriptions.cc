@@ -7017,11 +7017,6 @@ const char kArcWindowPredictorName[] = "Enable ARC window predictor";
 const char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";
 
-const char kArcInputOverlayNameBeta[] = "Enable ARC Input Overlay Beta";
-const char kArcInputOverlayDescriptionBeta[] =
-    "Enable full editor feature for Gaming Input Overlay including features in "
-    "Alpha V2, so users can add and remove actions.";
-
 const char kArcInputOverlayNameAlphaV2[] = "Enable ARC Input Overlay Alpha V2";
 const char kArcInputOverlayDescriptionAlphaV2[] =
     "Enable menu and action reposition feature for Gaming Input Overlay based "
