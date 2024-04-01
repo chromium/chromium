@@ -74,7 +74,7 @@ class MODULES_EXPORT MIDIAccessInitializer
                           wtf_size_t length,
                           base::TimeTicks time_stamp) override {}
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
 
