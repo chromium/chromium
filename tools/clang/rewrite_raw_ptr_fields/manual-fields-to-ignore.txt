@@ -612,6 +612,9 @@ base::(anonymous namespace)::HandlerParams::stack_copy_bottom
 base::(anonymous namespace)::HandlerParams::maybe_timestamp
 base::(anonymous namespace)::HandlerParams::stack_copier_delegate
 
+# Excluded in crrev.com/c/5370959
+base::basic_cstring_view::ptr_
+
 #######
 # End of recent manual exclusions
 #######
