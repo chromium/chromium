@@ -4,11 +4,11 @@
 
 import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
 import './css/about_sys.css.js';
-import './strings.m.js';
 // <if expr="chromeos_ash">
 import './js/jelly_colors.js';
 
 // </if>
+
 import type {KeyValuePairEntry} from '/shared/key_value_pair_viewer/key_value_pair_entry.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
