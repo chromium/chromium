@@ -205,6 +205,8 @@ public class StripLayoutHelperManagerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testGetBackgroundColor_ActivityFocusChange_LightTheme() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ false, /* isIncognito= */ false);
     }
@@ -213,6 +215,8 @@ public class StripLayoutHelperManagerTest {
     @Config(qualifiers = "night")
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testGetBackgroundColor_ActivityFocusChange_DarkTheme() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ true, /* isIncognito= */ false);
     }
@@ -220,6 +224,8 @@ public class StripLayoutHelperManagerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testGetBackgroundColor_ActivityFocusChange_Incognito() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
         mStripLayoutHelperManager.setIsIncognitoForTesting(true);
         doTestBackgroundColorOnActivityFocusChange(
                 /* isNightMode= */ false, /* isIncognito= */ true);
@@ -560,6 +566,8 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     public void testGetUpdatedSceneOverlayTree() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
         // Setup and stub required mocks.
         int hoveredTabId = 1;
         int selectedTabId = 2;
@@ -576,7 +584,9 @@ public class StripLayoutHelperManagerTest {
         // Update the paddings.
         float leftPadding = 10f;
         float rightPadding = 20f;
+        int topPaddingPx = 5;
         mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPaddingPx);
 
         // Invoke the method.
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
@@ -596,7 +606,8 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         anyFloat(),
                         eq(leftPadding),
-                        eq(rightPadding));
+                        eq(rightPadding),
+                        eq((float) topPaddingPx));
     }
 
     @Test
@@ -665,6 +676,7 @@ public class StripLayoutHelperManagerTest {
                         eq(mToolbarPrimaryColor),
                         /* scrimOpacity= */ eq(0f),
                         anyFloat(),
+                        anyFloat(),
                         anyFloat());
 
         // With tab strip transition, the yOffset will be forced to be 0.
@@ -689,6 +701,7 @@ public class StripLayoutHelperManagerTest {
                         eq(mToolbarPrimaryColor),
                         /* scrimOpacity= */ eq(expectedOpacity),
                         anyFloat(),
+                        anyFloat(),
                         anyFloat());
 
         // With tab strip transition finished, the yOffset will be forced to be the negative of the
@@ -708,6 +721,7 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         eq(mToolbarPrimaryColor),
                         /* scrimOpacity= */ eq(0f),
+                        anyFloat(),
                         anyFloat(),
                         anyFloat());
 
@@ -847,6 +861,7 @@ public class StripLayoutHelperManagerTest {
                         eq(scrimColor),
                         /* scrimOpacity= */ eq(0f),
                         anyFloat(),
+                        anyFloat(),
                         anyFloat());
 
         // With tab strip transition, the yOffset will be forced to be 0.
@@ -872,6 +887,7 @@ public class StripLayoutHelperManagerTest {
                         eq(scrimColor),
                         /* scrimOpacity= */ eq(expectedOpacity),
                         anyFloat(),
+                        anyFloat(),
                         anyFloat());
 
         // When transition finished while tabs strip showing, yOffset will be forwarded to cc
@@ -892,6 +908,7 @@ public class StripLayoutHelperManagerTest {
                         eq(scrimColor),
                         /* scrimOpacity= */ eq(0f),
                         anyFloat(),
+                        anyFloat(),
                         anyFloat());
 
         // Verify StatusBarColorController method invocations.
@@ -910,7 +927,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testTouchEventsIgnoredOnMargins() {
+    public void testTouchEventsIgnoredOnPaddings() {
         // Update the size and paddings.
         float leftPadding = 10f;
         float rightPadding = 20f;
@@ -940,6 +957,29 @@ public class StripLayoutHelperManagerTest {
         assertTrue(
                 "Event on not on margin should be handled.",
                 motionEvenHandled(SCREEN_WIDTH - rightPadding - 1, yCenterOfStrip));
+    }
+
+    @Test
+    public void testTopPadding() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        initializeTest();
+        int topPadding = 10;
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
+        mStripLayoutHelperManager.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
+
+        assertFalse(
+                "Event on top padding should not be handled.",
+                motionEvenHandled(SCREEN_WIDTH / 2, 0));
+        assertFalse(
+                "Event on top padding should not be handled.",
+                motionEvenHandled(SCREEN_WIDTH / 2, topPadding - 1));
+        assertTrue(
+                "Event should be handled below top padding.",
+                motionEvenHandled(SCREEN_WIDTH / 2, topPadding));
+        assertTrue(
+                "Ensure top padding increase the entire height",
+                motionEvenHandled(SCREEN_WIDTH / 2, topPadding + TAB_STRIP_HEIGHT_PX - 1));
     }
 
     private boolean motionEvenHandled(float x, float y) {

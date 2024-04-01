@@ -87,7 +87,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             int scrimColor,
             float scrimOpacity,
             float leftPaddingDp,
-            float rightPaddingDp) {
+            float rightPaddingDp,
+            float topPaddingDp) {
         if (mNativePtr == 0) return;
         final boolean visible = yOffset > -layoutHelper.getHeight();
         // This will hide the tab strips if necessary.
@@ -95,9 +96,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 .beginBuildingFrame(mNativePtr, TabStripSceneLayer.this, visible);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
-            // Round the padding to avoid off-by-one issues similar to crbug/329722454.
-            float leftPaddingPx = Math.round(leftPaddingDp * mDpToPx);
-            float rightPaddingPx = Math.round(rightPaddingDp * mDpToPx);
+            // Ceil the padding to avoid off-by-one issues similar to crbug/329722454. This is
+            // required since these values are originated from Android UI.
+            float leftPaddingPx = (float) Math.ceil(leftPaddingDp * mDpToPx);
+            float rightPaddingPx = (float) Math.ceil(rightPaddingDp * mDpToPx);
+            float topPaddingPx = (float) Math.ceil(topPaddingDp * mDpToPx);
             pushButtonsAndBackground(
                     layoutHelper,
                     resourceManager,
@@ -105,7 +108,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     scrimColor,
                     scrimOpacity,
                     leftPaddingPx,
-                    rightPaddingPx);
+                    rightPaddingPx,
+                    topPaddingPx);
             pushStripTabs(
                     layoutHelper,
                     layerTitleCache,
@@ -125,7 +129,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             @ColorInt int scrimColor,
             float scrimOpacity,
             float leftPaddingPx,
-            float rightPaddingPx) {
+            float rightPaddingPx,
+            float topPaddingPx) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
         TabStripSceneLayerJni.get()
@@ -139,7 +144,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         scrimColor,
                         scrimOpacity,
                         leftPaddingPx,
-                        rightPaddingPx);
+                        rightPaddingPx,
+                        topPaddingPx);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -154,6 +160,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getShouldApplyHoverBackground(),
                         newTabButton.getDrawX() * mDpToPx,
                         newTabButton.getDrawY() * mDpToPx,
+                        topPaddingPx,
                         layoutHelper.getNewTabBtnVisualOffset() * mDpToPx,
                         newTabButtonVisible,
                         newTabButton.getTint(),
@@ -309,7 +316,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 @ColorInt int scrimColor,
                 float scrimOpacity,
                 float leftPaddingPx,
-                float rightPaddingPx);
+                float rightPaddingPx,
+                float topPaddingPx);
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,
@@ -319,6 +327,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean isHovered,
                 float x,
                 float y,
+                float topPadding,
                 float touchTargetOffset,
                 boolean visible,
                 int tint,

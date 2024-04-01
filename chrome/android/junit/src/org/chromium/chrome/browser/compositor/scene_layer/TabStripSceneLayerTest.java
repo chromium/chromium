@@ -125,8 +125,9 @@ public class TabStripSceneLayerTest {
 
     @Test
     public void testPushAndUpdateStrip() {
-        float leftMargin = 10f;
-        float rightMargin = 20f;
+        float leftPadding = 10f;
+        float rightPadding = 20f;
+        float topPadding = 5f;
         // Call the method being tested.
         mTabStripSceneLayer.pushAndUpdateStrip(
                 mStripLayoutHelperManager,
@@ -139,8 +140,9 @@ public class TabStripSceneLayerTest {
                 -1,
                 Color.YELLOW,
                 0.3f,
-                leftMargin,
-                rightMargin);
+                leftPadding,
+                rightPadding,
+                topPadding);
 
         // Verify JNI calls.
         verify(mTabStripSceneMock)
@@ -161,11 +163,27 @@ public class TabStripSceneLayerTest {
                         mModelSelectorButton.getOpacity(),
                         mResourceManager);
         verify(mTabStripSceneMock)
+                .updateNewTabButton(
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        /* resourceId= */ anyInt(),
+                        /* backgroundResourceId= */ anyInt(),
+                        /* isHovered= */ eq(mNewTabButton.isHovered()),
+                        /* x= */ eq(mNewTabButton.getDrawX() * mDpToPx),
+                        /* y= */ eq(mNewTabButton.getDrawY() * mDpToPx),
+                        /* topPadding= */ eq(topPadding),
+                        /* touchTargetOffset= */ anyFloat(),
+                        /* visible= */ eq(mNewTabButton.isVisible()),
+                        /* tint= */ anyInt(),
+                        /* backgroundTint= */ anyInt(),
+                        /* buttonAlpha= */ anyFloat(),
+                        /* backgroundTint= */ eq(mResourceManager));
+        verify(mTabStripSceneMock)
                 .updateTabStripLeftFade(
-                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftMargin);
+                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftPadding);
         verify(mTabStripSceneMock)
                 .updateTabStripRightFade(
-                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, rightMargin);
+                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, rightPadding);
         verify(mTabStripSceneMock)
                 .updateTabStripLayer(
                         eq(1L),
@@ -176,7 +194,8 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         /* scrimColor= */ eq(Color.YELLOW),
                         /* scrimOpacity= */ eq(0.3f),
-                        anyFloat(),
-                        anyFloat());
+                        eq(leftPadding),
+                        eq(rightPadding),
+                        eq(topPadding));
     }
 }
