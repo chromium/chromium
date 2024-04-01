@@ -19,8 +19,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
-
 std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
   std::string result = "tab groups:[";
 
@@ -83,17 +81,9 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
     case AppType::ARC_APP:
     case AppType::BROWSER:
     case AppType::CHROME_APP:
+    case AppType::SYSTEM_APP:
       return true;
-    case AppType::SYSTEM_APP: {
-      const auto* app_id = window->GetProperty(kAppIDKey);
-      // Feedback app is not saved, see b/301479278.
-      if (app_id && *app_id == kOsFeedbackAppId) {
-        return false;
-      }
-    } break;
   }
-
-  return true;
 }
 
 constexpr char DeskTemplate::kIncognitoWindowIdentifier[];

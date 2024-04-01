@@ -397,7 +397,9 @@ bool IsUnsupportedWindow(aura::Window* window) {
       (OverviewController::Get()->disable_app_id_check_for_saved_desks() ||
        !saved_desk_util::GetAppId(window).empty());
 
-  return !DeskTemplate::IsAppTypeSupported(window) || !has_restore_id;
+  return !has_restore_id ||
+         !Shell::Get()->saved_desk_delegate()->IsWindowSupportedForSavedDesk(
+             window);
 }
 
 bool IsIncognitoWindow(aura::Window* window) {
