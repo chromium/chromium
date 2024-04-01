@@ -2557,6 +2557,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="11" label="Once-Google-Photos">
     Wallpaper chosen by the user from their Google Photos collection.
   </int>
+  <int value="12" label="Oobe">
+    Wallpaper shown during OOBE if not overridden.
+  </int>
+  <int value="13" label="Sea Pen">
+    User selected wallpaper from the Manta API.
+  </int>
 </enum>
 
 <enum name="WindowSnapAcceleratorAction">
