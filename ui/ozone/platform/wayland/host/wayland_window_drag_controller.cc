@@ -303,12 +303,11 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location,
         location, timestamp, wl::EventDispatchPolicy::kImmediate);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    LOG_IF(WARNING, touch_pointer_ids.size() != 1u)
+    LOG_IF(WARNING, touch_pointer_ids.size() < 1u)
         << "Unexpected touch drag motion. Active touch_points: "
         << touch_pointer_ids.size();
-    if (!touch_pointer_ids.empty()) {
-      touch_delegate_->OnTouchMotionEvent(location, timestamp,
-                                          touch_pointer_ids[0],
+    for (auto id : touch_pointer_ids) {
+      touch_delegate_->OnTouchMotionEvent(location, timestamp, id,
                                           wl::EventDispatchPolicy::kImmediate);
     }
   }
@@ -365,15 +364,15 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
         wl::EventDispatchPolicy::kImmediate);
   } else {
     const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-    if (!touch_pointer_ids.empty()) {
+    for (auto id : touch_pointer_ids) {
       // If an user starts dragging a tab horizontally with touch, Chrome enters
       // in "horizontal snapping" mode (see SnapScrollController for details).
       // Hence, in case of touch driven dragging, use a higher negative dy
       // to work around the threshold in ScrollSnapController otherwise,
       // the drag event is discarded.
       touch_delegate_->OnTouchMotionEvent(
-          {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp,
-          touch_pointer_ids[0], wl::EventDispatchPolicy::kImmediate);
+          {pointer_location_.x(), kHorizontalRailExitThreshold}, timestamp, id,
+          wl::EventDispatchPolicy::kImmediate);
     }
   }
 }
@@ -598,10 +597,9 @@ void WaylandWindowDragController::HandleDropAndResetState(
       }
     } else {
       const auto touch_pointer_ids = touch_delegate_->GetActiveTouchPointIds();
-      if (!touch_pointer_ids.empty()) {
+      for (auto id : touch_pointer_ids) {
         touch_delegate_->OnTouchReleaseEvent(
-            timestamp, touch_pointer_ids[0],
-            wl::EventDispatchPolicy::kImmediate);
+            timestamp, id, wl::EventDispatchPolicy::kImmediate);
       }
     }
   }

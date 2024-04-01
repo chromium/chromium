@@ -398,6 +398,166 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
+// Similar to DragInsideWindowAndDrop_TOUCH but with two fingers.
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDropTwoFingerTouch) {
+  ASSERT_TRUE(GetWmMoveLoopHandler(*window_));
+  ASSERT_TRUE(GetWaylandExtension(*window_));
+
+  // Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  // Touch and then move with two fingers.
+  SendTouchDown(window_.get(), &delegate_, 0 /*point id*/, {0, 0} /*location*/);
+  SendTouchDown(window_.get(), &delegate_, 1 /*point id*/, {5, 0} /*location*/);
+  SendTouchMotion(window_.get(), &delegate_, 0 /*point id*/,
+                  {10, 10} /*location*/);
+  SendTouchMotion(window_.get(), &delegate_, 1 /*point id*/,
+                  {15, 10} /*location*/);
+
+  // Set up an "interaction flow", start the drag session and run move loop:
+  //  - Event dispatching and bounds changes are monitored
+  //  - At each event, emulates a new event at server side and proceeds to the
+  //  next test step.
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kTouch,
+      /*allow_system_drag=*/false);
+
+  // While in |kAttached| state, motion events are expected to be dispatched
+  // plain ET_TOUCH_MOVED events.
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillOnce([&](Event* event) {
+        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
+        EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
+        EXPECT_EQ(State::kAttached, drag_controller()->state());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        // On Lacros, touch event will not update the cursor position.
+        EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
+#else
+        EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
+#endif
+      })
+      .WillOnce([&](Event* event) {
+        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
+        EXPECT_EQ(gfx::Point(10, 10), event->AsLocatedEvent()->root_location());
+        EXPECT_EQ(State::kAttached, drag_controller()->state());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        // On Lacros, touch event will not update the cursor position.
+        EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
+#else
+        EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
+#endif
+      });
+  SendDndMotionForWindowDrag({10, 10});
+
+  enum TestStep {
+    kDragging,
+    kDropping,
+    kFirstFingerReleased,
+    kDone
+  } test_step = kDragging;
+
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Lacros dispatches TOUCH_MOVED event so that aura can update the touch
+      // position.
+      .WillOnce([&](Event* event) {
+        ASSERT_EQ(kDragging, test_step);
+        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
+      })
+      .WillOnce([&](Event* event) {
+        ASSERT_EQ(kDragging, test_step);
+        EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+        EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
+
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        EXPECT_EQ(gfx::Point(20, 20), event->AsLocatedEvent()->root_location());
+      })
+#endif
+      // delegate_ should receive two touch release events in a sequence.
+      .WillOnce([&](Event* event) {
+        ASSERT_EQ(kDropping, test_step);
+        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(0, event->AsTouchEvent()->pointer_details().id);
+        EXPECT_EQ(State::kDropped, drag_controller()->state());
+
+    // Ensure PlatformScreen keeps consistent.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        gfx::Point expected_point{0, 0};
+    // On Lacros, touch event will not update the cursor position.
+#else
+        gfx::Point expected_point{20, 20};
+        expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+#endif
+        EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
+
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+        test_step = kFirstFingerReleased;
+      })
+      .WillOnce([&](Event* event) {
+        ASSERT_EQ(kFirstFingerReleased, test_step);
+        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(1, event->AsTouchEvent()->pointer_details().id);
+        EXPECT_EQ(State::kDropped, drag_controller()->state());
+
+    // Ensure PlatformScreen keeps consistent.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        gfx::Point expected_point{0, 0};
+    // On Lacros, touch event will not update the cursor position.
+#else
+        gfx::Point expected_point{20, 20};
+        expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+#endif
+        EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
+
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+        test_step = kDone;
+      });
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(_))
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
+        ASSERT_EQ(kDragging, test_step);
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        EXPECT_EQ(gfx::Point(20, 20), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
+
+        test_step = kDropping;
+        ScheduleTestTask(base::BindOnce(&WaylandDragDropTest::SendDndDrop,
+                                        base::Unretained(this)));
+      });
+
+  // While in |kDetached| state, motion events are expected to be propagated
+  // window bounds changed events.
+  // Otherwise, we are not able to override the dispatcher and miss events.
+  // This task must be scheduled so that move loop is able to be started before
+  // this task is executed.
+  ScheduleTestTask(base::BindOnce(
+      &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
+      base::Unretained(this), gfx::Point({20, 20})));
+
+  // RunMoveLoop() blocks until the dragging session ends, so resume test
+  // server's run loop until it returns.
+  EXPECT_TRUE(GetWmMoveLoopHandler(*window_)->RunMoveLoop({}));
+
+  EXPECT_EQ(test_step, TestStep::kDone);
+
+  SendPointerEnter(window_.get(), &delegate_);
+
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
 // Check the following flow works as expected:
 // 1. Start dragging  window_2 with touch.
 // 2. Emulate |window_2| being closed manually by the user (eg control+w).
