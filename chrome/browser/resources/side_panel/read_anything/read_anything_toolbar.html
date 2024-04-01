@@ -58,6 +58,10 @@
     font-size: 13px;
   }
   .check-mark {
+    visibility: hidden;
+    margin: 0;
+  }
+  .check-mark-for-lazy-render {
     margin: 0;
   }
   .check-mark-hidden-true {
@@ -323,7 +327,7 @@
           <button class="dropdown-item" on-click="onFontClick_"
               style$="font-family:[[item]]">
             <iron-icon
-              class$="button-image check-mark
+              class$="button-image check-mark-for-lazy-render
               check-mark-hidden-[[isFontItemSelected_(index)]]"
               icon="read-anything-20:check-mark"></iron-icon>
             [[getFontItemLabel_(item, areFontsLoaded_)]]
