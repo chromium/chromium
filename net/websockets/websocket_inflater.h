@@ -66,8 +66,8 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   // Returns the size of the current inflated output.
   size_t CurrentOutputSize() const { return output_buffer_.Size(); }
 
-  static const size_t kDefaultBufferCapacity = 512;
-  static const size_t kDefaultInputIOBufferCapacity = 512;
+  static constexpr size_t kDefaultBufferCapacity = 512;
+  static constexpr size_t kDefaultInputIOBufferCapacity = 512;
 
  private:
   // Ring buffer with fixed capacity.

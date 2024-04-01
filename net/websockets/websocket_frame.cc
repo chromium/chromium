@@ -37,15 +37,15 @@ using PackedMaskType = size_t;
 #endif  // defined(COMPILER_GCC) &&
         // (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
 
-const uint8_t kFinalBit = 0x80;
-const uint8_t kReserved1Bit = 0x40;
-const uint8_t kReserved2Bit = 0x20;
-const uint8_t kReserved3Bit = 0x10;
-const uint8_t kOpCodeMask = 0xF;
-const uint8_t kMaskBit = 0x80;
-const uint64_t kMaxPayloadLengthWithoutExtendedLengthField = 125;
-const uint64_t kPayloadLengthWithTwoByteExtendedLengthField = 126;
-const uint64_t kPayloadLengthWithEightByteExtendedLengthField = 127;
+constexpr uint8_t kFinalBit = 0x80;
+constexpr uint8_t kReserved1Bit = 0x40;
+constexpr uint8_t kReserved2Bit = 0x20;
+constexpr uint8_t kReserved3Bit = 0x10;
+constexpr uint8_t kOpCodeMask = 0xF;
+constexpr uint8_t kMaskBit = 0x80;
+constexpr uint64_t kMaxPayloadLengthWithoutExtendedLengthField = 125;
+constexpr uint64_t kPayloadLengthWithTwoByteExtendedLengthField = 126;
+constexpr uint64_t kPayloadLengthWithEightByteExtendedLengthField = 127;
 
 inline void MaskWebSocketFramePayloadByBytes(
     const WebSocketMaskingKey& masking_key,
@@ -189,7 +189,7 @@ void MaskWebSocketFramePayload(const WebSocketMaskingKey& masking_key,
                                uint64_t frame_offset,
                                char* const data,
                                int data_size) {
-  static const size_t kMaskingKeyLength =
+  static constexpr size_t kMaskingKeyLength =
       WebSocketFrameHeader::kMaskingKeyLength;
 
   DCHECK_GE(data_size, 0);
@@ -198,7 +198,7 @@ void MaskWebSocketFramePayload(const WebSocketMaskingKey& masking_key,
   // the beginning and the end of the buffer which may be unaligned.
   // PackedMaskType must be a multiple of kMaskingKeyLength in size.
   PackedMaskType packed_mask_key;
-  static const size_t kPackedMaskKeySize = sizeof(packed_mask_key);
+  static constexpr size_t kPackedMaskKeySize = sizeof(packed_mask_key);
   static_assert((kPackedMaskKeySize >= kMaskingKeyLength &&
                  kPackedMaskKeySize % kMaskingKeyLength == 0),
                 "PackedMaskType size is not a multiple of mask length");

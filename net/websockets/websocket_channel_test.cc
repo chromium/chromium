@@ -131,24 +131,25 @@ using ::testing::StrictMock;
 
 // A selection of characters that have traditionally been mangled in some
 // environment or other, for testing 8-bit cleanliness.
-const char kBinaryBlob[] = {'\n',   '\r',    // BACKWARDS CRNL
-                            '\0',            // nul
-                            '\x7F',          // DEL
-                            '\x80', '\xFF',  // NOT VALID UTF-8
-                            '\x1A',          // Control-Z, EOF on DOS
-                            '\x03',          // Control-C
-                            '\x04',          // EOT, special for Unix terms
-                            '\x1B',          // ESC, often special
-                            '\b',            // backspace
-                            '\'',            // single-quote, special in PHP
+constexpr char kBinaryBlob[] = {
+    '\n',   '\r',    // BACKWARDS CRNL
+    '\0',            // nul
+    '\x7F',          // DEL
+    '\x80', '\xFF',  // NOT VALID UTF-8
+    '\x1A',          // Control-Z, EOF on DOS
+    '\x03',          // Control-C
+    '\x04',          // EOT, special for Unix terms
+    '\x1B',          // ESC, often special
+    '\b',            // backspace
+    '\'',            // single-quote, special in PHP
 };
-const size_t kBinaryBlobSize = std::size(kBinaryBlob);
+constexpr size_t kBinaryBlobSize = std::size(kBinaryBlob);
 
-const int kVeryBigTimeoutMillis = 60 * 60 * 24 * 1000;
+constexpr int kVeryBigTimeoutMillis = 60 * 60 * 24 * 1000;
 
 // TestTimeouts::tiny_timeout() is 100ms! I could run halfway around the world
 // in that time! I would like my tests to run a bit quicker.
-const int kVeryTinyTimeoutMillis = 1;
+constexpr int kVeryTinyTimeoutMillis = 1;
 
 using ChannelState = WebSocketChannel::ChannelState;
 constexpr ChannelState CHANNEL_ALIVE = WebSocketChannel::CHANNEL_ALIVE;

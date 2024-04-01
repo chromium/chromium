@@ -245,8 +245,8 @@ class WebSocketHandshakeStreamCreateHelperTest
       const std::vector<std::string>& sub_protocols,
       const WebSocketExtraHeaders& extra_request_headers,
       const WebSocketExtraHeaders& extra_response_headers) {
-    const char kPath[] = "/";
-    const char kOrigin[] = "http://origin.example.org";
+    constexpr char kPath[] = "/";
+    constexpr char kOrigin[] = "http://origin.example.org";
     const GURL url("wss://www.example.org/");
     NetLogWithSource net_log;
 

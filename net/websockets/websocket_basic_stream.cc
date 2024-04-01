@@ -96,7 +96,7 @@ constexpr double kThresholdInBytesPerSecond = 1200 * 1000;
 // masked bit of the frames on.
 int CalculateSerializedSizeAndTurnOnMaskBit(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
-  const uint64_t kMaximumTotalSize = std::numeric_limits<int>::max();
+  constexpr uint64_t kMaximumTotalSize = std::numeric_limits<int>::max();
 
   uint64_t total_size = 0;
   for (const auto& frame : *frames) {

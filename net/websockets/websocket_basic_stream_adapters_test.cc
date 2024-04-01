@@ -212,7 +212,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, Read) {
   EXPECT_TRUE(adapter.is_initialized());
 
   // Buffer larger than each MockRead.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   int rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
@@ -243,7 +243,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, ReadIntoSmallBuffer) {
   EXPECT_TRUE(adapter.is_initialized());
 
   // Buffer smaller than each MockRead.
-  const int kReadBufSize = 2;
+  constexpr int kReadBufSize = 2;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   int rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(2, rv);
@@ -315,7 +315,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, AsyncReadAndWrite) {
   WebSocketClientSocketHandleAdapter adapter(std::move(connection));
   EXPECT_TRUE(adapter.is_initialized());
 
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   int rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
@@ -773,7 +773,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Read) {
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  const int kReadBufSize = 3;
+  constexpr int kReadBufSize = 3;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
@@ -843,7 +843,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, CallDelegateOnCloseShouldNotCrash) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Buffer larger than each MockRead.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
@@ -945,7 +945,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, AsyncReadAndWrite) {
 
   base::RunLoop().RunUntilIdle();
 
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
@@ -1023,7 +1023,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, ReadCallbackDestroysAdapter) {
   WebSocketSpdyStreamAdapter* adapter_raw = adapter.get();
   KillerCallback callback(std::move(adapter));
 
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   rv = adapter_raw->Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -1112,7 +1112,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
 
   // Must create buffer before `adapter`, since `adapter` doesn't hold onto a
   // reference to it.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
@@ -1404,7 +1404,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
 }
 
 TEST_P(WebSocketQuicStreamAdapterTest, AsyncAdapterCreation) {
-  const size_t kMaxOpenStreams = 50;
+  constexpr size_t kMaxOpenStreams = 50;
 
   int packet_number = 1;
   mock_quic_data_.AddWrite(SYNCHRONOUS,
@@ -1601,7 +1601,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
   run_loop.Run();
 
   // Buffer larger than each MockRead.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
 
@@ -1683,7 +1683,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
   session_->StartReading();
   run_loop.Run();
 
-  const int kReadBufSize = 3;
+  constexpr int kReadBufSize = 3;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
 

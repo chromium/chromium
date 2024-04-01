@@ -66,7 +66,7 @@ bool WebSocketDeflater::Initialize(int window_bits) {
     stream_.reset();
     return false;
   }
-  const size_t kFixedBufferSize = 4096;
+  constexpr size_t kFixedBufferSize = 4096;
   fixed_buffer_.resize(kFixedBufferSize);
   return true;
 }

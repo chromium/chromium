@@ -222,7 +222,7 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
       parameters, parameters + std::size(parameters));
 }
 
-const CompatibilityTestParameter kCompatibilityTestParameters[] = {
+constexpr CompatibilityTestParameter kCompatibilityTestParameters[] = {
     {"", "", true},
     // server_no_context_takeover
     {"", "; server_no_context_takeover", true},

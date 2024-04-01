@@ -56,7 +56,7 @@ class WebSocketFrameTestMaskBenchmark : public ::testing::Test {
 };
 
 TEST_F(WebSocketFrameTestMaskBenchmark, BenchmarkMaskShortPayload) {
-  static const char kShortPayload[] = "Short Payload";
+  static constexpr char kShortPayload[] = "Short Payload";
   Benchmark("short_payload", kShortPayload, std::size(kShortPayload));
 }
 

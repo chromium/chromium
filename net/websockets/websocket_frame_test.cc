@@ -28,7 +28,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
     size_t frame_header_length;
     uint64_t frame_length;
   };
-  static const TestCase kTests[] = {
+  static constexpr TestCase kTests[] = {
       {"\x81\x00", 2, UINT64_C(0)},
       {"\x81\x7D", 2, UINT64_C(125)},
       {"\x81\x7E\x00\x7E", 4, UINT64_C(126)},
@@ -62,7 +62,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
     size_t frame_header_length;
     uint64_t frame_length;
   };
-  static const TestCase kTests[] = {
+  static constexpr TestCase kTests[] = {
       {"\x81\x80\xDE\xAD\xBE\xEF", 6, UINT64_C(0)},
       {"\x81\xFD\xDE\xAD\xBE\xEF", 6, UINT64_C(125)},
       {"\x81\xFE\x00\x7E\xDE\xAD\xBE\xEF", 8, UINT64_C(126)},
@@ -97,7 +97,7 @@ TEST(WebSocketFrameHeaderTest, FrameOpCodes) {
     size_t frame_header_length;
     WebSocketFrameHeader::OpCode opcode;
   };
-  static const TestCase kTests[] = {
+  static constexpr TestCase kTests[] = {
       {"\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation},
       {"\x81\x00", 2, WebSocketFrameHeader::kOpCodeText},
       {"\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary},
@@ -140,13 +140,14 @@ TEST(WebSocketFrameHeaderTest, FinalBitAndReservedBits) {
     bool reserved2;
     bool reserved3;
   };
-  static const TestCase kTests[] = {{"\x81\x00", 2, true, false, false, false},
-                                    {"\x01\x00", 2, false, false, false, false},
-                                    {"\xC1\x00", 2, true, true, false, false},
-                                    {"\xA1\x00", 2, true, false, true, false},
-                                    {"\x91\x00", 2, true, false, false, true},
-                                    {"\x71\x00", 2, false, true, true, true},
-                                    {"\xF1\x00", 2, true, true, true, true}};
+  static constexpr TestCase kTests[] = {
+      {"\x81\x00", 2, true, false, false, false},
+      {"\x01\x00", 2, false, false, false, false},
+      {"\xC1\x00", 2, true, true, false, false},
+      {"\xA1\x00", 2, true, false, true, false},
+      {"\x91\x00", 2, true, false, false, true},
+      {"\x71\x00", 2, false, true, true, true},
+      {"\xF1\x00", 2, true, true, true, true}};
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -172,18 +173,19 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
     bool masked;
     size_t expected_header_size;
   };
-  static const TestCase kTests[] = {{UINT64_C(0), false, 2u},
-                                    {UINT64_C(125), false, 2u},
-                                    {UINT64_C(126), false, 4u},
-                                    {UINT64_C(0xFFFF), false, 4u},
-                                    {UINT64_C(0x10000), false, 10u},
-                                    {UINT64_C(0x7FFFFFFFFFFFFFFF), false, 10u},
-                                    {UINT64_C(0), true, 6u},
-                                    {UINT64_C(125), true, 6u},
-                                    {UINT64_C(126), true, 8u},
-                                    {UINT64_C(0xFFFF), true, 8u},
-                                    {UINT64_C(0x10000), true, 14u},
-                                    {UINT64_C(0x7FFFFFFFFFFFFFFF), true, 14u}};
+  static constexpr TestCase kTests[] = {
+      {UINT64_C(0), false, 2u},
+      {UINT64_C(125), false, 2u},
+      {UINT64_C(126), false, 4u},
+      {UINT64_C(0xFFFF), false, 4u},
+      {UINT64_C(0x10000), false, 10u},
+      {UINT64_C(0x7FFFFFFFFFFFFFFF), false, 10u},
+      {UINT64_C(0), true, 6u},
+      {UINT64_C(125), true, 6u},
+      {UINT64_C(126), true, 8u},
+      {UINT64_C(0xFFFF), true, 8u},
+      {UINT64_C(0x10000), true, 14u},
+      {UINT64_C(0x7FFFFFFFFFFFFFFF), true, 14u}};
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -208,7 +210,7 @@ TEST(WebSocketFrameTest, MaskPayload) {
     const char* output;
     size_t data_length;
   };
-  static const TestCase kTests[] = {
+  static constexpr TestCase kTests[] = {
       {"\xDE\xAD\xBE\xEF", 0, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6},
       {"\xDE\xAD\xBE\xEF", 1, "FooBar", "\xEB\xD1\x80\x9C\xCC\xCC", 6},
       {"\xDE\xAD\xBE\xEF", 2, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6},
@@ -218,8 +220,11 @@ TEST(WebSocketFrameTest, MaskPayload) {
       {"\xDE\xAD\xBE\xEF", 0, "", "", 0},
       {"\xDE\xAD\xBE\xEF", 0, "\xDE\xAD\xBE\xEF", "\x00\x00\x00\x00", 4},
       {"\xDE\xAD\xBE\xEF", 0, "\x00\x00\x00\x00", "\xDE\xAD\xBE\xEF", 4},
-      {{"\x00\x00\x00\x00", WebSocketFrameHeader::kMaskingKeyLength}, 0,
-       "FooBar", "FooBar", 6},
+      {{"\x00\x00\x00\x00", WebSocketFrameHeader::kMaskingKeyLength},
+       0,
+       "FooBar",
+       "FooBar",
+       6},
       {"\xFF\xFF\xFF\xFF", 0, "FooBar", "\xB9\x90\x90\xBD\x9E\x8D", 6},
   };
 
@@ -250,32 +255,30 @@ TEST(WebSocketFrameTest, MaskPayload) {
 TEST(WebSocketFrameTest, MaskPayloadAlignment) {
   // This reflects what might be implemented in the future, rather than
   // the current implementation. FMA3 and FMA4 support 256-bit vector ops.
-  static const size_t kMaxVectorSizeInBits = 256;
-  static const size_t kMaxVectorSize = kMaxVectorSizeInBits / 8;
-  static const size_t kMaxVectorAlignment = kMaxVectorSize;
-  static const size_t kMaskingKeyLength =
+  static constexpr size_t kMaxVectorSizeInBits = 256;
+  static constexpr size_t kMaxVectorSize = kMaxVectorSizeInBits / 8;
+  static constexpr size_t kMaxVectorAlignment = kMaxVectorSize;
+  static constexpr size_t kMaskingKeyLength =
       WebSocketFrameHeader::kMaskingKeyLength;
-  static const size_t kScratchBufferSize =
+  static constexpr size_t kScratchBufferSize =
       kMaxVectorAlignment + kMaxVectorSize * 2;
   static constexpr std::string_view kTestMask = "\xd2\xba\x5a\xbe";
   // We use 786 bits of random input to reduce the risk of correlated errors.
-  static const char kTestInput[] = {
-    "\x3d\x77\x1d\x1b\x19\x8c\x48\xa3\x19\x6d\xf7\xcc\x39\xe7\x57\x0b"
-    "\x69\x8c\xda\x4b\xfc\xac\x2c\xd3\x49\x96\x6e\x8a\x7b\x5a\x32\x76"
-    "\xd0\x11\x43\xa0\x89\xfc\x76\x2b\x10\x2f\x4c\x7b\x4f\xa6\xdd\xe4"
-    "\xfc\x8e\xd8\x72\xcf\x7e\x37\xcd\x31\xcd\xc1\xc0\x89\x0c\xa7\x4c"
-    "\xda\xa8\x4b\x75\xa1\xcb\xa9\x77\x19\x4d\x6e\xdf\xc8\x08\x1c\xb6"
-    "\x6d\xfb\x38\x04\x44\xd5\xba\x57\x9f\x76\xb0\x2e\x07\x91\xe6\xa8"
-  };
-  static const size_t kTestInputSize = std::size(kTestInput) - 1;
-  static const char kTestOutput[] = {
-    "\xef\xcd\x47\xa5\xcb\x36\x12\x1d\xcb\xd7\xad\x72\xeb\x5d\x0d\xb5"
-    "\xbb\x36\x80\xf5\x2e\x16\x76\x6d\x9b\x2c\x34\x34\xa9\xe0\x68\xc8"
-    "\x02\xab\x19\x1e\x5b\x46\x2c\x95\xc2\x95\x16\xc5\x9d\x1c\x87\x5a"
-    "\x2e\x34\x82\xcc\x1d\xc4\x6d\x73\xe3\x77\x9b\x7e\x5b\xb6\xfd\xf2"
-    "\x08\x12\x11\xcb\x73\x71\xf3\xc9\xcb\xf7\x34\x61\x1a\xb2\x46\x08"
-    "\xbf\x41\x62\xba\x96\x6f\xe0\xe9\x4d\xcc\xea\x90\xd5\x2b\xbc\x16"
-  };
+  static constexpr char kTestInput[] = {
+      "\x3d\x77\x1d\x1b\x19\x8c\x48\xa3\x19\x6d\xf7\xcc\x39\xe7\x57\x0b"
+      "\x69\x8c\xda\x4b\xfc\xac\x2c\xd3\x49\x96\x6e\x8a\x7b\x5a\x32\x76"
+      "\xd0\x11\x43\xa0\x89\xfc\x76\x2b\x10\x2f\x4c\x7b\x4f\xa6\xdd\xe4"
+      "\xfc\x8e\xd8\x72\xcf\x7e\x37\xcd\x31\xcd\xc1\xc0\x89\x0c\xa7\x4c"
+      "\xda\xa8\x4b\x75\xa1\xcb\xa9\x77\x19\x4d\x6e\xdf\xc8\x08\x1c\xb6"
+      "\x6d\xfb\x38\x04\x44\xd5\xba\x57\x9f\x76\xb0\x2e\x07\x91\xe6\xa8"};
+  static constexpr size_t kTestInputSize = std::size(kTestInput) - 1;
+  static constexpr char kTestOutput[] = {
+      "\xef\xcd\x47\xa5\xcb\x36\x12\x1d\xcb\xd7\xad\x72\xeb\x5d\x0d\xb5"
+      "\xbb\x36\x80\xf5\x2e\x16\x76\x6d\x9b\x2c\x34\x34\xa9\xe0\x68\xc8"
+      "\x02\xab\x19\x1e\x5b\x46\x2c\x95\xc2\x95\x16\xc5\x9d\x1c\x87\x5a"
+      "\x2e\x34\x82\xcc\x1d\xc4\x6d\x73\xe3\x77\x9b\x7e\x5b\xb6\xfd\xf2"
+      "\x08\x12\x11\xcb\x73\x71\xf3\xc9\xcb\xf7\x34\x61\x1a\xb2\x46\x08"
+      "\xbf\x41\x62\xba\x96\x6f\xe0\xe9\x4d\xcc\xea\x90\xd5\x2b\xbc\x16"};
   static_assert(std::size(kTestInput) == std::size(kTestOutput),
                 "output and input arrays should have the same length");
   std::unique_ptr<char, base::AlignedFreeDeleter> scratch(static_cast<char*>(

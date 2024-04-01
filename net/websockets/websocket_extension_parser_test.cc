@@ -162,7 +162,7 @@ TEST(WebSocketExtensionParserTest, QuotedParameterValue) {
 
 // This is a regression test for crbug.com/647156
 TEST(WebSocketExtensionParserTest, InvalidToken) {
-  static const char kInvalidInput[] = "\304;\304!*777\377=\377\254\377";
+  static constexpr char kInvalidInput[] = "\304;\304!*777\377=\377\254\377";
   WebSocketExtensionParser parser;
   EXPECT_FALSE(parser.Parse(kInvalidInput));
 }

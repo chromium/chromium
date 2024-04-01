@@ -57,7 +57,7 @@ namespace {
 // It is defined as the same value as the TCP connection timeout value in
 // net/socket/websocket_transport_client_socket_pool.cc to make it hard for
 // JavaScript programs to recognize the timeout cause.
-const int kHandshakeTimeoutIntervalInSeconds = 240;
+constexpr int kHandshakeTimeoutIntervalInSeconds = 240;
 
 class WebSocketStreamRequestImpl;
 

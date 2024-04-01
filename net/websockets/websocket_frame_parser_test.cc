@@ -18,14 +18,14 @@ namespace net {
 
 namespace {
 
-const char kHello[] = "Hello, world!";
-const uint64_t kHelloLength = std::size(kHello) - 1;
-const char kHelloFrame[] = "\x81\x0DHello, world!";
-const uint64_t kHelloFrameLength = std::size(kHelloFrame) - 1;
-const char kMaskedHelloFrame[] =
+constexpr char kHello[] = "Hello, world!";
+constexpr uint64_t kHelloLength = std::size(kHello) - 1;
+constexpr char kHelloFrame[] = "\x81\x0DHello, world!";
+constexpr uint64_t kHelloFrameLength = std::size(kHelloFrame) - 1;
+constexpr char kMaskedHelloFrame[] =
     "\x81\x8D\xDE\xAD\xBE\xEF"
     "\x96\xC8\xD2\x83\xB1\x81\x9E\x98\xB1\xDF\xD2\x8B\xFF";
-const uint64_t kMaskedHelloFrameLength = std::size(kMaskedHelloFrame) - 1;
+constexpr uint64_t kMaskedHelloFrameLength = std::size(kMaskedHelloFrame) - 1;
 
 struct FrameHeaderTestCase {
   const char* frame_header;
@@ -34,21 +34,20 @@ struct FrameHeaderTestCase {
   WebSocketError error_code;
 };
 
-const FrameHeaderTestCase kFrameHeaderTests[] = {
-  { "\x81\x00", 2, UINT64_C(0), kWebSocketNormalClosure },
-  { "\x81\x7D", 2, UINT64_C(125), kWebSocketNormalClosure },
-  { "\x81\x7E\x00\x7E", 4, UINT64_C(126), kWebSocketNormalClosure },
-  { "\x81\x7E\xFF\xFF", 4, UINT64_C(0xFFFF), kWebSocketNormalClosure },
-  { "\x81\x7F\x00\x00\x00\x00\x00\x01\x00\x00", 10, UINT64_C(0x10000),
-    kWebSocketNormalClosure },
-  { "\x81\x7F\x00\x00\x00\x00\x7F\xFF\xFF\xFF", 10, UINT64_C(0x7FFFFFFF),
-    kWebSocketNormalClosure },
-  { "\x81\x7F\x00\x00\x00\x00\x80\x00\x00\x00", 10, UINT64_C(0x80000000),
-    kWebSocketErrorMessageTooBig },
-  { "\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
-    UINT64_C(0x7FFFFFFFFFFFFFFF), kWebSocketErrorMessageTooBig }
-};
-const int kNumFrameHeaderTests = std::size(kFrameHeaderTests);
+constexpr FrameHeaderTestCase kFrameHeaderTests[] = {
+    {"\x81\x00", 2, UINT64_C(0), kWebSocketNormalClosure},
+    {"\x81\x7D", 2, UINT64_C(125), kWebSocketNormalClosure},
+    {"\x81\x7E\x00\x7E", 4, UINT64_C(126), kWebSocketNormalClosure},
+    {"\x81\x7E\xFF\xFF", 4, UINT64_C(0xFFFF), kWebSocketNormalClosure},
+    {"\x81\x7F\x00\x00\x00\x00\x00\x01\x00\x00", 10, UINT64_C(0x10000),
+     kWebSocketNormalClosure},
+    {"\x81\x7F\x00\x00\x00\x00\x7F\xFF\xFF\xFF", 10, UINT64_C(0x7FFFFFFF),
+     kWebSocketNormalClosure},
+    {"\x81\x7F\x00\x00\x00\x00\x80\x00\x00\x00", 10, UINT64_C(0x80000000),
+     kWebSocketErrorMessageTooBig},
+    {"\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
+     UINT64_C(0x7FFFFFFFFFFFFFFF), kWebSocketErrorMessageTooBig}};
+constexpr int kNumFrameHeaderTests = std::size(kFrameHeaderTests);
 
 TEST(WebSocketFrameParserTest, DecodeNormalFrame) {
   WebSocketFrameParser parser;
@@ -114,23 +113,42 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
     const char* expected_payload;
     size_t expected_payload_length;
   };
-  static const Input kInputs[] = {
-    // Each |frame| data is split into two string literals because C++ lexers
-    // consume unlimited number of hex characters in a hex character escape
-    // (e.g. "\x05F" is not treated as { '\x5', 'F', '\0' } but as
-    // { '\x5F', '\0' }).
-    { "\x81\x05" "First", 7, "First", 5 },
-    { "\x81\x06" "Second", 8, "Second", 6 },
-    { "\x81\x05" "Third", 7, "Third", 5 },
-    { "\x81\x06" "Fourth", 8, "Fourth", 6 },
-    { "\x81\x05" "Fifth", 7, "Fifth", 5 },
-    { "\x81\x05" "Sixth", 7, "Sixth", 5 },
-    { "\x81\x07" "Seventh", 9, "Seventh", 7 },
-    { "\x81\x06" "Eighth", 8, "Eighth", 6 },
-    { "\x81\x05" "Ninth", 7, "Ninth", 5 },
-    { "\x81\x05" "Tenth", 7, "Tenth", 5 }
-  };
-  static const int kNumInputs = std::size(kInputs);
+  static constexpr Input kInputs[] = {
+      // Each |frame| data is split into two string literals because C++ lexers
+      // consume unlimited number of hex characters in a hex character escape
+      // (e.g. "\x05F" is not treated as { '\x5', 'F', '\0' } but as
+      // { '\x5F', '\0' }).
+      {"\x81\x05"
+       "First",
+       7, "First", 5},
+      {"\x81\x06"
+       "Second",
+       8, "Second", 6},
+      {"\x81\x05"
+       "Third",
+       7, "Third", 5},
+      {"\x81\x06"
+       "Fourth",
+       8, "Fourth", 6},
+      {"\x81\x05"
+       "Fifth",
+       7, "Fifth", 5},
+      {"\x81\x05"
+       "Sixth",
+       7, "Sixth", 5},
+      {"\x81\x07"
+       "Seventh",
+       9, "Seventh", 7},
+      {"\x81\x06"
+       "Eighth",
+       8, "Eighth", 6},
+      {"\x81\x05"
+       "Ninth",
+       7, "Ninth", 5},
+      {"\x81\x05"
+       "Tenth",
+       7, "Tenth", 5}};
+  static constexpr int kNumInputs = std::size(kInputs);
 
   std::vector<char> input;
   // Concatenate all frames.
@@ -173,7 +191,7 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
 }
 
 TEST(WebSocketFrameParserTest, DecodePartialFrame) {
-  static const size_t kFrameHeaderSize = 2;
+  static constexpr size_t kFrameHeaderSize = 2;
 
   for (size_t cutting_pos = 0; cutting_pos < kHelloLength; ++cutting_pos) {
     std::vector<char> input1(kHelloFrame,
@@ -241,7 +259,7 @@ TEST(WebSocketFrameParserTest, DecodePartialFrame) {
 }
 
 TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
-  static const size_t kFrameHeaderSize = 6;
+  static constexpr size_t kFrameHeaderSize = 6;
 
   for (size_t cutting_pos = 0; cutting_pos < kHelloLength; ++cutting_pos) {
     std::vector<char> input1(
@@ -325,7 +343,7 @@ TEST(WebSocketFrameParserTest, DecodeFramesOfVariousLengths) {
 
     std::vector<char> input(frame_header, frame_header + frame_header_length);
     // Limit the payload size not to flood the console on failure.
-    static const uint64_t kMaxPayloadSize = 200;
+    static constexpr uint64_t kMaxPayloadSize = 200;
     uint64_t input_payload_size = std::min(frame_length, kMaxPayloadSize);
     input.insert(input.end(), input_payload_size, 'a');
 
@@ -434,7 +452,7 @@ TEST(WebSocketFrameParserTest, InvalidLengthEncoding) {
     const char* frame_header;
     size_t frame_header_length;
   };
-  static const TestCase kTests[] = {
+  static constexpr TestCase kTests[] = {
       // For frames with two-byte extended length field, the payload length
       // should be 126 (0x7E) bytes or more.
       {"\x81\x7E\x00\x00", 4},
@@ -471,7 +489,7 @@ TEST(WebSocketFrameParserTest, FrameTypes) {
     size_t frame_header_length;
     WebSocketFrameHeader::OpCode opcode;
   };
-  static const TestCase kTests[] = {
+  static constexpr TestCase kTests[] = {
       {"\x80\x00", 2, WebSocketFrameHeader::kOpCodeContinuation},
       {"\x81\x00", 2, WebSocketFrameHeader::kOpCodeText},
       {"\x82\x00", 2, WebSocketFrameHeader::kOpCodeBinary},
@@ -533,15 +551,14 @@ TEST(WebSocketFrameParserTest, FinalBitAndReservedBits) {
     bool reserved2;
     bool reserved3;
   };
-  static const TestCase kTests[] = {
-    { "\x81\x00", 2, true, false, false, false },
-    { "\x01\x00", 2, false, false, false, false },
-    { "\xC1\x00", 2, true, true, false, false },
-    { "\xA1\x00", 2, true, false, true, false },
-    { "\x91\x00", 2, true, false, false, true },
-    { "\x71\x00", 2, false, true, true, true },
-    { "\xF1\x00", 2, true, true, true, true }
-  };
+  static constexpr TestCase kTests[] = {
+      {"\x81\x00", 2, true, false, false, false},
+      {"\x01\x00", 2, false, false, false, false},
+      {"\xC1\x00", 2, true, true, false, false},
+      {"\xA1\x00", 2, true, false, true, false},
+      {"\x91\x00", 2, true, false, false, true},
+      {"\x71\x00", 2, false, true, true, true},
+      {"\xF1\x00", 2, true, true, true, true}};
 
   for (const auto& test : kTests) {
     const char* frame_header = test.frame_header;

@@ -96,7 +96,7 @@ class MockWeakTimer : public base::MockOneShotTimer,
   MockWeakTimer() = default;
 };
 
-const char kOrigin[] = "http://www.example.org";
+constexpr char kOrigin[] = "http://www.example.org";
 
 static url::Origin Origin() {
   return url::Origin::Create(GURL(kOrigin));
@@ -655,7 +655,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, SimpleSuccess) {
 }
 
 TEST_P(WebSocketStreamCreateTest, HandshakeInfo) {
-  static const char kResponse[] =
+  static constexpr char kResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade\r\n"
@@ -1027,7 +1027,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, InvalidStatusCode) {
 
   AddSSLData();
   if (stream_type_ == BASIC_HANDSHAKE_STREAM) {
-    static const char kInvalidStatusCodeResponse[] =
+    static constexpr char kInvalidStatusCodeResponse[] =
         "HTTP/1.1 200 OK\r\n"
         "Upgrade: websocket\r\n"
         "Connection: Upgrade\r\n"
@@ -1072,7 +1072,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, InvalidStatusCode) {
 TEST_P(WebSocketMultiProtocolStreamCreateTest, RedirectsRejected) {
   AddSSLData();
   if (stream_type_ == BASIC_HANDSHAKE_STREAM) {
-    static const char kRedirectResponse[] =
+    static constexpr char kRedirectResponse[] =
         "HTTP/1.1 302 Moved Temporarily\r\n"
         "Content-Type: text/html\r\n"
         "Content-Length: 34\r\n"
@@ -1100,7 +1100,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, RedirectsRejected) {
 // has to be at the start of the response. Even then, it just gets treated as an
 // HTTP/0.9 response.
 TEST_P(WebSocketStreamCreateTest, MalformedResponse) {
-  static const char kMalformedResponse[] =
+  static constexpr char kMalformedResponse[] =
       "220 mx.google.com ESMTP\r\n"
       "HTTP/1.1 101 OK\r\n"
       "Upgrade: websocket\r\n"
@@ -1119,7 +1119,7 @@ TEST_P(WebSocketStreamCreateTest, MalformedResponse) {
 TEST_P(WebSocketStreamCreateTest, MissingUpgradeHeader) {
   base::HistogramTester histogram_tester;
 
-  static const char kMissingUpgradeResponse[] =
+  static constexpr char kMissingUpgradeResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Connection: Upgrade\r\n"
       "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
@@ -1154,7 +1154,7 @@ TEST_P(WebSocketStreamCreateTest, DoubleUpgradeHeader) {
 
 // There must only be one correct upgrade header.
 TEST_P(WebSocketStreamCreateTest, IncorrectUpgradeHeader) {
-  static const char kMissingUpgradeResponse[] =
+  static constexpr char kMissingUpgradeResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Connection: Upgrade\r\n"
       "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
@@ -1173,7 +1173,7 @@ TEST_P(WebSocketStreamCreateTest, IncorrectUpgradeHeader) {
 TEST_P(WebSocketStreamCreateTest, MissingConnectionHeader) {
   base::HistogramTester histogram_tester;
 
-  static const char kMissingConnectionResponse[] =
+  static constexpr char kMissingConnectionResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
@@ -1199,7 +1199,7 @@ TEST_P(WebSocketStreamCreateTest, MissingConnectionHeader) {
 
 // Connection header must contain "Upgrade".
 TEST_P(WebSocketStreamCreateTest, IncorrectConnectionHeader) {
-  static const char kMissingConnectionResponse[] =
+  static constexpr char kMissingConnectionResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n"
@@ -1216,7 +1216,7 @@ TEST_P(WebSocketStreamCreateTest, IncorrectConnectionHeader) {
 
 // Connection header is permitted to contain other tokens.
 TEST_P(WebSocketStreamCreateTest, AdditionalTokenInConnectionHeader) {
-  static const char kAdditionalConnectionTokenResponse[] =
+  static constexpr char kAdditionalConnectionTokenResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade, Keep-Alive\r\n"
@@ -1233,7 +1233,7 @@ TEST_P(WebSocketStreamCreateTest, AdditionalTokenInConnectionHeader) {
 TEST_P(WebSocketStreamCreateTest, MissingSecWebSocketAccept) {
   base::HistogramTester histogram_tester;
 
-  static const char kMissingAcceptResponse[] =
+  static constexpr char kMissingAcceptResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade\r\n"
@@ -1258,7 +1258,7 @@ TEST_P(WebSocketStreamCreateTest, MissingSecWebSocketAccept) {
 
 // Sec-WebSocket-Accept header must match the key that was sent.
 TEST_P(WebSocketStreamCreateTest, WrongSecWebSocketAccept) {
-  static const char kIncorrectAcceptResponse[] =
+  static constexpr char kIncorrectAcceptResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade\r\n"
@@ -1725,7 +1725,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, Http2StreamReset) {
 TEST_P(WebSocketStreamCreateTest, HandleErrConnectionClosed) {
   base::HistogramTester histogram_tester;
 
-  static const char kTruncatedResponse[] =
+  static constexpr char kTruncatedResponse[] =
       "HTTP/1.1 101 Switching Protocols\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade\r\n"
@@ -1759,13 +1759,13 @@ TEST_P(WebSocketStreamCreateTest, HandleErrConnectionClosed) {
 }
 
 TEST_P(WebSocketStreamCreateTest, HandleErrTunnelConnectionFailed) {
-  static const char kConnectRequest[] =
+  static constexpr char kConnectRequest[] =
       "CONNECT www.example.org:80 HTTP/1.1\r\n"
       "Host: www.example.org:80\r\n"
       "Proxy-Connection: keep-alive\r\n"
       "\r\n";
 
-  static const char kProxyResponse[] =
+  static constexpr char kProxyResponse[] =
       "HTTP/1.1 403 Forbidden\r\n"
       "Content-Type: text/html\r\n"
       "Content-Length: 9\r\n"

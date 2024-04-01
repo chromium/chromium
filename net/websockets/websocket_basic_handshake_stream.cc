@@ -61,7 +61,7 @@ struct NetErrorDetails;
 
 namespace {
 
-const char kConnectionErrorStatusLine[] = "HTTP/1.1 503 Connection Error";
+constexpr char kConnectionErrorStatusLine[] = "HTTP/1.1 503 Connection Error";
 
 }  // namespace
 

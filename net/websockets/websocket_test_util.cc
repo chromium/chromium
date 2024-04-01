@@ -203,7 +203,7 @@ MockClientSocketFactory* WebSocketMockClientSocketFactoryMaker::factory() {
 void WebSocketMockClientSocketFactoryMaker::SetExpectations(
     const std::string& expect_written,
     const std::string& return_to_read) {
-  const size_t kHttpStreamParserBufferSize = 4096;
+  constexpr size_t kHttpStreamParserBufferSize = 4096;
   // We need to extend the lifetime of these strings.
   detail_->expect_written = expect_written;
   detail_->return_to_read = return_to_read;
