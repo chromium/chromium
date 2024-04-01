@@ -5,7 +5,6 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 
 #include "media/cast/cast_config.h"
-#include "media/cast/cast_sender.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"

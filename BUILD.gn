@@ -612,7 +612,6 @@ group("gn_all") {
     if (is_linux || is_chromeos_lacros) {
       deps += [
         "//gpu/khronos_glcts_support:khronos_glcts_test",
-        "//media/cast:cast_benchmarks",
         "//media/cast:tap_proxy",
         "//skia:filter_fuzz_stub",
         "//skia:image_operations_bench",

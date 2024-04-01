@@ -100,11 +100,6 @@ bool OpenscreenFrameSender::NeedsKeyFrame() const {
   return sender_->NeedsKeyFrame();
 }
 
-void OpenscreenFrameSender::OnMeasuredRoundTripTime(
-    base::TimeDelta round_trip_time) {
-  NOTIMPLEMENTED();
-}
-
 void OpenscreenFrameSender::SetTargetPlayoutDelay(
     base::TimeDelta new_target_playout_delay) {
   if (send_target_playout_delay_ &&
@@ -291,15 +286,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
 
   const auto result = sender_->EnqueueFrame(std::move(openscreen_frame));
   return ToFrameDropReason(result);
-}
-
-void OpenscreenFrameSender::OnReceivedCastFeedback(
-    const RtcpCastMessage& cast_feedback) {
-  NOTIMPLEMENTED();
-}
-
-void OpenscreenFrameSender::OnReceivedPli() {
-  OnPictureLost();
 }
 
 CastStreamingFrameDropReason OpenscreenFrameSender::ShouldDropNextFrame(

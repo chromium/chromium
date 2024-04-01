@@ -20,7 +20,6 @@
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/video_encoder.h"
-#include "media/cast/net/cast_transport_config.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "media/cast/sender/performance_metrics_overlay.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
@@ -108,67 +107,22 @@ VideoSender::VideoSender(
     const FrameSenderConfig& video_config,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    CastTransport* const transport_sender,
-    std::unique_ptr<media::VideoEncoderMetricsProvider>
-        encoder_metrics_provider,
-    PlayoutDelayChangeCB playout_delay_change_cb,
-    media::VideoCaptureFeedbackCB feedback_cb)
-    : VideoSender(cast_environment,
-                  video_config,
-                  std::move(status_change_cb),
-                  std::move(create_vea_cb),
-                  FrameSender::Create(cast_environment,
-                                      video_config,
-                                      transport_sender,
-                                      *this),
-                  std::move(encoder_metrics_provider),
-                  std::move(playout_delay_change_cb),
-                  std::move(feedback_cb)) {}
-
-VideoSender::VideoSender(
-    scoped_refptr<CastEnvironment> cast_environment,
-    const FrameSenderConfig& video_config,
-    StatusChangeCallback status_change_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     std::unique_ptr<openscreen::cast::Sender> sender,
     std::unique_ptr<media::VideoEncoderMetricsProvider>
         encoder_metrics_provider,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
     FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
-    : VideoSender(cast_environment,
-                  video_config,
-                  std::move(status_change_cb),
-                  std::move(create_vea_cb),
-                  FrameSender::Create(cast_environment,
-                                      video_config,
-                                      std::move(sender),
-                                      *this,
-                                      std::move(get_bitrate_cb)),
-                  std::move(encoder_metrics_provider),
-                  std::move(playout_delay_change_cb),
-                  std::move(feedback_cb)) {}
-
-// Note, we use a fixed bitrate value when external video encoder is used.
-// Some hardware encoder shows bad behavior if we set the bitrate too
-// frequently, e.g. quality drop, not abiding by target bitrate, etc.
-// See details: crbug.com/392086.
-VideoSender::VideoSender(
-    scoped_refptr<CastEnvironment> cast_environment,
-    const FrameSenderConfig& video_config,
-    StatusChangeCallback status_change_cb,
-    const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    std::unique_ptr<FrameSender> sender,
-    std::unique_ptr<media::VideoEncoderMetricsProvider>
-        encoder_metrics_provider,
-    PlayoutDelayChangeCB playout_delay_change_cb,
-    media::VideoCaptureFeedbackCB feedback_callback)
-    : frame_sender_(std::move(sender)),
+    : frame_sender_(FrameSender::Create(cast_environment,
+                                        video_config,
+                                        std::move(sender),
+                                        *this,
+                                        std::move(get_bitrate_cb))),
       cast_environment_(cast_environment),
       min_playout_delay_(video_config.min_playout_delay),
       max_playout_delay_(video_config.max_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
-      feedback_cb_(feedback_callback) {
+      feedback_cb_(feedback_cb) {
   video_encoder_ = VideoEncoder::Create(cast_environment_, video_config,
                                         std::move(encoder_metrics_provider),
                                         status_change_cb, create_vea_cb);
@@ -188,7 +142,7 @@ VideoSender::~VideoSender() {
 
 void VideoSender::InsertRawVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
-    const base::TimeTicks& reference_time) {
+    base::TimeTicks reference_time) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(video_encoder_);
 
@@ -359,6 +313,8 @@ base::TimeDelta VideoSender::GetTargetPlayoutDelay() const {
 base::WeakPtr<VideoSender> VideoSender::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+VideoSender::VideoSender() = default;
 
 int VideoSender::GetNumberOfFramesInEncoder() const {
   return frames_in_encoder_;

@@ -188,21 +188,14 @@ source_set("encoding") {
   }
 }
 
-# TODO(https://crbug.com/1327074): should be split into multiple source sets
-# once the new Open Screen frame sender implementation is added.
 source_set("sender") {
   sources = [
-    "cast_sender.h",
-    "cast_sender_impl.cc",
-    "cast_sender_impl.h",
     "sender/audio_sender.cc",
     "sender/audio_sender.h",
     "sender/congestion_control.cc",
     "sender/congestion_control.h",
     "sender/frame_sender.cc",
     "sender/frame_sender.h",
-    "sender/frame_sender_impl.cc",
-    "sender/frame_sender_impl.h",
     "sender/openscreen_frame_sender.cc",
     "sender/openscreen_frame_sender.h",
     "sender/performance_metrics_overlay.cc",
@@ -267,6 +260,8 @@ source_set("test_receiver") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "test/fake_openscreen_clock.cc",
+    "test/fake_openscreen_clock.h",
     "test/fake_receiver_time_offset_estimator.cc",
     "test/fake_receiver_time_offset_estimator.h",
     "test/fake_video_encode_accelerator_factory.cc",
@@ -275,6 +270,8 @@ static_library("test_support") {
     "test/loopback_transport.h",
     "test/mock_cast_transport.cc",
     "test/mock_cast_transport.h",
+    "test/mock_openscreen_environment.cc",
+    "test/mock_openscreen_environment.h",
     "test/mock_paced_packet_sender.cc",
     "test/mock_paced_packet_sender.h",
     "test/mock_rtp_payload_feedback.cc",
@@ -323,16 +320,6 @@ static_library("test_support") {
     "//third_party/libyuv",
     "//ui/gfx:test_support",
   ]
-
-  # FFMPEG software video decoders are not available on Android and/or
-  # Chromecast content_shell builds.
-  if (!is_android && !is_castos) {
-    sources += [
-      "test/fake_media_source.cc",
-      "test/fake_media_source.h",
-    ]
-    deps += [ "//third_party/ffmpeg" ]
-  }
 }
 
 test("cast_unittests") {
@@ -366,7 +353,6 @@ test("cast_unittests") {
     "sender/openscreen_frame_sender_unittest.cc",
     "sender/video_bitrate_suggester_unittest.cc",
     "sender/video_sender_unittest.cc",
-    "test/end2end_unittest.cc",
     "test/receiver/audio_decoder_unittest.cc",
     "test/receiver/cast_message_builder_unittest.cc",
     "test/receiver/frame_buffer_unittest.cc",
@@ -416,68 +402,9 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
   group("testing_tools") {
     testonly = true
     deps = [
-      ":cast_benchmarks",
-      ":cast_sender_app",
-      ":cast_simulator",
       ":generate_barcode_video",
       ":generate_timecode_audio",
       ":udp_proxy",
-    ]
-  }
-
-  test("cast_benchmarks") {
-    testonly = true
-    sources = [ "test/cast_benchmarks.cc" ]
-    deps = [
-      ":common",
-      ":net",
-      ":sender",
-      ":test_receiver",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//media:test_support",
-      "//net",
-      "//testing/gtest",
-      "//ui/gfx/geometry",
-    ]
-  }
-
-  executable("cast_sender_app") {
-    testonly = true
-    sources = [ "test/sender.cc" ]
-    deps = [
-      ":common",
-      ":net",
-      ":sender",
-      ":test_support",
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//media",
-      "//media:test_support",
-      "//testing/gmock",
-    ]
-  }
-
-  proto_library("network_simulation_model_proto") {
-    visibility = [ ":cast_simulator" ]
-    sources = [ "test/proto/network_simulation_model.proto" ]
-  }
-
-  executable("cast_simulator") {
-    testonly = true
-    sources = [ "test/simulator.cc" ]
-    deps = [
-      ":common",
-      ":net",
-      ":network_simulation_model_proto",
-      ":sender",
-      ":test_receiver",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//build/win:default_exe_manifest",
-      "//media:test_support",
     ]
   }
 

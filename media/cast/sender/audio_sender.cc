@@ -9,14 +9,12 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/audio_encoder.h"
-#include "media/cast/net/cast_transport_config.h"
-#include "media/cast/sender/openscreen_frame_sender.h"
+#include "media/cast/sender/frame_sender.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
@@ -35,34 +33,13 @@ constexpr char kHistogramFrameDropped[] =
 AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,
                          StatusChangeOnceCallback status_change_cb,
-                         CastTransport* const transport_sender)
-    : AudioSender(cast_environment,
-                  audio_config,
-                  std::move(status_change_cb),
-                  FrameSender::Create(cast_environment,
-                                      audio_config,
-                                      transport_sender,
-                                      *this)) {}
-
-AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
-                         const FrameSenderConfig& audio_config,
-                         StatusChangeOnceCallback status_change_cb,
                          std::unique_ptr<openscreen::cast::Sender> sender)
-    : AudioSender(cast_environment,
-                  audio_config,
-                  std::move(status_change_cb),
-                  FrameSender::Create(cast_environment,
-                                      audio_config,
-                                      std::move(sender),
-                                      *this)) {}
-
-AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
-                         const FrameSenderConfig& audio_config,
-                         StatusChangeOnceCallback status_change_cb,
-                         std::unique_ptr<FrameSender> sender)
     : cast_environment_(cast_environment),
       rtp_timebase_(audio_config.rtp_timebase),
-      frame_sender_(std::move(sender)) {
+      frame_sender_(FrameSender::Create(cast_environment,
+                                        audio_config,
+                                        std::move(sender),
+                                        *this)) {
   if (!audio_config.use_hardware_encoder) {
     audio_encoder_ = std::make_unique<AudioEncoder>(
         std::move(cast_environment), audio_config.channels, rtp_timebase_,
@@ -94,7 +71,7 @@ AudioSender::~AudioSender() {
 }
 
 void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
-                              const base::TimeTicks& recorded_time) {
+                              base::TimeTicks recorded_time) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   CHECK(audio_encoder_);
 
@@ -133,6 +110,8 @@ int AudioSender::GetEncoderBitrate() const {
 base::WeakPtr<AudioSender> AudioSender::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+AudioSender::AudioSender() = default;
 
 int AudioSender::GetNumberOfFramesInEncoder() const {
   // Note: It's possible for a partial frame to be in the encoder, but returning
