@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("constants") {
   sources = [ "constants.h" ]
+
+  deps = [ "//base" ]
 }
 
 source_set("data_migration") {
@@ -61,6 +63,7 @@ source_set("file_transfer") {
   ]
 
   deps = [
+    ":constants",
     ":file_receiver",
     ":pending_file_transfer_queue",
     "//base",

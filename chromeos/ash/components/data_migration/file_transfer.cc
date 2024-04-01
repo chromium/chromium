@@ -8,8 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/data_migration/constants.h"
 #include "chromeos/ash/components/data_migration/pending_file_transfer_queue.h"
 
 namespace data_migration {
@@ -17,14 +19,10 @@ namespace data_migration {
 namespace {
 
 base::FilePath GetPayloadPath(int64_t payload_id) {
-  // TODO(esum): Write the file to the real directory. Downloads/ is just being
-  // used right now for testing.
-  constexpr base::FilePath::CharType kPayloadTargetDir[] =
-      FILE_PATH_LITERAL("Downloads");
   base::FilePath home_dir;
   CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
   return home_dir.Append(kPayloadTargetDir)
-      .Append(base::StringPrintf("payload_%ld", payload_id));
+      .Append(base::StrCat({"payload_", base::NumberToString(payload_id)}));
 }
 
 }  // namespace

@@ -62,7 +62,7 @@ class DeviceTest : public ::testing::Test {
   }
 
   base::FilePath GetFilePayloadDirectory() {
-    return temp_dir_.GetPath().Append("Downloads");
+    return temp_dir_.GetPath().Append(kPayloadTargetDir);
   }
 
   base::FilePath BuildFilePayloadName(int64_t payload_id) {
