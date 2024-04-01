@@ -2535,7 +2535,13 @@
   {
     "prefix": "url-non-special",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/url"],
+    "bases": [
+      "external/wpt/fetch/data-urls/processing.any.js",
+      "external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1251.html",
+      "external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1252.html",
+      "external/wpt/html/semantics/links/links-created-by-a-and-area-elements/non-special-url-getter-setter.window.js",
+      "external/wpt/url"
+    ],
     "args": ["--enable-features=StandardCompliantNonSpecialSchemeURLParsing"],
     "owners": ["hayato@chromium.org"],
     "expires": "Jul 1, 2024"

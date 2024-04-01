@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Scheme ws (getting <a>.href)
+  assert_true: expected substring %C3%A5 got ws://example.invalid/?x=%E5 expected true got false
+[FAIL] Scheme wss (getting <a>.href)
+  assert_true: expected substring %C3%A5 got wss://example.invalid/?x=%E5 expected true got false
+[FAIL] Scheme gopher (getting <a>.href)
+  assert_true: expected substring %C3%A5 got gopher://example.invalid/?x=%E5 expected true got false
+[FAIL] Scheme ftps (getting <a>.href)
+  assert_true: expected substring %C3%A5 got ftps://example.invalid/?x=%E5 expected true got false
+[FAIL] Scheme httpbogus (getting <a>.href)
+  assert_true: expected substring %C3%A5 got httpbogus://example.invalid/?x=%E5 expected true got false
+Harness: the test ran to completion.
+
