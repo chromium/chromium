@@ -4019,15 +4019,10 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
 
 // This test ensures AppSessionService is notified of app restorations
 // correctly.
-// TODO(https://crbug.com/1255462): fails under lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CtrlShiftTRestoresAppsCorrectly \
-  DISABLED_CtrlShiftTRestoresAppsCorrectly
-#else
-#define MAYBE_CtrlShiftTRestoresAppsCorrectly CtrlShiftTRestoresAppsCorrectly
-#endif
-IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
-                       MAYBE_CtrlShiftTRestoresAppsCorrectly) {
+// Note: This test is ported for Lacros in
+// app_session_restore_lacros_browsertest.cc (in lacros_chrome_browsertests).
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, CtrlShiftTRestoresAppsCorrectly) {
   Profile* profile = browser()->profile();
   auto example_url = GURL("http://www.example.com");
   auto example_url2 = GURL("http://www.example2.com");
@@ -4084,6 +4079,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   EXPECT_TRUE(app2_seen);
   EXPECT_TRUE(app3_seen);
 }
+#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Request a no app restore and ensure no app was reopened.
 IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {

@@ -5610,6 +5610,7 @@ if (is_chromeos_lacros) {
       "../browser/metrics/structured/lacros_structured_metrics_delegate_browsertest.cc",
       "../browser/payments/webapps/payment_request_lacros_browsertest.cc",
       "../browser/policy/policy_extension_controlling_proxy_lacros_browsertest.cc",
+      "../browser/sessions/app_session_restore_lacros_browsertest.cc",
       "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_apps_toggle_sharing_lacros_browsertest.cc",
       "../browser/sync/test/lacros/sync_custom_passphrase_sharing_lacros_browsertest.cc",
