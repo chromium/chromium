@@ -369,6 +369,10 @@ const GURL& MockWebWrapper::GetLastCommittedURL() {
   return last_committed_url_;
 }
 
+const std::u16string& MockWebWrapper::GetTitle() {
+  return base::EmptyString16();
+}
+
 bool MockWebWrapper::IsFirstLoadForNavigationFinished() {
   return is_first_load_finished_;
 }

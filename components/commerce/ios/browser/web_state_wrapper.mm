@@ -5,6 +5,7 @@
 #include "components/commerce/ios/browser/web_state_wrapper.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/web/public/browser_state.h"
@@ -24,6 +25,10 @@ const GURL& WebStateWrapper::GetLastCommittedURL() {
     return GURL::EmptyGURL();
 
   return web_state_->GetLastCommittedURL();
+}
+
+const std::u16string& WebStateWrapper::GetTitle() {
+  return web_state_ ? web_state_->GetTitle() : base::EmptyString16();
 }
 
 bool WebStateWrapper::IsFirstLoadForNavigationFinished() {
