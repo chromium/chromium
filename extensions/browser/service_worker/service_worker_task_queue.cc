@@ -849,6 +849,12 @@ void ServiceWorkerTaskQueue::OnDestruct(
   StopObserving(context);
 }
 
+void ServiceWorkerTaskQueue::OnVersionStoppedRunning(int64_t version_id) {
+  // TODO(crbug.com/40936639): Confirming this is true in order to allow for
+  // synchronous notification of this status change.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(
     const LazyContextId& lazy_context_id) {
   auto activation_token =

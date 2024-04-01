@@ -938,6 +938,7 @@ void ServiceWorkerContextCore::AddLiveVersion(ServiceWorkerVersion* version) {
 }
 
 void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = live_versions_.find(id);
   DCHECK(it != live_versions_.end());
   ServiceWorkerVersion* version = it->second;
@@ -1190,6 +1191,7 @@ void ServiceWorkerContextCore::OnControlleeNavigationCommitted(
 
 void ServiceWorkerContextCore::OnRunningStateChanged(
     ServiceWorkerVersion* version) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(this, version->context().get());
   switch (version->running_status()) {
     case blink::EmbeddedWorkerStatus::kStopped:

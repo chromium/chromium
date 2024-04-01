@@ -702,6 +702,7 @@ void EmbeddedWorkerInstance::OnStarted(
 }
 
 void EmbeddedWorkerInstance::OnStopped() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::EmbeddedWorkerStatus old_status = status_;
   ReleaseProcess();
   for (auto& observer : listener_list_)

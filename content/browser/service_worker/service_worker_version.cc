@@ -1522,10 +1522,12 @@ void ServiceWorkerVersion::OnStopping() {
 }
 
 void ServiceWorkerVersion::OnStopped(blink::EmbeddedWorkerStatus old_status) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   OnStoppedInternal(old_status);
 }
 
 void ServiceWorkerVersion::OnDetached(blink::EmbeddedWorkerStatus old_status) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   OnStoppedInternal(old_status);
 }
 

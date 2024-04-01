@@ -160,6 +160,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
                               const GURL& scope,
                               const content::ConsoleMessage& message) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
+  void OnVersionStoppedRunning(int64_t version_id) override;
 
   class TestObserver {
    public:
