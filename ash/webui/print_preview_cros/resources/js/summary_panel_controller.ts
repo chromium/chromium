@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from './data/print_ticket_manager.js';
 
@@ -24,13 +25,17 @@ export class SummaryPanelController extends EventTarget {
   private sheetsUsed = 0;
   private printTicketManger = PrintTicketManager.getInstance();
 
-  constructor() {
+  /**
+   * @param eventTracker Passed in by owning element to ensure event handlers
+   * lifetime is aligned with element.
+   */
+  constructor(eventTracker: EventTracker) {
     super();
-    this.printTicketManger.addEventListener(
-        PRINT_REQUEST_STARTED_EVENT,
+    eventTracker.add(
+        this.printTicketManger, PRINT_REQUEST_STARTED_EVENT,
         (e: Event) => this.onPrintRequestStarted(e));
-    this.printTicketManger.addEventListener(
-        PRINT_REQUEST_FINISHED_EVENT,
+    eventTracker.add(
+        this.printTicketManger, PRINT_REQUEST_FINISHED_EVENT,
         (e: Event) => this.onPrintRequestFinished(e));
   }
 

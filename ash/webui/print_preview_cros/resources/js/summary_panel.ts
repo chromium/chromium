@@ -5,6 +5,7 @@
 import '../css/print_preview_cros_shared.css.js';
 import 'chrome://resources/cros_components/button/button.js';
 
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './summary_panel.html.js';
@@ -32,21 +33,30 @@ export class SummaryPanelElement extends PolymerElement {
     };
   }
 
-  private controller: SummaryPanelController = new SummaryPanelController();
+  private controller: SummaryPanelController;
+  private eventTracker = new EventTracker();
   private sheetsUsedText: string;
   private printButtonDisabled: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.controller.addEventListener(
-        PRINT_BUTTON_DISABLED_CHANGED_EVENT,
+
+    this.controller = new SummaryPanelController(this.eventTracker);
+    this.eventTracker.add(
+        this.controller, PRINT_BUTTON_DISABLED_CHANGED_EVENT,
         (e: Event) => this.onPrintButtonDisabledChanged(e));
-    this.controller.addEventListener(
-        SHEETS_USED_CHANGED_EVENT, (e: Event) => this.onSheetsUsedChanged(e));
+    this.eventTracker.add(
+        this.controller, SHEETS_USED_CHANGED_EVENT,
+        (e: Event) => this.onSheetsUsedChanged(e));
 
     // Initialize properties using controller.
     this.sheetsUsedText = this.controller.getSheetsUsedText();
     this.printButtonDisabled = this.controller.shouldDisablePrintButton();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
   }
 
   getControllerForTesting(): SummaryPanelController {

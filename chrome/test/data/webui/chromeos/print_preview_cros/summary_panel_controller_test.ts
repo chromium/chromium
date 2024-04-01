@@ -9,6 +9,7 @@ import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print
 import {SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -18,9 +19,11 @@ suite('SummaryPanelController', () => {
   let mockController: MockController;
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
   let printTicketManger: PrintTicketManager;
+  let eventTracker: EventTracker;
 
   setup(() => {
     mockController = new MockController();
+    eventTracker = new EventTracker();
 
     PrintTicketManager.resetInstanceForTesting();
     // Setup fakes.
@@ -28,12 +31,13 @@ suite('SummaryPanelController', () => {
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
     printTicketManger = PrintTicketManager.getInstance();
 
-    controller = new SummaryPanelController();
+    controller = new SummaryPanelController(eventTracker);
     assertTrue(!!controller);
   });
 
   teardown(() => {
     mockController.reset();
+    eventTracker.removeAll();
     PrintTicketManager.resetInstanceForTesting();
     controller = null;
   });
