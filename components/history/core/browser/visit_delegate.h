@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DELEGATE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_DELEGATE_H_
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 
