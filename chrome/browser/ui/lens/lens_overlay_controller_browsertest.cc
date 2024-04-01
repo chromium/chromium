@@ -77,6 +77,18 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return overlay_web_view->GetWebContents();
   }
 
+  // Lens overlay takes a screenshot of the tab. In order to take a screenshot
+  // the tab must be painted. Wait for that paint.
+  void WaitForPaint() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return browser()
+          ->tab_strip_model()
+          ->GetActiveTab()
+          ->contents()
+          ->CompletedFirstVisuallyNonEmptyPaint();
+    }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
@@ -84,6 +96,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 // TODO(https://crbug.com/329708692): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        DISABLED_CaptureScreenshot) {
+  WaitForPaint();
+
   // State should start in off.
   auto* controller = browser()
                          ->tab_strip_model()
@@ -103,6 +117,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
+  WaitForPaint();
+
   // State should start in off.
   auto* controller = browser()
                          ->tab_strip_model()
@@ -123,6 +139,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
+  WaitForPaint();
+
   // State should start in off.
   auto* controller = browser()
                          ->tab_strip_model()

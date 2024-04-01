@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -121,8 +122,11 @@ void LensOverlayController::ShowUI() {
   state_ = State::kScreenshot;
   view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
-      base::BindOnce(&LensOverlayController::DidCaptureScreenshot,
-                     weak_factory_.GetWeakPtr(), ++screenshot_attempt_id_));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&LensOverlayController::DidCaptureScreenshot,
+                         weak_factory_.GetWeakPtr(),
+                         ++screenshot_attempt_id_)));
 }
 
 void LensOverlayController::CloseUI() {
@@ -271,6 +275,16 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   // It is not possible to show the overlay UI if the tab is not associated with
   // a tab strip.
   if (!tab_model_->owning_model()) {
+    CloseUI();
+    return;
+  }
+
+  // The documentation for CopyFromSurface claims that the copy can fail, but
+  // without providing information about how this can happen.
+  // Supposedly IsSurfaceAvailableForCopy() should guard against this case, but
+  // this is a multi-process, multi-threaded environment so there may be a
+  // TOCTTOU race condition.
+  if (bitmap.drawsNothing()) {
     CloseUI();
     return;
   }
