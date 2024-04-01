@@ -881,7 +881,6 @@
       'mac12-arm64-rel-tests', # https://crbug.com/1406364
       'mac13-arm64-rel-tests', # https://crbug.com/1406364
       'Linux TSan Tests',  # https://crbug.com/368525
-      'linux-exp-tsan-fyi-rel',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
       'Win10 Tests x64 (dbg)',
       'win11-arm64-dbg-tests',
@@ -1290,11 +1289,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.cc_unittests.filter',
         ],
       },
-      'linux-exp-tsan-fyi-rel': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
       'linux-lacros-tester-rel': {
         'ci_only': True, # https://crbug.com/1509554
       },
@@ -1644,11 +1638,6 @@
           'shards': 4,
         },
       },
-      'linux-exp-tsan-fyi-rel': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
     },
   },
   'components_browsertests_no_field_trial': {
@@ -1701,11 +1690,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.components_unittests.filter',
         ],
-      },
-      'linux-exp-tsan-fyi-rel': {
-        'swarming': {
-          'shards': 2,
-        },
       },
       'win-asan': {
         # TODO(crbug.com/1518411): With a single shard seems to hit time limit.
@@ -2040,11 +2024,6 @@
           'shards': 12,
         },
       },
-      'linux-exp-tsan-fyi-rel': {
-        'swarming': {
-          'shards': 30,
-        },
-      },
       # https://crbug.com/1111979
       'linux-lacros-tester-fyi-rel': {
         'experiment_percentage': 100,
@@ -2280,8 +2259,6 @@
       'linux-win_cross-rel', # https://crbug.com/762167
       # https://crbug.com/crashpad/304
       'Linux TSan Tests',
-      # https://crbug.com/crashpad/304
-      'linux-exp-tsan-fyi-rel',
       'ToTLinuxTSan',
       # https://crbug.com/crashpad/306
       'Linux CFI',
@@ -2823,20 +2800,6 @@
           },
         },
       },
-      'linux-exp-tsan-fyi-rel': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          # This must be kept in sync with linux_nvidia_gtx_1660_stable mixin
-          'dimensions': {
-            'gpu': '10de:2184-440.100',
-            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
-            'pool': 'chromium.tests.gpu',
-          },
-        },
-      },
     },
   },
   'gl_tests_validating': {
@@ -3201,12 +3164,6 @@
           'shards': 4,
         },
       },
-      'linux-exp-tsan-fyi-rel': {
-        # These are slow on the TSan bots for some reason, crbug.com/1257927
-        'swarming': {
-          'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
-        },
-      },
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
           'shards': 10,
@@ -3508,7 +3465,6 @@
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
       'linux-win_cross-rel',  # Sets enable_nacl=false, https://crbug.com/774186
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
-      'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
       'linux-arm64-rel-cft',  # Not available on arm64.
     ],
@@ -3606,11 +3562,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'linux-exp-tsan-fyi-rel': {
-        'swarming': {
-          'shards': 4,
-        }
       },
       'win-asan': {
         # TODO(crbug.com/1257927): net_unittests is slow under ASan.
@@ -3989,7 +3940,6 @@
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
       'linux-win_cross-rel',  # Sets enable_nacl=false, https://crbug.com/774186
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
-      'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
     ],
   },
@@ -4232,11 +4182,6 @@
       'linux-code-coverage': {
         'swarming': {
           'shards': 4,
-        },
-      },
-      'linux-exp-tsan-fyi-rel': {
-        'swarming': {
-          'shards': 6,
         },
       },
       'mac-code-coverage': {
@@ -4595,11 +4540,6 @@
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
         'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'linux-exp-tsan-fyi-rel': {
         'swarming': {
           'shards': 2,
         },
@@ -5265,11 +5205,6 @@
         },
       },
       'Linux TSan Tests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'linux-exp-tsan-fyi-rel': {
         'swarming': {
           'shards': 2,
         },

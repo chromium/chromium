@@ -411,7 +411,6 @@
   },
   "chromium.memory.fyi": {
     "linux-exp-msan-fyi-rel": "ci/linux-exp-msan-fyi-rel/gn-args.json",
-    "linux-exp-tsan-fyi-rel": "ci/linux-exp-tsan-fyi-rel/gn-args.json",
     "linux-ubsan-fyi-rel": "ci/linux-ubsan-fyi-rel/gn-args.json",
     "mac-lsan-fyi-rel": "ci/mac-lsan-fyi-rel/gn-args.json",
     "mac-ubsan-fyi-rel": "ci/mac-ubsan-fyi-rel/gn-args.json"
@@ -773,7 +772,6 @@
     "linux-code-coverage": "try/linux-code-coverage/gn-args.json",
     "linux-dcheck-off-rel": "try/linux-dcheck-off-rel/gn-args.json",
     "linux-exp-msan-fyi-rel": "try/linux-exp-msan-fyi-rel/gn-args.json",
-    "linux-exp-tsan-fyi-rel": "try/linux-exp-tsan-fyi-rel/gn-args.json",
     "linux-extended-tracing-rel": "try/linux-extended-tracing-rel/gn-args.json",
     "linux-fieldtrial-rel": "try/linux-fieldtrial-rel/gn-args.json",
     "linux-gcc-rel": "try/linux-gcc-rel/gn-args.json",
