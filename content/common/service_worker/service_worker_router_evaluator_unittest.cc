@@ -43,6 +43,10 @@ blink::SafeUrlPattern DefaultURLPattern() {
   return url_pattern;
 }
 
+std::string ParseEncodeCallback(std::string_view input) {
+  return std::string(input);
+}
+
 TEST(ServiceWorkerRouterEvaluator, EmptyRule) {
   blink::ServiceWorkerRouterRules rules;
   ServiceWorkerRouterEvaluator evaluator(rules);
@@ -62,8 +66,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -97,9 +100,8 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/page.html",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("/test/page.html", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -133,8 +135,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingCondition) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -176,9 +177,8 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
     {
       // Not match
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/notmatch/*",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("/notmatch/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -212,8 +212,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -255,8 +254,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "*.html", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("*.html", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -274,8 +272,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "*.css", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("*.css", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -312,9 +309,8 @@ TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "*.example.com",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("*.example.com", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.hostname = parse_result.value().PartList();
       rule.condition =
@@ -348,9 +344,8 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactHostnameMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "www.example.com",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("www.example.com", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.hostname = parse_result.value().PartList();
       rule.condition =
@@ -384,9 +379,8 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHostnameCondition) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "*.example.com",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("*.example.com", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -420,54 +414,45 @@ TEST(ServiceWorkerRouterEvaluator, MatchingVariousCondition) {
     {
       blink::SafeUrlPattern url_pattern;
       {
-        auto parse_result = liburlpattern::Parse(
-            "https", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.protocol = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "user*", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("user*", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.username = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "pass*", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("pass*", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.password = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "*.example.org",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("*.example.org", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.hostname = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "80*", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("80*", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.port = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "*.html",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("*.html", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.pathname = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "query=test",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("query=test", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.search = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "test_hash",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("test_hash", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.hash = parse_result.value().PartList();
       }
@@ -537,8 +522,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingProtocol) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
-        auto parse_result = liburlpattern::Parse(
-            "wss", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("wss", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.protocol = parse_result.value().PartList();
       }
@@ -575,9 +559,8 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingUsername) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
-        auto parse_result = liburlpattern::Parse(
-            "not_matching_user",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("not_matching_user", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.username = parse_result.value().PartList();
       }
@@ -614,9 +597,8 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingPassword) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
-        auto parse_result = liburlpattern::Parse(
-            "not_matching_pass",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("not_matching_pass", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.password = parse_result.value().PartList();
       }
@@ -653,8 +635,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingPort) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
-        auto parse_result = liburlpattern::Parse(
-            "1234", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("1234", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.port = parse_result.value().PartList();
       }
@@ -691,9 +672,8 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingSearch) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
-        auto parse_result = liburlpattern::Parse(
-            "not_matching_query",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("not_matching_query", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.search = parse_result.value().PartList();
       }
@@ -730,9 +710,8 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingHash) {
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
       {
-        auto parse_result = liburlpattern::Parse(
-            "not_matching",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("not_matching", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.hash = parse_result.value().PartList();
       }
@@ -768,9 +747,8 @@ TEST(ServiceWorkerRouterEvaluator, SimpleIgnoreCaseMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*.html",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("/test/*.html", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       url_pattern.options.ignore_case = true;
@@ -805,9 +783,8 @@ TEST(ServiceWorkerRouterEvaluator, SimpleRespectCaseAndMismatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*.html",
-          [](std::string_view input) { return std::string(input); });
+      auto parse_result =
+          liburlpattern::Parse("/test/*.html", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       // Respects case.
@@ -862,8 +839,7 @@ TEST(ServiceWorkerRouterEvaluator, EmptySource) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -885,8 +861,7 @@ TEST(ServiceWorkerRouterEvaluator, InvalidSource) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       rule.condition =
@@ -1136,9 +1111,8 @@ TEST(ServiceWorkerRouterEvaluator, OrConditionMatch) {
       }
       {
         blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-        auto parse_result = liburlpattern::Parse(
-            "/test/page.html",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("/test/page.html", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.pathname = parse_result.value().PartList();
         outer_or.conditions.emplace_back(
@@ -1205,8 +1179,7 @@ TEST(ServiceWorkerRouterEvaluator, NotConditionMatch) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       blink::ServiceWorkerRouterNotCondition not_condition;
@@ -1254,8 +1227,7 @@ TEST(ServiceWorkerRouterEvaluator, NotConditionMatchNested) {
     blink::ServiceWorkerRouterRule rule;
     {
       blink::SafeUrlPattern url_pattern = DefaultURLPattern();
-      auto parse_result = liburlpattern::Parse(
-          "/test/*", [](std::string_view input) { return std::string(input); });
+      auto parse_result = liburlpattern::Parse("/test/*", ParseEncodeCallback);
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       blink::ServiceWorkerRouterNotCondition not_condition;
@@ -1587,54 +1559,45 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithFields) {
     {
       blink::SafeUrlPattern url_pattern;
       {
-        auto parse_result = liburlpattern::Parse(
-            "https", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("https", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.protocol = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "user*", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("user*", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.username = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "pass*", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("pass*", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.password = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "*.example.org",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("*.example.org", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.hostname = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "80*", [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("80*", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.port = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "*.html",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result = liburlpattern::Parse("*.html", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.pathname = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "query=test",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("query=test", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.search = parse_result.value().PartList();
       }
       {
-        auto parse_result = liburlpattern::Parse(
-            "test_hash",
-            [](std::string_view input) { return std::string(input); });
+        auto parse_result =
+            liburlpattern::Parse("test_hash", ParseEncodeCallback);
         ASSERT_TRUE(parse_result.ok());
         url_pattern.hash = parse_result.value().PartList();
       }
