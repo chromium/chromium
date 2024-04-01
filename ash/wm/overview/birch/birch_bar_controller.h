@@ -31,7 +31,7 @@ class BirchItem;
 // fetch data from `BirchModel` and distribute the data to birch bars.
 class BirchBarController : public BirchModel::Observer {
  public:
-  BirchBarController();
+  explicit BirchBarController(bool from_pine_service);
   BirchBarController(const BirchBarController&) = delete;
   BirchBarController& operator=(const BirchBarController&) = delete;
   ~BirchBarController() override;
@@ -96,6 +96,9 @@ class BirchBarController : public BirchModel::Observer {
 
   // Indicates if the data fetching is in progress.
   bool data_fetch_in_progress_ = false;
+
+  // True if the overview session was triggered by the pine service.
+  const bool from_pine_service_;
 
   // Show/hide suggestions pref change registrar.
   PrefChangeRegistrar show_suggestions_pref_registrar_;

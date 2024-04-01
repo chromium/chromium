@@ -361,7 +361,7 @@ void PineController::StartPineOverviewSession() {
   }
   // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,
-                                           OverviewEnterExitType::kNormal);
+                                           OverviewEnterExitType::kPine);
 }
 
 void PineController::OnOnboardingAcceptPressed(bool restore_on) {

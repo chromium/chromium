@@ -205,7 +205,9 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
 
   // Create this before the birch bar widget.
   if (features::IsForestFeatureEnabled()) {
-    birch_bar_controller_ = std::make_unique<BirchBarController>();
+    birch_bar_controller_ = std::make_unique<BirchBarController>(
+        /*from_pine_service=*/enter_exit_overview_type_ ==
+        OverviewEnterExitType::kPine);
   }
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();

@@ -28,7 +28,8 @@ PrefService* GetPrefService() {
 
 }  // namespace
 
-BirchBarController::BirchBarController() {
+BirchBarController::BirchBarController(bool from_pine_service)
+    : from_pine_service_(from_pine_service) {
   // Init and register the show suggestions pref changed callback.
   show_suggestions_pref_registrar_.Init(GetPrefService());
   show_suggestions_pref_registrar_.Add(
