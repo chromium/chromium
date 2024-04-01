@@ -35,7 +35,7 @@ export interface ReadAnythingToolbarElement {
     lineSpacingMenu: CrActionMenuElement,
     letterSpacingMenu: CrActionMenuElement,
     fontMenu: CrLazyRenderElement<CrActionMenuElement>,
-    fontSizeMenu: CrActionMenuElement,
+    fontSizeMenu: CrLazyRenderElement<CrActionMenuElement>,
     moreOptionsMenu: CrActionMenuElement,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     toolbarContainer: HTMLElement,
@@ -336,7 +336,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
             id: 'font-size',
             icon: 'read-anything:font-size',
             ariaLabel: loadTimeData.getString('fontSizeTitle'),
-            menuToOpen: () => this.$.fontSizeMenu,
+            menuToOpen: () => this.$.fontSizeMenu.get(),
           },
           {
             id: 'font',
@@ -780,7 +780,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onFontSizeMenuKeyDown_(e: KeyboardEvent) {
     this.onKeyDown_(
-        e, Array.from(this.$.fontSizeMenu.children) as HTMLElement[]);
+        e, Array.from(this.$.fontSizeMenu.get().children) as HTMLElement[]);
   }
 
   private onKeyDown_(e: KeyboardEvent, focusableElements: HTMLElement[]) {

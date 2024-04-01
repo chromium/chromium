@@ -257,30 +257,34 @@
       </button>
     </template>
   </cr-action-menu>
-  <cr-action-menu id="fontSizeMenu" on-keydown="onFontSizeMenuKeyDown_">
-    <cr-icon-button
-        class="font-size"
-        id="font-size-decrease"
-        aria-label="$i18n{decreaseFontSizeLabel}"
-        title="$i18n{decreaseFontSizeLabel}"
-        iron-icon="read-anything:font-size-decrease"
-        on-click="onFontSizeDecreaseClick_">
-    </cr-icon-button>
-    <cr-icon-button
-        class="font-size"
-        id="font-size-increase"
-        aria-label="$i18n{increaseFontSizeLabel}"
-        title="$i18n{increaseFontSizeLabel}"
-        iron-icon="cr:add"
-        on-click="onFontSizeIncreaseClick_">
-    </cr-icon-button>
-    <cr-button
-        class="text-button"
-        id="font-size-reset"
-        on-click="onFontResetClick_">
-      $i18n{fontResetTitle}
-    </cr-button>
-  </cr-action-menu>
+  <cr-lazy-render id="fontSizeMenu" on-keydown="onFontSizeMenuKeyDown_">
+    <template>
+      <cr-action-menu>
+        <cr-icon-button
+            class="font-size"
+            id="font-size-decrease"
+            aria-label="$i18n{decreaseFontSizeLabel}"
+            title="$i18n{decreaseFontSizeLabel}"
+            iron-icon="read-anything:font-size-decrease"
+            on-click="onFontSizeDecreaseClick_">
+        </cr-icon-button>
+        <cr-icon-button
+            class="font-size"
+            id="font-size-increase"
+            aria-label="$i18n{increaseFontSizeLabel}"
+            title="$i18n{increaseFontSizeLabel}"
+            iron-icon="cr:add"
+            on-click="onFontSizeIncreaseClick_">
+        </cr-icon-button>
+        <cr-button
+            class="text-button"
+            id="font-size-reset"
+            on-click="onFontResetClick_">
+          $i18n{fontResetTitle}
+        </cr-button>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
   <cr-action-menu id="colorMenu">
     <template is="dom-repeat" items="[[colorOptions_]]">
       <button class="dropdown-item" on-click="onColorClick_">

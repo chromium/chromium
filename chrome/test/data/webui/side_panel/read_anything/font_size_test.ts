@@ -47,14 +47,14 @@ suite('FontSize', () => {
 
     test('is dropdown menu', () => {
       menuButton!.click();
-      assertTrue(toolbar.$.fontSizeMenu.open);
+      assertTrue(toolbar.$.fontSizeMenu.get().open);
     });
 
     test('increase clicked increases container font size', () => {
       const startingFontSize = chrome.readingMode.fontSize;
       menuButton!.click();
 
-      toolbar.$.fontSizeMenu
+      toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
 
       assertGT(chrome.readingMode.fontSize, startingFontSize);
@@ -65,7 +65,7 @@ suite('FontSize', () => {
       const startingFontSize = chrome.readingMode.fontSize;
       menuButton!.click();
 
-      toolbar.$.fontSizeMenu
+      toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-decrease')!.click();
 
       assertGT(startingFontSize, chrome.readingMode.fontSize);
@@ -76,13 +76,13 @@ suite('FontSize', () => {
       const startingFontSize = chrome.readingMode.fontSize;
       menuButton!.click();
 
-      toolbar.$.fontSizeMenu
+      toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
-      toolbar.$.fontSizeMenu
+      toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-increase')!.click();
       assertGT(chrome.readingMode.fontSize, startingFontSize);
 
-      toolbar.$.fontSizeMenu
+      toolbar.$.fontSizeMenu.get()
           .querySelector<CrIconButtonElement>('#font-size-reset')!.click();
       assertEquals(startingFontSize, chrome.readingMode.fontSize);
       assertTrue(fontSizeEmitted);
