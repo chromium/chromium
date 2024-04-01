@@ -140,7 +140,7 @@ luci.cq_group(
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
     user_limit_default = cq.user_limit(
         name = "default-limit",
-        run = cq.run_limits(max_active = 50),
+        run = cq.run_limits(max_active = 25),
     ),
     user_limits = [
         cq.user_limit(
