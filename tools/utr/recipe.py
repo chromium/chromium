@@ -18,8 +18,9 @@ from rich import console
 
 import output_adapter
 
-# Disable noisy asyncio logs.
+# Disable some noisy logs.
 logging.getLogger('asyncio').setLevel(logging.WARNING)
+logging.getLogger('markdown_it').setLevel(logging.WARNING)
 
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
