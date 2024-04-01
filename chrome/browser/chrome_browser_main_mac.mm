@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
+
 #include "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #include "base/check_op.h"
@@ -116,7 +118,8 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
 
   ui::WarmScreenCapture();
 
-  mac_metrics::RecordAppFileSystemType();
+  metrics_ = std::make_unique<mac_metrics::Metrics>();
+  metrics_->RecordAppFileSystemType();
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);

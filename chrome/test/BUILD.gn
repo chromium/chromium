@@ -7232,6 +7232,7 @@ test("unit_tests") {
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/auth_session_request_unittest.mm",
       "../browser/mac/exception_processor_unittest.mm",
+      "../browser/mac/metrics_unittest.mm",
       "../browser/notifications/mac/notification_dispatcher_mojo_unittest.cc",
       "../browser/notifications/mac/notification_platform_bridge_mac_unittest.cc",
       "../browser/notifications/mac/notification_utils_unittest.cc",

@@ -5,37 +5,73 @@
 #include "chrome/browser/mac/metrics.h"
 
 #import <Foundation/Foundation.h>
+#include <Security/Security.h>
 #include <sys/attr.h>
 #include <sys/vnode.h>
 #include <unistd.h>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 
 namespace {
 
-// Don't renumber these values. They are recorded in UMA metrics.
-// See enum MacFileSystemType in enums.xml.
-enum class FileSystemType {
-  kHFS = 0,
-  kAPFS = 1,
-  kUnknown = 2,
-  kMaxValue = kUnknown,
-};
-
-FileSystemType VolumeTagToFileSystemType(enum vtagtype tag) {
+mac_metrics::FileSystemType VolumeTagToFileSystemType(enum vtagtype tag) {
   static constexpr auto map =
-      base::MakeFixedFlatMap<enum vtagtype, FileSystemType>({
-          {VT_HFS, FileSystemType::kHFS},
-          {VT_APFS, FileSystemType::kAPFS},
+      base::MakeFixedFlatMap<enum vtagtype, mac_metrics::FileSystemType>({
+          {VT_HFS, mac_metrics::FileSystemType::kHFS},
+          {VT_APFS, mac_metrics::FileSystemType::kAPFS},
       });
   const auto it = map.find(tag);
-  return it != map.end() ? it->second : FileSystemType::kUnknown;
+  return it != map.end() ? it->second : mac_metrics::FileSystemType::kUnknown;
 }
 
 void RecordAppFileSystemTypeUsingVolumeTag(enum vtagtype tag) {
   base::UmaHistogramEnumeration("Mac.AppFileSystemType",
                                 VolumeTagToFileSystemType(tag));
+}
+
+void RecordAppUpgradeCodeSignatureValidationStatus(OSStatus status) {
+  // There are currently 389 possible errSec values, however Chrome is only
+  // recording values returned by SecCodeCheckValidity which is a much smaller
+  // set (~10-20).
+  // https://github.com/apple-oss-distributions/Security/blob/Security-61040.80.10.0.1/base/SecBase.h#L318
+  base::UmaHistogramSparse("Mac.AppUpgradeCodeSignatureValidationStatus",
+                           status);
+}
+
+void RecordAppUpgradeCodeSignatureValidationImpl(base::OnceClosure closure) {
+  // SecCodeCheckValidity blocks on I/O, do the validation and metric recording
+  // on from background thread.
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceClosure closure) {
+            SecCodeRef self_code = nullptr;
+            if (SecCodeCopySelf(kSecCSDefaultFlags, &self_code) !=
+                errSecSuccess) {
+              std::move(closure).Run();
+              return;
+            }
+            // Ignoring revocation status with the kSecCSNoNetworkAccess.
+            RecordAppUpgradeCodeSignatureValidationStatus(SecCodeCheckValidity(
+                self_code, kSecCSNoNetworkAccess, nullptr));
+            if (self_code) {
+              CFRelease(self_code);
+            }
+
+            std::move(closure).Run();
+          },
+          std::move(closure)));
 }
 
 struct alignas(4) AttributeBuffer {
@@ -47,7 +83,15 @@ struct alignas(4) AttributeBuffer {
 
 namespace mac_metrics {
 
-void RecordAppFileSystemType() {
+Metrics::Metrics() {
+  UpgradeDetector::GetInstance()->AddObserver(this);
+}
+
+Metrics::~Metrics() {
+  UpgradeDetector::GetInstance()->RemoveObserver(this);
+}
+
+void Metrics::RecordAppFileSystemType() {
   const char* path =
       NSProcessInfo.processInfo.arguments.firstObject.fileSystemRepresentation;
 
@@ -70,6 +114,22 @@ void RecordAppFileSystemType() {
   }
   DCHECK_GE(sizeof(buff), buff.length);
   RecordAppFileSystemTypeUsingVolumeTag(buff.tag);
+}
+
+void Metrics::OnUpgradeRecommended() {
+  // By default OnUpgradeRecommended is called multiple times over the course
+  // of 7 days, the first being 1 hour after the update has been staged. Record
+  // the metric once and ignore all other calls.
+  static bool once = []() {
+    RecordAppUpgradeCodeSignatureValidationImpl(base::DoNothing());
+    return true;
+  }();
+  DCHECK(once);
+}
+
+void Metrics::RecordAppUpgradeCodeSignatureValidation(
+    base::OnceClosure closure) {
+  RecordAppUpgradeCodeSignatureValidationImpl(std::move(closure));
 }
 
 }  // namespace mac_metrics

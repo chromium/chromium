@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_MAC_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_MAC_H_
 
+#include <memory>
+
 #include "chrome/browser/chrome_browser_main_posix.h"
+
+namespace mac_metrics {
+class Metrics;
+}
 
 class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
  public:
@@ -28,6 +34,11 @@ class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
   // Perform platform-specific work that needs to be done after the main event
   // loop has ended. The embedder must be sure to call this.
   static void DidEndMainMessageLoop();
+
+ private:
+  // Records mac related metrics. Some metrics are recorded on startup, some
+  // are recorded later in response to an events.
+  std::unique_ptr<mac_metrics::Metrics> metrics_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_MAC_H_
