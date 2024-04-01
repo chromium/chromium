@@ -1196,7 +1196,7 @@ int main(int argc, const char* argv[]) {
   chrome_checker::StackAllocatedPredicate stack_allocated_checker;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &fields_to_exclude, paths_to_exclude.get(), exclude_stack_allocated,
-      &stack_allocated_checker};
+      &stack_allocated_checker, true};
 
   RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
                                   exclusion_options);

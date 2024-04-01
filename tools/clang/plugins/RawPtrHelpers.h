@@ -70,6 +70,7 @@ struct RawPtrAndRefExclusionsOptions {
   FilterFile* paths_to_exclude;
   bool should_exclude_stack_allocated_records;
   chrome_checker::StackAllocatedPredicate* stack_allocated_predicate;
+  bool should_rewrite_non_string_literals;
 };
 
 AST_MATCHER(clang::Type, anyCharType) {

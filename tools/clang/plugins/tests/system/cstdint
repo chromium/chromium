@@ -7,4 +7,8 @@
 
 using uintptr_t = __UINTPTR_TYPE__;
 
+using uint8_t = unsigned char;
+
+using int8_t = signed char;
+
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_SYSTEM_CSTDINT_

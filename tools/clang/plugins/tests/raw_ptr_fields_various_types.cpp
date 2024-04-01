@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -89,6 +90,26 @@ struct MyStruct {
   wchar_t* wide_char_ptr;
   // No error expected. crbug.com/1381955
   const wchar_t* const_wide_char_ptr;
+  // Error expected.
+  char8_t* char8_ptr;
+  // No error expected. crbug.com/1381955
+  const char8_t* const_char8_ptr;
+  // Error expected.
+  char16_t* char16_ptr;
+  // No error expected. crbug.com/1381955
+  const char16_t* const_char16_ptr;
+  char32_t* char32_ptr;
+  // No error expected. crbug.com/1381955
+  const char32_t* const_char32_ptr;
+
+  // Error expected.
+  const uint8_t* const_unsigned_char_ptr;
+  // Error expected.
+  const int8_t* const_signed_char_ptr;
+  // Error expected.
+  const unsigned char* const_unsigned_char_ptr2;
+  // Error expected.
+  const signed char* const_signed_char_ptr2;
 
   // |array_of_ptrs| is an array 123 of pointer to SomeClass.
   // No error expected. (this is not a pointer - this is an array).

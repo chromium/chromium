@@ -170,7 +170,14 @@ clang::ast_matchers::internal::Matcher<clang::Type> supported_pointer_type() {
   return pointerType(unless(unsupported_pointee_types));
 }
 
-clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type() {
+clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type(
+    bool should_rewrite_non_string_literals) {
+  if (should_rewrite_non_string_literals) {
+    return pointerType(pointee(qualType(hasCanonicalType(
+        anyOf(asString("const char"), asString("const wchar_t"),
+              asString("const char8_t"), asString("const char16_t"),
+              asString("const char32_t"))))));
+  }
   return pointerType(pointee(qualType(
       allOf(isConstQualified(), hasUnqualifiedDesugaredType(anyCharType())))));
 }
@@ -180,8 +187,8 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
   // TODO(crbug.com/1381955): Skipping const char pointers as it likely points
   // to string literals where raw_ptr isn't necessary. Remove when we have
   // implement const char support.
-  auto const_char_pointer_matcher =
-      fieldDecl(hasType(const_char_pointer_type()));
+  auto const_char_pointer_matcher = fieldDecl(hasType(
+      const_char_pointer_type(options.should_rewrite_non_string_literals)));
 
   auto field_decl_matcher =
       fieldDecl(allOf(hasType(supported_pointer_type()),

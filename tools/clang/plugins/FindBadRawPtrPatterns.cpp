@@ -269,7 +269,7 @@ void FindBadRawPtrPatterns(Options options,
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
-      &stack_allocated_predicate};
+      &stack_allocated_predicate, options.check_ptrs_to_non_string_literals};
 
   FilterFile filter_check_bad_raw_ptr_cast_exclude_paths(
       check_bad_raw_ptr_cast_exclude_paths);

@@ -111,6 +111,20 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_stack_allocated = true;
     } else if (arg == "check-raw-ref-fields") {
       options_.check_raw_ref_fields = true;
+    } else if (arg == "check-ptrs-to-non-string-literals") {
+      // Rewriting const char pointers was skipped for performance as they are
+      // likely to point to string literals.
+      //
+      // This exclusion mechanism also wrongly excluded some non-string-literals
+      // like `const uint8_t*` and `const int8*`.
+      //
+      // This flag is added to gradually re-include these types in the
+      // enforcement plugin.
+      //
+      // TODO(https://crbug.com/331840473) Remove this flag
+      // once the necessary members are rewritten and the raw_ptr enforcement
+      // plugin is up to date.
+      options_.check_ptrs_to_non_string_literals = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;
