@@ -6837,6 +6837,7 @@ interface Observable
     method forEach
     method map
     method subscribe
+    method switchMap
     method take
     method takeUntil
     method toArray

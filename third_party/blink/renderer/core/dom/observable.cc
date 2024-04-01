@@ -273,6 +273,216 @@ class OperatorFromPromiseSubscribeDelegate final
   ScriptPromiseUntyped promise_;
 };
 
+class OperatorSwitchMapSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorSwitchMapSubscribeDelegate(Observable* source_observable,
+                                     V8Mapper* mapper,
+                                     const ExceptionContext& exception_context)
+      : source_observable_(source_observable),
+        mapper_(mapper),
+        exception_context_(exception_context) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(
+            subscriber, script_state, mapper_, exception_context_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+    visitor->Trace(mapper_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* outer_subscriber,
+                           ScriptState* script_state,
+                           V8Mapper* mapper,
+                           const ExceptionContext& exception_context)
+        : outer_subscriber_(outer_subscriber),
+          script_state_(script_state),
+          mapper_(mapper),
+          exception_context_(exception_context) {
+      CHECK(outer_subscriber_);
+      CHECK(script_state_);
+      CHECK(mapper_);
+    }
+
+    // https://wicg.github.io/observable/#switchmap-next-steps.
+    void Next(ScriptValue value) override {
+      if (active_inner_abort_controller_) {
+        active_inner_abort_controller_->abort(script_state_);
+      }
+
+      active_inner_abort_controller_ = AbortController::Create(script_state_);
+
+      SwitchMapProcessNextValueSteps(value);
+    }
+    void Error(ScriptState*, ScriptValue error) override {
+      outer_subscriber_->error(script_state_, error);
+    }
+    // https://wicg.github.io/observable/#switchmap-complete-steps.
+    void Complete() override {
+      outer_subscription_has_completed_ = true;
+
+      if (!active_inner_abort_controller_) {
+        outer_subscriber_->complete(script_state_);
+      }
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(outer_subscriber_);
+      visitor->Trace(script_state_);
+      visitor->Trace(mapper_);
+      visitor->Trace(active_inner_abort_controller_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+    // https://wicg.github.io/observable/#switchmap-process-next-value-steps.
+    void SwitchMapProcessNextValueSteps(ScriptValue value) {
+      // `ScriptState::Scope` can only be created in a valid context, so
+      // early-return if we're in a detached one.
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      v8::Maybe<ScriptValue> mapped_value =
+          mapper_->Invoke(nullptr, value, ++idx_);
+      if (try_catch.HasCaught()) {
+        outer_subscriber_->error(
+            script_state_,
+            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+        return;
+      }
+
+      // Since we handled the exception case above, `mapped_value` must not be
+      // `v8::Nothing`.
+      ExceptionState exception_state(script_state_->GetIsolate(),
+                                     exception_context_);
+      Observable* inner_observable = Observable::from(
+          script_state_, mapped_value.ToChecked(), exception_state);
+      if (exception_state.HadException()) {
+        outer_subscriber_->error(script_state_,
+                                 ScriptValue(script_state_->GetIsolate(),
+                                             exception_state.GetException()));
+        exception_state.ClearException();
+        return;
+      }
+
+      // The `AbortSignal` with which we subscribe to the "inner" Observable is
+      // dependent on two signals:
+      //   1. The outer subscriber's signal; this one is no surprise, so that we
+      //      can unsubscribe from the inner Observable when the outer source
+      //      Observable gets torn down.
+      HeapVector<Member<AbortSignal>> signals;
+      signals.push_back(outer_subscriber_->signal());
+      //   2. A more narrowly-scoped signal: the one derived from
+      //      `active_inner_abort_controller_`. This signal allows `this` to
+      //      abort the inner Observable when the outer source Observable emits
+      //      new values.
+      DCHECK(active_inner_abort_controller_);
+      signals.push_back(active_inner_abort_controller_->signal());
+
+      SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+      options->setSignal(
+          MakeGarbageCollected<AbortSignal>(script_state_, signals));
+
+      inner_observable->SubscribeWithNativeObserver(
+          script_state_,
+          MakeGarbageCollected<InnerSwitchMapObserver>(outer_subscriber_, this),
+          options);
+    }
+
+    void InnerObservableCompleted() {
+      if (outer_subscription_has_completed_) {
+        outer_subscriber_->complete(script_state_);
+        return;
+      }
+
+      active_inner_abort_controller_ = nullptr;
+    }
+
+   private:
+    // This is the internal observer that manages the subscription for each
+    // "inner" Observable, that is derived from each `any` value that the
+    // `V8Mapper` omits for each value that the source Observable. So the flow
+    // looks like this:
+    //   1. "source observable" emits `any` values, which get processed by
+    //      `SourceInternalObserver::Next()`.
+    //   2. It then goes through
+    //      `SourceInternalObserver::SwitchMapProcessNextValueSteps()`, which
+    //      calls `V8Mapper` on the `any` value, transforming it into an
+    //      `Observable` (via `Observable::from()` semantics).
+    //   3. That `Observable` gets subscribed to, via this
+    //      `InnerSwitchMapObserver`. `InnerSwitchMapObserver` subscribes to the
+    //      given "inner" Observable, piping values/errors it omits to
+    //      `outer_subscriber_`, and upon completion, letting calling back to
+    //      `SourceInternalObserver` to let it know of the most recent "inner"
+    //      subscription completion, so it can process any subsequent ones.
+    class InnerSwitchMapObserver final : public ObservableInternalObserver {
+     public:
+      InnerSwitchMapObserver(Subscriber* outer_subscriber,
+                             SourceInternalObserver* source_observer)
+          : outer_subscriber_(outer_subscriber),
+            source_observer_(source_observer) {}
+
+      void Next(ScriptValue value) override { outer_subscriber_->next(value); }
+      void Error(ScriptState* script_state, ScriptValue value) override {
+        outer_subscriber_->error(script_state, value);
+      }
+      void Complete() override { source_observer_->InnerObservableCompleted(); }
+
+      void Trace(Visitor* visitor) const override {
+        visitor->Trace(source_observer_);
+        visitor->Trace(outer_subscriber_);
+
+        ObservableInternalObserver::Trace(visitor);
+      }
+
+     private:
+      Member<Subscriber> outer_subscriber_;
+      Member<SourceInternalObserver> source_observer_;
+    };
+
+    uint64_t idx_ = 0;
+    Member<Subscriber> outer_subscriber_;
+    Member<ScriptState> script_state_;
+    Member<V8Mapper> mapper_;
+    ExceptionContext exception_context_;
+
+    Member<AbortController> active_inner_abort_controller_ = nullptr;
+
+    // This member keeps track of whether the "outer" subscription has
+    // completed. This is relevant because while we're currently processing
+    // "inner" observable subscriptions (i.e., the subscriptions associated with
+    // individual Observable values that the "outer" subscriber produces), the
+    // "outer" subscription may very well complete. This member helps us keep
+    // track of that so we know to complete our subscription once all "inner"
+    // values are done being processed.
+    bool outer_subscription_has_completed_ = false;
+  };
+
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  //
+  // All of these members are essentially state-less, and are just held here so
+  // that we can pass them into the `SourceInternalObserver` above, which gets
+  // created for each new subscription.
+  Member<Observable> source_observable_;
+  Member<V8Mapper> mapper_;
+  ExceptionContext exception_context_;
+};
+
 // This class is the subscriber delegate for Observables returned by
 // `flatMap()`. Flat map is a tricky operator, so here's how the flow works.
 // Upon subscription, `this` subscribes to the "source" Observable, that had its
@@ -1298,6 +1508,16 @@ Observable* Observable::flatMap(ScriptState*,
   Observable* return_observable = MakeGarbageCollected<Observable>(
       GetExecutionContext(),
       MakeGarbageCollected<OperatorFlatMapSubscribeDelegate>(
+          this, mapper, exception_state.GetContext()));
+  return return_observable;
+}
+
+Observable* Observable::switchMap(ScriptState*,
+                                  V8Mapper* mapper,
+                                  ExceptionState& exception_state) {
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorSwitchMapSubscribeDelegate>(
           this, mapper, exception_state.GetContext()));
   return return_observable;
 }

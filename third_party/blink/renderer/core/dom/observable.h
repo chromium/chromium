@@ -65,11 +65,14 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   Observable* filter(ScriptState*, V8Predicate*);
   Observable* take(ScriptState*, uint64_t);
   Observable* drop(ScriptState*, uint64_t);
-  // Does not actually throw exceptions to script, but we need access to the
-  // `exception_state` to determine if future calls to `from()` succeeded or
-  // failed. In the failure case, we clear the exception from the stack and
-  // report it to the relevant `Subscriber`.
+  // `flatMap()` and `switchMap()` do not actually throw exceptions to script,
+  // but we need access to the `exception_state` to determine if future calls to
+  // `from()` succeeded or failed. In the failure case, we clear the exception
+  // from the stack and report it to the relevant `Subscriber`.
   Observable* flatMap(ScriptState*, V8Mapper*, ExceptionState& exception_state);
+  Observable* switchMap(ScriptState*,
+                        V8Mapper*,
+                        ExceptionState& exception_state);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.
