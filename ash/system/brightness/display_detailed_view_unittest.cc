@@ -15,48 +15,49 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
+
+views::View* GetScrollContent(views::View* detailed_view) {
+  return detailed_view->GetViewByID(VIEW_ID_QS_DISPLAY_SCROLL_CONTENT);
+}
+
+views::View* GetTileContainer(views::View* detailed_view) {
+  return detailed_view->GetViewByID(VIEW_ID_QS_DISPLAY_TILE_CONTAINER);
+}
+
+}  // namespace
 
 class DisplayDetailedViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    // Create a widget so tests can click on views.
-    widget_ = CreateFramelessTestWidget();
-    widget_->SetFullscreen(true);
     delegate_ = std::make_unique<FakeDetailedViewDelegate>();
-    // Passes in a fake delegate and a nullptr as `tray_controller` since we
-    // don't need to test the actual functionality of controllers.
-    detailed_view_ =
-        widget_->SetContentsView(std::make_unique<DisplayDetailedView>(
-            delegate_.get(), /*tray_controller=*/nullptr));
   }
 
   void TearDown() override {
-    widget_.reset();
-    detailed_view_ = nullptr;
     delegate_.reset();
     AshTestBase::TearDown();
   }
 
-  std::unique_ptr<views::Widget> widget_;
+  DetailedViewDelegate* fake_delegate() { return delegate_.get(); }
+
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<DisplayDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
 };
 
 TEST_F(DisplayDetailedViewTest, ScrollContentChildren) {
+  DisplayDetailedView detailed_view(fake_delegate(),
+                                    /*tray_controller=*/nullptr);
+
   // The scroll content has two children, one feature tile container and one
   // `UnifiedBrightnessView`.
-  views::View* scroll_content =
-      detailed_view_->GetViewByID(VIEW_ID_QS_DISPLAY_SCROLL_CONTENT);
+  views::View* scroll_content = GetScrollContent(&detailed_view);
   ASSERT_TRUE(scroll_content);
   ASSERT_EQ(scroll_content->children().size(), 2u);
 
   // The first child of scroll content is the `tile_container`, which has two
   // children (night light and dark mode feature tiles).
-  views::View* tile_container =
-      scroll_content->GetViewByID(VIEW_ID_QS_DISPLAY_TILE_CONTAINER);
+  views::View* tile_container = GetTileContainer(&detailed_view);
   ASSERT_TRUE(tile_container);
   ASSERT_EQ(tile_container->children().size(), 2u);
   EXPECT_STREQ(tile_container->children()[0]->GetClassName(), "FeatureTile");
@@ -70,26 +71,37 @@ TEST_F(DisplayDetailedViewTest, ScrollContentChildren) {
 }
 
 TEST_F(DisplayDetailedViewTest, FeatureTileVisibility) {
+  // Both tiles are visible in the active user session
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
+  DisplayDetailedView detailed_view1(fake_delegate(),
+                                     /*tray_controller=*/nullptr);
+  const auto* const tile_container1 = GetTileContainer(&detailed_view1);
+  ASSERT_TRUE(tile_container1);
+  ASSERT_EQ(tile_container1->children().size(), 2u);
+  EXPECT_TRUE(tile_container1->GetVisible());
+  EXPECT_TRUE(tile_container1->children()[0]->GetVisible());
+  EXPECT_TRUE(tile_container1->children()[1]->GetVisible());
 
-  views::View* scroll_content =
-      detailed_view_->GetViewByID(VIEW_ID_QS_DISPLAY_SCROLL_CONTENT);
-  views::View* tile_container =
-      scroll_content->GetViewByID(VIEW_ID_QS_DISPLAY_TILE_CONTAINER);
-  ASSERT_TRUE(tile_container);
-  ASSERT_EQ(tile_container->children().size(), 2u);
-
-  // Both tiles are visible in the active user session
-  EXPECT_TRUE(tile_container->children()[0]->GetVisible());
-  EXPECT_TRUE(tile_container->children()[1]->GetVisible());
-
-  // Locks the screen and the feature tiles are still visible.
+  // Feature tiles are still visible in the locked screen.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  EXPECT_TRUE(tile_container->children()[0]->GetVisible());
-  EXPECT_TRUE(tile_container->children()[1]->GetVisible());
+  DisplayDetailedView detailed_view2(fake_delegate(),
+                                     /*tray_controller=*/nullptr);
+  const auto* const tile_container2 = GetTileContainer(&detailed_view2);
+  EXPECT_TRUE(tile_container2->GetVisible());
+  EXPECT_TRUE(tile_container2->children()[0]->GetVisible());
+  EXPECT_TRUE(tile_container2->children()[1]->GetVisible());
+
+  // Feature tiles are not visible in OOBE.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+  DisplayDetailedView detailed_view3(fake_delegate(),
+                                     /*tray_controller=*/nullptr);
+  const auto* const tile_container3 = GetTileContainer(&detailed_view3);
+  EXPECT_FALSE(tile_container3->GetVisible());
+  EXPECT_FALSE(tile_container3->children()[0]->GetVisible());
+  EXPECT_FALSE(tile_container3->children()[1]->GetVisible());
 }
 
-}  // namespace
 }  // namespace ash
