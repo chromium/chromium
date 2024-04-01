@@ -686,6 +686,12 @@ void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
 }
 
 bool OptimizationGuideKeyedService::IsSettingVisible(
+    optimization_guide::UserVisibleFeatureKey feature) const {
+  return IsSettingVisible(
+      optimization_guide::ToModelExecutionFeatureProto(feature));
+}
+
+bool OptimizationGuideKeyedService::IsSettingVisible(
     optimization_guide::proto::ModelExecutionFeature feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_features_controller_) {

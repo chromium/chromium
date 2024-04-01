@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -166,6 +167,12 @@ ModelExecutionFeaturesController::ModelExecutionFeaturesController(
 ModelExecutionFeaturesController::~ModelExecutionFeaturesController() = default;
 
 bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
+    UserVisibleFeatureKey feature) const {
+  return ShouldFeatureBeCurrentlyEnabledForUser(
+      ToModelExecutionFeatureProto(feature));
+}
+
+bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
     proto::ModelExecutionFeature feature) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -205,6 +212,13 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
                    ? FeatureCurrentlyEnabledResult::kEnabledAtStartup
                    : FeatureCurrentlyEnabledResult::kNotEnabledAtStartup);
   return is_enabled;
+}
+
+bool ModelExecutionFeaturesController::
+    ShouldFeatureBeCurrentlyAllowedForLogging(
+        UserVisibleFeatureKey feature) const {
+  return ShouldFeatureBeCurrentlyAllowedForLogging(
+      ToModelExecutionFeatureProto(feature));
 }
 
 bool ModelExecutionFeaturesController::
@@ -261,6 +275,11 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
   }
 
   return ModelExecutionFeaturesController::UserValidityResult::kValid;
+}
+
+bool ModelExecutionFeaturesController::IsSettingVisible(
+    UserVisibleFeatureKey feature) const {
+  return IsSettingVisible(ToModelExecutionFeatureProto(feature));
 }
 
 bool ModelExecutionFeaturesController::IsSettingVisible(

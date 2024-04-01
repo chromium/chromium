@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
@@ -64,16 +65,24 @@ class ModelExecutionFeaturesController
 
   // Returns true if the opt-in setting should be shown for this profile for
   // given `feature`. This should only be called by settings UX.
+  bool IsSettingVisible(UserVisibleFeatureKey feature) const;
+  // TODO: b/331306557 - Remove after migration.
   bool IsSettingVisible(proto::ModelExecutionFeature feature) const;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on
   // chrome settings page since the latter takes effect on browser restart.
   bool ShouldFeatureBeCurrentlyEnabledForUser(
+      UserVisibleFeatureKey feature) const;
+  // TODO: b/331306557 - Remove after migration.
+  bool ShouldFeatureBeCurrentlyEnabledForUser(
       proto::ModelExecutionFeature feature) const;
 
   // Returns whether the `feature` should be currently allowed for logging model
   // quality logs.
+  bool ShouldFeatureBeCurrentlyAllowedForLogging(
+      UserVisibleFeatureKey feature) const;
+  // TODO: b/331306557 - Remove after migration.
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::ModelExecutionFeature feature) const;
 

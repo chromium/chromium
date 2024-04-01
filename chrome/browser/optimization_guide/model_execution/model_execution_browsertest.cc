@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -191,7 +192,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
 
   // Executes the model for the feature, waits until the response is received,
   // and returns the response.
-  void ExecuteModel(proto::ModelExecutionFeature feature,
+  void ExecuteModel(UserVisibleFeatureKey feature,
                     const google::protobuf::MessageLite& request_metadata,
                     Profile* profile = nullptr) {
     if (!profile) {
@@ -199,7 +200,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     }
     base::RunLoop run_loop;
     GetOptimizationGuideKeyedService(profile)->ExecuteModel(
-        feature, request_metadata,
+        ToModelBasedCapabilityKey(feature), request_metadata,
         base::BindOnce(&ModelExecutionBrowserTestBase::OnModelExecutionResponse,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -372,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
                        ModelExecutionDisabled) {
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -395,16 +396,21 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
         browser()->profile());
   }
 
-  bool IsSettingVisible(
-      optimization_guide::proto::ModelExecutionFeature feature) {
+  bool IsSettingVisible(UserVisibleFeatureKey feature) {
     return GetOptGuideKeyedService()->IsSettingVisible(feature);
   }
 
-  bool ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature feature) {
+  bool ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey feature) {
     return GetOptGuideKeyedService()
         ->model_execution_features_controller_
         ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
+  }
+
+  bool ShouldFeatureBeCurrentlyAllowedForLogging(
+      UserVisibleFeatureKey feature) {
+    return GetOptGuideKeyedService()
+        ->model_execution_features_controller_
+        ->ShouldFeatureBeCurrentlyAllowedForLogging(feature);
   }
 
   bool ShouldFeatureBeCurrentlyAllowedForLogging(
@@ -418,9 +424,9 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ShouldFeatureBeCurrentlyAllowedForLoggingTestFeatures) {
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::MODEL_EXECUTION_FEATURE_TEST));
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -428,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request,
                otr_browser->profile());
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -447,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionFailsNoUserSignIn) {
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -468,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->has_value());
   auto response = ParsedAnyMetadata<proto::ComposeResponse>(
@@ -494,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -516,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -533,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
   EXPECT_EQ(
@@ -554,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
@@ -594,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("foo");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->has_value());
   CheckInternalsLog("ExecuteModel");
@@ -606,14 +612,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        PRE_EnableFeatureViaPref) {
   EnableSignin();
   auto* prefs = browser()->profile()->GetPrefs();
-  prefs->SetInteger(prefs::GetSettingEnabledPrefName(
-                        proto::ModelExecutionFeature::
-                            MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
-                    static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  prefs->SetInteger(prefs::GetSettingEnabledPrefName(
-                        proto::ModelExecutionFeature::
-                            MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
-                    static_cast<int>(prefs::FeatureOptInState::kDisabled));
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kWallpaperSearch),
+      static_cast<int>(prefs::FeatureOptInState::kEnabled));
+  prefs->SetInteger(
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
+      static_cast<int>(prefs::FeatureOptInState::kDisabled));
 
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
@@ -694,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionComposeLoggingDisabledTest,
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->has_value());
   auto response = ParsedAnyMetadata<proto::ComposeResponse>(
@@ -730,18 +734,16 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
 IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
                        PRE_NewFeaturesEnabledWhenMainToggleEnabled) {
   EnableSignin();
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kModelExecutionMainToggleSettingState,
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(
+      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
@@ -750,14 +752,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
   EnableSignin();
 #endif
   // The new feature should have got enabled since main toggle was on.
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_TRUE(
+      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
@@ -792,23 +792,19 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kCompose));
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
@@ -821,16 +817,14 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
 
   // Enable via the enterprise policy.
   policies.Set(
@@ -841,21 +835,17 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kCompose));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
@@ -872,17 +862,14 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_COMPOSE),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kCompose),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
@@ -894,14 +881,13 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_FALSE(
+      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
   proto::ComposeRequest request_1;
   request_1.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request_1);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request_1);
 
   // The logs should be disabled via enterprise policy.
   histogram_tester_.ExpectBucketCount(
@@ -919,19 +905,16 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_COMPOSE),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kCompose),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
+  EXPECT_TRUE(
+      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 
   proto::ComposeRequest request_2;
   request_2.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request_2);
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request_2);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
@@ -940,17 +923,14 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
   // Default policy value allows the feature.
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      UserVisibleFeatureKey::kWallpaperSearch));
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
@@ -963,10 +943,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      UserVisibleFeatureKey::kWallpaperSearch));
 
   // Enable via the enterprise policy.
   policies.Set(
@@ -977,15 +956,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+      UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
@@ -994,9 +970,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   auto* prefs = browser()->profile()->GetPrefs();
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
 
@@ -1011,21 +985,17 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(
-          optimization_guide::proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE));
+      UserVisibleFeatureKey::kCompose));
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)

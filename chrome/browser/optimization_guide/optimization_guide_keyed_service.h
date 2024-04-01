@@ -268,6 +268,9 @@ class OptimizationGuideKeyedService
   // Returns true if the opt-in setting should be shown for this profile for
   // given `feature`. This should only be called by settings UX.
   bool IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey feature) const;
+  // TODO: b/331306557 - Remove after migration.
+  bool IsSettingVisible(
       optimization_guide::proto::ModelExecutionFeature feature) const;
 
   // Returns whether all conditions are met to show the IPH promo for
