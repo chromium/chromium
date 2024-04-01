@@ -357,7 +357,7 @@
 <translation id="3300733168898541351">अन्डू गरियोस्</translation>
 <translation id="3307886118343381874">तालिकाको अन्त जानुहोस्</translation>
 <translation id="3312997241656799641">अर्को भ्रमण गरिएको लिङ्क</translation>
-<translation id="3313245066383501820">ChromeVox परिमार्जक कुञ्जी</translation>
+<translation id="3313245066383501820">ChromeVox मोडिफायर की</translation>
 <translation id="3317212938060708859">एउटा स्लाइडर</translation>
 <translation id="3321460131042519426">शब्द र्याप अन गर्नुहोस्</translation>
 <translation id="3322936298410871309">अघिल्लो चरण 1 शीर्षक</translation>
@@ -807,7 +807,7 @@
 <translation id="6508059270146105198">ब्रेल प्रदर्शनलाई पृष्ठको तल पट्टी सार्नुहोस्</translation>
 <translation id="6521550811716689390">गाढा बैजनी</translation>
 <translation id="6536157907112457272">लिनेन</translation>
-<translation id="6540201937398578274">ChromeVox मा खोज कुञ्जी नै परिमार्जक कुञ्जी हो। ChromeVox का धेरैजसो सर्टकटहरू खोज कुञ्जीबाटै सुरु हुन्छन्। तपाईं नेभिगेसनका लागि तीर कुञ्जीहरूको पनि प्रयोग गर्नुहुनेछ।</translation>
+<translation id="6540201937398578274">ChromeVox मा सर्च की नै मोडिफायर की हो। ChromeVox का धेरैजसो सर्टकटहरू सर्च कीबाटै सुरु हुन्छन्। तपाईं नेभिगेसनका लागि एरो कीहरू पनि प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="6544923685317771506">समुद्री सेल</translation>
 <translation id="6551185905438378412">आइभोरी</translation>
 <translation id="6561818612645211875">हालको पङ्क्तिको सुरुमा जानुहोस्</translation>
@@ -1124,7 +1124,7 @@
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8910180774920883033">कारबाहीहरू उपलब्ध छन्। ती कारबाहीहरू हेर्न खोज बटन+Ctrl+A थिच्नुहोस्</translation>
 <translation id="8937112856099038376">intlnk</translation>
-<translation id="8940925288729953902">परिमार्जक कुञ्जी</translation>
+<translation id="8940925288729953902">मोडिफायर कीहरू</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8944511129464116546">आंशिक रूपमा चिन्ह लगाइएको</translation>
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>

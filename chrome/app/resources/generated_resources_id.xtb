@@ -977,7 +977,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1749733017156547309">Sandi wajib diisi</translation>
 <translation id="1750172676754093297">Kunci keamanan Anda tidak dapat menyimpan sidik jari</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> akan dapat mengedit file di <ph name="FOLDERNAME" /> hingga Anda menutup semua tab untuk situs ini</translation>
-<translation id="17513872634828108">Buka tab</translation>
+<translation id="17513872634828108">Tab terbuka</translation>
 <translation id="175196451752279553">Buka k&amp;embali tab yang tertutup</translation>
 <translation id="1753067873202720523">Chromebook Anda mungkin tidak mengisi daya ketika sedang dinyalakan.</translation>
 <translation id="1753905327828125965">Sering Dibuka</translation>
@@ -6756,7 +6756,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6326855256003666642">Jumlah aktivitas yang Tetap Aktif</translation>
 <translation id="6327065839080961103">Penggunaan data <ph name="FEATURE_NAME" /></translation>
-<translation id="6327785803543103246">Penemuan otomatis proksi web</translation>
+<translation id="6327785803543103246">Penemuan otomatis proxy web</translation>
 <translation id="6333064448949140209">File akan dikirim ke Google untuk proses debug</translation>
 <translation id="6333170995003625229">Alamat email atau sandi Anda tidak dapat diverifikasi. Coba login lagi.</translation>
 <translation id="6334267141726449402">Salin dan kirim link ini kepada pengguna untuk mengumpulkan log.</translation>
@@ -7122,7 +7122,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6635674640674343739">Tidak dapat terhubung ke jaringan. Periksa koneksi jaringan Anda, lalu coba lagi.</translation>
 <translation id="663569763553406962">Lihat ekstensi yang dapat membaca atau mengubah situs</translation>
 <translation id="6635944431854494329">Pemilik dapat mengontrol fitur ini dari Setelan &gt; Lanjutan &gt; Otomatis kirimkan data diagnostik dan penggunaan ke Google.</translation>
-<translation id="6636623428211296678">Jelajahi pengaturan lainnya di bawah atau selesaikan sekarang</translation>
+<translation id="6636623428211296678">Jelajahi setelan lainnya di bawah atau selesaikan sekarang</translation>
 <translation id="6639554308659482635">Memori SQLite</translation>
 <translation id="6640268266988685324">Tab Terbuka</translation>
 <translation id="6642720633335369752">Untuk melihat semua jendela aplikasi yang terbuka, geser ke atas dari bagian bawah layar dan tahan.</translation>
@@ -10439,7 +10439,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="932327136139879170">Beranda</translation>
 <translation id="932508678520956232">Tidak dapat memulai pencetakan.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{File ini terlalu besar untuk pemeriksaan keamanan. Anda dapat mengupload file hingga 50 MB.}other{Beberapa file ini terlalu besar untuk pemeriksaan keamanan. Anda dapat mengupload file hingga 50 MB.}}</translation>
-<translation id="93343527085570547">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten karena alasan hukum.  Sebagian informasi akun dan sistem dapat dikirimkan ke Google.  Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan untuk menyempurnakan layanan kami. Penggunaan informasi ini tunduk pada <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
+<translation id="93343527085570547">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten karena alasan hukum.  Sebagian informasi akun dan sistem dapat dikirimkan ke Google.  Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan untuk menyempurnakan layanan kami. Penggunaan informasi ini tunduk kepada <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
 <translation id="93393615658292258">Sandi saja</translation>
 <translation id="934244546219308557">Beri nama grup ini</translation>
 <translation id="93480724622239549">Bug atau Error</translation>

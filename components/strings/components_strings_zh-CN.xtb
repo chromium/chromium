@@ -145,7 +145,7 @@
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
 <translation id="1266469291454105242">设备解锁</translation>
-<translation id="126728463333482584">您是率先体验“跟踪保护”功能的用户之一，该功能可限制网站使用第三方 Cookie 来跟踪您的浏览活动。</translation>
+<translation id="126728463333482584">欢迎率先体验“跟踪保护”功能，该功能可限制网站使用第三方 Cookie 来跟踪您的浏览活动。</translation>
 <translation id="1268480293435976622">中式 #7 信封</translation>
 <translation id="1269516672602708785">在 Google 协作平台中快速创建新网站</translation>
 <translation id="1270328905573953738">搬迁</translation>
@@ -740,7 +740,7 @@
 <translation id="24699311393038040">纸（涂布纸）</translation>
 <translation id="2470767536994572628">当您修改注释时，此文档会恢复为单页视图和原始方向</translation>
 <translation id="2479410451996844060">搜索网址无效。</translation>
-<translation id="2480300195898055381">在您的 Google 账号 <ph name="USER_EMAIL" /> 中更新</translation>
+<translation id="2480300195898055381">保存到 Google 账号 <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">设备政策</translation>
 <translation id="2490199669743245365">您正在尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境，以免造成损害。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1203,7 +1203,7 @@
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3443504041532578451">光盘（磨光）</translation>
 <translation id="344449859752187052">已阻止第三方 Cookie</translation>
-<translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
+<translation id="3447644283769633681">阻止所有第三方 Cookie</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3450323514459570273">可以请求控制您的 MIDI 设备以及为其重新编程</translation>
@@ -2305,7 +2305,7 @@
 <translation id="5666606186680807225">海滩与岛屿</translation>
 <translation id="5667827081946850877">有声读物</translation>
 <translation id="5675650730144413517">该网页无法正常运作</translation>
-<translation id="5677928146339483299">已禁止</translation>
+<translation id="5677928146339483299">已阻止</translation>
 <translation id="5678007133659493065">箔</translation>
 <translation id="568292603005599551">图片 X 轴位置</translation>
 <translation id="5684277895745049190">列表</translation>
@@ -2546,7 +2546,7 @@
 <translation id="6184868291074982484">Chrome 会自动限制第三方 Cookie</translation>
 <translation id="61877208875190028">女装</translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
-<translation id="6195163219142236913">第三方 Cookie 受限</translation>
+<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195371403461054755">地质学</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 毫米</translation>

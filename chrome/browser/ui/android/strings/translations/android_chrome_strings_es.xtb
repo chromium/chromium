@@ -152,7 +152,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1796666869097395659">Minimizar la pestaña para volver a ella más tarde</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
 <translation id="185383612275551373">Activa la sincronización para recibir el contenido más relevante de Google</translation>
@@ -185,7 +185,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1986685561493779662">El nombre ya existe</translation>
 <translation id="1995884366040846621">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo e imagen de perfil con este sitio. Consulta la <ph name="BEGIN_LINK1" />política de privacidad<ph name="END_LINK1" /> de este sitio.</translation>
 <translation id="200114059308480249">¿Incluir texto cercano en las búsquedas de Google?</translation>
-<translation id="2009341475524975924">Para medir el rendimiento de los anuncios, se pueden compartir tipos de datos limitados entre los sitios, como la hora del día en la que se te mostró un anuncio.</translation>
+<translation id="2009341475524975924">Para medir el rendimiento de los anuncios, se pueden compartir un número limitado de tipos de datos entre los sitios, como la hora del día en la que se te mostró un anuncio.</translation>
 <translation id="201060170519281460">El bloqueo de perfil protege tu información en el coche, como las contraseñas sincronizadas o los pagos.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# archivo}other{# archivos}}</translation>
 <translation id="2021896219286479412">Controles de pantalla completa</translation>
@@ -389,7 +389,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3027644380269727216">Se basa en tu actividad en un sitio. Esta opción está activada.</translation>
 <translation id="3029276696788198026">No precargar</translation>
 <translation id="3029704984691124060">Las frases de contraseña no coinciden</translation>
-<translation id="303514781271618814">Chrome está explorando nuevas funciones que permitan que los sitios ofrezcan la misma experiencia de navegación con un uso menor de tus datos</translation>
+<translation id="303514781271618814">Chrome está explorando nuevas funciones que permitan que los sitios ofrezcan la misma experiencia de navegación usando menos datos tuyos</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Siguiendo precio</translation>
 <translation id="3037517125981011456">Muestra solicitudes para iniciar sesión en Chrome</translation>
@@ -521,7 +521,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3771694256347217732">Términos del Servicio de Google</translation>
 <translation id="3773856050682458546">Datos básicos e información sobre los sitios web que visitas y las aplicaciones que usas.</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
-<translation id="3777796259512476958">Cierra tu sesión en la mayoría de los sitios</translation>
+<translation id="3777796259512476958">Cierra tu sesión en la mayoría de los sitios.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="3795154175078851242">Copiar imagen con enlace</translation>
 <translation id="3810838688059735925">Vídeo</translation>
@@ -1078,7 +1078,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ambos dispositivos</translation>
 <translation id="6627583120233659107">Editar carpeta</translation>
 <translation id="6633067410344541938">Desbloquear pestañas de incógnito</translation>
-<translation id="6636623428211296678">Explora más ajustes a continuación o termina ahora</translation>
+<translation id="6636623428211296678">Consulta más ajustes a continuación o termina ahora</translation>
 <translation id="663674369910034433">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />Servicios de Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Para ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_UMA_LINK" />Gestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear siempre</translation>
@@ -1126,7 +1126,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6828070228333235514">Dejar de seguir precio</translation>
 <translation id="6830728435402077660">No es seguro</translation>
 <translation id="6831043979455480757">Traducir</translation>
-<translation id="6833996806551876956">Demostración del entorno aislado de privacidad</translation>
+<translation id="6833996806551876956">Prueba de Privacy Sandbox</translation>
 <translation id="6836206421467243968">Restaurar grupo de pestañas <ph name="TITLE_OF_GROUP" /> como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">Tu descarga sigue en curso</translation>
@@ -1219,7 +1219,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="729975465115245577">Tu dispositivo no tiene ninguna aplicación para almacenar el archivo de contraseñas.</translation>
 <translation id="7304072650267745798">Es posible que tu dispositivo Android tenga una opción similar. Si esta opción está activada en Chrome y en tu dispositivo Android, una empresa podría medir la eficacia de un anuncio en los sitios web que visitas y las aplicaciones que usas.</translation>
 <translation id="7304873321153398381">Sin conexión. Chrome no puede comprobar tus contraseñas.</translation>
-<translation id="7313094438430838513">Protección frente al seguimiento</translation>
+<translation id="7313094438430838513">Protección Antirrastreo</translation>
 <translation id="7313188324932846546">Toca para configurar la sincronización</translation>
 <translation id="7324354302972299151">Enviar una solicitud "Do Not Track"</translation>
 <translation id="7332075081379534664">Se ha iniciado sesión correctamente</translation>
@@ -1451,7 +1451,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8402673309244746971">Ir a Siguiendo</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8413795581997394485">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio hace algo sospechoso, también se envían URLs completas y fragmentos de contenido de la página.</translation>
-<translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">Iniciar sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Más información sobre la personalización de anuncios en Chrome</translation>
 <translation id="8419244640277402268">Incluir</translation>
 <translation id="8422250855136581222">No hay pestañas en este dispositivo</translation>

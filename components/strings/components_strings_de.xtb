@@ -361,7 +361,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1662550410081243962">Zahlungsmethoden speichern und ausfüllen</translation>
 <translation id="1663943134801823270">Die Karten und Adressen stammen aus Chrome. Sie werden in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwaltet.</translation>
 <translation id="1664389769577564606">Flexofotopolymer</translation>
-<translation id="1668071460721346172">E-Mail anfordern</translation>
+<translation id="1668071460721346172">E-Mail erhalten</translation>
 <translation id="1671391448414634642">Seiten auf <ph name="SOURCE_LANGUAGE" /> werden ab jetzt auf <ph name="TARGET_LANGUAGE" /> übersetzt.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1674542638006317838">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten.</translation>
@@ -491,7 +491,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1939059826036755332">Automatischer Bild-im-Bild-Modus</translation>
 <translation id="1939175642807587452">Darf nachfragen, wenn sie Benachrichtigungen senden möchte</translation>
 <translation id="1940441167050915935">Gespeicherte Sicherheitscodes löschen</translation>
-<translation id="194174710521904357">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Dies bedeutet weniger Schutz beim Surfen, aber die Websitefunktionen funktionieren mit höherer Wahrscheinlichkeit wie erwartet.</translation>
+<translation id="194174710521904357">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Dies bedeutet weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass die Website wie erwartet funktioniert.</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du könntest den Zugriff auf das Konto deines Unternehmens verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
 <translation id="1946849748901605102">12 × 15 Zoll</translation>
@@ -608,7 +608,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2166378884831602661">Diese Website kann keine sichere Verbindung bereitstellen</translation>
 <translation id="2168151236314517198">Die Administratorrichtlinie blockiert das Drucken dieses Inhalts</translation>
 <translation id="2175630235841878061">Dateien mit mehr als 100 MB können nicht heruntergeladen werden</translation>
-<translation id="2176974405772725904">Adresse in Konto speichern</translation>
+<translation id="2176974405772725904">Adresse im Konto speichern</translation>
 <translation id="2178665390943006934">Schaltfläche „Chrome aktualisieren“ – aktivieren, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2182170103603703676">Geschirrspüler</translation>
@@ -761,7 +761,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2521736961081452453">Formular erstellen</translation>
 <translation id="2523886232349826891">Nur auf diesem Gerät gespeichert</translation>
 <translation id="2524461107774643265">Weitere Informationen hinzufügen</translation>
-<translation id="2526280916094749336">Du kannst gespeicherte Adressen in allen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
+<translation id="2526280916094749336">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="2527451058878391043">Der CVC befindet sich auf der Vorderseite deiner Karte. Er ist der vierstellige Code rechts oben über der Kartennummer.</translation>
 <translation id="2529899080962247600">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren Einträge werden ignoriert.</translation>
 <translation id="253493526287553278">Details zu Gutscheincode ansehen</translation>
@@ -1762,7 +1762,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="457875822857220463">Lieferung</translation>
 <translation id="4579699065574932398">Banking</translation>
 <translation id="4582204425268416675">Karte entfernen</translation>
-<translation id="4582595824823167856">SMS empfangen</translation>
+<translation id="4582595824823167856">SMS erhalten</translation>
 <translation id="4586607503179159908">Zahlungsmethode bestätigt</translation>
 <translation id="4587425331216688090">Adresse aus Chrome entfernen?</translation>
 <translation id="459089498662672729">Die Administratorrichtlinie empfiehlt, keine Inhalte aus <ph name="ORIGIN_NAME" /> an dieser Stelle einzufügen</translation>
@@ -1954,7 +1954,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
 <translation id="4957080528849277028">Schaltfläche „Chrome-Verlauf ansehen“ – aktivieren, um in den Chrome-Einstellungen deinen Browserverlauf aufzurufen und zu verwalten</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
-<translation id="4960068118612257147">In den Datenschutzeinstellungen für Werbungen von Chrome kannst du jederzeit Änderungen vornehmen.</translation>
+<translation id="4960068118612257147">In den Datenschutzeinstellungen für Werbung von Chrome kannst du jederzeit Änderungen vornehmen.</translation>
 <translation id="4960203958361543136">Wähle deine Suchmaschine</translation>
 <translation id="4964505745997821360">Krankenversicherung</translation>
 <translation id="4968522289500246572">Diese App wurde für Mobilgeräte entwickelt. Ihre Größe kann deshalb eventuell nicht richtig angepasst werden. Außerdem können Probleme auftreten und sie wird möglicherweise neu gestartet.</translation>
@@ -1986,7 +1986,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5018422839182700155">Diese Seite kann nicht geöffnet werden</translation>
 <translation id="5018802455907704660">16 × 20 Zoll</translation>
 <translation id="5019198164206649151">Sicherungsspeicher ist fehlerhaft.</translation>
-<translation id="5019293549442035120">Du kannst gespeicherte Adressen in allen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert.</translation>
+<translation id="5019293549442035120">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="5020776957610079374">Weltmusik</translation>
 <translation id="5021557570875267742">Preise mit Chrome beobachten</translation>
 <translation id="5023310440958281426">Informiere dich über die von deinem Administrator festgelegten Richtlinien.</translation>
@@ -2210,7 +2210,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5485973315555778056">Cloudgerät</translation>
 <translation id="5487426985799386720">Essen und Trinken</translation>
 <translation id="5488590678320979185">Schaltfläche „Notiz erstellen“ – aktivieren, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
-<translation id="5490432419156082418">Adressen</translation>
+<translation id="5490432419156082418">Adressen und andere Daten</translation>
 <translation id="5492298309214877701">Diese Website im Intranet des Unternehmens, der Organisation oder der Schule hat die gleiche URL wie eine externe Website.
     <ph name="LINE_BREAK" />
     Wende dich an deinen Systemadministrator.</translation>
@@ -2491,7 +2491,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6051221802930200923">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website das Zertifikats-Pinning nutzt. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
 <translation id="6051898664905071243">Seitenzahl:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053584886670442526">Du kannst gespeicherte Adressen in allen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
+<translation id="6053584886670442526">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse ist in deinem Google-Konto <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="6053735090575989697">Weitere Informationen dazu, wie Google zum Schutz deiner Daten beiträgt, findest du in unserer Datenschutzerklärung.</translation>
 <translation id="6055888660316801977">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten</translation>
 <translation id="6055982527635883756">Umschlag (Archiv)</translation>
@@ -2733,7 +2733,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6545864417968258051">Bluetooth-Suche</translation>
 <translation id="6547208576736763147">Doppelte Lochung links</translation>
 <translation id="6549443526281184652">Kostüme</translation>
-<translation id="6551873053534932690">Adresse in Konto speichern?</translation>
+<translation id="6551873053534932690">Adresse im Konto speichern?</translation>
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="6556866813142980365">Wiederholen</translation>
 <translation id="6557715786897013164">14 × 17 Zoll</translation>
@@ -2797,7 +2797,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6687230248707087982">Umschlag (unbedruckt)</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
 <translation id="6687696737818665306">Schauspiel und Theater</translation>
-<translation id="6688743156324860098">Aktualisieren…</translation>
+<translation id="6688743156324860098">Aktualisieren</translation>
 <translation id="6688775486821967877">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte versuche es später noch einmal</translation>
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
 <translation id="6689271823431384964">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern. Der Name des Karteninhabers stammt aus deinem Konto.</translation>
@@ -2822,7 +2822,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">Kamera</translation>
 <translation id="6737708609449480586">Backwaren</translation>
-<translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
+<translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="674375294223700098">Fehler wegen unbekanntem Serverzertifikat</translation>
 <translation id="6744009308914054259">Während du auf eine Verbindung wartest, kannst du "Downloads" aufrufen und Offline-Artikel lesen.</translation>
 <translation id="6745592621698551453">Jetzt aktualisieren</translation>
@@ -3150,7 +3150,7 @@ Weitere Details:
 <translation id="738439098860678026">Früherziehung</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7390545607259442187">Karte bestätigen</translation>
-<translation id="7392089738299859607">Adresse aktualisieren</translation>
+<translation id="7392089738299859607">Aktualisieren</translation>
 <translation id="739728382607845710">Symbol für die Zahlungsabwicklung</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -3724,12 +3724,12 @@ Weitere Details:
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Aktivieren</translation>
-<translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
+<translation id="8461694314515752532">Synchronisierte Daten mit eigener Passphrase für die Synchronisierung verschlüsseln</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 Kreditkarte}other{# Kreditkarten}}</translation>
 <translation id="8467494337615822642">In den Einstellungen die Seite für den Chrome-Sicherheitscheck aufrufen</translation>
 <translation id="8468358362970107653">Umschlag C3</translation>
 <translation id="8473626140772740486">300 × 450 mm</translation>
-<translation id="8473863474539038330">Adressen</translation>
+<translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474910779563686872">Entwicklerdetails anzeigen</translation>
 <translation id="8479754468255770962">Heftklammer unten links</translation>
 <translation id="8479926481822108747">deine Tracking-Schutzmaßnahmen zu verwalten</translation>
@@ -3891,7 +3891,7 @@ Weitere Details:
 <translation id="8806696968588872703">Kunststoff (Satin)</translation>
 <translation id="8807160976559152894">Nach jeder Seite zuschneiden</translation>
 <translation id="8809203544698246977">Hier werden blockierte Themen angezeigt</translation>
-<translation id="8811470563853401328">Adresse in Konto speichern?</translation>
+<translation id="8811470563853401328">Adresse im Konto speichern?</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8814707942599948500">Umschlag C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
@@ -4001,7 +4001,7 @@ Weitere Details:
 <translation id="9049981332609050619">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, der Server hat sich jedoch mit einem ungültigen Zertifikat ausgewiesen.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9051072642122229460">Kaffee- und Espressomaschinen</translation>
-<translation id="9053840549256861041">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: „Erfolgsmessung von Anzeigen“. Chrome gibt nur sehr wenige Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
+<translation id="9053840549256861041">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: Erfolgsmessung von Anzeigen. Chrome gibt nur sehr wenige Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Eventuell wurde sie verschoben, bearbeitet oder gelöscht.</translation>
 <translation id="9063398205799684336">Umschlag Kaku 2</translation>

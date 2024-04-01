@@ -12,7 +12,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1125124144982679672">Wie gebruik tans Chrome?</translation>
 <translation id="1142745911746664600">Kan nie Chrome opdateer nie</translation>
 <translation id="1149651794389918149">Meld by Chrome aan. As jy ’n rekening net een keer wil aanmeld, kan jy <ph name="GUEST_LINK_BEGIN" />die toestel as gas gebruik<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">Meer oor Chrome-bedryfstelsel</translation>
+<translation id="1152920704813762236">Meer oor ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
 <translation id="1194807384646768652">Chrome het hierdie aflaai geblokkeer omdat die lêertipe nie algemeen afgelaai word nie en dit gevaarlik kan wees</translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
@@ -86,7 +86,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="234869673307233423">Chrome kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="235650106824528204">Enige Chrome-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur die werkprofieladministrateur verwyder word. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Gaan voort</translation>
-<translation id="2401189691232800402">Chrome-bedryfstelsel</translation>
+<translation id="2401189691232800402">ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Een of meer Chrome-uitbreidings het toegang tot 1 MKT-toestel gehad}=1{Een of meer Chrome-uitbreidings het tans toegang tot 1 MKT-toestel}other{Een of meer Chrome-uitbreidings het tans toegang tot # MKT-toestelle}}</translation>
 <translation id="2424440923901031101">Hierdie uitbreiding oortree Chrome Webwinkel se beleid, en kan onveilig wees. Verwyder dit uit Chrome sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
 <translation id="2467438592969358367">Google Chrome wil jou wagwoorde uitvoer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
@@ -103,7 +103,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2597976513418770460">Kry jou Chrome-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
 <translation id="259935314519650377">Kon nie die afgelaaide installeerder kas nie. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome kan nie nagaan of daar opdaterings is nie. Probeer om jou internetverbinding na te gaan.</translation>
-<translation id="2645435784669275700">Chrome-bedryfstelsel</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontroleer gereeld om seker te maak jou blaaier het die veiligste instellings. Ons sal jou laat weet as jy enigiets moet nagaan.</translation>
 <translation id="2652691236519827073">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
 <translation id="2665296953892887393">Help om Google Chrome beter te maak deur omvalverslae en <ph name="UMA_LINK" /> na Google te stuur</translation>
@@ -347,7 +347,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="683440813066116847">Inkomende reël vir Google Chrome Kanarie om mDNS-verkeer toe te laat.</translation>
 <translation id="6881299373831449287">Dateer tans Chrome op</translation>
 <translation id="6885412569789873916">Chrome Beta-programme</translation>
-<translation id="6933858244219479645">Chrome-bedryfstelsel</translation>
+<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.1.</translation>
 <translation id="6943584222992551122">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chrome aan om hierdie data te herwin.</translation>
 <translation id="6967962315388095737">Inkomende reël vir Google Chrome Beta om mDNS-verkeer toe te laat.</translation>

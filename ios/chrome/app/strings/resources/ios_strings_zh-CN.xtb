@@ -163,7 +163,7 @@
 <translation id="1822994441903263130">FEDEX</translation>
 <translation id="1827529786398596735">轻触并按住主屏幕</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
-<translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="1830634592642484976">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
 <translation id="1836891464494477513">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{书签已保存到您的 Google 账号 {email}}}</translation>
 <translation id="183878838231635348">此卡片会显示安全检查功能自动为您检测到的所有隐私问题或安全问题。</translation>
@@ -185,7 +185,7 @@
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="194449685234099560">您可在此处找到您打开的所有标签页。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
-<translation id="1956138802718275401">从主屏幕获取密码</translation>
+<translation id="1956138802718275401">从主屏幕快速查询密码</translation>
 <translation id="1959441496380398824">轻触并按住某个日期。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
@@ -338,7 +338,7 @@
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2754492786623500387">此设备上的账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
-<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 (<ph name="USER_EMAIL" />)。</translation>
+<translation id="2772667768515195373">您可在各种 Google 产品中使用已保存的地址。这个地址已保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
 <translation id="2773292004659987824">无痕搜索</translation>
 <translation id="277771892408211951">选择语言</translation>
 <translation id="2780046210906776326">没有电子邮件账号</translation>
@@ -371,7 +371,7 @@
 <translation id="2890171748217283516">您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="2898963176829412617">新建文件夹…</translation>
 <translation id="2902684821701498619">添加到阅读清单</translation>
-<translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个重复使用的密码，这可能会给您带来安全风险。</translation>
+<translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
 <translation id="291754862089661335">将 QR 码或条形码放到此框内</translation>
 <translation id="2920866371965792875">若要查看来自此网站的最新讯息，请从这里关注它。</translation>
 <translation id="2921219216347069551">无法分享网页</translation>
@@ -1315,7 +1315,7 @@
 <translation id="7883882164760409935">您有重复使用的密码。</translation>
 <translation id="7884694604461143138">在历史记录中搜索（找到了 <ph name="COUNT" /> 项结果）</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
-<translation id="7889910613639381518">使用“Google 密码管理工具”小组件轻松安全地进行访问。</translation>
+<translation id="7889910613639381518">使用“Google 密码管理工具”小组件查询密码，方便又安全。</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
 <translation id="7920949005883349320">隐私与安全</translation>
 <translation id="792357691529995513">未发现任何问题</translation>
@@ -1441,7 +1441,7 @@
 <translation id="8533670235862049797">“安全浏览”功能已开启</translation>
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>
 <translation id="8548878600947630424">在网页中查找...</translation>
-<translation id="854938212724803178">您有 1 个已泄露的密码。请立即修正它以确保安全。</translation>
+<translation id="854938212724803178">您有 1 个密码已泄露。请立即更改，确保安全。</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>

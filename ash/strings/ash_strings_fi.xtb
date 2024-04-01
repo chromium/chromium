@@ -401,7 +401,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2624588537172718173">Laitteen audio ja mikrofoni</translation>
 <translation id="263399434338050016">Valitse kaikki</translation>
 <translation id="2644422758626431000">Kiinnitä ikkuna vasemmalle</translation>
-<translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">Ikkunan tallennus</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2658778018866295321">Klikkaa ja vedä</translation>
@@ -1762,7 +1762,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8132793192354020517">Yhteys muodostettu verkkoon <ph name="NAME" /></translation>
 <translation id="8135163608236671037">Laita hotspot päälle tai pois päältä. Hotspot on päällä, ei yhdistettyjä laitteita.</translation>
 <translation id="8138705869659070104">Aktivoi käyttöönoton jälkeen</translation>
-<translation id="813913629614996137">Käynnistetään…</translation>
+<translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8142441511840089262">Kaksoisklikkaus</translation>
 <translation id="8142699993796781067">Yksityinen verkko</translation>
 <translation id="8144760705599030999">Tallenna <ph name="NAME" /> tilille <ph name="EMAIL" />, jotta laiteparin muodostaminen muiden laitteidesi kanssa sujuu nopeammin</translation>

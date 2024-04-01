@@ -91,7 +91,7 @@
 <translation id="2490684707762498678">Les notifications sont gérées par <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
-<translation id="2546283357679194313">Témoins et données de site</translation>
+<translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 témoin bloqué}one{# témoin bloqué}other{# témoins bloqués}}</translation>
 <translation id="2570922361219980984">L'accès à la localisation est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé : cliquer pour réduire</translation>

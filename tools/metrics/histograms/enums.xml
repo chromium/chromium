@@ -34348,6 +34348,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1182" label="FeedbackSurveysEnabled"/>
   <int value="1183" label="DeskAPIDeskSaveAndShareEnabled"/>
   <int value="1184" label="OopPrintDriversEnabled"/>
+  <int value="1185" label="DeviceHardwareVideoDecodingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -398,7 +398,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1307165550267142340">Se creó tu PIN</translation>
 <translation id="1307431692088049276">No volver a preguntarme</translation>
 <translation id="1307559529304613120">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
-<translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios.</translation>
+<translation id="131112695174432497">Se borran los datos que afectan la personalización de anuncios</translation>
 <translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="1312811472299082263">Crear a partir de un archivo de copia de seguridad de Crostini o de playbook de Ansible</translation>
 <translation id="13130607084115184">Las contraseñas guardadas aparecerán aquí. Para importar contraseñas al <ph name="BRAND" /> en este dispositivo, <ph name="BEGIN_LINK" />selecciona un archivo CSV.<ph name="END_LINK" /></translation>
@@ -520,7 +520,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1415708812149920388">Se denegó el acceso de lectura al portapapeles</translation>
 <translation id="1415990189994829608">No se permite <ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") en este tipo de sesión.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Quitar app}other{Quitar apps}}</translation>
-<translation id="1417497355604638350">Envía datos de uso y diagnóstico</translation>
+<translation id="1417497355604638350">Envía datos de uso y diagnóstico.</translation>
 <translation id="1418552618736477642">Notificaciones y apps</translation>
 <translation id="1418559532423038045">Quita <ph name="VM_NAME" /> de tu <ph name="DEVICE_TYPE" />. Esta acción borrará todas las apps y los datos de la máquina virtual.</translation>
 <translation id="1418882096915998312">Inscripción en Enterprise en progreso</translation>
@@ -3575,7 +3575,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3776508619697147021">Permitir que los sitios soliciten permiso para descargar múltiples archivos de forma automática</translation>
 <translation id="3776796446459804932">Esta extensión infringe la política de Chrome Web Store.</translation>
 <translation id="3777483481409781352">No se pudo activar el dispositivo celular</translation>
-<translation id="3777796259512476958">Saldrás de la mayoría de los sitios</translation>
+<translation id="3777796259512476958">Saldrás de la mayoría de los sitios.</translation>
 <translation id="3778208826288864398">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Deberás restablecerla.</translation>
 <translation id="3778740492972734840">&amp;Herramientas del desarrollador</translation>
 <translation id="3778868487658107119">Hazle preguntas. Encárgale tareas. Es tu versión personal de Google, está siempre lista para ayudarte.</translation>
@@ -3715,7 +3715,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3875815154304214043">La app de <ph name="APP_NAME" /> está configurada para abrirse en una nueva pestaña del navegador. Los vínculos compatibles también se abrirán en el navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_NAME" />, quien comparte contenido con la cuenta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
-<translation id="3880513902716032002">Algunas de las páginas que visitas están precargadas</translation>
+<translation id="3880513902716032002">Se precargan algunas de las páginas que visitas</translation>
 <translation id="3883482240657453056">Obtener descuentos para <ph name="MERCHANT_NAME_1" /> y <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">El administrador gestiona las actualizaciones</translation>
@@ -4204,7 +4204,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4275397969489577657">Habilitar el acceso para la transmisión de eventos</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
 <translation id="4277434192562187284">Configuración de la fuente de XML</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitidas</translation>
 <translation id="4278498748067682896">Utilizarás una Actualización de kiosco y señalización que permite que el dispositivo funcione únicamente en modo kiosco o de señalización. Si quieres que los usuarios accedan al dispositivo, regresa e inscríbete con la actualización de Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Este proceso puede tardar unos minutos. Se están descargando los archivos.</translation>
 <translation id="4279129444466079448">Puedes instalar hasta <ph name="PROFILE_LIMIT" /> perfiles de eSIM en este dispositivo. Para agregar otro perfil, primero debes quitar uno de los perfiles existentes.</translation>
@@ -5920,7 +5920,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="567643736130151854">Accede y activa la sincronización para obtener tus favoritos, contraseñas y mucho más en todos tus dispositivos</translation>
 <translation id="567740581294087470">¿Qué tipo de comentarios envías?</translation>
 <translation id="5677503058916217575">Idioma de la página:</translation>
-<translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677928146339483299">Bloqueadas</translation>
 <translation id="5678550637669481956">Se concedió acceso de lectura y escritura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678821117681811450">Se está enviando a <ph name="WEB_DRIVE" />.</translation>
 <translation id="5678955352098267522">Leer los datos en <ph name="WEBSITE_1" /></translation>
@@ -6753,7 +6753,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6344170822609224263">Acceder a la lista de conexiones de red</translation>
 <translation id="6344576354370880196">Impresoras guardadas</translation>
 <translation id="6344608411615208519">Tu madre o padre <ph name="BEGIN_LINK" />administra el navegador<ph name="END_LINK" /></translation>
-<translation id="6344622098450209924">Protección contra el seguimiento</translation>
+<translation id="6344622098450209924">Protección contra seguimiento</translation>
 <translation id="6345418402353744910">Para que el administrador pueda configurar tu red, proporciona tu nombre de usuario y contraseña para el proxy <ph name="PROXY" />.</translation>
 <translation id="6345566021391290381">Se compartieron contraseñas de <ph name="WEBSITE_NAME" /> contigo. Puedes usarlas en el formulario de acceso.</translation>
 <translation id="6345878117466430440">Marcar como leído</translation>
@@ -6909,7 +6909,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
 <translation id="6475294023568239942">Libera espacio en el disco o cambia el tamaño del disco de Linux en Configuración.</translation>
-<translation id="6476482583633999078">Velocidad de voz</translation>
+<translation id="6476482583633999078">Velocidad de habla</translation>
 <translation id="6477822444490674459">No se admite la sincronización de notificaciones para teléfonos que tengan un perfil de trabajo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">¿Deseas conservar el archivo peligroso?</translation>
 <translation id="6479881432656947268">Visitar Chrome Web Store.</translation>
@@ -9391,7 +9391,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8422787418163030046">Falta la bandeja</translation>
 <translation id="8424250197845498070">La Protección avanzada lo bloqueó.</translation>
 <translation id="8425213833346101688">Cambiar</translation>
-<translation id="8425492902634685834">Asociar a la barra de tareas</translation>
+<translation id="8425492902634685834">Anclar a la barra de tareas</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
 <translation id="8426111352542548860">Guardar grupo</translation>
 <translation id="8426713856918551002">Habilitando</translation>

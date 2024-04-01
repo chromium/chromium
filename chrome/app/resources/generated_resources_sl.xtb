@@ -989,7 +989,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1757301747492736405">Odmestitev na čakanju</translation>
 <translation id="175772926354468439">Omogoči temo</translation>
 <translation id="1757786065507923842">Zahteva za dovoljenje starša ni uspela.</translation>
-<translation id="17584710573359123">Prikaži v Spletni trgovini Chrome</translation>
+<translation id="17584710573359123">Prikaži v trgovini Chrome Web Store</translation>
 <translation id="1761402971842586829">Gumb <ph name="BUTTON_NAME" /> je preslikan v <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Računi osebe <ph name="NAME" /></translation>
 <translation id="176272781006230109">predlogi za nakupovanje</translation>
@@ -2175,7 +2175,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2643698698624765890">Razširitve lahko upravljate tako, da v meniju »Windows« kliknete »Extensions«.</translation>
 <translation id="2645047101481282803">Napravo upravlja <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Predvajanje tega zavihka v napravi <ph name="DEVICE_NAME" />.</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">Base64 kodiran ASCII, veriga potrdil</translation>
 <translation id="265156376773362237">Standardno vnaprejšnje nalaganje</translation>
@@ -2195,7 +2195,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="266079277508604648">Ni se mogoče povezati s tiskalnikom. Preverite, ali je tiskalnik vklopljen in povezan s Chromebookom prek omrežja Wi-Fi ali z USB-jem.</translation>
 <translation id="2661315027005813059">Stran v predpomnilniku za hitro obnovitev strani: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">Brskajte hitreje in uporabite manj podatkov z lahkim načinom. Kliknite, če želite več informacij.</translation>
-<translation id="2662876636500006917">Spletna trgovina Chrome</translation>
+<translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Dodajanje profila za e-SIM. To lahko traja nekaj minut.</translation>
 <translation id="2663302507110284145">Jezik</translation>
 <translation id="2665394472441560184">Dodaj novo besedo</translation>
@@ -3594,7 +3594,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3775432569830822555">Strežniško potrdilo SSL</translation>
 <translation id="3775705724665058594">Pošiljanje v vaše naprave</translation>
 <translation id="3776508619697147021">Spletna mesta lahko zahtevajo samodejno prenašanje več datotek.</translation>
-<translation id="3776796446459804932">Ta razširitev krši pravilnik Spletne trgovine Chrome.</translation>
+<translation id="3776796446459804932">Ta razširitev krši pravilnik trgovine Chrome Web Store.</translation>
 <translation id="3777483481409781352">Mobilne naprave ni bilo mogoče aktivirati</translation>
 <translation id="3777796259512476958">Odjavi vas z večine spletnih mest</translation>
 <translation id="3778208826288864398">Varnostni ključ je zaklenjen, ker ste prevečkrat vnesli napačno kodo PIN. Ponastaviti boste morali varnostni ključ.</translation>
@@ -4963,7 +4963,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4870724079713069532">Podprte datoteke lahko s to aplikacijo odpirate in urejate v raziskovalcu datotek ali drugih aplikacijah. Če želite upravljati, katere datoteke se v tej aplikaciji privzeto odprejo, odprite <ph name="BEGIN_LINK" />nastavitve sistema Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Vnesite geslo, ki ga je priskrbel skrbnik, da pridobite podatke o konfiguraciji</translation>
 <translation id="4870995365819149457">Nekatere podprte povezave se bodo še vedno odprle v aplikacijah <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> in še 1 aplikaciji.</translation>
-<translation id="4871308555310586478">Ni iz Spletne trgovine Chrome.</translation>
+<translation id="4871308555310586478">Ni iz trgovine Chrome Web Store.</translation>
 <translation id="4871322859485617074">Koda PIN vsebuje neveljavne znake</translation>
 <translation id="4871370605780490696">Dodajanje zaznamka</translation>
 <translation id="4871568871368204250">Izklop sinhronizacije</translation>
@@ -5691,7 +5691,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5470735824776589490">Pred ponastavitvijo naprave s funkcijo Powerwash je potreben vnovičen zagon. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Pozdravljeni! Jaz sem glas za pretvorbo besedila v govor.</translation>
 <translation id="5472627187093107397">Shrani gesla za to spletno mesto</translation>
-<translation id="5473062644742711742">Poiščite več orodij za ljudi s posebnimi potrebami v Spletni trgovini Chrome</translation>
+<translation id="5473062644742711742">Poiščite več orodij za ljudi s posebnimi potrebami v trgovini Chrome Web Store</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenaša in namešča posodobitve in aplikacije Googla, operaterja in proizvajalca te otrokove naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Koda PIN mora vsebovati najmanj en znak}one{Koda PIN mora vsebovati najmanj # znak}two{Koda PIN mora vsebovati najmanj # znaka}few{Koda PIN mora vsebovati najmanj # znake}other{Koda PIN mora vsebovati najmanj # znakov}}</translation>
@@ -5904,7 +5904,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5636996382092289526">Če želite uporabljati omrežje <ph name="NETWORK_ID" />, morate najprej <ph name="LINK_START" />obiskati stran za prijavo v omrežje<ph name="LINK_END" />, ki se bo samodejno odprla čez nekaj sekund. Če se ne odpre, omrežja ne morete uporabljati.</translation>
 <translation id="5637476008227280525">Omogoči prenos podatkov v mobilnih omrežjih</translation>
 <translation id="563821631542362636">Dovoli spletnemu mestu shranjevanje podatkov</translation>
-<translation id="5638309510554459422">Poiščite razširitve in teme v <ph name="BEGIN_LINK" />Spletni trgovini Chrome<ph name="END_LINK" /></translation>
+<translation id="5638309510554459422">Poiščite razširitve in teme v <ph name="BEGIN_LINK" />trgovini Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Vnovično nalaganje te strani, pridržite za prikaz več možnosti</translation>
 <translation id="5640133431808313291">Upravljanje varnostnih ključev</translation>
 <translation id="5641608986289282154">Začnite uporabljati sistem <ph name="DEVICE_OS" /></translation>
@@ -7600,7 +7600,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6993000214273684335">Zavihek je odstranjen iz neimenovane skupine – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6993050154661569036">Posodabljanje brskalnika Chrome</translation>
 <translation id="6995899638241819463">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
-<translation id="6995984090981858039">Branje podatkov o napravi Chrome OS in podatkov</translation>
+<translation id="6995984090981858039">Branje podatkov o napravi ChromeOS in podatkov</translation>
 <translation id="6996438701394974959">Povečanje velikosti prikaza in besedila</translation>
 <translation id="6997553674029032185">Na spletno mesto</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – dnevnik dejavnosti</translation>
@@ -8053,7 +8053,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="737728204345822099">Na varnostnem ključu se bo morda zabeležil obisk tega spletnega mesta.</translation>
 <translation id="7377451353532943397">Še naprej preprečuj dostop do tipal</translation>
 <translation id="7377481913241237033">Povezava s kodo</translation>
-<translation id="73786666777299047">Odpiranje Spletne trgovine Chrome</translation>
+<translation id="73786666777299047">Odpiranje trgovine Chrome Web Store</translation>
 <translation id="7380272457268061606">Želite onemogočiti obnovitev lokalnih podatkov?</translation>
 <translation id="7380459290951585794">Preverite, ali imate telefon v bližini, ali je vklopljen in ali ima vklopljeno povezavo Bluetooth ter omrežje Wi-Fi.</translation>
 <translation id="7380622428988553498">Ime naprave vsebuje neveljavne znake.</translation>

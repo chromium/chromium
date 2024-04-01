@@ -217,7 +217,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2158408438301413340">Chrome non ha potuto controllare tutte le password</translation>
 <translation id="2172688499998841696">Le descrizioni delle immagini sono disattivate</translation>
 <translation id="2172905120685242547">Chiudere la finestra?</translation>
-<translation id="2173302385160625112">Controlla la connessione a Internet</translation>
+<translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="218608176142494674">Condivisione</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
@@ -455,7 +455,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3387650086002190359">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori del file system.</translation>
 <translation id="3389286852084373014">Il testo è troppo grande</translation>
 <translation id="3398320232533725830">Apri Gestione preferiti</translation>
-<translation id="3407392651057365886">Vengono precaricate più pagine. Le pagine potrebbero essere precaricate tramite i server di Google quando richiesto da altri siti.</translation>
+<translation id="3407392651057365886">Vengono precaricate più pagine. Le pagine potrebbero essere precaricate tramite i server di Google quando richiesto da altri siti</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
 <translation id="3421726884497337397">Scegli quando bloccare i cookie di terze parti</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
@@ -521,7 +521,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3771694256347217732">Termini di servizio di Google</translation>
 <translation id="3773856050682458546">Dati di base e informazioni sui siti web che visiti e sulle app che utilizzi</translation>
 <translation id="3775705724665058594">Invia ai tuoi dispositivi</translation>
-<translation id="3777796259512476958">Uscirai dalla maggior parte dei siti.</translation>
+<translation id="3777796259512476958">Ti disconnette dalla maggior parte dei siti.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="3795154175078851242">Copia immagine con link</translation>
 <translation id="3810838688059735925">Video</translation>
@@ -892,7 +892,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="569435661099256888">Puoi visualizzare le pagine che hai visitato o cancellarle dalla cronologia</translation>
 <translation id="569536719314091526">Traduci questa pagina in una lingua qualsiasi usando il pulsante Altre opzioni</translation>
 <translation id="5696597120588531049">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo</translation>
-<translation id="5698878456427040674">Controlla se l'account selezionato è supportato.</translation>
+<translation id="5698878456427040674">Verifica se l'account selezionato è supportato.</translation>
 <translation id="570347048394355941">Passa alla scheda</translation>
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5726692708398506830">Ingrandisci i contenuti della pagina</translation>
@@ -913,7 +913,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5780792035410621042">Per copiare le password, imposta prima un blocco schermo sul tuo dispositivo</translation>
 <translation id="5793665092639000975">Spazio utilizzato: <ph name="SPACE_USED" /> di <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Cerca e sfoglia</translation>
-<translation id="5797521893972859201">Viene cancellata la cronologia, anche nella casella di ricerca</translation>
+<translation id="5797521893972859201">Cancella la cronologia, anche nella casella di ricerca</translation>
 <translation id="5797949256525811424">Argomento bloccato</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ora fa}other{# ore fa}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
@@ -1113,7 +1113,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6767294960381293877">Elenco di dispositivi con cui condividere una scheda aperto nella parte inferiore dello schermo.</translation>
 <translation id="6770042910635026163">Siti visitati che definiscono i tuoi interessi</translation>
 <translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del Web</translation>
-<translation id="6775840696761158817">Quando tocchi o digiti nella barra degli indirizzi o nella casella di ricerca, vengono visualizzati suggerimenti del tuo motore di ricerca predefinito. Questa funzionalità è disattivata in incognito.</translation>
+<translation id="6775840696761158817">Quando tocchi o digiti nella barra degli indirizzi o nella casella di ricerca, vengono visualizzati suggerimenti del tuo motore di ricerca predefinito. Questa funzionalità è disattivata in incognito</translation>
 <translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e ChromeOS</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="6802555630140434547">La finestra verrà chiusa</translation>
@@ -1184,7 +1184,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>
 <translation id="7146622961999026732">Questi siti e app sembrano importanti per te:</translation>
-<translation id="7148400116894863598"><ph name="BEGIN_LINK" />Ottieni maggiori informazioni<ph name="END_LINK" /> da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="7148400116894863598"><ph name="BEGIN_LINK" />Richiedi maggiori informazioni<ph name="END_LINK" /> a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Ultimo giorno</translation>
 <translation id="7168323970702333693">Accesso eseguito come <ph name="USER_NAME" />. Consente di aprire le impostazioni.</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
@@ -1304,7 +1304,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="768232549260819724">GIF copiata</translation>
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
-<translation id="768618399695552958">Alcune delle pagine che visiti sono precaricate. Le pagine potrebbero essere precaricate tramite i server di Google quando il sito che vi rimanda è un sito Google.</translation>
+<translation id="768618399695552958">Alcune delle pagine che visiti sono precaricate. Le pagine potrebbero essere precaricate tramite i server di Google quando il sito che vi rimanda è un sito Google</translation>
 <translation id="7690596512217303514">Impossibile aprire Chrome sul dispositivo. Per risolvere il problema, scarica l'ultimo aggiornamento di Chrome dallo store.</translation>
 <translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
 <translation id="7697383401610880082">Punto di trascinamento</translation>
@@ -1518,7 +1518,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8683039184091909753">immagine</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
-<translation id="8712637175834984815">Fatto</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8723453889042591629">Traduci rapidamente questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
@@ -1527,12 +1527,12 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8754448020583829686">Copia senza link</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
-<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
+<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito</translation>
 <translation id="8766529642647037772">Vuoi creare un link evidenziato come questo?</translation>
 <translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8788968922598763114">Riapri l'ultima scheda chiusa</translation>
-<translation id="879027982257117598">Ad esempio, se visiti un sito che vende scarpe da corsa a lunga distanza, il sito potrebbe decidere che ti interessa partecipare a maratone. Se in un secondo momento visiti un altro sito, quest'ultimo può mostrarti un annuncio relativo a scarpe da corsa suggerito dal primo sito.</translation>
+<translation id="879027982257117598">Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone. Se in un secondo momento visiti un altro sito, quest'ultimo può mostrarti un annuncio relativo a scarpe da corsa suggerito dal primo sito.</translation>
 <translation id="8798449543960971550">Leggi</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
 <translation id="8812260976093120287">In alcuni siti web puoi pagare con le suddette app di pagamento supportate sul tuo dispositivo.</translation>

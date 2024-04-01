@@ -2168,11 +2168,11 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="264083724974021997">Connect to your phone – dialogue</translation>
 <translation id="2642111877055905627">Football</translation>
 <translation id="2642206811783203764">Always on <ph name="SITE_NAME" /></translation>
-<translation id="2643064289437760082">You can always delete ad-measurement data by deleting your browsing data</translation>
+<translation id="2643064289437760082">You can always delete ads measurement data by deleting your browsing data</translation>
 <translation id="2643698698624765890">Manage your extensions by clicking Extensions in the Window menu.</translation>
 <translation id="2645047101481282803">Your device is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Casting this tab to <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomaly</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="265156376773362237">Standard preloading</translation>
@@ -2249,7 +2249,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2705736684557713153">Scroll to the bottom of the screen and if it appears, turn on Instant Tethering. If it doesn't, you're ready to go.</translation>
 <translation id="2707024448553392710">Component downloading</translation>
 <translation id="270921614578699633">Average Over</translation>
-<translation id="2709516037105925701">Auto-fill</translation>
+<translation id="2709516037105925701">Autofill</translation>
 <translation id="2710101514844343743">Usage and diagnostic data</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2710507903599773521">Your <ph name="DEVICE_TYPE" /> is now unlocked</translation>
@@ -2852,7 +2852,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{This app is blocked}other{Some apps are blocked}}</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
@@ -3260,7 +3260,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3519564332031442870">Print backend service</translation>
 <translation id="3519938335881974273">Save page as…</translation>
 <translation id="3520824492621090923">Confirm kiosk and signage device enrolment?</translation>
-<translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="3521388823983121502">Can't continue with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3521405806571557477">Delete saved data for <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Change disk size</translation>
 <translation id="3522088408596898827">Disk space is critically low. Free up disk space and try again.</translation>
@@ -3802,7 +3802,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3928570707778085600">Save changes to <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Low on ink</translation>
 <translation id="3929426037718431833">These extensions can see and change information on this site.</translation>
-<translation id="3930155420525972941">Move Group to New Window</translation>
+<translation id="3930155420525972941">Move group to new window</translation>
 <translation id="3930602610362250897">To play content protected by copyright, sites may need to use a content protection service</translation>
 <translation id="3930737994424905957">Looking for devices</translation>
 <translation id="3930968231047618417">Background colour</translation>
@@ -4717,7 +4717,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4666472247053585787">View notifications from your phone on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="4666911709726371538">More apps</translation>
 <translation id="4667027203988048332">What data is used:</translation>
-<translation id="4668279686271488041">Ad measurement data is deleted regularly from your device</translation>
+<translation id="4668279686271488041">Ads measurement data is deleted regularly from your device</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4672759829555593783">Open <ph name="FILE_NAME" /> now</translation>
 <translation id="4673442866648850031">Open stylus tools when the stylus is removed</translation>
@@ -6772,7 +6772,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6344170822609224263">Access list of network connections</translation>
 <translation id="6344576354370880196">Saved printers</translation>
 <translation id="6344608411615208519">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your parent</translation>
-<translation id="6344622098450209924">Tracking protection</translation>
+<translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="6345418402353744910">Your username and password are required for the proxy <ph name="PROXY" /> so that the admin can configure your network</translation>
 <translation id="6345566021391290381">There are passwords shared with you for <ph name="WEBSITE_NAME" />. You can use them in the sign-in form.</translation>
 <translation id="6345878117466430440">Mark as read</translation>
@@ -6785,7 +6785,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="635609604405270300">Keep device turned on</translation>
 <translation id="63566973648609420">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Scroll up to move the page down</translation>
-<translation id="6356893102071098867">Check that you chose the right account</translation>
+<translation id="6356893102071098867">Check that you chose the right account.</translation>
 <translation id="6357305427698525450">Some supported links will still open in <ph name="APP_NAME" /> or <ph name="APP_NAME_2" />.</translation>
 <translation id="6357750620525943720">Other Stable Identifiers (e.g., Hashes or UUIDs)</translation>
 <translation id="6358884629796491903">Dragon</translation>
@@ -7902,7 +7902,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">The application is not responding. Select 'Force close' to close the app.</translation>
 <translation id="7260186537988033909">Kiosk and signage device enrolment complete</translation>
-<translation id="7260367682327802201">Your Android device may include a similar setting. If ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
+<translation id="7260367682327802201">Your Android device may include a similar setting. If ads measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="7261612856573623172">System Text-to-Speech voice</translation>
 <translation id="7262004276116528033">This sign-in service is hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="7263162347647986485">{NUM_SITES,plural, =1{Permissions removed for 1 site}other{Permissions removed for {NUM_SITES} sites}}</translation>
@@ -8669,7 +8669,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7848244988854036372">Open all (<ph name="URL_COUNT" />) in new tab group</translation>
 <translation id="7849264908733290972">Open &amp;Image in New Tab</translation>
 <translation id="784934925303690534">Time range</translation>
-<translation id="7849656116606005620">Reminder: Tracking protection is on</translation>
+<translation id="7849656116606005620">Reminder: Tracking Protection is on</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account. You can see your data, delete it and change your account settings at account.google.com.<ph name="END_PARAGRAPH3" /></translation>
@@ -9862,7 +9862,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8779944680596936487">Sites can only use cookies to see your browsing activity on their own site</translation>
 <translation id="8780123805589053431">Get image descriptions from Google</translation>
 <translation id="8780443667474968681">Voice search has been turned off.</translation>
-<translation id="8781834595282316166">New Tab in Group</translation>
+<translation id="8781834595282316166">New tab in group</translation>
 <translation id="8781980678064919987">Shut down when lid is closed</translation>
 <translation id="8782565991310229362">Kiosk application launch cancelled.</translation>
 <translation id="8783834180813871000">Type the pairing code then press Return or Enter</translation>

@@ -898,7 +898,7 @@
 <translation id="1692118695553449118">同期は有効です</translation>
 <translation id="1692210323591458290">暗い紫</translation>
 <translation id="1692713444215319269">色反転、拡大鏡、表示設定</translation>
-<translation id="1695487653372841667">各ユーザーは Google と共有するデータを設定できるようになっています。これは [設定] でいつでも変更できます。</translation>
+<translation id="1695487653372841667">あなたは Google と共有するデータを設定することができ、これは [設定] でいつでも変更できます。</translation>
 <translation id="1695510246756136088">インターネットに接続できません。もう一度お試しください。</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> で続行するには、別の方法をお試しください。</translation>
 <translation id="169675691788639886">デバイスに SSH サーバーが設定されています。慎重な取り扱いが必要なアカウントではログインしないでください。</translation>
@@ -1051,7 +1051,7 @@
 <translation id="1810070166657251157">スマートフォンに保存されているパスワードを使用するには、QR コードのサイトから iOS 版 Chrome をダウンロードし、Google アカウントにログインします。</translation>
 <translation id="1810366086647840386">イメージ サーバー</translation>
 <translation id="1811908311154949291">シークレット モードのフェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> は <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の使用を続行できません</translation>
+<translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> で続行できません</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> をキャストしています</translation>
 <translation id="1813278315230285598">サービス</translation>
 <translation id="18139523105317219">EDI パーティ名</translation>
@@ -2151,7 +2151,7 @@
 <translation id="2643698698624765890">[ウィンドウ] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="2645047101481282803">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。</translation>
 <translation id="2645388244376970260">このタブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">第一色弱</translation>
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
 <translation id="265156376773362237">標準プリロード</translation>
@@ -2484,7 +2484,7 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
 <translation id="2889043468805635730">問題は見つかりませんでした</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
-<translation id="2890206081124517553">デスクトップの背景をすべてのデバイスに保存する</translation>
+<translation id="2890206081124517553">デスクトップの背景をすべてのデバイスに保存します</translation>
 <translation id="2891464434568738544">現在、追加されたサイトはありません。このサイトをリストに追加するには、サイトにアクセスしてください。</translation>
 <translation id="2891566119238851894">サイドパネルで検索を開きます。サイドパネルで検索が開いていません。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
@@ -3087,7 +3087,7 @@
 <translation id="3406290648907941085">バーチャル リアリティ デバイスとデータの使用を許可するサイト</translation>
 <translation id="3406396172897554194">言語または入力方法で検索</translation>
 <translation id="3406605057700382950">ブックマーク バーを表示(&amp;S)</translation>
-<translation id="3407392651057365886">プリロードされるページ数が増加します。ページが他のサイトからリクエストされた場合は、Google サーバーを経由してプリロードされる可能性があります。</translation>
+<translation id="3407392651057365886">プリロードされるページ数が増加します。ページが他のサイトからリクエストされた場合、Google サーバーを介してプリロードされる可能性があります。</translation>
 <translation id="3407967630066378878">指紋を設定するには、この <ph name="DEVICE_TYPE" /> の左側にある指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="3409513286451883969">選択範囲を<ph name="LANGUAGE" />に翻訳(&amp;T)</translation>
 <translation id="3409785640040772790">マップ</translation>
@@ -3458,7 +3458,7 @@
 <translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />このデモデバイスを設定する販売店の名前と番号を入力してください*。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />販売店の番号が不明な場合は、「0000」と入力するとデモモードのインストールを続行できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />*注: Google は、デバイスが受信するデモモードのバージョンを特定し、デモモードの使用状況を測定する目的でこの情報を使用します。<ph name="END_PARAGRAPH3" /></translation>
-<translation id="3703166520839776970">この問題がまだ解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
+<translation id="3703166520839776970">問題が解消しない場合は、下の [詳細] を選択して <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="3703699162703116302">チケットが更新されました</translation>
 <translation id="370415077757856453">JavaScript がブロックされました</translation>
 <translation id="3704331259350077894">処理が停止した</translation>
@@ -4060,7 +4060,7 @@
 <translation id="4147911968024186208">もう一度お試しください。このエラーが再び表示される場合は、サポート担当者にお問い合わせください。</translation>
 <translation id="414800391140809654">では次のサイトの閲覧時にあなたの情報を使用できます:</translation>
 <translation id="4148195018520464922">ログインを特定のユーザーに制限できます。制限すると、ログイン画面から [ユーザーを追加] オプションが削除されます。現在のユーザーを削除することもできます。</translation>
-<translation id="4150201353443180367">表示</translation>
+<translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4150569944729499860">画面のコンテキスト</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
 <translation id="4151503145138736576">クリーンアップの必要なオフライン ストレージはありません</translation>
@@ -4193,7 +4193,7 @@
 <translation id="4268025649754414643">キーの暗号化</translation>
 <translation id="4268516942564021145">お使いのアカウントではこの設定は使用できません。</translation>
 <translation id="4270393598798225102">バージョン <ph name="NUMBER" /></translation>
-<translation id="4274604968379621964">グループを保存する</translation>
+<translation id="4274604968379621964">グループを保存</translation>
 <translation id="4274667386947315930">ログインデータ</translation>
 <translation id="4274673989874969668">ユーザーがサイトから離れた後も、サイトは同期を継続して、写真のアップロードやチャット メッセージの送信などのタスクを完了することがあります</translation>
 <translation id="4275291496240508082">起動音</translation>
@@ -4327,7 +4327,7 @@
 <translation id="4378556263712303865">デバイスの登録</translation>
 <translation id="4379097572583973456">サイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。これらの他のサイトでもデータが保存される可能性があります。</translation>
 <translation id="4379281552162875326">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
-<translation id="4380055775103003110">この問題がまだ解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="4380648069038809855">全画面表示に切り替えました</translation>
 <translation id="4381902252848068865">サイトによるデータの保存を許可しない</translation>
 <translation id="4383048856908088702">このタブがアクティブでないときに、メモリセーバーが <ph name="MEMORY_VALUE" /> のメモリを他のタスクに解放しました。これは <ph name="SETTINGS_LINK" /> でいつでも変更できます。</translation>
@@ -6746,7 +6746,7 @@
 <translation id="6344170822609224263">ネットワーク接続のリストにアクセスする</translation>
 <translation id="6344576354370880196">保存済みのプリンタ</translation>
 <translation id="6344608411615208519">保護者によって<ph name="BEGIN_LINK" />ブラウザが管理<ph name="END_LINK" />されています</translation>
-<translation id="6344622098450209924">トラッキング保護</translation>
+<translation id="6344622098450209924">トラッキング防止</translation>
 <translation id="6345418402353744910">管理者がネットワークを設定できるよう、プロキシ「<ph name="PROXY" />」のユーザー名とパスワードを指定してください</translation>
 <translation id="6345566021391290381"><ph name="WEBSITE_NAME" /> のパスワードがあなたと共有されています。これらのパスワードはログイン フォームで使用できます。</translation>
 <translation id="6345878117466430440">既読にする</translation>
@@ -6759,7 +6759,7 @@
 <translation id="635609604405270300">デバイスの電源を切らないでください</translation>
 <translation id="63566973648609420">パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />する必要があります。</translation>
 <translation id="6356718524173428713">上にスクロールすると、ページ下部に移動します</translation>
-<translation id="6356893102071098867">正しいアカウントを選択していることを確認する</translation>
+<translation id="6356893102071098867">正しいアカウントを選択していることを確認してください</translation>
 <translation id="6357305427698525450">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" /> または <ph name="APP_NAME_2" /> で開かれます。</translation>
 <translation id="6357750620525943720">その他の不変の識別子（例: ハッシュまたは UUID）</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
@@ -6854,7 +6854,7 @@
 <translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438475350605608554">すでに別のタブにパスワードをインポートしています</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - オーディオ再生中です</translation>
-<translation id="6440291723980579689">ページは開いてから読み込まれます</translation>
+<translation id="6440291723980579689">ページは開いてから読み込まれます。</translation>
 <translation id="6441377161852435370">タブをリーディング リストに追加</translation>
 <translation id="6442187272350399447">ビックリ</translation>
 <translation id="6442445294758185945">アップデートをダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
@@ -7905,7 +7905,7 @@
 <translation id="7287411021188441799">デフォルトの背景に戻す</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289049772085228972">Chrome の最高強度のセキュリティで保護されています</translation>
-<translation id="7289303553784750393">オンラインであるにもかかわらず、この問題がまだ解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
+<translation id="7289303553784750393">オンラインであるにもかかわらず問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、F6 キーを押してください</translation>
 <translation id="7290242001003353852">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされており、カメラにアクセスしています。</translation>
 <translation id="7292067737327289208">お使いの<ph name="BEGIN_LINK" />ブラウザは組織<ph name="END_LINK" />によって、<ph name="BEGIN_LINK" />プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理<ph name="END_LINK" />されています</translation>
@@ -8090,7 +8090,7 @@
 <translation id="7429415133937917139">点字ディスプレイの出力を
     画面上部の ChromeVox パネルにシミュレートします</translation>
 <translation id="7431719494109538750">HID デバイスは見つかりませんでした</translation>
-<translation id="7431991332293347422">検索などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
+<translation id="7431991332293347422">検索などのカスタマイズに閲覧履歴がどのように使われるかを管理する</translation>
 <translation id="7432200167665670017">「<ph name="EXTENSION_NAME" />」（アプリ ID: <ph name="EXTENSION_ID" />）は管理者によってブロックされています</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> を引き続き使用するにはスマートカードを挿入してください</translation>
 <translation id="7433957986129316853">そのままにする</translation>
@@ -8639,7 +8639,7 @@
 <translation id="7848244988854036372">すべて（<ph name="URL_COUNT" /> 個）を新しいタブグループで開く</translation>
 <translation id="7849264908733290972">新しいタブで画像を開く(&amp;I)</translation>
 <translation id="784934925303690534">期間</translation>
-<translation id="7849656116606005620">お知らせ: トラッキング保護がオンになっています</translation>
+<translation id="7849656116606005620">お知らせ: トラッキング防止機能がオンになっています</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。自動レポートでは、Chrome OS がクラッシュした時間、使用されている機能、通常のメモリ使用量、Android アプリの診断データと使用状況データなどの情報が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。データの確認と削除、アカウント設定の変更は、account.google.com で行えます。<ph name="END_PARAGRAPH3" /></translation>
@@ -10215,7 +10215,7 @@
 <translation id="9068598199622656904">キーボード ショートカットで複数のキーを同時に押すのではなく、1 つずつ押します</translation>
 <translation id="9068878141610261315">サポートされていないファイル形式です</translation>
 <translation id="9069417381769492963">検索条件に一致するブックマークはありません</translation>
-<translation id="9069665781180028115">選択したアイテムはこの Chromebook で使用できるようになります。Chromebook を初めて使用する場合は、すべてのアイテムを同期して設定をバックアップします。この設定は、[設定] &gt; [アカウント] でいつでも変更できます。</translation>
+<translation id="9069665781180028115">選択した項目はこの Chromebook で使用できるようになります。Chromebook を初めてお使いになる場合は、すべての項目を同期すると設定のバックアップが作成されます。この設定は、[設定] &gt; [アカウント] でいつでも変更できます。</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> に許可した権限は、インストール（ストリーミング）されるアプリにも適用されます。</translation>
 <translation id="9070342919388027491">タブを左に移動しました</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

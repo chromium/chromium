@@ -7,16 +7,24 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "components/omnibox/common/omnibox_features.h"
 
 namespace omnibox_feature_configs {
+
+constexpr auto enabled_by_default_desktop_only =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
 
 // TODO(manukh): Enabled by default in m120. Clean up 12/5 when after m121
 //   branch cut.
 // static
 BASE_FEATURE(CalcProvider::kCalcProvider,
              "OmniboxCalcProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 CalcProvider::CalcProvider() {
   enabled = base::FeatureList::IsEnabled(kCalcProvider);
   score =

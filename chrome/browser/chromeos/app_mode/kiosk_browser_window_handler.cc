@@ -4,10 +4,16 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include <memory>
+#include <tuple>
+#include <utility>
 
 #include "base/check_deref.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
@@ -16,6 +22,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -28,6 +35,8 @@
 namespace chromeos {
 
 namespace {
+
+constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
 void MakeWindowResizable(BrowserWindow* window) {
   views::Widget* widget =
@@ -43,10 +52,14 @@ std::string GetUrlOfActiveTab(const Browser* browser) {
   return active_tab ? active_tab->GetVisibleURL().spec() : std::string();
 }
 
-void CloseAllBrowserWindows() {
-  for (auto* browser : CHECK_DEREF(BrowserList::GetInstance())) {
-    LOG(WARNING) << "kiosk: Closing unexpected browser window with url: "
-                 << GetUrlOfActiveTab(browser);
+void CloseBrowser(Browser* browser) {
+  // We prefer to use `browser->tab_strip_model()->CloseAllTabs`, because
+  // `browser->window()->Close()` can silently fail if the window is currently
+  // being dragged. However, `CloseAllTabs` becomes a no-op if no tabs are
+  // present, so we fall back to `browser->window()->Close()` for that case.
+  if (!browser->tab_strip_model()->empty()) {
+    browser->tab_strip_model()->CloseAllTabs();
+  } else {
     browser->window()->Close();
   }
 }
@@ -82,11 +95,8 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
                          weak_ptr_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  if (!web_app_name.has_value()) {
-    // If this is ChromeApp kiosk, close all preexisting browser windows to
-    // avoid potential kiosk escapes.
-    CloseAllBrowserWindows();
-  }
+  CloseAllUnexpectedBrowserWindows();
+
   BrowserList::AddObserver(this);
 }
 
@@ -148,7 +158,7 @@ void KioskBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
                                 KioskBrowserWindowType::kClosedRegularBrowser);
   LOG(WARNING) << "Force close browser opened in kiosk session"
                << ", url=" << url_string;
-  browser->window()->Close();
+  CloseBrowserAndSetTimer(browser);
   on_browser_window_added_callback_.Run(/*is_closing=*/true);
 }
 
@@ -158,7 +168,7 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   if (settings_browser_) {
     // If another settings browser exist, navigate to `url_string` in the
     // existing browser.
-    browser->window()->Close();
+    CloseBrowserAndSetTimer(browser);
     // Navigate in the existing browser.
     NavigateParams nav_params(
         settings_browser_, GURL(url_string),
@@ -173,7 +183,7 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   if (!app_browser) {
     // If this browser is not an app browser, create a new app browser if none
     // yet exists.
-    browser->window()->Close();
+    CloseBrowserAndSetTimer(browser);
     // Create a new app browser.
     NavigateParams nav_params(
         profile_, GURL(url_string),
@@ -195,6 +205,16 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   browser->window()->Maximize();
 }
 
+void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
+  CloseBrowserWindowsIf([&web_app_name =
+                             web_app_name_](const Browser& browser) {
+    // Do not close the main web app window (if any).
+    bool is_web_app = web_app_name.has_value();
+    bool is_web_app_window = is_web_app && (browser.app_name() == web_app_name);
+    return !is_web_app_window;
+  });
+}
+
 void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -203,6 +223,8 @@ void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
 }
 
 void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
+  closing_browsers_.erase(browser);
+
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() &&
       BrowserList::GetInstance()->empty()) {
@@ -215,7 +237,7 @@ void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
              IsOnlySettingsBrowserRemainOpen()) {
     // Only `settings_browser_` is opened and there are no app browsers anymore.
     // So we should close `settings_browser_` and it will end the kiosk session.
-    settings_browser_->window()->Close();
+    CloseBrowserAndSetTimer(settings_browser_);
   }
 }
 
@@ -253,6 +275,32 @@ void KioskBrowserWindowHandler::Shutdown() {
   if (!shutdown_kiosk_browser_session_callback_.is_null()) {
     std::move(shutdown_kiosk_browser_session_callback_).Run();
   }
+}
+
+void KioskBrowserWindowHandler::CloseBrowserWindowsIf(
+    base::FunctionRef<bool(const Browser&)> filter) {
+  for (Browser* browser : CHECK_DEREF(BrowserList::GetInstance())) {
+    if (filter(*browser)) {
+      LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
+                   << GetUrlOfActiveTab(browser) << " of app "
+                   << browser->app_name();
+      CloseBrowserAndSetTimer(browser);
+    }
+  }
+}
+
+void KioskBrowserWindowHandler::CloseBrowserAndSetTimer(Browser* browser) {
+  closing_browsers_.emplace(std::piecewise_construct, std::make_tuple(browser),
+                            std::make_tuple());
+  closing_browsers_[browser].Start(
+      FROM_HERE, kCloseBrowserTimeout,
+      base::BindOnce(&KioskBrowserWindowHandler::OnCloseBrowserTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+  CloseBrowser(browser);
+}
+
+void KioskBrowserWindowHandler::OnCloseBrowserTimeout() {
+  CHECK(false) << "Failed to close unexpected browser window.";
 }
 
 }  // namespace chromeos

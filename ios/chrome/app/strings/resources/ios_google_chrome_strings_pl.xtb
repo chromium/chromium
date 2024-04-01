@@ -70,7 +70,7 @@ Pamiętaj, że:
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
 <translation id="3173834708294760622">Strona Google Chrome</translation>
 <translation id="3196546062792660320">Chrome oszczędza Twój czas, zapisując konta w internecie. Konta możesz dodawać i usuwać w Ustawieniach.</translation>
-<translation id="322254490661677575">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, wpisz hasło.</translation>
+<translation id="322254490661677575">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, wpisz hasło wielowyrazowe.</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3345341804167540816">Korzystaj z Chrome w dowolnym miejscu</translation>
 <translation id="3472587960215700950">Chrome używa Map Google, aby podawać wskazówki dojazdu i informacje lokalne o wykrytych adresach.</translation>
@@ -160,7 +160,7 @@ Pamiętaj, że:
 <translation id="6709398533399187136">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Menedżer haseł Google zaleca, aby jak najszybciej je zmienić.</translation>
 <translation id="6815466750807582739">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielowyrazowe. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="6851982868877411675">Otwórz Ustawienia Chrome na urządzeniu z iOS, kliknij „Domyślna przeglądarka” i wybierz Chrome.</translation>
 <translation id="6916015246697034114">Wyszukaj głosowo w Chrome</translation>
@@ -226,7 +226,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="8772179140489533211">Pokazuj prośby o zalogowanie się w Chrome.</translation>
 <translation id="8788269841521769222">Nie musisz go zapamiętywać. Menedżer haseł Google zapisze je na koncie <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Ustawienia Chrome</translation>
-<translation id="8856877214925961642">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
+<translation id="8856877214925961642">Szyfrowanie za pomocą hasła wielowyrazowego nie obejmuje form płatności ani adresów.
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>

@@ -759,7 +759,7 @@
 <translation id="2515761554693942801">ನೀವು <ph name="PROVIDER_ORIGIN" /> ಬಳಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಸ್ಪರ್ಶ ID ಯ ಮೂಲಕ ದೃಢೀಕರಿಸುವ ಆಯ್ಕೆಯನ್ನು ಮಾಡಿದ್ದೀರಿ. ಈ ಪೂರೈಕೆದಾರರು ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಟ್ಟಿರಬಹುದು, ನೀವು ಅದನ್ನು <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
 <translation id="2521736961081452453">ಫಾರ್ಮ್ ಆನ್ನು ರಚಿಸಿ</translation>
-<translation id="2523886232349826891">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ</translation>
+<translation id="2523886232349826891">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2524461107774643265">ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2526280916094749336">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">ನಿಮ್ಮ CVC ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಮುಂಭಾಗದಲ್ಲಿದೆ. ಇದು ನಿಮ್ಮ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯ ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿರುವ 4-ಅಂಕಿಯ ಕೋಡ್ ಆಗಿದೆ.</translation>
@@ -1626,7 +1626,7 @@
 <translation id="4281998142035485137">{0,plural, =1{ಗೌಪ್ಯ ಫೈಲ್ ತೆರೆಯುವುದೇ?}one{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವುದೇ?}other{ಗೌಪ್ಯ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯುವುದೇ?}}</translation>
 <translation id="4282346679996504092">ಈ ಉತ್ಪನ್ನದ ಕುರಿತ ಅಲರ್ಟ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ ಹಾಗೂ ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="4285498937028063278">ಅನ್‌ಪಿನ್</translation>
-<translation id="428639260510061158">{NUM_CARDS,plural, =1{ಈ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ}one{ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ}other{ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ}}</translation>
+<translation id="428639260510061158">{NUM_CARDS,plural, =1{ಈ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}other{ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="4287495839370498922">Chrome ನಲ್ಲಿ ವರ್ಧಿತ ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ</translation>
 <translation id="4290920330097335010">ಎಂದಿಗೂ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="4296207570293932800">ಹೊಸ ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ ಫೀಚರ್‌ ಈಗ ಲಭ್ಯವಿದೆ</translation>
@@ -2137,7 +2137,7 @@
 <translation id="5310178588836736698">ಆಫ್-ರೋಡ್ ವಾಹನಗಳು</translation>
 <translation id="5314967030527622926">ಬುಕ್‌ಲೆಟ್ ಮೇಕರ್</translation>
 <translation id="5316812925700871227">ಅಪ್ರದಕ್ಷಿಣವಾಗಿ ತಿರುಗಿಸು</translation>
-<translation id="5317780077021120954">ಉಳಿಸು</translation>
+<translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5319366980180850702">ಸಾಹಿತ್ಯದ ಶ್ರೇಷ್ಠ ಕೃತಿಗಳು</translation>
 <translation id="5323043727018853753">ಎಂಬೆಡ್ ಮಾಡಿದ ಕಂಟೆಂಟ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> ಗಳ <ph name="MATCH_POSITION" /></translation>
@@ -2398,7 +2398,7 @@
 <translation id="5880050725127890683">Chrome ಸುರಕ್ಷತೆ ಪರಿಶೀಲನೆಗೆ ಹೋಗಿ</translation>
 <translation id="5883861433316751031">MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸಬೇಕೆ ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5884465125445718607">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #6</translation>
-<translation id="5887400589839399685">ಕಾರ್ಡ್ ಉಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5887400589839399685">ಕಾರ್ಡ್ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5887687176710214216">ಕೊನೆಯದಾಗಿ ನಿನ್ನೆ ಭೇಟಿ ನೀಡಲಾಗಿದೆ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5895187275912066135">ರಂದು ನೀಡಲಾಗಿದೆ</translation>

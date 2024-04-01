@@ -577,6 +577,8 @@ void HTMLConstructionSite::MergeAttributesFromTokenIntoElement(
             token_attribute.GetName()) == kNotFound)
       element->setAttribute(token_attribute.GetName(), token_attribute.Value());
   }
+
+  element->HideNonce();
 }
 
 void HTMLConstructionSite::InsertHTMLHtmlStartTagInBody(

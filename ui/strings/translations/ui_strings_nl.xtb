@@ -137,7 +137,7 @@
 <translation id="5843690142429128814">Afbeelding.</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{over 1 j}other{over # j}}</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
-<translation id="5906667377645263094">{SECONDS,plural, =1{1 seconde resterend}other{# seconden reseterend}}</translation>
+<translation id="5906667377645263094">{SECONDS,plural, =1{1 seconde resterend}other{# seconden resterend}}</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 uur}other{# uur}}</translation>
 <translation id="6007284015834422026">Extensie vastgezet</translation>

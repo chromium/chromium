@@ -164,7 +164,7 @@
 <translation id="2303301624314357662">फाइल <ph name="FILE_NAME" /> उघडत आहे.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> बाहेर काढले गेले आहे.</translation>
-<translation id="2307462900900812319">नेटवर्क कॉंफिगर करा</translation>
+<translation id="2307462900900812319">नेटवर्क कॉन्फिगर करा</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> हा आयडी असलेले एक्स्टेंशन लोकेट करू शकत नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> हे आयडी असलेले एक्स्टेंशन लोकेट करू शकत नाही. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.}}</translation>
 <translation id="2325650632570794183">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी Chrome वेब स्टोअरला भेट द्या.</translation>
 <translation id="2326539130272988168">बल्गेरियन</translation>
@@ -888,7 +888,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="78104721049218340">किडमनी कीबोर्डसह थाई</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
-<translation id="7831491651892296503">नेटवर्क कॉंफिगर करताना एरर आली</translation>
+<translation id="7831491651892296503">नेटवर्क कॉन्फिगर करताना एरर आली</translation>
 <translation id="7839804798877833423">या फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7853966320808728790">फ्रेंच बेपो</translation>
@@ -930,7 +930,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8138705869659070104">डिव्हाइस सेटअपनंतर सक्रिय करा</translation>
 <translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8147028810663464959">वर्णाची रुंदी पूर्ण आहे</translation>
-<translation id="8151638057146502721">कॉंफिगर करा</translation>
+<translation id="8151638057146502721">कॉन्फिगर करा</translation>
 <translation id="8154842056504218462">सर्व नोंदी निवडल्या आहेत.</translation>
 <translation id="8157684860301034423">ॲप माहिती पुन्हा मिळवता आली नाही.</translation>
 <translation id="8175731104491895765">फ्रेंच (बेल्जियम)</translation>

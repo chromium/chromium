@@ -1354,7 +1354,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin, murin mbrojtës dhe konfigurimin e DNS-së<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Gjatë përditësimit, nuk do të mund ta përdorësh pajisjen tënde për deri në 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacionet që mund ta shkaktojnë këtë gabim përfshijnë softuerë antivirusi, murin mbrojtës, si dhe softuerë filtrimi uebi ose ndërmjetësues.</translation>
-<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një prezantim të ri të Google te Slides</translation>
+<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një prezantim të ri të Google në "Diapozitivat e Google"</translation>
 <translation id="3733139489341305600">Automjetet autonome</translation>
 <translation id="3736520371357197498">Nëse i kupton rreziqet për sigurinë tënde, mund <ph name="BEGIN_LINK" />ta vizitosh këtë faqe të pasigurt<ph name="END_LINK" /> para se të jenë hequr programet e rrezikshme.</translation>
 <translation id="3736739313435669994">I ke bllokuar sajtet që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="LINK" />.</translation>
@@ -1810,7 +1810,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4673460618347856347">Loja Dino, luaj</translation>
 <translation id="467662567472608290">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë përmban gabime. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> kërkon të reagojë ndaj ngjarjeve të qasshmërisë</translation>
-<translation id="467809019005607715">Google Slides</translation>
+<translation id="467809019005607715">Diapozitivat e Google</translation>
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
 <translation id="4687718960473379118">Reklamat e sugjeruara nga sajtet</translation>
@@ -2945,7 +2945,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="696703987787944103">Perceptues</translation>
 <translation id="6967851206780867018">1 skedar është bllokuar për shkak të përmbajtjes</translation>
 <translation id="6970885655016700774">Pëlhurë (arkivore)</translation>
-<translation id="6971439137020188025">Krijo shpejt një prezantim të ri të Google në Slides</translation>
+<translation id="6971439137020188025">Krijo shpejt një prezantim të ri të Google në "Diapozitivat e Google"</translation>
 <translation id="6972629891077993081">Pajisjet HID</translation>
 <translation id="6973656660372572881">Janë specifikuar serverë përfaqësues fiksë dhe një URL e skriptit .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 inç</translation>

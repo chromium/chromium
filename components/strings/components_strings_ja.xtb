@@ -145,7 +145,7 @@
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
 <translation id="1266469291454105242">デバイスのロック解除</translation>
-<translation id="126728463333482584">トラッキング保護機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
+<translation id="126728463333482584">トラッキング防止機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
 <translation id="1268480293435976622">中国 #7 封筒</translation>
 <translation id="1269516672602708785">Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="1270328905573953738">引越し、移転</translation>
@@ -608,7 +608,7 @@
 <translation id="2166378884831602661">このサイトは安全に接続できません</translation>
 <translation id="2168151236314517198">このコンテンツの印刷は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="2175630235841878061">100 MB を超えるファイルはダウンロードできません</translation>
-<translation id="2176974405772725904">アカウントに住所を保存する</translation>
+<translation id="2176974405772725904">アカウントに住所を保存</translation>
 <translation id="2178665390943006934">[Chrome を更新] ボタンです。実行すると、Chrome の設定で Chrome を更新できます</translation>
 <translation id="2181821976797666341">ポリシー</translation>
 <translation id="2182170103603703676">食器洗い機</translation>
@@ -1391,7 +1391,7 @@
 <translation id="3793574014653384240">最近発生した問題の件数と原因</translation>
 <translation id="3795344968043407227">インディーズ音楽、オルタナティブ ミュージック</translation>
 <translation id="3799805948399000906">リクエストされたフォント</translation>
-<translation id="3801265110651850478">閲覧トラフィックと一緒に「トラッキング拒否」リクエストを送信する</translation>
+<translation id="3801265110651850478">閲覧トラフィックと一緒に「Do Not Track」リクエストを送信する</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3806932344025766608">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">電話回線サービス</translation>
@@ -1601,7 +1601,7 @@
 <translation id="422722221769396062">出前、デリバリー サービス</translation>
 <translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
 <translation id="4231448684371260244">8x13 インチ</translation>
-<translation id="4233220688695460165">Chrome では、30 日以上経過していないトピックや広告を提案した広告主のウェブサイトが自動削除されます。また、提案してほしくないトピックやウェブサイトをユーザーがブロックすることもできます。</translation>
+<translation id="4233220688695460165">Chrome では、30 日以内に複数の広告を提案するトピックおよびウェブサイトは自動削除されます。また、提案してほしくないトピックやウェブサイトをユーザーがブロックすることもできます。</translation>
 <translation id="4235360514405112390">有効</translation>
 <translation id="4239799716689808527">ラベル</translation>
 <translation id="4242380780309416996">封筒（重量）</translation>
@@ -1630,7 +1630,7 @@
 <translation id="4282346679996504092">この商品のアラートをオフにし、ブックマークを削除しました</translation>
 <translation id="4285498937028063278">固定を解除</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{このカードを Google アカウントに保存しました}other{これらのカードを Google アカウントに保存しました}}</translation>
-<translation id="4287495839370498922">Chrome で表示される広告プライバシーの強化について</translation>
+<translation id="4287495839370498922">Chrome で表示される広告に対するプライバシー強化について</translation>
 <translation id="4290920330097335010">許可しない</translation>
 <translation id="4296207570293932800">新しい広告のプライバシー機能をご利用いただけるようになりました</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
@@ -2624,7 +2624,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> の値は無効なため、使用されません。</translation>
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}}</translation>
-<translation id="6344622098450209924">トラッキング保護</translation>
+<translation id="6344622098450209924">トラッキング防止</translation>
 <translation id="634500758737709758">経路案内</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
@@ -3735,7 +3735,7 @@
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
 <translation id="8479754468255770962">ステープル（左下）</translation>
-<translation id="8479926481822108747">トラッキング保護を管理</translation>
+<translation id="8479926481822108747">トラッキング防止機能を管理</translation>
 <translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>

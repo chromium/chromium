@@ -17,9 +17,9 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 8,
-    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
+    orchestrator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_configs = ["builder"],
@@ -313,56 +313,15 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Linux Builder (Wayland)",
         "ci/Linux Tests (Wayland)",
     ],
-    compilator = "linux-wayland-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        # go/nplus1shardsproposal
-        "chromium.add_one_test_shard": 10,
-    },
-    main_list_view = "try",
-    tryjob = try_.job(),
     use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-wayland-rel-compilator",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    ssd = True,
-    main_list_view = "try",
-    siso_enabled = True,
-)
-
-try_.orchestrator_builder(
-    name = "linux-wayland-siso-rel",
-    description_html = """\
-This builder shadows linux-wayland-rel builder to compare between Siso builds and Ninja builds.<br/>
-This builder should be removed after migrating linux-wayland-rel from Ninja to Siso. b/277863839
-""",
-    mirrors = builder_config.copy_from("try/linux-wayland-rel"),
-    try_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
-    compilator = "linux-wayland-siso-rel-compilator",
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    use_clang_coverage = True,
-)
-
-try_.compilator_builder(
-    name = "linux-wayland-siso-rel-compilator",
-    ssd = True,
-    main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -516,7 +475,6 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_asan_siso_rel_ng-compilator",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(
@@ -698,7 +656,6 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
 try_.compilator_builder(
     name = "linux_chromium_tsan_siso_rel_ng-compilator",
     main_list_view = "try",
-    siso_enabled = True,
 )
 
 try_.builder(

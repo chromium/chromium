@@ -986,7 +986,7 @@
 <translation id="1757301747492736405">Чыгарып салуу күтүлүүдө</translation>
 <translation id="175772926354468439">Теманы иштетүү</translation>
 <translation id="1757786065507923842">Ата-эненин уруксат сурамы ишке ашкан жок.</translation>
-<translation id="17584710573359123">Chrome Интернет дүкөнүндө көрүү</translation>
+<translation id="17584710573359123">Chrome Web Store'до көрүү</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> болуп дайындалды.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> аккаунту</translation>
 <translation id="176272781006230109">Соода кылуу сунуштары</translation>
@@ -1194,7 +1194,7 @@
 <translation id="1904580727789512086">Сиз кирген URL даректери Google аккаунтуңузга сакталат</translation>
 <translation id="1905375423839394163">Chromebook түзмөгүнүн аталышы</translation>
 <translation id="1906181697255754968">Сайттар адатта ишиңизди автоматтык түрдө сактоо сыяктуу функциялар үчүн түзмөгүңүздөгү файлдарды жана папкаларды колдонот</translation>
-<translation id="1906488504371069394">Дагы башка кеңейтүүлөрдү жана темаларды <ph name="BEGIN_LINK" />Chrome Интернет дүкөнүнөн<ph name="END_LINK" /> табасыз</translation>
+<translation id="1906488504371069394">Дагы башка кеңейтүүлөрдү жана темаларды <ph name="BEGIN_LINK" />Chrome Web Store'дон<ph name="END_LINK" /> табасыз</translation>
 <translation id="1907044622262489040">Айтып териңиз. Search + D баскычтарын басып, сүйлөп баштаңыз.</translation>
 <translation id="1907659324308286326">Ойдогудай иштеши үчүн Thunderbolt же USB4 аксессуарларына эстутумду колдонууга уруксат берүү керек.</translation>
 <translation id="1908591798274282246">Жабылган топту кайра ачуу</translation>
@@ -2214,7 +2214,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2673873887296220733">1 файлды ачуу үчүн ал <ph name="CLOUD_PROVIDER" /> кызматына көчүрүлсүнбү?</translation>
 <translation id="267442004702508783">жаңылоо</translation>
 <translation id="2674764818721168631">Өчүк</translation>
-<translation id="2676084251379299915">Бул кеңейтүү Chrome Интернет дүкөнүндө мындан ары жеткиликсиз болгондуктан, Enterprise саясаты тарабынан өчүрүлдү.</translation>
+<translation id="2676084251379299915">Бул кеңейтүү Chrome Web Store'до мындан ары жеткиликсиз болгондуктан, Enterprise саясаты тарабынан өчүрүлдү.</translation>
 <translation id="2678063897982469759">Кайра иштетүү</translation>
 <translation id="2678100101831051676">Тышкы экранга чыгарылбай жатат.</translation>
 <translation id="2678468611080193228">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында коопсуздугуңуз азыраак корголот, бирок сайттын функциялары иштеши мүмкүн</translation>
@@ -5688,7 +5688,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5470735824776589490">Түзмөктү "жууп салып" баштапкы абалга келтирээрден мурун, аны өчүрүп күйгүзүү керек. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Салам! Мен сизге текстти окуп беремин.</translation>
 <translation id="5472627187093107397">Бул сайттагы сырсөздөрдү сактоо</translation>
-<translation id="5473062644742711742">Chrome Интернет дүкөнүндө көбүрөөк атайын мүмкүнчүлүктөр куралдарын таап алыңыз</translation>
+<translation id="5473062644742711742">Chrome Web Store'до көбүрөөк атайын мүмкүнчүлүктөр куралдарын таап алыңыз</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473099001878321374">Улантуу менен бул түзмөккө Google'дан, байланыш операторуңуздан жана түзмөгүңүздүн өндүрүүчүсүнөн жаңыртууларды жана колдонмолорду автоматтык түрдө жүктөп алып, орнотууга мүмкүнчүлүк береcиз (мобилдик Интернет аркылуу дагы). Бул колдонмолордун айрымдары колдонмо аркылуу сатып алууну сунушташы мүмкүн.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN код кеминде бир символдон турушу керек}other{PIN код кеминде # символдон турушу керек}}</translation>
@@ -5899,7 +5899,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> колдонуу үчүн адегенде <ph name="LINK_START" />тармактын кирүү бетине өтүңүз<ph name="LINK_END" />, ал бир нече секунддун ичинде автоматтык түрдө ачылат. Эгер ачылбаса, тармакты колдоно албайсыз.</translation>
 <translation id="5637476008227280525">Мобилдик Интернетти иштетүү</translation>
 <translation id="563821631542362636">Сайтка маалымат сактоого уруксат берүү</translation>
-<translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome Интернет дүкөнүнөн<ph name="END_LINK" /> кеңейтүүлөрдү жана темаларды таап алыңыз</translation>
+<translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome Web Store'дон<ph name="END_LINK" /> кеңейтүүлөрдү жана темаларды таап алыңыз</translation>
 <translation id="5639549361331209298">Бул баракты кайра жүктөп, көбүрөөк параметр көрүү үчүн коё бербей кармап туруңуз</translation>
 <translation id="5640133431808313291">Коопсуздук ачкычтарын башкаруу</translation>
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> системасын колдонуп баштоо</translation>
@@ -6931,7 +6931,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6476482583633999078">Кептин ылдамдыгы</translation>
 <translation id="6477822444490674459">Жумуш профилиндеги телефондордо билдирмелер шайкештирилбейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Бул коркунучтуу файл сакталсынбы?</translation>
-<translation id="6479881432656947268">Chrome Интернет дүкөнүнө баш багуу</translation>
+<translation id="6479881432656947268">Chrome Web Store'го баш багуу</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> башкарат</translation>
 <translation id="6482559668224714696">Толук экран режиминдеги лупа</translation>
 <translation id="6483485061007832714">Жүктөлүп алынган файлды ачуу</translation>
@@ -8126,7 +8126,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7434509671034404296">Иштеп чыгуучу</translation>
 <translation id="7434757724413878233">Чычканды ылдамдаткыч</translation>
 <translation id="7434969625063495310">Басып чыгаруу сервери кошулган жок. Сервердин конфигурациясын текшерип, кайталап көрүңүз.</translation>
-<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Chrome Интернет дүкөнүнөн өчүрүлгөн 1 кеңейтүүнү карап чыгыңыз}other{Chrome Интернет дүкөнүнөн өчүрүлгөн {NUM_EXTENSIONS} кеңейтүүнү карап чыгыңыз}}</translation>
+<translation id="7436452443388501706">{NUM_EXTENSIONS,plural, =1{Chrome Web Store'дон өчүрүлгөн 1 кеңейтүүнү карап чыгыңыз}other{Chrome Web Store'дон өчүрүлгөн {NUM_EXTENSIONS} кеңейтүүнү карап чыгыңыз}}</translation>
 <translation id="7436921188514130341">Ка-ап! Аталышы өзгөртүлүп жатканда ката кетти.</translation>
 <translation id="7439519621174723623">Улантуу үчүн түзмөктүн аталышын кошуңуз</translation>
 <translation id="7441736921018636843">Бул параметрди өзгөртүү үчүн <ph name="BEGIN_LINK" />шайкештирүү параметрлерин баштапкы абалга келтирип<ph name="END_LINK" />, купуя сөз айкашын алып салыңыз</translation>
@@ -9765,7 +9765,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8708000541097332489">Чыгууда тазалансын</translation>
 <translation id="870805141700401153">Microsoft Жеке кодунун колтамгасы</translation>
 <translation id="8708671767545720562">&amp;Көбүрөөк маалымат</translation>
-<translation id="8709368517685334931">Эски түстөрдү Chrome Интернет дүкөнүнөн табасыз</translation>
+<translation id="8709368517685334931">Эски түстөрдү Chrome Web Store'дон табасыз</translation>
 <translation id="8711402221661888347">Туздалган бадыраң</translation>
 <translation id="8711538096655725662">Сиз баш баккан бардык сайттарда автоматтык түрдө иштейт</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>

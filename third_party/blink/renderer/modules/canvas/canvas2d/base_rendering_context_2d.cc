@@ -2709,40 +2709,6 @@ const Font& BaseRenderingContext2D::AccessFont(HTMLCanvasElement* canvas) {
   return GetState().GetFont();
 }
 
-namespace {
-
-// Drawing methods need to use this instead of SkAutoCanvasRestore in case
-// overdraw detection substitutes the recording canvas (to discard overdrawn
-// draw calls).
-class BaseRenderingContext2DAutoRestoreSkCanvas {
-  STACK_ALLOCATED();
-
- public:
-  explicit BaseRenderingContext2DAutoRestoreSkCanvas(
-      BaseRenderingContext2D* context)
-      : context_(context) {
-    DCHECK(context_);
-    cc::PaintCanvas* c = context_->GetOrCreatePaintCanvas();
-    if (c) {
-      save_count_ = c->getSaveCount();
-    }
-  }
-
-  ~BaseRenderingContext2DAutoRestoreSkCanvas() {
-    cc::PaintCanvas* c = context_->GetOrCreatePaintCanvas();
-    if (c) {
-      c->restoreToCount(save_count_);
-    }
-    context_->ValidateStateStack();
-  }
-
- private:
-  BaseRenderingContext2D* context_;
-  int save_count_ = 0;
-};
-
-}  // namespace
-
 void BaseRenderingContext2D::DrawTextInternal(
     const String& text,
     double x,
@@ -2763,8 +2729,10 @@ void BaseRenderingContext2D::DrawTextInternal(
     canvas->GetDocument().UpdateStyleAndLayoutTreeForNode(
         canvas, DocumentUpdateReason::kCanvas);
   }
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c) {
+
+  // Abort if we don't have a paint canvas (e.g. the context was lost).
+  cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
+  if (!paint_canvas) {
     return;
   }
 
@@ -2835,14 +2803,13 @@ void BaseRenderingContext2D::DrawTextInternal(
     InflateStrokeRect(bounds);
   }
 
-  BaseRenderingContext2DAutoRestoreSkCanvas state_restorer(this);
   if (use_max_width) {
-    c->save();
+    paint_canvas->save();
     // We draw when fontWidth is 0 so compositing operations (eg, a "copy" op)
     // still work. As the width of canvas is scaled, so text can be scaled to
     // match the given maxwidth, update text location so it appears on desired
     // place.
-    c->scale(ClampTo<float>(width / font_width), 1);
+    paint_canvas->scale(ClampTo<float>(width / font_width), 1);
     location.set_x(location.x() / ClampTo<float>(width / font_width));
   }
 
@@ -2873,6 +2840,16 @@ void BaseRenderingContext2D::DrawTextInternal(
       { return false; },
       bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
+
+  if (use_max_width) {
+    // Cannot use `paint_canvas` in case recording canvas was substituted or
+    // destroyed during draw call.
+    cc::PaintCanvas* c = GetPaintCanvas();
+    if (c) {
+      c->restore();
+    }
+  }
+  ValidateStateStack();
 }
 
 TextMetrics* BaseRenderingContext2D::measureText(const String& text) {

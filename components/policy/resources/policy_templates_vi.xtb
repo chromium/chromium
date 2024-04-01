@@ -1798,7 +1798,7 @@ Nếu bạn đặt chính sách này thành <ph name="POLICY_VALUE_VISIBLE" />, 
 Nếu bạn chưa đặt chính sách này, thì <ph name="POLICY_VALUE_VISIBLE" /> sẽ là lựa chọn mặc định.</translation>
 <translation id="2489558694350871332">Cho phép thiết bị chạy máy ảo</translation>
 <translation id="2492240920793040106">Bật tính năng báo cáo thông tin hệ thống và nội dung trang để giúp cải thiện tính năng Duyệt web an toàn</translation>
-<translation id="2496180316473517155">Lịch sử duyệt web</translation>
+<translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="2497751676088107779">Tập lệnh người dùng</translation>
 <translation id="2497965601277442929">Không cho phép người dùng bật chế độ Chỉ giao thức HTTPS</translation>
 <translation id="249798396824949930"> Kiểm soát khả năng trình duyệt phát hiện phạm vi chính sách bắt buộc trên <ph name="MAC_OS_NAME" />.
@@ -3453,7 +3453,7 @@ Chính sách này kiểm soát việc Chrome có hỗ trợ các công cụ tíc
       Mỗi mục nhập trong danh sách chứa một từ điển. Từ điển này phải bao gồm ID tiện ích trong trường 'extension-id' và URL cập nhật trong trường 'update-url'.</translation>
 <translation id="3869180930654347954">Tắt First-Party Sets cho mọi người dùng trong phạm vi tác động</translation>
 <translation id="3869566220234507038">Luôn tải trình duyệt <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
-<translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào ngữ cảnh trên màn hình trong quá trình tương tác</translation>
+<translation id="3870035799352372700">Chặn Trợ lý Google truy cập vào bối cảnh trên màn hình trong quá trình tương tác</translation>
 <translation id="3870059789954671543">Bật tính năng hỗ trợ tiếp cận về làm nổi bật tiêu điểm bằng bàn phím trên màn hình đăng nhập.
 
           Khi bật tính năng này, hệ thống sẽ tự động làm nổi bật đối tượng được lấy tiêu điểm bằng bàn phím.
@@ -3801,7 +3801,7 @@ các tiện ích cố định ở một phiên bản cũng bị bỏ qua.
 Nếu bạn đặt chính sách này thành <ph name="ALLOW_UNPUBLISHED" /> (0) hoặc không đặt, các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ được cho phép.
 Nếu bạn đặt chính sách này thành <ph name="DISABLE_UNPUBLISHED" /> (1) thì các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ bị vô hiệu hoá.</translation>
 <translation id="4164866067069311355">Kiểm soát phím tắt dùng để kích hoạt chế độ cài đặt F11/F12</translation>
-<translation id="4165986682804962316">Cài đặt trang web</translation>
+<translation id="4165986682804962316">Chế độ cài đặt trang web</translation>
 <translation id="4166174702671320480">Nếu bạn đặt chính sách này thành Bật, các chính sách không có chung nguồn với các chính sách có độ ưu tiên cao nhất trong một nhóm không thể phân chia sẽ bị bỏ qua.
 
       Nếu bạn đặt chính sách này thành Tắt, sẽ không có chính sách nào bị bỏ qua do vấn đề liên quan đến nguồn nữa. Các chính sách sẽ chỉ bị bỏ qua nếu có xung đột và chính sách này không có mức độ ưu tiên cao nhất.
@@ -4241,7 +4241,7 @@ Chính sách này không có hiệu lực nếu bạn bật, để trống hoặ
 <translation id="4534500438517478692">Tên giới hạn Android:</translation>
 <translation id="4541530620466526913">Tài khoản trong thiết bị</translation>
 <translation id="4542255783284620926">Chặn việc thêm tài khoản được quản lý làm tài khoản phụ trên ChromeOS (trong phiên)</translation>
-<translation id="4543502256674577024">Cài đặt cập nhật thiết bị</translation>
+<translation id="4543502256674577024">Cài đặt cách cập nhật thiết bị</translation>
 <translation id="454585952814397564">Dùng mức ưu tiên bình thường cho tiến trình âm thanh</translation>
 <translation id="4548555985107150628">Chính sách này không còn dùng nữa. Vui lòng dùng <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> để kiểm soát khả năng cung cấp plugin Flash và <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> để kiểm soát xem có phải dùng trình xem PDF tích hợp để mở tệp PDF hay không.
 

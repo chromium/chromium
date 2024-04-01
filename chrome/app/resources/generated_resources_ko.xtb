@@ -522,7 +522,7 @@
 <translation id="1415708812149920388">클립 보드 읽기 액세스 거부됨</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 이 세션 유형에서 허용되지 않습니다.</translation>
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
-<translation id="1417497355604638350">진단 및 사용 데이터 전송</translation>
+<translation id="1417497355604638350">진단 및 사용 데이터 전송.</translation>
 <translation id="1418552618736477642">알림 및 앱</translation>
 <translation id="1418559532423038045"><ph name="DEVICE_TYPE" />에서 <ph name="VM_NAME" />가 삭제됩니다. 이렇게 하면 가상 머신의 모든 앱과 데이터가 삭제됩니다.</translation>
 <translation id="1418882096915998312">기업용 등록 진행 중</translation>
@@ -904,7 +904,7 @@
 <translation id="1692713444215319269">색상 반전, 돋보기, 디스플레이 설정</translation>
 <translation id="1695487653372841667">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다</translation>
 <translation id="1695510246756136088">인터넷에 연결할 수 없습니다. 다시 시도해 주세요.</translation>
-<translation id="1696555181932908973">다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
+<translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" />에서 계속하려면 다른 방법을 시도해 보세요.</translation>
 <translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697150536837697295">예술</translation>
 <translation id="1697686431566694143">파일 수정</translation>
@@ -1002,7 +1002,7 @@
 <translation id="1768278914020124551">로그온 서버에 연결하는 중에 문제가 발생했습니다. 네트워크 연결 및 도메인 이름을 확인한 다음 다시 시도하세요.</translation>
 <translation id="1769104665586091481">새 창에서 링크 열기(&amp;W)</translation>
 <translation id="1770407692401984718">여기로 이미지를 드래그하거나</translation>
-<translation id="177053719077591686">Google Drive에 Android 앱을 백업하세요</translation>
+<translation id="177053719077591686">Google Drive에 Android 앱 백업.</translation>
 <translation id="1771075623623424448">브라우저 기기 로그 페이지를 찾고 계신가요? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />에서 확인하세요.</translation>
 <translation id="1773329206876345543"><ph name="DEVICE_TYPE" />의 모바일 데이터를 사용해 다른 기기에 인터넷을 제공하는 Wi-Fi 핫스팟을 만드세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="177336675152937177">호스팅된 앱 데이터</translation>
@@ -1063,7 +1063,7 @@
 <translation id="1810070166657251157">휴대전화에서 저장된 비밀번호를 사용하려면 QR 코드를 따라가 iOS용 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="1810366086647840386">이미지 서버</translation>
 <translation id="1811908311154949291">시크릿 모드 펜스된 프레임: <ph name="FENCEDFRAME_SITE" /></translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 계속 사용할 수 없음</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />에서 ID 공급업체(<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)를 사용하여 계속할 수 없음</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> 전송 중</translation>
 <translation id="1813278315230285598">서비스</translation>
 <translation id="18139523105317219">EDI측 이름</translation>
@@ -1145,7 +1145,7 @@
 <translation id="186612162884103683">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽고 쓸 수 있습니다.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" />에서 설치 완료 준비가 되었습니다.</translation>
 <translation id="1868553836791672080">Chromium에서 비밀번호 확인 기능을 사용할 수 없습니다.</translation>
-<translation id="1868617395637139709">Android 앱과 서비스에 위치를 사용하세요</translation>
+<translation id="1868617395637139709">Android 앱과 서비스에 위치 사용.</translation>
 <translation id="1869433484041798909">북마크 버튼</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
 <translation id="1871131409931646355">전체 다운로드 기록</translation>
@@ -1243,7 +1243,7 @@
 <translation id="1940546824932169984">연결된 기기</translation>
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
-<translation id="194174710521904357">이 사이트에서 서드 파티 쿠키가 일시적으로 허용되었습니다. 보안이 취약해졌지만 사이트 기능이 예상대로 작동할 가능성은 높아졌습니다.</translation>
+<translation id="194174710521904357">이 사이트에서 서드 파티 쿠키가 일시적으로 허용되었습니다. 보안 수준이 낮아졌지만 사이트 기능이 예상대로 작동할 가능성은 높아졌습니다.</translation>
 <translation id="1941995177877935582">키 매핑 표시</translation>
 <translation id="1942128823046546853">모든 웹사이트에 있는 전체 내 데이터 읽기 및 변경</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
@@ -1550,7 +1550,7 @@
 <translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />이 기기(일련번호: <ph name="SERIAL_NUMBER" />)는 잠긴 상태입니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="MS_AD_NAME" />에서 Chrome 기기 관리는 더 이상 지원되지 않습니다. 로그인하려면 다른 기기를 사용하거나 기기 관리자에게 문의하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2169062631698640254">로그인</translation>
-<translation id="2173302385160625112">인터넷 연결 상태를 확인하세요.</translation>
+<translation id="2173302385160625112">인터넷 연결 상태 확인</translation>
 <translation id="2173801458090845390">이 기기에 요청 ID 추가</translation>
 <translation id="2175384018164129879">검색엔진 및 사이트 검색 관리</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
@@ -2410,7 +2410,7 @@
 <translation id="2811205483104563968">계정</translation>
 <translation id="2811564570599779918">스팸 및 사기 감소</translation>
 <translation id="2812049959647166806">Thunderbolt가 지원되지 않음</translation>
-<translation id="2812171980080389735">즉시 연결할 수 있도록 네트워크 및 비밀번호 저장</translation>
+<translation id="2812171980080389735">즉시 연결할 수 있도록 저장된 네트워크 및 비밀번호</translation>
 <translation id="2813094189969465044">자녀 보호 기능</translation>
 <translation id="2813765525536183456">새 프로필 추가(&amp;A)</translation>
 <translation id="281390819046738856">요청을 서명할 수 없습니다.</translation>
@@ -3571,7 +3571,7 @@
 <translation id="37613671848467444">시크릿 창에서 열기(&amp;I)</translation>
 <translation id="3761390540041101668">문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다(가능한 경우).</translation>
 <translation id="3761556954875533505">사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
-<translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다.</translation>
+<translation id="3763433740586298940">원치 않는 사이트를 차단할 수 있습니다. 또한 30일이 경과한 웹사이트는 목록에서 자동으로 삭제됩니다.</translation>
 <translation id="3763549179847864476">개인 정보 보호 가이드 뒤로 버튼</translation>
 <translation id="3764314093345384080">자세한 빌드 정보</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB 기기 1개와 통신}other{USB 기기 #개와 통신}}</translation>
@@ -5939,7 +5939,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="567643736130151854">로그인 후 동기화를 사용 설정하여 모든 기기에서 내 북마크, 비밀번호 등을 사용하세요.</translation>
 <translation id="567740581294087470">무엇에 관련된 의견인가요?</translation>
 <translation id="5677503058916217575">페이지 언어:</translation>
-<translation id="5677928146339483299">차단</translation>
+<translation id="5677928146339483299">차단됨</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" />에 대한 읽기/쓰기 액세스 권한이 부여되었습니다.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" />에 보내는 중</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />에서 데이터 읽기</translation>
@@ -7934,7 +7934,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>
 <translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다</translation>
-<translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
+<translation id="7289303553784750393">온라인 상태인데도 이 문제가 계속 발생하는 경우 <ph name="SITE_ETLD_PLUS_ONE" />에서 계속하기 위한 다른 방법을 시도해 보세요.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 권한 요청됨, F6 키를 눌러 응답</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />에서 호스팅하는 이 로그인 서비스는 카메라에 액세스합니다.</translation>
 <translation id="7292067737327289208">조직에서 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />하고 <ph name="PROFILE_DOMAIN" />에서 <ph name="BEGIN_LINK" />프로필을 관리<ph name="END_LINK" />합니다.</translation>
@@ -8002,7 +8002,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" />에서 나가려면 클릭하세요.</translation>
 <translation id="7348093485538360975">터치 키보드</translation>
 <translation id="7349010927677336670">동영상 화질</translation>
-<translation id="7352651011704765696">문제가 발생한 경우</translation>
+<translation id="7352651011704765696">문제가 발생했습니다.</translation>
 <translation id="7352664183151911163">여러 앱 및 Chrome 브라우저</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
@@ -8371,7 +8371,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7634566076839829401">문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7635048370253485243">관리자가 고정함</translation>
 <translation id="7635711411613274199">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK1" />광고 주제<ph name="LINK_END1" />, 나의 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
-<translation id="7636346903338549690">사이트에서 서드 파티 쿠키를 사용할 수 있음</translation>
+<translation id="7636346903338549690">서드 파티 쿠키 사용이 허용된 사이트</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
 <translation id="7637253234491814483">키보드 오른쪽 상단의 전원 버튼 옆에 있는 지문 센서를 터치합니다. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="7637272932128132922">이 탭이 비활성 상태인 동안 메모리 절약 모드가 다른 작업을 위해 메모리를 확보했습니다. 언제든지 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
@@ -9504,7 +9504,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8497219075884839166">Windows 유틸리티</translation>
 <translation id="8498214519255567734">어두운 곳에서 화면을 보거나 읽기 편하도록 설정합니다.</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
-<translation id="8499951261760185742">방문하는 사이트가 제대로 작동하지 않는 경우 해당 사이트에 대한 서드 파티 쿠키를 일시적으로 허용해 보세요. 보안은 취약해지지만, 사이트 기능이 제대로 작동할 가능성은 높아집니다.</translation>
+<translation id="8499951261760185742">방문하는 사이트가 제대로 작동하지 않는 경우 해당 사이트에 대한 서드 파티 쿠키를 일시적으로 허용해 보세요. 보안 수준은 낮아지지만, 사이트 기능이 제대로 작동할 가능성은 높아집니다.</translation>
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="850382998924680137">오늘 조회함</translation>

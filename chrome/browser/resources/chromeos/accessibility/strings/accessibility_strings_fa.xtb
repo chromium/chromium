@@ -357,7 +357,7 @@
 <translation id="3300733168898541351">واگرد</translation>
 <translation id="3307886118343381874">رفتن به انتهای جدول</translation>
 <translation id="3312997241656799641">پیوند بازدید شده بعدی</translation>
-<translation id="3313245066383501820">‏کلید تغییردهنده ChromeVox</translation>
+<translation id="3313245066383501820">‏کلید توصیف‌گر ChromeVox</translation>
 <translation id="3317212938060708859">لغزنده</translation>
 <translation id="3321460131042519426">فعال کردن «قرارگیری متن در کادر»</translation>
 <translation id="3322936298410871309">عنوان قبلی سطح ۱</translation>
@@ -807,7 +807,7 @@
 <translation id="6508059270146105198">انتقال نمایشگر بریل به پایین صفحه</translation>
 <translation id="6521550811716689390">بنفش تیره</translation>
 <translation id="6536157907112457272">کتانی</translation>
-<translation id="6540201937398578274">‏در ChromeVox، کلید «جستجو» (Search) کلید تغییردهنده است. اکثر میان‌برهای ChromeVox با کلید «جستجو» شروع می‌شوند. از کلیدهای پیکان نیز برای پیمایش استفاده می‌کنید.</translation>
+<translation id="6540201937398578274">‏در ChromeVox، کلید «جستجو» (Search) کلید توصیف‌گر است. اکثر میان‌برهای ChromeVox با کلید «جستجو» شروع می‌شوند. از کلیدهای پیکان نیز برای پیمایش استفاده می‌کنید.</translation>
 <translation id="6544923685317771506">بژ باز</translation>
 <translation id="6551185905438378412">عاجی</translation>
 <translation id="6561818612645211875">رفتن به شروع ردیف کنونی</translation>
@@ -1124,7 +1124,7 @@
 <translation id="8908714597367957477">colhdr</translation>
 <translation id="8910180774920883033">کنش‌هایی دردسترس است. برای مشاهده، «جستجو+مهار+ش» را فشار دهید</translation>
 <translation id="8937112856099038376">intlnk</translation>
-<translation id="8940925288729953902">کلیدهای تغییردهنده</translation>
+<translation id="8940925288729953902">کلیدهای توصیف‌گر</translation>
 <translation id="8943282376843390568">لیمویی</translation>
 <translation id="8944511129464116546">برخی علامت‌گذاری شده است</translation>
 <translation id="8946628535652548639">ر<ph name="TABLECELLROWINDEX" />س<ph name="TABLECELLCOLUMNINDEX" /></translation>

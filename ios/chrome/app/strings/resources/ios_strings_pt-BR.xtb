@@ -316,7 +316,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2648803196158606475">Excluir lidas</translation>
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2666092431469916601">Parte superior</translation>
-<translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos transferidos por download</translation>
+<translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os arquivos baixados</translation>
 <translation id="2671426118752779020">Você pode usar as senhas armazenadas no Gerenciador de senhas do Google em outros apps do iPhone.</translation>
 <translation id="2690858294534178585">A câmera está sendo usada</translation>
 <translation id="2691653761409724435">Não está disponível off-line</translation>
@@ -1227,7 +1227,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> artigos não lidos.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="7425346204213733349">Alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na Conta do Google.</translation>
-<translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
+<translation id="7431991332293347422">Controlar como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
@@ -1477,7 +1477,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
-<translation id="8730621377337864115">Concluído</translation>
+<translation id="8730621377337864115">Concluir</translation>
 <translation id="8731958888085671579">Ocultar "Localizar na página"</translation>
 <translation id="87371078663613140">Explore as opções na barra de menus</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} perfil salvo disponível acima do teclado.}one{{count} perfil salvo disponível acima do teclado.}other{{count} perfis salvos disponíveis acima do teclado.}}</translation>

@@ -1259,7 +1259,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1969550816138571473">Préparation…</translation>
 <translation id="1969654639948595766">Journaux texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils ChromeOS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans ChromeOS. Ces rapports peuvent inclure diverses informations (plantages de ChromeOS, fonctionnalités utilisées, quantité de mémoire généralement utilisée, etc.). Certaines données globales seront également utiles aux développeurs des applis Google et à nos partenaires tels que les développeurs Android. D'autres données d'utilisation et de diagnostic des applis (y compris Android et Web) seront collectées si la synchronisation des applis est aussi activée.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil Chrome OS. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil ChromeOS. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si le paramètre "Activité sur le Web et les applications" est activé pour votre compte Google, vos données Android peuvent y être enregistrées. Vous pouvez consulter vos données, les supprimer et modifier les paramètres de votre compte sur la page account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">Les sites que vous ajoutez restent toujours actifs et ne sont pas libérés de la mémoire. <ph name="BEGIN_LINK" />Découvrez comment maintenir des sites spécifiques actifs<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
@@ -3094,7 +3094,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3406290648907941085">Autorisé à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="3406396172897554194">Faites une recherche par langue ou mode de saisie</translation>
 <translation id="3406605057700382950">&amp;Afficher la barre de favoris</translation>
-<translation id="3407392651057365886">Plus de pages sont préchargées. Elles peuvent l'être via les serveurs de Google à la demande d'autres sites.</translation>
+<translation id="3407392651057365886">Un plus grand nombre de pages est préchargé. Ces pages peuvent être préchargées via les serveurs de Google à la demande d'autres sites</translation>
 <translation id="3407967630066378878">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale sur le côté gauche de ce <ph name="DEVICE_TYPE" />. Les données liées à son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3409513286451883969">&amp;Traduire la sélection en <ph name="LANGUAGE" /></translation>
 <translation id="3409785640040772790">Maps</translation>
@@ -3246,7 +3246,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3519564332031442870">Service d'impression backend</translation>
 <translation id="3519938335881974273">Enregistrer la page sous…</translation>
 <translation id="3520824492621090923">Confirmer l'enregistrement de l'appareil avec Kiosk &amp; Signage ?</translation>
-<translation id="3521388823983121502">Impossible de poursuivre avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="3521388823983121502">Impossible de poursuivre avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3521405806571557477">Supprimer les données enregistrées pour <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
 <translation id="3522088408596898827">Le disque est presque saturé. Veuillez libérer de l'espace et réessayer.</translation>
@@ -3660,7 +3660,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3826440694796503677">Votre administrateur a désactivé la fonctionnalité d'ajout d'autres comptes Google</translation>
 <translation id="3827774300009121996">&amp;Plein écran</translation>
 <translation id="3828029223314399057">Rechercher dans les favoris</translation>
-<translation id="3828953470056652895">J'ai lu et j'accepte les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" />, les<ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Chrome et Chrome OS<ph name="END_LINK2" />, ainsi que les <ph name="BEGIN_LINK3" />Conditions d'utilisation de Play<ph name="END_LINK3" />.</translation>
+<translation id="3828953470056652895">J'ai lu et j'accepte les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" />, les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Chrome et Chrome OS<ph name="END_LINK2" />, ainsi que les <ph name="BEGIN_LINK3" />Conditions d'utilisation de Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Utilisation élevée de la mémoire - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Partage de fichiers SMB</translation>
 <translation id="3830470485672984938">Utiliser une autre clé d'accès</translation>
@@ -3858,7 +3858,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3979748722126423326">Activer <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Visible par les appareils à proximité sous le nom <ph name="DEVICE_NAME" /> pendant <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">Le type d'enregistrement indiqué est incorrect.</translation>
-<translation id="3981902534690264083">Les annonceurs peuvent comprendre les performances des annonces</translation>
+<translation id="3981902534690264083">Les annonceurs peuvent analyser les performances des annonces</translation>
 <translation id="3982375475032951137">Configurez votre navigateur en quelques étapes faciles</translation>
 <translation id="3983400541576569538">Il se peut que les données de certaines applications soient perdues</translation>
 <translation id="3983586614702900908">appareils d'un fournisseur inconnu</translation>
@@ -3969,7 +3969,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4067839975993712852">Marquer l'onglet actif comme lu</translation>
 <translation id="4068776064906523561">Empreintes digitales enregistrées</translation>
 <translation id="407173827865827707">En cas de clic</translation>
-<translation id="4072805772816336153">Réessayer plus tard</translation>
+<translation id="4072805772816336153">Réessayez plus tard</translation>
 <translation id="4074164314564067597">clavier</translation>
 <translation id="407520071244661467">Mise à l'échelle</translation>
 <translation id="407543464472585404">Le profil de <ph name="NAME" /> est associé à <ph name="EMAIL" /></translation>
@@ -4335,7 +4335,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4378556263712303865">Réquisition de l'appareil</translation>
 <translation id="4379097572583973456">Un site peut aussi intégrer du contenu d'autres sites (par exemple, des images, des annonces et du texte). Ces autres sites peuvent aussi enregistrer des données.</translation>
 <translation id="4379281552162875326">Désinstaller <ph name="APP_NAME" /> ?</translation>
-<translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
+<translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Mode plein écran activé</translation>
 <translation id="4381902252848068865">Ne pas autoriser le site à enregistrer des données</translation>
 <translation id="4383048856908088702">Pendant que cet onglet était inactif, l'économiseur de mémoire a libéré <ph name="MEMORY_VALUE" /> de mémoire pour d'autres tâches. Vous pouvez modifier cette option à tout moment dans <ph name="SETTINGS_LINK" />.</translation>
@@ -5615,7 +5615,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5425863515030416387">Se connecter facilement sur tous les appareils</translation>
 <translation id="5427278936122846523">Toujours traduire</translation>
 <translation id="5427459444770871191">Rotation &amp;horaire</translation>
-<translation id="542750953150239272">En continuant, vous acceptez que cet appareil puisse aussi télécharger et installer automatiquement des mises à jour et des applis de Google, de votre opérateur et du fabricant de votre appareil, probablement via le réseau mobile. Certaines de ces applis permettent d'y effectuer des achats.</translation>
+<translation id="542750953150239272">En continuant, vous acceptez que cet appareil puisse aussi télécharger et installer automatiquement des mises à jour et des applis de Google, de votre opérateur et du fabricant de votre appareil, éventuellement via des données mobiles. Certaines de ces applis permettent d'y effectuer des achats.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (mise à jour disponible)</translation>
 <translation id="542948651837270806">Vous devez mettre à jour le micrologiciel TPM (Trusted Platform Module). Consultez la page <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Pleine largeur</translation>
@@ -5925,7 +5925,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="567643736130151854">Connectez-vous et activez la synchronisation pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="567740581294087470">Quel type de commentaires fournissez-vous ?</translation>
 <translation id="5677503058916217575">Langue de la page :</translation>
-<translation id="5677928146339483299">Bloqué</translation>
+<translation id="5677928146339483299">Bloqués</translation>
 <translation id="5678550637669481956">L'accès en lecture et en écriture à "<ph name="VOLUME_NAME" />" a été accordé.</translation>
 <translation id="5678821117681811450">Envoi à <ph name="WEB_DRIVE" />…</translation>
 <translation id="5678955352098267522">Lire vos données sur <ph name="WEBSITE_1" /></translation>
@@ -6430,7 +6430,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6077189836672154517">Conseils et actualités sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parler pour saisir votre texte</translation>
 <translation id="6078121669093215958">{0,plural, =1{Invité}one{# fenêtre en mode Invité ouverte}other{# fenêtres en mode Invité ouvertes}}</translation>
-<translation id="6078323886959318429">Ajouter un raccourci</translation>
+<translation id="6078323886959318429">Ajouter raccourci</translation>
 <translation id="6078742430369906859">La connectivité sur "<ph name="NETWORK_ID" />" peut être limitée</translation>
 <translation id="6078752646384677957">Veuillez vérifier le volume de votre micro et le volume audio.</translation>
 <translation id="608029822688206592">Aucun réseau trouvé. Veuillez insérer votre carte SIM et réessayer.</translation>
@@ -7363,7 +7363,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6826872289184051766">Valider via USB</translation>
 <translation id="6827121912381363404">Autoriser toutes les extensions à lire et modifier <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827422464708099620">Sélectionner pour afficher plus d'options</translation>
-<translation id="6827517233063803343">Vos applis et paramètres seront synchronisés sur tous les appareils Chrome OS où vous êtes connecté à votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827517233063803343">Vos applis et paramètres seront synchronisés sur tous les appareils ChromeOS où vous êtes connecté à votre compte Google. Pour voir les options de synchronisation du navigateur, accédez aux <ph name="LINK_BEGIN" />paramètres de Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">Les anciennes versions des applis Chrome ne s'ouvriront plus sur les appareils Windows après décembre 2022. Contactez votre administrateur pour passer à une nouvelle version ou supprimer cette appli.</translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Saisissez votre phrase secrète pour synchroniser vos données.</translation>
@@ -8046,7 +8046,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7387273928653486359">Acceptable</translation>
 <translation id="7387951778417998929">Pour utiliser un autre moteur de recherche que celui défini par défaut, saisissez son raccourci dans la barre d'adresse suivi du raccourci clavier de votre choix. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="7388209873137778229">Seuls les appareils compatibles sont affichés.</translation>
-<translation id="7388615499319468910">Les sites et les annonceurs peuvent comprendre les performances des annonces. Ce paramètre est désactivé.</translation>
+<translation id="7388615499319468910">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est désactivé.</translation>
 <translation id="738903649531469042">Ajouter l'onglet à la liste de lecture</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus.</translation>
 <translation id="7392915005464253525">&amp;Rouvrir la fenêtre fermée</translation>
@@ -8657,7 +8657,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7848244988854036372">Tout ouvrir (<ph name="URL_COUNT" />) dans un nouveau groupe d'onglets</translation>
 <translation id="7849264908733290972">Ouvrir l'&amp;image dans un nouvel onglet</translation>
 <translation id="784934925303690534">Période</translation>
-<translation id="7849656116606005620">Rappel : La Protection contre le suivi est activée</translation>
+<translation id="7849656116606005620">Rappel : La protection contre le suivi est activée</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils Chrome OS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans Chrome OS. Ces rapports peuvent inclure diverses informations (plantages de Chrome OS, fonctionnalités utilisées, quantité de mémoire généralement utilisée et données d'utilisation et de diagnostic des applis Android). Certaines données globales seront aussi utiles aux partenaires et développeurs d'applis Google tels que les développeurs Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil Chrome OS. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si le paramètre "Activité sur le Web et les applications" est activé pour votre compte Google, vos données Android peuvent y être enregistrées. Vous pouvez consulter vos données, les supprimer et modifier les paramètres de votre compte sur la page account.google.com.<ph name="END_PARAGRAPH3" /></translation>
@@ -9492,7 +9492,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8497219075884839166">Utilitaires Windows</translation>
 <translation id="8498214519255567734">Facilite la lecture à l'écran lorsque l'éclairage est faible</translation>
 <translation id="8499083585497694743">Réactiver le micro</translation>
-<translation id="8499951261760185742">Si un site que vous consultez ne fonctionne pas comme prévu, essayez d'autoriser temporairement les cookies tiers pour celui-ci. La protection sera réduite, mais les fonctionnalités du site seront plus susceptibles de fonctionner comme prévu.</translation>
+<translation id="8499951261760185742">Si un site que vous consultez ne fonctionne pas comme prévu, essayez d'autoriser temporairement les cookies tiers pour celui-ci. La protection sera réduite, mais les fonctionnalités du site seront davantage susceptibles de fonctionner.</translation>
 <translation id="8502536196501630039">Pour utiliser des applications de Google Play, vous devez d'abord restaurer vos applications. Certaines données peuvent avoir été perdues.</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="850382998924680137">Vu aujourd'hui</translation>
@@ -10279,7 +10279,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9100765901046053179">Paramètres avancés</translation>
 <translation id="9101691533782776290">Lancer l'application</translation>
 <translation id="9102610709270966160">Activer l'extension</translation>
-<translation id="9102864637938129124">Les sites et les annonceurs peuvent comprendre les performances des annonces. Ce paramètre est activé.</translation>
+<translation id="9102864637938129124">Les sites et les annonceurs peuvent analyser les performances des annonces. Ce paramètre est activé.</translation>
 <translation id="9103479157856427471">Zoom avant de l'écran effectué selon l'élément sélectionné au clavier</translation>
 <translation id="9103868373786083162">Appuyer pour revenir en arrière, menu contextuel pour afficher l'historique</translation>
 <translation id="9107096627210171112">Traduire</translation>

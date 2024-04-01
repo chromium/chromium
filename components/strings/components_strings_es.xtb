@@ -145,7 +145,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1266469291454105242">Desbloqueo del dispositivo</translation>
-<translation id="126728463333482584">Eres una de las primeras personas en usar Protección Antirastreo, que restringe que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
+<translation id="126728463333482584">Eres una de las primeras personas en usar Protección Antirrastreo, que restringe que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
 <translation id="1268480293435976622">Sobre chino 7</translation>
 <translation id="1269516672602708785">Crea un nuevo sitio con Google Sites rápidamente</translation>
 <translation id="1270328905573953738">Portes y mudanzas</translation>
@@ -761,7 +761,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Añade más información</translation>
-<translation id="2526280916094749336">Puedes usar direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
+<translation id="2526280916094749336">Puedes usar las direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
 <translation id="253493526287553278">Ver detalles del código promocional</translation>
@@ -2493,7 +2493,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6051221802930200923">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web utiliza la fijación de certificados. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053584886670442526">Puedes usar direcciones guardadas en los productos de Google. Esta dirección está guardada en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
+<translation id="6053584886670442526">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guarda en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Consulta más información sobre cómo protege Google tus datos en nuestra Política de Privacidad.</translation>
 <translation id="6055888660316801977">Hoja de credenciales de pago seguro con una credencial que no coincide</translation>
 <translation id="6055982527635883756">Sobre (archivo)</translation>
@@ -2624,7 +2624,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
 <translation id="6340739886198108203">La política del administrador recomienda no hacer capturas de pantalla o grabaciones cuando se muestra contenido confidencial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La política del administrador recomienda no subir este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador recomienda no subir estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Protección frente al seguimiento</translation>
+<translation id="6344622098450209924">Protección Antirrastreo</translation>
 <translation id="634500758737709758">Indicaciones</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
@@ -2843,7 +2843,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6786145470008421571">Sobre de 6x9 pulgadas</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensiones</translation>
-<translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad para que puedas controlar mejor los anuncios que veas.</translation>
+<translation id="6787094689637422836">Vamos a lanzar nuevas funciones de privacidad para que puedas controlar mejor los anuncios que ves.</translation>
 <translation id="6789062271869667677">Impresión continua (larga)</translation>
 <translation id="678982761784843853">IDs de contenido protegido</translation>
 <translation id="6790428901817661496">Reproducir</translation>

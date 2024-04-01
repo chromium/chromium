@@ -313,7 +313,7 @@
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="1236009322878349843">修改手机详情</translation>
 <translation id="1239594683407221485">在“文件”应用中浏览此设备上的内容。</translation>
-<translation id="1240903469550363138">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
+<translation id="1240903469550363138">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的姓名、电子邮件地址和个人资料照片提供给此网站。具体请参阅此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1241066500170667906">为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态</translation>
 <translation id="124116460088058876">更多语言</translation>
 <translation id="1241381048229838873">显示所有书签</translation>
@@ -1252,7 +1252,7 @@
 <translation id="1969654639948595766">WebRTC 文本日志 (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 账号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 账号中。您可在 account.google.com 上查看和删除您的数据以及更改您的账号设置。<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 账号开启“网络与应用活动记录”设置，您的 Android 数据可能会保存到您的 Google 账号中。您可在 account.google.com 上查看和删除您的数据以及更改您的账号设置。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">您添加的网站将始终保持活跃状态，且系统不会从它们中释放内存。<ph name="BEGIN_LINK" />详细了解如何让特定网站保持活跃状态<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="197288927597451399">保留</translation>
@@ -2149,7 +2149,7 @@
 <translation id="2643698698624765890">您可以通过点击“窗口”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在将此标签页投放到“<ph name="DEVICE_NAME" />”</translation>
-<translation id="2645435784669275700">Chrome 操作系统</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">红色弱</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
 <translation id="265156376773362237">标准预加载</translation>
@@ -3139,7 +3139,7 @@
 <translation id="3445925074670675829">USB-C 设备</translation>
 <translation id="3446274660183028131">请启动 Parallels Desktop 以安装 Windows。</translation>
 <translation id="344630545793878684">读取您在一些网站上的数据</translation>
-<translation id="3447644283769633681">拦截所有第三方 Cookie</translation>
+<translation id="3447644283769633681">阻止所有第三方 Cookie</translation>
 <translation id="3447797901512053632">正在将“<ph name="TAB_NAME" />”投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="3448492834076427715">更新账号</translation>
 <translation id="3449393517661170867">打开新的标签页窗口</translation>
@@ -4448,7 +4448,7 @@
 <translation id="4476590490540813026">运动员</translation>
 <translation id="4476659815936224889">要扫描此二维码，您可以使用手机上的二维码扫描器应用，也可以使用某些相机应用。</translation>
 <translation id="4477015793815781985">必须以 Ctrl 键、Alt 键或 ⌘ 键开头</translation>
-<translation id="4478161224666880173">您可以在此网站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号。如需继续操作，请登录 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
+<translation id="4478161224666880173">您可以在此网站上使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号。如需继续，请登录 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />。</translation>
 <translation id="4478664379124702289">链接存储为(&amp;K)...</translation>
 <translation id="4479424953165245642">管理自助服务终端应用</translation>
 <translation id="4479639480957787382">以太网</translation>
@@ -4713,7 +4713,7 @@
 <translation id="4682830185876172415">近期的下载内容</translation>
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
-<translation id="4684427112815847243">同步所有数据类型</translation>
+<translation id="4684427112815847243">同步所有数据</translation>
 <translation id="4685096503970466594">关闭“<ph name="FEATURE_NAME" />”功能</translation>
 <translation id="4687238339694011189">请确保您的打印机已开机，且已连接到 Chromebook 所用网络或使用 USB 线</translation>
 <translation id="4687613760714619596">未知设备 (<ph name="DEVICE_ID" />)</translation>
@@ -5912,7 +5912,7 @@
 <translation id="567643736130151854">您只需登录账号并开启同步功能，即可将您的书签和密码等信息同步到所有设备上</translation>
 <translation id="567740581294087470">您要提供什么类型的反馈？</translation>
 <translation id="5677503058916217575">网页语言：</translation>
-<translation id="5677928146339483299">已禁止</translation>
+<translation id="5677928146339483299">已阻止</translation>
 <translation id="5678550637669481956">已授予对 <ph name="VOLUME_NAME" />的读写权限。</translation>
 <translation id="5678821117681811450">正在发送到“<ph name="WEB_DRIVE" />”</translation>
 <translation id="5678955352098267522">读取您在 <ph name="WEBSITE_1" /> 上的数据</translation>
@@ -6557,7 +6557,7 @@
 <translation id="6194333736420234626">付款方式(&amp;P)</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
 <translation id="6195155925303302899">居中对齐</translation>
-<translation id="6195163219142236913">第三方 Cookie 受限</translation>
+<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
@@ -9361,7 +9361,7 @@
 <translation id="8403807918453631441">您需要先保存密码，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
-<translation id="8408270600235826886">您可以控制与 Google 分享哪些数据。您随时可在“设置”中更改此设置。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
+<translation id="8408270600235826886">您可以控制与 Google 分享哪些数据，并且随时可在“设置”中进行更改。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
 <translation id="84098433273647700">您已安装的当前主题。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全屏</translation>
@@ -9369,7 +9369,7 @@
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8413956290606243087">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="8414249071344507766">回忆已设为隐藏两天</translation>
-<translation id="8414396119627470038">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8414685983518053656">备注</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>
 <translation id="8417548266957501132">家长登录密码</translation>
@@ -9639,7 +9639,7 @@
 <translation id="8641946446576357115">在 iOS 设备上使用您的密码</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
-<translation id="8643403533759285912">删除群组</translation>
+<translation id="8643403533759285912">删除组</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{无 Cookie}=1{屏蔽了 1 个 Cookie}other{屏蔽了 # 个 Cookie}}</translation>
 <translation id="864423554496711319">已保存在您账号下的设备</translation>

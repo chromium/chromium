@@ -658,6 +658,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisabledTest(message = "https://crbug.com/1510968")
     public void testShowCookiesSubpageUserBypassOn() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -685,6 +686,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisabledTest(message = "https://crbug.com/1510968")
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
         enableTrackingProtection();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -713,6 +715,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(PageInfoFeatures.USER_BYPASS_UI_NAME)
+    @DisabledTest(message = "https://crbug.com/1510968")
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
         enableTrackingProtection();
         blockAll3PC();

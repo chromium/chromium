@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PASS] 3 inputs; 0 outputs
+[FAIL] 0 inputs; 3 outputs
+  assert_equals: outputs[0].length expected 1 but got 0
+Harness: the test ran to completion.
+

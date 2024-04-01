@@ -15,7 +15,7 @@
 <translation id="10614374240317010">Nie speichern für…</translation>
 <translation id="1062628064301375934">Hilf uns, den Datenschutz im Web zu verbessern</translation>
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an deinem Gerät verursachen.</translation>
-<translation id="1089606299949659462">Überprüfung abgeschlossen</translation>
+<translation id="1089606299949659462">Fertig!</translation>
 <translation id="1095761715416917775">Du solltest jederzeit auf deine synchronisierten Daten zugreifen können</translation>
 <translation id="1100066534610197918">In neuem Tab in Gruppe öffnen</translation>
 <translation id="1103142993930332957">Möchtest du helfen, Chrome zu verbessern?</translation>
@@ -51,7 +51,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1239792311949352652">Diese Seite schnell teilen. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
 <translation id="1240190568154816272">Chrome-Tipps</translation>
 <translation id="1240288207750131269"><ph name="LANG" /> wird geladen</translation>
-<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Lies die <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und die <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" /> dieser Website.</translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website, um fortzufahren. Weitere Informationen findest du in der <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />Nutzungsbedingungen<ph name="END_LINK2" /> dieser Website.</translation>
 <translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1241792820757384812">Deine Passwörter für <ph name="CHROME_CHANNEL" /> werden aus dem Google Passwortmanager gelöscht. Du behältst die soeben heruntergeladene Passwortdatei.</translation>
 <translation id="1242883863226959074">Gerät</translation>
@@ -572,7 +572,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="405399507749852140">Du wirst bei einem Preisnachlass benachrichtigt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Rechtliche Hinweise</translation>
-<translation id="4072805772816336153">Versuchen Sie es später noch einmal</translation>
+<translation id="4072805772816336153">Versuch es später noch einmal</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
 <translation id="4084712963632273211">Von <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />bereitgestellt durch Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kannst dich über dieses Tablet auf dem Gerät anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
@@ -713,7 +713,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4763480195061959176">Video</translation>
 <translation id="4766313118839197559">Passwörter werden auf diesem Gerät im Passwortmanager gespeichert</translation>
 <translation id="4766678251456904326">Konto zum Gerät hinzufügen</translation>
-<translation id="4767947714785277816">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: „Erfolgsmessung von Anzeigen“. Chrome gibt nur sehr wenige Informationen zwischen Websites und Apps weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit die Leistung von Werbung analysiert werden kann.</translation>
+<translation id="4767947714785277816">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: Erfolgsmessung von Anzeigen. Chrome gibt nur sehr wenige Informationen zwischen Websites und Apps weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit die Leistung von Werbung analysiert werden kann.</translation>
 <translation id="4769095993849849966">Neuer Dateiname</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> gelöscht</translation>
 <translation id="4778653490315793244">Noch keine Inhalte vorhanden</translation>
@@ -930,7 +930,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
 <translation id="5864419784173784555">Warten auf weiteren Download…</translation>
-<translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte automatisch an Google senden</translation>
+<translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte werden automatisch an Google gesendet</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="587735546353481577">Wenn du einer Website folgen möchtest, rufe die Website auf, öffne das Chrome-Menü und tippe auf „Folgen“.</translation>
 <translation id="5879072387416556377">Bessere Vorschläge erhalten</translation>
@@ -1078,7 +1078,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6621391692573306628">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chrome an</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6633067410344541938">Inkognitotabs entsperren</translation>
-<translation id="6636623428211296678">Weitere Einstellungen ansehen oder Überprüfung jetzt beenden</translation>
+<translation id="6636623428211296678">Weitere Einstellungen ansehen oder jetzt beenden</translation>
 <translation id="663674369910034433">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK1" />Synchronisierung<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Google-Dienste<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Immer blockieren</translation>
@@ -1105,7 +1105,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="671481426037969117">Dein <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
 <translation id="6715020873764921614">Möchtest du <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) trotzdem herunterladen?</translation>
 <translation id="6719634564325948108">Über QR-Code verbinden?</translation>
-<translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
+<translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="6738867403308150051">Wird heruntergeladen...</translation>
 <translation id="674388916582496364">Von dir besuchte Websites können deine Interessen speichern und zur Personalisierung verwenden. Websites können außerdem Daten zu deinen Interessen bei Chrome speichern.</translation>
 <translation id="6751521182688001123">Öffnet schnell einen neuen Tab. Zum Ändern Schaltfläche gedrückt halten.</translation>
@@ -1113,7 +1113,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6767294960381293877">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist halb geöffnet.</translation>
 <translation id="6770042910635026163">Von dir besuchte Websites, über die deine Interessen definiert werden</translation>
 <translation id="6770602306803890733">Verbessert die Sicherheit für dich und alle im Internet</translation>
-<translation id="6775840696761158817">Wenn du auf die Adressleiste oder das Suchfeld tippst oder darin Eingaben vornimmst, werden Vorschläge deiner Standardsuchmaschine angezeigt. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
+<translation id="6775840696761158817">Wenn du auf die Adressleiste oder das Suchfeld tippst oder dort ewas eingibst, werden Vorschläge deiner Standardsuchmaschine angezeigt. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="6785476624617658922">Zusätzliche Nutzungsbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="6795633245022906657">Öffnet schnell einen neuen Tab. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
 <translation id="6802555630140434547">Das Fenster wird geschlossen</translation>
@@ -1467,9 +1467,9 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8453310803815879010">Dino-Spiel starten</translation>
 <translation id="8460448946170646641">Die wichtigsten Datenschutz- und Sicherheitseinstellungen überprüfen</translation>
-<translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
+<translation id="8461694314515752532">Synchronisierte Daten mit eigener Passphrase für die Synchronisierung verschlüsseln</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> muss mit dem Internet verbunden sein</translation>
-<translation id="8473863474539038330">Adressen</translation>
+<translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="847433688444405067">Geräteübergreifend surfen</translation>
 <translation id="8481980314595922412">Testfunktionen sind aktiviert</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>

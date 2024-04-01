@@ -766,7 +766,7 @@
 <translation id="1600541617401655593">ChromeOS Flex को पर्फर्मेन्स र यसका सुविधाहरूको गुणस्तर सुधार्न सघाउनुहोस्। जानकारी एकत्रित गरिन्छ र एकदमै सुरक्षित राखिन्छ।</translation>
 <translation id="1600857548979126453">पृष्ठ डिबजर ब्याकएन्ड पहुँच गर्नुहोस्</translation>
 <translation id="1601481906560916994">यो साइट समावेश नगर्नुहोस्</translation>
-<translation id="1601560923496285236">लागु गर्नुहोस्</translation>
+<translation id="1601560923496285236">लागू गर्नुहोस्</translation>
 <translation id="1602085790802918092">भर्चुअल मेसिन सुरु हुँदै छ</translation>
 <translation id="1603116295689434284">Chrome सिस्टमसम्बन्धी जानकारी</translation>
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> हटाउनुहोस्</translation>
@@ -1006,7 +1006,7 @@
 <translation id="178092663238929451">तपाईं आफू वरपरका मान्छेले पठाएका फाइल प्राप्त गर्न र ती मान्छेलाई फाइल पठाउन चाहनुहुन्छ भने नजिकैका डिभाइससँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="1781291988450150470">हालको PIN</translation>
 <translation id="1781502536226964113">नयाँ ट्याब पेज खोल्नुहोस्</translation>
-<translation id="1781553166608855614">पाठ पढेर सुनाइने भाषा</translation>
+<translation id="1781553166608855614">पढेर सुनाइने भाषा</translation>
 <translation id="1781771911845953849">खाता र सिंक सुविधा</translation>
 <translation id="1781979858217752599">विन्डोमा बजिरहेको अडियो सेयर गर्नुहोस्</translation>
 <translation id="1782101999402987960">तपाईंका एड्मिनले अपडेट गर्न नमिल्ने बनाएका छन्</translation>
@@ -8101,7 +8101,7 @@
 <translation id="7431991332293347422">खोज र थप कुराहरू वैयक्तीकृत गर्ने प्रयोजनका लागि तपाईंको ब्राउजिङ इतिहासको प्रयोग गरिने तरिका नियन्त्रण गर्नुहोस्</translation>
 <translation id="7432200167665670017">तपाईंका एड्मिनले "<ph name="EXTENSION_NAME" />" (एप ID <ph name="EXTENSION_ID" />) ब्लक गर्नुभएको छ</translation>
 <translation id="7433708794692032816">आफ्नो <ph name="DEVICE_TYPE" /> प्रयोग गरिरहन स्मार्ट कार्ड इन्सर्ट गर्नुहोस्</translation>
-<translation id="7433957986129316853">यसलाई लागु गर्नुहोस्</translation>
+<translation id="7433957986129316853">यसलाई यथावत् राख्नुहोस्</translation>
 <translation id="7434100547946193426">अन्य एपहरू</translation>
 <translation id="7434509671034404296">विकासकर्ता</translation>
 <translation id="7434757724413878233">माउसको गति बढाउने कार्य</translation>
@@ -9524,7 +9524,7 @@
 <translation id="8535005006684281994">नेटस्केप प्रमाणपत्र नविकरण URL</translation>
 <translation id="8536713137312218707">द्रुत कमान्डहरू</translation>
 <translation id="8536810348276651776">यसले अधिकांश साइटहरूबाट तपाईंलाई साइन आउट गर्छ। तपाईंले Chrome का निम्ति सेट गर्नुभएका Family Link का सेटिङ लागू गर्न तपाईं Google खातामा साइन इन भइराख्नु हुने छ।</translation>
-<translation id="8536956381488731905">कुञ्जी थिच्दा आवाज आउने पारियोस्</translation>
+<translation id="8536956381488731905">की थिच्दा आवाज आओस्</translation>
 <translation id="8539727552378197395">हैन (Http मात्र)</translation>
 <translation id="8539766201049804895">अपग्रेड गर्नुहोस्</translation>
 <translation id="8540136935098276800">सही ढाँचा भएको URL प्रविष्टि गर्नुहोस्</translation>

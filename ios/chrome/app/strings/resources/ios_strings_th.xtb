@@ -165,7 +165,7 @@
 <translation id="1822994441903263130">FEDEX</translation>
 <translation id="1827529786398596735">แตะหน้าจอหลักค้างไว้</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{รหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รหัส}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รหัส}}</translation>
-<translation id="1830634592642484976">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ <ph name="USER_EMAIL" /></translation>
+<translation id="1830634592642484976">บันทึกที่อยู่นี้ไว้ใน Chrome แล้ว หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1836891464494477513">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์กไว้ในบัญชี Google ของคุณ {email} แล้ว}}</translation>
 <translation id="183878838231635348">การ์ดนี้แสดงปัญหาด้านความเป็นส่วนตัวหรือความปลอดภัยที่การตรวจสอบความปลอดภัยตรวจหาให้คุณโดยอัตโนมัติ</translation>
@@ -289,7 +289,7 @@
 <translation id="2496626742194544812">ไปที่แท็บแรก</translation>
 <translation id="2499505845365628575">คุณดูประวัติการท่องเว็บทั้งหมดได้จาก "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="2500374554657206846">ตัวเลือกในการบันทึกรหัสผ่าน</translation>
-<translation id="2511117522375201202">คุณมีรหัสผ่านที่ถูกละเมิด <ph name="NUMBER_OF_PASSWORDS" /> รายการซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
+<translation id="2511117522375201202">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
 <translation id="2536991091671391962">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ ระบบจะบันทึกรหัสผ่านเหล่านี้ไว้ในเครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="2542268842667970959">ซ่อน "การตรวจสอบความปลอดภัย"</translation>
@@ -340,7 +340,7 @@
 <translation id="2749231692441336879">กำลังติดตาม <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">บัญชีในอุปกรณ์นี้</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
-<translation id="2772667768515195373">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ โดยที่อยู่นี้จะบันทึกอยู่ในบัญชี Google ชื่อ <ph name="USER_EMAIL" /></translation>
+<translation id="2772667768515195373">คุณใช้ที่อยู่ที่บันทึกไว้ในผลิตภัณฑ์ต่างๆ ของ Google ได้ ระบบจะบันทึกที่อยู่นี้ไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2773292004659987824">ค้นหาในโหมดไม่ระบุตัวตน</translation>
 <translation id="277771892408211951">เลือกภาษา</translation>
 <translation id="2780046210906776326">ไม่มีบัญชีอีเมล</translation>
@@ -373,7 +373,7 @@
 <translation id="2890171748217283516">ระบบจะบันทึกเว็บไซต์ที่คุณติดตามไว้ในบัญชี Google โดยคุณจัดการเว็บไซต์เหล่านี้ได้ในการตั้งค่าของฟีเจอร์สำรวจ</translation>
 <translation id="2898963176829412617">โฟลเดอร์ใหม่…</translation>
 <translation id="2902684821701498619">เพิ่มไปยังเรื่องรออ่าน</translation>
-<translation id="2905479111267140204">คุณมีรหัสผ่านที่ใช้ซ้ำ <ph name="NUMBER_OF_PASSWORDS" /> รายการที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
+<translation id="2905479111267140204">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ใช้ซ้ำที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
 <translation id="291754862089661335">จัดตำแหน่งโค้ด QR หรือบาร์โค้ดให้อยู่ในกรอบนี้</translation>
 <translation id="2920866371965792875">ติดตามเว็บไซต์นี้เพื่อดูข้อมูลอัปเดตได้ที่นี่</translation>
 <translation id="2921219216347069551">ไม่สามารถแชร์เว็บ</translation>
@@ -790,7 +790,7 @@
 <translation id="5173088371991956744">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
 <translation id="5173493422621051500">ใช้แป้นพิมพ์</translation>
 <translation id="5176312250994681348">เก็บรหัสผ่านล่าสุด</translation>
-<translation id="5177141896043341906">คุณมีรหัสผ่านที่ไม่รัดกุม <ph name="NUMBER_OF_PASSWORDS" /> รายการที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
+<translation id="5177141896043341906">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ไม่รัดกุมที่อาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
 <translation id="5181140330217080051">กำลังดาวน์โหลด</translation>
 <translation id="5184329579814168207">เปิดใน Chrome</translation>
 <translation id="5186185447130319458">ส่วนตัว</translation>
@@ -963,7 +963,7 @@
 <translation id="6059830886158432458">ควบคุมเรื่องราวและกิจกรรมของคุณได้ที่นี่</translation>
 <translation id="6064824697233747382">องค์กรกำหนดให้คุณปิดการซิงค์</translation>
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
-<translation id="6067849159007176401">เพิ่มการปกป้องจากการท่องเว็บ</translation>
+<translation id="6067849159007176401">เพิ่มการปกป้องขณะท่องเว็บ</translation>
 <translation id="607620096698446287">อัปโหลด <ph name="FILENAME" /> (<ph name="FILESIZE" />) ไม่ได้</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
 <translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
@@ -1231,7 +1231,7 @@
 <translation id="7435356471928173109">ปิดโดยผู้ดูแลระบบ</translation>
 <translation id="7438481509621345350">ตอนนี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="7451023311965289370">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}}</translation>
-<translation id="7454057999980797137">เขต/แขวง</translation>
+<translation id="7454057999980797137">จังหวัด</translation>
 <translation id="745899714366929493">ตลอดวัน</translation>
 <translation id="7459628154744868585">การปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
 <translation id="7466693328838535498">ในช่องวิดเจ็ต Search ให้ป้อน Chrome</translation>
@@ -1420,7 +1420,7 @@
 <translation id="842017693807136194">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="8423121072346537366">เมื่อสักครู่</translation>
 <translation id="8425693829365242963">รหัสผ่านของคุณไม่ซ้ำกันเลย</translation>
-<translation id="8428045167754449968">เมือง/จังหวัด</translation>
+<translation id="8428045167754449968">อำเภอ</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8428634594422941299">รับทราบ</translation>
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>

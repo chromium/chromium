@@ -5,7 +5,7 @@
 <translation id="1047130070405668746">Vælg Chromium</translation>
 <translation id="1091252999271033193">Det betyder, at Chromium anmoder om mobilwebsitet hver gang.</translation>
 <translation id="1115463765356382667">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chromium.</translation>
-<translation id="1171824629317156389">Åbn Chromium-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chromium.</translation>
+<translation id="1171824629317156389">Åbn Chromium-indstillingerne i iOS, tryk på "Standardapp til browsing", og vælg Chromium.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Hvis du vil gemme billeder, skal du trykke på Indstillinger for at give Chromium tilladelse til at føje billeder til din mappe</translation>
 <translation id="1289216811211435351">Skift til Chromium</translation>
@@ -141,7 +141,7 @@ Vær opmærksom på følgende:
 <translation id="61109258320235597">Angiv din adgangssætning for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="6119647025869519954">Sådan gør du Chromium til din standardbrowser:
 1. Åbn Indstillinger
-2. Tryk på Standardbrowserapp
+2. Tryk på Standardapp til browsing
 3. Vælg Chromium.</translation>
 <translation id="6154098560469640583">Brug Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="6197255575340902638">Hvis du skjuler "<ph name="MODULE_NAME" />", sporer Chromium ikke længere automatisk dine fremtidige pakker, og alle dine tidligere pakkesporingsdata slettes.</translation>
@@ -177,7 +177,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7269362888766543920">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="7285031092584344905">Få adgang til dine Chromium-adgangskoder og meget mere i andre apps.</translation>
-<translation id="7313655110045230863">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger. Tryk på Standardbrowserapp, og vælg derefter Chromium.</translation>
+<translation id="7313655110045230863">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger. Tryk på Standardapp til browsing, og vælg derefter Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte data er fjernet fra Chromium og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7387082980875012885">Åbn en ny fane i Chromium</translation>

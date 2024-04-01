@@ -152,7 +152,7 @@
 <translation id="1796666869097395659">برگه را کوچک کنید تا بعداً به آن برگردید</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1810845389119482123">همگام‌سازی اولیه کامل نشد</translation>
-<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> نمی‌تواند بااستفاده از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه دهد</translation>
+<translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> نمی‌تواند بااستفاده از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه دهد.</translation>
 <translation id="1829244130665387512">یافتن در صفحه</translation>
 <translation id="1832459821645506983">بله، موافقم</translation>
 <translation id="185383612275551373">‏برای دریافت مرتبط‌ترین محتوا از Google، همگام‌سازی کنید</translation>
@@ -696,7 +696,7 @@
 <translation id="4685741273709472646">انتخاب از فهرست کرکره‌ای</translation>
 <translation id="4687718960473379118">آگهی‌های پیشنهادی سایت</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
-<translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
+<translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه نهان</translation>
 <translation id="4710167854527459075">ترتیب براساس جدیدترین</translation>
 <translation id="4719927025381752090">پیشنهاد برای ترجمه</translation>
 <translation id="47217992755561375">دیدن سایت‌های برتر شما</translation>
@@ -1292,7 +1292,7 @@
 <translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
-<translation id="7641339528570811325">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="7641339528570811325">پاک کردن داده‌های مرور…</translation>
 <translation id="7646772052135772216">همگام‌سازی گذرواژه کار نمی‌کند</translation>
 <translation id="7655240423373329753">۷ روز گذشته</translation>
 <translation id="7655900163790317559">درحال روشن کردن بلوتوث…</translation>
@@ -1304,7 +1304,7 @@
 <translation id="768232549260819724">‏GIF کپی شد</translation>
 <translation id="7682724950699840886">نکات زیر را امتحان کنید: مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد، سعی کنید دوباره صادر کنید.</translation>
 <translation id="7686086654630106285">اطلاعات بیشتر درباره آگهی‌های پیشنهادی سایت</translation>
-<translation id="768618399695552958">‏برخی‌از صفحاتی که بازدید می‌کنید پیش‌بارگیری شده‌اند وقتی صفحات از سایت Google پیوند داده شده باشند، ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
+<translation id="768618399695552958">‏برخی‌از صفحاتی که بازدید می‌کنید پیش‌بارگیری شده‌اند. وقتی صفحات از سایت Google پیوند داده شده باشند، ممکن است ازطریق سرورهای Google پیش‌بارگیری شوند.</translation>
 <translation id="7690596512217303514">‏دستگاه شما Chrome را باز نکرد. برای رفع مشکل، جدیدترین به‌روزرسانی Chrome را از فروشگاه برنامه بارگیری کنید.</translation>
 <translation id="7691043218961417207">کاوش محتوا برای دنبال کردن</translation>
 <translation id="7697383401610880082">دستگیره کشاندن</translation>

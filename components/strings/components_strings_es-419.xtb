@@ -486,7 +486,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio}other{# sitios}}</translation>
 <translation id="192095259937375524">Botón Compartir esta pestaña: actívalo para compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
-<translation id="1924727005275031552">Nuevas</translation>
+<translation id="1924727005275031552">Nueva</translation>
 <translation id="1935995810530254458">Copiar de todos modos</translation>
 <translation id="1939059826036755332">Modo de pantalla en pantalla automático</translation>
 <translation id="1939175642807587452">Puede solicitar permiso para enviar notificaciones</translation>
@@ -720,7 +720,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2397836504670957718">Laptops y notebooks</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos en serie</translation>
 <translation id="2404884497378469141">Intenta volver a copiar tus archivos</translation>
-<translation id="2413155254802890957">Antiguas</translation>
+<translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2429716554270894715">Tela (impermeable)</translation>
@@ -1057,7 +1057,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
 <translation id="3166370127092388416">{NUM_COOKIES,plural, =0{Cookies de terceros, no se permiten sitios}=1{Cookies de terceros, se permite 1 sitio}other{Cookies de terceros, se permiten # sitios}}</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Descubre</translation>
 <translation id="3171703252520926121">Servicios inmobiliarios</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3176929007561373547">Comprueba la configuración del proxy o comunícate con tu
@@ -1626,7 +1626,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4277028893293644418">Restablecer contraseña</translation>
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitidas</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Quieres abrir un archivo confidencial?}other{¿Quieres abrir archivos confidenciales?}}</translation>
 <translation id="4282346679996504092">Se desactivaron las alertas para este producto y se quitó el favorito</translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
@@ -2310,7 +2310,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5666606186680807225">Islas y playas</translation>
 <translation id="5667827081946850877">Audiolibros</translation>
 <translation id="5675650730144413517">Esta página no funciona</translation>
-<translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677928146339483299">Bloqueadas</translation>
 <translation id="5678007133659493065">Lámina</translation>
 <translation id="568292603005599551">Posición en el eje X de la imagen</translation>
 <translation id="5684277895745049190">Lista</translation>
@@ -2625,7 +2625,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
 <translation id="6340739886198108203">La política del administrador no recomienda grabar pantalla o tomar capturas cuando hay contenido confidencial visible:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La política del administrador no recomienda subir este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda subir estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
-<translation id="6344622098450209924">Protección contra el seguimiento</translation>
+<translation id="6344622098450209924">Protección contra seguimiento</translation>
 <translation id="634500758737709758">Instrucciones</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
@@ -3958,7 +3958,7 @@ Detalles adicionales:
 <translation id="8968766641738584599">Guardar la tarjeta</translation>
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8971063699422889582">El certificado del servidor ha caducado.</translation>
-<translation id="8975012916872825179">Incluye información, como números de teléfono, direcciones de correo electrónico y direcciones de envío</translation>
+<translation id="8975012916872825179">Incluye información como números de teléfono, direcciones de correo electrónico y direcciones de envío</translation>
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>
 <translation id="8978053250194585037">Recientemente, la navegación segura de Google <ph name="BEGIN_LINK" />detectó un intento de phishing<ph name="END_LINK" /> en <ph name="SITE" />. Los sitios de suplantación de identidad imitan a otros sitios web para engañarte.</translation>
 <translation id="8982884016487650216">Se terminó de cargar el PDF</translation>

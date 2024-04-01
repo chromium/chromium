@@ -795,7 +795,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2573834589046842510">Inprenta eta argitalpenak</translation>
 <translation id="257674075312929031">Taldekatu</translation>
 <translation id="2586657967955657006">Arbela</translation>
-<translation id="2587841377698384444">Direktorioko APIaren IDa:</translation>
+<translation id="2587841377698384444">Direktorioko APIarenidentifikatzailea:</translation>
 <translation id="2594318783181750337">Web-ikuspegi bizkorra:</translation>
 <translation id="2595719060046994702">Ez dago gailua eta kontua kudeatzen dituen enpresa edo erakunderik.</translation>
 <translation id="2596415276201385844">Konexio segurua ezartzeko, erlojuak behar bezala ezarrita egon behar du, webguneek beren burua identifikatzeko erabiltzen dituzten ziurtagiriek denboraldi jakinetarako bakarrik balio dutelako. Gailuaren erlojua oker ezarrita dagoenez, Chrome-k ezin ditu ziurtagiri horiek egiaztatu.</translation>
@@ -1167,7 +1167,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3377188786107721145">Errore bat gertatu da errorea analizatzean</translation>
 <translation id="3377736046129930310">Erabili pantailaren blokeoa txartelak bizkorrago berresteko</translation>
 <translation id="3380365263193509176">Errore ezezaguna</translation>
-<translation id="3380864720620200369">Bezeroaren IDa:</translation>
+<translation id="3380864720620200369">Bezero-identifikatzailea:</translation>
 <translation id="3381668585148405088">Egiaztatu erosketa</translation>
 <translation id="3383566085871012386">Oraingo lehentasunen ordena</translation>
 <translation id="3384522979010096022">Erakundeak ez dizu eman webgune hau ikusteko baimenik</translation>
@@ -1536,7 +1536,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4132448310531350254"><ph name="FILE_EXTENSION" /> fitxategi-luzapenaren kudeatzaile bikoiztuei egiten diete erreferentzia <ph name="POLICY_IDS_LIST" /> darabilten aplikazioek.</translation>
 <translation id="4134123981501319574">Sortu dokumentu bat</translation>
 <translation id="413544239732274901">Lortu informazio gehiago</translation>
-<translation id="4140905530744469899">Profilaren IDa:</translation>
+<translation id="4140905530744469899">Profil-identifikatzailea:</translation>
 <translation id="4142935452406587478">10. erretilua</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Gutun-azal txinatarra 4</translation>
@@ -2298,7 +2298,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5649053991847567735">Deskarga automatikoak</translation>
 <translation id="5651323159439184939">Aitzinamendu traktorea</translation>
 <translation id="5653432653077411130">Ur-hornikuntza eta -tratamendua</translation>
-<translation id="5654927323611874862">Kargatutako hutsegite-txostenaren IDa:</translation>
+<translation id="5654927323611874862">Kargatutako hutsegite-txostenarenidentifikatzailea:</translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
 <translation id="5660122698869360728">Erosketa-orri guztiak toki berean gordetzea, prezioen jarraipena automatikoki egitea, prezioaren informazio xehatua lortzea eta beste gauza asko egitea ahalbidetzen dizun karpeta adimendun berria.</translation>
 <translation id="5663955426505430495">Gailuaren administratzaileak luzapenak instalatu ditu funtzio gehigarriak izan ditzazun. Luzapenek zenbait datu atzi ditzakete.</translation>
@@ -3038,7 +3038,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7156870133441232244">Zerbitzaria TLS 1.2 bertsiora edo berriago batera eguneratu behar da.</translation>
 <translation id="7160999678034985039">Gorde lana eta hasi eguneratzen prest zaudenean.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Isilpeko fitxategia kopiatu nahi duzu?}other{Isilpeko fitxategia kopiatu nahi dituzu?}}</translation>
-<translation id="717330890047184534">GAIA IDa:</translation>
+<translation id="717330890047184534">GAIAidentifikatzailea:</translation>
 <translation id="7174545416324379297">Bateratuta</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Gorde eta bete ordainketa-metodoak</translation>
@@ -3210,7 +3210,7 @@ Xehetasun gehiago:
 <translation id="7489473601138133813">Ibilbide profesionalerako baliabideak eta planifikazioa</translation>
 <translation id="7495528107193238112">Eduki hori blokeatuta dago. Jarri harremanetan webgunearen arduradunarekin arazoa konpontzeko.</translation>
 <translation id="749865518782565832">Iturgintza</translation>
-<translation id="7501663406926337752">Webgune hori markatuta dauka erakundeak</translation>
+<translation id="7501663406926337752">Zure erakundeak webgune hori salatu du</translation>
 <translation id="7501853161948120656">Hezkuntza-baliabideak</translation>
 <translation id="7506488012654002225">Chromium-ek <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
         <ph name="BEGIN_LIST" />
@@ -3319,7 +3319,7 @@ Xehetasun gehiago:
 <translation id="7668654391829183341">Identifikatu ezin den gailua</translation>
 <translation id="7669271284792375604">Webgune honetako erasotzaileak zu engainatzen saia litezke, sarea arakatzea oztopatuko dizuten programak instala ditzazun. Besteak beste, hasierako orria alda lezakete edo ikusten dituzun webguneetan iragarki gehiago erakuts litzakete programok.</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> posiziotatik <ph name="ITEM_POSITION" />garrena.</translation>
-<translation id="7669907849388166732">{COUNT,plural, =1{Isilpeko gisa markatu diren datuekin gauzatutako ekintzak (ekintza bat saioa hasi denetik). <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" />}other{Isilpeko gisa markatu diren datuekin gauzatutako ekintzak (# ekintza saioa hasi denetik). <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" />}}</translation>
+<translation id="7669907849388166732">{COUNT,plural, =1{Isilpekoak direla salatutako datuekin gauzatutako ekintzak (ekintza bat saioa hasi denetik). <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" />}other{Isilpekoak direla salatutako datuekin gauzatutako ekintzak (# ekintza saioa hasi denetik). <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6. postontzia</translation>
 <translation id="7675325315208090829">Kudeatu ordainketa-metodoak…</translation>
 <translation id="767550629621587224">Aurrez ebakitako bereizleak</translation>
@@ -3711,7 +3711,7 @@ Xehetasun gehiago:
 <translation id="8436623588884785770">Gehitu gidalerroa</translation>
 <translation id="8437238597147034694">&amp;Desegin mugitzea</translation>
 <translation id="8438786541497918448">Kamera eta mikrofonoa erabili nahi dituzu?</translation>
-<translation id="8438923942245957911">Webgune hau markatuta dauka erakundeak</translation>
+<translation id="8438923942245957911">Zure erakundeak webgune hau salatu du</translation>
 <translation id="8443613539889492016">Rapa eta hip-hopa</translation>
 <translation id="8444543005280733648">Ordenagailu-sareak</translation>
 <translation id="8446275044635689572">Arte eszenikoak</translation>

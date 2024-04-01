@@ -117,12 +117,6 @@ class SavedDeskTest : public OverviewTestBase {
                       std::move(restore_data));
   }
 
-  // Adds a captured desk entry to the desks model.
-  void AddEntry(std::unique_ptr<DeskTemplate> saved_desk) {
-    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
-                      std::move(saved_desk));
-  }
-
   // Creates an app_restore::RestoreData object with `num_windows.size()` apps,
   // where the ith app has `num_windows[i]` windows. The windows
   // activation index is its creation order.
@@ -4782,4 +4776,32 @@ TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
       GetItemViewsFromDeskLibrary(overview_grid2);
   EXPECT_EQ(2u, GetItemViewsFromDeskLibrary(overview_grid2).size());
 }
+
+// Tests that if we tab while the saved desks library is fading out, there is no
+// crash. Regression test for http://b/302708219.
+TEST_F(SavedDeskTest, TabbingDuringExitAnimation) {
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Ensure we have a desk saved so we can go into the library.
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
+           DeskTemplateType::kSaveAndRecall);
+
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+
+  // Enter the desks library.
+  ShowSavedDeskLibrary();
+  WaitForSavedDeskLibrary();
+
+  // Exit overview. This will fade out the saved desks library.
+  ToggleOverview();
+
+  // Try tab focus traversal while the animation is in progress. There should be
+  // no crash.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+}
+
 }  // namespace ash

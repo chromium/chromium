@@ -2177,7 +2177,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="266079277508604648">Não é possível ligar à impressora. Verifique se a impressora está ligada e associada ao Chromebook por Wi-Fi ou USB.</translation>
 <translation id="2661315027005813059">Página na cache para a frente/para trás: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">Navegue mais rapidamente e utilize menos dados com o Modo Lite. Clique para saber mais.</translation>
-<translation id="2662876636500006917">Chrome Web Store</translation>
+<translation id="2662876636500006917">Web Store do Chrome</translation>
 <translation id="2663253180579749458">A adicionar o perfil do eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="2663302507110284145">Idioma</translation>
 <translation id="2665394472441560184">Adicionar uma nova palavra</translation>
@@ -3577,7 +3577,7 @@ Quer pará-lo?</translation>
 <translation id="3775432569830822555">Certificado de servidor SSL</translation>
 <translation id="3775705724665058594">Envie para os seus dispositivos</translation>
 <translation id="3776508619697147021">Os sites podem solicitar a transferência automática de vários ficheiros</translation>
-<translation id="3776796446459804932">Esta extensão viola a política da Chrome Web Store.</translation>
+<translation id="3776796446459804932">Esta extensão viola a política da Web Store do Chrome.</translation>
 <translation id="3777483481409781352">Não foi possível ativar o dispositivo móvel</translation>
 <translation id="3777796259512476958">A sua sessão é terminada na maioria dos sites</translation>
 <translation id="3778208826288864398">A chave de segurança está bloqueada porque foi introduzido o PIN incorreto demasiadas vezes. Tem de repor a chave de segurança.</translation>
@@ -4945,7 +4945,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4870724079713069532">Pode abrir e editar ficheiros suportados com esta app a partir do Explorador de Ficheiros ou outras apps. Para controlar que ficheiros abrem esta app por predefinição, aceda a <ph name="BEGIN_LINK" />Definições do Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Introduza a palavra-passe fornecida pelo administrador para obter informações de configuração.</translation>
 <translation id="4870995365819149457">Alguns links suportados continuarão a ser abertos nas apps <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e mais 1 app.</translation>
-<translation id="4871308555310586478">Não é da Chrome Web Store</translation>
+<translation id="4871308555310586478">Não é da Web Store do Chrome</translation>
 <translation id="4871322859485617074">O PIN contém carateres inválidos.</translation>
 <translation id="4871370605780490696">Adicionar marcador</translation>
 <translation id="4871568871368204250">Desativar a sincronização</translation>
@@ -7415,7 +7415,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6862472520095266519">O nome não pode exceder 32 carateres</translation>
 <translation id="6863496016067551393">Todas as extensões permitidas</translation>
 <translation id="686366188661646310">Eliminar a palavra-passe?</translation>
-<translation id="6865313869410766144">Dados de formulário de Preenchimento automático</translation>
+<translation id="6865313869410766144">Dados de formulário de preenchimento automático</translation>
 <translation id="6865598234501509159">A página não está em <ph name="LANGUAGE" />.</translation>
 <translation id="6865708901122695652">Registos de eventos WebRTC (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Baixo</translation>

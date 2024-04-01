@@ -1604,7 +1604,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2224551243087462610">Upraviť názov priečinka</translation>
 <translation id="2225927550500503913">Virtuálna karta bola zapnutá</translation>
 <translation id="2226449515541314767">Týmto stránkam bola zablokovaná úplná kontrola nad zariadeniami MIDI.</translation>
-<translation id="2226826835915474236">Neaktívne skratky</translation>
+<translation id="2226826835915474236">Neaktívne odkazy</translation>
 <translation id="2226907662744526012">Automaticky odomknúť po zadaní kódu PIN</translation>
 <translation id="2227179592712503583">Odstrániť návrh</translation>
 <translation id="2229161054156947610">Zostáva viac ako 1 hodina</translation>
@@ -2733,7 +2733,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="308268297242056490">URI</translation>
 <translation id="3083193146044397360">Dočasne blokované s cieľom zaistiť vašu bezpečnosť</translation>
 <translation id="3083899879156272923">Posúvať obrazovku a myš udržovať v jej strede</translation>
-<translation id="3083998949001524405">Weby, ktoré môžu používať súbory cookie tretej strany</translation>
+<translation id="3083998949001524405">Weby, ktoré môžu používať súbory cookie tretích strán</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> pripol váš správca</translation>
 <translation id="3084548735795614657">Nainštalujte presunutím</translation>
 <translation id="3084771660770137092">Prehliadač Chrome má nedostatok pamäte, alebo bol proces na webovej stránke z ukončený z iného dôvodu. Ak chcete pokračovať, obnovte stránku alebo prejdite na inú.</translation>
@@ -7214,7 +7214,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6716798148881908873">Pripojenie k sieti bolo prerušené. Skontrolujte ho alebo skúste inú sieť Wi-Fi.</translation>
 <translation id="6718849325281682232">Farby motívu Chromu boli obnovené, aby viac vyhovovali všetkým, či už používajú tmavý alebo svetlý režim</translation>
 <translation id="671928215901716392">Uzamknúť obrazovku</translation>
-<translation id="6721744718589119342">Ďalšie informácie alebo aktuality vám môžeme poslať e‑mailom</translation>
+<translation id="6721744718589119342">O ďalšie informácie alebo aktuality vás môžeme požiadať e‑mailom</translation>
 <translation id="6721972322305477112">&amp;Súbor</translation>
 <translation id="672208878794563299">Tento web sa to nabudúce spýta znova.</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> môžete obnoviť, ale miestne údaje budú odstránené.</translation>

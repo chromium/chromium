@@ -12,7 +12,7 @@
 <translation id="1125124144982679672">Ко користи Chrome?</translation>
 <translation id="1142745911746664600">Не можете да ажурирате Chrome</translation>
 <translation id="1149651794389918149">Пријавите се у Chrome. Ако желите да се пријавите на налог само једном, можете да <ph name="GUEST_LINK_BEGIN" />користите уређај као гост<ph name="GUEST_LINK_END" />.</translation>
-<translation id="1152920704813762236">О Chrome ОС-у</translation>
+<translation id="1152920704813762236">О ChromeOS-у</translation>
 <translation id="1154147086299354128">&amp;Отвори у Chrome-у</translation>
 <translation id="1194807384646768652">Chrome је блокирао ово преузимање јер се овај тип фајл не преузима често и може да буде опасан</translation>
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
@@ -86,7 +86,7 @@
 <translation id="234869673307233423">Chrome не може да вам проверава лозинке. Пробајте поново касније.</translation>
 <translation id="235650106824528204">Администратор пословног профила може да уклони све податке Chrome-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Настави</translation>
-<translation id="2401189691232800402">Систем Chrome ОС</translation>
+<translation id="2401189691232800402">Систем ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Један или више додатака за Chrome су приступали 1 HID уређају}=1{Један или више додатака за Chrome приступају 1 HID уређају}one{Један или више додатака за Chrome приступају # HID уређају}few{Један или више додатака за Chrome приступају HID уређајима (#)}other{Један или више додатака за Chrome приступају HID уређајима (#)}}</translation>
 <translation id="2424440923901031101">Овај додатак крши смернице Chrome веб-продавнице и можда није безбедан. Уклоните га из Chrome-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
 <translation id="2467438592969358367">Google Chrome жели да извезе лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
@@ -103,7 +103,7 @@
 <translation id="2597976513418770460">Преузмите садржај из Chrome прегледача са: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може да тражи ажурирања. Проверите интернет везу.</translation>
-<translation id="2645435784669275700">Chrome ОС</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome редовно проверава да ли прегледач има најбезбеднија подешавања. Обавестићемо вас ако је потребно да нешто прегледате.</translation>
 <translation id="2652691236519827073">Отвори линк у новој Chrome &amp;картици</translation>
 <translation id="2665296953892887393">Помозите нам да побољшамо Google Chrome тако што ћете Google-у слати извештаје о отказивању и <ph name="UMA_LINK" /></translation>
@@ -347,7 +347,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="683440813066116847">Правило за долазни саобраћај за Google Chrome Canary да бисте омогућили mDNS саобраћај.</translation>
 <translation id="6881299373831449287">Ажурирамо Chrome</translation>
 <translation id="6885412569789873916">Chrome апликације за бета канал</translation>
-<translation id="6933858244219479645">Систем Chrome ОС</translation>
+<translation id="6933858244219479645">Систем ChromeOS</translation>
 <translation id="6938166777909186039">Да бисте добијали будућа Google Chrome ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.1.</translation>
 <translation id="6943584222992551122">Подаци прегледања ове особе ће бити избрисани са овог уређаја. Да бисте вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Правило за долазни саобраћај за Google Chrome бета да бисте омогућили mDNS саобраћај.</translation>

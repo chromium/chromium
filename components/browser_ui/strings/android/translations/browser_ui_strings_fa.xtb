@@ -118,7 +118,7 @@
 <translation id="2968755619301702150">بیننده گواهی</translation>
 <translation id="2979365474350987274">کوکی‌های شخص ثالث محدود شده است</translation>
 <translation id="3008272652534848354">بازنشانی اجازه‌ها</translation>
-<translation id="301521992641321250">مسدود‌شده به‌طور خودکار</translation>
+<translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3069226013421428034">ورود به سیستم شخص ثالث برای سایت خاصی مجاز می‌شود.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="310297983047869047">اسلاید قبلی</translation>
@@ -165,7 +165,7 @@
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
 <translation id="3835233591525155343">استفاده از دستگاه</translation>
 <translation id="3843916486309149084">‏Chrome کوکی‌ها را امروز دوباره مسدود خواهد کرد</translation>
-<translation id="385051799172605136">بازگشت</translation>
+<translation id="385051799172605136">برگشتن</translation>
 <translation id="3859306556332390985">جستجو به جلو</translation>
 <translation id="3895926599014793903">فعال کردن اجباری بزرگ‌نمایی</translation>
 <translation id="3908288065506437185">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شود</translation>
@@ -228,7 +228,7 @@
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5048398596102334565">مجاز بودن دسترسی سایت‌ها به حسگرهای حرکتی (توصیه می‌شود)</translation>
 <translation id="5050380848339752099">این سایت می‌خواهد خارج از «حالت ناشناس»، اطلاعاتی را با برنامه‌ای هم‌رسانی کند.</translation>
-<translation id="5063480226653192405">کاربر </translation>
+<translation id="5063480226653192405">مصرف</translation>
 <translation id="5091013926750941408">سایت ویژه تلفن همراه</translation>
 <translation id="509133520954049755">درخواست نمای رایانه</translation>
 <translation id="5099358668261120049">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند حذف می‌شود.</translation>
@@ -374,7 +374,7 @@
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="757524316907819857">مسدود کردن سایت‌ها برای پخش محتوای محافظت‌شده</translation>
 <translation id="7594634374516752650">به دستگاه بلوتوث متصل است</translation>
-<translation id="7641339528570811325">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="7641339528570811325">پاک کردن داده‌های مرور…</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>

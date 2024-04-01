@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CONNECTIVITY_DIAGNOSTICS_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 
 class ConnectivityDiagnosticsDialog : public SystemWebDialogDelegate {
  public:
-  static void ShowDialog();
+  static void ShowDialog(gfx::NativeWindow parent);
 
  protected:
   ConnectivityDiagnosticsDialog();

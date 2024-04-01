@@ -401,7 +401,7 @@
 <translation id="2624588537172718173">デバイスの音声とマイク</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
 <translation id="2644422758626431000">ウィンドウを左に固定する</translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
 <translation id="2653659639078652383">送信</translation>
 <translation id="2658778018866295321">クリックしてドラッグ</translation>
@@ -773,7 +773,7 @@
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+右矢印</translation>
 <translation id="4146671046252289537">次の単語の末尾に移動</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
-<translation id="4150201353443180367">表示</translation>
+<translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4156293514828496577">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。
 バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
 <translation id="4165275524535002941">ケーブルはディスプレイに対応していない可能性があります</translation>

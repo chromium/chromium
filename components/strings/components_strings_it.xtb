@@ -491,7 +491,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1939059826036755332">Modalità Picture in picture automatica</translation>
 <translation id="1939175642807587452">Può chiedere di inviare notifiche</translation>
 <translation id="1940441167050915935">Elimina i codici di sicurezza salvati</translation>
-<translation id="194174710521904357">Hai consentito temporaneamente a questo sito di utilizzare i cookie di terze parti, il che comporta una minore protezione della navigazione, ma è più probabile che le funzionalità del sito funzionino come previsto.</translation>
+<translation id="194174710521904357">Hai consentito temporaneamente a questo sito di utilizzare i cookie di terze parti. Ciò comporta una minore protezione della navigazione, ma una maggiore probabilità che le funzionalità del sito operino come previsto.</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Potresti perdere l'accesso all'account della tua organizzazione oppure subire un furto d'identità. Chromium ti consiglia di cambiare subito la password.</translation>
 <translation id="1946849748901605102">12 x 15 in</translation>
@@ -698,7 +698,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu di attivazione/disattivazione ridimensionamento</translation>
-<translation id="2365355378251437925">Inserisci un valore <ph name="FIELD" /></translation>
+<translation id="2365355378251437925">Inserisci un valore per <ph name="FIELD" /></translation>
 <translation id="2365382709349300355">È stato bloccato 1 file a causa dei criteri</translation>
 <translation id="2365508935344991784">Arredamento per esterni</translation>
 <translation id="2366689192918515749">Carne e frutti di mare</translation>
@@ -761,7 +761,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2521736961081452453">Crea modulo</translation>
 <translation id="2523886232349826891">Salvataggio effettuato solo su questo dispositivo</translation>
 <translation id="2524461107774643265">Aggiungi altre informazioni</translation>
-<translation id="2526280916094749336">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google, <ph name="ACCOUNT" />.</translation>
+<translation id="2526280916094749336">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Il CVC si trova sul lato anteriore della tua carta. È il codice di 4 cifre in alto a destra, sopra il numero della carta.</translation>
 <translation id="2529899080962247600">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in più verranno ignorate.</translation>
 <translation id="253493526287553278">Visualizza i dettagli del codice promozionale</translation>
@@ -1146,7 +1146,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3339440062908617027">Corsa e camminata</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">impostazioni</translation>
-<translation id="3342018947887487892">In seguito, un sito che visiti può chiedere queste informazioni: gli argomenti degli annunci o gli annunci suggeriti dai siti che hai visitato.</translation>
+<translation id="3342018947887487892">In seguito, un sito che visiti può chiedere queste informazioni: gli argomenti degli annunci o gli annunci suggeriti in base ai siti che hai visitato.</translation>
 <translation id="3342366525167526994">Body art</translation>
 <translation id="334438173029876234">Attrezzature e articoli per skateboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -1953,7 +1953,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4953689047182316270">Rispondi agli eventi di accessibilità</translation>
 <translation id="4957080528849277028">Pulsante Visualizza la tua cronologia di Chrome, attiva per visualizzare e gestire la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
 <translation id="4958444002117714549">Espandi elenco</translation>
-<translation id="4960068118612257147">Puoi apportare modifiche nelle impostazioni della privacy per gli annunci di Chrome</translation>
+<translation id="4960068118612257147">Puoi apportare modifiche nelle impostazioni della privacy per gli annunci di Chrome.</translation>
 <translation id="4960203958361543136">Scegli il tuo motore di ricerca</translation>
 <translation id="4964505745997821360">Assicurazione sanitaria</translation>
 <translation id="4968522289500246572">Questa app è stata progettata per dispositivi mobili e il relativo ridimensionamento potrebbe non avvenire correttamente. L'app potrebbe riavviarsi o presentare problemi.</translation>
@@ -1985,7 +1985,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5018422839182700155">Impossibile aprire questa pagina</translation>
 <translation id="5018802455907704660">16 x 20 in</translation>
 <translation id="5019198164206649151">Archivio di backup in stato non valido</translation>
-<translation id="5019293549442035120">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019293549442035120">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">World Music</translation>
 <translation id="5021557570875267742">Monitora i prezzi con Chrome</translation>
 <translation id="5023310440958281426">Consulta le norme dell'amministratore</translation>
@@ -2394,7 +2394,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5872692522325383488">IBAN salvato</translation>
 <translation id="5873297634595728366">Veicoli diesel</translation>
 <translation id="5877831137320480913">Bellezza e fitness</translation>
-<translation id="5879989559903563723">Autorizzazione non consentita in modalità Ospite</translation>
+<translation id="5879989559903563723">Autorizzazione non consentita in modalità ospite</translation>
 <translation id="5880050725127890683">Vai al controllo di sicurezza di Chrome</translation>
 <translation id="5883861433316751031">Vuoi controllare e riprogrammare i dispositivi MIDI?</translation>
 <translation id="5884465125445718607">Busta Chinese #6</translation>
@@ -2490,7 +2490,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6051221802930200923">Al momento non puoi visitare il sito web <ph name="SITE" /> perché utilizza il blocco dei certificati. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="6051898664905071243">Numero di pagine:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6053584886670442526">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo viene salvato nel tuo Account Google, <ph name="ACCOUNT" />.</translation>
+<translation id="6053584886670442526">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo viene salvato nel tuo Account Google <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Scopri di più su come Google protegge i tuoi dati nelle nostre Norme sulla privacy.</translation>
 <translation id="6055888660316801977">Riquadro inferiore per credenziali pagamento sicuro non corrispondenti</translation>
 <translation id="6055982527635883756">Busta (archivio)</translation>
@@ -2552,7 +2552,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Schede a taglio completo</translation>
-<translation id="6203231073485539293">Controlla la connessione a Internet</translation>
+<translation id="6203231073485539293">Controlla la connessione a internet</translation>
 <translation id="6205314730813004066">Privacy per gli annunci</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6215936431492593050">Metallo (satinato)</translation>
@@ -3053,7 +3053,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Riavvia e applica criteri</translation>
 <translation id="7192188280913829296">È necessario specificare anche l'attributo "vendor_id".</translation>
-<translation id="7192203810768312527">Consente di liberare <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
+<translation id="7192203810768312527">Libera <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="7192537357091279678">Unità e dispositivi di archiviazione per computer</translation>
 <translation id="7193661028827781021">Consultazione</translation>
 <translation id="719464814642662924">Visa</translation>
@@ -3341,7 +3341,7 @@ Ulteriori dettagli:
 <translation id="7696089921647603491">Rock classico e oldies</translation>
 <translation id="769721561045429135">Al momento hai carte che possono essere utilizzate solo su questo dispositivo. Fai clic su Continua per controllare le carte.</translation>
 <translation id="7698864304447945242">Vuoi aggiornare Google Play Services per AR?</translation>
-<translation id="7701040980221191251">Nulla</translation>
+<translation id="7701040980221191251">Nessun dato</translation>
 <translation id="7701544340847569275">Aggiornamento completato con errori</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Procedi su <ph name="SITE" /> (non sicuro)<ph name="END_LINK" /></translation>
 <translation id="7705992072972338699">Disco ottico (lucido)</translation>
@@ -3703,7 +3703,7 @@ Ulteriori dettagli:
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
-<translation id="8428634594422941299">OK</translation>
+<translation id="8428634594422941299">Ok</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
 <translation id="8432419784006585012">Può chiedere l'autorizzazione a usare i tuoi dispositivi MIDI</translation>
 <translation id="8433057134996913067">In questo modo uscirai dalla maggior parte dei siti web.</translation>
@@ -3730,7 +3730,7 @@ Ulteriori dettagli:
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474910779563686872">Mostra i dettagli dello sviluppatore</translation>
 <translation id="8479754468255770962">Pinzatura in basso a sinistra</translation>
-<translation id="8479926481822108747">gestire le protezioni dal monitoraggio</translation>
+<translation id="8479926481822108747">gestire le protezioni antitracciamento</translation>
 <translation id="8483229036294884935">Questo indirizzo verrà eliminato dal tuo Account Google <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Si applica a</translation>
 <translation id="8490137692873530638">Fascicolatore 10</translation>
@@ -3833,7 +3833,7 @@ Ulteriori dettagli:
 <translation id="8705331520020532516">Numero di serie</translation>
 <translation id="8708134712139312373">Può chiedere di connettersi ai dispositivi Bluetooth</translation>
 <translation id="8710842507289500830">Stile carattere</translation>
-<translation id="8712637175834984815">Fatto</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8713438021996895321">Poesia</translation>
 <translation id="8715502133575042727">Letteratura per bambini</translation>
 <translation id="8718314106902482036">Pagamento non completato</translation>
@@ -3919,7 +3919,7 @@ Ulteriori dettagli:
 <translation id="8870494189203302833">Stesso ordine a faccia in giù</translation>
 <translation id="8870700989640064057">Vuoi stampare il file riservato?</translation>
 <translation id="8871553383647848643">Personalizza l'aspetto del browser</translation>
-<translation id="8874790741333031443">Prova a consentire temporaneamente i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito agiscano come previsto.</translation>
+<translation id="8874790741333031443">Prova a consentire temporaneamente i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito operino come previsto.</translation>
 <translation id="8874824191258364635">Inserisci un numero di carta di credito valido</translation>
 <translation id="8876033571432926051">Casual game</translation>
 <translation id="8877780815363510165">Pesca</translation>
@@ -4055,7 +4055,7 @@ Ulteriori dettagli:
 <translation id="9157595877708044936">Configurazione in corso...</translation>
 <translation id="9161794544616754735">{0,plural, =1{Il file <ph name="FILE_NAME" /> potrebbe includere contenuti sensibili}other{<ph name="FILE_COUNT" /> file potrebbero includere contenuti sensibili}}</translation>
 <translation id="9164742147345933553">os://flags</translation>
-<translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa a lunga distanza, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
+<translation id="9165305804774426672">I siti che visiti possono anche stabilire i tuoi interessi in base alla tua attività sul sito. Ad esempio, se visiti un sito che vende scarpe da corsa per lunghe distanze, il sito potrebbe decidere che ti interessa partecipare a maratone.</translation>
 <translation id="9166851138617700776">Scopri di più sugli annunci suggeriti dai siti e sulla misurazione degli annunci</translation>
 <translation id="9168814207360376865">Consenti ai siti di controllare se hai metodi di pagamento salvati</translation>
 <translation id="9169664750068251925">Blocca sempre su questo sito</translation>

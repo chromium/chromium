@@ -764,7 +764,7 @@
 <translation id="2526280916094749336">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره خواهد شد.</translation>
 <translation id="2527451058878391043">‏کد تأیید کارت (CVC) روی کارتتان درج شده است. این کد ۴ رقمی در بالا سمت راست شماره کارت قرار دارد.</translation>
 <translation id="2529899080962247600">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. همه ورودی‌های بعدی نادیده گرفته خواهند شد.</translation>
-<translation id="253493526287553278">دیدن جزئیات کد تبلیغاتی</translation>
+<translation id="253493526287553278">دیدن جزئیات کد ترویجی</translation>
 <translation id="2535585790302968248">برگه ناشناس جدیدی برای مرور خصوصی باز می‌شود</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{و ۱ مورد دیگر}one{و # مورد دیگر}other{و # مورد دیگر}}</translation>
 <translation id="2536110899380797252">افزودن نشانی</translation>
@@ -990,7 +990,7 @@
 <translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای مرور کنش‌های موجود کلید «جهش» را فشار دهید، سپس برای اجرای کنش انتخاب‌شده کلید Enter را فشار دهید.</translation>
 <translation id="3013291976881901233">‏دستگاه‌های MIDI</translation>
 <translation id="3014553260345122294">اخبار کسب‌وکار</translation>
-<translation id="301521992641321250">مسدود‌شده به‌طور خودکار</translation>
+<translation id="301521992641321250">به‌طور خودکار مسدود‌شده</translation>
 <translation id="3016780570757425217">مکان‌تان را بدانید</translation>
 <translation id="3017086357773116182">‏<ph name="REMOVE_SUGGESTION_SUFFIX" />، برای «حذف پیشنهاد»، کلید «جهش» و سپس Enter را فشار دهید.</translation>
 <translation id="3023165109041533893">آگهی‌های پیشنهادی سایت از سابقه مرور و هویت شما محافظت می‌کند و درعین‌حال به سایت‌ها امکان می‌دهد آگهی‌های مرتبط به شما نشان دهند. براساس فعالیتتان، سایتی که از آن بازدید کرده‌اید می‌تواند در ادامه مرورتان، آگهی‌های مرتبط پیشنهاد دهد. در تنظیمات می‌توانید فهرست این سایت‌ها را ببینید و آن‌هایی را که نمی‌خواهید مسدود کنید.</translation>
@@ -1137,7 +1137,7 @@
 <translation id="3304073249511302126">اسکن دستگاه‌های بلوتوث</translation>
 <translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
-<translation id="3307649904964670439">‏دکمه «سفارشی کردن Chrome»؛ برای سفارشی کردن ظاهر مرورگر، آن را فعال کنید</translation>
+<translation id="3307649904964670439">‏دکمه «سفارشی‌سازی Chrome»؛ برای سفارشی‌سازی ظاهر مرورگر، آن را فعال کنید</translation>
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
 <translation id="3324687287337751929">۶ × ۴ اینچ</translation>
 <translation id="3324983252691184275">زرشکی</translation>
@@ -1218,12 +1218,12 @@
 <translation id="346601286295919445">شیمی</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، اکنون باز است، برای جابه‌جا شدن به برگه باز، ابتدا دکمه Tab سپس Enter را فشار دهید</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
-<translation id="3474392552865647225">‏دکمه «سفارشی کردن قلم‌ها در Chrome»؛ برای سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome، آن را فعال کنید</translation>
+<translation id="3474392552865647225">‏دکمه «سفارشی‌سازی قلم‌ها در Chrome»؛ برای سفارشی‌سازی اندازه قلم‌ها و طرح حروف در Chrome، آن را فعال کنید</translation>
 <translation id="3477679029130949506">فهرست فیلم و ساعات کار سینما</translation>
 <translation id="3478033058537426179">براساس گروه</translation>
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3484560055331845446">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chrome توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
-<translation id="3484861421501147767">یادآوری: کد تبلیغاتی ذخیره‌شده دردسترس است</translation>
+<translation id="3484861421501147767">یادآوری: کد ترویجی ذخیره‌شده دردسترس است</translation>
 <translation id="3487845404393360112">سینی ۴</translation>
 <translation id="3493660662684070951">کامیون، وَن، و خودروهای شاسی‌بلند</translation>
 <translation id="3495081129428749620">یافتن در صفحه
@@ -1291,7 +1291,7 @@
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3615309852743236517">مانیکور و پدیکور</translation>
 <translation id="3620239073311576716">یونیفرم و لباس کار</translation>
-<translation id="36224234498066874">پاک کردن داده‌های محصول مرور…</translation>
+<translation id="36224234498066874">پاک کردن داده‌های مرور…</translation>
 <translation id="362276910939193118">نمایش کل سابقه</translation>
 <translation id="3624292976554877583">برچسب (مات)</translation>
 <translation id="3628905806504633297">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را به <ph name="DESTINATION_NAME" /> منتقل کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را به <ph name="DESTINATION_NAME" /> منتقل کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را به <ph name="DESTINATION_NAME" /> منتقل کنید}}</translation>
@@ -1417,7 +1417,7 @@
 <translation id="384315386171052386">ماهی و غذای دریایی</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع «سندنگار Google» جدید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
-<translation id="385051799172605136">بازگشت</translation>
+<translation id="385051799172605136">برگشتن</translation>
 <translation id="3851830401766703401">آموزش حقوقی</translation>
 <translation id="385489333361351399">دوربین و تجهیزات عکاسی</translation>
 <translation id="3858027520442213535">به‌روزرسانی تاریخ و زمان</translation>
@@ -4087,7 +4087,7 @@
 <translation id="9215416866750762878">‏برنامه‌ای مانع از اتصال ایمن Chrome به این سایت می‌شود</translation>
 <translation id="9218430445555521422">تنظیم به‌عنوان پیش‌فرض</translation>
 <translation id="9219103736887031265">تصاویر</translation>
-<translation id="922152298093051471">‏سفارشی کردن Chrome</translation>
+<translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
 <translation id="9222403027701923763">‏تحصیلات ابتدایی و متوسطه (K-12)</translation>
 <translation id="93020190163435405">کارآموزی</translation>
 <translation id="933712198907837967">Diners Club</translation>

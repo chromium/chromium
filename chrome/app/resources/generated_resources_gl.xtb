@@ -332,7 +332,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1251366534849411931">Falta unha chave de apertura: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">Buscando redes de datos móbiles...</translation>
 <translation id="125220115284141797">Predeterminadas</translation>
-<translation id="1252219782845132919">Ocultar o grupo</translation>
+<translation id="1252219782845132919">Ocultar grupo</translation>
 <translation id="1252987234827889034">Produciuse un erro no perfil</translation>
 <translation id="1253664522045778676">Fai clic nun resultado e a páxina abrirase na pestana actual</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -2068,7 +2068,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2569972178052279830">Nome do punto de venda</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2571655996835834626">Cambiar as opcións de configuración que controlan o acceso dos sitios web a funcións como as cookies, o JavaScript, os complementos, a xeolocalización, o micrófono, a cámara etc.</translation>
-<translation id="2572032849266859634">Concedeuse acceso de só lectura a <ph name="VOLUME_NAME" />.</translation>
+<translation id="2572032849266859634">Concedeuse acceso só de lectura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2573276323521243649">Volver desde a páxina de selección do avatar</translation>
 <translation id="2573417407488272418">Antes da actualización, fai unha copia de seguranza das aplicacións e dos ficheiros e gárdaa en Ficheiros &gt; Os meus ficheiros.</translation>
 <translation id="2573831315551295105">Asignarlle a un interruptor a acción <ph name="ACTION" /></translation>
@@ -2156,7 +2156,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2643698698624765890">Fai clic en Extensións no menú Ventá para xestionar as túas extensións.</translation>
 <translation id="2645047101481282803">O teu dispositivo está xestionado por <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Emitindo esta pestana en: <ph name="DEVICE_NAME" /></translation>
-<translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="264897126871533291">Protanomalía</translation>
 <translation id="2649045351178520408">Cadea de certificado en ASCII con codificación Base64</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
@@ -4320,7 +4320,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4369215744064167350">Aprobouse a solicitude de sitios web</translation>
 <translation id="4369233657762989723">Activar ou desactivar ditado</translation>
 <translation id="436926121798828366">Podes cambiar esta opción cando queiras na <ph name="SETTINGS_LINK" /></translation>
-<translation id="4369735607080757018">Compártense tipos de datos limitados entre os sitios para medir o rendemento dos seus anuncios (por exemplo, a hora do día na que se che mostrou un anuncio)</translation>
+<translation id="4369735607080757018">Certo tipo de datos (como, por exemplo, a hora do día na que se che mostrou un anuncio) compártense entre os sitios para medir o rendemento dos seus anuncios</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
 <translation id="4373418556073552953">Inicia sesión co teu teléfono Android</translation>
 <translation id="4374805630006466253">Usar un teléfono ou unha tableta diferente</translation>
@@ -4478,7 +4478,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4495002167047709180">Queres permitir que esta extensión se execute en <ph name="SITE" />?</translation>
 <translation id="4495419450179050807">Non mostrar nesta páxina</translation>
 <translation id="4497145443434063861">O PC e o Chromecast están conectados a redes wifi diferentes (por exemplo, a unha de 2,4 GHz e a outra de 5 GHz)</translation>
-<translation id="4497360513077910151">Ocultar o grupo</translation>
+<translation id="4497360513077910151">Ocultar grupo</translation>
 <translation id="4500114933761911433">Produciuse un fallo co complemento <ph name="PLUGIN_NAME" /></translation>
 <translation id="4500647907053779331">&amp;Traducir selección ao <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Icona de signo de exclamación</translation>

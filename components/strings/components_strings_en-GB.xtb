@@ -856,7 +856,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2704283930420550640">Value doesn't match format.</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2705137772291741111">The saved (cached) copy of this site was unreadable.</translation>
-<translation id="2709516037105925701">Auto-fill</translation>
+<translation id="2709516037105925701">Autofill</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="2715808615350965923">Super A</translation>
@@ -1069,7 +1069,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3182185041786697613">Save security code?</translation>
 <translation id="3185635157430775689">Computer Components</translation>
 <translation id="3187306450550410410">Flexible work arrangements</translation>
-<translation id="3187472288455401631">Ad measurement</translation>
+<translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="319282854780294203">Social networks</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
@@ -1749,7 +1749,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4530347922939905757">Text message</translation>
 <translation id="4531477351494678589">Virtual card number:</translation>
 <translation id="4535523368173457420">These search engines are popular in your region and are shown in random order</translation>
-<translation id="4540780316273593836">Something went wrong</translation>
+<translation id="4540780316273593836">Something went wrong.</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Tray 6</translation>
 <translation id="4543072026714825470">To pay faster next time, save your card and billing address in your Google Account</translation>
@@ -2624,7 +2624,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="633770708279464947">The <ph name="SECURE_DNS_SALT" /> value is invalid and will not be used.</translation>
 <translation id="6340739886198108203">Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administrator policy doesn’t recommend uploading this file to <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend uploading these files to <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6344622098450209924">Tracking protection</translation>
+<translation id="6344622098450209924">Tracking Protection</translation>
 <translation id="634500758737709758">Directions</translation>
 <translation id="6348220984832452017">Active variations</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>

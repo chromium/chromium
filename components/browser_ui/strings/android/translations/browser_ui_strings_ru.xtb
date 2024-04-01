@@ -183,13 +183,13 @@
 <translation id="4149890623864272035">Вы действительно хотите удалить все локальные данные этого сайта, включая файлы cookie, и сбросить все его разрешения?</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4151930093518524179">Масштаб по умолчанию</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
 <translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Разрешено</translation>
+<translation id="4278390842282768270">Разрешены</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4336566011000459927">Сегодня Chrome снова ограничит использование файлов cookie</translation>
@@ -263,7 +263,7 @@
 <translation id="5591840828808741583">Заблокировано для сайта <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
-<translation id="5677928146339483299">Заблокировано</translation>
+<translation id="5677928146339483299">Заблокированы</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
 <translation id="5700761515355162635">Сторонние файлы cookie разрешены</translation>
@@ -289,7 +289,7 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
 <translation id="6064125863973209585">Завершенные скачивания</translation>
-<translation id="6071501408666570960">Вы выйдете из аккаунта на этом сайте.</translation>
+<translation id="6071501408666570960">Возможно, вам потребуется повторно войти в аккаунт на этом сайте.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6177111841848151710">Закрыт доступ для текущей поисковой системы</translation>
 <translation id="6177128806592000436">Подключение к сайту не защищено</translation>
@@ -307,7 +307,7 @@
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6320088164292336938">Вибросигнал</translation>
-<translation id="6344622098450209924">Блокировка отслеживания</translation>
+<translation id="6344622098450209924">Защита от слежения</translation>
 <translation id="6367753977865761591">Блокировать вход через сторонние сервисы для определенного сайта.</translation>
 <translation id="6398765197997659313">Обычный режим</translation>
 <translation id="640163077447496506">Срок действия истекает сегодня</translation>
@@ -472,7 +472,7 @@
 <translation id="8990043154272859344">Вы выйдете из аккаунта на всех сайтах</translation>
 <translation id="9011903857143958461">Действует для сайта <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
-<translation id="9039697262778250930">Возможно, на этих сайтах вам потребуется повторно войти в аккаунт.</translation>
+<translation id="9039697262778250930">Возможно, вам потребуется повторно войти в аккаунт на этих сайтах.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Удалить файлы cookie</translation>

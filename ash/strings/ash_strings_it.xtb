@@ -77,7 +77,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1247519845643687288">App recenti</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
-<translation id="1269405891096105529">Periferica non supportata in modalità Ospite</translation>
+<translation id="1269405891096105529">Periferica non supportata in modalità ospite</translation>
 <translation id="1270290102613614947">Tastiera sullo schermo disattivata</translation>
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1275285675049378717">Alimentazione di <ph name="POWER_SOURCE" /></translation>
@@ -1803,7 +1803,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8367948981300340152">In uso: <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Scrivania salvata, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avanti per lettera</translation>
-<translation id="8371991222807690464">Le prestazioni delle periferiche potrebbero essere limitate in modalità Ospite</translation>
+<translation id="8371991222807690464">Le prestazioni delle periferiche potrebbero essere limitate in modalità ospite</translation>
 <translation id="8374601332003098278">Premi invio per registrare una schermata parziale</translation>
 <translation id="8375916635258623388">Questo dispositivo <ph name="DEVICE_NAME" /> e il telefono si connetteranno automaticamente</translation>
 <translation id="8380784334203145311">Buonanotte,</translation>
