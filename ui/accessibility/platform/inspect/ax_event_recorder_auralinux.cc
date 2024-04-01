@@ -53,7 +53,7 @@ bool AXEventRecorderAuraLinux::ShouldUseATSPI() {
 }
 
 AXEventRecorderAuraLinux::AXEventRecorderAuraLinux(
-    AXPlatformTreeManager* manager,
+    base::WeakPtr<AXPlatformTreeManager> manager,
     base::ProcessId pid,
     const AXTreeSelector& selector)
     : manager_(manager), pid_(pid), selector_(selector) {
@@ -134,7 +134,7 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
                                                unsigned int n_params,
                                                const GValue* params) {
   // If we don't have a root object, it means the tree is being destroyed.
-  if (!manager_->RootDelegate()) {
+  if (!manager_ || !manager_->RootDelegate()) {
     RemoveATKEventListeners();
     return;
   }
