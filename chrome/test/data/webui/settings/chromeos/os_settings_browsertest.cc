@@ -46,6 +46,33 @@ class OSSettingsMochaTest : public WebUIMochaBrowserTest {
       ash::features::kEnableHostnameSetting};
 };
 
+// This class parameterizes the tests to run once with
+// OSSettingsRevampWayfinding feature enabled and once disabled.
+class OSSettingsRevampMochaTest : public OSSettingsMochaTest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "OsSettingsRevampWayfindingEnabled"
+                      : "OsSettingsRevampWayfindingDisabled";
+  }
+
+ protected:
+  OSSettingsRevampMochaTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kOsSettingsRevampWayfinding,
+        /*enabled=*/GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(RevampParameterized,
+                         OSSettingsRevampMochaTest,
+                         testing::Bool(),
+                         OSSettingsRevampMochaTest::DescribeParams);
+
 class OSSettingsMochaTestRevampEnabled : public OSSettingsMochaTest {
  protected:
   OSSettingsMochaTestRevampEnabled() {
@@ -134,63 +161,65 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
   RunSettingsTest("apn_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ApnDetailDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, ApnDetailDialog) {
   RunSettingsTest("apn_detail_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppLanguageSelectionDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
   RunSettingsTest(
       "common/app_language_selection_dialog/"
       "app_language_selection_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppLanguageSelectionItem) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionItem) {
   RunSettingsTest(
       "common/app_language_selection_dialog/"
       "app_language_selection_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppManagementFileHandlingItem) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       AppManagementFileHandlingItem) {
   RunSettingsTest("app_management/file_handling_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppManagementManagedApps) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppManagementManagedApps) {
   RunSettingsTest("app_management/managed_apps_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, AppManagementToggleRow) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppManagementToggleRow) {
   RunSettingsTest("app_management/toggle_row_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, CellularNetworksList) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, CellularNetworksList) {
   RunSettingsTest("cellular_networks_list_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, CellularRoamingToggleButton) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, CellularRoamingToggleButton) {
   RunSettingsTest("cellular_roaming_toggle_button_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ControlledButton) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, ControlledButton) {
   RunSettingsTest("controls/controlled_button_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ControlledRadioButton) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, ControlledRadioButton) {
   RunSettingsTest("controls/controlled_radio_button_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ExtensionControlledIndicator) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       ExtensionControlledIndicator) {
   RunSettingsTest("controls/extension_controlled_indicator_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DropdownMenu) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, DropdownMenu) {
   RunSettingsTest("controls/dropdown_menu_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsSlider) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsSlider) {
   RunSettingsTest("controls/settings_slider_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, SettingsToggleButton) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsToggleButton) {
   RunSettingsTest("controls/settings_toggle_button_test.js");
 }
 
