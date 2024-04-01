@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -22,6 +23,9 @@ using proto::SegmentId;
 // Default parameters for IosModuleRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER;
+// Default parameters for TestIosModuleRanker model.
+constexpr SegmentId kTestSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER_TEST;
 constexpr int64_t kModelVersion = 3;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
@@ -349,4 +353,81 @@ void IosModuleRanker::ExecuteModelWithInput(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
+
+// static
+std::unique_ptr<Config> TestIosModuleRanker::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kIosModuleRankerKey;
+  config->segmentation_uma_name = kIosModuleRankerUmaName;
+  config->AddSegmentId(kTestSegmentId, std::make_unique<TestIosModuleRanker>());
+  config->auto_execute_and_cache = false;
+  return config;
+}
+
+TestIosModuleRanker::TestIosModuleRanker()
+    : DefaultModelProvider(kTestSegmentId) {}
+
+std::unique_ptr<DefaultModelProvider::ModelConfig>
+TestIosModuleRanker::GetModelConfig() {
+  // TODO(b/331914464): Merge this duplicate implementation with
+  // IosModuleRanker's.
+  proto::SegmentationModelMetadata metadata;
+  MetadataWriter writer(&metadata);
+  writer.SetDefaultSegmentationMetadataConfig(kMinSignalCollectionLength,
+                                              kSignalStorageLength);
+  metadata.set_upload_tensors(true);
+
+  // Set output config.
+  writer.AddOutputConfigForMultiClassClassifier(kIosModuleLabels,
+                                                kIosModuleLabels.size(),
+                                                /*threshold=*/-99999.0);
+  writer.AddPredictedResultTTLInOutputConfig(
+      /*top_label_to_ttl_list=*/{},
+      /*default_ttl=*/kResultTTLMinutes, proto::TimeUnit::MINUTE);
+
+  // Set features.
+  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
+
+  // Add freshness for all modules as custom input.
+  writer.AddFromInputContext("most_visited_tiles_input",
+                             kMostVisitedTilesFreshness);
+  writer.AddFromInputContext("shortcuts_input", kShortcutsFreshness);
+  writer.AddFromInputContext("safety_check_input", kSafetyCheckFreshness);
+  writer.AddFromInputContext("tab_resumption_input", kTabResumptionFreshness);
+  writer.AddFromInputContext("parcel_tracking_input", kParcelTrackingFreshness);
+
+  return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
+}
+
+void TestIosModuleRanker::ExecuteModelWithInput(
+    const ModelProvider::Request& inputs,
+    ExecutionCallback callback) {
+  // Invalid inputs.
+  if (inputs.size() !=
+      kUMAFeatures.size() + kIosModuleInputContextKeys.size()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  ModelProvider::Response response(kIosModuleLabels.size(), 0);
+  std::string card_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "test-ios-module-ranker");
+  if (card_type == "mvt") {
+    response[0] = 6;
+  } else if (card_type == "shortcut") {
+    response[1] = 6;
+  } else if (card_type == "safety_check") {
+    response[2] = 6;
+  } else if (card_type == "tab_resumption") {
+    response[3] = 6;
+  } else if (card_type == "parcel_tracking") {
+    response[4] = 6;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response));
+}
+
 }  // namespace segmentation_platform

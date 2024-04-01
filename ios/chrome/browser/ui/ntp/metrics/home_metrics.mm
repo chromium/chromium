@@ -80,58 +80,74 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
   switch (module_type) {
     case ContentSuggestionsModuleType::kMostVisited: {
       // Increment freshness pref since it is an impression of
-      // the latest Most Visited Sites as the top module.
+      // the latest Most Visited Sites as the top module, but only if there has
+      // been a freshness signal.
       int freshness_impression_count = local_state->GetInteger(
           prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness);
-      local_state->SetInteger(
-          prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness,
-          freshness_impression_count + 1);
+      if (freshness_impression_count >= 0) {
+        local_state->SetInteger(
+            prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
       break;
     }
     case ContentSuggestionsModuleType::kShortcuts: {
       // Increment freshness pref since it is an impression of
-      // the latest Most Visited Sites as the top module.
+      // the latest Shortcuts as the top module, but only if there has been a
+      // freshness signal.
       int freshness_impression_count = local_state->GetInteger(
           prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness);
-      local_state->SetInteger(
-          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
-          freshness_impression_count + 1);
+      if (freshness_impression_count >= 0) {
+        local_state->SetInteger(
+            prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
       break;
     }
 
     case ContentSuggestionsModuleType::kSafetyCheck: {
       // Increment freshness pref since it is an impression of
-      // the latest Safety Check results as the top module.
+      // the latest Safety Check results as the top module, but only if there
+      // has been a freshness signal.
       int freshness_impression_count = local_state->GetInteger(
           prefs::
               kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
-      local_state->SetInteger(
-          prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-          freshness_impression_count + 1);
+      if (freshness_impression_count >= 0) {
+        local_state->SetInteger(
+            prefs::
+                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
       break;
     }
     case ContentSuggestionsModuleType::kTabResumption: {
       // Increment freshness pref since it is an impression of
-      // the latest Tab Resumption results as the top module.
+      // the latest Tab Resumption results as the top module, but only if there
+      // has been a freshness signal.
       int freshness_impression_count = local_state->GetInteger(
           prefs::
               kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
-      local_state->SetInteger(
-          prefs::
-              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
-          freshness_impression_count + 1);
+      if (freshness_impression_count >= 0) {
+        local_state->SetInteger(
+            prefs::
+                kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
       break;
     }
     case ContentSuggestionsModuleType::kParcelTracking: {
       // Increment freshness pref since it is an impression of
-      // the latest Tab Resumption results as the top module.
+      // the latest Tab Resumption results as the top module, but only if there
+      // has been a freshness signal.
       int freshness_impression_count = local_state->GetInteger(
           prefs::
               kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
-      local_state->SetInteger(
-          prefs::
-              kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
-          freshness_impression_count + 1);
+      if (freshness_impression_count >= 0) {
+        local_state->SetInteger(
+            prefs::
+                kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
       break;
     }
     case ContentSuggestionsModuleType::kSetUpListSync:
