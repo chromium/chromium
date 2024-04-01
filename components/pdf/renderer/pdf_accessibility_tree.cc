@@ -2012,14 +2012,23 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
                                    [&page_id](const ui::AXNodeID child_id) {
                                      return child_id == page_id;
                                    });
-    CHECK_EQ(num_erased, 1);
-
-    ui::AXTreeUpdate update;
-    update.root_id = doc_node_->id;
-    update.node_id_to_clear = page_id;
-    update.nodes = {*doc_node_};
-    if (!tree_.Unserialize(update)) {
-      LOG(FATAL) << tree_.error();
+    if (num_erased == 1) {
+      ui::AXTreeUpdate update;
+      update.root_id = doc_node_->id;
+      update.node_id_to_clear = page_id;
+      update.nodes = {*doc_node_};
+      if (!tree_.Unserialize(update)) {
+        LOG(FATAL) << tree_.error();
+      }
+    } else {
+      // TODO(b/329087996): Remove this debug and check why `num_erased != 1`
+      // here after collecting more data about this unexpected behavior.
+      std::vector<int32_t> child_ids = doc_node_->child_ids;
+      ui::AXNodeID page_id_to_remove = page.id;
+      base::debug::Alias(&child_ids);
+      base::debug::Alias(&page_id_to_remove);
+      base::debug::Alias(&num_erased);
+      base::debug::DumpWithoutCrashing();
     }
 
     if (ocr_service_->AreAllPagesOcred()) {
