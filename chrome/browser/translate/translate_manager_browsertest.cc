@@ -1225,8 +1225,9 @@ class TranslateManagerBackForwardCacheBrowserTest
   logging::ScopedVmoduleSwitches vmodule_switches_;
 };
 
+// Disabled due to flakiness: https://crbug.com/331926163.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
-                       RestorePageTranslatorAfterBackForwardCache) {
+                       DISABLED_RestorePageTranslatorAfterBackForwardCache) {
   SetTranslateScript(kTestValidScript);
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
