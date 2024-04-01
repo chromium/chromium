@@ -471,8 +471,10 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       RegisterDeviceWithGpmPin_MakeCredential_Success) {
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorBrowserTest,
+    // TODO(crbug.com/332193450): Re-enable this test
+    DISABLED_RegisterDeviceWithGpmPin_MakeCredential_Success) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
