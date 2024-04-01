@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -416,9 +417,9 @@ class PortsTest : public testing::Test, public MessageRouter {
 
     // Serialize and de-serialize all forwarded events.
     size_t buf_size = event->GetSerializedSize();
-    std::unique_ptr<char[]> buf(new char[buf_size]);
-    event->Serialize(buf.get());
-    ScopedEvent copy = Event::Deserialize(buf.get(), buf_size);
+    auto buf = base::HeapArray<char>::Uninit(buf_size);
+    event->Serialize(buf.data());
+    ScopedEvent copy = Event::Deserialize(buf.data(), buf.size());
     // This should always succeed unless serialization or deserialization
     // is broken. In that case, the loss of events should cause a test failure.
     ASSERT_TRUE(copy);
