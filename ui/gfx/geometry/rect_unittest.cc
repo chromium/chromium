@@ -298,24 +298,48 @@ TEST(RectTest, SplitVertically) {
   Rect left_half, right_half;
 
   // Splitting when origin is (0, 0).
-  Rect(0, 0, 20, 20).SplitVertically(&left_half, &right_half);
+  Rect(0, 0, 20, 20).SplitVertically(left_half, right_half);
   EXPECT_TRUE(left_half == Rect(0, 0, 10, 20));
   EXPECT_TRUE(right_half == Rect(10, 0, 10, 20));
 
   // Splitting when origin is arbitrary.
-  Rect(10, 10, 20, 10).SplitVertically(&left_half, &right_half);
+  Rect(10, 10, 20, 10).SplitVertically(left_half, right_half);
   EXPECT_TRUE(left_half == Rect(10, 10, 10, 10));
   EXPECT_TRUE(right_half == Rect(20, 10, 10, 10));
 
   // Splitting a rectangle of zero width.
-  Rect(10, 10, 0, 10).SplitVertically(&left_half, &right_half);
+  Rect(10, 10, 0, 10).SplitVertically(left_half, right_half);
   EXPECT_TRUE(left_half == Rect(10, 10, 0, 10));
   EXPECT_TRUE(right_half == Rect(10, 10, 0, 10));
 
   // Splitting a rectangle of odd width.
-  Rect(10, 10, 5, 10).SplitVertically(&left_half, &right_half);
+  Rect(10, 10, 5, 10).SplitVertically(left_half, right_half);
   EXPECT_TRUE(left_half == Rect(10, 10, 2, 10));
   EXPECT_TRUE(right_half == Rect(12, 10, 3, 10));
+}
+
+TEST(RectTest, SplitHorizontally) {
+  Rect top_half, bottom_half;
+
+  // Splitting when origin is (0, 0).
+  Rect(0, 0, 10, 20).SplitHorizontally(top_half, bottom_half);
+  EXPECT_EQ(Rect(0, 0, 10, 10), top_half);
+  EXPECT_EQ(Rect(0, 10, 10, 10), bottom_half);
+
+  // Splitting when origin is arbitrary.
+  Rect(10, 10, 10, 20).SplitHorizontally(top_half, bottom_half);
+  EXPECT_EQ(Rect(10, 10, 10, 10), top_half);
+  EXPECT_EQ(Rect(10, 20, 10, 10), bottom_half);
+
+  // Splitting a rectangle of zero height.
+  Rect(10, 10, 10, 0).SplitHorizontally(top_half, bottom_half);
+  EXPECT_EQ(Rect(10, 10, 10, 0), top_half);
+  EXPECT_EQ(Rect(10, 10, 10, 0), bottom_half);
+
+  // Splitting a rectangle of odd height.
+  Rect(10, 10, 10, 5).SplitHorizontally(top_half, bottom_half);
+  EXPECT_EQ(Rect(10, 10, 10, 2), top_half);
+  EXPECT_EQ(Rect(10, 12, 10, 3), bottom_half);
 }
 
 TEST(RectTest, CenterPoint) {

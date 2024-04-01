@@ -20,6 +20,9 @@ namespace ash {
 // performant resizing.
 class LayoutDividerController {
  public:
+  // Returns the root window for the layout.
+  virtual aura::Window* GetRootWindow() = 0;
+
   // Resizing functions used when resizing via the divider, where
   // `location_in_screen` is the location of the event that started this resize
   // and will be used to calculate the divider position.

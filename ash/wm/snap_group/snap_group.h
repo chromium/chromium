@@ -62,6 +62,7 @@ class SnapGroup : public aura::WindowObserver,
                                   chromeos::WindowStateType old_type) override;
 
   // LayoutDividerController:
+  aura::Window* GetRootWindow() override;
   void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
   void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
   bool EndResizeWithDivider(const gfx::Point& location_in_screen) override;

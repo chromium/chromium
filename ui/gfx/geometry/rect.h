@@ -234,8 +234,11 @@ class GEOMETRY_EXPORT Rect {
   // Transpose x and y axis.
   void Transpose();
 
-  // Splits |this| in two halves, |left_half| and |right_half|.
-  void SplitVertically(Rect* left_half, Rect* right_half) const;
+  // Splits `this` in two halves, `left_half` and `right_half`.
+  void SplitVertically(Rect& left_half, Rect& right_half) const;
+
+  // Splits `this` in two halves, `top_half` and `bottom_half`.
+  void SplitHorizontally(Rect& top_half, Rect& bottom_half) const;
 
   // Returns true if this rectangle shares an entire edge (i.e., same width or
   // same height) with the given rectangle, and the rectangles do not overlap.

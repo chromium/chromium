@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range_f.h"
@@ -141,6 +142,11 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
   }
 }
 
+aura::Window* SnapGroup::GetRootWindow() {
+  CHECK_EQ(window1_->GetRootWindow(), window2_->GetRootWindow());
+  return window1_->GetRootWindow();
+}
+
 void SnapGroup::StartResizeWithDivider(const gfx::Point& location_in_screen) {
   // `SplitViewDivider` will do the work to start resizing.
   // TODO(sophiewen): Maybe start performant resizing and add presentation time
@@ -243,8 +249,7 @@ void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
 }
 
 void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
-  const int upper_limit =
-      GetDividerPositionUpperLimit(window1_->GetRootWindow());
+  const int upper_limit = GetDividerPositionUpperLimit(GetRootWindow());
   const int requested_divider_position =
       upper_limit * primary_snap_ratio - kSplitviewDividerShortSideLength / 2.f;
 

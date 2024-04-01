@@ -1595,6 +1595,10 @@ void SplitViewController::OnWindowActivated(ActivationReason reason,
   }
 }
 
+aura::Window* SplitViewController::GetRootWindow() {
+  return root_window_;
+}
+
 void SplitViewController::StartResizeWithDivider(
     const gfx::Point& location_in_screen) {
   base::RecordAction(base::UserMetricsAction("SplitView_ResizeWindows"));

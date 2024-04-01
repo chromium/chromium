@@ -299,8 +299,8 @@ void SplitViewDivider::UpdateDividerBounds() {
 gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
   const gfx::Rect work_area_bounds_in_screen =
       GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
-  const bool landscape = IsCurrentScreenOrientationLandscape();
-  return GetDividerBoundsInScreen(work_area_bounds_in_screen, landscape,
+  return GetDividerBoundsInScreen(work_area_bounds_in_screen,
+                                  IsLayoutHorizontal(GetRootWindow()),
                                   divider_position_, is_dragging);
 }
 
@@ -505,7 +505,7 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
 }
 
 aura::Window* SplitViewDivider::GetRootWindow() const {
-  return divider_widget_->GetNativeWindow()->GetRootWindow();
+  return controller_->GetRootWindow();
 }
 
 void SplitViewDivider::RefreshStackingOrder() {

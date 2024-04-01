@@ -270,13 +270,16 @@ void Rect::Transpose() {
   SetRect(y(), x(), height(), width());
 }
 
-void Rect::SplitVertically(Rect* left_half, Rect* right_half) const {
-  DCHECK(left_half);
-  DCHECK(right_half);
+void Rect::SplitVertically(Rect& left_half, Rect& right_half) const {
+  left_half.SetRect(x(), y(), width() / 2, height());
+  right_half.SetRect(left_half.right(), y(), width() - left_half.width(),
+                     height());
+}
 
-  left_half->SetRect(x(), y(), width() / 2, height());
-  right_half->SetRect(
-      left_half->right(), y(), width() - left_half->width(), height());
+void Rect::SplitHorizontally(Rect& top_half, Rect& bottom_half) const {
+  top_half.SetRect(x(), y(), width(), height() / 2);
+  bottom_half.SetRect(x(), top_half.bottom(), width(),
+                      height() - top_half.height());
 }
 
 bool Rect::SharesEdgeWith(const Rect& rect) const {

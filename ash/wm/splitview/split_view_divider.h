@@ -154,7 +154,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   void CreateDividerWidget(int divider_position);
 
-  // Returns the root window of `divider_widget_`.
+  // Returns the root window of this.
   aura::Window* GetRootWindow() const;
 
   // Refreshes the stacking order of the `divider_widget_` to be right on top of

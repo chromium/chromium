@@ -34,9 +34,9 @@ namespace ash {
 
 namespace {
 
-// Distance between the bottom of the feedback button and the bottom of the work
-// area.
-constexpr int kFeedbackButtonDistanceFromBottom = 58;
+// Distance between the bottom / right edge of the feedback button and the
+// bottom / right of the work area.
+constexpr int kFeedbackButtonDistanceFromEdge = 58;
 
 // Size of the feedback button.
 constexpr gfx::Size kFeedbackButtonSize{40, 40};
@@ -116,14 +116,21 @@ void SplitViewDividerView::Layout(PassKey) {
   divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
 
   if (feedback_button_) {
-    // TODO(michelefan): Calculate the bounds for the feedback button for
-    // vertical layout.
     const gfx::Size feedback_button_size = feedback_button_->GetPreferredSize();
-    const gfx::Rect feedback_button_bounds(
-        (width() - feedback_button_size.width()) / 2.f,
-        height() - feedback_button_size.height() -
-            kFeedbackButtonDistanceFromBottom,
-        feedback_button_size.width(), feedback_button_size.height());
+    gfx::Rect feedback_button_bounds = gfx::Rect();
+    if (IsLayoutHorizontal(GetWidget()->GetNativeWindow()->GetRootWindow())) {
+      feedback_button_bounds = gfx::Rect(
+          (width() - feedback_button_size.width()) / 2.f,
+          height() - feedback_button_size.height() -
+              kFeedbackButtonDistanceFromEdge,
+          feedback_button_size.width(), feedback_button_size.height());
+    } else {
+      feedback_button_bounds = gfx::Rect(
+          width() - feedback_button_size.width() / 2.f -
+              kFeedbackButtonDistanceFromEdge,
+          height() - feedback_button_size.height() / 2,
+          feedback_button_size.width(), feedback_button_size.height());
+    }
     feedback_button_->SetBoundsRect(feedback_button_bounds);
   }
   divider_handler_view_->Refresh(divider_->is_resizing_with_divider());

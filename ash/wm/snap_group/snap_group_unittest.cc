@@ -1947,11 +1947,17 @@ class SnapGroupTest : public FasterSplitScreenTest {
     WaitForOverviewEntered();
     VerifySplitViewOverviewSession(window1);
 
-    // When the first window is snapped, it takes exactly half the width.
-    gfx::Rect expected_bounds_in_screen(work_area_bounds());
-    gfx::Rect left_bounds, right_bounds;
-    expected_bounds_in_screen.SplitVertically(&left_bounds, &right_bounds);
-    EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
+    // Snapping the first window makes it fill half the screen, either
+    // vertically or horizontally (based on orientation).
+    gfx::Rect work_area(work_area_bounds());
+    gfx::Rect primary_bounds, secondary_bounds;
+    if (horizontal) {
+      work_area.SplitVertically(primary_bounds, secondary_bounds);
+    } else {
+      work_area.SplitHorizontally(primary_bounds, secondary_bounds);
+    }
+
+    EXPECT_EQ(primary_bounds, window1->GetBoundsInScreen());
 
     // The `window2` gets selected in the overview will be snapped to the
     // non-occupied snap position and the overview session will end.
@@ -1974,12 +1980,36 @@ class SnapGroupTest : public FasterSplitScreenTest {
     EXPECT_EQ(chromeos::kDefaultSnapRatio,
               *WindowState::Get(window2)->snap_ratio());
 
-    // Now that two windows are snapped, the divider is between them.
     gfx::Rect divider_bounds(snap_group_divider_bounds_in_screen());
-    EXPECT_EQ(expected_bounds_in_screen.CenterPoint().x(),
-              divider_bounds.CenterPoint().x());
+    EXPECT_EQ(work_area.CenterPoint().x(), divider_bounds.CenterPoint().x());
     EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1, window2,
                                                  snap_group_divider()));
+
+    if (horizontal) {
+      primary_bounds.set_width(primary_bounds.width() -
+                               divider_bounds.width() / 2);
+      secondary_bounds.set_x(secondary_bounds.x() + divider_bounds.width() / 2);
+      secondary_bounds.set_width(secondary_bounds.width() -
+                                 divider_bounds.width() / 2);
+      EXPECT_EQ(primary_bounds.width(), window1->GetBoundsInScreen().width());
+      EXPECT_EQ(secondary_bounds.width(), window2->GetBoundsInScreen().width());
+      EXPECT_EQ(primary_bounds.width() + secondary_bounds.width() +
+                    divider_bounds.width(),
+                work_area.width());
+    } else {
+      primary_bounds.set_height(primary_bounds.height() -
+                                divider_bounds.height() / 2);
+      secondary_bounds.set_y(secondary_bounds.y() +
+                             divider_bounds.height() / 2);
+      secondary_bounds.set_height(secondary_bounds.height() -
+                                  divider_bounds.height() / 2);
+      EXPECT_EQ(primary_bounds.height(), window1->GetBoundsInScreen().height());
+      EXPECT_EQ(secondary_bounds.height(),
+                window2->GetBoundsInScreen().height());
+      EXPECT_EQ(primary_bounds.height() + secondary_bounds.height() +
+                    divider_bounds.height(),
+                work_area.height());
+    }
   }
 
   void CompleteWindowCycling() {
@@ -2501,25 +2531,34 @@ TEST_F(SnapGroupTest, DividerStackingOrderWithTwoTransientWindows) {
 }
 
 // Tests that the union bounds of the primary window, secondary window in a snap
-// group and the split view divider will be equal to the work area bounds both
+// group and the snap group divider will be equal to the work area bounds both
 // in horizontal and vertical split view mode.
-TEST_F(SnapGroupTest, SplitViewDividerBoundsTest) {
-  for (const auto is_display_horizontal_layout : {true, false}) {
-    // Need to explicitly create two windows otherwise to snap a snapped window
-    // on the same position won't trigger the overview session.
-    std::unique_ptr<aura::Window> w1(CreateTestWindow());
-    std::unique_ptr<aura::Window> w2(CreateTestWindow());
-    SnapTwoTestWindows(w1.get(), w2.get(), is_display_horizontal_layout);
+TEST_F(SnapGroupTest, SnapGroupDividerBoundsTest) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  for (const auto is_horizontal : {true, false}) {
+    if (is_horizontal) {
+      UpdateDisplay("900x600");
+    } else {
+      UpdateDisplay("600x900");
+    }
+
+    ASSERT_EQ(IsLayoutHorizontal(w1.get()), is_horizontal);
+
+    SnapTwoTestWindows(w1.get(), w2.get(), is_horizontal);
     EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
                                                  snap_group_divider()));
+
+    MaximizeToClearTheSession(w1.get());
+    MaximizeToClearTheSession(w2.get());
   }
 }
 
 TEST_F(SnapGroupTest, OverviewEnterExitBasic) {
   UpdateDisplay("800x600");
 
-  std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
 
   // Verify that full overview session is expected when starting overview from

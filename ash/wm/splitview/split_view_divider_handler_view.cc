@@ -5,14 +5,13 @@
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/shell.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -24,7 +23,7 @@ class SplitViewDividerHandlerView::SelectionAnimation
     : public gfx::SlideAnimation,
       public gfx::AnimationDelegate {
  public:
-  SelectionAnimation(SplitViewDividerHandlerView* white_handler_view)
+  explicit SelectionAnimation(SplitViewDividerHandlerView* white_handler_view)
       : gfx::SlideAnimation(this), white_handler_view_(white_handler_view) {
     SetSlideDuration(kSplitviewDividerSelectionStatusChangeDuration);
     SetTweenType(gfx::Tween::EASE_IN);
@@ -146,7 +145,7 @@ void SplitViewDividerHandlerView::UpdateCornerRadius(float radius) {
 void SplitViewDividerHandlerView::SetBounds(int short_length,
                                             int long_length,
                                             int signed_offset) {
-  const bool landscape = IsCurrentScreenOrientationLandscape();
+  const bool landscape = parent()->width() == kSplitviewDividerShortSideLength;
   gfx::Rect bounds = landscape ? gfx::Rect(short_length, long_length)
                                : gfx::Rect(long_length, short_length);
   bounds.Offset(parent()->GetLocalBounds().CenterPoint() -

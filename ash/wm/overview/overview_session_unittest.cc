@@ -6908,7 +6908,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
       // If we are dragging to snap, `SplitViewOverviewSession` is not active
       // yet, but the overview grid bounds are split.
       gfx::Rect left_bounds, right_bounds;
-      overview_bounds.SplitVertically(&left_bounds, &right_bounds);
+      overview_bounds.SplitVertically(left_bounds, right_bounds);
       // If we are dragging to snap in tablet mode, `split_view_divider` hasn't
       // been created yet, but we still need to subtract the divider width.
       const int divider_width = display::Screen::GetScreen()->InTabletMode()
